@@ -26,4 +26,5 @@
 #'   high-performance computing platforms or cloud computing services.
 #' @family help
 #' @importFrom R6 R6Class
+#' @importFrom rlang abort
 NULL

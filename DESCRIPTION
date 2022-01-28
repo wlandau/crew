@@ -42,6 +42,7 @@ Depends:
   R (>= 3.5.0)
 Imports:
   R6 (>= 2.5.0),
+  rlang (>= 0.4.10)
 Suggests:
   future (>= 1.22.0),
   knitr (>= 1.30),

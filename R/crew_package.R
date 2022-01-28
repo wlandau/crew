@@ -7,7 +7,7 @@
 #'   Like the `future` R package,
 #'   `crew` provides a backend-agnostic standard.
 #'   But unlike `future`, `crew` prioritizes centralized scheduling,
-#'   semi-persistent workers, and user-driven customization.
+#'   semi-persistent (reusable) workers, and user-driven customization.
 #'   The user supplies methods to initialize, dispatch, poll,
 #'   and terminate a worker on a specific backend technology.
 #'   The backend technology could be forked processes,

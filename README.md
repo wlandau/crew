@@ -1,22 +1,22 @@
 
-# workerui
+# crew
 
-<!--[![CRAN](https://www.r-pkg.org/badges/version/workerui)](https://CRAN.R-project.org/package=workerui)-->
+<!--[![CRAN](https://www.r-pkg.org/badges/version/crew)](https://CRAN.R-project.org/package=crew)-->
 
 [![status](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-[![check](https://github.com/ropensci/workerui/workflows/check/badge.svg)](https://github.com/ropensci/workerui/actions?query=workflow%3Acheck)
-[![codecov](https://codecov.io/gh/ropensci/workerui/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/ropensci/workerui)
-[![lint](https://github.com/ropensci/workerui/workflows/lint/badge.svg)](https://github.com/ropensci/workerui/actions?query=workflow%3Alint)
+[![check](https://github.com/ropensci/crew/workflows/check/badge.svg)](https://github.com/ropensci/crew/actions?query=workflow%3Acheck)
+[![codecov](https://codecov.io/gh/ropensci/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/ropensci/crew)
+[![lint](https://github.com/ropensci/crew/workflows/lint/badge.svg)](https://github.com/ropensci/crew/actions?query=workflow%3Alint)
 
-The user interface in `workerui` is an abstraction for high-performance
-computing technologies. Like the `future` R package, `workerui` provides
-a backend-agnostic standard. But unlike `future`, `workerui` prioritizes
+The user interface in `crew` is an abstraction for high-performance
+computing technologies. Like the `future` R package, `crew` provides
+a backend-agnostic standard. But unlike `future`, `crew` prioritizes
 centralized scheduling, semi-persistent workers, and user-driven
 customization. The user supplies methods to initialize, dispatch, poll,
 and terminate a worker on a specific backend technology. The backend
 technology could be forked processes, an on-premises high-performance
 computing cluster, a cloud computing service, or even another worker
-abstraction like `future`. Then, `workerui` supplies an `R6` subclass to
+abstraction like `future`. Then, `crew` supplies an `R6` subclass to
 create objects that manage the actual workers. Every worker group has a
 centralized mutable cache and a centralized registry of all the workers
 in the group, both of which are available to the user-defined worker
@@ -29,34 +29,34 @@ computing platforms or cloud computing services.
 ## Installation
 
 ``` r
-remotes::install_github("ropensci/workerui")
+remotes::install_github("ropensci/crew")
 ```
 
 ## Code of Conduct
 
-Please note that the `workerui` project is released with a [Contributor
+Please note that the `crew` project is released with a [Contributor
 Code of
-Conduct](https://github.com/wlandau/workerui/blob/main/CODE_OF_CONDUCT.md).
+Conduct](https://github.com/wlandau/crew/blob/main/CODE_OF_CONDUCT.md).
 By contributing to this project, you agree to abide by its terms.
 
 ## Citation
 
 ``` r
-citation("workerui")
+citation("crew")
 #> 
-#> To cite package 'workerui' in publications use:
+#> To cite package 'crew' in publications use:
 #> 
-#>   William Michael Landau (NA). workerui: Centralized Interface For
+#>   William Michael Landau (NA). crew: Centralized Interface For
 #>   Semi-Persistent High-Performance Computing Workers.
-#>   https://wlandau.github.io/workerui/,
-#>   https://github.com/wlandau/workerui.
+#>   https://wlandau.github.io/crew/,
+#>   https://github.com/wlandau/crew.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
 #>   @Manual{,
-#>     title = {workerui: Centralized Interface For Semi-Persistent
+#>     title = {crew: Centralized Interface For Semi-Persistent
 #> High-Performance Computing Workers},
 #>     author = {William Michael Landau},
-#>     note = {https://wlandau.github.io/workerui/, https://github.com/wlandau/workerui},
+#>     note = {https://wlandau.github.io/crew/, https://github.com/wlandau/crew},
 #>   }
 ```

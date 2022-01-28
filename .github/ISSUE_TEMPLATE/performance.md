@@ -9,8 +9,8 @@ assignees: wlandau
 
 ## Prework
 
-* [ ] Read and agree to the [Contributor Code of Conduct](https://github.com/wlandau/workerui/blob/main/CODE_OF_CONDUCT.md) and [contributing guidelines](https://github.com/ropensci/workerui/blob/main/CONTRIBUTING.md).
-* [ ] If there is [already a relevant issue](https://github.com/ropensci/workerui/issues), whether open or closed, comment on the existing thread instead of posting a new issue.
+* [ ] Read and agree to the [Contributor Code of Conduct](https://github.com/wlandau/crew/blob/main/CODE_OF_CONDUCT.md) and [contributing guidelines](https://github.com/ropensci/crew/blob/main/CONTRIBUTING.md).
+* [ ] If there is [already a relevant issue](https://github.com/ropensci/crew/issues), whether open or closed, comment on the existing thread instead of posting a new issue.
 * [ ] Post a [minimal reproducible example](https://www.tidyverse.org/help/) like [this one](https://github.com/ropensci/targets/issues/256#issuecomment-754229683) so the maintainer can troubleshoot the problems you identify. A reproducible example is:
     * [ ] **Runnable**: post enough R code and data so any onlooker can create the error on their own computer.
     * [ ] **Minimal**: reduce runtime wherever possible and remove complicated details that are irrelevant to the issue at hand.
@@ -29,12 +29,12 @@ Please describe the performance issue.
 
 ## Benchmarks
 
-How poorly does `workerui` perform? To find out, we recommend you use the [`proffer`](https://github.com/r-prof/proffer) package and take screenshots of the results displayed in your browser.
+How poorly does `crew` perform? To find out, we recommend you use the [`proffer`](https://github.com/r-prof/proffer) package and take screenshots of the results displayed in your browser.
 
 ```r
-library(workerui)
+library(crew)
 library(proffer)
 px <- pprof({
-  # All your workerui code goes here.
+  # All your crew code goes here.
 })
 ```

@@ -1,6 +1,6 @@
 ---
 name: Maintenance
-about: "Something in workerui needs work: updates, documentation, etc. Not a bug, performance issue, or new feature."
+about: "Something in crew needs work: updates, documentation, etc. Not a bug, performance issue, or new feature."
 title: ""
 labels: "type: maintenance"
 assignees: ""
@@ -8,8 +8,8 @@ assignees: ""
 
 ## Prework
 
-* [ ] Read and agree to the [Contributor Code of Conduct](https://github.com/wlandau/workerui/blob/main/CODE_OF_CONDUCT.md) and [contributing guidelines](https://github.com/ropensci/workerui/blob/main/CONTRIBUTING.md).
-* [ ] If there is [already a relevant issue](https://github.com/ropensci/workerui/issues), whether open or closed, comment on the existing thread instead of posting a new issue.
+* [ ] Read and agree to the [Contributor Code of Conduct](https://github.com/wlandau/crew/blob/main/CODE_OF_CONDUCT.md) and [contributing guidelines](https://github.com/ropensci/crew/blob/main/CONTRIBUTING.md).
+* [ ] If there is [already a relevant issue](https://github.com/ropensci/crew/issues), whether open or closed, comment on the existing thread instead of posting a new issue.
 * [ ] For any problems you identify, post a [minimal reproducible example](https://www.tidyverse.org/help/) like [this one](https://github.com/ropensci/targets/issues/256#issuecomment-754229683) so the maintainer can troubleshoot. A reproducible example is:
     * [ ] **Runnable**: post enough R code and data so any onlooker can create the error on their own computer.
     * [ ] **Minimal**: reduce runtime wherever possible and remove complicated details that are irrelevant to the issue at hand.

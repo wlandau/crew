@@ -1,6 +1,7 @@
-crew_assert <- function(condition) {
+crew_assert <- function(condition, message = NULL) {
   if (!all(condition)) {
-    crew_error(message = paste(deparse(substitute(condition)), "is not true."))
+    default <- paste(deparse(substitute(condition)), "is not true.")
+    crew_error(message = message %||% default)
   }
 }
 

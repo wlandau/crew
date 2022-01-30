@@ -3,15 +3,15 @@ test_that("empty crew", {
 })
 
 test_that("nonempty crew", {
-  worker <- class_worker$new()
-  workers <- list(worker)
-  names(workers) <- worker$name
-  out <- class_crew$new(workers = workers)
-  expect_silent(out$validate())
+  crew <- class_crew$new()
+  worker <- class_worker$new(crew = crew)
+  crew$worker_list[[worker$name]] <- worker
+  expect_silent(crew$validate())
 })
 
 test_that("invalid crew", {
-  workers <- list(a = 2)
-  out <- class_crew$new(workers = workers)
-  expect_error(out$validate(), class = "crew_error")
+  crew <- class_crew$new()
+  worker <- class_worker$new(crew = crew)
+  crew$worker_list[["nope"]] <- worker
+  expect_error(crew$validate(), class = "crew_error")
 })

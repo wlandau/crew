@@ -10,6 +10,8 @@
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{name}}{Character of length 1, worker name.}
+
+\item{\code{crew}}{\code{R6} crew object to which the worker belongs.}
 }
 \if{html}{\out{</div>}}
 }
@@ -26,13 +28,15 @@
 \subsection{Method \code{new()}}{
 Worker constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker$new(name = basename(tempfile(pattern = "worker_")))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$new(name = basename(tempfile(pattern = "worker_")), crew = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{name}}{Character of length 1, worker name.}
+
+\item{\code{crew}}{\code{R6} crew object to which the worker belongs.}
 }
 \if{html}{\out{</div>}}
 }

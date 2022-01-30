@@ -1,9 +1,8 @@
-test_that("empty worker", {
-  expect_silent(class_worker$new()$validate())
-})
-
-test_that("nonempty worker", {
-  expect_silent(class_worker$new(name = "x")$validate())
+test_that("valid worker", {
+  crew <- class_crew$new()
+  worker <- class_worker$new(crew = crew)
+  crew$worker_list[[worker$name]] <- worker
+  expect_silent(worker$validate())
 })
 
 test_that("invalid worker", {

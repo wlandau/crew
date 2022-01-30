@@ -11,10 +11,10 @@
 \describe{
 \item{\code{name}}{Character of length 1, crew name.}
 
-\item{\code{worker_class}}{\code{R6ClassGenerator}
+\item{\code{worker_definition}}{\code{R6ClassGenerator}
 object with the worker definition.}
 
-\item{\code{workers}}{Named list of worker objects.}
+\item{\code{worker_list}}{Named list of worker objects.}
 }
 \if{html}{\out{</div>}}
 }
@@ -33,8 +33,8 @@ Crew constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_crew$new(
   name = basename(tempfile(pattern = "crew_")),
-  worker_class = class_worker,
-  workers = list()
+  worker_definition = class_worker,
+  worker_list = list()
 )}\if{html}{\out{</div>}}
 }
 
@@ -43,10 +43,10 @@ Crew constructor.
 \describe{
 \item{\code{name}}{Character of length 1, crew name.}
 
-\item{\code{worker_class}}{\code{R6ClassGenerator}
+\item{\code{worker_definition}}{\code{R6ClassGenerator}
 object with the worker definition.}
 
-\item{\code{workers}}{Named list of \code{R6} worker objects.}
+\item{\code{worker_list}}{Named list of \code{R6} worker objects.}
 }
 \if{html}{\out{</div>}}
 }

@@ -6,27 +6,13 @@
 \title{crew: abstract interface specification for semi-persistent
 high-performance computing workers}
 \description{
-The user interface in \code{crew} is an abstraction for
-high-performance computing technologies.
-Like the \code{future} R package,
-\code{crew} provides a backend-agnostic standard.
-But unlike \code{future}, \code{crew} prioritizes centralized scheduling,
-semi-persistent (reusable) workers, and user-driven customization.
-The user supplies methods to initialize, dispatch, poll,
-and terminate a worker on a specific backend technology.
-The backend technology could be forked processes,
-an on-premises high-performance computing cluster,
-a cloud computing service, or even another worker abstraction
-like \code{future}. Then, \code{crew} supplies an \code{R6} subclass to
-create objects that manage the actual workers.
-Every worker group has a centralized mutable cache
-and a centralized registry of all the workers in the group,
-both of which are available to the user-defined worker methods.
-This facilitates advanced capabilities such as worker affinities
-and batched polling. The end goal is to help
-pipeline tools such as such \code{targets}
-efficiently orchestrate tasks
-without having to support individual low-level interfaces to specific
-high-performance computing platforms or cloud computing services.
+The \code{R6} classes of \code{crew} establish a standardized
+user interface to high-performance computing technologies.
+Unlike its closely related \code{future} package, \code{crew} prioritizes
+centralized scheduling, semi-persistent (reusable) workers,
+and user-driven customization. The primary goal is to help
+pipeline tools such as such \code{targets} efficiently orchestrate
+tasks without having to support individual low-level interfaces
+to specific high-performance computing platforms or cloud services.
 }
 \concept{help}

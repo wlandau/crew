@@ -1,27 +1,15 @@
 Package: crew
 Title: Centralized Reusable Workers
-Description: The user interface in 'crew' is an abstraction for
-  high-performance computing technologies.
-  Like the 'future' R package (2021, <doi:10.32614/RJ-2021-048>),
-  'crew' provides a backend-agnostic standard.
-  But unlike 'future', 'crew' prioritizes centralized scheduling,
-  semi-persistent (reusable) workers, and user-driven customization.
-  The user supplies methods to initialize, dispatch, poll,
-  and terminate a worker on a specific backend technology.
-  The backend technology could be forked processes,
-  an on-premises high-performance computing cluster,
-  a cloud computing service, or even another worker abstraction
-  like 'future'. Then, 'crew' supplies an 'R6' subclass to
-  create objects that manage the actual workers.
-  Every worker group has a centralized mutable cache
-  and a centralized registry of all the workers in the group,
-  both of which are available to the user-defined worker methods.
-  This facilitates advanced capabilities such as worker affinities
-  and batched polling. The end goal is to help
-  pipeline tools such as such 'targets'
-  (2021, <doi:10.21105/joss.02959>) efficiently orchestrate tasks
-  without having to support individual low-level interfaces to specific
-  high-performance computing platforms or cloud computing services.
+Description: The 'R6' classes of 'crew' establish a standardized
+  user interface to high-performance computing technologies.
+  Unlike the closely related 'future' package
+  (2021, <doi:10.32614/RJ-2021-048>), 'crew' prioritizes centralized
+  scheduling, semi-persistent (reusable) workers,
+  and user-driven customization. The purpose is to enable pipeline
+  tools such as such 'targets' (2021, <doi:10.21105/joss.02959>)
+  to efficiently orchestrate tasks without having to support
+  individual low-level interfaces to specific high-performance
+  computing platforms or cloud services.
 Version: 0.0.0.9000
 License: MIT + file LICENSE
 URL: https://wlandau.github.io/crew/, https://github.com/wlandau/crew

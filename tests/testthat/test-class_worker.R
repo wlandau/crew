@@ -3,7 +3,7 @@ test_that("empty worker", {
 })
 
 test_that("nonempty worker", {
-  expect_silent(class_worker$new(name = "x", data = list(a = 1))$validate())
+  expect_silent(class_worker$new(name = "x")$validate())
 })
 
 test_that("invalid worker", {

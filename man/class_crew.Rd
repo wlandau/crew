@@ -11,9 +11,7 @@
 \describe{
 \item{\code{name}}{Character of length 1, crew name.}
 
-\item{\code{data}}{Named list of user-defined crew data.}
-
-\item{\code{workers}}{Named list of \code{R6} worker objects.}
+\item{\code{workers}}{Named list of worker objects.}
 }
 \if{html}{\out{</div>}}
 }
@@ -30,19 +28,13 @@
 \subsection{Method \code{new()}}{
 Crew constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$new(
-  name = basename(tempfile(pattern = "crew_")),
-  data = list(),
-  workers = list()
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$new(name = basename(tempfile(pattern = "crew_")), workers = list())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{name}}{Character of length 1, crew name.}
-
-\item{\code{data}}{Named list of user-defined crew data.}
 
 \item{\code{workers}}{Named list of \code{R6} worker objects.}
 }

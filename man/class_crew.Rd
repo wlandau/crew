@@ -4,12 +4,15 @@
 \alias{class_crew}
 \title{Crew class.}
 \description{
-\code{R6} class for a crew..
+\code{R6} class for a crew.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{name}}{Character of length 1, crew name.}
+
+\item{\code{worker_class}}{\code{R6ClassGenerator}
+object with the worker definition.}
 
 \item{\code{workers}}{Named list of worker objects.}
 }
@@ -28,13 +31,20 @@
 \subsection{Method \code{new()}}{
 Crew constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$new(name = basename(tempfile(pattern = "crew_")), workers = list())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$new(
+  name = basename(tempfile(pattern = "crew_")),
+  worker_class = class_worker,
+  workers = list()
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{name}}{Character of length 1, crew name.}
+
+\item{\code{worker_class}}{\code{R6ClassGenerator}
+object with the worker definition.}
 
 \item{\code{workers}}{Named list of \code{R6} worker objects.}
 }

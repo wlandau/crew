@@ -62,7 +62,7 @@ A `store` object manages files on a file system that the workers and the crew bo
 * Paths to directories and sub-directories.
 * Methods to read, write, check the existence of, and delete worker files.
 
-A store creates and manages one file per active worker. There may be other files such as local temporary files.
+A store creates and manages one file per active worker. Files may exist locally or on the cloud, depending on the subclass. There is a 
 
 ## Local store
 

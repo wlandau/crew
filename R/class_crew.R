@@ -34,10 +34,7 @@ class_crew <- R6::R6Class(
     },
     #' @description Crew validator.
     validate = function() {
-      crew_assert(
-        is.character(self$name) & length(self$name) == 1L,
-        "crew has invalid name."
-      )
+      crew_assert_chr_scalar(self$name, "crew has invalid name.")
       crew_assert(
         inherits(self$store, "store"),
         paste("invalid store in crew", self$name)

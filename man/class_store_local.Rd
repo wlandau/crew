@@ -10,33 +10,80 @@
 \section{Super class}{
 \code{\link[crew:store]{crew::store}} -> \code{store_local}
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{dir_temp}}{Character of length 1, directory for temporary files.}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-write}{\code{class_store_local$write()}}
-\item \href{#method-read}{\code{class_store_local$read()}}
-\item \href{#method-exists}{\code{class_store_local$exists()}}
-\item \href{#method-delete}{\code{class_store_local$delete()}}
+\item \href{#method-new}{\code{class_store_local$new()}}
+\item \href{#method-path_temp}{\code{class_store_local$path_temp()}}
+\item \href{#method-write_input}{\code{class_store_local$write_input()}}
+\item \href{#method-write_output}{\code{class_store_local$write_output()}}
+\item \href{#method-read_input}{\code{class_store_local$read_input()}}
+\item \href{#method-read_output}{\code{class_store_local$read_output()}}
+\item \href{#method-exists_input}{\code{class_store_local$exists_input()}}
+\item \href{#method-exists_output}{\code{class_store_local$exists_output()}}
+\item \href{#method-delete_input}{\code{class_store_local$delete_input()}}
+\item \href{#method-delete_output}{\code{class_store_local$delete_output()}}
 \item \href{#method-destroy}{\code{class_store_local$destroy()}}
 }
 }
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="store" data-id="initialize">}\href{../../crew/html/store.html#method-initialize}{\code{crew::store$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="store" data-id="path">}\href{../../crew/html/store.html#method-path}{\code{crew::store$path()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="store" data-id="path_temp">}\href{../../crew/html/store.html#method-path_temp}{\code{crew::store$path_temp()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="store" data-id="path_input">}\href{../../crew/html/store.html#method-path_input}{\code{crew::store$path_input()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="store" data-id="path_output">}\href{../../crew/html/store.html#method-path_output}{\code{crew::store$path_output()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="store" data-id="validate">}\href{../../crew/html/store.html#method-validate}{\code{crew::store$validate()}}\out{</span>}
 }
 \out{</details>}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-write"></a>}}
-\if{latex}{\out{\hypertarget{method-write}{}}}
-\subsection{Method \code{write()}}{
-Write worker data.
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
+Store constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$write(name, data)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$new(dir_root = tempfile())}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{dir_root}}{Character of length 1, file path or prefix
+where all the files are located.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-path_temp"></a>}}
+\if{latex}{\out{\hypertarget{method-path_temp}{}}}
+\subsection{Method \code{path_temp()}}{
+Path to a worker's temporary file.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$path_temp(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Worker name.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-write_input"></a>}}
+\if{latex}{\out{\hypertarget{method-write_input}{}}}
+\subsection{Method \code{write_input()}}{
+Write worker input.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$write_input(name, data)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -50,12 +97,12 @@ Write worker data.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-read"></a>}}
-\if{latex}{\out{\hypertarget{method-read}{}}}
-\subsection{Method \code{read()}}{
-Read worker output.
+\if{html}{\out{<a id="method-write_output"></a>}}
+\if{latex}{\out{\hypertarget{method-write_output}{}}}
+\subsection{Method \code{write_output()}}{
+Write worker output.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$read(name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$write_output(name, data)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -63,18 +110,86 @@ Read worker output.
 \describe{
 \item{\code{name}}{Character of length 1, worker name.}
 
-\item{\code{output}}{Worker output to write.}
+\item{\code{data}}{Data to write.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-exists"></a>}}
-\if{latex}{\out{\hypertarget{method-exists}{}}}
-\subsection{Method \code{exists()}}{
-Exists worker data?
+\if{html}{\out{<a id="method-read_input"></a>}}
+\if{latex}{\out{\hypertarget{method-read_input}{}}}
+\subsection{Method \code{read_input()}}{
+Read worker input.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$exists(name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$read_input(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character of length 1, worker name.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-read_output"></a>}}
+\if{latex}{\out{\hypertarget{method-read_output}{}}}
+\subsection{Method \code{read_output()}}{
+Read worker output.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$read_output(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character of length 1, worker name.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-exists_input"></a>}}
+\if{latex}{\out{\hypertarget{method-exists_input}{}}}
+\subsection{Method \code{exists_input()}}{
+Exists worker input?
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$exists_input(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character of length 1, worker name.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-exists_output"></a>}}
+\if{latex}{\out{\hypertarget{method-exists_output}{}}}
+\subsection{Method \code{exists_output()}}{
+Exists worker output?
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$exists_output(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character of length 1, worker name.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-delete_input"></a>}}
+\if{latex}{\out{\hypertarget{method-delete_input}{}}}
+\subsection{Method \code{delete_input()}}{
+Delete worker input.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$delete_input(name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -86,12 +201,12 @@ Exists worker data?
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-delete"></a>}}
-\if{latex}{\out{\hypertarget{method-delete}{}}}
-\subsection{Method \code{delete()}}{
-Delete worker data.
+\if{html}{\out{<a id="method-delete_output"></a>}}
+\if{latex}{\out{\hypertarget{method-delete_output}{}}}
+\subsection{Method \code{delete_output()}}{
+Delete worker output.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$delete(name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$delete_output(name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

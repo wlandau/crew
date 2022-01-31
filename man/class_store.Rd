@@ -9,12 +9,12 @@
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{root}}{Character of length 1, root file path or prefix
+\item{\code{dir_root}}{Character of length 1, root file path or prefix
 where the files are located.}
 
-\item{\code{dir}}{Character of length 1, worker persistent storage directory.}
+\item{\code{dir_input}}{Character of length 1, worker input directory.}
 
-\item{\code{dir_temp}}{Character of length 1, directory for temporary files.}
+\item{\code{dir_output}}{Character of length 1, worker output directory.}
 }
 \if{html}{\out{</div>}}
 }
@@ -22,8 +22,8 @@ where the files are located.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{class_store$new()}}
-\item \href{#method-path}{\code{class_store$path()}}
-\item \href{#method-path_temp}{\code{class_store$path_temp()}}
+\item \href{#method-path_input}{\code{class_store$path_input()}}
+\item \href{#method-path_output}{\code{class_store$path_output()}}
 \item \href{#method-validate}{\code{class_store$validate()}}
 }
 }
@@ -33,48 +33,48 @@ where the files are located.}
 \subsection{Method \code{new()}}{
 Store constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store$new(root = tempfile())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store$new(dir_root = tempfile())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{root}}{Character of length 1, file path or prefix where the files
-are located.}
+\item{\code{dir_root}}{Character of length 1, file path or prefix
+where all the files are located.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-path"></a>}}
-\if{latex}{\out{\hypertarget{method-path}{}}}
-\subsection{Method \code{path()}}{
-Path to a worker's persistent file.
+\if{html}{\out{<a id="method-path_input"></a>}}
+\if{latex}{\out{\hypertarget{method-path_input}{}}}
+\subsection{Method \code{path_input()}}{
+Path to job input.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store$path(name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store$path_input(job_name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Worker name.}
+\item{\code{job_name}}{Job name.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-path_temp"></a>}}
-\if{latex}{\out{\hypertarget{method-path_temp}{}}}
-\subsection{Method \code{path_temp()}}{
-Path to a worker's temporary file.
+\if{html}{\out{<a id="method-path_output"></a>}}
+\if{latex}{\out{\hypertarget{method-path_output}{}}}
+\subsection{Method \code{path_output()}}{
+Path to job input.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store$path_temp(name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store$path_output(job_name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Worker name.}
+\item{\code{job_name}}{Job name.}
 }
 \if{html}{\out{</div>}}
 }

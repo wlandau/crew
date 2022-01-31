@@ -3,7 +3,9 @@ test_that("valid store class", {
 })
 
 test_that("invalid store class", {
-  expect_silent(class_store$new(dir_root = NULL)$validate())
+  x <- class_store$new()
+  x$dir_root <- NULL
+  expect_error(x$validate(), class = "crew_error")
 })
 
 test_that("input path", {

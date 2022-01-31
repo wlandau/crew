@@ -11,6 +11,8 @@
 \describe{
 \item{\code{name}}{Character of length 1, crew name.}
 
+\item{\code{store}}{\code{R6} store object.}
+
 \item{\code{worker_definition}}{\code{R6ClassGenerator}
 object with the worker definition.}
 
@@ -33,6 +35,7 @@ Crew constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_crew$new(
   name = basename(tempfile(pattern = "crew_")),
+  store = class_store$new(),
   worker_definition = class_worker,
   worker_list = list()
 )}\if{html}{\out{</div>}}
@@ -42,6 +45,8 @@ Crew constructor.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{name}}{Character of length 1, crew name.}
+
+\item{\code{store}}{\code{R6} store object.}
 
 \item{\code{worker_definition}}{\code{R6ClassGenerator}
 object with the worker definition.}

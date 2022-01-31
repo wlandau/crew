@@ -1,0 +1,78 @@
+---
+title: "Specification"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: true
+vignette: >
+  %\VignetteIndexEntry{Specification}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(crew)
+```
+
+This vignette is a specification of the classes in `crew`. Sub-classes are listed, but only the ones implemented in the `crew` package itself. Other sub-classes may be developed in packages that depend on `crew`.
+
+# crew
+
+A `crew` represents a group of workers. It contains:
+
+* Its name.
+* A data store to send and receive worker data.
+* A list of worker objects to manage active workers
+* A worker definition to launch new workers.
+
+A crew is in charge of
+
+* Launching new workers.
+* Assigning jobs to workers.
+* Polling workers.
+* Receiving and processing data from workers.
+* Terminating workers.
+
+# worker
+
+A `worker` object encapsulates a worker: a local process, cluster process, or cloud process that accepts and runs work that the crew dispatches. It contains:
+
+* Its name.
+* The `crew` object of the crew it belongs to.
+
+## Sequential worker
+
+Worker that runs in a simple R process.
+
+## Future worker
+
+Worker that runs in a `future`.
+
+# store
+
+A `store` object manages files on a file system that the workers and the crew both can access. The store object contains:
+
+* Paths to directories and subdirectories.
+* Methods to read, write, check the existence of, and delete worker files.
+
+A store creates and manages one file per active worker. There may be other files such as local temporary files.
+
+## Local store
+
+Subclass of a store based on local files.
+
+## AWS S3 store
+
+Subclass of a store based on AWS S3
+
+## Google Cloud store
+
+Subclass of a store based on Google Cloud Storage.
+

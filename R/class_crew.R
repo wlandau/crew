@@ -8,6 +8,8 @@ class_crew <- R6::R6Class(
   public = list(
     #' @field name Character of length 1, crew name.
     name = NULL,
+    #' @field store `R6` store object.
+    store = NULL,
     #' @field worker_definition `R6ClassGenerator`
     #'   object with the worker definition.
     worker_definition = NULL,
@@ -15,15 +17,18 @@ class_crew <- R6::R6Class(
     worker_list = NULL,
     #' @description Crew constructor.
     #' @param name Character of length 1, crew name.
+    #' @param store `R6` store object.
     #' @param worker_definition `R6ClassGenerator`
     #'   object with the worker definition.
     #' @param worker_list Named list of `R6` worker objects.
     initialize = function(
-      name =  basename(tempfile(pattern = "crew_")),
+      name = basename(tempfile(pattern = "crew_")),
+      store = class_store$new(),
       worker_definition = class_worker,
       worker_list = list()
     ) {
       self$name <- name
+      self$store <- store
       self$worker_definition <- worker_definition
       self$worker_list <- worker_list
     },
@@ -33,6 +38,11 @@ class_crew <- R6::R6Class(
         is.character(self$name) & length(self$name) == 1L,
         "crew has invalid name."
       )
+      crew_assert(
+        inherits(self$store, "store"),
+        paste("invalid store in crew", self$name)
+      )
+      self$store$validate()
       crew_assert(
         inherits(self$worker_definition, "R6ClassGenerator"),
         paste(

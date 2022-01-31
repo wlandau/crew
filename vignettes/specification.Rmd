@@ -28,7 +28,7 @@ This vignette is a specification of the classes in `crew`. Sub-classes are liste
 A `crew` represents a group of workers. It contains:
 
 * Its name.
-* A data store to send and receive worker data.
+* A `store` object with a data store to send and receive worker data.
 * A list of worker objects to manage active workers
 * A worker definition to launch new workers.
 

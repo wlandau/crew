@@ -1,5 +1,6 @@
 #' @title Local store class.
 #' @export
+#' @aliases store
 #' @description `R6` class for a local store.
 class_store_local <- R6::R6Class(
   classname = "store_local",

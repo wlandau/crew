@@ -59,7 +59,7 @@ Worker that runs in a `future`.
 
 A `store` object manages files on a file system that the workers and the crew both can access. The store object contains:
 
-* Paths to directories and subdirectories.
+* Paths to directories and sub-directories.
 * Methods to read, write, check the existence of, and delete worker files.
 
 A store creates and manages one file per active worker. There may be other files such as local temporary files.

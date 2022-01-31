@@ -3,7 +3,7 @@
 #' @description `R6` class for a local store.
 class_store_local <- R6::R6Class(
   classname = "store_local",
-  inherit = class_store,
+  inherit = crew::class_store,
   portable = FALSE,
   cloneable = FALSE,
   public = list(

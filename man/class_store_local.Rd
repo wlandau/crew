@@ -23,6 +23,8 @@
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="store" data-id="initialize">}\href{../../crew/html/store.html#method-initialize}{\code{crew::store$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="store" data-id="path">}\href{../../crew/html/store.html#method-path}{\code{crew::store$path()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="store" data-id="path_temp">}\href{../../crew/html/store.html#method-path_temp}{\code{crew::store$path_temp()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="store" data-id="validate">}\href{../../crew/html/store.html#method-validate}{\code{crew::store$validate()}}\out{</span>}
 }
 \out{</details>}

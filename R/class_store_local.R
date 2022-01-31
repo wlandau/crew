@@ -13,11 +13,11 @@ class_store_local <- R6::R6Class(
     write = function(name, data) {
       crew_assert(is.character(name) & length(name) == 1L & nzchar(name))
       path_temp <- self$path_temp(name)
-      path_worker <- self$path_worker(name)
+      path <- self$path(name)
       fs::dir_create(dirname(path_temp))
-      fs::dir_create(dirname(path_worker))
+      fs::dir_create(dirname(path))
       qs::qsave(x = data, file = path_temp)
-      file.rename(from = path_temp, to = path_worker)
+      file.rename(from = path_temp, to = path)
       invisible()
     },
     #' @description Read worker output.
@@ -25,7 +25,7 @@ class_store_local <- R6::R6Class(
     #' @param output Worker output to write.
     read = function(name) {
       crew_assert(is.character(name) & length(name) == 1L & nzchar(name))
-      path <- self$path_worker(name)
+      path <- self$path(name)
       msg <- paste("input file", path, "of worker", name, "does not exist.")
       if (!all(file.exists(path))) {
         crew_error(msg)
@@ -36,13 +36,13 @@ class_store_local <- R6::R6Class(
     #' @param name Character of length 1, worker name
     exists = function(name) {
       crew_assert(is.character(name) & length(name) == 1L & nzchar(name))
-      all(file.exists(self$path_worker(name)))
+      all(file.exists(self$path(name)))
     },
     #' @description Delete worker data.
     #' @param name Character of length 1, worker name
     delete = function(name) {
       crew_assert(is.character(name) & length(name) == 1L & nzchar(name))
-      path <- self$path_worker(name)
+      path <- self$path(name)
       unlink(path, recursive = TRUE, force = TRUE)
       invisible()
     },

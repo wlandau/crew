@@ -29,6 +29,8 @@ Authors@R: c(
 Depends:
   R (>= 3.5.0)
 Imports:
+  fs (>= 1.5.0),
+  qs (>= 0.24.1),
   R6 (>= 2.5.0),
   rlang (>= 0.4.10)
 Suggests:

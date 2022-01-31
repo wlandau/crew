@@ -1,3 +1,8 @@
+test_that("temp path", {
+  x <- class_store_local$new()
+  expect_equal(x$path_temp("abc"), file.path(x$dir_root, "temp", "abc"))
+})
+
 test_that("local store", {
   x <- class_store_local$new()
   name <- "abc"

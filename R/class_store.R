@@ -6,38 +6,39 @@ class_store <- R6::R6Class(
   portable = FALSE,
   cloneable = FALSE,
   public = list(
-    #' @field root Character of length 1, root file path or prefix
+    #' @field dir_root Character of length 1, root file path or prefix
     #'   where the files are located.
-    root = NULL,
-    #' @field dir Character of length 1, worker persistent storage directory.
-    dir = NULL,
-    #' @field dir_temp Character of length 1, directory for temporary files.
-    dir_temp = NULL,
+    dir_root = NULL,
+    #' @field dir Character of length 1, worker input directory.
+    dir_input = NULL,
+    #' @field dir Character of length 1, worker output directory.
+    dir_output = NULL,
+
     #' @description Store constructor.
-    #' @param root Character of length 1, file path or prefix where the files
+    #' @param dir_root Character of length 1, file path or prefix where the files
     #'   are located.
     initialize = function(
-      root = tempfile()
+      dir_root = tempfile()
     ) {
-      self$root <- root
-      self$dir <- file.path(self$root, "worker")
-      self$dir_temp <- file.path(self$root, "temp")
+      self$dir_root <- dir_root
+      self$dir_input <- file.path(self$dir_root, "input")
+      self$dir_output <- file.path(self$dir_root, "output")
     },
-    #' @description Path to a worker's persistent file.
-    #' @param name Worker name.
-    path = function(name) {
-      crew_assert(is.character(name) & length(name) == 1L & nzchar(name))
-      file.path(self$dir, name)
+    #' @description Path to job input.
+    #' @param job_name Job name.
+    path_input = function(job_name) {
+      crew_assert(is.character(job_name) & length(job_name) == 1L & nzchar(job_name))
+      file.path(self$dir_input, job_name)
     },
-    #' @description Path to a worker's temporary file.
-    #' @param name Worker name.
-    path_temp = function(name) {
-      crew_assert(is.character(name) & length(name) == 1L & nzchar(name))
-      file.path(self$dir_temp, name)
+    #' @description Path to job input.
+    #' @param job_name Job name.
+    path_output = function(job_name) {
+      crew_assert(is.character(job_name) & length(job_name) == 1L & nzchar(job_name))
+      file.path(self$dir_output, job_name)
     },
     #' @description Store validator.
     validate = function() {
-      for (field in c("root", "dir", "dir_temp")) {
+      for (field in c("dir_root", "dir_input", "dir_output")) {
         value <- self[[field]]
         crew_assert(
           is.character(value) & length(value) == 1L & nzchar(value),

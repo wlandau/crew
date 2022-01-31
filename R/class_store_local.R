@@ -8,6 +8,23 @@ class_store_local <- R6::R6Class(
   portable = FALSE,
   cloneable = FALSE,
   public = list(
+    #' @field dir_temp Character of length 1, directory for temporary files.
+    dir_temp = NULL,
+    #' @description Store constructor.
+    #' @param dir_root Character of length 1, file path or prefix where the files
+    #'   are located.
+    initialize = function(
+      dir_root = tempfile()
+    ) {
+      super$initialize(dir_root = dir_root)
+      self$dir_temp <- file.path(self$dir_root, "temp")
+    },
+    #' @description Path to a worker's temporary file.
+    #' @param name Worker name.
+    path_temp = function(name) {
+      crew_assert(is.character(name) & length(name) == 1L & nzchar(name))
+      file.path(self$dir_temp, name)
+    },
     #' @description Write worker data.
     #' @param name Character of length 1, worker name.
     #' @param data Data to write.

@@ -3,15 +3,15 @@ test_that("valid store class", {
 })
 
 test_that("invalid store class", {
-  expect_silent(class_store$new(root = NULL)$validate())
+  expect_silent(class_store$new(dir_root = NULL)$validate())
 })
 
-test_that("valid worker path", {
+test_that("input path", {
   x <- class_store$new()
-  expect_equal(x$path("abc"), file.path(x$root, "worker", "abc"))
+  expect_equal(x$path_input("abc"), file.path(x$dir_root, "input", "abc"))
 })
 
-test_that("valid temp path", {
+test_that("output path", {
   x <- class_store$new()
-  expect_equal(x$path_temp("abc"), file.path(x$root, "temp", "abc"))
+  expect_equal(x$path_output("abc"), file.path(x$dir_root, "output", "abc"))
 })

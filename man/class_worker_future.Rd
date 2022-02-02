@@ -2,6 +2,7 @@
 % Please edit documentation in R/class_worker_future.R
 \name{class_worker_future}
 \alias{class_worker_future}
+\alias{class_worker}
 \title{Future worker class.}
 \description{
 \code{R6} class for a \code{future} worker.

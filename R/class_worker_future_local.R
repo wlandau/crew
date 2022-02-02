@@ -1,6 +1,6 @@
 #' @title Local `future` worker class.
 #' @export
-#' @aliases class_worker_future
+#' @aliases worker_future
 #' @description `R6` class for a local `future` worker.
 #'   It is "local" in the sense that the data store
 #'   is a local file system. Workers can use `future.batchtools`.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/class_worker_future_local.R
 \name{class_worker_future_local}
 \alias{class_worker_future_local}
-\alias{class_worker_future}
+\alias{worker_future}
 \title{Local \code{future} worker class.}
 \description{
 \code{R6} class for a local \code{future} worker.

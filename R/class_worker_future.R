@@ -1,6 +1,6 @@
 #' @title Future worker class.
 #' @export
-#' @aliases class_worker
+#' @aliases worker
 #' @description `R6` class for a `future` worker.
 class_worker_future <- R6::R6Class(
   classname = "worker_future",

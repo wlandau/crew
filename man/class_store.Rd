@@ -51,13 +51,13 @@ where all the files are located.}
 \subsection{Method \code{path_input()}}{
 Path to job input.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store$path_input(job_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store$path_input(worker_name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{job_name}}{Job name.}
+\item{\code{worker_name}}{Worker name.}
 }
 \if{html}{\out{</div>}}
 }
@@ -68,13 +68,13 @@ Path to job input.
 \subsection{Method \code{path_output()}}{
 Path to job input.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store$path_output(job_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store$path_output(worker_name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{job_name}}{Job name.}
+\item{\code{worker_name}}{Worker name.}
 }
 \if{html}{\out{</div>}}
 }

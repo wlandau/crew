@@ -62,10 +62,7 @@ A `store` object manages files on a file system that the workers and the crew bo
 * Paths to directories and sub-directories.
 * Methods to read, write, check the existence of, and delete worker files.
 
-Files may exist locally or on the cloud, depending on the subclass. The directory structure of a data store has a single root folder and sub-directories `input/` and `output/`. The former contains instructions and data for submitted jobs, and the latter contains job output written by the workers. In both cases, there is one file per job, and the file names are in alphabetical order according to the file system. Benefits of this design include:
-
-* Polling by design: to poll, a worker object can simply check if the `output/` file exists for the job currently running. (Although a separate mechanism is needed in order to detect crashed workers.)
-* A natural first-in-first-out queue for job submission dictated solely by the file names.
+Files may exist locally or on the cloud, depending on the subclass. The directory structure of a data store has a single root folder and sub-directories `input/` and `output/`. The former contains instructions and data for submitted jobs, and the latter contains job output written by the workers. In both cases, there is at most one file per worker, with the base name equal to the worker name. That way, to check if a remote worker completed a job successfully, a worker object can simply check if the `output/` file exists for the job currently running. (Although a separate backend-specific mechanism is needed in order to detect crashed workers. Would be nice to use `httpuv`/`websocket` for this, but websockets are probably not reliable or feasible enough for AWS.)
 
 ## Local store
 

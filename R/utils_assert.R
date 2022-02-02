@@ -16,6 +16,13 @@ crew_assert_chr_scalar <- function(x, message = NULL) {
   )
 }
 
-crew_error <- function(message) {
-  rlang::abort(message = message, class = c("crew_error", "crew"))
+crew_assert_pos_dbl_scalar <- function(x, message = NULL) {
+  default <- paste(
+    x,
+    "must be a positive numeric of length 1."
+  )
+  crew_assert(
+    condition = is.numeric(x) && length(x) == 1L && all(x > 0),
+    message = default %||% message
+  )
 }

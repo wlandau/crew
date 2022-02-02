@@ -25,16 +25,16 @@ class_store <- R6::R6Class(
       self$dir_output <- file.path(self$dir_root, "output")
     },
     #' @description Path to job input.
-    #' @param worker_name Worker name.
-    path_input = function(worker_name) {
-      crew_assert_chr_scalar(worker_name)
-      file.path(self$dir_input, worker_name)
+    #' @param name Worker name.
+    path_input = function(name) {
+      crew_assert_chr_scalar(name)
+      file.path(self$dir_input, name)
     },
     #' @description Path to job input.
-    #' @param worker_name Worker name.
-    path_output = function(worker_name) {
-      crew_assert_chr_scalar(worker_name)
-      file.path(self$dir_output, worker_name)
+    #' @param name Worker name.
+    path_output = function(name) {
+      crew_assert_chr_scalar(name)
+      file.path(self$dir_output, name)
     },
     #' @description Store validator.
     validate = function() {

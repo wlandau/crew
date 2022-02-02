@@ -66,13 +66,13 @@ where all the files are located.}
 \subsection{Method \code{path_temp()}}{
 Path to a worker's temporary file.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$path_temp(worker_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$path_temp(name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{worker_name}}{Worker name.}
+\item{\code{name}}{Worker name.}
 }
 \if{html}{\out{</div>}}
 }
@@ -83,13 +83,13 @@ Path to a worker's temporary file.
 \subsection{Method \code{write_input()}}{
 Write worker input.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$write_input(worker_name, data)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$write_input(name, data)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{worker_name}}{Character of length 1, Worker name.}
+\item{\code{name}}{Character of length 1, Worker name.}
 
 \item{\code{data}}{Data to write.}
 }
@@ -102,13 +102,13 @@ Write worker input.
 \subsection{Method \code{write_output()}}{
 Write worker output.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$write_output(worker_name, data)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$write_output(name, data)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{worker_name}}{Character of length 1, Worker name.}
+\item{\code{name}}{Character of length 1, Worker name.}
 
 \item{\code{data}}{Data to write.}
 }
@@ -121,13 +121,13 @@ Write worker output.
 \subsection{Method \code{read_input()}}{
 Read worker input.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$read_input(worker_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$read_input(name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{worker_name}}{Character of length 1, Worker name.}
+\item{\code{name}}{Character of length 1, Worker name.}
 }
 \if{html}{\out{</div>}}
 }
@@ -138,13 +138,13 @@ Read worker input.
 \subsection{Method \code{read_output()}}{
 Read worker output.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$read_output(worker_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$read_output(name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{worker_name}}{Character of length 1, Worker name.}
+\item{\code{name}}{Character of length 1, Worker name.}
 }
 \if{html}{\out{</div>}}
 }
@@ -155,13 +155,13 @@ Read worker output.
 \subsection{Method \code{exists_input()}}{
 Exists worker input?
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$exists_input(worker_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$exists_input(name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{worker_name}}{Character of length 1, Worker name.}
+\item{\code{name}}{Character of length 1, Worker name.}
 }
 \if{html}{\out{</div>}}
 }
@@ -172,13 +172,13 @@ Exists worker input?
 \subsection{Method \code{exists_output()}}{
 Exists worker output?
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$exists_output(worker_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$exists_output(name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{worker_name}}{Character of length 1, Worker name.}
+\item{\code{name}}{Character of length 1, Worker name.}
 }
 \if{html}{\out{</div>}}
 }
@@ -189,13 +189,13 @@ Exists worker output?
 \subsection{Method \code{delete_input()}}{
 Delete worker input.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$delete_input(worker_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$delete_input(name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{worker_name}}{Character of length 1, Worker name}
+\item{\code{name}}{Character of length 1, Worker name}
 }
 \if{html}{\out{</div>}}
 }
@@ -206,13 +206,13 @@ Delete worker input.
 \subsection{Method \code{delete_output()}}{
 Delete worker output.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$delete_output(worker_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$delete_output(name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{worker_name}}{Character of length 1, Worker name}
+\item{\code{name}}{Character of length 1, Worker name}
 }
 \if{html}{\out{</div>}}
 }
@@ -229,7 +229,7 @@ Delete all the files in the data store.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{worker_name}}{Character of length 1, Worker name}
+\item{\code{name}}{Character of length 1, Worker name}
 }
 \if{html}{\out{</div>}}
 }

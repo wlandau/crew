@@ -12,6 +12,13 @@
 \item{\code{name}}{Character of length 1, worker name.}
 
 \item{\code{crew}}{\code{R6} crew object to which the worker belongs.}
+
+\item{\code{timeout}}{Positive numeric of length 1,
+number of seconds of idling for the worker to time out.}
+
+\item{\code{wait_input}}{Positive numeric of length 1,
+number of seconds for a worker to wait between iterations of
+polling input.}
 }
 \if{html}{\out{</div>}}
 }
@@ -28,7 +35,12 @@
 \subsection{Method \code{new()}}{
 Worker constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker$new(name = basename(tempfile(pattern = "worker_")), crew = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$new(
+  name = basename(tempfile(pattern = "worker_")),
+  crew = NULL,
+  timeout = 60,
+  wait_input = 0.1
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -37,6 +49,12 @@ Worker constructor.
 \item{\code{name}}{Character of length 1, worker name.}
 
 \item{\code{crew}}{\code{R6} crew object to which the worker belongs.}
+
+\item{\code{timeout}}{Positive numeric of length 1, number of seconds
+that a worker can idle before timing out.}
+
+\item{\code{wait_input}}{Positive numeric of length 1, number of seconds
+that the worker waits between checking if a job exists.}
 }
 \if{html}{\out{</div>}}
 }

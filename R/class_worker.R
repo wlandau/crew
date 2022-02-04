@@ -59,7 +59,7 @@ class_worker <- R6::R6Class(
     submit = function(fun, args = list()) {
       self$send(fun = fun, args = args)
       self$launch()
-    }
+    },
     #' @description Collect the results of a job.
     receive = function() {
       out <- self$crew$store$read_output(name = self$name)

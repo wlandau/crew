@@ -81,7 +81,7 @@ class_crew <- R6::R6Class(
       )
       lapply(self$worker_list, function(x) x$validate())
       crew_assert(
-        inherits(self$store, "R6ClassGenerator"),
+        inherits(self$store, "store"),
         paste(
           "store field in crew",
           self$name,

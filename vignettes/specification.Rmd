@@ -47,10 +47,6 @@ A `worker` object encapsulates a worker: a local process, cluster process, or cl
 * Its name.
 * The `crew` object of the crew it belongs to.
 
-## Sequential worker
-
-Worker that runs in a simple R process.
-
 ## Future worker
 
 Worker that runs in a `future`.

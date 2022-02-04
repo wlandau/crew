@@ -51,6 +51,10 @@ A `worker` object encapsulates a worker: a local process, cluster process, or cl
 
 Worker that runs in a `future`.
 
+## callr worker
+
+Worker that runs in a `callr::r_bg()` process.
+
 # store
 
 A `store` object manages files on a file system that the workers and the crew both can access. The store object contains:

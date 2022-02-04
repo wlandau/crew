@@ -22,7 +22,12 @@ class_worker_future_local <- R6::R6Class(
           timeout = timeout,
           wait_input = wait_input
         ),
-        env = self$globals()
+        env = list(
+          name = self$name,
+          dir_root = self$crew$store$dir_root,
+          timeout = self$timeout,
+          wait_input = self$wait_input
+        )
       )
       self$future <- future::future(
         expr = expr,

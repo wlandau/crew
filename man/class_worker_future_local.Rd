@@ -24,7 +24,6 @@ is a local file system. Workers can use \code{future.batchtools}.
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="initialize">}\href{../../crew/html/worker.html#method-initialize}{\code{crew::worker$initialize()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="alive">}\href{../../crew/html/worker_future.html#method-alive}{\code{crew::worker_future$alive()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="done">}\href{../../crew/html/worker_future.html#method-done}{\code{crew::worker_future$done()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="globals">}\href{../../crew/html/worker_future.html#method-globals}{\code{crew::worker_future$globals()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="receive">}\href{../../crew/html/worker_future.html#method-receive}{\code{crew::worker_future$receive()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="send">}\href{../../crew/html/worker_future.html#method-send}{\code{crew::worker_future$send()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="shutdown">}\href{../../crew/html/worker_future.html#method-shutdown}{\code{crew::worker_future$shutdown()}}\out{</span>}

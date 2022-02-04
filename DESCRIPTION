@@ -29,13 +29,14 @@ Authors@R: c(
 Depends:
   R (>= 3.5.0)
 Imports:
+  callr (>= 3.6.0),
   fs (>= 1.5.0),
+  future (>= 1.22.0),
+  future.callr (>= 0.7.0),
   qs (>= 0.24.1),
   R6 (>= 2.5.0),
   rlang (>= 0.4.10)
 Suggests:
-  future (>= 1.22.0),
-  future.callr (>= 0.7.0),
   knitr (>= 1.30),
   markdown (>= 1.1),
   rmarkdown (>= 2.4),

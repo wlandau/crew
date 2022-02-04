@@ -20,7 +20,6 @@
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-globals}{\code{class_worker_future$globals()}}
 \item \href{#method-send}{\code{class_worker_future$send()}}
 \item \href{#method-alive}{\code{class_worker_future$alive()}}
 \item \href{#method-done}{\code{class_worker_future$done()}}
@@ -35,16 +34,6 @@
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="initialize">}\href{../../crew/html/worker.html#method-initialize}{\code{crew::worker$initialize()}}\out{</span>}
 }
 \out{</details>}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-globals"></a>}}
-\if{latex}{\out{\hypertarget{method-globals}{}}}
-\subsection{Method \code{globals()}}{
-Create the \code{globals} argument of \code{future::future()}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker_future$globals()}\if{html}{\out{</div>}}
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-send"></a>}}

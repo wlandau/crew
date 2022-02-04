@@ -10,15 +10,6 @@ class_worker_future <- R6::R6Class(
   public = list(
     #' @field future A `future::future()` object.
     future = NULL,
-    #' @description Create the `globals` argument of `future::future()`.
-    globals = function() {
-      list(
-        name = self$name,
-        dir_root = self$crew$store$dir_root,
-        timeout = self$timeout,
-        wait_input = self$wait_input
-      )
-    },
     #' @description Send a job.
     #' @param fun Function to run in the job. Should be completely
     #'   self-contained in the body and arguments, without relying

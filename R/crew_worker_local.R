@@ -24,20 +24,23 @@ crew_loop_worker_local <- function(name, dir_root, timeout, wait_input) {
 crew_loop_worker_local_run <- function(name, dir_root, timeout, wait_input) {
   store <- class_store_local$new(dir_root = dir_root)
   start <- proc.time()["elapsed"]
-  while (proc.time()["elapsed"] - start < timeout) {
+  do_while <- FALSE
+  while (do_while || (proc.time()["elapsed"] - start < timeout)) {
     if (store$exists_input(name = name)) {
       crew_loop_worker_local_job(name = name, store = store)
       start <- proc.time()["elapsed"]
     } else {
-      Sys.sleep(wait_input)
+      Sys.sleep(wait_input) # nocov (coverage here is a race condition)
     }
+    do_while <- TRUE
   }
   crew_timeout(sprintf("worker %s timed out at %s seconds.", name, timeout))
 }
 
 crew_loop_worker_local_job <- function(name, store) {
   input <- store$read_input(name = name)
-  input$fun <- deparse(input$fun)
+  store$delete_input(name = name)
+  input$fun <- eval(parse(text = input$fun))
   output <- do.call(what = input$fun, args = input$args)
   store$write_output(name = name, data = output)
 }

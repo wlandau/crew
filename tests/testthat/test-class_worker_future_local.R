@@ -43,7 +43,7 @@ test_that("local future worker works", {
   }
   expect_equal(x$receive(), 3L)
   # termination
-  x$terminate()
+  x$shutdown()
   tries <- 300
   while (tries > 0 && x$alive()) {
     Sys.sleep(0.1)

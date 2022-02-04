@@ -10,12 +10,12 @@ test_that("no work then worker timeout", {
   )
 })
 
-test_that("one job that runs and terminates the worker", {
+test_that("one job that runs and shutdowns the worker", {
   dir_root <- fs::dir_create(tempfile())
   store <- class_store_local$new(dir_root = dir_root)
   fun <- function(x, dir_root) {
     store <- class_store_local$new(dir_root = dir_root)
-    fun <- function() rlang::abort(class = "crew_terminate")
+    fun <- function() rlang::abort(class = "crew_shutdown")
     data <- list(fun = deparse(fun), args = list())
     store$write_input(name = "worker", data = data)
     x + 1L

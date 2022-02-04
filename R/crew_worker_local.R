@@ -16,7 +16,7 @@ crew_loop_worker_local <- function(name, dir_root, timeout, wait_input) {
       timeout = timeout,
       wait_input = wait_input
     ),
-    crew_terminate = identity
+    crew_shutdown = identity
   )
   invisible()
 }

@@ -43,9 +43,9 @@ class_worker_future <- R6::R6Class(
       self$crew$store$delete_output(name = self$name)
       out
     },
-    #' @description Terminate the worker.
-    terminate = function() {
-      self$send(fun = function() rlang::abort(class = "crew_terminate"))
+    #' @description Gracefully shut down the worker.
+    shutdown = function() {
+      self$send(fun = function() rlang::abort(class = "crew_shutdown"))
     },
     #' @description Worker validator.
     validate = function() {

@@ -25,7 +25,7 @@
 \item \href{#method-alive}{\code{class_worker_future$alive()}}
 \item \href{#method-done}{\code{class_worker_future$done()}}
 \item \href{#method-receive}{\code{class_worker_future$receive()}}
-\item \href{#method-terminate}{\code{class_worker_future$terminate()}}
+\item \href{#method-shutdown}{\code{class_worker_future$shutdown()}}
 \item \href{#method-validate}{\code{class_worker_future$validate()}}
 }
 }
@@ -99,12 +99,12 @@ Collect the results of a job.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-terminate"></a>}}
-\if{latex}{\out{\hypertarget{method-terminate}{}}}
-\subsection{Method \code{terminate()}}{
-Terminate the worker.
+\if{html}{\out{<a id="method-shutdown"></a>}}
+\if{latex}{\out{\hypertarget{method-shutdown}{}}}
+\subsection{Method \code{shutdown()}}{
+Gracefully shut down the worker.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker_future$terminate()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker_future$shutdown()}\if{html}{\out{</div>}}
 }
 
 }

@@ -6,8 +6,8 @@ crew_error <- function(message = NULL) {
   rlang::abort(message = message, class = c("crew_error", "crew"))
 }
 
-crew_terminate <- function(message = NULL) {
-  rlang::abort(message = message, class = c("crew_terminate", "crew"))
+crew_shutdown <- function(message = NULL) {
+  rlang::abort(message = message, class = c("crew_shutdown", "crew"))
 }
 
 crew_timeout <- function(message = NULL) {

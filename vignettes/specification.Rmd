@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 library(crew)
 ```
 
-This vignette is a specification of the classes in `crew`. Sub-classes are listed, but only the ones implemented in the `crew` package itself. Other sub-classes may be developed in packages that depend on `crew`.
+This vignette a the design specification for developers who wish extend `crew` functionality in third-party packages.
 
 # Design
 

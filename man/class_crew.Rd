@@ -35,7 +35,7 @@ Crew constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_crew$new(
   name = basename(tempfile(pattern = "crew_")),
-  store = class_store$new(),
+  store = class_store_local$new(),
   worker_definition = class_worker,
   worker_list = list()
 )}\if{html}{\out{</div>}}

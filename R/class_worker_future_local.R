@@ -12,16 +12,25 @@ class_worker_future_local <- R6::R6Class(
   public = list(
     #' @description Launch the worker.
     launch = function() {
-      self$future <- future::future(
-        expr = crew::crew_loop_worker_local(
+      if (self$alive()) {
+        return()
+      }
+      expr <- substitute(
+        crew::crew_loop_worker_local(
           name = name,
           dir_root = dir_root,
           timeout = timeout,
           wait_input = wait_input
         ),
-        globals = self$globals(),
+        env = self$globals()
+      )
+      self$future <- future::future(
+        expr = expr,
+        substitute = FALSE,
+        globals = FALSE,
         packages = character(0)
       )
+      invisible()
     }
   )
 )

@@ -16,7 +16,7 @@ class_worker_future <- R6::R6Class(
         name = self$name,
         dir_root = self$crew$store$dir_root,
         timeout = self$timeout,
-        wait = self$wait_input
+        wait_input = self$wait_input
       )
     },
     #' @description Send a job.
@@ -26,7 +26,7 @@ class_worker_future <- R6::R6Class(
     #' @param args Named list of arguments to `fun`.
     send = function(fun, args = list()) {
       data <- list(fun = deparse(fun), args = args)
-      self$crew$store$write_input(worker_name = self$name, data = data)
+      self$crew$store$write_input(name = self$name, data = data)
     },
     #' @description `TRUE` if the worker is alive and `FALSE` otherwise.
     alive = function() {
@@ -35,12 +35,12 @@ class_worker_future <- R6::R6Class(
     #' @description `TRUE` if a worker is done with a job and the
     #'   main process can receive the output of the job. `FALSE` otherwise.
     done = function() {
-      store$exists_output(worker_name = self$name)
+      self$crew$store$exists_output(name = self$name)
     },
     #' @description Collect the results of a job.
     receive = function() {
-      out <- store$read_output(worker_name = self$name)
-      store$delete_output(worker_name = self$name)
+      out <- self$crew$store$read_output(name = self$name)
+      self$crew$store$delete_output(name = self$name)
       out
     },
     #' @description Terminate the worker.
@@ -50,7 +50,7 @@ class_worker_future <- R6::R6Class(
     #' @description Worker validator.
     validate = function() {
       super$validate()
-      crew_assert(is.null(self$future) || inherits(self$future, "future"))
+      crew_assert(is.null(self$future) || inherits(self$future, "Future"))
     }
   )
 )

@@ -35,6 +35,7 @@ Imports:
   rlang (>= 0.4.10)
 Suggests:
   future (>= 1.22.0),
+  future.callr (>= 0.7.0),
   knitr (>= 1.30),
   markdown (>= 1.1),
   rmarkdown (>= 2.4),

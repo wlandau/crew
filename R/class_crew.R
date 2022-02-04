@@ -23,7 +23,7 @@ class_crew <- R6::R6Class(
     #' @param worker_list Named list of `R6` worker objects.
     initialize = function(
       name = basename(tempfile(pattern = "crew_")),
-      store = class_store$new(),
+      store = class_store_local$new(),
       worker_definition = class_worker,
       worker_list = list()
     ) {
@@ -80,6 +80,15 @@ class_crew <- R6::R6Class(
         }
       )
       lapply(self$worker_list, function(x) x$validate())
+      crew_assert(
+        inherits(self$store, "R6ClassGenerator"),
+        paste(
+          "store field in crew",
+          self$name,
+          "must be an R6 store object."
+        )
+      )
+      self$store$validate()
     }
   )
 )

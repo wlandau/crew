@@ -1,5 +1,5 @@
 test_that("local callr worker works", {
-  crew <- class_crew$new(classes = list(default = class_worker_callr))
+  crew <- class_crew$new(worker_classes = list(default = class_worker_callr))
   x <- class_worker_callr$new(
     crew = crew,
     timeout = Inf,
@@ -51,7 +51,7 @@ test_that("local callr worker works", {
 })
 
 test_that("cover idempotent launch", {
-  crew <- class_crew$new(classes = list(default = class_worker_callr))
+  crew <- class_crew$new(worker_classes = list(default = class_worker_callr))
   x <- class_worker_callr$new(
     crew = crew,
     timeout = Inf,

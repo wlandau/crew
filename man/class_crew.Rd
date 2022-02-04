@@ -14,7 +14,7 @@
 
 \item{\code{store}}{\code{R6} store object.}
 
-\item{\code{classes}}{Named list of \code{R6ClassGenerator}
+\item{\code{worker_classes}}{Named list of \code{R6ClassGenerator}
 objects with worker definitions. The first one
 is the default.}
 
@@ -38,7 +38,7 @@ Crew constructor.
 \if{html}{\out{<div class="r">}}\preformatted{class_crew$new(
   name = basename(tempfile(pattern = "crew_")),
   store = class_store_local$new(),
-  classes = list(default = class_worker),
+  worker_classes = list(default = class_worker),
   workers = list()
 )}\if{html}{\out{</div>}}
 }
@@ -50,7 +50,7 @@ Crew constructor.
 
 \item{\code{store}}{\code{R6} store object.}
 
-\item{\code{classes}}{\code{R6ClassGenerator}
+\item{\code{worker_classes}}{\code{R6ClassGenerator}
 object with the worker definition.}
 
 \item{\code{workers}}{Named list of \code{R6} worker objects.}

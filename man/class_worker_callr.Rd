@@ -33,6 +33,7 @@
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="initialize">}\href{../../crew/html/worker.html#method-initialize}{\code{crew::worker$initialize()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="receive">}\href{../../crew/html/worker.html#method-receive}{\code{crew::worker$receive()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="send">}\href{../../crew/html/worker.html#method-send}{\code{crew::worker$send()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="submit">}\href{../../crew/html/worker.html#method-submit}{\code{crew::worker$submit()}}\out{</span>}
 }
 \out{</details>}
 }

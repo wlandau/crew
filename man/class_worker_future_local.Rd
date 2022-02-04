@@ -26,6 +26,7 @@ is a local file system. Workers can use \code{future.batchtools}.
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="receive">}\href{../../crew/html/worker.html#method-receive}{\code{crew::worker$receive()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="send">}\href{../../crew/html/worker.html#method-send}{\code{crew::worker$send()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="shutdown">}\href{../../crew/html/worker.html#method-shutdown}{\code{crew::worker$shutdown()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="submit">}\href{../../crew/html/worker.html#method-submit}{\code{crew::worker$submit()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="up">}\href{../../crew/html/worker_future.html#method-up}{\code{crew::worker_future$up()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="validate">}\href{../../crew/html/worker_future.html#method-validate}{\code{crew::worker_future$validate()}}\out{</span>}
 }

@@ -31,6 +31,7 @@ already has a job to do.}
 \itemize{
 \item \href{#method-new}{\code{class_worker$new()}}
 \item \href{#method-send}{\code{class_worker$send()}}
+\item \href{#method-submit}{\code{class_worker$submit()}}
 \item \href{#method-receive}{\code{class_worker$receive()}}
 \item \href{#method-done}{\code{class_worker$done()}}
 \item \href{#method-shutdown}{\code{class_worker$shutdown()}}
@@ -74,6 +75,27 @@ that the worker waits between checking if a job exists.}
 Send a job.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_worker$send(fun, args = list())}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{fun}}{Function to run in the job. Should be completely
+self-contained in the body and arguments, without relying
+on the closure or global variables in the environment.}
+
+\item{\code{args}}{Named list of arguments to \code{fun}.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-submit"></a>}}
+\if{latex}{\out{\hypertarget{method-submit}{}}}
+\subsection{Method \code{submit()}}{
+Send a job and ensure the worker is launched.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$submit(fun, args = list())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

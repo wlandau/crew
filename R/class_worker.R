@@ -49,9 +49,17 @@ class_worker <- R6::R6Class(
       data <- list(fun = deparse(fun), args = args)
       self$crew$store$write_input(name = self$name, data = data)
       self$assigned <- TRUE
-      self$launch()
       invisible()
     },
+    #' @description Send a job and ensure the worker is launched.
+    #' @param fun Function to run in the job. Should be completely
+    #'   self-contained in the body and arguments, without relying
+    #'   on the closure or global variables in the environment.
+    #' @param args Named list of arguments to `fun`.
+    submit = function(fun, args = list()) {
+      self$send(fun = fun, args = args)
+      self$launch()
+    }
     #' @description Collect the results of a job.
     receive = function() {
       out <- self$crew$store$read_output(name = self$name)

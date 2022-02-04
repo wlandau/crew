@@ -47,7 +47,7 @@ class_worker <- R6::R6Class(
     },
     #' @description `TRUE` if a worker is done with a job and the
     #'   main process can receive the output of the job. `FALSE` otherwise.
-    done = function() {
+    receivable = function() {
       self$crew$store$exists_output(name = self$name)
     },
     #' @description Collect the results of a job.

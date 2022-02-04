@@ -9,11 +9,11 @@ test_that("local callr worker works", {
   x$validate()
   # no callr yet
   expect_false(x$alive())
-  expect_false(x$done())
+  expect_false(x$receivable())
   # launch callr
   x$launch()
   expect_true(x$alive())
-  expect_false(x$done())
+  expect_false(x$receivable())
   x$validate()
   # send first job
   expect_false(x$crew$store$exists_input(x$name))
@@ -21,12 +21,12 @@ test_that("local callr worker works", {
   x$send(fun = function(x) x + 1L, args = list(x = 1L))
   # Did the job run?
   tries <- 300
-  while (tries > 0 && !x$done()) {
+  while (tries > 0 && !x$receivable()) {
     Sys.sleep(0.1)
     tries <- tries - 1
   }
   expect_true(x$crew$store$exists_output(x$name))
-  expect_true(x$done())
+  expect_true(x$receivable())
   expect_true(x$alive())
   expect_false(x$crew$store$exists_input(x$name))
   expect_true(x$crew$store$exists_output(x$name))
@@ -35,7 +35,7 @@ test_that("local callr worker works", {
   # another job
   x$send(fun = function(x) x + 1L, args = list(x = 2L))
   tries <- 300
-  while (tries > 0 && !x$done()) {
+  while (tries > 0 && !x$receivable()) {
     Sys.sleep(0.1)
     tries <- tries - 1
   }

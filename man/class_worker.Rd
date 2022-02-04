@@ -28,7 +28,7 @@ polling input.}
 \itemize{
 \item \href{#method-new}{\code{class_worker$new()}}
 \item \href{#method-send}{\code{class_worker$send()}}
-\item \href{#method-done}{\code{class_worker$done()}}
+\item \href{#method-receivable}{\code{class_worker$receivable()}}
 \item \href{#method-receive}{\code{class_worker$receive()}}
 \item \href{#method-shutdown}{\code{class_worker$shutdown()}}
 \item \href{#method-validate}{\code{class_worker$validate()}}
@@ -86,13 +86,13 @@ on the closure or global variables in the environment.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-done"></a>}}
-\if{latex}{\out{\hypertarget{method-done}{}}}
-\subsection{Method \code{done()}}{
+\if{html}{\out{<a id="method-receivable"></a>}}
+\if{latex}{\out{\hypertarget{method-receivable}{}}}
+\subsection{Method \code{receivable()}}{
 \code{TRUE} if a worker is done with a job and the
 main process can receive the output of the job. \code{FALSE} otherwise.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker$done()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$receivable()}\if{html}{\out{</div>}}
 }
 
 }

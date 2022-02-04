@@ -22,10 +22,10 @@
 \itemize{
 \item \href{#method-new}{\code{class_store_local$new()}}
 \item \href{#method-path_temp}{\code{class_store_local$path_temp()}}
-\item \href{#method-write_input}{\code{class_store_local$write_input()}}
-\item \href{#method-write_output}{\code{class_store_local$write_output()}}
 \item \href{#method-read_input}{\code{class_store_local$read_input()}}
 \item \href{#method-read_output}{\code{class_store_local$read_output()}}
+\item \href{#method-write_input}{\code{class_store_local$write_input()}}
+\item \href{#method-write_output}{\code{class_store_local$write_output()}}
 \item \href{#method-exists_input}{\code{class_store_local$exists_input()}}
 \item \href{#method-exists_output}{\code{class_store_local$exists_output()}}
 \item \href{#method-delete_input}{\code{class_store_local$delete_input()}}
@@ -78,6 +78,40 @@ Path to a worker's temporary file.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-read_input"></a>}}
+\if{latex}{\out{\hypertarget{method-read_input}{}}}
+\subsection{Method \code{read_input()}}{
+Read worker input.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$read_input(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character of length 1, Worker name.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-read_output"></a>}}
+\if{latex}{\out{\hypertarget{method-read_output}{}}}
+\subsection{Method \code{read_output()}}{
+Read worker output.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$read_output(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character of length 1, Worker name.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-write_input"></a>}}
 \if{latex}{\out{\hypertarget{method-write_input}{}}}
 \subsection{Method \code{write_input()}}{
@@ -111,40 +145,6 @@ Write worker output.
 \item{\code{name}}{Character of length 1, Worker name.}
 
 \item{\code{data}}{Data to write.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-read_input"></a>}}
-\if{latex}{\out{\hypertarget{method-read_input}{}}}
-\subsection{Method \code{read_input()}}{
-Read worker input.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$read_input(name)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Character of length 1, Worker name.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-read_output"></a>}}
-\if{latex}{\out{\hypertarget{method-read_output}{}}}
-\subsection{Method \code{read_output()}}{
-Read worker output.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$read_output(name)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Character of length 1, Worker name.}
 }
 \if{html}{\out{</div>}}
 }

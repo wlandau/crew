@@ -103,7 +103,7 @@ class_worker <- R6::R6Class(
         "validate"
       )
       for (fun in funs) {
-        crew_assert(is.function(self[[fun]]))
+        crew_assert(is.function(self[[fun]]), paste(fun, "method undefined"))
       }
     }
   )

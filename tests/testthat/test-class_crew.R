@@ -11,7 +11,7 @@ test_that("nonempty crew", {
 
 test_that("invalid crew", {
   crew <- class_crew$new()
-  worker <- class_worker$new(crew = crew)
+  worker <- class_worker_callr$new(crew = crew)
   crew$worker_list[["nope"]] <- worker
   expect_error(crew$validate(), class = "crew_error")
 })

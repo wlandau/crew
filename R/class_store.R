@@ -57,7 +57,7 @@ class_store <- R6::R6Class(
         "destroy"
       )
       for (fun in funs) {
-        crew_assert(is.function(fun))
+        crew_assert(is.function(self[[fun]]), paste(fun, "method undefined"))
       }
     }
   )

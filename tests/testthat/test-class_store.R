@@ -1,9 +1,9 @@
 test_that("valid store class", {
-  expect_silent(class_store$new()$validate())
+  expect_silent(class_store_local$new()$validate())
 })
 
 test_that("invalid store class", {
-  x <- class_store$new()
+  x <- class_store_local$new()
   x$dir_root <- NULL
   expect_error(x$validate(), class = "crew_error")
 })

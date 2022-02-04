@@ -11,7 +11,10 @@
 #'   tasks without having to support individual low-level interfaces
 #'   to specific high-performance computing platforms or cloud services.
 #' @family help
+#' @importFrom callr r_bg
 #' @importFrom fs dir_create
+#' @importFrom future future resolved
+#' @importFrom future.callr callr
 #' @importFrom qs qsave
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort

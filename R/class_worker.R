@@ -49,6 +49,7 @@ class_worker <- R6::R6Class(
       data <- list(fun = deparse(fun), args = args)
       self$crew$store$write_input(name = self$name, data = data)
       self$assigned <- TRUE
+      self$launch()
       invisible()
     },
     #' @description Collect the results of a job.

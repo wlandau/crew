@@ -24,6 +24,18 @@ specific high-performance computing platforms or cloud services.
 remotes::install_github("ropensci/crew")
 ```
 
+## Thanks
+
+The `crew` package incorporates insightful ideas from the following
+people.
+
+-   [Kirill Müller](https://github.com/krlmlr/)
+-   [Henrik Bengtsson](https://github.com/HenrikBengtsson/)
+-   [Michael Schubert](https://github.com/mschubert/)
+-   [David Kretch](https://github.com/davidkretch)
+-   [Adam Banker](https://github.com/adambanker)
+-   [David Neuzerling](https://github.com/mdneuzerling)
+
 ## Code of Conduct
 
 Please note that the `crew` project is released with a [Contributor Code

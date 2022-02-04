@@ -21,7 +21,7 @@
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-launch}{\code{class_worker_callr$launch()}}
-\item \href{#method-alive}{\code{class_worker_callr$alive()}}
+\item \href{#method-up}{\code{class_worker_callr$up()}}
 \item \href{#method-shutdown}{\code{class_worker_callr$shutdown()}}
 \item \href{#method-validate}{\code{class_worker_callr$validate()}}
 }
@@ -29,8 +29,8 @@
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="done">}\href{../../crew/html/worker.html#method-done}{\code{crew::worker$done()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="initialize">}\href{../../crew/html/worker.html#method-initialize}{\code{crew::worker$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="receivable">}\href{../../crew/html/worker.html#method-receivable}{\code{crew::worker$receivable()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="receive">}\href{../../crew/html/worker.html#method-receive}{\code{crew::worker$receive()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="send">}\href{../../crew/html/worker.html#method-send}{\code{crew::worker$send()}}\out{</span>}
 }
@@ -47,12 +47,12 @@ Launch the worker.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-alive"></a>}}
-\if{latex}{\out{\hypertarget{method-alive}{}}}
-\subsection{Method \code{alive()}}{
-\code{TRUE} if the worker is alive and \code{FALSE} otherwise.
+\if{html}{\out{<a id="method-up"></a>}}
+\if{latex}{\out{\hypertarget{method-up}{}}}
+\subsection{Method \code{up()}}{
+\code{TRUE} if the worker is up and \code{FALSE} otherwise.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker_callr$alive()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker_callr$up()}\if{html}{\out{</div>}}
 }
 
 }

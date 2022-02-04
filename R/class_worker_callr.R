@@ -12,7 +12,7 @@ class_worker_callr <- R6::R6Class(
     process = NULL,
     #' @description Launch the worker.
     launch = function() {
-      if (self$alive()) {
+      if (self$up()) {
         return()
       }
       self$process <- callr::r_bg(
@@ -27,8 +27,8 @@ class_worker_callr <- R6::R6Class(
       )
       invisible()
     },
-    #' @description `TRUE` if the worker is alive and `FALSE` otherwise.
-    alive = function() {
+    #' @description `TRUE` if the worker is up and `FALSE` otherwise.
+    up = function() {
       if_any(
         is.null(self$process),
         FALSE,

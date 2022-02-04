@@ -10,8 +10,8 @@ class_worker_future <- R6::R6Class(
   public = list(
     #' @field future A `future::future()` object.
     future = NULL,
-    #' @description `TRUE` if the worker is alive and `FALSE` otherwise.
-    alive = function() {
+    #' @description `TRUE` if the worker is running and `FALSE` otherwise.
+    up = function() {
       !future::resolved(self$future)
     },
     #' @description Worker validator.

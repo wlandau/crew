@@ -1,5 +1,6 @@
 #' @title Worker class.
 #' @export
+#' @aliases worker
 #' @description `R6` class for a worker.
 class_worker <- R6::R6Class(
   classname = "worker",
@@ -34,6 +35,31 @@ class_worker <- R6::R6Class(
       self$crew <- crew
       self$timeout <- timeout
       self$wait_input <- wait_input
+    },
+    #' @description Send a job.
+    #' @param fun Function to run in the job. Should be completely
+    #'   self-contained in the body and arguments, without relying
+    #'   on the closure or global variables in the environment.
+    #' @param args Named list of arguments to `fun`.
+    send = function(fun, args = list()) {
+      data <- list(fun = deparse(fun), args = args)
+      self$crew$store$write_input(name = self$name, data = data)
+    },
+    #' @description `TRUE` if a worker is done with a job and the
+    #'   main process can receive the output of the job. `FALSE` otherwise.
+    done = function() {
+      self$crew$store$exists_output(name = self$name)
+    },
+    #' @description Collect the results of a job.
+    receive = function() {
+      out <- self$crew$store$read_output(name = self$name)
+      self$crew$store$delete_output(name = self$name)
+      out
+    },
+    #' @description Gracefully shut down the worker.
+    shutdown = function() {
+      self$send(fun = function() rlang::abort(class = "crew_shutdown"))
+      invisible()
     },
     #' @description Worker validator.
     validate = function() {

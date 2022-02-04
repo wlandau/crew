@@ -2,6 +2,7 @@
 % Please edit documentation in R/class_crew.R
 \name{class_crew}
 \alias{class_crew}
+\alias{crew}
 \title{Crew class.}
 \description{
 \code{R6} class for a crew.

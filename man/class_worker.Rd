@@ -2,6 +2,7 @@
 % Please edit documentation in R/class_worker.R
 \name{class_worker}
 \alias{class_worker}
+\alias{worker}
 \title{Worker class.}
 \description{
 \code{R6} class for a worker.
@@ -26,6 +27,10 @@ polling input.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{class_worker$new()}}
+\item \href{#method-send}{\code{class_worker$send()}}
+\item \href{#method-done}{\code{class_worker$done()}}
+\item \href{#method-receive}{\code{class_worker$receive()}}
+\item \href{#method-shutdown}{\code{class_worker$shutdown()}}
 \item \href{#method-validate}{\code{class_worker$validate()}}
 }
 }
@@ -58,6 +63,58 @@ that the worker waits between checking if a job exists.}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-send"></a>}}
+\if{latex}{\out{\hypertarget{method-send}{}}}
+\subsection{Method \code{send()}}{
+Send a job.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$send(fun, args = list())}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{fun}}{Function to run in the job. Should be completely
+self-contained in the body and arguments, without relying
+on the closure or global variables in the environment.}
+
+\item{\code{args}}{Named list of arguments to \code{fun}.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-done"></a>}}
+\if{latex}{\out{\hypertarget{method-done}{}}}
+\subsection{Method \code{done()}}{
+\code{TRUE} if a worker is done with a job and the
+main process can receive the output of the job. \code{FALSE} otherwise.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$done()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-receive"></a>}}
+\if{latex}{\out{\hypertarget{method-receive}{}}}
+\subsection{Method \code{receive()}}{
+Collect the results of a job.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$receive()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-shutdown"></a>}}
+\if{latex}{\out{\hypertarget{method-shutdown}{}}}
+\subsection{Method \code{shutdown()}}{
+Gracefully shut down the worker.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$shutdown()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-validate"></a>}}

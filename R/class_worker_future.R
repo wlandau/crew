@@ -1,6 +1,6 @@
 #' @title Future worker class.
 #' @export
-#' @aliases worker
+#' @aliases worker_future
 #' @description `R6` class for a `future` worker.
 class_worker_future <- R6::R6Class(
   classname = "worker_future",
@@ -10,33 +10,9 @@ class_worker_future <- R6::R6Class(
   public = list(
     #' @field future A `future::future()` object.
     future = NULL,
-    #' @description Send a job.
-    #' @param fun Function to run in the job. Should be completely
-    #'   self-contained in the body and arguments, without relying
-    #'   on the closure or global variables in the environment.
-    #' @param args Named list of arguments to `fun`.
-    send = function(fun, args = list()) {
-      data <- list(fun = deparse(fun), args = args)
-      self$crew$store$write_input(name = self$name, data = data)
-    },
     #' @description `TRUE` if the worker is alive and `FALSE` otherwise.
     alive = function() {
       !future::resolved(self$future)
-    },
-    #' @description `TRUE` if a worker is done with a job and the
-    #'   main process can receive the output of the job. `FALSE` otherwise.
-    done = function() {
-      self$crew$store$exists_output(name = self$name)
-    },
-    #' @description Collect the results of a job.
-    receive = function() {
-      out <- self$crew$store$read_output(name = self$name)
-      self$crew$store$delete_output(name = self$name)
-      out
-    },
-    #' @description Gracefully shut down the worker.
-    shutdown = function() {
-      self$send(fun = function() rlang::abort(class = "crew_shutdown"))
     },
     #' @description Worker validator.
     validate = function() {

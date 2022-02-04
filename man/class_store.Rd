@@ -2,6 +2,7 @@
 % Please edit documentation in R/class_store.R
 \name{class_store}
 \alias{class_store}
+\alias{store}
 \title{Store class.}
 \description{
 \code{R6} class for a store.

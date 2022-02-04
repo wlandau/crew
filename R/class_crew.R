@@ -1,5 +1,6 @@
 #' @title Crew class.
 #' @export
+#' @aliases crew
 #' @description `R6` class for a crew.
 class_crew <- R6::R6Class(
   classname = "crew",

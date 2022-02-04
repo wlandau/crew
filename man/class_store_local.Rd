@@ -2,7 +2,7 @@
 % Please edit documentation in R/class_store_local.R
 \name{class_store_local}
 \alias{class_store_local}
-\alias{store}
+\alias{store_local}
 \title{Local store class.}
 \description{
 \code{R6} class for a local store.

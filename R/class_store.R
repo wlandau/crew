@@ -1,5 +1,6 @@
 #' @title Store class.
 #' @export
+#' @aliases store
 #' @description `R6` class for a store.
 class_store <- R6::R6Class(
   classname = "store",

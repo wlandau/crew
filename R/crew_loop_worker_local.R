@@ -2,15 +2,10 @@
 #' @export
 #' @description Local worker event loop.
 #' @return `NULL` (invisibly).
-#' @param name Character of length 1, name of the worker.
-#' @param dir_root Character of length 1, directory path to the data store.
-#' @param timeout Positive numeric of length 1, number of seconds
-#'   that a worker can idle before timing out.
-#' @param wait_input Positive numeric of length 1, number of seconds
-#'   that the worker waits between checking if a job exists.
+#' @inheritParams crew_loop_worker_local_run
 crew_loop_worker_local <- function(name, dir_root, timeout, wait_input) {
   tryCatch(
-    crew_loop_worker_local_run(
+    crew::crew_loop_worker_local_run(
       name = name,
       dir_root = dir_root,
       timeout = timeout,
@@ -21,6 +16,17 @@ crew_loop_worker_local <- function(name, dir_root, timeout, wait_input) {
   invisible()
 }
 
+#' @title Local worker inner event loop.
+#' @export
+#' @keywords internal
+#' @description Not a user-side function. for internal use only.
+#' @return `NULL` (invisibly).
+#' @param name Character of length 1, name of the worker.
+#' @param dir_root Character of length 1, directory path to the data store.
+#' @param timeout Positive numeric of length 1, number of seconds
+#'   that a worker can idle before timing out.
+#' @param wait_input Positive numeric of length 1, number of seconds
+#'   that the worker waits between checking if a job exists.
 crew_loop_worker_local_run <- function(name, dir_root, timeout, wait_input) {
   store <- class_store_local$new(dir_root = dir_root)
   start <- proc.time()["elapsed"]

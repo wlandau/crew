@@ -1,0 +1,49 @@
+#' @title `callr` worker class.
+#' @export
+#' @aliases worker_callr
+#' @description `R6` class for a `callr` worker.
+class_worker_callr <- R6::R6Class(
+  classname = "worker_callr",
+  inherit = class_worker,
+  portable = FALSE,
+  cloneable = FALSE,
+  public = list(
+    #' @field process A `callr::r_bg()` process handler.
+    process = NULL,
+    #' @description Launch the worker.
+    launch = function() {
+      if (self$alive()) {
+        return()
+      }
+      self$process <- callr::r_bg(
+        func = crew::crew_loop_worker_local,
+        args = list(
+          name = self$name,
+          dir_root = self$crew$store$dir_root,
+          timeout = self$timeout,
+          wait_input = self$wait_input
+        ),
+        supervise = TRUE
+      )
+      invisible()
+    },
+    #' @description `TRUE` if the worker is alive and `FALSE` otherwise.
+    alive = function() {
+      if_any(
+        is.null(self$process),
+        FALSE,
+        self$process$is_alive()
+      )
+    },
+    #' @description Gracefully shut down the worker.
+    shutdown = function() {
+      self$process$kill()
+      invisible()
+    },
+    #' @description Worker validator.
+    validate = function() {
+      super$validate()
+      crew_assert(is.null(self$process) || inherits(self$process, "r_process"))
+    }
+  )
+)

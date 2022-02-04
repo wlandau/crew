@@ -2,7 +2,7 @@
 % Please edit documentation in R/class_worker_future_local.R
 \name{class_worker_future_local}
 \alias{class_worker_future_local}
-\alias{worker_future}
+\alias{worker_future_local}
 \title{Local \code{future} worker class.}
 \description{
 \code{R6} class for a local \code{future} worker.
@@ -21,12 +21,12 @@ is a local file system. Workers can use \code{future.batchtools}.
 \if{html}{
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="done">}\href{../../crew/html/worker.html#method-done}{\code{crew::worker$done()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="initialize">}\href{../../crew/html/worker.html#method-initialize}{\code{crew::worker$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="receive">}\href{../../crew/html/worker.html#method-receive}{\code{crew::worker$receive()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="send">}\href{../../crew/html/worker.html#method-send}{\code{crew::worker$send()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="shutdown">}\href{../../crew/html/worker.html#method-shutdown}{\code{crew::worker$shutdown()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="alive">}\href{../../crew/html/worker_future.html#method-alive}{\code{crew::worker_future$alive()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="done">}\href{../../crew/html/worker_future.html#method-done}{\code{crew::worker_future$done()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="receive">}\href{../../crew/html/worker_future.html#method-receive}{\code{crew::worker_future$receive()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="send">}\href{../../crew/html/worker_future.html#method-send}{\code{crew::worker_future$send()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="shutdown">}\href{../../crew/html/worker_future.html#method-shutdown}{\code{crew::worker_future$shutdown()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker_future" data-id="validate">}\href{../../crew/html/worker_future.html#method-validate}{\code{crew::worker_future$validate()}}\out{</span>}
 }
 \out{</details>}

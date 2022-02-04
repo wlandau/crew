@@ -15,16 +15,6 @@ class_store_local <- R6::R6Class(
         self$path_output(name)
       )
     },
-    write = function(name, data, direction) {
-      crew_assert_chr_scalar(name)
-      path_temp <- self$path_temp(name)
-      path <- private$path_direction(name, direction)
-      fs::dir_create(dirname(path_temp))
-      fs::dir_create(dirname(path))
-      qs::qsave(x = data, file = path_temp)
-      file.rename(from = path_temp, to = path)
-      invisible()
-    },
     read = function(name, direction) {
       crew_assert_chr_scalar(name)
       path <- private$path_direction(name, direction)
@@ -39,6 +29,16 @@ class_store_local <- R6::R6Class(
         crew_error(msg)
       }
       qs::qread(file = path)
+    },
+    write = function(name, data, direction) {
+      crew_assert_chr_scalar(name)
+      path_temp <- self$path_temp(name)
+      path <- private$path_direction(name, direction)
+      fs::dir_create(dirname(path_temp))
+      fs::dir_create(dirname(path))
+      qs::qsave(x = data, file = path_temp)
+      file.rename(from = path_temp, to = path)
+      invisible()
     },
     exists = function(name, direction) {
       crew_assert_chr_scalar(name)
@@ -69,6 +69,16 @@ class_store_local <- R6::R6Class(
       crew_assert_chr_scalar(name)
       file.path(self$dir_temp, name)
     },
+    #' @description Read worker input.
+    #' @param name Character of length 1, Worker name.
+    read_input = function(name) {
+      private$read(name = name, direction = "input")
+    },
+    #' @description Read worker output.
+    #' @param name Character of length 1, Worker name.
+    read_output = function(name) {
+      private$read(name = name, direction = "output")
+    },
     #' @description Write worker input.
     #' @param name Character of length 1, Worker name.
     #' @param data Data to write.
@@ -88,16 +98,6 @@ class_store_local <- R6::R6Class(
         data = data,
         direction = "output"
       )
-    },
-    #' @description Read worker input.
-    #' @param name Character of length 1, Worker name.
-    read_input = function(name) {
-      private$read(name = name, direction = "input")
-    },
-    #' @description Read worker output.
-    #' @param name Character of length 1, Worker name.
-    read_output = function(name) {
-      private$read(name = name, direction = "output")
     },
     #' @description Exists worker input?
     #' @param name Character of length 1, Worker name.

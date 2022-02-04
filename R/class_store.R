@@ -43,6 +43,22 @@ class_store <- R6::R6Class(
         value <- self[[field]]
         crew_assert_chr_scalar(value, paste("store: invalid ", field))
       }
+      funs <- c(
+        "path_input",
+        "path_output",
+        "read_input",
+        "read_output",
+        "write_input",
+        "write_output",
+        "exists_input",
+        "exists_output",
+        "delete_input",
+        "delete_output",
+        "destroy"
+      )
+      for (fun in funs) {
+        crew_assert(is.function(fun))
+      }
     }
   )
 )

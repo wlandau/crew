@@ -23,6 +23,10 @@ library(crew)
 
 This vignette is a specification of the classes in `crew`. Sub-classes are listed, but only the ones implemented in the `crew` package itself. Other sub-classes may be developed in packages that depend on `crew`.
 
+# Design
+
+The `crew` package consists of `R6` classes. Each object of class `crew` contains an object of class `store` and a list of objects of class `worker`. The `crew`, `store`, and `worker` classes have inheritance hierarchies. Each parent class is an abstract class with a `validate()` method to ensure the concrete instantiable subclasses define all the required methods and fields. The next sections describe these class hierarchies.
+
 # crew
 
 A `crew` represents a group of workers. It contains:
@@ -42,7 +46,9 @@ A crew is in charge of
 
 # worker
 
-A `worker` object encapsulates a worker: a local process, cluster process, or cloud process that accepts and runs work that the crew dispatches. Required fields:
+A `worker` object encapsulates a worker: a local process, cluster process, or cloud process that accepts and runs work that the crew dispatches.
+
+Required fields:
 
 * `name`: name of the worker.
 * `crew`: the `crew` object of the crew it belongs to.
@@ -60,32 +66,52 @@ Required methods:
 * `shutdown()`: send a special job that gracefully shuts down the worker.
 * `validate()`: check for errors in the fields and methods.
 
-## Future worker
+Inheritance hierarchy:
 
-Worker that runs in a `future`.
+```
+├── worker
+│   ├── worker_callr
+│   ├── worker_future
+│   │   ├── worker_future_local
+```
 
-## callr worker
+Instantiable concrete subclasses:
 
-Worker that runs in a `callr::r_bg()` process.
+* `"worker_callr"`: worker that runs in a `callr::r_bg()` process.
+* `"worker_future_local"`: worker that runs in a `future` and uses a local data store.
+
+Other subclasses will run on cloud services like AWS Batch.
 
 # store
 
-A `store` object manages files on a file system that the workers and the crew both can access. The store object contains:
+A `store` object manages files on a file system that the workers and the crew both can access. Files may exist locally or on the cloud, depending on the subclass. The directory structure of a data store has a single root folder and sub-directories `input/` and `output/`. The former contains instructions and data for submitted jobs, and the latter contains job output written by the workers. In both cases, there is at most one file per worker, with the base name equal to the worker name. That way, to check if a remote worker completed a job successfully, a worker object can simply check if the `output/` file exists for the job currently running. (Although a separate backend-specific mechanism is needed in order to detect crashed workers.)
 
-* Paths to directories and sub-directories.
-* Methods to read, write, check the existence of, and delete worker files.
+Required fields:
 
-Files may exist locally or on the cloud, depending on the subclass. The directory structure of a data store has a single root folder and sub-directories `input/` and `output/`. The former contains instructions and data for submitted jobs, and the latter contains job output written by the workers. In both cases, there is at most one file per worker, with the base name equal to the worker name. That way, to check if a remote worker completed a job successfully, a worker object can simply check if the `output/` file exists for the job currently running. (Although a separate backend-specific mechanism is needed in order to detect crashed workers.)
+* `dir_root`: directory or prefix of the root of the store file system.
+* `dir_input`: directory or prefix of the input files where jobs are submitted to.
+* `dir_output`: directory or prefix where workers save the output from their jobs.
 
-## Local store
+Required methods:
 
-Subclass of a store based on local files.
+* `path_input()`: return the job input file path of a worker.
+* `path_output()`: return the job output file path of a worker.
+* `read_input()`: read a job's input file.
+* `read_output()`: read a job's output file.
+* `write_input()`: write a job's input file.
+* `write_output()`: write a job's output file.
+* `exists_input()`: check if a job's input file exists.
+* `exists_output()`: check if a job's output file exists.
+* `delete_input()`: delete a job's input file.
+* `delete_output()`: delete a job's output file.
+* `destroy()`: delete all the files of the store.
+* `validate()`: check for errors in the fields and methods.
 
-## AWS S3 store
+Inheritance hierarchy:
 
-Subclass of a store based on AWS S3
+```
+├── store
+│   ├── store_local
+```
 
-## Google Cloud store
-
-Subclass of a store based on Google Cloud Storage.
-
+The `"store_local"` subclass is the only instantiable sub-class built directly into `crew`. Other packages that depend on `crew` will implement other stores that use AWS/GCP buckets instead of local files.

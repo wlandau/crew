@@ -27,23 +27,6 @@ This vignette a the design specification for developers who wish extend `crew` f
 
 The `crew` package consists of `R6` classes. Each object of class `crew` contains an object of class `store` and a list of objects of class `worker`. The `crew`, `store`, and `worker` classes have inheritance hierarchies. Each parent class is an abstract class with a `validate()` method to ensure the concrete instantiable subclasses define all the required methods and fields. The next sections describe these class hierarchies.
 
-# crew
-
-A `crew` represents a group of workers. It contains:
-
-* Its name.
-* A `store` object with a data store to send and receive worker data.
-* A list of worker objects to manage active workers
-* A worker definition to launch new workers.
-
-A crew is in charge of
-
-* Launching new workers.
-* Assigning jobs to workers.
-* Polling workers.
-* Receiving and processing data from workers.
-* Terminating workers.
-
 # worker
 
 A `worker` object encapsulates a worker: a local process, cluster process, or cloud process that accepts and runs work that the crew dispatches.
@@ -81,6 +64,21 @@ Instantiable concrete subclasses:
 * `"worker_future_local"`: worker that runs in a `future` and uses a local data store.
 
 Other subclasses will run on cloud services like AWS Batch.
+
+# crew
+
+A `crew` object manages a group of workers. End users can send jobs and receive output through the `crew` object directly without having to interface with individual workers.
+
+Required fields:
+
+* `name`: name of the crew object.
+* `store`: data store object.
+* `worker_classes`: list of `R6` class definitions to construct workers.
+* `workers`: list of worker objects.
+
+Methods:
+
+* TBD
 
 # store
 

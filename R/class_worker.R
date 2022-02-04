@@ -51,17 +51,17 @@ class_worker <- R6::R6Class(
       self$assigned <- TRUE
       invisible()
     },
-    #' @description `TRUE` if a worker is done with a job and the
-    #'   main process can receive the output of the job. `FALSE` otherwise.
-    done = function() {
-      self$crew$store$exists_output(name = self$name)
-    },
     #' @description Collect the results of a job.
     receive = function() {
       out <- self$crew$store$read_output(name = self$name)
       self$crew$store$delete_output(name = self$name)
       self$assigned <- FALSE
       out
+    },
+    #' @description `TRUE` if a worker is done with a job and the
+    #'   main process can receive the output of the job. `FALSE` otherwise.
+    done = function() {
+      self$crew$store$exists_output(name = self$name)
     },
     #' @description Gracefully shut down the worker.
     shutdown = function() {
@@ -93,6 +93,18 @@ class_worker <- R6::R6Class(
         "worker timeout must be a positive number."
       )
       crew_assert_lgl_scalar(self$assigned)
+      funs <- c(
+        "up",
+        "launch",
+        "send",
+        "receive",
+        "done",
+        "shutdown",
+        "validate"
+      )
+      for (fun in funs) {
+        crew_assert(is.function(self[[fun]]))
+      }
     }
   )
 )

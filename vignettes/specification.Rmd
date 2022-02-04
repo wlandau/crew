@@ -42,10 +42,23 @@ A crew is in charge of
 
 # worker
 
-A `worker` object encapsulates a worker: a local process, cluster process, or cloud process that accepts and runs work that the crew dispatches. It contains:
+A `worker` object encapsulates a worker: a local process, cluster process, or cloud process that accepts and runs work that the crew dispatches. Required fields:
 
-* Its name.
-* The `crew` object of the crew it belongs to.
+* `name`: name of the worker.
+* `crew`: the `crew` object of the crew it belongs to.
+* `timeout`: seconds to idle before the worker times out.
+* `wait_input`: seconds to wait between polling for input (a new job).
+* `assigned`: whether the worker is currently assigned a job.
+
+Required methods:
+
+* `up()`: check whether the worker is running.
+* `launch()`: start the worker if it not already running.
+* `send()`: send a job to a worker, usually through the crew's data store.
+* `receive()`: receive the output of a job from a worker, usually through the crew's data store.
+* `done()`: whether the worker is done with its current job and is waiting for the crew to read the output data and free the worker to do another job.
+* `shutdown()`: send a special job that gracefully shuts down the worker.
+* `validate()`: check for errors in the fields and methods.
 
 ## Future worker
 

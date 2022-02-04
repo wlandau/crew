@@ -4,7 +4,7 @@ test_that("empty crew", {
 
 test_that("nonempty crew", {
   crew <- class_crew$new()
-  worker <- class_worker$new(crew = crew)
+  worker <- class_worker_callr$new(crew = crew)
   crew$worker_list[[worker$name]] <- worker
   expect_silent(crew$validate())
 })

@@ -24,6 +24,18 @@ specific high-performance computing platforms or cloud services.
 remotes::install_github("ropensci/crew")
 ```
 
+## Usage
+
+TBD. Need <https://github.com/wlandau/crew/issues/1> first.
+
+## Nested crews
+
+TBD. Advantages:
+
+1.  Avoid blocking the main process.
+2.  Manage a small number of local cores and a large number of remote
+    workers.
+
 ## Thanks
 
 The `crew` package incorporates insightful ideas from the following

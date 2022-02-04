@@ -21,11 +21,7 @@ knitr::opts_chunk$set(
 library(crew)
 ```
 
-This vignette a the design specification for developers who wish extend `crew` functionality in third-party packages.
-
-# Design
-
-The `crew` package consists of `R6` classes. Each object of class `crew` contains an object of class `store` and a list of objects of class `worker`. The `crew`, `store`, and `worker` classes have inheritance hierarchies. Each parent class is an abstract class with a `validate()` method to ensure the concrete instantiable subclasses define all the required methods and fields. The next sections describe these class hierarchies.
+The `crew` package consists of `R6` classes. Each object of class `crew` contains an object of class `store` and a list of objects of class `worker`. The `crew`, `store`, and `worker` classes have inheritance hierarchies. Each parent class is an abstract class with a `validate()` method to ensure the concrete instantiable subclasses define all the required methods and fields.
 
 # worker
 
@@ -44,6 +40,7 @@ Required methods:
 * `up()`: check whether the worker is running.
 * `launch()`: start the worker if it not already running.
 * `send()`: send a job to a worker, usually through the crew's data store.
+* `submit()`: send a job to a worker 
 * `receive()`: receive the output of a job from a worker, usually through the crew's data store.
 * `done()`: whether the worker is done with its current job and is waiting for the crew to read the output data and free the worker to do another job.
 * `shutdown()`: send a special job that gracefully shuts down the worker.

@@ -26,3 +26,14 @@ crew_assert_pos_dbl_scalar <- function(x, message = NULL) {
     message = default %||% message
   )
 }
+
+crew_assert_lgl_scalar <- function(x, message = NULL) {
+  default <- paste(
+    x,
+    "must be a logical of length 1."
+  )
+  crew_assert(
+    condition = is.logical(x) && length(x) == 1L,
+    message = default %||% message
+  )
+}

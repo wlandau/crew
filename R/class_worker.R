@@ -92,6 +92,7 @@ class_worker <- R6::R6Class(
         self$wait_input,
         "worker timeout must be a positive number."
       )
+      crew_assert_lgl_scalar(self$assigned)
     }
   )
 )

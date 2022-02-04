@@ -8,6 +8,7 @@ test_that("local future worker works", {
   crew$worker_list[[x$name]] <- x
   x$validate()
   # no future yet
+  expect_false(x$assigned)
   expect_false(x$up())
   expect_false(x$done())
   # launch future
@@ -30,10 +31,12 @@ test_that("local future worker works", {
   expect_true(x$crew$store$exists_output(x$name))
   expect_true(x$done())
   expect_true(x$up())
+  expect_true(x$assigned)
   expect_false(x$crew$store$exists_input(x$name))
   expect_true(x$crew$store$exists_output(x$name))
   # get results
   expect_equal(x$receive(), 2L)
+  expect_false(x$assigned)
   # another job
   x$send(fun = function(x) x + 1L, args = list(x = 2L))
   tries <- 300

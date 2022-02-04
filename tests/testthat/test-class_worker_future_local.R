@@ -38,7 +38,7 @@ test_that("local future worker works", {
   expect_equal(x$receive(), 2L)
   expect_false(x$assigned)
   # another job
-  x$send(fun = function(x) x + 1L, args = list(x = 2L))
+  x$submit(fun = function(x) x + 1L, args = list(x = 2L))
   tries <- 300
   while (tries > 0 && !x$done()) {
     Sys.sleep(0.1)
@@ -55,7 +55,7 @@ test_that("local future worker works", {
   expect_false(x$up())
 })
 
-test_that("cover idempotent launch", {
+test_that("idempotent launch", {
   crew <- class_crew$new(worker_classes = list(class_worker_future_local))
   x <- class_worker_future_local$new(
     crew = crew,

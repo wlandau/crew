@@ -76,7 +76,7 @@ class_worker <- R6::R6Class(
         paste("invalid crew object in worker", self$name)
       )
       crew_assert(
-        identical(self$crew$worker_list[[self$name]], self),
+        identical(self$crew$workers[[self$name]], self),
         paste(
           "worker",
           self$name,

@@ -37,3 +37,15 @@ crew_assert_lgl_scalar <- function(x, message = NULL) {
     message = default %||% message
   )
 }
+
+crew_assert_named <- function(x, message = NULL) {
+  names <- names(x)
+  names <- names[nzchar(names)]
+  crew_assert(
+    length(unique(names)) == length(x),
+    paste(
+      deparse(substitute(x)),
+      "must have nonempty unique names."
+    )
+  )
+}

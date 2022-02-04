@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 [![codecov](https://codecov.io/gh/ropensci/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/ropensci/crew)
 [![lint](https://github.com/ropensci/crew/workflows/lint/badge.svg)](https://github.com/ropensci/crew/actions?query=workflow%3Alint)
 
-The [`R6`](https://r6.r-lib.org) classes of `crew` establish a standardized user interface to high-performance computing technologies. Unlike its closely related [`future`](https://future.futureverse.org/) package, `crew` prioritizes centralized scheduling, semi-persistent (reusable) workers, and user-driven customization. The primary goal is to help pipeline tools such as such [`targets`](https://docs.ropensci.org/targets/) efficiently orchestrate tasks without having to support individual low-level interfaces to specific high-performance computing platforms or cloud services.
+The [`R6`](https://r6.r-lib.org) classes of `crew` establish a standardized user interface to high-performance computing technologies. Unlike its closely related [`future`](https://future.futureverse.org/) package, `crew` prioritizes centralized scheduling, heterogeneous semi-persistent workers, and user-driven customization. The primary goal is to help pipeline tools such as such [`targets`](https://docs.ropensci.org/targets/) efficiently orchestrate tasks without having to support individual low-level interfaces to specific high-performance computing platforms or cloud services.
 
 ## Installation
 

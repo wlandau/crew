@@ -1,7 +1,7 @@
 test_that("valid worker", {
   crew <- class_crew$new()
   worker <- class_worker_callr$new(crew = crew)
-  crew$worker_list[[worker$name]] <- worker
+  crew$workers[[worker$name]] <- worker
   expect_silent(worker$validate())
 })
 

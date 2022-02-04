@@ -1,11 +1,11 @@
 test_that("local future worker works", {
-  crew <- class_crew$new(worker_definition = class_worker_future_local)
+  crew <- class_crew$new(classes = list(class_worker_future_local))
   x <- class_worker_future_local$new(
     crew = crew,
     timeout = Inf,
     wait_input = 0.01
   )
-  crew$worker_list[[x$name]] <- x
+  crew$workers[[x$name]] <- x
   x$validate()
   # no future yet
   expect_false(x$assigned)
@@ -56,13 +56,13 @@ test_that("local future worker works", {
 })
 
 test_that("cover idempotent launch", {
-  crew <- class_crew$new(worker_definition = class_worker_future_local)
+  crew <- class_crew$new(classes = list(class_worker_future_local))
   x <- class_worker_future_local$new(
     crew = crew,
     timeout = Inf,
     wait_input = 0.01
   )
-  crew$worker_list[[x$name]] <- x
+  crew$workers[[x$name]] <- x
   future::plan(future.callr::callr)
   on.exit(future::plan(future::sequential))
   x$launch()

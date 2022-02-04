@@ -28,3 +28,10 @@ test_that("crew_assert_lgl_scalar()", {
   expect_error(crew_assert_lgl_scalar(c(TRUE, FALSE)), class = "crew_error")
   expect_error(crew_assert_lgl_scalar(logical(0)), class = "crew_error")
 })
+
+test_that("crew_assert_named()", {
+  expect_silent(crew_assert_named(list(x = 1)))
+  expect_error(crew_assert_named(list(1)), class = "crew_error")
+  expect_error(crew_assert_named(list(a = 1, a = 2)), class = "crew_error")
+  expect_error(crew_assert_named(list(a = 1, 2)), class = "crew_error")
+})

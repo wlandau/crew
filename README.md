@@ -11,9 +11,9 @@
 The [`R6`](https://r6.r-lib.org) classes of `crew` establish a
 standardized user interface to high-performance computing technologies.
 Unlike its closely related [`future`](https://future.futureverse.org/)
-package, `crew` prioritizes centralized scheduling, semi-persistent
-(reusable) workers, and user-driven customization. The primary goal is
-to help pipeline tools such as such
+package, `crew` prioritizes centralized scheduling, heterogeneous
+semi-persistent workers, and user-driven customization. The primary goal
+is to help pipeline tools such as such
 [`targets`](https://docs.ropensci.org/targets/) efficiently orchestrate
 tasks without having to support individual low-level interfaces to
 specific high-performance computing platforms or cloud services.

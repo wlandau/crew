@@ -106,3 +106,44 @@ test_that("cannot send if worker is already assigned", {
     class = "crew_error"
   )
 })
+
+test_that("value received", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 1, timeout = Inf)
+  crew$send(fun = function(x) x, args = list(x = "y"))
+  while (!crew$receivable()) {
+    Sys.sleep(0.1)
+  }
+  out <- crew$receive()
+  expect_equal(out$value, "y")
+  expect_true(is.numeric(out$seconds))
+  expect_equal(length(out$seconds), 1)
+  expect_null(out$error)
+  expect_null(out$traceback)
+  expect_null(out$warnings)
+})
+
+test_that("value with warnings and errors", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 1, timeout = Inf)
+  crew$send(
+    fun = function() {
+      warning("warning1")
+      warning("warning2")
+      stop("error1")
+    }
+  )
+  while (!crew$receivable()) {
+    Sys.sleep(0.1)
+  }
+  out <- crew$receive()
+  expect_null(out$value)
+  expect_true(is.numeric(out$seconds))
+  expect_equal(length(out$seconds), 1)
+  expect_equal(out$error, "error1")
+  expect_true(is.character(out$traceback) && length(out$traceback) > 0)
+  expect_equal(out$warnings, c("warning1", "warning2"))
+  expect_true(crew$workers[[1]]$up())
+})

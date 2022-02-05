@@ -60,19 +60,16 @@ crew_worker_loop_job <- function(name, store) {
 }
 
 crew_worker_loop_monad <- function(fun, args) {
-  start <- as.numeric(proc.time()["elapsed"])
-  state <- new.env(hash = FALSE, parent = emptyenv())
   capture_error <- function(condition) {
     state$error <- conditionMessage(condition)
     state$traceback <- as.character(sys.calls())
     NULL
   }
   capture_warnings <- function(condition) {
-    state$warnings <- conditionMessage(condition)
-    class(condition) <- c("immediateCondition", condition)
-    warning(as_immediate_condition(condition))
-    invokeRestart("muffleWarning")
+    state$warnings <- c(state$warnings, conditionMessage(condition))
   }
+  state <- new.env(hash = FALSE, parent = emptyenv())
+  start <- as.numeric(proc.time()["elapsed"])
   value <- tryCatch(
     withCallingHandlers(
       tryCatch(
@@ -80,10 +77,9 @@ crew_worker_loop_monad <- function(fun, args) {
         crew_shutdown = identity
       ),
       error = capture_error,
-      warnings = capture_warnings
+      warning = capture_warnings
     ),
-    error = function(condition) {
-    }
+    error = function(condition) NULL
   )
   if (inherits(value, "crew_shutdown")) {
     crew_shutdown(conditionMessage(value))

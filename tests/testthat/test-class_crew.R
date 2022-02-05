@@ -85,19 +85,6 @@ test_that("crew receivable", {
   expect_false(crew$receivable(tags = "c"))
 })
 
-test_that("crew send and receive", {
-  crew <- class_crew$new()
-  on.exit(crew$shutdown())
-  crew$recruit(workers = 2, timeout = Inf)
-  crew$send(fun = function(x) x, args = list(x = "y"))
-  while (!crew$receivable()) {
-    Sys.sleep(0.1)
-  }
-  expect_equal(crew$receive()$value, "y")
-  expect_true(crew$workers[[1]]$up())
-  expect_false(crew$workers[[2]]$up())
-})
-
 test_that("crew send and receive with a busy worker", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())

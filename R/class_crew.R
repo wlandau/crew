@@ -17,22 +17,29 @@ class_crew <- R6::R6Class(
     worker_classes = NULL,
     #' @field workers Named list of worker objects.
     workers = NULL,
+    #' @field max_workers Positive integer,
+    #'   maximum number of workers in the crew.
+    max_workers = NULL,
     #' @description Crew constructor.
     #' @param name Character of length 1, crew name.
     #' @param store `R6` store object.
     #' @param worker_classes `R6ClassGenerator`
     #'   object with the worker definition.
     #' @param workers Named list of `R6` worker objects.
+    #' @param max_workers Positive integer,
+    #'   maximum number of workers in the crew.
     initialize = function(
       name = basename(tempfile(pattern = "crew_")),
       store = class_store_local$new(),
       worker_classes = list(default = class_worker),
-      workers = list()
+      workers = list(),
+      max_workers = 1
     ) {
       self$name <- name
       self$store <- store
       self$worker_classes <- worker_classes
       self$workers <- workers
+      self$max_workers <- max_workers
     },
     #' @description Crew validator.
     validate = function() {
@@ -63,15 +70,7 @@ class_crew <- R6::R6Class(
         }
       )
       lapply(self$workers, function(x) x$validate())
-      crew_assert(
-        inherits(self$store, "store"),
-        paste(
-          "store field in crew",
-          self$name,
-          "must be an R6 store object."
-        )
-      )
-      self$store$validate()
+      crew_assert_pos_dbl_scalar(self$max_workers)
     }
   )
 )

@@ -19,6 +19,9 @@ objects with worker definitions. The first one
 is the default.}
 
 \item{\code{workers}}{Named list of worker objects.}
+
+\item{\code{max_workers}}{Positive integer,
+maximum number of workers in the crew.}
 }
 \if{html}{\out{</div>}}
 }
@@ -39,7 +42,8 @@ Crew constructor.
   name = basename(tempfile(pattern = "crew_")),
   store = class_store_local$new(),
   worker_classes = list(default = class_worker),
-  workers = list()
+  workers = list(),
+  max_workers = 1
 )}\if{html}{\out{</div>}}
 }
 
@@ -54,6 +58,9 @@ Crew constructor.
 object with the worker definition.}
 
 \item{\code{workers}}{Named list of \code{R6} worker objects.}
+
+\item{\code{max_workers}}{Positive integer,
+maximum number of workers in the crew.}
 }
 \if{html}{\out{</div>}}
 }

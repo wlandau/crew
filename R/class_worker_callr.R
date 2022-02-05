@@ -16,10 +16,10 @@ class_worker_callr <- R6::R6Class(
         return()
       }
       self$process <- callr::r_bg(
-        func = crew::crew_loop_worker_local,
+        func = crew::crew_worker_loop,
         args = list(
           name = self$name,
-          dir_root = self$crew$store$dir_root,
+          store = self$crew$store,
           timeout = self$timeout,
           wait_input = self$wait_input
         ),

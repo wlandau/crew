@@ -1,6 +1,6 @@
 test_that("local future worker works", {
-  crew <- class_crew$new(worker_classes = list(class_worker_future_local))
-  x <- class_worker_future_local$new(
+  crew <- class_crew$new(worker_classes = list(class_worker_future))
+  x <- class_worker_future$new(
     crew = crew,
     timeout = Inf,
     wait_input = 0.01
@@ -56,8 +56,8 @@ test_that("local future worker works", {
 })
 
 test_that("idempotent launch", {
-  crew <- class_crew$new(worker_classes = list(class_worker_future_local))
-  x <- class_worker_future_local$new(
+  crew <- class_crew$new(worker_classes = list(class_worker_future))
+  x <- class_worker_future$new(
     crew = crew,
     timeout = Inf,
     wait_input = 0.01

@@ -20,6 +20,7 @@
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-launch}{\code{class_worker_future$launch()}}
 \item \href{#method-up}{\code{class_worker_future$up()}}
 \item \href{#method-validate}{\code{class_worker_future$validate()}}
 }
@@ -35,6 +36,16 @@
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="submit">}\href{../../crew/html/worker.html#method-submit}{\code{crew::worker$submit()}}\out{</span>}
 }
 \out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-launch"></a>}}
+\if{latex}{\out{\hypertarget{method-launch}{}}}
+\subsection{Method \code{launch()}}{
+Launch the worker.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_worker_future$launch()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-up"></a>}}

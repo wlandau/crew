@@ -1,8 +1,9 @@
 test_that("no work then worker timeout", {
+  store <- class_store_local$new()
   expect_error(
-    crew_loop_worker_local(
+    crew_worker_loop(
       name = "name",
-      dir_root = fs::dir_create(tempfile()),
+      store = store,
       timeout = 0,
       wait_input = 0
     ),
@@ -13,19 +14,18 @@ test_that("no work then worker timeout", {
 test_that("one job that runs and shutdowns the worker", {
   dir_root <- fs::dir_create(tempfile())
   store <- class_store_local$new(dir_root = dir_root)
-  fun <- function(x, dir_root) {
-    store <- class_store_local$new(dir_root = dir_root)
+  fun <- function(x, store) {
     fun <- function() rlang::abort(class = "crew_shutdown")
     data <- list(fun = deparse(fun), args = list())
     store$write_input(name = "worker", data = data)
     x + 1L
   }
-  args <- list(x = 0L, dir_root = dir_root)
+  args <- list(x = 0L, store = store)
   data <- list(fun = deparse(fun), args = args)
   store$write_input(name = "worker", data = data)
-  crew_loop_worker_local(
+  crew_worker_loop(
     name = "worker",
-    dir_root = dir_root,
+    store = store,
     timeout = Inf,
     wait_input = 0
   )

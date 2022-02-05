@@ -52,13 +52,12 @@ Inheritance hierarchy:
 ├── worker
 │   ├── worker_callr
 │   ├── worker_future
-│   │   ├── worker_future_local
 ```
 
 Instantiable concrete subclasses:
 
 * `"worker_callr"`: worker that runs in a `callr::r_bg()` process.
-* `"worker_future_local"`: worker that runs in a `future` and uses a local data store.
+* `"worker_future"`: worker that runs in a `future`.
 
 Other subclasses will run on cloud services like AWS Batch.
 

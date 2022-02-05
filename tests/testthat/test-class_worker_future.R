@@ -10,13 +10,13 @@ test_that("local future worker works", {
   # no future yet
   expect_false(x$assigned)
   expect_false(x$up())
-  expect_false(x$done())
+  expect_false(x$receivable())
   # launch future
   future::plan(future.callr::callr)
   on.exit(future::plan(future::sequential))
   x$launch()
   expect_true(x$up())
-  expect_false(x$done())
+  expect_false(x$receivable())
   x$validate()
   # send first job
   expect_false(x$crew$store$exists_input(x$name))
@@ -24,12 +24,12 @@ test_that("local future worker works", {
   x$send(fun = function(x) x + 1L, args = list(x = 1L))
   # Did the job run?
   tries <- 300
-  while (tries > 0 && !x$done()) {
+  while (tries > 0 && !x$receivable()) {
     Sys.sleep(0.1)
     tries <- tries - 1
   }
   expect_true(x$crew$store$exists_output(x$name))
-  expect_true(x$done())
+  expect_true(x$receivable())
   expect_true(x$up())
   expect_true(x$assigned)
   expect_false(x$crew$store$exists_input(x$name))
@@ -38,9 +38,9 @@ test_that("local future worker works", {
   expect_equal(x$receive(), 2L)
   expect_false(x$assigned)
   # another job
-  x$submit(fun = function(x) x + 1L, args = list(x = 2L))
+  x$send(fun = function(x) x + 1L, args = list(x = 2L))
   tries <- 300
-  while (tries > 0 && !x$done()) {
+  while (tries > 0 && !x$receivable()) {
     Sys.sleep(0.1)
     tries <- tries - 1
   }

@@ -30,10 +30,10 @@ already has a job to do.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{class_worker$new()}}
+\item \href{#method-sendable}{\code{class_worker$sendable()}}
 \item \href{#method-send}{\code{class_worker$send()}}
-\item \href{#method-submit}{\code{class_worker$submit()}}
+\item \href{#method-receivable}{\code{class_worker$receivable()}}
 \item \href{#method-receive}{\code{class_worker$receive()}}
-\item \href{#method-done}{\code{class_worker$done()}}
 \item \href{#method-shutdown}{\code{class_worker$shutdown()}}
 \item \href{#method-validate}{\code{class_worker$validate()}}
 }
@@ -69,6 +69,16 @@ that the worker waits between checking if a job exists.}
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-sendable"></a>}}
+\if{latex}{\out{\hypertarget{method-sendable}{}}}
+\subsection{Method \code{sendable()}}{
+Check if this worker is ready to accept a job.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$sendable()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-send"></a>}}
 \if{latex}{\out{\hypertarget{method-send}{}}}
 \subsection{Method \code{send()}}{
@@ -90,25 +100,15 @@ on the closure or global variables in the environment.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-submit"></a>}}
-\if{latex}{\out{\hypertarget{method-submit}{}}}
-\subsection{Method \code{submit()}}{
-Send a job and ensure the worker is launched.
+\if{html}{\out{<a id="method-receivable"></a>}}
+\if{latex}{\out{\hypertarget{method-receivable}{}}}
+\subsection{Method \code{receivable()}}{
+\code{TRUE} if a worker is receivable with a job and the
+main process can receive the output of the job. \code{FALSE} otherwise.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker$submit(fun, args = list())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$receivable()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{fun}}{Function to run in the job. Should be completely
-self-contained in the body and arguments, without relying
-on the closure or global variables in the environment.}
-
-\item{\code{args}}{Named list of arguments to \code{fun}.}
-}
-\if{html}{\out{</div>}}
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-receive"></a>}}
@@ -117,17 +117,6 @@ on the closure or global variables in the environment.}
 Collect the results of a job.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_worker$receive()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-done"></a>}}
-\if{latex}{\out{\hypertarget{method-done}{}}}
-\subsection{Method \code{done()}}{
-\code{TRUE} if a worker is done with a job and the
-main process can receive the output of the job. \code{FALSE} otherwise.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker$done()}\if{html}{\out{</div>}}
 }
 
 }

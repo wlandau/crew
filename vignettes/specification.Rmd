@@ -39,10 +39,10 @@ Required methods:
 
 * `up()`: check whether the worker is running.
 * `launch()`: start the worker if it not already running.
-* `send()`: send a job to a worker, usually through the crew's data store.
-* `submit()`: send a job to a worker 
-* `receive()`: receive the output of a job from a worker, usually through the crew's data store.
-* `done()`: whether the worker is done with its current job and is waiting for the crew to read the output data and free the worker to do another job.
+* `sendable()`: whether the worker is available to accept a new job.
+* `send()`: send a job to a worker through the data store and make sure the worker is launched. Errors if the worker is busy (i.e. if `sendable()` returns `FALSE`).
+* `receivable()`: whether the worker is done with its current job and is waiting for the crew to read the output data and free the worker to do another job.
+* `receive()`: receive job output from the worker. Assumes the worker is receivable.
 * `shutdown()`: send a special job that gracefully shuts down the worker.
 * `validate()`: check for errors in the fields and methods.
 
@@ -74,7 +74,15 @@ Required fields:
 
 Methods:
 
-* TBD
+* `recruit()`: create worker objects from one or more worker definitions. Does not actually launch the new worker objects.
+* `launch()`: call the `launch()` method of each worker. Assumes worker `launch()` is idempotent so no worker is re-launched if it is already up.
+* `sendable()`: whether any worker is available to accept a new job.
+* `send()`: find an appropriate worker for the job and call its `send()` method on the job.
+* `receivable()`: whether any worker is done with its current job and is waiting for the crew to read the output data and free the worker to do another job.
+* `receive()`: receive job output from the first detected receivable worker. Assumes there exists a receivable worker in the crew.
+* `shutdown()`: shut down one or more workers. Workers must be sendable if the worker shutdown method uses `send()`.
+* `dismiss()`: delete one or more worker objects from the crew. Dismissed workers must be down and sendable, so not all requested dismissals actually happen.
+* `validate()`: check for errors in the fields and methods.
 
 # store
 

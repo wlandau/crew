@@ -41,6 +41,66 @@ class_crew <- R6::R6Class(
       self$workers <- workers
       self$max_workers <- max_workers
     },
+    #' @description create worker objects from one or more worker definitions.
+    #'   Does not actually launch the new worker objects.
+    #' @param workers Number of new worker objects to create.
+    #' @param class Name of the worker class to use for launching workers.
+    #' @param ... Named arguments to the worker constructor.
+    recruit = function(
+      workers = 1L,
+      class = names(self$worker_classes)[[1]],
+      ...
+    ) {
+      crew_assert_pos_dbl_scalar(workers)
+      crew_assert_chr_scalar(class)
+      crew_asset(class in names(self$worker_classes))
+      
+    },
+    #' @description Launch all down workers in the crew.
+    launch = function() {
+      
+    },
+    #' @description Determine if any worker is unassigned
+    #'   and ready to accept a new job.
+    sendable = function() {
+      
+    },
+    #' @description Send a job to an available worker. Assumes `sendable()`
+    #'   on the crew returns `TRUE`.
+    #' @param fun Function to run in the job.
+    #' @param args Named list of arguments to `fun()`
+    send = function(fun, args = list()) {
+      crew_assert(is.function(fun))
+      crew_assert(is.list(args))
+      crew_assert_named(args)
+      
+    },
+    #' @description Determine if any worker in the crew is done
+    #'   with its current job and the job output is available for collection.
+    receivable = function() {
+      
+    },
+    #' @description Choose a receivable worker and collect its job output.
+    receive = function() {
+      
+    },
+    #' @description Shut down one or more workers. Workers must be sendable
+    #'   if the worker shutdown method uses `send()`.
+    #' @param workers Positive integer of length 1,
+    #'   number of workers to shut down.
+    shutdown = function(workers = Inf) {
+      crew_assert_pos_dbl_scalar(workers)
+      
+    },
+    #' @description  delete one or more worker objects from the crew.
+    #'   Dismissed workers must be down and sendable,
+    #'   so not all requested dismissals actually happen.
+    #' @param workers Positive integer of length 1,
+    #'   number of workers to shut down.
+    dismiss = function(workers = Inf) {
+      crew_assert_pos_dbl_scalar(workers)
+      
+    },
     #' @description Crew validator.
     validate = function() {
       crew_assert_chr_scalar(self$name, "crew has invalid name.")

@@ -40,25 +40,32 @@ class_worker <- R6::R6Class(
       self$wait_input <- wait_input
       self$assigned <- FALSE
     },
+    #' @description Check if this worker is ready to accept a job.
+    sendable = function() {
+      !self$assigned
+    },
     #' @description Send a job.
     #' @param fun Function to run in the job. Should be completely
     #'   self-contained in the body and arguments, without relying
     #'   on the closure or global variables in the environment.
     #' @param args Named list of arguments to `fun`.
     send = function(fun, args = list()) {
+      if (!self$sendable()) {
+        crew_error(sprintf("worker %s is busy.", self$name))
+      }
+      self$assigned <- TRUE
+      crew_assert(is.function(fun))
+      crew_assert(is.list(args))
+      crew_assert_named(args)
       data <- list(fun = deparse(fun), args = args)
       self$crew$store$write_input(name = self$name, data = data)
-      self$assigned <- TRUE
+      self$launch()
       invisible()
     },
-    #' @description Send a job and ensure the worker is launched.
-    #' @param fun Function to run in the job. Should be completely
-    #'   self-contained in the body and arguments, without relying
-    #'   on the closure or global variables in the environment.
-    #' @param args Named list of arguments to `fun`.
-    submit = function(fun, args = list()) {
-      self$send(fun = fun, args = args)
-      self$launch()
+    #' @description `TRUE` if a worker is receivable with a job and the
+    #'   main process can receive the output of the job. `FALSE` otherwise.
+    receivable = function() {
+      self$crew$store$exists_output(name = self$name)
     },
     #' @description Collect the results of a job.
     receive = function() {
@@ -66,11 +73,6 @@ class_worker <- R6::R6Class(
       self$crew$store$delete_output(name = self$name)
       self$assigned <- FALSE
       out
-    },
-    #' @description `TRUE` if a worker is done with a job and the
-    #'   main process can receive the output of the job. `FALSE` otherwise.
-    done = function() {
-      self$crew$store$exists_output(name = self$name)
     },
     #' @description Gracefully shut down the worker.
     shutdown = function() {
@@ -106,8 +108,9 @@ class_worker <- R6::R6Class(
         "up",
         "launch",
         "send",
+        "sendable",
         "receive",
-        "done",
+        "receivable",
         "shutdown",
         "validate"
       )

@@ -29,6 +29,14 @@ maximum number of workers in the crew.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{class_crew$new()}}
+\item \href{#method-recruit}{\code{class_crew$recruit()}}
+\item \href{#method-launch}{\code{class_crew$launch()}}
+\item \href{#method-sendable}{\code{class_crew$sendable()}}
+\item \href{#method-send}{\code{class_crew$send()}}
+\item \href{#method-receivable}{\code{class_crew$receivable()}}
+\item \href{#method-receive}{\code{class_crew$receive()}}
+\item \href{#method-shutdown}{\code{class_crew$shutdown()}}
+\item \href{#method-dismiss}{\code{class_crew$dismiss()}}
 \item \href{#method-validate}{\code{class_crew$validate()}}
 }
 }
@@ -61,6 +69,129 @@ object with the worker definition.}
 
 \item{\code{max_workers}}{Positive integer,
 maximum number of workers in the crew.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-recruit"></a>}}
+\if{latex}{\out{\hypertarget{method-recruit}{}}}
+\subsection{Method \code{recruit()}}{
+create worker objects from one or more worker definitions.
+Does not actually launch the new worker objects.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$recruit(workers = 1L, class = names(self$worker_classes)[[1]], ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{workers}}{Number of new worker objects to create.}
+
+\item{\code{class}}{Name of the worker class to use for launching workers.}
+
+\item{\code{...}}{Named arguments to the worker constructor.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-launch"></a>}}
+\if{latex}{\out{\hypertarget{method-launch}{}}}
+\subsection{Method \code{launch()}}{
+Launch all down workers in the crew.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$launch()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-sendable"></a>}}
+\if{latex}{\out{\hypertarget{method-sendable}{}}}
+\subsection{Method \code{sendable()}}{
+Determine if any worker is unassigned
+and ready to accept a new job.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$sendable()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-send"></a>}}
+\if{latex}{\out{\hypertarget{method-send}{}}}
+\subsection{Method \code{send()}}{
+Send a job to an available worker. Assumes \code{sendable()}
+on the crew returns \code{TRUE}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$send(fun, args = list())}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{fun}}{Function to run in the job.}
+
+\item{\code{args}}{Named list of arguments to \code{fun()}}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-receivable"></a>}}
+\if{latex}{\out{\hypertarget{method-receivable}{}}}
+\subsection{Method \code{receivable()}}{
+Determine if any worker in the crew is done
+with its current job and the job output is available for collection.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$receivable()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-receive"></a>}}
+\if{latex}{\out{\hypertarget{method-receive}{}}}
+\subsection{Method \code{receive()}}{
+Choose a receivable worker and collect its job output.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$receive()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-shutdown"></a>}}
+\if{latex}{\out{\hypertarget{method-shutdown}{}}}
+\subsection{Method \code{shutdown()}}{
+Shut down one or more workers. Workers must be sendable
+if the worker shutdown method uses \code{send()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$shutdown(workers = Inf)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{workers}}{Positive integer of length 1,
+number of workers to shut down.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-dismiss"></a>}}
+\if{latex}{\out{\hypertarget{method-dismiss}{}}}
+\subsection{Method \code{dismiss()}}{
+delete one or more worker objects from the crew.
+Dismissed workers must be down and sendable,
+so not all requested dismissals actually happen.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$dismiss(workers = Inf)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{workers}}{Positive integer of length 1,
+number of workers to shut down.}
 }
 \if{html}{\out{</div>}}
 }

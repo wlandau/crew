@@ -33,6 +33,7 @@ Required fields:
 * `crew`: the `crew` object of the crew it belongs to.
 * `timeout`: seconds to idle before the worker times out.
 * `wait_input`: seconds to wait between polling for input (a new job).
+* `tags`: a character vector, optionally containing user-defined tags to identify a subset of eligible heterogeneous workers for submitting and receiving jobs.
 * `assigned`: whether the worker is currently assigned a job.
 
 Required methods:

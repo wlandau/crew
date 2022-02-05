@@ -21,6 +21,10 @@ number of seconds of idling for the worker to time out.}
 number of seconds for a worker to wait between iterations of
 polling input.}
 
+\item{\code{tags}}{Character vector of optional user-defined tags
+to select subsets of eligible workers for job submission and
+retrieval.}
+
 \item{\code{assigned}}{Logical of length 1, whether the worker
 already has a job to do.}
 }
@@ -35,6 +39,7 @@ already has a job to do.}
 \item \href{#method-receivable}{\code{class_worker$receivable()}}
 \item \href{#method-receive}{\code{class_worker$receive()}}
 \item \href{#method-shutdown}{\code{class_worker$shutdown()}}
+\item \href{#method-tagged}{\code{class_worker$tagged()}}
 \item \href{#method-validate}{\code{class_worker$validate()}}
 }
 }
@@ -48,7 +53,8 @@ Worker constructor.
   name = basename(tempfile(pattern = "worker_")),
   crew = NULL,
   timeout = 60,
-  wait_input = 0.1
+  wait_input = 0.1,
+  tags = character(0)
 )}\if{html}{\out{</div>}}
 }
 
@@ -64,6 +70,9 @@ that a worker can idle before timing out.}
 
 \item{\code{wait_input}}{Positive numeric of length 1, number of seconds
 that the worker waits between checking if a job exists.}
+
+\item{\code{tags}}{Character vector of optional user-defined tags
+to mark eligible groups of workers in scheduling operations.}
 }
 \if{html}{\out{</div>}}
 }
@@ -129,6 +138,24 @@ Gracefully shut down the worker.
 \if{html}{\out{<div class="r">}}\preformatted{class_worker$shutdown()}\if{html}{\out{</div>}}
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-tagged"></a>}}
+\if{latex}{\out{\hypertarget{method-tagged}{}}}
+\subsection{Method \code{tagged()}}{
+Check if the worker has one or more
+of the tags in the argument.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$tagged(tags)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tags}}{Character vector of tags to check.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-validate"></a>}}

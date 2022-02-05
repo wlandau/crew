@@ -100,9 +100,16 @@ check the \code{worker_classes} field for possible names.}
 \subsection{Method \code{launch()}}{
 Launch all down workers in the crew.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$launch()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$launch(tags = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tags}}{Character vector of allowable tags of eligible workers.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-sendable"></a>}}
@@ -111,9 +118,16 @@ Launch all down workers in the crew.
 Determine if any worker is unassigned
 and ready to accept a new job.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$sendable()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$sendable(tags = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tags}}{Character vector of allowable tags of eligible workers.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-send"></a>}}
@@ -122,7 +136,7 @@ and ready to accept a new job.
 Send a job to an available worker. Assumes \code{sendable()}
 on the crew returns \code{TRUE}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$send(fun, args = list())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$send(fun, args = list(), tags = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -131,6 +145,8 @@ on the crew returns \code{TRUE}.
 \item{\code{fun}}{Function to run in the job.}
 
 \item{\code{args}}{Named list of arguments to \code{fun()}}
+
+\item{\code{tags}}{Character vector of allowable tags of eligible workers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -142,9 +158,16 @@ on the crew returns \code{TRUE}.
 Determine if any worker in the crew is done
 with its current job and the job output is available for collection.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$receivable()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$receivable(tags = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tags}}{Character vector of allowable tags of eligible workers.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-receive"></a>}}
@@ -152,9 +175,16 @@ with its current job and the job output is available for collection.
 \subsection{Method \code{receive()}}{
 Choose a receivable worker and collect its job output.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$receive()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$receive(tags = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tags}}{Character vector of allowable tags of eligible workers.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-shutdown"></a>}}
@@ -162,7 +192,7 @@ Choose a receivable worker and collect its job output.
 \subsection{Method \code{shutdown()}}{
 Shut down one or more running workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$shutdown(workers = Inf, sendable_only = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$shutdown(workers = Inf, sendable_only = TRUE, tags = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -174,6 +204,8 @@ workers.}
 
 \item{\code{sendable_only}}{Logical of length 1, whether to skip to another
 worker to shut down if the current worker is not sendable.}
+
+\item{\code{tags}}{Character vector of allowable tags of eligible workers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -192,7 +224,12 @@ the loop moves on to another worker.
 \subsection{Method \code{dismiss()}}{
 delete all worker objects.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$dismiss(workers = Inf, sendable_only = TRUE, down_only = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$dismiss(
+  workers = Inf,
+  sendable_only = TRUE,
+  down_only = TRUE,
+  tags = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -207,6 +244,8 @@ worker to dismiss if the current worker is not sendable.}
 
 \item{\code{down_only}}{Logical of length 1, whether to skip to another
 worker to dismiss if the current worker is not down.}
+
+\item{\code{tags}}{Character vector of allowable tags of eligible workers.}
 }
 \if{html}{\out{</div>}}
 }

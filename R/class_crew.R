@@ -74,14 +74,20 @@ class_crew <- R6::R6Class(
       invisible()
     },
     #' @description Launch all down workers in the crew.
-    launch = function() {
-      walk(self$workers, ~.x$launch())
+    #' @param tags Character vector of allowable tags of eligible workers.
+    launch = function(tags = NULL) {
+      if (!is.null(tags)) {
+        workers <- fltr(self$workers, ~.x$tagged(tags))
+      }
+      walk(workers, ~.x$launch())
     },
     #' @description Determine if any worker is unassigned
     #'   and ready to accept a new job.
-    sendable = function() {
+    #' @param tags Character vector of allowable tags of eligible workers.
+    sendable = function(tags = NULL) {
+      crew_assert(is.null(tags) || is.character(tags))
       for (worker in self$workers) {
-        if (worker$sendable()) {
+        if (worker$sendable() && (is.null(tags) || worker$tagged(tags))) {
           return(TRUE)
         }
       }
@@ -91,8 +97,7 @@ class_crew <- R6::R6Class(
     #'   on the crew returns `TRUE`.
     #' @param fun Function to run in the job.
     #' @param args Named list of arguments to `fun()`
-    #' @param tags Character vector of allowable worker to submit to.
-    #'   check the `worker_classes` field for possible names.
+    #' @param tags Character vector of allowable tags of eligible workers.
     send = function(
       fun,
       args = list(),
@@ -101,11 +106,8 @@ class_crew <- R6::R6Class(
       crew_assert(is.function(fun))
       crew_assert(is.list(args))
       crew_assert_named(args)
-      crew_assert(is.null(tags) || is.character(tags))
       for (worker in self$workers) {
-        should_send <- worker$sendable() &&
-          (is.null(tags) || any(worker$tags %in% tags))
-        if (should_send) {
+        if (worker$sendable() && (is.null(tags) || worker$tagged(tags))) {
           worker$send(fun = fun, args = args)
           return(invisible())
         }
@@ -120,18 +122,20 @@ class_crew <- R6::R6Class(
     },
     #' @description Determine if any worker in the crew is done
     #'   with its current job and the job output is available for collection.
-    receivable = function() {
+    #' @param tags Character vector of allowable tags of eligible workers.
+    receivable = function(tags = NULL) {
       for (worker in self$workers) {
-        if (worker$receivable()) {
+        if (worker$receivable() && (is.null(tags) || worker$tagged(tags))) {
           return(TRUE)
         }
       }
       FALSE
     },
     #' @description Choose a receivable worker and collect its job output.
-    receive = function() {
+    #' @param tags Character vector of allowable tags of eligible workers.
+    receive = function(tags = NULL) {
       for (worker in self$workers) {
-        if (worker$receivable()) {
+        if (worker$receivable() && (is.null(tags) || worker$tagged(tags))) {
           return(worker$receive())
         }
       }
@@ -148,12 +152,16 @@ class_crew <- R6::R6Class(
     #'   workers.
     #' @param sendable_only Logical of length 1, whether to skip to another
     #'   worker to shut down if the current worker is not sendable.
-    shutdown = function(workers = Inf, sendable_only = TRUE) {
+    #' @param tags Character vector of allowable tags of eligible workers.
+    shutdown = function(workers = Inf, sendable_only = TRUE, tags = NULL) {
       crew_assert_pos_dbl_scalar(workers)
       crew_assert_lgl_scalar(sendable_only)
       workers_shut_down <- 0
       for (worker in self$workers) {
-        if ((!sendable_only || worker$sendable()) && worker$up()) {
+        eligible <- (!sendable_only || worker$sendable()) &&
+          worker$up() &&
+          (is.null(tags) || worker$tagged(tags))
+        if (eligible) {
           worker$shutdown()
           workers_shut_down <- workers_shut_down + 1
         }
@@ -176,7 +184,13 @@ class_crew <- R6::R6Class(
     #'   worker to dismiss if the current worker is not sendable.
     #' @param down_only Logical of length 1, whether to skip to another
     #'   worker to dismiss if the current worker is not down.
-    dismiss = function(workers = Inf, sendable_only = TRUE, down_only = TRUE) {
+    #' @param tags Character vector of allowable tags of eligible workers.
+    dismiss = function(
+      workers = Inf,
+      sendable_only = TRUE,
+      down_only = TRUE,
+      tags = NULL
+    ) {
       crew_assert_pos_dbl_scalar(workers)
       crew_assert_lgl_scalar(sendable_only)
       crew_assert_lgl_scalar(down_only)
@@ -184,9 +198,10 @@ class_crew <- R6::R6Class(
       dismiss_these <- integer(0)
       for (index in check_these) {
         worker <- self$workers[[index]]
-        should_dismiss <- (!sendable_only || worker$sendable()) &&
-          (!down_only || !worker$up())
-        if (should_dismiss) {
+        eligible <- (!sendable_only || worker$sendable()) &&
+          (!down_only || !worker$up()) &&
+          (is.null(tags) || worker$tagged(tags))
+        if (eligible) {
           dismiss_these <- c(dismiss_these, index)
         }
         if (length(dismiss_these) >= workers) {

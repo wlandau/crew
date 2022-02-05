@@ -34,6 +34,7 @@
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="send">}\href{../../crew/html/worker.html#method-send}{\code{crew::worker$send()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="sendable">}\href{../../crew/html/worker.html#method-sendable}{\code{crew::worker$sendable()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="shutdown">}\href{../../crew/html/worker.html#method-shutdown}{\code{crew::worker$shutdown()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="tagged">}\href{../../crew/html/worker.html#method-tagged}{\code{crew::worker$tagged()}}\out{</span>}
 }
 \out{</details>}
 }

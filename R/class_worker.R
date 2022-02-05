@@ -18,6 +18,10 @@ class_worker <- R6::R6Class(
     #'   number of seconds for a worker to wait between iterations of
     #'   polling input.
     wait_input = NULL,
+    #' @field tags Character vector of optional user-defined tags
+    #'   to select subsets of eligible workers for job submission and
+    #'   retrieval.
+    tags = NULL,
     #' @field assigned Logical of length 1, whether the worker
     #'   already has a job to do.
     assigned = NULL,
@@ -28,16 +32,20 @@ class_worker <- R6::R6Class(
     #'   that a worker can idle before timing out.
     #' @param wait_input Positive numeric of length 1, number of seconds
     #'   that the worker waits between checking if a job exists.
+    #' @param tags Character vector of optional user-defined tags
+    #'   to mark eligible groups of workers in scheduling operations.
     initialize = function(
       name = basename(tempfile(pattern = "worker_")),
       crew = NULL,
       timeout = 60,
-      wait_input = 0.1
+      wait_input = 0.1,
+      tags = character(0)
     ) {
       self$name <- name
       self$crew <- crew
       self$timeout <- timeout
       self$wait_input <- wait_input
+      self$tags <- unique(tags)
       self$assigned <- FALSE
     },
     #' @description Check if this worker is ready to accept a job.
@@ -79,6 +87,13 @@ class_worker <- R6::R6Class(
       self$send(fun = function() rlang::abort(class = "crew_shutdown"))
       invisible()
     },
+    #' @description Check if the worker has one or more
+    #'   of the tags in the argument.
+    #' @param tags Character vector of tags to check.
+    tagged = function(tags) {
+      crew_assert(is.character(tags))
+      any(self$tags %in% tags)
+    },
     #' @description Worker validator.
     validate = function() {
       crew_assert_chr_scalar(self$name, "worker has invalid name.")
@@ -104,6 +119,7 @@ class_worker <- R6::R6Class(
         "worker timeout must be a positive number."
       )
       crew_assert_lgl_scalar(self$assigned)
+      crew_assert(is.character(self$tags))
       funs <- c(
         "up",
         "launch",

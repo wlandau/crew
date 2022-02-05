@@ -40,12 +40,14 @@ test_that("crew recruit", {
   walk(crew$workers, ~.x$validate())
 })
 
-test_that("crew launch", {
+test_that("crew launch with tag", {
   crew <- class_crew$new()
-  crew$recruit(workers = 2, timeout = Inf)
-  crew$launch()
-  walk(crew$workers, ~expect_true(.x$up()))
-  walk(crew$workers, ~.x$shutdown())
+  on.exit(crew$shutdown())
+  crew$recruit(tags = "x")
+  crew$recruit(tags = "y")
+  crew$launch(tags = "y")
+  expect_false(crew$workers[[1]]$up())
+  expect_true(crew$workers[[2]]$up())
 })
 
 test_that("crew sendable", {
@@ -59,7 +61,44 @@ test_that("crew sendable", {
   expect_false(crew$sendable())
 })
 
+test_that("crew sendable with tags", {
+  crew <- class_crew$new()
+  expect_false(crew$sendable())
+  crew$recruit(workers = 1, timeout = Inf, tags = "a")
+  crew$recruit(workers = 1, timeout = Inf, tags = "b")
+  crew$workers[[2]]$assigned <- TRUE
+  expect_true(crew$sendable())
+  expect_true(crew$sendable(tags = "a"))
+  expect_false(crew$sendable(tags = "b"))
+  expect_false(crew$sendable(tags = "c"))
+})
+
+test_that("crew receivable", {
+  crew <- class_crew$new()
+  expect_false(crew$receivable())
+  crew$recruit(workers = 1, timeout = Inf, tags = "a")
+  crew$recruit(workers = 1, timeout = Inf, tags = "b")
+  crew$store$write_output(name = crew$workers[[2]]$name, data = "x")
+  expect_true(crew$receivable())
+  expect_false(crew$receivable(tags = "a"))
+  expect_true(crew$receivable(tags = "b"))
+  expect_false(crew$receivable(tags = "c"))
+})
+
 test_that("crew send and receive", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 2, timeout = Inf)
+  crew$send(fun = function(x) x, args = list(x = "y"))
+  while (!crew$receivable()) {
+    Sys.sleep(0.1)
+  }
+  expect_equal(crew$receive(), "y")
+  expect_true(crew$workers[[1]]$up())
+  expect_false(crew$workers[[2]]$up())
+})
+
+test_that("crew send and receive with a busy worker", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
@@ -73,13 +112,39 @@ test_that("crew send and receive", {
   expect_true(crew$workers[[2]]$up())
 })
 
-test_that("crew receivable", {
+test_that("crew send and receive at a tag", {
   crew <- class_crew$new()
-  expect_false(crew$receivable())
+  on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
-  expect_false(crew$receivable())
-  crew$store$write_output(name = crew$workers[[2]]$name, data = "x")
-  expect_true(crew$sendable())
+  crew$workers[[2]]$tags <- "my_tag"
+  crew$send(fun = function(x) x, args = list(x = "y"), tags = "my_tag")
+  while (!crew$receivable(tags = "my_tag")) {
+    Sys.sleep(0.1)
+  }
+  expect_equal(crew$receive(tags = "my_tag"), "y")
+  expect_false(crew$workers[[1]]$up())
+  expect_true(crew$workers[[2]]$up())
+})
+
+test_that("crew send at a bad tag", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 2, timeout = Inf)
+  expect_error(
+    crew$send(fun = function(x) x, args = list(x = "y"), tag = "bad"),
+    class = "crew_error"
+  )
+})
+
+test_that("crew receive at a bad tag", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 2, timeout = Inf)
+  crew$send(fun = function(x) x, args = list(x = "y"))
+  while (!crew$receivable()) {
+    Sys.sleep(0.1)
+  }
+  expect_error(crew$receive(tag = "bad"), class = "crew_error")
 })
 
 test_that("crew shutdown sendable_only = TRUE", {

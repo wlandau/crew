@@ -27,8 +27,10 @@ crew_worker_loop <- function(name, store, timeout, wait_input) {
 #' @description Not a user-side function. for internal use only.
 #' @return `NULL` (invisibly).
 #' @param name Character of length 1, name of the worker.
-#' @param store Marshaled `R6` data store object to send/receive job data from the crew.
-#'   Constructed from the `$marshal()` method of the store. `eval(parse(text = store))`
+#' @param store Marshaled `R6` data store object to
+#'   send/receive job data from the crew.
+#'   Constructed from the `$marshal()` method of the store.
+#'   `eval(parse(text = store))`
 #'   should reconstruct the usable store object inside the worker event loop.
 #' @param timeout Positive numeric of length 1, number of seconds
 #'   that a worker can idle before timing out.

@@ -30,7 +30,6 @@ Depends:
   R (>= 3.5.0)
 Imports:
   callr (>= 3.6.0),
-  fs (>= 1.5.0),
   future (>= 1.22.0),
   future.callr (>= 0.7.0),
   qs (>= 0.24.1),

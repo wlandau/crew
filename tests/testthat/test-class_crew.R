@@ -64,7 +64,6 @@ test_that("crew send and receive", {
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
   crew$workers[[1]]$assigned <- TRUE
-  crew$launch()
   crew$send(fun = function(x) x, args = list(x = "y"))
   while (!crew$receivable()) {
     Sys.sleep(0.1)

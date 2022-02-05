@@ -93,7 +93,7 @@ test_that("crew send and receive", {
   while (!crew$receivable()) {
     Sys.sleep(0.1)
   }
-  expect_equal(crew$receive(), "y")
+  expect_equal(crew$receive()$value, "y")
   expect_true(crew$workers[[1]]$up())
   expect_false(crew$workers[[2]]$up())
 })
@@ -107,7 +107,7 @@ test_that("crew send and receive with a busy worker", {
   while (!crew$receivable()) {
     Sys.sleep(0.1)
   }
-  expect_equal(crew$receive(), "y")
+  expect_equal(crew$receive()$value, "y")
   expect_false(crew$workers[[1]]$up())
   expect_true(crew$workers[[2]]$up())
 })
@@ -121,7 +121,7 @@ test_that("crew send and receive at a tag", {
   while (!crew$receivable(tags = "my_tag")) {
     Sys.sleep(0.1)
   }
-  expect_equal(crew$receive(tags = "my_tag"), "y")
+  expect_equal(crew$receive(tags = "my_tag")$value, "y")
   expect_false(crew$workers[[1]]$up())
   expect_true(crew$workers[[2]]$up())
 })

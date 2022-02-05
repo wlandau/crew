@@ -5,6 +5,7 @@ test_that("local future worker works", {
     timeout = Inf,
     wait_input = 0.01
   )
+  on.exit(x$shutdown())
   crew$workers[[x$name]] <- x
   x$validate()
   # no future yet
@@ -35,7 +36,7 @@ test_that("local future worker works", {
   expect_false(x$crew$store$exists_input(x$name))
   expect_true(x$crew$store$exists_output(x$name))
   # get results
-  expect_equal(x$receive(), 2L)
+  expect_equal(x$receive()$value, 2L)
   expect_false(x$assigned)
   # another job
   x$send(fun = function(x) x + 1L, args = list(x = 2L))
@@ -44,7 +45,7 @@ test_that("local future worker works", {
     Sys.sleep(0.1)
     tries <- tries - 1
   }
-  expect_equal(x$receive(), 3L)
+  expect_equal(x$receive()$value, 3L)
   # termination
   x$shutdown()
   tries <- 300
@@ -62,6 +63,7 @@ test_that("idempotent launch", {
     timeout = Inf,
     wait_input = 0.01
   )
+  on.exit(x$shutdown())
   crew$workers[[x$name]] <- x
   future::plan(future.callr::callr)
   on.exit(future::plan(future::sequential))

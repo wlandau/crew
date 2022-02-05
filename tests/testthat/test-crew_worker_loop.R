@@ -15,7 +15,7 @@ test_that("one job that runs and shutdowns the worker", {
   dir_root <- fs::dir_create(tempfile())
   store <- class_store_local$new(dir_root = dir_root)
   fun <- function(x, store) {
-    fun <- function() rlang::abort(class = "crew_shutdown")
+    fun <- function() rlang::abort(message = "x", class = "crew_shutdown")
     data <- list(fun = deparse(fun), args = list())
     store$write_input(name = "worker", data = data)
     x + 1L
@@ -31,5 +31,5 @@ test_that("one job that runs and shutdowns the worker", {
   )
   expect_false(store$exists_input("worker"))
   expect_true(store$exists_output("worker"))
-  expect_equal(store$read_output("worker"), 1L)
+  expect_equal(store$read_output("worker")$value, 1L)
 })

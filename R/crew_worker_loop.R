@@ -55,6 +55,45 @@ crew_worker_loop_job <- function(name, store) {
   input <- store$read_input(name = name)
   store$delete_input(name = name)
   input$fun <- eval(parse(text = input$fun))
-  output <- do.call(what = input$fun, args = input$args)
+  output <- crew_worker_loop_monad(fun = input$fun, args = input$args)
   store$write_output(name = name, data = output)
+}
+
+crew_worker_loop_monad <- function(fun, args) {
+  start <- as.numeric(proc.time()["elapsed"])
+  state <- new.env(hash = FALSE, parent = emptyenv())
+  capture_error <- function(condition) {
+    state$error <- conditionMessage(condition)
+    state$traceback <- as.character(sys.calls())
+    NULL
+  }
+  capture_warnings <- function(condition) {
+    state$warnings <- conditionMessage(condition)
+    class(condition) <- c("immediateCondition", condition)
+    warning(as_immediate_condition(condition))
+    invokeRestart("muffleWarning")
+  }
+  value <- tryCatch(
+    withCallingHandlers(
+      tryCatch(
+        do.call(what = fun, args = args),
+        crew_shutdown = identity
+      ),
+      error = capture_error,
+      warnings = capture_warnings
+    ),
+    error = function(condition) {
+    }
+  )
+  if (inherits(value, "crew_shutdown")) {
+    crew_shutdown(conditionMessage(value))
+  }
+  seconds <- as.numeric(proc.time()["elapsed"]) - start
+  list(
+    value = value,
+    seconds = seconds,
+    error = state$error,
+    traceback = state$traceback,
+    warnings = state$warnings
+  )
 }

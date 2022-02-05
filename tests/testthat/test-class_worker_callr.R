@@ -31,7 +31,7 @@ test_that("local callr worker works", {
   expect_false(x$crew$store$exists_input(x$name))
   expect_true(x$crew$store$exists_output(x$name))
   # get results
-  expect_equal(x$receive(), 2L)
+  expect_equal(x$receive()$value, 2L)
   # another job
   x$send(fun = function(x) x + 1L, args = list(x = 2L))
   tries <- 300
@@ -39,7 +39,7 @@ test_that("local callr worker works", {
     Sys.sleep(0.1)
     tries <- tries - 1
   }
-  expect_equal(x$receive(), 3L)
+  expect_equal(x$receive()$value, 3L)
   # termination
   x$shutdown()
   tries <- 300

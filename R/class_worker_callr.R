@@ -19,7 +19,7 @@ class_worker_callr <- R6::R6Class(
         func = crew::crew_worker_loop,
         args = list(
           name = self$name,
-          store = self$crew$store,
+          store = self$crew$store$marshal(),
           timeout = self$timeout,
           wait_input = self$wait_input
         ),

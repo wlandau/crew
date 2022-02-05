@@ -124,6 +124,16 @@ class_store_local <- R6::R6Class(
     destroy = function() {
       unlink(self$dir_root, recursive = TRUE, force = TRUE)
       invisible()
+    },
+    #' @description Marshal the `R6` store object to ship to a worker.
+    #' @return Character of length 1 with R code to run to reconstruct
+    #'   the store on a worker.
+    marshal = function() {
+      expr <- substitute(
+        crew::class_store_local$new(dir_root = dir_root),
+        list(dir_root = self$dir_root)
+      )
+      paste(deparse(expr), collapse = "\n")
     }
   )
 )

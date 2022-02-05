@@ -3,7 +3,7 @@ test_that("no work then worker timeout", {
   expect_error(
     crew_worker_loop(
       name = "name",
-      store = store,
+      store = store$marshal(),
       timeout = 0,
       wait_input = 0
     ),
@@ -25,7 +25,7 @@ test_that("one job that runs and shutdowns the worker", {
   store$write_input(name = "worker", data = data)
   crew_worker_loop(
     name = "worker",
-    store = store,
+    store = store$marshal(),
     timeout = Inf,
     wait_input = 0
   )

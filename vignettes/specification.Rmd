@@ -51,7 +51,7 @@ Inheritance hierarchy:
 ```
 ├── worker
 │   ├── worker_callr
-│   ├── worker_future
+│   └── worker_future
 ```
 
 Instantiable concrete subclasses:
@@ -99,13 +99,14 @@ Required methods:
 * `delete_input()`: delete a job's input file.
 * `delete_output()`: delete a job's output file.
 * `destroy()`: delete all the files of the store.
+* `marshal()`: represent the store object as a character string of length 1 for efficient transport to the worker event loop. `eval(parse(text = store$marshal()))` should reconstruct the store.
 * `validate()`: check for errors in the fields and methods.
 
 Inheritance hierarchy:
 
 ```
 ├── store
-│   ├── store_local
+│   └── store_local
 ```
 
 The `"store_local"` subclass is the only instantiable sub-class built directly into `crew`. Other packages that depend on `crew` will implement other stores that use AWS/GCP buckets instead of local files.

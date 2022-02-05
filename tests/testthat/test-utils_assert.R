@@ -21,6 +21,31 @@ test_that("crew_assert_pos_dbl_scalar()", {
   expect_error(crew_assert_pos_dbl_scalar(seq_len(2)), class = "crew_error")
 })
 
+test_that("crew_assert_nonnegative_dbl_scalar()", {
+  expect_silent(crew_assert_nonnegative_dbl_scalar(1))
+  expect_silent(crew_assert_nonnegative_dbl_scalar(0))
+  expect_error(
+    crew_assert_nonnegative_dbl_scalar(-1),
+    class = "crew_error"
+  )
+  expect_error(
+    crew_assert_nonnegative_dbl_scalar(numeric(0)),
+    class = "crew_error"
+  )
+  expect_error(
+    crew_assert_nonnegative_dbl_scalar(NULL),
+    class = "crew_error"
+  )
+  expect_error(
+    crew_assert_nonnegative_dbl_scalar("a"),
+    class = "crew_error"
+  )
+  expect_error(
+    crew_assert_nonnegative_dbl_scalar(seq_len(2)),
+    class = "crew_error"
+  )
+})
+
 test_that("crew_assert_lgl_scalar()", {
   expect_silent(crew_assert_lgl_scalar(TRUE))
   expect_silent(crew_assert_lgl_scalar(FALSE))

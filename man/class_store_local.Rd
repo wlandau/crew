@@ -31,6 +31,7 @@
 \item \href{#method-delete_input}{\code{class_store_local$delete_input()}}
 \item \href{#method-delete_output}{\code{class_store_local$delete_output()}}
 \item \href{#method-destroy}{\code{class_store_local$destroy()}}
+\item \href{#method-marshal}{\code{class_store_local$marshal()}}
 }
 }
 \if{html}{
@@ -232,6 +233,20 @@ Delete all the files in the data store.
 \item{\code{name}}{Character of length 1, Worker name}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-marshal"></a>}}
+\if{latex}{\out{\hypertarget{method-marshal}{}}}
+\subsection{Method \code{marshal()}}{
+Marshal the \code{R6} store object to ship to a worker.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$marshal()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character of length 1 with R code to run to reconstruct
+the store on a worker.
 }
 }
 }

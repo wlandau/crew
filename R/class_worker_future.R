@@ -24,7 +24,7 @@ class_worker_future <- R6::R6Class(
         ),
         env = list(
           name = self$name,
-          store = self$crew$store,
+          store = self$crew$store$marshal(),
           timeout = self$timeout,
           wait_input = self$wait_input
         )

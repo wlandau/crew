@@ -9,7 +9,9 @@ crew_worker_loop_run(name, store, timeout, wait_input)
 \arguments{
 \item{name}{Character of length 1, name of the worker.}
 
-\item{store}{\code{R6} data store object to send/receive job data from the crew.}
+\item{store}{Marshaled \code{R6} data store object to send/receive job data from the crew.
+Constructed from the \verb{$marshal()} method of the store. \code{eval(parse(text = store))}
+should reconstruct the usable store object inside the worker event loop.}
 
 \item{timeout}{Positive numeric of length 1, number of seconds
 that a worker can idle before timing out.}

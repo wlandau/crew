@@ -54,7 +54,9 @@ class_store <- R6::R6Class(
         "exists_output",
         "delete_input",
         "delete_output",
-        "destroy"
+        "destroy",
+        "marshal",
+        "validate"
       )
       for (fun in funs) {
         crew_assert(is.function(self[[fun]]), paste(fun, "method undefined"))

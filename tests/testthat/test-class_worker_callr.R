@@ -91,3 +91,18 @@ test_that("can send without explicit launch", {
   expect_false(x$crew$store$exists_input(x$name))
   expect_true(x$crew$store$exists_output(x$name))
 })
+
+test_that("cannot send if worker is already assigned", {
+  crew <- class_crew$new(worker_classes = list(default = class_worker_callr))
+  x <- class_worker_callr$new(
+    crew = crew,
+    timeout = Inf,
+    wait_input = 0.01
+  )
+  crew$workers[[x$name]] <- x
+  x$assigned <- TRUE
+  expect_error(
+    x$send(fun = function(x) x + 1L, args = list(x = 1L)),
+    class = "crew_error"
+  )
+})

@@ -2,6 +2,10 @@ test_that("fltr()", {
   expect_equal(fltr(seq_len(10), ~.x < 5), seq_len(4))
 })
 
+test_that("map()", {
+  expect_equal(unname(map(letters, identity)), as.list(letters))
+})
+
 test_that("map_chr()", {
   expect_equal(unname(map_chr(letters, identity)), letters)
 })

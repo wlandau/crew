@@ -192,7 +192,12 @@ Choose a receivable worker and collect its job output.
 \subsection{Method \code{shutdown()}}{
 Shut down one or more running workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$shutdown(workers = Inf, sendable_only = TRUE, tags = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$shutdown(
+  workers = Inf,
+  sendable_only = TRUE,
+  up_only = TRUE,
+  tags = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -202,8 +207,11 @@ Shut down one or more running workers.
 to try to shut down. Does not count busy (non-sendable)
 workers.}
 
-\item{\code{sendable_only}}{Logical of length 1, whether to skip to another
-worker to shut down if the current worker is not sendable.}
+\item{\code{sendable_only}}{Logical of length 1, whether to ignore
+workers that are not sendable.}
+
+\item{\code{up_only}}{Logical of length 1, whether to ignore workers
+that are not up.}
 
 \item{\code{tags}}{Character vector of allowable tags of eligible workers.}
 }
@@ -239,11 +247,11 @@ delete all worker objects.
 to try to dismiss. Does not count up or busy (non-sendable) workers
 (workers with unfinished jobs).}
 
-\item{\code{sendable_only}}{Logical of length 1, whether to skip to another
-worker to dismiss if the current worker is not sendable.}
+\item{\code{sendable_only}}{Logical of length 1, whether to ignore
+workers that are not sendable.}
 
-\item{\code{down_only}}{Logical of length 1, whether to skip to another
-worker to dismiss if the current worker is not down.}
+\item{\code{down_only}}{Logical of length 1, whether to ignore
+workers that are still up.}
 
 \item{\code{tags}}{Character vector of allowable tags of eligible workers.}
 }

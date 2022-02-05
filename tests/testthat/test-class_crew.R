@@ -213,6 +213,22 @@ test_that("crew shutdown all workers", {
   }
 })
 
+test_that("crew shutdown at tag", {
+  crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 1, timeout = Inf, tags = "a")
+  crew$recruit(workers = 1, timeout = Inf, tags = "b")
+  crew$launch()
+  for (worker in crew$workers) {
+    while (!worker$up()) {
+      Sys.sleep(0.1)
+    }
+  }
+  crew$shutdown(tags = "b")
+  expect_true(crew$workers[[1]]$up())
+  expect_false(crew$workers[[2]]$up())
+})
+
 test_that("crew dismiss sendable_only = TRUE, down_only = TRUE", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   on.exit(crew$shutdown())
@@ -289,4 +305,14 @@ test_that("crew dismiss some workers", {
   crew$recruit(4, timeout = Inf)
   crew$dismiss(workers = 3)
   expect_equal(length(crew$workers), 1)
+})
+
+test_that("crew dismiss at tag", {
+  crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 1, timeout = Inf, tags = "a")
+  crew$recruit(workers = 1, timeout = Inf, tags = "b")
+  crew$dismiss(tags = "b")
+  expect_equal(length(crew$workers), 1)
+  expect_equal(crew$workers[[1]]$tags, "a")
 })

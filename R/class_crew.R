@@ -150,16 +150,24 @@ class_crew <- R6::R6Class(
     #' @param workers Positive integer of length 1. Maximum number of workers
     #'   to try to shut down. Does not count busy (non-sendable)
     #'   workers.
-    #' @param sendable_only Logical of length 1, whether to skip to another
-    #'   worker to shut down if the current worker is not sendable.
+    #' @param sendable_only Logical of length 1, whether to ignore
+    #'   workers that are not sendable.
+    #' @param up_only Logical of length 1, whether to ignore workers
+    #'   that are not up.
     #' @param tags Character vector of allowable tags of eligible workers.
-    shutdown = function(workers = Inf, sendable_only = TRUE, tags = NULL) {
+    shutdown = function(
+      workers = Inf,
+      sendable_only = TRUE,
+      up_only = TRUE,
+      tags = NULL
+    ) {
       crew_assert_pos_dbl_scalar(workers)
       crew_assert_lgl_scalar(sendable_only)
+      crew_assert_lgl_scalar(up_only)
       workers_shut_down <- 0
       for (worker in self$workers) {
         eligible <- (!sendable_only || worker$sendable()) &&
-          worker$up() &&
+          (!up_only || worker$up()) &&
           (is.null(tags) || worker$tagged(tags))
         if (eligible) {
           worker$shutdown()
@@ -180,10 +188,10 @@ class_crew <- R6::R6Class(
     #' @param workers Positive integer of length 1. Maximum number of workers
     #'   to try to dismiss. Does not count up or busy (non-sendable) workers
     #'   (workers with unfinished jobs).
-    #' @param sendable_only Logical of length 1, whether to skip to another
-    #'   worker to dismiss if the current worker is not sendable.
-    #' @param down_only Logical of length 1, whether to skip to another
-    #'   worker to dismiss if the current worker is not down.
+    #' @param sendable_only Logical of length 1, whether to ignore
+    #'   workers that are not sendable.
+    #' @param down_only Logical of length 1, whether to ignore
+    #'   workers that are still up.
     #' @param tags Character vector of allowable tags of eligible workers.
     dismiss = function(
       workers = Inf,

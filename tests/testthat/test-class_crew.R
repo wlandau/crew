@@ -59,6 +59,21 @@ test_that("crew sendable", {
   expect_false(crew$sendable())
 })
 
+test_that("crew send and receive", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 2, timeout = Inf)
+  crew$workers[[1]]$assigned <- TRUE
+  crew$launch()
+  crew$send(fun = function(x) x, args = list(x = "y"))
+  while (!crew$receivable()) {
+    Sys.sleep(0.1)
+  }
+  expect_equal(crew$receive(), "y")
+  expect_false(crew$workers[[1]]$up())
+  expect_true(crew$workers[[2]]$up())
+})
+
 test_that("crew receivable", {
   crew <- class_crew$new()
   expect_false(crew$receivable())

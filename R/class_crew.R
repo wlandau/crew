@@ -91,11 +91,32 @@ class_crew <- R6::R6Class(
     #'   on the crew returns `TRUE`.
     #' @param fun Function to run in the job.
     #' @param args Named list of arguments to `fun()`
-    send = function(fun, args = list()) {
+    #' @param tags Character vector of allowable worker to submit to.
+    #'   check the `worker_classes` field for possible names.
+    send = function(
+      fun,
+      args = list(),
+      tags = NULL
+    ) {
       crew_assert(is.function(fun))
       crew_assert(is.list(args))
       crew_assert_named(args)
-      
+      crew_assert(is.null(tags) || is.character(tags))
+      for (worker in self$workers) {
+        should_send <- worker$sendable() &&
+          (is.null(tags) || any(worker$tags %in% tags))
+        if (should_send) {
+          worker$send(fun = fun, args = args)
+          return(invisible())
+        }
+      }
+      crew_error(
+        paste(
+          "all eligible workers in crew",
+          self$name,
+          "are busy and cannot accept jobs."
+        )
+      )
     },
     #' @description Determine if any worker in the crew is done
     #'   with its current job and the job output is available for collection.
@@ -109,7 +130,12 @@ class_crew <- R6::R6Class(
     },
     #' @description Choose a receivable worker and collect its job output.
     receive = function() {
-      
+      for (worker in self$workers) {
+        if (worker$receivable()) {
+          return(worker$receive())
+        }
+      }
+      crew_error(paste("no job output from crew", self$name))
     },
     #' @description Shut down one or more running workers.
     #' @details This method loops through the workers

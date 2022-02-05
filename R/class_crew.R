@@ -98,7 +98,12 @@ class_crew <- R6::R6Class(
     #' @description Determine if any worker in the crew is done
     #'   with its current job and the job output is available for collection.
     receivable = function() {
-      
+      for (worker in self$workers) {
+        if (worker$receivable()) {
+          return(TRUE)
+        }
+      }
+      FALSE
     },
     #' @description Choose a receivable worker and collect its job output.
     receive = function() {

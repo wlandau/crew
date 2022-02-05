@@ -58,3 +58,13 @@ test_that("crew sendable", {
   }
   expect_false(crew$sendable())
 })
+
+test_that("crew receivable", {
+  crew <- class_crew$new()
+  expect_false(crew$receivable())
+  crew$recruit(2, timeout = Inf)
+  expect_false(crew$receivable())
+  crew$store$write_output(name = crew$workers[[2]]$name, data = "x")
+  expect_true(crew$sendable())
+})
+  

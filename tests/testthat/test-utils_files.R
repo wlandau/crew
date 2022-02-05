@@ -1,5 +1,5 @@
 test_that("dir_create()", {
-  tmp <- tempfile()
+  tmp <- file.path(tempfile(), "x", "y")
   expect_false(dir.exists(tmp))
   expect_false(file.exists(tmp))
   dir_create(tmp)

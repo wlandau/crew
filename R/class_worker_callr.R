@@ -37,7 +37,9 @@ class_worker_callr <- R6::R6Class(
     },
     #' @description Gracefully shut down the worker.
     shutdown = function() {
-      self$process$kill()
+      if (!is.null(self$process)) {
+        self$process$kill()
+      }
       invisible()
     },
     #' @description Worker validator.

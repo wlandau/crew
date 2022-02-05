@@ -42,7 +42,7 @@ test_that("crew recruit", {
 
 test_that("crew launch", {
   crew <- class_crew$new()
-  crew$recruit(2, timeout = Inf)
+  crew$recruit(workers = 2, timeout = Inf)
   crew$launch()
   walk(crew$workers, ~expect_true(.x$up()))
   walk(crew$workers, ~.x$shutdown())
@@ -51,7 +51,7 @@ test_that("crew launch", {
 test_that("crew sendable", {
   crew <- class_crew$new()
   expect_false(crew$sendable())
-  crew$recruit(2, timeout = Inf)
+  crew$recruit(workers = 2, timeout = Inf)
   expect_true(crew$sendable())
   for (worker in crew$workers) {
     worker$assigned <- TRUE
@@ -62,9 +62,152 @@ test_that("crew sendable", {
 test_that("crew receivable", {
   crew <- class_crew$new()
   expect_false(crew$receivable())
-  crew$recruit(2, timeout = Inf)
+  crew$recruit(workers = 2, timeout = Inf)
   expect_false(crew$receivable())
   crew$store$write_output(name = crew$workers[[2]]$name, data = "x")
   expect_true(crew$sendable())
 })
-  
+
+test_that("crew shutdown sendable_only = TRUE", {
+  crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 3, timeout = Inf)
+  crew$workers[[2]]$assigned <- TRUE
+  for (index in seq(2, 3)) {
+    crew$workers[[index]]$launch()
+  }
+  crew$shutdown(workers = 1, sendable_only = TRUE)
+  while (crew$workers[[3]]$up()) {
+    Sys.sleep(0.1)
+  }
+  expect_false(crew$workers[[1]]$up())
+  expect_true(crew$workers[[2]]$up())
+  expect_false(crew$workers[[3]]$up())
+})
+
+test_that("crew shutdown sendable_only = FALSE", {
+  crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 3, timeout = Inf)
+  crew$workers[[2]]$assigned <- TRUE
+  for (index in seq(2, 3)) {
+    crew$workers[[index]]$launch()
+  }
+  crew$shutdown(workers = 1, sendable_only = FALSE)
+  while (crew$workers[[2]]$up()) {
+    Sys.sleep(0.1)
+  }
+  expect_false(crew$workers[[1]]$up())
+  expect_false(crew$workers[[2]]$up())
+  expect_true(crew$workers[[3]]$up())
+})
+
+test_that("crew shutdown one worker", {
+  crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 3, timeout = Inf)
+  for (index in seq(2, 3)) {
+    crew$workers[[index]]$launch()
+  }
+  crew$shutdown(workers = 1)
+  while (crew$workers[[2]]$up()) {
+    Sys.sleep(0.1)
+  }
+  expect_false(crew$workers[[1]]$up())
+  expect_false(crew$workers[[2]]$up())
+  expect_true(crew$workers[[3]]$up())
+})
+
+test_that("crew shutdown all workers", {
+  crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 3, timeout = Inf)
+  for (index in seq(2, 3)) {
+    crew$workers[[index]]$launch()
+  }
+  crew$shutdown(workers = 2)
+  while (crew$workers[[2]]$up() || crew$workers[[3]]$up()) {
+    Sys.sleep(0.1)
+  }
+  for (index in seq_len(3)) {
+    expect_false(crew$workers[[index]]$up())
+  }
+})
+
+test_that("crew dismiss sendable_only = TRUE, down_only = TRUE", {
+  crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 4, timeout = Inf)
+  names <- names(crew$workers)
+  for (index in c(1, 3)) {
+    crew$workers[[index]]$launch()
+  }
+  for (index in c(1, 2)) {
+    crew$workers[[index]]$assigned <- TRUE
+  }
+  crew$dismiss(workers = 2, sendable_only = TRUE, down_only = TRUE)
+  expect_equal(sort(names(crew$workers)), sort(names[seq_len(3)]))
+  for (worker in crew$workers) {
+    expect_true(!worker$sendable() || worker$up())
+  }
+})
+
+test_that("crew dismiss sendable_only = FALSE, down_only = TRUE", {
+  crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 4, timeout = Inf)
+  names <- names(crew$workers)
+  for (index in c(1, 3)) {
+    crew$workers[[index]]$launch()
+  }
+  for (index in c(1, 2)) {
+    crew$workers[[index]]$assigned <- TRUE
+  }
+  crew$dismiss(workers = 2, sendable_only = FALSE, down_only = TRUE)
+  expect_equal(sort(names(crew$workers)), sort(names[c(1, 3)]))
+  for (worker in crew$workers) {
+    expect_true(worker$up())
+  }
+})
+
+test_that("crew dismiss sendable_only = TRUE, down_only = FALSE", {
+  crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
+  crew$recruit(workers = 4, timeout = Inf)
+  names <- names(crew$workers)
+  workers <- lapply(crew$workers, identity)
+  on.exit(walk(workers, ~.x$shutdown()))
+  for (index in c(1, 3)) {
+    crew$workers[[index]]$launch()
+  }
+  for (index in c(1, 2)) {
+    crew$workers[[index]]$assigned <- TRUE
+  }
+  crew$dismiss(workers = 2, sendable_only = TRUE, down_only = FALSE)
+  expect_equal(sort(names(crew$workers)), sort(names[c(1, 2)]))
+  for (worker in crew$workers) {
+    expect_true(!worker$sendable())
+  }
+})
+
+test_that("crew dismiss sendable_only = FALSE, down_only = FALSE", {
+  crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
+  crew$recruit(workers = 4, timeout = Inf)
+  names <- names(crew$workers)
+  workers <- lapply(crew$workers, identity)
+  on.exit(walk(workers, ~.x$shutdown()))
+  for (index in c(1, 3)) {
+    crew$workers[[index]]$launch()
+  }
+  for (index in c(1, 2)) {
+    crew$workers[[index]]$assigned <- TRUE
+  }
+  crew$dismiss(workers = 4, sendable_only = FALSE, down_only = FALSE)
+  expect_equal(length(crew$workers), 0)
+})
+
+test_that("crew dismiss some workers", {
+  crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
+  crew$recruit(4, timeout = Inf)
+  crew$dismiss(workers = 3)
+  expect_equal(length(crew$workers), 1)
+})

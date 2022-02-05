@@ -169,7 +169,7 @@ Shut down one or more running workers.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{workers}}{Positive integer of length 1. Maximum number of workers
-to try to shut down. Does not count running or non-sendable (busy)
+to try to shut down. Does not count busy (non-sendable)
 workers.}
 
 \item{\code{sendable_only}}{Logical of length 1, whether to skip to another
@@ -199,7 +199,7 @@ delete all worker objects.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{workers}}{Positive integer of length 1. Maximum number of workers
-to try to dismiss. Does not count down or non-sendable workers
+to try to dismiss. Does not count up or busy (non-sendable) workers
 (workers with unfinished jobs).}
 
 \item{\code{sendable_only}}{Logical of length 1, whether to skip to another

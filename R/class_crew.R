@@ -64,11 +64,13 @@ class_crew <- R6::R6Class(
           paste(names(self$worker_classes), collapse = ", ")
         )
       )
-      for (index in seq_len(workers)) {
-        worker <- self$worker_classes[[class]]$new(...)
-        worker$crew <- self
-        self$workers[[worker$name]] <- worker
-      }
+      new_workers <- lapply(
+        seq_len(workers),
+        function(index) self$worker_classes[[class]]$new(...)
+      )
+      walk(new_workers, function(x) x$crew <- self)
+      names(new_workers) <- map_chr(new_workers, ~.x$name)
+      self$workers <- c(self$workers, new_workers)
       invisible()
     },
     #' @description Launch all down workers in the crew.
@@ -116,7 +118,7 @@ class_crew <- R6::R6Class(
     #'   then the worker is sent a shutdown command. Otherwise,
     #'   the loop moves on to another worker.
     #' @param workers Positive integer of length 1. Maximum number of workers
-    #'   to try to shut down. Does not count running or non-sendable (busy)
+    #'   to try to shut down. Does not count busy (non-sendable)
     #'   workers.
     #' @param sendable_only Logical of length 1, whether to skip to another
     #'   worker to shut down if the current worker is not sendable.
@@ -142,7 +144,7 @@ class_crew <- R6::R6Class(
     #'   then the worker object is deleted from the crew. Otherwise,
     #'   the loop moves on to another worker.
     #' @param workers Positive integer of length 1. Maximum number of workers
-    #'   to try to dismiss. Does not count down or non-sendable workers
+    #'   to try to dismiss. Does not count up or busy (non-sendable) workers
     #'   (workers with unfinished jobs).
     #' @param sendable_only Logical of length 1, whether to skip to another
     #'   worker to dismiss if the current worker is not sendable.
@@ -152,20 +154,22 @@ class_crew <- R6::R6Class(
       crew_assert_pos_dbl_scalar(workers)
       crew_assert_lgl_scalar(sendable_only)
       crew_assert_lgl_scalar(down_only)
-      workers_dismissed <- 0
       check_these <- seq_along(self$workers)
       dismiss_these <- integer(0)
       for (index in check_these) {
+        worker <- self$workers[[index]]
         should_dismiss <- (!sendable_only || worker$sendable()) &&
           (!down_only || !worker$up())
         if (should_dismiss) {
           dismiss_these <- c(dismiss_these, index)
         }
-        if (workers_dismissed >= workers) {
+        if (length(dismiss_these) >= workers) {
           break
         }
       }
-      self$workers <- self$workers[dismiss_these]
+      for (index in sort(dismiss_these, decreasing = TRUE)) {
+        self$workers[[index]] <- NULL
+      }
       invisible()
     },
     #' @description Crew validator.

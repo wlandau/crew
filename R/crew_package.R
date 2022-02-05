@@ -17,5 +17,5 @@
 #' @importFrom future.callr callr
 #' @importFrom qs qsave
 #' @importFrom R6 R6Class
-#' @importFrom rlang abort
+#' @importFrom rlang abort as_function
 NULL

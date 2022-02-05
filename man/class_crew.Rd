@@ -48,9 +48,8 @@ Crew constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_crew$new(
   name = basename(tempfile(pattern = "crew_")),
-  store = class_store_local$new(),
-  worker_classes = list(default = class_worker),
-  workers = list(),
+  store = crew::class_store_local$new(),
+  worker_classes = list(crew::class_worker_callr, crew::class_worker_future),
   max_workers = 1
 )}\if{html}{\out{</div>}}
 }
@@ -62,10 +61,9 @@ Crew constructor.
 
 \item{\code{store}}{\code{R6} store object.}
 
-\item{\code{worker_classes}}{\code{R6ClassGenerator}
-object with the worker definition.}
-
-\item{\code{workers}}{Named list of \code{R6} worker objects.}
+\item{\code{worker_classes}}{List of \code{R6ClassGenerator}
+objects (created with \code{R6Class}) with worker definitions
+and constructor.}
 
 \item{\code{max_workers}}{Positive integer,
 maximum number of workers in the crew.}
@@ -88,7 +86,8 @@ Does not actually launch the new worker objects.
 \describe{
 \item{\code{workers}}{Number of new worker objects to create.}
 
-\item{\code{class}}{Name of the worker class to use for launching workers.}
+\item{\code{class}}{Name of the worker class to use for launching workers.
+check the \code{worker_classes} field for possible names.}
 
 \item{\code{...}}{Named arguments to the worker constructor.}
 }
@@ -161,40 +160,64 @@ Choose a receivable worker and collect its job output.
 \if{html}{\out{<a id="method-shutdown"></a>}}
 \if{latex}{\out{\hypertarget{method-shutdown}{}}}
 \subsection{Method \code{shutdown()}}{
-Shut down one or more workers. Workers must be sendable
-if the worker shutdown method uses \code{send()}.
+Shut down one or more running workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$shutdown(workers = Inf)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$shutdown(workers = Inf, sendable_only = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{workers}}{Positive integer of length 1,
-number of workers to shut down.}
+\item{\code{workers}}{Positive integer of length 1. Maximum number of workers
+to try to shut down. Does not count running or non-sendable (busy)
+workers.}
+
+\item{\code{sendable_only}}{Logical of length 1, whether to skip to another
+worker to shut down if the current worker is not sendable.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+This method loops through the workers
+from first to last in the worker list. If the worker
+is up (running) and sendable (able to receive a job)
+then the worker is sent a shutdown command. Otherwise,
+the loop moves on to another worker.
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-dismiss"></a>}}
 \if{latex}{\out{\hypertarget{method-dismiss}{}}}
 \subsection{Method \code{dismiss()}}{
-delete one or more worker objects from the crew.
-Dismissed workers must be down and sendable,
-so not all requested dismissals actually happen.
+delete all worker objects.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_crew$dismiss(workers = Inf)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$dismiss(workers = Inf, sendable_only = TRUE, down_only = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{workers}}{Positive integer of length 1,
-number of workers to shut down.}
+\item{\code{workers}}{Positive integer of length 1. Maximum number of workers
+to try to dismiss. Does not count down or non-sendable workers
+(workers with unfinished jobs).}
+
+\item{\code{sendable_only}}{Logical of length 1, whether to skip to another
+worker to dismiss if the current worker is not sendable.}
+
+\item{\code{down_only}}{Logical of length 1, whether to skip to another
+worker to dismiss if the current worker is not down.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+This method loops through the workers
+from first to last in the worker list. If the worker
+is down and sendable (able to receive a job)
+then the worker object is deleted from the crew. Otherwise,
+the loop moves on to another worker.
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-validate"></a>}}

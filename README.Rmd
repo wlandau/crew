@@ -29,7 +29,32 @@ remotes::install_github("ropensci/crew")
 
 ## Usage
 
-TBD. Need https://github.com/wlandau/crew/issues/1 first.
+First, create a `crew` object. Optionally, supply the store and worker classes you plan to use. The store determines where the input and output data live for jobs (local file system, Amazon S3 bucket, Google Cloud bucket, etc.), and worker classes control where and how the workers run (locally in a different R session, Amazon Web Services, Google Cloud Platform, etc.).
+
+```{r}
+library(crew)
+crew <- class_crew$new(
+  store = class_store_local$new(),
+  worker_classes = list(
+    class_worker_callr,
+    class_worker_future
+  )
+)
+```
+
+If you use `class_worker_future`, choose a plan.
+
+```{r}
+library(future)
+library(future.callr)
+plan(callr)
+```
+
+Create worker objects with the `recruit()` method.
+
+```{r}
+
+```
 
 ## Nested crews
 

@@ -106,6 +106,17 @@ class_crew <- R6::R6Class(
       crew_assert(is.function(fun))
       crew_assert(is.list(args))
       crew_assert_named(args)
+      # Try already up workers first.
+      for (worker in self$workers) {
+        eligible <- worker$sendable() &&
+          (is.null(tags) || worker$tagged(tags)) &&
+          worker$up()
+        if (eligible) {
+          worker$send(fun = fun, args = args)
+          return(invisible())
+        }
+      }
+      # If now workers are up, loop again and launch if needed.
       for (worker in self$workers) {
         if (worker$sendable() && (is.null(tags) || worker$tagged(tags))) {
           worker$send(fun = fun, args = args)

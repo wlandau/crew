@@ -20,7 +20,7 @@ test_that("map_lgl()", {
 })
 
 test_that("map_rows()", {
-  x <- data_frame(x = seq_len(3), y = rep(1, 3), z = rep(2, 3))
+  x <- data.frame(x = seq_len(3), y = rep(1, 3), z = rep(2, 3))
   expect_equal(map_rows(x, ~sum(.x)), seq_len(3) + 3)
 })
 

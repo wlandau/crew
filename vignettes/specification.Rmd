@@ -45,6 +45,7 @@ Required methods:
 * `receivable()`: whether the worker is done with its current job and is waiting for the crew to read the output data and free the worker to do another job.
 * `receive()`: receive job output from the worker. Assumes the worker is receivable.
 * `shutdown()`: send a special job that gracefully shuts down the worker.
+* `tagged()`: check if a worker has one or more tags in a given set.
 * `validate()`: check for errors in the fields and methods.
 
 Inheritance hierarchy:

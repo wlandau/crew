@@ -47,3 +47,14 @@ test_that("crew launch", {
   walk(crew$workers, ~expect_true(.x$up()))
   walk(crew$workers, ~.x$shutdown())
 })
+
+test_that("crew sendable", {
+  crew <- class_crew$new()
+  expect_false(crew$sendable())
+  crew$recruit(2, timeout = Inf)
+  expect_true(crew$sendable())
+  for (worker in crew$workers) {
+    worker$assigned <- TRUE
+  }
+  expect_false(crew$sendable())
+})

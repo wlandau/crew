@@ -78,7 +78,12 @@ class_crew <- R6::R6Class(
     #' @description Determine if any worker is unassigned
     #'   and ready to accept a new job.
     sendable = function() {
-      
+      for (worker in self$workers) {
+        if (worker$sendable()) {
+          return(TRUE)
+        }
+      }
+      FALSE
     },
     #' @description Send a job to an available worker. Assumes `sendable()`
     #'   on the crew returns `TRUE`.

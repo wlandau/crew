@@ -2,6 +2,18 @@
 #' @export
 #' @aliases crew
 #' @description `R6` class for a crew.
+#' @details A crew object is an interface to manage multiple
+#'   high-performance computing workers. Supported methods
+#'   send jobs, receive output, and poll, etc.
+#' @examples
+#' crew <- class_crew$new()
+#' crew$recruit(workers = 2)
+#' crew$send(fun = function(arg) paste("job", arg), args = list(arg = 1))
+#' while (!crew$receivable()) Sys.sleep(0.1)
+#' job <- crew$receive()
+#' print(job$value)
+#' print(job$error)
+#' crew$shutdown()
 class_crew <- R6::R6Class(
   classname = "crew",
   portable = FALSE,
@@ -18,6 +30,8 @@ class_crew <- R6::R6Class(
     #' @field workers Named list of worker objects.
     workers = NULL,
     #' @description Crew constructor.
+    #' @return The `new()` method calls the constructor
+    #'   and returns a new crew object.
     #' @param name Character of length 1, crew name.
     #' @param store `R6` store object.
     #' @param worker_classes List of `R6ClassGenerator`
@@ -41,6 +55,7 @@ class_crew <- R6::R6Class(
     },
     #' @description create worker objects from one or more worker definitions.
     #'   Does not actually launch the new worker objects.
+    #' @return `NULL` (invisibly).
     #' @param workers Number of new worker objects to create.
     #' @param class Name of the worker class to use for launching workers.
     #'   check the `worker_classes` field for possible names.
@@ -69,15 +84,18 @@ class_crew <- R6::R6Class(
       invisible()
     },
     #' @description Launch all down workers in the crew.
+    #' @return `NULL` (invisibly).
     #' @param tags Character vector of allowable tags of eligible workers.
     launch = function(tags = NULL) {
       if (!is.null(tags)) {
         workers <- fltr(self$workers, ~.x$tagged(tags))
       }
       walk(workers, ~.x$launch())
+      invisible()
     },
     #' @description Determine if any worker is unassigned
     #'   and ready to accept a new job.
+    #' @return `TRUE` if the worker can accept a job and `FALSE` otherwise.
     #' @param tags Character vector of allowable tags of eligible workers.
     sendable = function(tags = NULL) {
       crew_assert(is.null(tags) || is.character(tags))
@@ -90,8 +108,9 @@ class_crew <- R6::R6Class(
     },
     #' @description Send a job to an available worker. Assumes `sendable()`
     #'   on the crew returns `TRUE`.
+    #' @return `NULL` (invisibly).
     #' @param fun Function to run in the job.
-    #' @param args Named list of arguments to `fun()`
+    #' @param args Named list of function arguments to `fun`.
     #' @param tags Character vector of allowable tags of eligible workers.
     send = function(
       fun,
@@ -128,6 +147,8 @@ class_crew <- R6::R6Class(
     },
     #' @description Determine if any worker in the crew is done
     #'   with its current job and the job output is available for collection.
+    #' @return `TRUE` if there exists an eligible worker with job output
+    #'   that can be accessed with `receive()`. `FALSE` otherwise.
     #' @param tags Character vector of allowable tags of eligible workers.
     receivable = function(tags = NULL) {
       for (worker in self$workers) {
@@ -137,7 +158,16 @@ class_crew <- R6::R6Class(
       }
       FALSE
     },
-    #' @description Choose a receivable worker and collect its job output.
+    #' @description Find a receivable worker, collect its job output,
+    #'   and free up the worker.
+    #' @details Once collected and returned. the job output is deleted from
+    #'   the data store and no longer available to receive.
+    #'   `receive()` also marks the worker as "sendable" again (unblocked)
+    #'   which makes the worker ready for another job (`send()` method).
+    #' @return A named list of job output. The `value` element has the
+    #'   actual result of the job function, if successful. Other elements
+    #'   have job metadata such as the error message (if any), traceback,
+    #'   warnings, and runtime in seconds.
     #' @param tags Character vector of allowable tags of eligible workers.
     receive = function(tags = NULL) {
       for (worker in self$workers) {
@@ -153,6 +183,7 @@ class_crew <- R6::R6Class(
     #'   is up (running) and sendable (able to receive a job)
     #'   then the worker is sent a shutdown command. Otherwise,
     #'   the loop moves on to another worker.
+    #' @return `NULL` (invisibly).
     #' @param workers Positive integer of length 1. Maximum number of workers
     #'   to try to shut down. Does not count busy (non-sendable)
     #'   workers.
@@ -191,6 +222,7 @@ class_crew <- R6::R6Class(
     #'   is down and sendable (able to receive a job)
     #'   then the worker object is deleted from the crew. Otherwise,
     #'   the loop moves on to another worker.
+    #' @return `NULL` (invisibly).
     #' @param workers Positive integer of length 1. Maximum number of workers
     #'   to try to dismiss. Does not count up or busy (non-sendable) workers
     #'   (workers with unfinished jobs).
@@ -228,6 +260,7 @@ class_crew <- R6::R6Class(
       invisible()
     },
     #' @description Crew validator.
+    #' @return `NULL` (invisibly).
     validate = function() {
       crew_assert_chr_scalar(self$name, "crew has invalid name.")
       crew_assert(
@@ -256,6 +289,7 @@ class_crew <- R6::R6Class(
         }
       )
       lapply(self$workers, function(x) x$validate())
+      invisible()
     }
   )
 )

@@ -1,8 +1,35 @@
-#' @title Local worker event loop.
+#' @title Worker event loop.
 #' @export
-#' @description Local worker event loop.
+#' @description Run the worker event loop.
+#' @details The worker event loop runs inside the underlying process
+#'   of a worker. It waits for the next job (timing out
+#'   if it idles for too long at one time) runs any incoming jobs
+#'   and puts the output in the data store. If sent a shutdown job
+#'   (which throws an error of class `"crew_shutdown"`) then the
+#'   loop exits.
 #' @return `NULL` (invisibly).
 #' @inheritParams crew_worker_loop_run
+#' @examples
+#' # Example of send one job that shuts down the loop:
+#' dir_root <- tempfile()
+#' dir.create(dir_root)
+#' store <- class_store_local$new(dir_root = dir_root)
+#' fun <- function(x, store) {
+#'   fun <- function() rlang::abort(message = "x", class = "crew_shutdown")
+#'   data <- list(fun = deparse(fun), args = list())
+#'   store$write_input(name = "my_worker", data = data)
+#'   paste("job", x)
+#' }
+#' args <- list(x = 12, store = store)
+#' data <- list(fun = deparse(fun), args = args)
+#' store$write_input(name = "my_worker", data = data)
+#' crew_worker_loop(
+#'   name = "my_worker",
+#'   store = store$marshal(),
+#'   timeout = Inf,
+#'   wait_input = 0
+#' )
+#' store$read_output("my_worker")$value
 crew_worker_loop <- function(name, store, timeout, wait_input) {
   name <- as.character(name)
   store <- eval(parse(text = store))
@@ -25,6 +52,9 @@ crew_worker_loop <- function(name, store, timeout, wait_input) {
 #' @export
 #' @keywords internal
 #' @description Not a user-side function. for internal use only.
+#' @details See [crew_worker_loop()] for details. `crew_worker_loop_run()`
+#'   is the function that actually runs inside the loop and may
+#'   error out with class `"crew_shutdown"`
 #' @return `NULL` (invisibly).
 #' @param name Character of length 1, name of the worker.
 #' @param store Marshaled `R6` data store object to
@@ -36,6 +66,8 @@ crew_worker_loop <- function(name, store, timeout, wait_input) {
 #'   that a worker can idle before timing out.
 #' @param wait_input Positive numeric of length 1, number of seconds
 #'   that the worker waits between checking if a job exists.
+#' @examples
+#' # See the examples of crew_worker_loop().
 crew_worker_loop_run <- function(name, store, timeout, wait_input) {
   start <- proc.time()["elapsed"]
   do_while <- FALSE

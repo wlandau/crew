@@ -7,6 +7,29 @@
 \description{
 \code{R6} class for a worker.
 }
+\details{
+A worker object is an interface to manage a single
+high-performance computing worker. Supported methods
+send jobs, receive output, and poll, etc.
+This particular worker class is the parent abstract class
+and is not usable on its own. Subclasses like
+\link{class_worker_callr} and \link{class_worker_future}
+are concrete and usable. In addition, worker needs a crew in
+order to be valid. So it is recommended to create a worker
+of a given subclass through the \code{recruit()} method of the crew.
+See the examples.
+}
+\examples{
+crew <- class_crew$new(worker_classes = list(class_worker_callr))
+crew$recruit(workers = 1)
+worker <- crew$workers[[1]]
+worker$send(fun = function(arg) paste("job", arg), args = list(arg = 1))
+while (!worker$receivable()) Sys.sleep(0.1)
+job <- worker$receive()
+print(job$value)
+print(job$error)
+worker$shutdown()
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
@@ -76,6 +99,10 @@ to mark eligible groups of workers in scheduling operations.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+The \code{new()} method calls the constructor
+and returns a new worker object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-sendable"></a>}}
@@ -86,6 +113,10 @@ Check if this worker is ready to accept a job.
 \if{html}{\out{<div class="r">}}\preformatted{class_worker$sendable()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{TRUE} if the worker is ready for a job
+(or not properly blocked) and \code{FALSE} otherwise.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-send"></a>}}
@@ -107,32 +138,55 @@ on the closure or global variables in the environment.}
 
 \item{\code{block}}{Logical of length 1, whether to prevent
 new jobs from being submitted to the worker
-until the output of the current job is collected with
-the \code{receive()} method.}
+until the output of the job is collected with
+the \code{receive()} method. \code{TRUE} is highly recommended
+so job output is not lost. Should only be \code{FALSE}
+if called inside \code{shutdown()}. If \code{block} is \code{TRUE},
+then \code{sendable()} will return \code{FALSE} for the worker
+until the output is collected with \code{recieve()}.}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-receivable"></a>}}
 \if{latex}{\out{\hypertarget{method-receivable}{}}}
 \subsection{Method \code{receivable()}}{
-\code{TRUE} if a worker is receivable with a job and the
-main process can receive the output of the job. \code{FALSE} otherwise.
+Check if job output is available to collect.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_worker$receivable()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{TRUE} if a job output can be collected from the worker,
+\code{FALSE} otherwise.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-receive"></a>}}
 \if{latex}{\out{\hypertarget{method-receive}{}}}
 \subsection{Method \code{receive()}}{
-Collect the results of a job.
+Collect the results of a job and free up the worker.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_worker$receive()}\if{html}{\out{</div>}}
 }
 
+\subsection{Details}{
+Once collected and returned. the job output is deleted from
+the data store and no longer available to receive.
+\code{receive()} also marks the worker as "sendable" again (unblocked)
+which makes the worker ready for another job (\code{send()} method).
+}
+
+\subsection{Returns}{
+A named list of job output. The \code{value} element has the
+actual result of the job function, if successful. Other elements
+have job metadata such as the error message (if any), traceback,
+warnings, and runtime in seconds.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-shutdown"></a>}}
@@ -143,6 +197,22 @@ Gracefully shut down the worker.
 \if{html}{\out{<div class="r">}}\preformatted{class_worker$shutdown()}\if{html}{\out{</div>}}
 }
 
+\subsection{Details}{
+The underlying worker process should promptly
+shut down if successful. A new \code{send()} or \code{launch()}
+call will re-launch the worker.
+
+The default shutdown method
+sends a special shutdown job through the data store.
+This is not always reliable, e.g. if a worker freezes.
+Subclasses of \code{class_worker} should write their own
+shutdown methods that leverage the backend technology.
+to achieve more reliable shutdowns.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-tagged"></a>}}
@@ -161,6 +231,10 @@ of the tags in the argument.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+\code{TRUE} if the worker has any of the tags in the \code{tags} argument.
+\code{FALSE} otherwise.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-validate"></a>}}
@@ -171,5 +245,8 @@ Worker validator.
 \if{html}{\out{<div class="r">}}\preformatted{class_worker$validate()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 }

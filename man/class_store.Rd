@@ -5,7 +5,18 @@
 \alias{store}
 \title{Store class.}
 \description{
-\code{R6} class for a store.
+\code{R6} class for a data store.
+}
+\details{
+A data store is how a worker object sends jobs to its
+underlying R process and receives output back. Subclasses may
+use the local file system or cloud storage (e.g. Amazon S3 buckets).
+A store object is part of a crew.
+}
+\examples{
+store <- class_store_local$new()
+store$write_output("worker_name", list(value = "job_output"))
+store$read_output("worker_name")
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -45,6 +56,10 @@ where all the files are located.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+The \code{new()} method calls the constructor and returns
+a new store object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-path_input"></a>}}
@@ -62,12 +77,15 @@ Path to job input.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+Character of length 1, path to job input for a given worker.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-path_output"></a>}}
 \if{latex}{\out{\hypertarget{method-path_output}{}}}
 \subsection{Method \code{path_output()}}{
-Path to job input.
+Path to job output.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_store$path_output(name)}\if{html}{\out{</div>}}
 }
@@ -79,6 +97,9 @@ Path to job input.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+Character of length 1, path to job output for a given worker.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-validate"></a>}}
@@ -89,5 +110,8 @@ Store validator.
 \if{html}{\out{<div class="r">}}\preformatted{class_store$validate()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 }

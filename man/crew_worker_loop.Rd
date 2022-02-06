@@ -2,7 +2,7 @@
 % Please edit documentation in R/crew_worker_loop.R
 \name{crew_worker_loop}
 \alias{crew_worker_loop}
-\title{Local worker event loop.}
+\title{Worker event loop.}
 \usage{
 crew_worker_loop(name, store, timeout, wait_input)
 }
@@ -25,5 +25,35 @@ that the worker waits between checking if a job exists.}
 \code{NULL} (invisibly).
 }
 \description{
-Local worker event loop.
+Run the worker event loop.
+}
+\details{
+The worker event loop runs inside the underlying process
+of a worker. It waits for the next job (timing out
+if it idles for too long at one time) runs any incoming jobs
+and puts the output in the data store. If sent a shutdown job
+(which throws an error of class \code{"crew_shutdown"}) then the
+loop exits.
+}
+\examples{
+# Example of send one job that shuts down the loop:
+dir_root <- tempfile()
+dir.create(dir_root)
+store <- class_store_local$new(dir_root = dir_root)
+fun <- function(x, store) {
+  fun <- function() rlang::abort(message = "x", class = "crew_shutdown")
+  data <- list(fun = deparse(fun), args = list())
+  store$write_input(name = "my_worker", data = data)
+  paste("job", x)
+}
+args <- list(x = 12, store = store)
+data <- list(fun = deparse(fun), args = args)
+store$write_input(name = "my_worker", data = data)
+crew_worker_loop(
+  name = "my_worker",
+  store = store$marshal(),
+  timeout = Inf,
+  wait_input = 0
+)
+store$read_output("my_worker")$value
 }

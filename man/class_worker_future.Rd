@@ -6,6 +6,15 @@
 \title{Future worker class.}
 \description{
 \code{R6} class for a \code{future} worker.
+crew <- class_crew$new(worker_classes = list(class_worker_future))
+crew$recruit(workers = 1)
+worker <- crew$workers[\link{1}]
+worker$send(fun = function(arg) paste("job", arg), args = list(arg = 1))
+while (!worker$receivable()) Sys.sleep(0.1)
+job <- worker$receive()
+print(job$value)
+print(job$error)
+worker$shutdown()
 }
 \section{Super class}{
 \code{\link[crew:worker]{crew::worker}} -> \code{worker_future}
@@ -47,6 +56,9 @@ Launch the worker.
 \if{html}{\out{<div class="r">}}\preformatted{class_worker_future$launch()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-up"></a>}}
@@ -57,6 +69,17 @@ Launch the worker.
 \if{html}{\out{<div class="r">}}\preformatted{class_worker_future$up()}\if{html}{\out{</div>}}
 }
 
+\subsection{Details}{
+While running, the worker could be actually running a job,
+or it could be waiting for job input. This way, a worker
+can accept multiple jobs throughout its lifetime before it
+times out and is possibly relaunched. This is what it means
+to be a "semi-persistent" worker.
+}
+
+\subsection{Returns}{
+\code{TRUE} if the worker is running and \code{FALSE} otherwise.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-validate"></a>}}

@@ -7,6 +7,17 @@
 \description{
 \code{R6} class for a \code{callr} worker.
 }
+\examples{
+crew <- class_crew$new(worker_classes = list(class_worker_callr))
+crew$recruit(workers = 1)
+worker <- crew$workers[[1]]
+worker$send(fun = function(arg) paste("job", arg), args = list(arg = 1))
+while (!worker$receivable()) Sys.sleep(0.1)
+job <- worker$receive()
+print(job$value)
+print(job$error)
+worker$shutdown()
+}
 \section{Super class}{
 \code{\link[crew:worker]{crew::worker}} -> \code{worker_callr}
 }
@@ -47,16 +58,31 @@ Launch the worker.
 \if{html}{\out{<div class="r">}}\preformatted{class_worker_callr$launch()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-up"></a>}}
 \if{latex}{\out{\hypertarget{method-up}{}}}
 \subsection{Method \code{up()}}{
-\code{TRUE} if the worker is up and \code{FALSE} otherwise.
+Check if the underlying worker R process
+is actually running.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_worker_callr$up()}\if{html}{\out{</div>}}
 }
 
+\subsection{Details}{
+While running, the worker could be actually running a job,
+or it could be waiting for job input. This way, a worker
+can accept multiple jobs throughout its lifetime before it
+times out and is possibly relaunched. This is what it means
+to be a "semi-persistent" worker.
+}
+
+\subsection{Returns}{
+\code{TRUE} if the worker is running and \code{FALSE} otherwise.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-shutdown"></a>}}
@@ -67,6 +93,20 @@ Gracefully shut down the worker.
 \if{html}{\out{<div class="r">}}\preformatted{class_worker_callr$shutdown()}\if{html}{\out{</div>}}
 }
 
+\subsection{Details}{
+The underlying worker process should promptly
+shut down if successful. A new \code{send()} or \code{launch()}
+call will re-launch the worker.
+
+The shutdown method
+for a \code{callr} worker is quicker and more reliable
+than the default method of sending a shutdown job
+through the data store.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-validate"></a>}}

@@ -27,4 +27,12 @@ that the worker waits between checking if a job exists.}
 \description{
 Not a user-side function. for internal use only.
 }
+\details{
+See \code{\link[=crew_worker_loop]{crew_worker_loop()}} for details. \code{crew_worker_loop_run()}
+is the function that actually runs inside the loop and may
+error out with class \code{"crew_shutdown"}
+}
+\examples{
+# See the examples of crew_worker_loop().
+}
 \keyword{internal}

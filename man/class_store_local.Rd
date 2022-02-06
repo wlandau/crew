@@ -5,7 +5,13 @@
 \alias{store_local}
 \title{Local store class.}
 \description{
-\code{R6} class for a local store.
+\code{R6} class for a local store. Worker files are on disk
+on the same machine that manages the crew.
+}
+\examples{
+store <- class_store_local$new()
+store$write_output("worker_name", list(value = "job_output"))
+store$read_output("worker_name")
 }
 \section{Super class}{
 \code{\link[crew:store]{crew::store}} -> \code{store_local}
@@ -60,6 +66,10 @@ where all the files are located.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+The \code{new()} method calls the constructor and returns a new
+data store object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-path_temp"></a>}}
@@ -76,6 +86,17 @@ Path to a worker's temporary file.
 \item{\code{name}}{Worker name.}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Temporary files are staging areas for writing large data.
+In the write methods, the file is written to the temporary file
+and then moved over to the permanent location. This safeguards
+against corrupted persistent files that may result if
+the file is not finished writing and R crashes.
+}
+
+\subsection{Returns}{
+Character of length 1, path to the worker's temporary file.
 }
 }
 \if{html}{\out{<hr>}}
@@ -94,6 +115,10 @@ Read worker input.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+Input data sent to a worker. Should contain a job
+and required data to run it.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-read_output"></a>}}
@@ -111,6 +136,10 @@ Read worker output.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+Output data returned from a worker. Should contain
+the result of a job.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-write_input"></a>}}
@@ -126,9 +155,13 @@ Write worker input.
 \describe{
 \item{\code{name}}{Character of length 1, Worker name.}
 
-\item{\code{data}}{Data to write.}
+\item{\code{data}}{Data to write. Should contain a job and the required
+data to run it.}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}
@@ -145,16 +178,19 @@ Write worker output.
 \describe{
 \item{\code{name}}{Character of length 1, Worker name.}
 
-\item{\code{data}}{Data to write.}
+\item{\code{data}}{Data to write. Should contain the result of a job.}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-exists_input"></a>}}
 \if{latex}{\out{\hypertarget{method-exists_input}{}}}
 \subsection{Method \code{exists_input()}}{
-Exists worker input?
+Check if worker input exists.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_store_local$exists_input(name)}\if{html}{\out{</div>}}
 }
@@ -166,12 +202,15 @@ Exists worker input?
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+\code{TRUE} if worker input exists and \code{FALSE} otherwise.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-exists_output"></a>}}
 \if{latex}{\out{\hypertarget{method-exists_output}{}}}
 \subsection{Method \code{exists_output()}}{
-Exists worker output?
+Check if worker output exists.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_store_local$exists_output(name)}\if{html}{\out{</div>}}
 }
@@ -182,6 +221,9 @@ Exists worker output?
 \item{\code{name}}{Character of length 1, Worker name.}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{TRUE} if worker input exists and \code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}
@@ -200,6 +242,9 @@ Delete worker input.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-delete_output"></a>}}
@@ -217,6 +262,9 @@ Delete worker output.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-destroy"></a>}}
@@ -233,6 +281,9 @@ Delete all the files in the data store.
 \item{\code{name}}{Character of length 1, Worker name}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}

@@ -7,6 +7,21 @@
 \description{
 \code{R6} class for a crew.
 }
+\details{
+A crew object is an interface to manage multiple
+high-performance computing workers. Supported methods
+send jobs, receive output, and poll, etc.
+}
+\examples{
+crew <- class_crew$new()
+crew$recruit(workers = 2)
+crew$send(fun = function(arg) paste("job", arg), args = list(arg = 1))
+while (!crew$receivable()) Sys.sleep(0.1)
+job <- crew$receive()
+print(job$value)
+print(job$error)
+crew$shutdown()
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
@@ -66,6 +81,10 @@ maximum number of workers in the crew.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+The \code{new()} method calls the constructor
+and returns a new crew object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-recruit"></a>}}
@@ -89,6 +108,9 @@ check the \code{worker_classes} field for possible names.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-launch"></a>}}
@@ -105,6 +127,9 @@ Launch all down workers in the crew.
 \item{\code{tags}}{Character vector of allowable tags of eligible workers.}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}
@@ -124,6 +149,9 @@ and ready to accept a new job.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+\code{TRUE} if the worker can accept a job and \code{FALSE} otherwise.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-send"></a>}}
@@ -140,11 +168,14 @@ on the crew returns \code{TRUE}.
 \describe{
 \item{\code{fun}}{Function to run in the job.}
 
-\item{\code{args}}{Named list of arguments to \code{fun()}}
+\item{\code{args}}{Named list of function arguments to \code{fun}.}
 
 \item{\code{tags}}{Character vector of allowable tags of eligible workers.}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}
@@ -164,12 +195,17 @@ with its current job and the job output is available for collection.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+\code{TRUE} if there exists an eligible worker with job output
+that can be accessed with \code{receive()}. \code{FALSE} otherwise.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-receive"></a>}}
 \if{latex}{\out{\hypertarget{method-receive}{}}}
 \subsection{Method \code{receive()}}{
-Choose a receivable worker and collect its job output.
+Find a receivable worker, collect its job output,
+and free up the worker.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_crew$receive(tags = NULL)}\if{html}{\out{</div>}}
 }
@@ -180,6 +216,19 @@ Choose a receivable worker and collect its job output.
 \item{\code{tags}}{Character vector of allowable tags of eligible workers.}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Once collected and returned. the job output is deleted from
+the data store and no longer available to receive.
+\code{receive()} also marks the worker as "sendable" again (unblocked)
+which makes the worker ready for another job (\code{send()} method).
+}
+
+\subsection{Returns}{
+A named list of job output. The \code{value} element has the
+actual result of the job function, if successful. Other elements
+have job metadata such as the error message (if any), traceback,
+warnings, and runtime in seconds.
 }
 }
 \if{html}{\out{<hr>}}
@@ -221,6 +270,9 @@ then the worker is sent a shutdown command. Otherwise,
 the loop moves on to another worker.
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-dismiss"></a>}}
@@ -261,6 +313,9 @@ then the worker object is deleted from the crew. Otherwise,
 the loop moves on to another worker.
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-validate"></a>}}
@@ -271,5 +326,8 @@ Crew validator.
 \if{html}{\out{<div class="r">}}\preformatted{class_crew$validate()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 }

@@ -93,7 +93,7 @@ Check if this worker is ready to accept a job.
 \subsection{Method \code{send()}}{
 Send a job.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker$send(fun, args = list())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$send(fun, args = list(), block = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -104,6 +104,11 @@ self-contained in the body and arguments, without relying
 on the closure or global variables in the environment.}
 
 \item{\code{args}}{Named list of arguments to \code{fun}.}
+
+\item{\code{block}}{Logical of length 1, whether to prevent
+new jobs from being submitted to the worker
+until the output of the current job is collected with
+the \code{receive()} method.}
 }
 \if{html}{\out{</div>}}
 }

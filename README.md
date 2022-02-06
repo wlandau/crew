@@ -81,9 +81,9 @@ No workers are running yet.
 ``` r
 library(purrr)
 map_lgl(crew$workers, ~.x$up())
-#> worker_1153f52705e11 worker_1153f4f2fd85f worker_1153f3ce4baef 
+#> worker_1280c5cb2adc3 worker_1280c56ae0cc0 worker_1280c3ca4553f 
 #>                FALSE                FALSE                FALSE 
-#> worker_1153f4cacc024 
+#> worker_1280c48d8ba33 
 #>                FALSE
 ```
 
@@ -114,11 +114,11 @@ do_other_tasks <- function () {
 }
 
 do_other_tasks()
-#> [1] 1.004
-#> [1] 2.014
-#> [1] 3.019
-#> [1] 4.025
-#> [1] 5.027
+#> [1] 1.006
+#> [1] 2.015
+#> [1] 3.016
+#> [1] 4.02
+#> [1] 5.024
 
 # Get the output when ready.
 output <- crew$receive()
@@ -142,9 +142,9 @@ Once launched, workers stay running until they time out or shut down.
 ``` r
 is_up <- map_lgl(crew$workers, ~.x$up())
 is_up
-#> worker_1153f52705e11 worker_1153f4f2fd85f worker_1153f3ce4baef 
+#> worker_1280c5cb2adc3 worker_1280c56ae0cc0 worker_1280c3ca4553f 
 #>                FALSE                FALSE                 TRUE 
-#> worker_1153f4cacc024 
+#> worker_1280c48d8ba33 
 #>                FALSE
 ```
 
@@ -165,18 +165,18 @@ crew$send(fun = job, args = list(seconds = 8), tags = "long_jobs_go_here")
 crew$send(fun = job, args = list(seconds = 4)) # May run on any available worker.
 
 do_other_tasks()
-#> [1] 1.005
-#> [1] 2.011
-#> [1] 3.016
-#> [1] 4.022
-#> [1] 5.028
+#> [1] 1.004
+#> [1] 2.01
+#> [1] 3.013
+#> [1] 4.014
+#> [1] 5.016
 
 output_first <- crew$receive()
 
 do_other_tasks()
-#> [1] 1
-#> [1] 2.002
-#> [1] 3.004
+#> [1] 1.002
+#> [1] 2.006
+#> [1] 3.009
 
 output_second <- crew$receive()
 
@@ -191,7 +191,7 @@ str(output_first)
 str(output_second)
 #> List of 5
 #>  $ value    : chr "Job ran in 8 seconds."
-#>  $ seconds  : num 8.03
+#>  $ seconds  : num 8.02
 #>  $ error    : NULL
 #>  $ traceback: NULL
 #>  $ warnings : chr "This is a warning."
@@ -211,8 +211,8 @@ To delete one or more worker objects from the crew, use `dismiss()`.
 
 ``` r
 crew$dismiss(tags = "long_jobs_go_here")
-length(crew$workers) # should be 2
-#> [1] 3
+length(crew$workers) # Should be 2.
+#> [1] 2
 ```
 
 ## Nested crews

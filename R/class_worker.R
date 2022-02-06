@@ -57,11 +57,18 @@ class_worker <- R6::R6Class(
     #'   self-contained in the body and arguments, without relying
     #'   on the closure or global variables in the environment.
     #' @param args Named list of arguments to `fun`.
-    send = function(fun, args = list()) {
+    #' @param block Logical of length 1, whether to prevent
+    #'   new jobs from being submitted to the worker
+    #'   until the output of the current job is collected with
+    #'   the `receive()` method.
+    send = function(fun, args = list(), block = TRUE) {
+      crew_assert_lgl_scalar(block)
       if (!self$sendable()) {
         crew_error(sprintf("worker %s is busy.", self$name))
       }
-      self$assigned <- TRUE
+      if (block) {
+        self$assigned <- TRUE
+      }
       crew_assert(is.function(fun))
       crew_assert(is.list(args))
       crew_assert_named(args)
@@ -84,7 +91,11 @@ class_worker <- R6::R6Class(
     },
     #' @description Gracefully shut down the worker.
     shutdown = function() {
-      self$send(fun = function() rlang::abort(class = "crew_shutdown"))
+      self$send(
+        fun = function() rlang::abort(class = "crew_shutdown"),
+        args = list(),
+        block = FALSE
+      )
       invisible()
     },
     #' @description Check if the worker has one or more

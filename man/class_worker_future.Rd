@@ -8,8 +8,10 @@
 \code{R6} class for a \code{future} worker.
 }
 \examples{
+if (requireNamespace("future.callr", quietly = TRUE)) {
+future::plan(future.callr::callr)
 crew <- class_crew$new(worker_classes = list(class_worker_future))
-crew$recruit(workers = 1, timeout = 1))
+crew$recruit(workers = 1)
 worker <- crew$workers[[1]]
 worker$send(fun = function(arg) paste("job", arg), args = list(arg = 1))
 while (!worker$receivable()) Sys.sleep(0.1)
@@ -17,6 +19,8 @@ job <- worker$receive()
 print(job$value)
 print(job$error)
 worker$shutdown()
+future::plan(future::sequential)
+}
 }
 \section{Super class}{
 \code{\link[crew:worker]{crew::worker}} -> \code{worker_future}

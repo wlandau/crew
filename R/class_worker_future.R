@@ -3,8 +3,10 @@
 #' @aliases worker_future
 #' @description `R6` class for a `future` worker.
 #' @examples
+#' if (requireNamespace("future.callr", quietly = TRUE)) {
+#' future::plan(future.callr::callr)
 #' crew <- class_crew$new(worker_classes = list(class_worker_future))
-#' crew$recruit(workers = 1, timeout = 1))
+#' crew$recruit(workers = 1)
 #' worker <- crew$workers[[1]]
 #' worker$send(fun = function(arg) paste("job", arg), args = list(arg = 1))
 #' while (!worker$receivable()) Sys.sleep(0.1)
@@ -12,6 +14,8 @@
 #' print(job$value)
 #' print(job$error)
 #' worker$shutdown()
+#' future::plan(future::sequential)
+#' }
 class_worker_future <- R6::R6Class(
   classname = "worker_future",
   inherit = class_worker,

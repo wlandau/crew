@@ -19,9 +19,6 @@ objects with worker definitions. The first one
 is the default.}
 
 \item{\code{workers}}{Named list of worker objects.}
-
-\item{\code{max_workers}}{Positive integer,
-maximum number of workers in the crew.}
 }
 \if{html}{\out{</div>}}
 }
@@ -49,8 +46,7 @@ Crew constructor.
 \if{html}{\out{<div class="r">}}\preformatted{class_crew$new(
   name = basename(tempfile(pattern = "crew_")),
   store = crew::class_store_local$new(),
-  worker_classes = list(crew::class_worker_callr, crew::class_worker_future),
-  max_workers = 1
+  worker_classes = list(crew::class_worker_callr, crew::class_worker_future)
 )}\if{html}{\out{</div>}}
 }
 

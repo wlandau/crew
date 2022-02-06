@@ -17,9 +17,6 @@ class_crew <- R6::R6Class(
     worker_classes = NULL,
     #' @field workers Named list of worker objects.
     workers = NULL,
-    #' @field max_workers Positive integer,
-    #'   maximum number of workers in the crew.
-    max_workers = NULL,
     #' @description Crew constructor.
     #' @param name Character of length 1, crew name.
     #' @param store `R6` store object.
@@ -34,15 +31,13 @@ class_crew <- R6::R6Class(
       worker_classes = list(
         crew::class_worker_callr,
         crew::class_worker_future
-      ),
-      max_workers = 1
+      )
     ) {
       self$name <- name
       self$store <- store
       names(worker_classes) <- map_chr(worker_classes, ~.x$classname)
       self$worker_classes <- worker_classes
       self$workers <- list()
-      self$max_workers <- max_workers
     },
     #' @description create worker objects from one or more worker definitions.
     #'   Does not actually launch the new worker objects.
@@ -127,7 +122,7 @@ class_crew <- R6::R6Class(
         paste(
           "all eligible workers in crew",
           self$name,
-          "are busy and cannot accept jobs."
+          "are either nonexistent or busy and cannot accept jobs."
         )
       )
     },
@@ -261,7 +256,6 @@ class_crew <- R6::R6Class(
         }
       )
       lapply(self$workers, function(x) x$validate())
-      crew_assert_pos_dbl_scalar(self$max_workers)
     }
   )
 )

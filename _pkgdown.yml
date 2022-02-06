@@ -1,0 +1,35 @@
+destination: docs/
+navbar:
+  title: crew
+  type: default
+  left:
+  - icon: fa-home fa-lg
+    href: index.html
+  - text: Functions
+    href: reference/index.html
+  - text: Specification
+    href: articles/specification.html
+  - text: News
+    href: news/index.html
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/ropensci/targets
+reference:
+- title: Help
+  contents:
+  - '`crew-package`'
+- title: Crew classes
+  contents:
+  - '`class_crew`'
+- title: Worker classes
+  contents:
+  - '`class_worker`'
+  - '`class_worker_callr`'
+  - '`class_worker_future`'
+- title: Store classes
+  contents:
+  - '`class_store`'
+  - '`class_store_local`'
+- title: Worker loops
+  contents:
+  - '`crew_worker_loop`'

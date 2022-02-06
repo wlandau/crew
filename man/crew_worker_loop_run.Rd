@@ -4,7 +4,7 @@
 \alias{crew_worker_loop_run}
 \title{Local worker inner event loop.}
 \usage{
-crew_worker_loop_run(name, store, timeout, wait_input)
+crew_worker_loop_run(name, store, timeout, wait)
 }
 \arguments{
 \item{name}{Character of length 1, name of the worker.}
@@ -18,7 +18,7 @@ should reconstruct the usable store object inside the worker event loop.}
 \item{timeout}{Positive numeric of length 1, number of seconds
 that a worker can idle before timing out.}
 
-\item{wait_input}{Positive numeric of length 1, number of seconds
+\item{wait}{Positive numeric of length 1, number of seconds
 that the worker waits between checking if a job exists.}
 }
 \value{

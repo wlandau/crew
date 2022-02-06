@@ -34,10 +34,10 @@ class_worker <- R6::R6Class(
     #' @field timeout Positive numeric of length 1,
     #'   number of seconds of idling for the worker to time out.
     timeout = NULL,
-    #' @field wait_input Positive numeric of length 1,
+    #' @field wait Positive numeric of length 1,
     #'   number of seconds for a worker to wait between iterations of
     #'   polling input.
-    wait_input = NULL,
+    wait = NULL,
     #' @field tags Character vector of optional user-defined tags
     #'   to select subsets of eligible workers for job submission and
     #'   retrieval.
@@ -52,7 +52,7 @@ class_worker <- R6::R6Class(
     #' @param crew `R6` crew object to which the worker belongs.
     #' @param timeout Positive numeric of length 1, number of seconds
     #'   that a worker can idle before timing out.
-    #' @param wait_input Positive numeric of length 1, number of seconds
+    #' @param wait Positive numeric of length 1, number of seconds
     #'   that the worker waits between checking if a job exists.
     #' @param tags Character vector of optional user-defined tags
     #'   to mark eligible groups of workers in scheduling operations.
@@ -60,13 +60,13 @@ class_worker <- R6::R6Class(
       name = basename(tempfile(pattern = "worker_")),
       crew = NULL,
       timeout = 60,
-      wait_input = 0.1,
+      wait = 0.1,
       tags = character(0)
     ) {
       self$name <- name
       self$crew <- crew
       self$timeout <- timeout
-      self$wait_input <- wait_input
+      self$wait <- wait
       self$tags <- unique(tags)
       self$assigned <- FALSE
     },
@@ -90,19 +90,33 @@ class_worker <- R6::R6Class(
     #'   if called inside `shutdown()`. If `block` is `TRUE`,
     #'   then `sendable()` will return `FALSE` for the worker
     #'   until the output is collected with `recieve()`.
-    send = function(fun, args = list(), block = TRUE) {
+    #' @param timeout Number of seconds to wait for job data to
+    #'   send successfully.
+    #' @param wait Number of seconds to wait between iterations checking
+    #'   if the job data was sent successfully.
+    send = function(fun, args = list(), block = TRUE, timeout = 60, wait = 1) {
+      crew_assert(is.function(fun))
+      crew_assert(is.list(args))
+      crew_assert_named(args)
       crew_assert_lgl_scalar(block)
+      crew_assert_nonnegative_dbl_scalar(timeout)
+      crew_assert_nonnegative_dbl_scalar(wait)
       if (!self$sendable()) {
         crew_error(sprintf("worker %s is busy.", self$name))
-      }
-      if (block) {
-        self$assigned <- TRUE
       }
       crew_assert(is.function(fun))
       crew_assert(is.list(args))
       crew_assert_named(args)
       data <- list(fun = deparse(fun), args = args)
-      self$crew$store$write_input(name = self$name, data = data)
+      self$crew$store$write_input(
+        name = self$name,
+        data = data,
+        timeout = timeout,
+        wait = wait
+      )
+      if (block) {
+        self$assigned <- TRUE
+      }
       self$launch()
       invisible()
     },
@@ -121,11 +135,27 @@ class_worker <- R6::R6Class(
     #'   actual result of the job function, if successful. Other elements
     #'   have job metadata such as the error message (if any), traceback,
     #'   warnings, and runtime in seconds.
-    receive = function() {
+    #' @param timeout Number of seconds to wait for the file deletion to
+    #'   succeed.
+    #' @param wait Number of seconds to wait between iterations checking
+    #'   that the worker files were successfully removed from the data store.
+    receive = function(timeout = 60, wait = 1) {
       out <- self$crew$store$read_output(name = self$name)
-      self$crew$store$delete_output(name = self$name)
+      self$clear(timeout = timeout, wait = wait)
       self$assigned <- FALSE
       out
+    },
+    #' @description Clear worker input and output.
+    #' @details Deletes worker input and output files.
+    #' @return `NULL` (invisibly)
+    #' @param timeout Number of seconds to wait for the file deletion to
+    #'   succeed.
+    #' @param wait Number of seconds to wait between iterations checking
+    #'   that the worker files were successfully removed from the data store.
+    clear = function(timeout = 60, wait = 1) {
+      self$crew$store$delete_input(self$name, timeout = timeout, wait = wait)
+      self$crew$store$delete_output(self$name, timeout = timeout, wait = wait)
+      invisible()
     },
     #' @description Gracefully shut down the worker.
     #' @details The underlying worker process should promptly
@@ -178,7 +208,7 @@ class_worker <- R6::R6Class(
         "worker timeout must be a positive number."
       )
       crew_assert_pos_dbl_scalar(
-        self$wait_input,
+        self$wait,
         "worker timeout must be a positive number."
       )
       crew_assert_lgl_scalar(self$assigned)

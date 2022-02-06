@@ -47,6 +47,7 @@ is the default.}
 \item \href{#method-send}{\code{class_crew$send()}}
 \item \href{#method-receivable}{\code{class_crew$receivable()}}
 \item \href{#method-receive}{\code{class_crew$receive()}}
+\item \href{#method-clear}{\code{class_crew$clear()}}
 \item \href{#method-shutdown}{\code{class_crew$shutdown()}}
 \item \href{#method-dismiss}{\code{class_crew$dismiss()}}
 \item \href{#method-validate}{\code{class_crew$validate()}}
@@ -229,6 +230,38 @@ A named list of job output. The \code{value} element has the
 actual result of the job function, if successful. Other elements
 have job metadata such as the error message (if any), traceback,
 warnings, and runtime in seconds.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clear"></a>}}
+\if{latex}{\out{\hypertarget{method-clear}{}}}
+\subsection{Method \code{clear()}}{
+Clear worker input and output.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$clear(timeout = 60, wait = 1, down_only = TRUE, tags = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{timeout}}{Number of seconds to wait for the file deletion to
+succeed.}
+
+\item{\code{wait}}{Number of seconds to wait between iterations checking
+that the worker files were successfully removed from the data store.}
+
+\item{\code{down_only}}{Logical of length 1, whether to only clear down jobs.}
+
+\item{\code{tags}}{Character vector of allowable tags of eligible workers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Deletes worker input and output files.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly)
 }
 }
 \if{html}{\out{<hr>}}

@@ -10,38 +10,37 @@
 #' @return `NULL` (invisibly).
 #' @inheritParams crew_worker_loop_run
 #' @examples
-#' # Example of send one job that shuts down the loop:
 #' dir_root <- tempfile()
 #' dir.create(dir_root)
 #' store <- class_store_local$new(dir_root = dir_root)
-#' fun <- function(x, store) {
-#'   fun <- function() rlang::abort(message = "x", class = "crew_shutdown")
-#'   data <- list(fun = deparse(fun), args = list())
-#'   store$write_input(name = "my_worker", data = data)
-#'   paste("job", x)
+#' fun <- function(x) {
+#'   x + 1
 #' }
-#' args <- list(x = 12, store = store)
+#' args <- list(x = 1)
 #' data <- list(fun = deparse(fun), args = args)
 #' store$write_input(name = "my_worker", data = data)
-#' crew_worker_loop(
-#'   name = "my_worker",
-#'   store = store$marshal(),
-#'   timeout = Inf,
-#'   wait_input = 0
+#' try( # The worker throws a special error class when it times out.
+#'   crew_worker_loop(
+#'     name = "my_worker",
+#'     store = store$marshal(),
+#'     timeout = 0,
+#'     wait = 0
+#'   ),
+#'   silent = TRUE
 #' )
 #' store$read_output("my_worker")$value
-crew_worker_loop <- function(name, store, timeout, wait_input) {
+crew_worker_loop <- function(name, store, timeout, wait) {
   name <- as.character(name)
   store <- eval(parse(text = store))
   timeout <- as.numeric(timeout)
-  wait_input <- as.numeric(wait_input)
+  wait <- as.numeric(wait)
   store$validate()
   tryCatch(
     crew::crew_worker_loop_run(
       name = name,
       store = store,
       timeout = timeout,
-      wait_input = wait_input
+      wait = wait
     ),
     crew_shutdown = identity
   )
@@ -64,31 +63,40 @@ crew_worker_loop <- function(name, store, timeout, wait_input) {
 #'   should reconstruct the usable store object inside the worker event loop.
 #' @param timeout Positive numeric of length 1, number of seconds
 #'   that a worker can idle before timing out.
-#' @param wait_input Positive numeric of length 1, number of seconds
+#' @param wait Positive numeric of length 1, number of seconds
 #'   that the worker waits between checking if a job exists.
 #' @examples
 #' # See the examples of crew_worker_loop().
-crew_worker_loop_run <- function(name, store, timeout, wait_input) {
+crew_worker_loop_run <- function(name, store, timeout, wait) {
   start <- proc.time()["elapsed"]
   do_while <- FALSE
-  while (do_while || (proc.time()["elapsed"] - start < timeout)) {
-    if (store$exists_input(name = name)) {
-      crew_worker_loop_job(name = name, store = store)
-      start <- proc.time()["elapsed"]
-    } else {
-      Sys.sleep(wait_input) # nocov (coverage here is a race condition)
-    }
-    do_while <- TRUE
+  while (TRUE) {
+    crew_wait(
+      fun = function(name, store) store$exists_input(name = name),
+      args = list(name = name, store = store),
+      timeout = timeout,
+      wait = wait
+    )
+    crew_worker_loop_job(name, store, timeout, wait)
   }
-  crew_timeout(sprintf("worker %s timed out at %s seconds.", name, timeout))
 }
 
-crew_worker_loop_job <- function(name, store) {
+crew_worker_loop_job <- function(name, store, timeout, wait) {
   input <- store$read_input(name = name)
-  store$delete_input(name = name)
   input$fun <- eval(parse(text = input$fun))
   output <- crew_worker_loop_monad(fun = input$fun, args = input$args)
-  store$write_output(name = name, data = output)
+  store$write_output(
+    name = name,
+    data = output,
+    timeout = timeout,
+    wait = wait
+  )
+  store$delete_input(
+    name = name,
+    timeout = timeout,
+    wait = wait
+  )
+  invisible()
 }
 
 crew_worker_loop_monad <- function(fun, args) {

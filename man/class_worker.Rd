@@ -40,7 +40,7 @@ worker$shutdown()
 \item{\code{timeout}}{Positive numeric of length 1,
 number of seconds of idling for the worker to time out.}
 
-\item{\code{wait_input}}{Positive numeric of length 1,
+\item{\code{wait}}{Positive numeric of length 1,
 number of seconds for a worker to wait between iterations of
 polling input.}
 
@@ -61,6 +61,7 @@ already has a job to do.}
 \item \href{#method-send}{\code{class_worker$send()}}
 \item \href{#method-receivable}{\code{class_worker$receivable()}}
 \item \href{#method-receive}{\code{class_worker$receive()}}
+\item \href{#method-clear}{\code{class_worker$clear()}}
 \item \href{#method-shutdown}{\code{class_worker$shutdown()}}
 \item \href{#method-tagged}{\code{class_worker$tagged()}}
 \item \href{#method-validate}{\code{class_worker$validate()}}
@@ -76,7 +77,7 @@ Worker constructor.
   name = basename(tempfile(pattern = "worker_")),
   crew = NULL,
   timeout = 60,
-  wait_input = 0.1,
+  wait = 0.1,
   tags = character(0)
 )}\if{html}{\out{</div>}}
 }
@@ -91,7 +92,7 @@ Worker constructor.
 \item{\code{timeout}}{Positive numeric of length 1, number of seconds
 that a worker can idle before timing out.}
 
-\item{\code{wait_input}}{Positive numeric of length 1, number of seconds
+\item{\code{wait}}{Positive numeric of length 1, number of seconds
 that the worker waits between checking if a job exists.}
 
 \item{\code{tags}}{Character vector of optional user-defined tags
@@ -124,7 +125,7 @@ Check if this worker is ready to accept a job.
 \subsection{Method \code{send()}}{
 Send a job.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker$send(fun, args = list(), block = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$send(fun, args = list(), block = TRUE, timeout = 60, wait = 1)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -144,6 +145,12 @@ so job output is not lost. Should only be \code{FALSE}
 if called inside \code{shutdown()}. If \code{block} is \code{TRUE},
 then \code{sendable()} will return \code{FALSE} for the worker
 until the output is collected with \code{recieve()}.}
+
+\item{\code{timeout}}{Number of seconds to wait for job data to
+send successfully.}
+
+\item{\code{wait}}{Number of seconds to wait between iterations checking
+if the job data was sent successfully.}
 }
 \if{html}{\out{</div>}}
 }
@@ -171,9 +178,20 @@ Check if job output is available to collect.
 \subsection{Method \code{receive()}}{
 Collect the results of a job and free up the worker.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker$receive()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$receive(timeout = 60, wait = 1)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{timeout}}{Number of seconds to wait for the file deletion to
+succeed.}
+
+\item{\code{wait}}{Number of seconds to wait between iterations checking
+that the worker files were successfully removed from the data store.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Details}{
 Once collected and returned. the job output is deleted from
 the data store and no longer available to receive.
@@ -186,6 +204,34 @@ A named list of job output. The \code{value} element has the
 actual result of the job function, if successful. Other elements
 have job metadata such as the error message (if any), traceback,
 warnings, and runtime in seconds.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clear"></a>}}
+\if{latex}{\out{\hypertarget{method-clear}{}}}
+\subsection{Method \code{clear()}}{
+Clear worker input and output.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$clear(timeout = 60, wait = 1)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{timeout}}{Number of seconds to wait for the file deletion to
+succeed.}
+
+\item{\code{wait}}{Number of seconds to wait between iterations checking
+that the worker files were successfully removed from the data store.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Deletes worker input and output files.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly)
 }
 }
 \if{html}{\out{<hr>}}

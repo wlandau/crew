@@ -3,7 +3,7 @@ test_that("local callr worker works", {
   x <- class_worker_callr$new(
     crew = crew,
     timeout = Inf,
-    wait_input = 0.01
+    wait = 0.01
   )
   crew$workers[[x$name]] <- x
   x$validate()
@@ -32,6 +32,8 @@ test_that("local callr worker works", {
   expect_true(x$crew$store$exists_output(x$name))
   # get results
   expect_equal(x$receive()$value, 2L)
+  expect_false(x$crew$store$exists_input(x$name))
+  expect_false(x$crew$store$exists_output(x$name))
   # another job
   x$send(fun = function(x) x + 1L, args = list(x = 2L))
   tries <- 300
@@ -55,7 +57,7 @@ test_that("idempotent launch", {
   x <- class_worker_callr$new(
     crew = crew,
     timeout = Inf,
-    wait_input = 0.01
+    wait = 0.01
   )
   crew$workers[[x$name]] <- x
   x$launch()
@@ -74,7 +76,7 @@ test_that("can send without explicit launch", {
   x <- class_worker_callr$new(
     crew = crew,
     timeout = Inf,
-    wait_input = 0.01
+    wait = 0.01
   )
   crew$workers[[x$name]] <- x
   expect_false(x$crew$store$exists_input(x$name))
@@ -97,7 +99,7 @@ test_that("cannot send if worker is already assigned", {
   x <- class_worker_callr$new(
     crew = crew,
     timeout = Inf,
-    wait_input = 0.01
+    wait = 0.01
   )
   crew$workers[[x$name]] <- x
   x$assigned <- TRUE

@@ -333,3 +333,58 @@ test_that("crew dismiss at tag", {
   expect_equal(length(crew$workers), 1)
   expect_equal(crew$workers[[1]]$tags, "a")
 })
+
+test_that("crew clear everyone", {
+  crew <- class_crew$new()
+  crew$recruit(workers = 2)
+  for (index in seq_len(2)) {
+    crew$store$write_input(crew$workers[[index]]$name, "x")
+    crew$store$write_output(crew$workers[[index]]$name, "x")
+    expect_true(crew$store$exists_input(crew$workers[[index]]$name))
+    expect_true(crew$store$exists_output(crew$workers[[index]]$name))
+  }
+  crew$clear()
+  for (index in seq_len(2)) {
+    expect_false(crew$store$exists_input(crew$workers[[index]]$name))
+    expect_false(crew$store$exists_output(crew$workers[[index]]$name))
+  }
+})
+
+test_that("crew clear with down_only = TRUE", {
+  crew <- class_crew$new()
+  crew$recruit(workers = 1)
+  on.exit(crew$shutdown())
+  crew$launch()
+  while (!crew$workers[[1]]$up()) Sys.sleep(0.1)
+  crew$send(fun = function() Sys.sleep(200))
+  crew$clear(down_only = TRUE)
+  expect_true(crew$store$exists_input(crew$workers[[1]]$name))
+})
+
+test_that("crew clear with down_only = FALSE", {
+  crew <- class_crew$new()
+  crew$recruit(workers = 1)
+  on.exit(crew$shutdown())
+  crew$launch()
+  crew$send(fun = function() Sys.sleep(200))
+  crew$clear(down_only = FALSE)
+  expect_false(crew$store$exists_input(crew$workers[[1]]$name))
+  expect_false(crew$store$exists_output(crew$workers[[1]]$name))
+})
+
+test_that("crew clear tags ", {
+  crew <- class_crew$new()
+  crew$recruit(workers = 1, tags = "a")
+  crew$recruit(workers = 1, tags = "b")
+  for (index in seq_len(2)) {
+    crew$store$write_input(crew$workers[[index]]$name, "x")
+    crew$store$write_output(crew$workers[[index]]$name, "x")
+    expect_true(crew$store$exists_input(crew$workers[[index]]$name))
+    expect_true(crew$store$exists_output(crew$workers[[index]]$name))
+  }
+  crew$clear(tags = "a")
+  expect_false(crew$store$exists_input(crew$workers[[1]]$name))
+  expect_false(crew$store$exists_output(crew$workers[[1]]$name))
+  expect_true(crew$store$exists_input(crew$workers[[2]]$name))
+  expect_true(crew$store$exists_output(crew$workers[[2]]$name))
+})

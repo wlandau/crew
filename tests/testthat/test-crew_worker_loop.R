@@ -5,34 +5,52 @@ test_that("no work then worker timeout", {
       name = "name",
       store = store$marshal(),
       timeout = 0,
-      wait_input = 0
+      wait = 0
     ),
     class = "crew_timeout"
   )
+})
+
+test_that("one simple job", {
+  dir_root <- tempfile()
+  dir_create(dir_root)
+  store <- class_store_local$new(dir_root = dir_root)
+  fun <- function(x) {
+    x + 1
+  }
+  data <- list(fun = deparse(fun), args = list(x = 1L))
+  store$write_input(name = "worker", data = data)
+  expect_error(
+    crew_worker_loop(
+      name = "worker",
+      store = store$marshal(),
+      timeout = 0,
+      wait = 0
+    ),
+    class = "crew_timeout"
+  )
+  expect_false(store$exists_input("worker"))
+  expect_true(store$exists_output("worker"))
+  expect_equal(store$read_output("worker")$value, 2L)
 })
 
 test_that("one job that runs and shutdowns the worker", {
   dir_root <- tempfile()
   dir_create(dir_root)
   store <- class_store_local$new(dir_root = dir_root)
-  fun <- function(x, store) {
-    fun <- function() rlang::abort(message = "x", class = "crew_shutdown")
-    data <- list(fun = deparse(fun), args = list())
-    store$write_input(name = "worker", data = data)
-    x + 1L
+  fun <- function() {
+    rlang::abort(message = "x", class = "crew_shutdown")
   }
-  args <- list(x = 0L, store = store)
-  data <- list(fun = deparse(fun), args = args)
+  data <- list(fun = deparse(fun), args = list())
   store$write_input(name = "worker", data = data)
   crew_worker_loop(
     name = "worker",
     store = store$marshal(),
-    timeout = Inf,
-    wait_input = 0
+    timeout = 1,
+    wait = 0
   )
-  expect_false(store$exists_input("worker"))
-  expect_true(store$exists_output("worker"))
-  expect_equal(store$read_output("worker")$value, 1L)
+  expect_true(store$exists_input("worker"))
+  expect_false(store$exists_output("worker"))
 })
 
 test_that("crew_worker_loop_monad() without errors", {

@@ -18,3 +18,17 @@ test_that("worker tagged", {
   expect_true(worker$tagged(c("t1", "t3", "t4")))
   expect_false(worker$tagged("nope"))
 })
+
+test_that("worker clear", {
+  crew <- class_crew$new()
+  worker <- class_worker_callr$new(crew = crew, tags = c("t1", "t2", "t3"))
+  crew$workers[[worker$name]] <- worker
+  expect_silent(worker$validate())
+  crew$store$write_input(worker$name, "x")
+  crew$store$write_output(worker$name, "x")
+  expect_true(crew$store$exists_input(worker$name))
+  expect_true(crew$store$exists_output(worker$name))
+  worker$clear()
+  expect_false(crew$store$exists_input(worker$name))
+  expect_false(crew$store$exists_output(worker$name))
+})

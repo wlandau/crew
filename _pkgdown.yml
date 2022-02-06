@@ -33,3 +33,6 @@ reference:
 - title: Worker loops
   contents:
   - '`crew_worker_loop`'
+- title: Utilities
+  contents:
+  - '`crew_wait`'

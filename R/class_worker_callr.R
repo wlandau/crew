@@ -32,7 +32,7 @@ class_worker_callr <- R6::R6Class(
           name = self$name,
           store = self$crew$store$marshal(),
           timeout = self$timeout,
-          wait_input = self$wait_input
+          wait = self$wait
         ),
         # TODO: supervise after https://github.com/r-lib/processx/issues/323
         supervise = FALSE

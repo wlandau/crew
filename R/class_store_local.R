@@ -14,14 +14,18 @@ class_store_local <- R6::R6Class(
   cloneable = FALSE,
   private = list(
     path_direction = function(name, direction) {
-      if_any(
+      crew_assert_chr_scalar(name)
+      crew_assert(direction %in% c("input", "output"))
+      out <- if_any(
         identical(direction, "input"),
         self$path_input(name),
         self$path_output(name)
       )
+      out
     },
     read = function(name, direction) {
       crew_assert_chr_scalar(name)
+      crew_assert(direction %in% c("input", "output"))
       path <- private$path_direction(name, direction)
       msg <- paste(
         "input file",
@@ -35,24 +39,47 @@ class_store_local <- R6::R6Class(
       }
       qs::qread(file = path)
     },
-    write = function(name, data, direction) {
+    write = function(name, data, direction, timeout, wait) {
       crew_assert_chr_scalar(name)
+      crew_assert(direction %in% c("input", "output"))
       path_temp <- self$path_temp(name)
       path <- private$path_direction(name, direction)
       dir_create(dirname(path_temp))
       dir_create(dirname(path))
       qs::qsave(x = data, file = path_temp)
+      crew_wait(
+        fun = function(path_temp) file.exists(path_temp),
+        args = list(path_temp = path_temp),
+        timeout = timeout,
+        wait = wait
+      )
       file.rename(from = path_temp, to = path)
+      crew_wait(
+        fun = function(path, path_temp) {
+          file.exists(path) && !file.exists(path_temp)
+        },
+        args = list(path = path, path_temp = path_temp),
+        timeout = timeout,
+        wait = wait
+      )
       invisible()
     },
     exists = function(name, direction) {
       crew_assert_chr_scalar(name)
+      crew_assert(direction %in% c("input", "output"))
       all(file.exists(private$path_direction(name, direction)))
     },
-    delete = function(name, direction) {
+    delete = function(name, timeout, wait, direction) {
       crew_assert_chr_scalar(name)
+      crew_assert(direction %in% c("input", "output"))
       path <- private$path_direction(name, direction)
       unlink(path, recursive = TRUE, force = TRUE)
+      crew_wait(
+        fun = function(path) !file.exists(path),
+        args = list(path = path),
+        timeout = timeout,
+        wait = wait
+      )
       invisible()
     }
   ),
@@ -80,7 +107,8 @@ class_store_local <- R6::R6Class(
     #' @param name Worker name.
     path_temp = function(name) {
       crew_assert_chr_scalar(name)
-      file.path(self$dir_temp, name)
+      base <- basename(tempfile(pattern = paste0(name, "_")))
+      file.path(self$dir_temp, base)
     },
     #' @description Read worker input.
     #' @return Input data sent to a worker. Should contain a job
@@ -101,10 +129,16 @@ class_store_local <- R6::R6Class(
     #' @param name Character of length 1, Worker name.
     #' @param data Data to write. Should contain a job and the required
     #'   data to run it.
-    write_input = function(name, data) {
+    #' @param timeout Positive numeric of length 1, number of seconds to wait
+    #'   for a successful write.
+    #' @param wait Number of seconds to wait between
+    #'   checks that the file exists.
+    write_input = function(name, data, timeout = 60, wait = 1) {
       private$write(
         name = name,
         data = data,
+        timeout = timeout,
+        wait = wait,
         direction = "input"
       )
     },
@@ -112,10 +146,16 @@ class_store_local <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param name Character of length 1, Worker name.
     #' @param data Data to write. Should contain the result of a job.
-    write_output = function(name, data) {
+    #' @param timeout Positive numeric of length 1, number of seconds to wait
+    #'   for a successful write.
+    #' @param wait Number of seconds to wait between
+    #'   checks that the file exists.
+    write_output = function(name, data, timeout = 60, wait = 1) {
       private$write(
         name = name,
         data = data,
+        timeout = timeout,
+        wait = wait,
         direction = "output"
       )
     },
@@ -133,15 +173,33 @@ class_store_local <- R6::R6Class(
     },
     #' @description Delete worker input.
     #' @return `NULL` (invisibly).
-    #' @param name Character of length 1, Worker name
-    delete_input = function(name) {
-      private$delete(name = name, direction = "input")
+    #' @param name Character of length 1, worker name.
+    #' @param timeout Positive numeric of length 1, number of seconds to wait
+    #'   for a successful deletion.
+    #' @param wait Number of seconds to wait between
+    #'   checks that the file is gone.
+    delete_input = function(name, timeout = 60, wait = 1) {
+      private$delete(
+        name = name,
+        timeout = timeout,
+        wait = wait,
+        direction = "input"
+      )
     },
     #' @description Delete worker output.
     #' @return `NULL` (invisibly).
-    #' @param name Character of length 1, Worker name
-    delete_output = function(name) {
-      private$delete(name = name, direction = "output")
+    #' @param name Character of length 1, worker name.
+    #' @param timeout Positive numeric of length 1, number of seconds to wait
+    #'   for a successful deletion.
+    #' @param wait Number of seconds to wait between
+    #'   checks that the file is gone.
+    delete_output = function(name, timeout = 60, wait = 1) {
+      private$delete(
+        name = name,
+        timeout = timeout,
+        wait = wait,
+        direction = "output"
+      )
     },
     #' @description Delete all the files in the data store.
     #' @return `NULL` (invisibly).

@@ -43,6 +43,7 @@ future::plan(future::sequential)
 \if{html}{
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="clear">}\href{../../crew/html/worker.html#method-clear}{\code{crew::worker$clear()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="initialize">}\href{../../crew/html/worker.html#method-initialize}{\code{crew::worker$initialize()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="receivable">}\href{../../crew/html/worker.html#method-receivable}{\code{crew::worker$receivable()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="receive">}\href{../../crew/html/worker.html#method-receive}{\code{crew::worker$receive()}}\out{</span>}

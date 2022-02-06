@@ -4,7 +4,7 @@
 \alias{crew_worker_loop}
 \title{Worker event loop.}
 \usage{
-crew_worker_loop(name, store, timeout, wait_input)
+crew_worker_loop(name, store, timeout, wait)
 }
 \arguments{
 \item{name}{Character of length 1, name of the worker.}
@@ -18,7 +18,7 @@ should reconstruct the usable store object inside the worker event loop.}
 \item{timeout}{Positive numeric of length 1, number of seconds
 that a worker can idle before timing out.}
 
-\item{wait_input}{Positive numeric of length 1, number of seconds
+\item{wait}{Positive numeric of length 1, number of seconds
 that the worker waits between checking if a job exists.}
 }
 \value{
@@ -36,24 +36,23 @@ and puts the output in the data store. If sent a shutdown job
 loop exits.
 }
 \examples{
-# Example of send one job that shuts down the loop:
 dir_root <- tempfile()
 dir.create(dir_root)
 store <- class_store_local$new(dir_root = dir_root)
-fun <- function(x, store) {
-  fun <- function() rlang::abort(message = "x", class = "crew_shutdown")
-  data <- list(fun = deparse(fun), args = list())
-  store$write_input(name = "my_worker", data = data)
-  paste("job", x)
+fun <- function(x) {
+  x + 1
 }
-args <- list(x = 12, store = store)
+args <- list(x = 1)
 data <- list(fun = deparse(fun), args = args)
 store$write_input(name = "my_worker", data = data)
-crew_worker_loop(
-  name = "my_worker",
-  store = store$marshal(),
-  timeout = Inf,
-  wait_input = 0
+try( # The worker throws a special error class when it times out.
+  crew_worker_loop(
+    name = "my_worker",
+    store = store$marshal(),
+    timeout = 0,
+    wait = 0
+  ),
+  silent = TRUE
 )
 store$read_output("my_worker")$value
 }

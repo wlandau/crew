@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 library(crew)
 ```
 
-The `crew` package consists of `R6` classes. Each object of class `crew` contains an object of class `store` and a list of objects of class `worker`. The `crew`, `store`, and `worker` classes have inheritance hierarchies. Each parent class is an abstract class with a `validate()` method to ensure the concrete instantiable subclasses define all the required methods and fields.
+The `crew` package consists of `R6` classes. Each object of class `crew` contains an object of class `store` and a list of objects of class `worker`. The `crew`, `store`, and `worker` classes have inheritance hierarchies. Each parent class is an abstract class with a `validate()` method to ensure the concrete instantiable subclasses define all the required methods and fields. Unless ellipsis (`...`) is an argument, all formal arguments of subclass methods must be the same as the arguments of the parent class (but default values can be different).
 
 # worker
 
@@ -44,6 +44,7 @@ Required methods:
 * `send()`: send a job to a worker through the data store and make sure the worker is launched. Errors if the worker is busy (i.e. if `sendable()` returns `FALSE`).
 * `receivable()`: whether the worker is done with its current job and is waiting for the crew to read the output data and free the worker to do another job.
 * `receive()`: receive job output from the worker. Assumes the worker is receivable.
+* `clear()`: remove input and output files for the worker.
 * `shutdown()`: send a special job that gracefully shuts down the worker.
 * `tagged()`: check if a worker has one or more tags in a given set.
 * `validate()`: check for errors in the fields and methods.
@@ -82,6 +83,7 @@ Methods:
 * `send()`: find an appropriate worker for the job and call its `send()` method on the job.
 * `receivable()`: whether any worker is done with its current job and is waiting for the crew to read the output data and free the worker to do another job.
 * `receive()`: receive job output from the first detected receivable worker. Assumes there exists a receivable worker in the crew.
+* `clear()`: remove input and output files one or more workers.
 * `shutdown()`: shut down one or more workers. Workers must be sendable if the worker shutdown method uses `send()`.
 * `dismiss()`: delete one or more worker objects from the crew. Dismissed workers must be down and sendable, so not all requested dismissals actually happen.
 * `validate()`: check for errors in the fields and methods.

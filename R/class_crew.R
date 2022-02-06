@@ -177,6 +177,25 @@ class_crew <- R6::R6Class(
       }
       crew_error(paste("no job output from crew", self$name))
     },
+    #' @description Clear worker input and output.
+    #' @details Deletes worker input and output files.
+    #' @return `NULL` (invisibly)
+    #' @param timeout Number of seconds to wait for the file deletion to
+    #'   succeed.
+    #' @param wait Number of seconds to wait between iterations checking
+    #'   that the worker files were successfully removed from the data store.
+    #' @param down_only Logical of length 1, whether to only clear down jobs.
+    #' @param tags Character vector of allowable tags of eligible workers.
+    clear = function(timeout = 60, wait = 1, down_only = TRUE, tags = NULL) {
+      for (worker in self$workers) {
+        eligible <- (!down_only || !worker$up()) &&
+          (is.null(tags) || worker$tagged(tags))
+        if (eligible) {
+          worker$clear(timeout = timeout, wait = wait)
+        }
+      }
+      invisible()
+    },
     #' @description Shut down one or more running workers.
     #' @details This method loops through the workers
     #'   from first to last in the worker list. If the worker

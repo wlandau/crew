@@ -35,13 +35,13 @@ class_worker_future <- R6::R6Class(
           name = name,
           store = store,
           timeout = timeout,
-          wait_input = wait_input
+          wait = wait
         ),
         env = list(
           name = self$name,
           store = self$crew$store$marshal(),
           timeout = self$timeout,
-          wait_input = self$wait_input
+          wait = self$wait
         )
       )
       self$future <- future::future(

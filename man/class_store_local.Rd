@@ -147,7 +147,7 @@ the result of a job.
 \subsection{Method \code{write_input()}}{
 Write worker input.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$write_input(name, data)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$write_input(name, data, timeout = 60, wait = 1)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -157,6 +157,12 @@ Write worker input.
 
 \item{\code{data}}{Data to write. Should contain a job and the required
 data to run it.}
+
+\item{\code{timeout}}{Positive numeric of length 1, number of seconds to wait
+for a successful write.}
+
+\item{\code{wait}}{Number of seconds to wait between
+checks that the file exists.}
 }
 \if{html}{\out{</div>}}
 }
@@ -170,7 +176,7 @@ data to run it.}
 \subsection{Method \code{write_output()}}{
 Write worker output.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$write_output(name, data)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$write_output(name, data, timeout = 60, wait = 1)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -179,6 +185,12 @@ Write worker output.
 \item{\code{name}}{Character of length 1, Worker name.}
 
 \item{\code{data}}{Data to write. Should contain the result of a job.}
+
+\item{\code{timeout}}{Positive numeric of length 1, number of seconds to wait
+for a successful write.}
+
+\item{\code{wait}}{Number of seconds to wait between
+checks that the file exists.}
 }
 \if{html}{\out{</div>}}
 }
@@ -232,13 +244,19 @@ Check if worker output exists.
 \subsection{Method \code{delete_input()}}{
 Delete worker input.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$delete_input(name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$delete_input(name, timeout = 60, wait = 1)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character of length 1, Worker name}
+\item{\code{name}}{Character of length 1, worker name.}
+
+\item{\code{timeout}}{Positive numeric of length 1, number of seconds to wait
+for a successful deletion.}
+
+\item{\code{wait}}{Number of seconds to wait between
+checks that the file is gone.}
 }
 \if{html}{\out{</div>}}
 }
@@ -252,13 +270,19 @@ Delete worker input.
 \subsection{Method \code{delete_output()}}{
 Delete worker output.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_store_local$delete_output(name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_store_local$delete_output(name, timeout = 60, wait = 1)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character of length 1, Worker name}
+\item{\code{name}}{Character of length 1, worker name.}
+
+\item{\code{timeout}}{Positive numeric of length 1, number of seconds to wait
+for a successful deletion.}
+
+\item{\code{wait}}{Number of seconds to wait between
+checks that the file is gone.}
 }
 \if{html}{\out{</div>}}
 }

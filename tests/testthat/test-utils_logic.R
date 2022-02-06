@@ -28,4 +28,3 @@ test_that("crew_wait on a file", {
   on.exit(unlink(tmp))
   expect_silent(crew_wait(fun = fun, args = args))
 })
-

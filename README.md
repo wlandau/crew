@@ -4,9 +4,9 @@
 <!--[![CRAN](https://www.r-pkg.org/badges/version/crew)](https://CRAN.R-project.org/package=crew)-->
 
 [![status](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-[![check](https://github.com/ropensci/crew/workflows/check/badge.svg)](https://github.com/ropensci/crew/actions?query=workflow%3Acheck)
-[![codecov](https://codecov.io/gh/ropensci/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/ropensci/crew)
-[![lint](https://github.com/ropensci/crew/workflows/lint/badge.svg)](https://github.com/ropensci/crew/actions?query=workflow%3Alint)
+[![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
+[![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
+[![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
 
 The [`R6`](https://r6.r-lib.org) classes of `crew` establish a
 standardized user interface to high-performance computing technologies.
@@ -21,7 +21,7 @@ specific high-performance computing platforms or cloud services.
 ## Installation
 
 ``` r
-remotes::install_github("ropensci/crew")
+remotes::install_github("wlandau/crew")
 ```
 
 ## Usage
@@ -81,9 +81,9 @@ No workers are running yet.
 ``` r
 library(purrr)
 map_lgl(crew$workers, ~.x$up())
-#> worker_128d15724218d  worker_128d1516dcad worker_128d141ce5103 
+#> worker_155d12ac10db7 worker_155d1686b7f4e   worker_155d1fab826 
 #>                FALSE                FALSE                FALSE 
-#> worker_128d15028bdb5 
+#> worker_155d14c4fc74a 
 #>                FALSE
 ```
 
@@ -114,11 +114,12 @@ do_other_tasks <- function () {
 }
 
 do_other_tasks()
-#> [1] 1.002
-#> [1] 2.009
-#> [1] 3.014
+#> [1] 1.001
+#> [1] 2.011
+#> [1] 3.015
 #> [1] 4.017
-#> [1] 5.02
+#> [1] 5.018
+#> [1] 6.022
 
 # Get the output when ready.
 output <- crew$receive()
@@ -131,7 +132,7 @@ etc.
 str(output)
 #> List of 5
 #>  $ value    : chr "Job ran in 4 seconds."
-#>  $ seconds  : num 4.01
+#>  $ seconds  : num 4
 #>  $ error    : NULL
 #>  $ traceback: NULL
 #>  $ warnings : chr "This is a warning."
@@ -142,9 +143,9 @@ Once launched, workers stay running until they time out or shut down.
 ``` r
 is_up <- map_lgl(crew$workers, ~.x$up())
 is_up
-#> worker_128d15724218d  worker_128d1516dcad worker_128d141ce5103 
+#> worker_155d12ac10db7 worker_155d1686b7f4e   worker_155d1fab826 
 #>                FALSE                FALSE                 TRUE 
-#> worker_128d15028bdb5 
+#> worker_155d14c4fc74a 
 #>                FALSE
 ```
 
@@ -165,25 +166,25 @@ crew$send(fun = job, args = list(seconds = 8), tags = "long_jobs_go_here")
 crew$send(fun = job, args = list(seconds = 4)) # May run on any available worker.
 
 do_other_tasks()
-#> [1] 1.005
-#> [1] 2.01
-#> [1] 3.016
-#> [1] 4.021
-#> [1] 5.026
+#> [1] 1.002
+#> [1] 2.003
+#> [1] 3.004
+#> [1] 4.005
+#> [1] 5.009
 
 output_first <- crew$receive()
 
 do_other_tasks()
-#> [1] 1.005
-#> [1] 2.009
-#> [1] 3.014
+#> [1] 1.003
+#> [1] 2.004
+#> [1] 3.005
 
 output_second <- crew$receive()
 
 str(output_first)
 #> List of 5
 #>  $ value    : chr "Job ran in 4 seconds."
-#>  $ seconds  : num 4.01
+#>  $ seconds  : num 4
 #>  $ error    : NULL
 #>  $ traceback: NULL
 #>  $ warnings : chr "This is a warning."
@@ -191,7 +192,7 @@ str(output_first)
 str(output_second)
 #> List of 5
 #>  $ value    : chr "Job ran in 8 seconds."
-#>  $ seconds  : num 8.02
+#>  $ seconds  : num 8.03
 #>  $ error    : NULL
 #>  $ traceback: NULL
 #>  $ warnings : chr "This is a warning."

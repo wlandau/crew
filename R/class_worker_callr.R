@@ -34,7 +34,7 @@ class_worker_callr <- R6::R6Class(
           timeout = self$timeout,
           wait_input = self$wait_input
         ),
-        supervise = TRUE
+        supervise = FALSE
       )
       invisible()
     },
@@ -66,6 +66,7 @@ class_worker_callr <- R6::R6Class(
     shutdown = function() {
       if (!is.null(self$process)) {
         self$process$kill()
+        self$process$finalize()
       }
       invisible()
     },

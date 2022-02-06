@@ -81,9 +81,9 @@ No workers are running yet.
 ``` r
 library(purrr)
 map_lgl(crew$workers, ~.x$up())
-#> worker_1280c5cb2adc3 worker_1280c56ae0cc0 worker_1280c3ca4553f 
+#> worker_128d15724218d  worker_128d1516dcad worker_128d141ce5103 
 #>                FALSE                FALSE                FALSE 
-#> worker_1280c48d8ba33 
+#> worker_128d15028bdb5 
 #>                FALSE
 ```
 
@@ -114,11 +114,11 @@ do_other_tasks <- function () {
 }
 
 do_other_tasks()
-#> [1] 1.006
-#> [1] 2.015
-#> [1] 3.016
-#> [1] 4.02
-#> [1] 5.024
+#> [1] 1.002
+#> [1] 2.009
+#> [1] 3.014
+#> [1] 4.017
+#> [1] 5.02
 
 # Get the output when ready.
 output <- crew$receive()
@@ -131,7 +131,7 @@ etc.
 str(output)
 #> List of 5
 #>  $ value    : chr "Job ran in 4 seconds."
-#>  $ seconds  : num 4
+#>  $ seconds  : num 4.01
 #>  $ error    : NULL
 #>  $ traceback: NULL
 #>  $ warnings : chr "This is a warning."
@@ -142,9 +142,9 @@ Once launched, workers stay running until they time out or shut down.
 ``` r
 is_up <- map_lgl(crew$workers, ~.x$up())
 is_up
-#> worker_1280c5cb2adc3 worker_1280c56ae0cc0 worker_1280c3ca4553f 
+#> worker_128d15724218d  worker_128d1516dcad worker_128d141ce5103 
 #>                FALSE                FALSE                 TRUE 
-#> worker_1280c48d8ba33 
+#> worker_128d15028bdb5 
 #>                FALSE
 ```
 
@@ -165,18 +165,18 @@ crew$send(fun = job, args = list(seconds = 8), tags = "long_jobs_go_here")
 crew$send(fun = job, args = list(seconds = 4)) # May run on any available worker.
 
 do_other_tasks()
-#> [1] 1.004
+#> [1] 1.005
 #> [1] 2.01
-#> [1] 3.013
-#> [1] 4.014
-#> [1] 5.016
+#> [1] 3.016
+#> [1] 4.021
+#> [1] 5.026
 
 output_first <- crew$receive()
 
 do_other_tasks()
-#> [1] 1.002
-#> [1] 2.006
-#> [1] 3.009
+#> [1] 1.005
+#> [1] 2.009
+#> [1] 3.014
 
 output_second <- crew$receive()
 
@@ -223,7 +223,7 @@ Amazon and Google. In these situations, orchestration itself is
 computationally demanding. Sending jobs, receiving job output, and
 detecting crashes may severely block the main process.
 
-To overcome this bottleneck, the `crew` package will eventually support
+To overcome this bottleneck, `crew` package will eventually support
 nested crews. The outer crew will support a small number of
 `callr::r_bg()` workers running on the same machine as the main process.
 Each of these outer workers will run a crew of its own, and the inner
@@ -243,6 +243,8 @@ Cloud Run workers, one can write new worker subclasses analogous to
 documented in help files, and a specification of required methods and
 fields is in the [specification
 vignette](https://wlandau.github.io/crew/articles/specification.html).
+The new subclasses will be supported in separate R packages that import
+`crew`, ideally one package per cloud platform.
 
 ## Thanks
 

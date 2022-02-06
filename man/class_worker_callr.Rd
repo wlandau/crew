@@ -9,7 +9,7 @@
 }
 \examples{
 crew <- class_crew$new(worker_classes = list(class_worker_callr))
-crew$recruit(workers = 1)
+crew$recruit(workers = 1, timeout = 1))
 worker <- crew$workers[[1]]
 worker$send(fun = function(arg) paste("job", arg), args = list(arg = 1))
 while (!worker$receivable()) Sys.sleep(0.1)

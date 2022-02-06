@@ -7,7 +7,7 @@
 #'   send jobs, receive output, and poll, etc.
 #' @examples
 #' crew <- class_crew$new()
-#' crew$recruit(workers = 2)
+#' crew$recruit(workers = 1, timeout = 1)
 #' crew$send(fun = function(arg) paste("job", arg), args = list(arg = 1))
 #' while (!crew$receivable()) Sys.sleep(0.1)
 #' job <- crew$receive()

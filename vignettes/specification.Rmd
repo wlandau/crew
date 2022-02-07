@@ -10,15 +10,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-```
-
-```{r setup}
-library(crew)
 ```
 
 The `crew` package consists of `R6` classes. Each object of class `crew` contains an object of class `store` and a list of objects of class `worker`. The `crew`, `store`, and `worker` classes have inheritance hierarchies. Each parent class is an abstract class with a `validate()` method to ensure the concrete instantiable subclasses define all the required methods and fields. Unless ellipsis (`...`) is an argument, all formal arguments of subclass methods must be the same as the arguments of the parent class (but default values can be different).

@@ -66,10 +66,10 @@ crew$recruit(
 )
 ```
 
-The individual worker objects available in `crew$workers`.
+The individual worker interfaces are `R6` objects available in `crew$workers`.
 
 ```{r}
-str(crew$workers)
+lapply(crew$workers, class)
 ```
 
 # Launch workers and send jobs

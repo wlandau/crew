@@ -1,4 +1,4 @@
-test_that("temp path", {
+crew_test("temp path", {
   skip_on_os("windows")
   x <- class_store_local$new()
   expect_equal(
@@ -7,7 +7,7 @@ test_that("temp path", {
   )
 })
 
-test_that("local store input", {
+crew_test("local store input", {
   x <- class_store_local$new()
   name <- "abc"
   data <- list(x = "x")
@@ -26,7 +26,7 @@ test_that("local store input", {
   expect_false(file.exists(x$dir_root))
 })
 
-test_that("local store output", {
+crew_test("local store output", {
   x <- class_store_local$new()
   name <- "abc"
   data <- list(x = "x")

@@ -1,4 +1,4 @@
-test_that("no work then worker timeout", {
+crew_test("no work then worker timeout", {
   store <- class_store_local$new()
   expect_error(
     crew_worker_loop(
@@ -11,7 +11,7 @@ test_that("no work then worker timeout", {
   )
 })
 
-test_that("one simple job", {
+crew_test("one simple job", {
   dir_root <- tempfile()
   dir_create(dir_root)
   store <- class_store_local$new(dir_root = dir_root)
@@ -34,7 +34,7 @@ test_that("one simple job", {
   expect_equal(store$read_output("worker")$value, 2L)
 })
 
-test_that("one job that runs and shutdowns the worker", {
+crew_test("one job that runs and shutdowns the worker", {
   dir_root <- tempfile()
   dir_create(dir_root)
   store <- class_store_local$new(dir_root = dir_root)
@@ -53,7 +53,7 @@ test_that("one job that runs and shutdowns the worker", {
   expect_false(store$exists_output("worker"))
 })
 
-test_that("crew_worker_loop_monad() without errors", {
+crew_test("crew_worker_loop_monad() without errors", {
   out <- crew_worker_loop_monad(fun = identity, args = list(x = "x"))
   expect_equal(out$value, "x")
   expect_true(is.numeric(out$seconds) && length(out$seconds) == 1)
@@ -63,7 +63,7 @@ test_that("crew_worker_loop_monad() without errors", {
 })
 
 
-test_that("crew_worker_loop_monad() with errors", {
+crew_test("crew_worker_loop_monad() with errors", {
   fun <- function() {
     warning("warning1")
     warning("warning2")
@@ -78,7 +78,7 @@ test_that("crew_worker_loop_monad() with errors", {
   expect_equal(out$warnings, c("warning1", "warning2"))
 })
 
-test_that("crew_worker_loop_monad() with worker shutdown", {
+crew_test("crew_worker_loop_monad() with worker shutdown", {
   fun <- function() {
     crew_shutdown()
   }

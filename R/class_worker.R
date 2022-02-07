@@ -22,6 +22,7 @@
 #' print(job$value)
 #' print(job$error)
 #' worker$shutdown()
+#' processx::supervisor_kill()
 class_worker <- R6::R6Class(
   classname = "worker",
   portable = FALSE,

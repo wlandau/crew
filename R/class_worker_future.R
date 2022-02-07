@@ -15,6 +15,7 @@
 #' print(job$error)
 #' worker$shutdown()
 #' future::plan(future::sequential)
+#' processx::supervisor_kill()
 #' }
 class_worker_future <- R6::R6Class(
   classname = "worker_future",

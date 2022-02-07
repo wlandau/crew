@@ -20,6 +20,7 @@ print(job$value)
 print(job$error)
 worker$shutdown()
 future::plan(future::sequential)
+processx::supervisor_kill()
 }
 }
 \section{Super class}{

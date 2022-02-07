@@ -1,22 +1,22 @@
-test_that("empty crew", {
+crew_test("empty crew", {
   expect_silent(class_crew$new()$validate())
 })
 
-test_that("nonempty crew", {
+crew_test("nonempty crew", {
   crew <- class_crew$new()
   worker <- class_worker_callr$new(crew = crew)
   crew$workers[[worker$name]] <- worker
   expect_silent(crew$validate())
 })
 
-test_that("invalid crew", {
+crew_test("invalid crew", {
   crew <- class_crew$new()
   worker <- class_worker_callr$new(crew = crew)
   crew$workers[["nope"]] <- worker
   expect_error(crew$validate(), class = "crew_error")
 })
 
-test_that("crew recruit", {
+crew_test("crew recruit", {
   crew <- class_crew$new(
     store = crew::class_store_local$new(),
     worker_classes = list(
@@ -40,7 +40,7 @@ test_that("crew recruit", {
   walk(crew$workers, ~.x$validate())
 })
 
-test_that("crew launch with tag", {
+crew_test("crew launch with tag", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(tags = "x")
@@ -50,7 +50,7 @@ test_that("crew launch with tag", {
   expect_true(crew$workers[[2]]$up())
 })
 
-test_that("crew sendable", {
+crew_test("crew sendable", {
   crew <- class_crew$new()
   expect_false(crew$sendable())
   crew$recruit(workers = 2, timeout = Inf)
@@ -61,7 +61,7 @@ test_that("crew sendable", {
   expect_false(crew$sendable())
 })
 
-test_that("crew sendable with tags", {
+crew_test("crew sendable with tags", {
   crew <- class_crew$new()
   expect_false(crew$sendable())
   crew$recruit(workers = 1, timeout = Inf, tags = "a")
@@ -73,7 +73,7 @@ test_that("crew sendable with tags", {
   expect_false(crew$sendable(tags = "c"))
 })
 
-test_that("crew receivable", {
+crew_test("crew receivable", {
   crew <- class_crew$new()
   expect_false(crew$receivable())
   crew$recruit(workers = 1, timeout = Inf, tags = "a")
@@ -85,7 +85,7 @@ test_that("crew receivable", {
   expect_false(crew$receivable(tags = "c"))
 })
 
-test_that("crew send and receive", {
+crew_test("crew send and receive", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
@@ -98,7 +98,7 @@ test_that("crew send and receive", {
   expect_false(crew$workers[[2]]$up())
 })
 
-test_that("crew send and receive with a busy worker", {
+crew_test("crew send and receive with a busy worker", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
@@ -112,7 +112,7 @@ test_that("crew send and receive with a busy worker", {
   expect_true(crew$workers[[2]]$up())
 })
 
-test_that("crew tries to send to already up workers first", {
+crew_test("crew tries to send to already up workers first", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
@@ -129,7 +129,7 @@ test_that("crew tries to send to already up workers first", {
   expect_true(crew$workers[[2]]$up())
 })
 
-test_that("crew send and receive at a tag", {
+crew_test("crew send and receive at a tag", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
@@ -143,7 +143,7 @@ test_that("crew send and receive at a tag", {
   expect_true(crew$workers[[2]]$up())
 })
 
-test_that("crew send at a bad tag", {
+crew_test("crew send at a bad tag", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
@@ -153,7 +153,7 @@ test_that("crew send at a bad tag", {
   )
 })
 
-test_that("crew receive at a bad tag", {
+crew_test("crew receive at a bad tag", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
@@ -164,7 +164,7 @@ test_that("crew receive at a bad tag", {
   expect_error(crew$receive(tag = "bad"), class = "crew_error")
 })
 
-test_that("crew shutdown sendable_only = TRUE", {
+crew_test("crew shutdown sendable_only = TRUE", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   on.exit(crew$shutdown())
   crew$recruit(workers = 3, timeout = Inf)
@@ -181,7 +181,7 @@ test_that("crew shutdown sendable_only = TRUE", {
   expect_false(crew$workers[[3]]$up())
 })
 
-test_that("crew shutdown sendable_only = FALSE", {
+crew_test("crew shutdown sendable_only = FALSE", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   on.exit(crew$shutdown())
   crew$recruit(workers = 3, timeout = Inf)
@@ -198,7 +198,7 @@ test_that("crew shutdown sendable_only = FALSE", {
   expect_true(crew$workers[[3]]$up())
 })
 
-test_that("crew shutdown one worker", {
+crew_test("crew shutdown one worker", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   on.exit(crew$shutdown())
   crew$recruit(workers = 3, timeout = Inf)
@@ -214,7 +214,7 @@ test_that("crew shutdown one worker", {
   expect_true(crew$workers[[3]]$up())
 })
 
-test_that("crew shutdown all workers", {
+crew_test("crew shutdown all workers", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   on.exit(crew$shutdown())
   crew$recruit(workers = 3, timeout = Inf)
@@ -230,7 +230,7 @@ test_that("crew shutdown all workers", {
   }
 })
 
-test_that("crew shutdown at tag", {
+crew_test("crew shutdown at tag", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   on.exit(crew$shutdown())
   crew$recruit(workers = 1, timeout = Inf, tags = "a")
@@ -246,7 +246,7 @@ test_that("crew shutdown at tag", {
   expect_false(crew$workers[[2]]$up())
 })
 
-test_that("crew dismiss sendable_only = TRUE, down_only = TRUE", {
+crew_test("crew dismiss sendable_only = TRUE, down_only = TRUE", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   on.exit(crew$shutdown())
   crew$recruit(workers = 4, timeout = Inf)
@@ -264,7 +264,7 @@ test_that("crew dismiss sendable_only = TRUE, down_only = TRUE", {
   }
 })
 
-test_that("crew dismiss sendable_only = FALSE, down_only = TRUE", {
+crew_test("crew dismiss sendable_only = FALSE, down_only = TRUE", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   on.exit(crew$shutdown())
   crew$recruit(workers = 4, timeout = Inf)
@@ -282,7 +282,7 @@ test_that("crew dismiss sendable_only = FALSE, down_only = TRUE", {
   }
 })
 
-test_that("crew dismiss sendable_only = TRUE, down_only = FALSE", {
+crew_test("crew dismiss sendable_only = TRUE, down_only = FALSE", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   crew$recruit(workers = 4, timeout = Inf)
   names <- names(crew$workers)
@@ -301,7 +301,7 @@ test_that("crew dismiss sendable_only = TRUE, down_only = FALSE", {
   }
 })
 
-test_that("crew dismiss sendable_only = FALSE, down_only = FALSE", {
+crew_test("crew dismiss sendable_only = FALSE, down_only = FALSE", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   crew$recruit(workers = 4, timeout = Inf)
   names <- names(crew$workers)
@@ -317,14 +317,14 @@ test_that("crew dismiss sendable_only = FALSE, down_only = FALSE", {
   expect_equal(length(crew$workers), 0)
 })
 
-test_that("crew dismiss some workers", {
+crew_test("crew dismiss some workers", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   crew$recruit(4, timeout = Inf)
   crew$dismiss(workers = 3)
   expect_equal(length(crew$workers), 1)
 })
 
-test_that("crew dismiss at tag", {
+crew_test("crew dismiss at tag", {
   crew <- class_crew$new(worker_classes = list(crew::class_worker_callr))
   on.exit(crew$shutdown())
   crew$recruit(workers = 1, timeout = Inf, tags = "a")
@@ -334,7 +334,7 @@ test_that("crew dismiss at tag", {
   expect_equal(crew$workers[[1]]$tags, "a")
 })
 
-test_that("crew clear everyone", {
+crew_test("crew clear everyone", {
   crew <- class_crew$new()
   crew$recruit(workers = 2)
   for (index in seq_len(2)) {
@@ -350,7 +350,7 @@ test_that("crew clear everyone", {
   }
 })
 
-test_that("crew clear with down_only = TRUE", {
+crew_test("crew clear with down_only = TRUE", {
   crew <- class_crew$new()
   crew$recruit(workers = 1)
   on.exit(crew$shutdown())
@@ -361,7 +361,7 @@ test_that("crew clear with down_only = TRUE", {
   expect_true(crew$store$exists_input(crew$workers[[1]]$name))
 })
 
-test_that("crew clear with down_only = FALSE", {
+crew_test("crew clear with down_only = FALSE", {
   crew <- class_crew$new()
   crew$recruit(workers = 1)
   on.exit(crew$shutdown())
@@ -372,7 +372,7 @@ test_that("crew clear with down_only = FALSE", {
   expect_false(crew$store$exists_output(crew$workers[[1]]$name))
 })
 
-test_that("crew clear tags ", {
+crew_test("crew clear tags ", {
   crew <- class_crew$new()
   crew$recruit(workers = 1, tags = "a")
   crew$recruit(workers = 1, tags = "b")
@@ -389,7 +389,7 @@ test_that("crew clear tags ", {
   expect_true(crew$store$exists_output(crew$workers[[2]]$name))
 })
 
-test_that("restart stuck worker", {
+crew_test("restart stuck worker", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 1, timeout = Inf)

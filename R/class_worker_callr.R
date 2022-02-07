@@ -12,6 +12,7 @@
 #' print(job$value)
 #' print(job$error)
 #' worker$shutdown()
+#' processx::supervisor_kill()
 class_worker_callr <- R6::R6Class(
   classname = "worker_callr",
   inherit = class_worker,
@@ -34,8 +35,7 @@ class_worker_callr <- R6::R6Class(
           timeout = self$timeout,
           wait = self$wait
         ),
-        # TODO: supervise after https://github.com/r-lib/processx/issues/323
-        supervise = FALSE
+        supervise = TRUE
       )
       crew_wait(
         fun = function(worker) worker$up(),

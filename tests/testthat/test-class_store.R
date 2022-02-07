@@ -1,19 +1,19 @@
-test_that("valid store class", {
+crew_test("valid store class", {
   expect_silent(class_store_local$new()$validate())
 })
 
-test_that("invalid store class", {
+crew_test("invalid store class", {
   x <- class_store_local$new()
   x$dir_root <- NULL
   expect_error(x$validate(), class = "crew_error")
 })
 
-test_that("input path", {
+crew_test("input path", {
   x <- class_store$new()
   expect_equal(x$path_input("abc"), file.path(x$dir_root, "input", "abc"))
 })
 
-test_that("output path", {
+crew_test("output path", {
   x <- class_store$new()
   expect_equal(x$path_output("abc"), file.path(x$dir_root, "output", "abc"))
 })

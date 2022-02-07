@@ -1,4 +1,4 @@
-test_that("local callr worker works", {
+crew_test("local callr worker works", {
   crew <- class_crew$new(worker_classes = list(default = class_worker_callr))
   x <- class_worker_callr$new(
     crew = crew,
@@ -52,7 +52,7 @@ test_that("local callr worker works", {
   expect_false(x$up())
 })
 
-test_that("idempotent launch", {
+crew_test("idempotent launch", {
   crew <- class_crew$new(worker_classes = list(default = class_worker_callr))
   x <- class_worker_callr$new(
     crew = crew,
@@ -71,7 +71,7 @@ test_that("idempotent launch", {
   expect_false(x$up())
 })
 
-test_that("can send without explicit launch", {
+crew_test("can send without explicit launch", {
   crew <- class_crew$new(worker_classes = list(default = class_worker_callr))
   x <- class_worker_callr$new(
     crew = crew,
@@ -94,7 +94,7 @@ test_that("can send without explicit launch", {
   expect_true(x$crew$store$exists_output(x$name))
 })
 
-test_that("cannot send if worker is already assigned", {
+crew_test("cannot send if worker is already assigned", {
   crew <- class_crew$new(worker_classes = list(default = class_worker_callr))
   x <- class_worker_callr$new(
     crew = crew,
@@ -109,7 +109,7 @@ test_that("cannot send if worker is already assigned", {
   )
 })
 
-test_that("value received", {
+crew_test("value received", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 1, timeout = Inf)
@@ -126,7 +126,7 @@ test_that("value received", {
   expect_null(out$warnings)
 })
 
-test_that("value with warnings and errors", {
+crew_test("value with warnings and errors", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 1, timeout = Inf)
@@ -150,7 +150,7 @@ test_that("value with warnings and errors", {
   expect_true(crew$workers[[1]]$up())
 })
 
-test_that("restart one stuck workers", {
+crew_test("restart one stuck workers", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
@@ -175,7 +175,7 @@ test_that("restart one stuck workers", {
   expect_true(crew$workers[[2]]$stuck())
 })
 
-test_that("restart the tagged stuck worker", {
+crew_test("restart the tagged stuck worker", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 1, timeout = Inf, tags = "a")
@@ -201,7 +201,7 @@ test_that("restart the tagged stuck worker", {
   expect_false(crew$workers[[2]]$stuck())
 })
 
-test_that("restart two stuck workers", {
+crew_test("restart two stuck workers", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
@@ -226,7 +226,7 @@ test_that("restart two stuck workers", {
   }
 })
 
-test_that("restart the second worker", {
+crew_test("restart the second worker", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)
@@ -250,7 +250,7 @@ test_that("restart the second worker", {
   }
 })
 
-test_that("restart the second worker", {
+crew_test("restart the second worker", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
   crew$recruit(workers = 2, timeout = Inf)

@@ -1,14 +1,14 @@
-test_that("%||%", {
+crew_test("%||%", {
   expect_equal("a" %||% "b", "a")
   expect_equal(NULL %||% "b", "b")
 })
 
-test_that("if_any()", {
+crew_test("if_any()", {
   expect_equal(if_any(TRUE, "a", "b"), "a")
   expect_equal(if_any(FALSE, "a", "b"), "b")
 })
 
-test_that("crew_wait with argless function", {
+crew_test("crew_wait with argless function", {
   expect_silent(crew_wait(fun = function() TRUE))
   expect_error(
     crew_wait(fun = function() FALSE, timeout = 0.05, wait = 0.01),
@@ -16,7 +16,7 @@ test_that("crew_wait with argless function", {
   )
 })
 
-test_that("crew_wait on a file", {
+crew_test("crew_wait on a file", {
   tmp <- tempfile()
   fun <- function(x) file.exists(x)
   args <- list(x = tmp)

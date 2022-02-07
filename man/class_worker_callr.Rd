@@ -17,6 +17,7 @@ job <- worker$receive()
 print(job$value)
 print(job$error)
 worker$shutdown()
+processx::supervisor_kill()
 }
 \section{Super class}{
 \code{\link[crew:worker]{crew::worker}} -> \code{worker_callr}

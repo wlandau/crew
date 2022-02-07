@@ -29,6 +29,7 @@ job <- worker$receive()
 print(job$value)
 print(job$error)
 worker$shutdown()
+processx::supervisor_kill()
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

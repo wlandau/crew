@@ -1,4 +1,4 @@
-test_that("local future worker works", {
+crew_test("local future worker works", {
   crew <- class_crew$new(worker_classes = list(class_worker_future))
   x <- class_worker_future$new(
     crew = crew,
@@ -56,7 +56,7 @@ test_that("local future worker works", {
   expect_false(x$up())
 })
 
-test_that("idempotent launch", {
+crew_test("idempotent launch", {
   crew <- class_crew$new(worker_classes = list(class_worker_future))
   x <- class_worker_future$new(
     crew = crew,

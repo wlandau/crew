@@ -191,7 +191,7 @@ class_worker <- R6::R6Class(
     #'   and not receivable.
     #' @return Logical of length 1, whether the worker is stuck.
     stuck = function() {
-      !self$sendable() && !self$receivable() && !self$up() 
+      !self$sendable() && !self$receivable() && !self$up()
     },
     #' @description Relaunch the worker if it is stuck.
     #' @return `NULL` (invisibly).

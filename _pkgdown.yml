@@ -7,6 +7,8 @@ navbar:
     href: index.html
   - text: Functions
     href: reference/index.html
+  - text: Usage
+    href: articles/usage.html
   - text: Specification
     href: articles/specification.html
   - text: News

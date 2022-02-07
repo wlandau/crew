@@ -1,0 +1,202 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "identifier": "crew",
+  "description": "The 'R6' classes of 'crew' establish a standardized user interface to high-performance computing technologies. Unlike the closely related 'future' package (2021, <doi:10.32614/RJ-2021-048>), 'crew' prioritizes centralized scheduling, heterogeneous semi-persistent workers, and user-driven customization. The purpose is to enable pipeline tools such as such 'targets' (2021, <doi:10.21105/joss.02959>) to efficiently orchestrate tasks without having to support individual low-level interfaces to specific high-performance computing platforms or cloud services.",
+  "name": "crew: Centralized Reusable Workers",
+  "relatedLink": "https://wlandau.github.io/crew/",
+  "codeRepository": "https://github.com/wlandau/crew",
+  "issueTracker": "https://github.com/wlandau/crew/issues",
+  "license": "https://spdx.org/licenses/MIT",
+  "version": "0.0.0.9000",
+  "programmingLanguage": {
+    "@type": "ComputerLanguage",
+    "name": "R",
+    "url": "https://r-project.org"
+  },
+  "runtimePlatform": "R version 4.1.2 (2021-11-01)",
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": ["William", "Michael"],
+      "familyName": "Landau",
+      "email": "will.landau@gmail.com",
+      "@id": "https://orcid.org/0000-0003-1878-3253"
+    }
+  ],
+  "copyrightHolder": [
+    {
+      "@type": "Organization",
+      "name": "Eli Lilly and Company"
+    }
+  ],
+  "maintainer": [
+    {
+      "@type": "Person",
+      "givenName": ["William", "Michael"],
+      "familyName": "Landau",
+      "email": "will.landau@gmail.com",
+      "@id": "https://orcid.org/0000-0003-1878-3253"
+    }
+  ],
+  "softwareSuggestions": [
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "future.callr",
+      "name": "future.callr",
+      "version": ">= 0.7.0",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=future.callr"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "knitr",
+      "name": "knitr",
+      "version": ">= 1.30",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=knitr"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "markdown",
+      "name": "markdown",
+      "version": ">= 1.1",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=markdown"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "purrr",
+      "name": "purrr",
+      "version": ">= 0.3.4",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=purrr"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "rmarkdown",
+      "name": "rmarkdown",
+      "version": ">= 2.4",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=rmarkdown"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "testthat",
+      "name": "testthat",
+      "version": ">= 3.0.0",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=testthat"
+    }
+  ],
+  "softwareRequirements": {
+    "1": {
+      "@type": "SoftwareApplication",
+      "identifier": "R",
+      "name": "R",
+      "version": ">= 3.5.0"
+    },
+    "2": {
+      "@type": "SoftwareApplication",
+      "identifier": "callr",
+      "name": "callr",
+      "version": ">= 3.6.0",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=callr"
+    },
+    "3": {
+      "@type": "SoftwareApplication",
+      "identifier": "future",
+      "name": "future",
+      "version": ">= 1.22.0",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=future"
+    },
+    "4": {
+      "@type": "SoftwareApplication",
+      "identifier": "qs",
+      "name": "qs",
+      "version": ">= 0.24.1",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=qs"
+    },
+    "5": {
+      "@type": "SoftwareApplication",
+      "identifier": "R6",
+      "name": "R6",
+      "version": ">= 2.5.0",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=R6"
+    },
+    "6": {
+      "@type": "SoftwareApplication",
+      "identifier": "rlang",
+      "name": "rlang",
+      "version": ">= 0.4.10",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=rlang"
+    },
+    "SystemRequirements": null
+  },
+  "fileSize": "142.843KB",
+  "releaseNotes": "https://github.com/wlandau/crew/blob/master/NEWS.md",
+  "readme": "https://github.com/wlandau/crew/blob/main/README.md",
+  "contIntegration": ["https://github.com/wlandau/crew/actions?query=workflow%3Acheck", "https://app.codecov.io/gh/wlandau/crew", "https://github.com/wlandau/crew/actions?query=workflow%3Alint"],
+  "developmentStatus": "https://www.repostatus.org/#wip",
+  "keywords": ["r-package", "r", "rstats", "workflow", "high-performance-computing"]
+}

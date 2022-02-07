@@ -28,7 +28,7 @@ class_worker_future <- R6::R6Class(
     #' @return `NULL` (invisibly).
     launch = function() {
       if (self$up()) {
-        return()
+        return(invisible())
       }
       expr <- substitute(
         crew::crew_worker_loop(
@@ -49,6 +49,12 @@ class_worker_future <- R6::R6Class(
         substitute = FALSE,
         globals = FALSE,
         packages = character(0)
+      )
+      crew_wait(
+        fun = function(worker) worker$up(),
+        args = list(worker = self),
+        timeout = self$timeout,
+        wait = self$wait
       )
       invisible()
     },

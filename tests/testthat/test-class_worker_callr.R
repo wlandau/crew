@@ -149,3 +149,20 @@ test_that("value with warnings and errors", {
   expect_equal(out$warnings, c("warning1", "warning2"))
   expect_true(crew$workers[[1]]$up())
 })
+
+test_that("restart stuck worker", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 1, timeout = Inf)
+  worker <- crew$workers[[1]]
+  expect_false(worker$stuck())
+  crew$send(fun = function() Sys.sleep(Inf))
+  expect_false(worker$stuck())
+  worker$process$kill()
+  while (worker$up()) Sys.sleep(0.1)
+  expect_false(worker$up())
+  expect_true(worker$stuck())
+  worker$restart()
+  expect_true(worker$up())
+  expect_false(worker$stuck())
+})

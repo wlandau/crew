@@ -47,9 +47,11 @@ future::plan(future::sequential)
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="initialize">}\href{../../crew/html/worker.html#method-initialize}{\code{crew::worker$initialize()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="receivable">}\href{../../crew/html/worker.html#method-receivable}{\code{crew::worker$receivable()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="receive">}\href{../../crew/html/worker.html#method-receive}{\code{crew::worker$receive()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="restart">}\href{../../crew/html/worker.html#method-restart}{\code{crew::worker$restart()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="send">}\href{../../crew/html/worker.html#method-send}{\code{crew::worker$send()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="sendable">}\href{../../crew/html/worker.html#method-sendable}{\code{crew::worker$sendable()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="shutdown">}\href{../../crew/html/worker.html#method-shutdown}{\code{crew::worker$shutdown()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="stuck">}\href{../../crew/html/worker.html#method-stuck}{\code{crew::worker$stuck()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="crew" data-topic="worker" data-id="tagged">}\href{../../crew/html/worker.html#method-tagged}{\code{crew::worker$tagged()}}\out{</span>}
 }
 \out{</details>}

@@ -41,8 +41,8 @@ worker$shutdown()
 number of seconds of idling for the worker to time out.}
 
 \item{\code{wait}}{Positive numeric of length 1,
-number of seconds for a worker to wait between iterations of
-polling input.}
+number of seconds in a polling interval, e.g. checking
+if an input job exists.}
 
 \item{\code{tags}}{Character vector of optional user-defined tags
 to select subsets of eligible workers for job submission and
@@ -57,13 +57,15 @@ already has a job to do.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{class_worker$new()}}
+\item \href{#method-tagged}{\code{class_worker$tagged()}}
 \item \href{#method-sendable}{\code{class_worker$sendable()}}
 \item \href{#method-send}{\code{class_worker$send()}}
 \item \href{#method-receivable}{\code{class_worker$receivable()}}
 \item \href{#method-receive}{\code{class_worker$receive()}}
 \item \href{#method-clear}{\code{class_worker$clear()}}
 \item \href{#method-shutdown}{\code{class_worker$shutdown()}}
-\item \href{#method-tagged}{\code{class_worker$tagged()}}
+\item \href{#method-stuck}{\code{class_worker$stuck()}}
+\item \href{#method-restart}{\code{class_worker$restart()}}
 \item \href{#method-validate}{\code{class_worker$validate()}}
 }
 }
@@ -93,7 +95,7 @@ Worker constructor.
 that a worker can idle before timing out.}
 
 \item{\code{wait}}{Positive numeric of length 1, number of seconds
-that the worker waits between checking if a job exists.}
+in a polling interval, e.g. checking if an input job exists.}
 
 \item{\code{tags}}{Character vector of optional user-defined tags
 to mark eligible groups of workers in scheduling operations.}
@@ -103,6 +105,28 @@ to mark eligible groups of workers in scheduling operations.}
 \subsection{Returns}{
 The \code{new()} method calls the constructor
 and returns a new worker object.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-tagged"></a>}}
+\if{latex}{\out{\hypertarget{method-tagged}{}}}
+\subsection{Method \code{tagged()}}{
+Check if the worker has one or more
+of the tags in the argument.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$tagged(tags)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tags}}{Character vector of tags to check.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{TRUE} if the worker has any of the tags in the \code{tags} argument.
+\code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}
@@ -261,25 +285,34 @@ to achieve more reliable shutdowns.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-tagged"></a>}}
-\if{latex}{\out{\hypertarget{method-tagged}{}}}
-\subsection{Method \code{tagged()}}{
-Check if the worker has one or more
-of the tags in the argument.
+\if{html}{\out{<a id="method-stuck"></a>}}
+\if{latex}{\out{\hypertarget{method-stuck}{}}}
+\subsection{Method \code{stuck()}}{
+Check if a worker is stuck.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker$tagged(tags)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$stuck()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{tags}}{Character vector of tags to check.}
+\subsection{Details}{
+A worker is stuck if it is down, not sendable,
+and not receivable.
 }
-\if{html}{\out{</div>}}
-}
+
 \subsection{Returns}{
-\code{TRUE} if the worker has any of the tags in the \code{tags} argument.
-\code{FALSE} otherwise.
+Logical of length 1, whether the worker is stuck.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-restart"></a>}}
+\if{latex}{\out{\hypertarget{method-restart}{}}}
+\subsection{Method \code{restart()}}{
+Relaunch the worker if it is stuck.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$restart()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}

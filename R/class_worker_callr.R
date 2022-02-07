@@ -24,7 +24,7 @@ class_worker_callr <- R6::R6Class(
     #' @return `NULL` (invisibly).
     launch = function() {
       if (self$up()) {
-        return()
+        return(invisible())
       }
       self$process <- callr::r_bg(
         func = crew::crew_worker_loop,
@@ -36,6 +36,12 @@ class_worker_callr <- R6::R6Class(
         ),
         # TODO: supervise after https://github.com/r-lib/processx/issues/323
         supervise = FALSE
+      )
+      crew_wait(
+        fun = function(worker) worker$up(),
+        args = list(worker = self),
+        timeout = self$timeout,
+        wait = self$wait
       )
       invisible()
     },

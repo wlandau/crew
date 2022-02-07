@@ -35,8 +35,8 @@ class_worker <- R6::R6Class(
     #'   number of seconds of idling for the worker to time out.
     timeout = NULL,
     #' @field wait Positive numeric of length 1,
-    #'   number of seconds for a worker to wait between iterations of
-    #'   polling input.
+    #'   number of seconds in a polling interval, e.g. checking
+    #'   if an input job exists.
     wait = NULL,
     #' @field tags Character vector of optional user-defined tags
     #'   to select subsets of eligible workers for job submission and
@@ -53,7 +53,7 @@ class_worker <- R6::R6Class(
     #' @param timeout Positive numeric of length 1, number of seconds
     #'   that a worker can idle before timing out.
     #' @param wait Positive numeric of length 1, number of seconds
-    #'   that the worker waits between checking if a job exists.
+    #'   in a polling interval, e.g. checking if an input job exists.
     #' @param tags Character vector of optional user-defined tags
     #'   to mark eligible groups of workers in scheduling operations.
     initialize = function(
@@ -69,6 +69,15 @@ class_worker <- R6::R6Class(
       self$wait <- wait
       self$tags <- unique(tags)
       self$assigned <- FALSE
+    },
+    #' @description Check if the worker has one or more
+    #'   of the tags in the argument.
+    #' @param tags Character vector of tags to check.
+    #' @return `TRUE` if the worker has any of the tags in the `tags` argument.
+    #'   `FALSE` otherwise.
+    tagged = function(tags) {
+      crew_assert(is.character(tags))
+      any(self$tags %in% tags)
     },
     #' @description Check if this worker is ready to accept a job.
     #' @return `TRUE` if the worker is ready for a job
@@ -177,14 +186,20 @@ class_worker <- R6::R6Class(
       )
       invisible()
     },
-    #' @description Check if the worker has one or more
-    #'   of the tags in the argument.
-    #' @param tags Character vector of tags to check.
-    #' @return `TRUE` if the worker has any of the tags in the `tags` argument.
-    #'   `FALSE` otherwise.
-    tagged = function(tags) {
-      crew_assert(is.character(tags))
-      any(self$tags %in% tags)
+    #' @description Check if a worker is stuck.
+    #' @details A worker is stuck if it is down, not sendable,
+    #'   and not receivable.
+    #' @return Logical of length 1, whether the worker is stuck.
+    stuck = function() {
+      !self$sendable() && !self$receivable() && !self$up() 
+    },
+    #' @description Relaunch the worker if it is stuck.
+    #' @return `NULL` (invisibly).
+    restart = function() {
+      if (self$stuck()) {
+        self$launch()
+      }
+      invisible()
     },
     #' @description Worker validator.
     #' @return `NULL` (invisibly).

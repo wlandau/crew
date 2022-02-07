@@ -93,7 +93,7 @@ Methods:
 * `clear()`: remove input and output files one or more workers.
 * `shutdown()`: shut down one or more workers. Workers must be sendable if the worker shutdown method uses `send()`.
 * `dismiss()`: delete one or more worker objects from the crew. Dismissed workers must be down and sendable, so not all requested dismissals actually happen.
-* `restart()`: relaunch stuck workers.
+* `restart()`: relaunch all stuck workers.
 * `validate()`: check for errors in the fields and methods.
 
 # store

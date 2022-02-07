@@ -150,19 +150,126 @@ test_that("value with warnings and errors", {
   expect_true(crew$workers[[1]]$up())
 })
 
-test_that("restart stuck worker", {
+test_that("restart one stuck workers", {
   crew <- class_crew$new()
   on.exit(crew$shutdown())
-  crew$recruit(workers = 1, timeout = Inf)
-  worker <- crew$workers[[1]]
-  expect_false(worker$stuck())
-  crew$send(fun = function() Sys.sleep(Inf))
+  crew$recruit(workers = 2, timeout = Inf)
+  for (worker in crew$workers) {
+    expect_false(worker$stuck())
+  }
+  for (index in seq_len(2)) {
+    crew$send(fun = function() Sys.sleep(Inf))
+  }
+  for (worker in crew$workers) {
+    expect_true(worker$up())
+    expect_false(worker$stuck())
+    worker$process$kill()
+    while (worker$up()) Sys.sleep(0.1)
+    expect_false(worker$up())
+    expect_true(worker$stuck())
+  }
+  crew$restart(workers = 1)
+  expect_true(crew$workers[[1]]$up())
+  expect_false(crew$workers[[1]]$stuck())
+  expect_false(crew$workers[[2]]$up())
+  expect_true(crew$workers[[2]]$stuck())
+})
+
+test_that("restart the tagged stuck worker", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 1, timeout = Inf, tags = "a")
+  crew$recruit(workers = 1, timeout = Inf, tags = "b")
+  for (worker in crew$workers) {
+    expect_false(worker$stuck())
+  }
+  for (index in seq_len(2)) {
+    crew$send(fun = function() Sys.sleep(Inf))
+  }
+  for (worker in crew$workers) {
+    expect_true(worker$up())
+    expect_false(worker$stuck())
+    worker$process$kill()
+    while (worker$up()) Sys.sleep(0.1)
+    expect_false(worker$up())
+    expect_true(worker$stuck())
+  }
+  crew$restart(tags = "b")
+  expect_false(crew$workers[[1]]$up())
+  expect_true(crew$workers[[1]]$stuck())
+  expect_true(crew$workers[[2]]$up())
+  expect_false(crew$workers[[2]]$stuck())
+})
+
+test_that("restart two stuck workers", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 2, timeout = Inf)
+  for (worker in crew$workers) {
+    expect_false(worker$stuck())
+  }
+  for (index in seq_len(2)) {
+    crew$send(fun = function() Sys.sleep(Inf))
+  }
+  for (worker in crew$workers) {
+    expect_true(worker$up())
+    expect_false(worker$stuck())
+    worker$process$kill()
+    while (worker$up()) Sys.sleep(0.1)
+    expect_false(worker$up())
+    expect_true(worker$stuck())
+  }
+  crew$restart(workers = 2)
+  for (worker in crew$workers) {
+    expect_true(worker$up())
+    expect_false(worker$stuck())
+  }
+})
+
+test_that("restart the second worker", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 2, timeout = Inf)
+  for (worker in crew$workers) {
+    expect_false(worker$stuck())
+  }
+  for (index in seq_len(2)) {
+    crew$send(fun = function() Sys.sleep(Inf))
+  }
+  worker <- crew$workers[[2]]
+  expect_true(worker$up())
   expect_false(worker$stuck())
   worker$process$kill()
   while (worker$up()) Sys.sleep(0.1)
   expect_false(worker$up())
   expect_true(worker$stuck())
-  worker$restart()
+  crew$restart(workers = 2)
+  for (worker in crew$workers) {
+    expect_true(worker$up())
+    expect_false(worker$stuck())
+  }
+})
+
+test_that("restart the second worker", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  crew$recruit(workers = 2, timeout = Inf)
+  for (worker in crew$workers) {
+    expect_false(worker$stuck())
+  }
+  for (index in seq_len(2)) {
+    crew$send(fun = function() Sys.sleep(Inf))
+  }
+  worker <- crew$workers[[2]]
   expect_true(worker$up())
   expect_false(worker$stuck())
+  worker$process$kill()
+  while (worker$up()) Sys.sleep(0.1)
+  expect_false(worker$up())
+  expect_true(worker$stuck())
+  crew$restart(workers = 2)
+  for (worker in crew$workers) {
+    expect_true(worker$up())
+    expect_false(worker$stuck())
+  }
 })

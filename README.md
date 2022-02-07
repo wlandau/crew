@@ -81,10 +81,8 @@ No workers are running yet.
 ``` r
 library(purrr)
 map_lgl(crew$workers, ~.x$up())
-#> worker_155d12ac10db7 worker_155d1686b7f4e   worker_155d1fab826 
-#>                FALSE                FALSE                FALSE 
-#> worker_155d14c4fc74a 
-#>                FALSE
+#> worker_e42926df1465 worker_e4297fb406d2 worker_e429665e3c55 worker_e42934cb24f4 
+#>               FALSE               FALSE               FALSE               FALSE
 ```
 
 To start any or all workers, either use `launch()` or `send()`. The
@@ -114,12 +112,11 @@ do_other_tasks <- function () {
 }
 
 do_other_tasks()
-#> [1] 1.001
-#> [1] 2.011
-#> [1] 3.015
-#> [1] 4.017
-#> [1] 5.018
-#> [1] 6.022
+#> [1] 1.003
+#> [1] 2.012
+#> [1] 3.013
+#> [1] 4.015
+#> [1] 5.016
 
 # Get the output when ready.
 output <- crew$receive()
@@ -143,10 +140,8 @@ Once launched, workers stay running until they time out or shut down.
 ``` r
 is_up <- map_lgl(crew$workers, ~.x$up())
 is_up
-#> worker_155d12ac10db7 worker_155d1686b7f4e   worker_155d1fab826 
-#>                FALSE                FALSE                 TRUE 
-#> worker_155d14c4fc74a 
-#>                FALSE
+#> worker_e42926df1465 worker_e4297fb406d2 worker_e429665e3c55 worker_e42934cb24f4 
+#>               FALSE               FALSE                TRUE               FALSE
 ```
 
 Sure enough, the running worker has the tags of the previous job.
@@ -166,18 +161,19 @@ crew$send(fun = job, args = list(seconds = 8), tags = "long_jobs_go_here")
 crew$send(fun = job, args = list(seconds = 4)) # May run on any available worker.
 
 do_other_tasks()
-#> [1] 1.002
-#> [1] 2.003
-#> [1] 3.004
-#> [1] 4.005
-#> [1] 5.009
+#> [1] 1.005
+#> [1] 2.007
+#> [1] 3.008
+#> [1] 4.009
+#> [1] 5.013
 
 output_first <- crew$receive()
 
 do_other_tasks()
-#> [1] 1.003
+#> [1] 1.001
 #> [1] 2.004
-#> [1] 3.005
+#> [1] 3.004
+#> [1] 4.01
 
 output_second <- crew$receive()
 
@@ -192,7 +188,7 @@ str(output_first)
 str(output_second)
 #> List of 5
 #>  $ value    : chr "Job ran in 8 seconds."
-#>  $ seconds  : num 8.03
+#>  $ seconds  : num 8.02
 #>  $ error    : NULL
 #>  $ traceback: NULL
 #>  $ warnings : chr "This is a warning."
@@ -215,6 +211,11 @@ crew$dismiss(tags = "long_jobs_go_here")
 length(crew$workers) # Should be 2.
 #> [1] 2
 ```
+
+If eventually a worker gets stuck (not sendable, not receivable, not
+running) then the `stuck()` method of the worker will return `TRUE` and
+the `restart()` method will restart it. Use the `restart()` method of
+the crew object to restart one or more stuck workers.
 
 ## Nested crews
 

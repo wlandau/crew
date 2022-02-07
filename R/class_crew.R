@@ -235,7 +235,7 @@ class_crew <- R6::R6Class(
       }
       invisible()
     },
-    #' @description delete all worker objects.
+    #' @description Delete one or more worker objects.
     #' @details This method loops through the workers
     #'   from first to last in the worker list. If the worker
     #'   is down and sendable (able to receive a job)
@@ -275,6 +275,29 @@ class_crew <- R6::R6Class(
       }
       for (index in sort(dismiss_these, decreasing = TRUE)) {
         self$workers[[index]] <- NULL
+      }
+      invisible()
+    },
+    #' @description Restart one or more stuck workers.
+    #' @details This method loops through the workers
+    #'   from first to last in the worker list. If the worker
+    #'   is stuck, then the worker is restarted. Otherwise,
+    #'   the loop moves on to another worker.
+    #' @return `NULL` (invisibly).
+    #' @param workers Positive integer of length 1. Maximum number of workers
+    #'   to try to restart. Does not count already unstuck workers.
+    #' @param tags Character vector of allowable tags of eligible workers.
+    restart = function(workers = Inf, tags = NULL) {
+      crew_assert_pos_dbl_scalar(workers)
+      workers_unstick <- 0
+      for (worker in self$workers) {
+        if ((is.null(tags) || worker$tagged(tags)) && worker$stuck()) {
+          worker$restart()
+          workers_unstick <- workers_unstick + 1
+        }
+        if (workers_unstick >= workers) {
+          break
+        }
       }
       invisible()
     },

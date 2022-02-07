@@ -50,6 +50,7 @@ is the default.}
 \item \href{#method-clear}{\code{class_crew$clear()}}
 \item \href{#method-shutdown}{\code{class_crew$shutdown()}}
 \item \href{#method-dismiss}{\code{class_crew$dismiss()}}
+\item \href{#method-restart}{\code{class_crew$restart()}}
 \item \href{#method-validate}{\code{class_crew$validate()}}
 }
 }
@@ -311,7 +312,7 @@ the loop moves on to another worker.
 \if{html}{\out{<a id="method-dismiss"></a>}}
 \if{latex}{\out{\hypertarget{method-dismiss}{}}}
 \subsection{Method \code{dismiss()}}{
-delete all worker objects.
+Delete one or more worker objects.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{class_crew$dismiss(
   workers = Inf,
@@ -343,6 +344,36 @@ This method loops through the workers
 from first to last in the worker list. If the worker
 is down and sendable (able to receive a job)
 then the worker object is deleted from the crew. Otherwise,
+the loop moves on to another worker.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-restart"></a>}}
+\if{latex}{\out{\hypertarget{method-restart}{}}}
+\subsection{Method \code{restart()}}{
+Restart one or more stuck workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$restart(workers = Inf, tags = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{workers}}{Positive integer of length 1. Maximum number of workers
+to try to restart. Does not count already unstuck workers.}
+
+\item{\code{tags}}{Character vector of allowable tags of eligible workers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+This method loops through the workers
+from first to last in the worker list. If the worker
+is stuck, then the worker is restarted. Otherwise,
 the loop moves on to another worker.
 }
 

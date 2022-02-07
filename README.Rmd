@@ -169,6 +169,8 @@ crew$dismiss(tags = "long_jobs_go_here")
 length(crew$workers) # Should be 2.
 ```
 
+If eventually a worker gets stuck (not sendable, not receivable, not running) then the `stuck()` method of the worker will return `TRUE` and the `restart()` method will restart it. Use the `restart()` method of the crew object to restart one or more stuck workers.
+
 ## Nested crews
 
 Large data science pipelines manage hundreds of distributed workers on different machines, from traditional clusters to cloud platforms by Amazon and Google. In these situations, orchestration itself is computationally demanding. Sending jobs, receiving job output, and detecting crashes may severely block the main process.

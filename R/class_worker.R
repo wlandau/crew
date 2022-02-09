@@ -27,6 +27,37 @@ class_worker <- R6::R6Class(
   classname = "worker",
   portable = FALSE,
   cloneable = FALSE,
+  private = list(
+    send_job = function(
+      fun = function() TRUE,
+      args = list(),
+      timeout = 60,
+      wait = 1,
+      class = "default"
+    ) {
+      crew_assert(is.function(fun))
+      crew_assert(is.list(args))
+      crew_assert_named(args)
+      crew_assert_nonnegative_dbl_scalar(timeout)
+      crew_assert_nonnegative_dbl_scalar(wait)
+      if (!self$sendable()) {
+        crew_error(sprintf("worker %s is busy.", self$name))
+      }
+      crew_assert(is.function(fun))
+      crew_assert(is.list(args))
+      crew_assert_named(args)
+      data <- structure(list(fun = deparse(fun), args = args), class = class)
+      self$crew$store$write_input(
+        name = self$name,
+        data = data,
+        timeout = timeout,
+        wait = wait
+      )
+      self$assigned <- TRUE
+      self$launch()
+      invisible()
+    }
+  ),
   public = list(
     #' @field name Character of length 1, worker name.
     name = NULL,
@@ -96,35 +127,18 @@ class_worker <- R6::R6Class(
     #'   send successfully.
     #' @param wait Number of seconds to wait between iterations checking
     #'   if the job data was sent successfully.
-    #' @param class Class of job sent.
     send = function(
       fun = function() TRUE,
       args = list(),
       timeout = 60,
-      wait = 1,
-      class = "inner"
+      wait = 1
     ) {
-      crew_assert(is.function(fun))
-      crew_assert(is.list(args))
-      crew_assert_named(args)
-      crew_assert_nonnegative_dbl_scalar(timeout)
-      crew_assert_nonnegative_dbl_scalar(wait)
-      if (!self$sendable()) {
-        crew_error(sprintf("worker %s is busy.", self$name))
-      }
-      crew_assert(is.function(fun))
-      crew_assert(is.list(args))
-      crew_assert_named(args)
-      data <- structure(list(fun = deparse(fun), args = args), class = class)
-      self$crew$store$write_input(
-        name = self$name,
-        data = data,
+      private$send_job(
+        fun = fun,
+        args = args,
         timeout = timeout,
         wait = wait
       )
-      self$assigned <- TRUE
-      self$launch()
-      invisible()
     },
     #' @description Check if job output is available to collect.
     #' @return `TRUE` if a job output can be collected from the worker,
@@ -176,7 +190,7 @@ class_worker <- R6::R6Class(
     #'   to achieve more reliable shutdowns.
     #' @return `NULL` (invisibly).
     shutdown = function() {
-      self$send(class = "shutdown")
+      private$send_job(class = "shutdown")
       invisible()
     },
     #' @description Check if a worker is stuck.

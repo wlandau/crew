@@ -150,13 +150,7 @@ Check if this worker is ready to accept a job.
 \subsection{Method \code{send()}}{
 Send a job.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker$send(
-  fun = function() TRUE,
-  args = list(),
-  timeout = 60,
-  wait = 1,
-  class = "inner"
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$send(fun = function() TRUE, args = list(), timeout = 60, wait = 1)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -173,8 +167,6 @@ send successfully.}
 
 \item{\code{wait}}{Number of seconds to wait between iterations checking
 if the job data was sent successfully.}
-
-\item{\code{class}}{Class of job sent.}
 }
 \if{html}{\out{</div>}}
 }

@@ -18,7 +18,10 @@ crew_test("one simple job", {
   fun <- function(x) {
     x + 1
   }
-  data <- structure(list(fun = deparse(fun), args = list(x = 1L)), class = "job")
+  data <- structure(
+    list(fun = deparse(fun), args = list(x = 1L)),
+    class = "job"
+  )
   store$write_input(name = "worker", data = data)
   expect_error(
     crew_worker_loop(

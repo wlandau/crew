@@ -422,7 +422,7 @@ crew_test("crew up", {
   expect_true(crew$up(tags = "a"))
   expect_false(crew$up(tags = "b"))
   crew$shutdown(sendable_only = FALSE)
-  while(crew$up()) {
+  while (crew$up()) {
     Sys.sleep(0.1)
   }
   expect_false(crew$up())

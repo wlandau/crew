@@ -81,7 +81,8 @@ Required fields:
 Methods:
 
 * `recruit()`: create worker objects from one or more worker definitions. Does not actually launch the new worker objects.
-* `launch()`: call the `launch()` method of each worker. Assumes worker `launch()` is idempotent so no worker is re-launched if it is already up.
+* `launch()`: Launch one or more worker objects.
+* `up()`: Check if any worker is up.
 * `sendable()`: whether any worker is available to accept a new job.
 * `send()`: find an appropriate worker for the job and call its `send()` method on the job.
 * `receivable()`: whether any worker is done with its current job and is waiting for the crew to read the output data and free the worker to do another job.

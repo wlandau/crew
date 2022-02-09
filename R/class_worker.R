@@ -28,12 +28,12 @@ class_worker <- R6::R6Class(
   portable = FALSE,
   cloneable = FALSE,
   private = list(
-    send_job = function(
+    send_message = function(
       fun = function() TRUE,
       args = list(),
       timeout = 60,
       wait = 1,
-      class = "default"
+      class = "job"
     ) {
       crew_assert(is.function(fun))
       crew_assert(is.list(args))
@@ -133,7 +133,7 @@ class_worker <- R6::R6Class(
       timeout = 60,
       wait = 1
     ) {
-      private$send_job(
+      private$send_message(
         fun = fun,
         args = args,
         timeout = timeout,
@@ -190,7 +190,7 @@ class_worker <- R6::R6Class(
     #'   to achieve more reliable shutdowns.
     #' @return `NULL` (invisibly).
     shutdown = function() {
-      private$send_job(class = "shutdown")
+      private$send_message(class = "shutdown")
       invisible()
     },
     #' @description Check if a worker is stuck.

@@ -18,7 +18,7 @@ crew_test("one simple job", {
   fun <- function(x) {
     x + 1
   }
-  data <- list(fun = deparse(fun), args = list(x = 1L))
+  data <- structure(list(fun = deparse(fun), args = list(x = 1L)), class = "job")
   store$write_input(name = "worker", data = data)
   expect_error(
     crew_worker_loop(
@@ -31,7 +31,9 @@ crew_test("one simple job", {
   )
   expect_false(store$exists_input("worker"))
   expect_true(store$exists_output("worker"))
-  expect_equal(store$read_output("worker")$value, 2L)
+  job <- store$read_output("worker")
+  expect_s3_class(job, "job")
+  expect_equal(job$value, 2L)
 })
 
 crew_test("shutdown job", {

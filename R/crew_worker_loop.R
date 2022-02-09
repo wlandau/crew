@@ -106,7 +106,7 @@ crew_worker_loop_job_finalize <- function(input) {
 }
 
 #' @export
-crew_worker_loop_job_finalize.default <- function(input) {
+crew_worker_loop_job_finalize.job <- function(input) {
 }
 
 #' @export

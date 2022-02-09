@@ -36,7 +36,9 @@ crew_test("local future worker works", {
   expect_false(x$crew$store$exists_input(x$name))
   expect_true(x$crew$store$exists_output(x$name))
   # get results
-  expect_equal(x$receive()$value, 2L)
+  job <- x$receive()
+  expect_s3_class(job, "job")
+  expect_equal(job$value, 2L)
   expect_false(x$assigned)
   # another job
   x$send(fun = function(x) x + 1L, args = list(x = 2L))
@@ -54,6 +56,8 @@ crew_test("local future worker works", {
     tries <- tries - 1
   }
   expect_false(x$up())
+  job <- x$receive()
+  expect_s3_class(job, "shutdown")
 })
 
 crew_test("idempotent launch", {

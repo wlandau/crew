@@ -116,7 +116,7 @@ str(output)
 Once launched, workers stay running until they time out or shut down.
 
 ```{r}
-is_up <- vapply(crew$workers, \(.x) .x$up(), FUN.VALUE = logical(1))
+is_up <- vapply(crew$workers, function(x) x$up(), FUN.VALUE = logical(1))
 is_up
 ```
 

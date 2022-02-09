@@ -92,23 +92,21 @@ class_worker <- R6::R6Class(
     #'   self-contained in the body and arguments, without relying
     #'   on the closure or global variables in the environment.
     #' @param args Named list of arguments to `fun`.
-    #' @param block Logical of length 1, whether to prevent
-    #'   new jobs from being submitted to the worker
-    #'   until the output of the job is collected with
-    #'   the `receive()` method. `TRUE` is highly recommended
-    #'   so job output is not lost. Should only be `FALSE`
-    #'   if called inside `shutdown()`. If `block` is `TRUE`,
-    #'   then `sendable()` will return `FALSE` for the worker
-    #'   until the output is collected with `recieve()`.
     #' @param timeout Number of seconds to wait for job data to
     #'   send successfully.
     #' @param wait Number of seconds to wait between iterations checking
     #'   if the job data was sent successfully.
-    send = function(fun, args = list(), block = TRUE, timeout = 60, wait = 1) {
+    #' @param class Class of job sent.
+    send = function(
+      fun = function() TRUE,
+      args = list(),
+      timeout = 60,
+      wait = 1,
+      class = "inner"
+    ) {
       crew_assert(is.function(fun))
       crew_assert(is.list(args))
       crew_assert_named(args)
-      crew_assert_lgl_scalar(block)
       crew_assert_nonnegative_dbl_scalar(timeout)
       crew_assert_nonnegative_dbl_scalar(wait)
       if (!self$sendable()) {
@@ -117,16 +115,14 @@ class_worker <- R6::R6Class(
       crew_assert(is.function(fun))
       crew_assert(is.list(args))
       crew_assert_named(args)
-      data <- list(fun = deparse(fun), args = args)
+      data <- structure(list(fun = deparse(fun), args = args), class = class)
       self$crew$store$write_input(
         name = self$name,
         data = data,
         timeout = timeout,
         wait = wait
       )
-      if (block) {
-        self$assigned <- TRUE
-      }
+      self$assigned <- TRUE
       self$launch()
       invisible()
     },
@@ -180,11 +176,7 @@ class_worker <- R6::R6Class(
     #'   to achieve more reliable shutdowns.
     #' @return `NULL` (invisibly).
     shutdown = function() {
-      self$send(
-        fun = function() rlang::abort(class = "crew_shutdown"),
-        args = list(),
-        block = FALSE
-      )
+      self$send(class = "shutdown")
       invisible()
     },
     #' @description Check if a worker is stuck.

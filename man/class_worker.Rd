@@ -150,7 +150,13 @@ Check if this worker is ready to accept a job.
 \subsection{Method \code{send()}}{
 Send a job.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{class_worker$send(fun, args = list(), block = TRUE, timeout = 60, wait = 1)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{class_worker$send(
+  fun = function() TRUE,
+  args = list(),
+  timeout = 60,
+  wait = 1,
+  class = "inner"
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -162,20 +168,13 @@ on the closure or global variables in the environment.}
 
 \item{\code{args}}{Named list of arguments to \code{fun}.}
 
-\item{\code{block}}{Logical of length 1, whether to prevent
-new jobs from being submitted to the worker
-until the output of the job is collected with
-the \code{receive()} method. \code{TRUE} is highly recommended
-so job output is not lost. Should only be \code{FALSE}
-if called inside \code{shutdown()}. If \code{block} is \code{TRUE},
-then \code{sendable()} will return \code{FALSE} for the worker
-until the output is collected with \code{recieve()}.}
-
 \item{\code{timeout}}{Number of seconds to wait for job data to
 send successfully.}
 
 \item{\code{wait}}{Number of seconds to wait between iterations checking
 if the job data was sent successfully.}
+
+\item{\code{class}}{Class of job sent.}
 }
 \if{html}{\out{</div>}}
 }

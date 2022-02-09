@@ -34,14 +34,12 @@ crew_test("one simple job", {
   expect_equal(store$read_output("worker")$value, 2L)
 })
 
-crew_test("one job that runs and shutdowns the worker", {
+crew_test("shutdown job", {
   dir_root <- tempfile()
   dir_create(dir_root)
   store <- class_store_local$new(dir_root = dir_root)
-  fun <- function() {
-    rlang::abort(message = "x", class = "crew_shutdown")
-  }
-  data <- list(fun = deparse(fun), args = list())
+  fun <- function() FALSE
+  data <- structure(list(fun = deparse(fun), args = list()), class = "shutdown")
   store$write_input(name = "worker", data = data)
   crew_worker_loop(
     name = "worker",
@@ -49,8 +47,9 @@ crew_test("one job that runs and shutdowns the worker", {
     timeout = 1,
     wait = 0
   )
-  expect_true(store$exists_input("worker"))
-  expect_false(store$exists_output("worker"))
+  expect_false(store$exists_input("worker"))
+  expect_true(store$exists_output("worker"))
+  expect_s3_class(store$read_output("worker"), "shutdown")
 })
 
 crew_test("crew_worker_loop_monad() without errors", {
@@ -61,7 +60,6 @@ crew_test("crew_worker_loop_monad() without errors", {
   expect_null(out$warnings)
   expect_null(out$traceback)
 })
-
 
 crew_test("crew_worker_loop_monad() with errors", {
   fun <- function() {
@@ -76,14 +74,4 @@ crew_test("crew_worker_loop_monad() with errors", {
   expect_equal(out$error, "error1")
   expect_true(is.character(out$traceback) && length(out$traceback) > 0)
   expect_equal(out$warnings, c("warning1", "warning2"))
-})
-
-crew_test("crew_worker_loop_monad() with worker shutdown", {
-  fun <- function() {
-    crew_shutdown()
-  }
-  expect_error(
-    crew_worker_loop_monad(fun = fun, args = list()),
-    class = "crew_shutdown"
-  )
 })

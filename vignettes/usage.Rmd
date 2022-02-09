@@ -15,7 +15,6 @@ knitr::opts_chunk$set(
 library(crew)
 library(future)
 library(future.callr)
-library(purrr)
 ```
 
 # Setup

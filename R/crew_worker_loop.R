@@ -85,6 +85,7 @@ crew_worker_loop_job <- function(name, store, timeout, wait) {
   input <- store$read_input(name = name)
   input$fun <- eval(parse(text = input$fun))
   output <- crew_worker_loop_monad(fun = input$fun, args = input$args)
+  class(output) <- class(input)
   store$write_output(
     name = name,
     data = output,
@@ -96,7 +97,21 @@ crew_worker_loop_job <- function(name, store, timeout, wait) {
     timeout = timeout,
     wait = wait
   )
+  crew_worker_loop_job_finalize(input)
   invisible()
+}
+
+crew_worker_loop_job_finalize <- function(input) {
+  UseMethod("crew_worker_loop_job_finalize")
+}
+
+#' @export
+crew_worker_loop_job_finalize.default <- function(input) {
+}
+
+#' @export
+crew_worker_loop_job_finalize.shutdown <- function(input) {
+  crew_shutdown()
 }
 
 crew_worker_loop_monad <- function(fun, args) {
@@ -111,19 +126,13 @@ crew_worker_loop_monad <- function(fun, args) {
   state <- new.env(hash = FALSE, parent = emptyenv())
   start <- as.numeric(proc.time()["elapsed"])
   value <- tryCatch(
-    withCallingHandlers(
-      tryCatch(
-        do.call(what = fun, args = args),
-        crew_shutdown = identity
-      ),
+    expr = withCallingHandlers(
+      expr = do.call(what = fun, args = args),
       error = capture_error,
       warning = capture_warnings
     ),
     error = function(condition) NULL
   )
-  if (inherits(value, "crew_shutdown")) {
-    crew_shutdown(conditionMessage(value))
-  }
   seconds <- as.numeric(proc.time()["elapsed"]) - start
   list(
     value = value,

@@ -44,6 +44,7 @@ is the default.}
 \item \href{#method-new}{\code{class_crew$new()}}
 \item \href{#method-recruit}{\code{class_crew$recruit()}}
 \item \href{#method-launch}{\code{class_crew$launch()}}
+\item \href{#method-up}{\code{class_crew$up()}}
 \item \href{#method-sendable}{\code{class_crew$sendable()}}
 \item \href{#method-send}{\code{class_crew$send()}}
 \item \href{#method-receivable}{\code{class_crew$receivable()}}
@@ -133,6 +134,26 @@ Launch all down workers in the crew.
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-up"></a>}}
+\if{latex}{\out{\hypertarget{method-up}{}}}
+\subsection{Method \code{up()}}{
+Check if any workers are up.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_crew$up(tags = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tags}}{Character vector of allowable tags of eligible workers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{TRUE} if any workers are up, \code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}

@@ -405,3 +405,27 @@ crew_test("restart stuck worker", {
   expect_true(worker$up())
   expect_false(worker$stuck())
 })
+
+crew_test("crew up", {
+  crew <- class_crew$new()
+  on.exit(crew$shutdown())
+  expect_false(crew$up())
+  expect_false(crew$up(tags = "a"))
+  expect_false(crew$up(tags = "b"))
+  crew$recruit(workers = 1, timeout = Inf, tags = "a")
+  crew$recruit(workers = 1, timeout = Inf, tags = "b")
+  expect_false(crew$up())
+  expect_false(crew$up(tags = "a"))
+  expect_false(crew$up(tags = "b"))
+  crew$send(fun = function(x) x, args = list(x = "y"), tags = "a")
+  expect_true(crew$up())
+  expect_true(crew$up(tags = "a"))
+  expect_false(crew$up(tags = "b"))
+  crew$shutdown(sendable_only = FALSE)
+  while(crew$up()) {
+    Sys.sleep(0.1)
+  }
+  expect_false(crew$up())
+  expect_false(crew$up(tags = "a"))
+  expect_false(crew$up(tags = "b"))
+})

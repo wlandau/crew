@@ -94,6 +94,17 @@ class_crew <- R6::R6Class(
       walk(workers, ~.x$launch())
       invisible()
     },
+    #' @description Check if any workers are up.
+    #' @return `TRUE` if any workers are up, `FALSE` otherwise.
+    #' @param tags Character vector of allowable tags of eligible workers.
+    up = function(tags = NULL) {
+      for (worker in self$workers) {
+        if ((is.null(tags) || worker$tagged(tags)) && worker$up()) {
+          return(TRUE)
+        }
+      }
+      FALSE
+    },
     #' @description Determine if any worker is unassigned
     #'   and ready to accept a new job.
     #' @return `TRUE` if the worker can accept a job and `FALSE` otherwise.

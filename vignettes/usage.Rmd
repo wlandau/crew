@@ -77,8 +77,7 @@ lapply(crew$workers, class)
 No workers are running yet.
 
 ```{r}
-library(purrr)
-map_lgl(crew$workers, ~.x$up())
+crew$up()
 ```
 
 To start any or all workers, either use `launch()` or `send()`. The latter finds a suitable available worker, launches it if necessary, and then sends a job. Poll with `receivable()` and get the output with `receive()`. Tags let you control which kinds of workers get the jobs, and they are are supported and optional in all relevant crew methods.
@@ -118,7 +117,7 @@ str(output)
 Once launched, workers stay running until they time out or shut down.
 
 ```{r}
-is_up <- map_lgl(crew$workers, ~.x$up())
+is_up <- vapply(crew$workers, \(.x) .x$up(), FUN.VALUE = logical(1))
 is_up
 ```
 
@@ -156,7 +155,7 @@ To shut down one or more workers, use `shutdown()`. By default, only idle worker
 
 ```{r}
 crew$shutdown()
-while (any(map_lgl(crew$workers, ~.x$up()))) {
+while (crew$up()) {
   Sys.sleep(0.1)
 }
 ```

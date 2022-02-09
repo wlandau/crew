@@ -168,6 +168,6 @@ crew$dismiss(tags = "long_jobs_go_here")
 length(crew$workers) # Should be 2.
 ```
 
-# Crashes and retries
+# Crashes and restarts
 
 If eventually a worker gets stuck (not sendable, not receivable, not running) then the `stuck()` method of the worker will return `TRUE` and the `restart()` method will restart it. Use the `restart()` method of the crew object to restart one or more stuck workers.

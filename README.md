@@ -31,30 +31,14 @@ remotes::install_github("wlandau/crew")
 -   Design specification for developers who extend `crew`:
     <https://wlandau.github.io/crew/articles/specification.html>.
 
-## Future development: nested crews
-
-Large data science pipelines manage hundreds of distributed workers on
-different machines, from traditional clusters to cloud platforms by
-Amazon and Google. In these situations, orchestration itself is
-computationally demanding. Sending jobs, receiving job output, and
-detecting crashes may severely block the main process.
-
-To overcome this bottleneck, `crew` package will eventually support
-nested crews. The outer crew will support a small number of
-`callr::r_bg()` workers running on the same machine as the main process.
-Each of these outer workers will run a crew of its own, and the inner
-crews will run hundreds of inner workers on distributed systems like AWS
-Batch. The outer workers will run a different event loop that forwards
-jobs from the outer crew to the inner crews and back.
-
 ## Future development: new backends
 
-The `crew` package is arbitrarily extensible. It is designed to support
-multiple backend services (e.g. Amazon, Google, Azure) with minimal
-changes to the `R6` interface. For Amazon S3 storage for jobs, one can
-write a new subclass of `class_store` and write methods analogous to
-those of `class_store_local`. Likewise, for Amazon AWS Batch or Google
-Cloud Run workers, one can write new worker subclasses analogous to
+The `crew` package is extensible. It is designed to support multiple
+backend services (e.g. Amazon, Google, Azure) with minimal changes to
+the `R6` interface. For Amazon S3 storage for jobs, one can write a new
+subclass of `class_store` and write methods analogous to those of
+`class_store_local`. Likewise, for Amazon AWS Batch or Google Cloud Run
+workers, one can write new worker subclasses analogous to
 `class_worker_callr` and `class_worker_future`. All these classes are
 documented in help files, and a specification of required methods and
 fields is in the [specification

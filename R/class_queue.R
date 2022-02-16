@@ -16,8 +16,20 @@ class_queue <- R6::R6Class(
       private$next_id <- id + 1L
       paste0(".", id)
     },
+    add_worker = function(index) {
+      self$tasks <- tibble::add_row(
+        self$tasks,
+        id = paste0(".idle-", index),
+        idle = TRUE,
+        state = "running",
+        fun = list(NULL),
+        args = list(NULL),
+        worker = list(callr::r_session$new(wait = FALSE)),
+        result = list(NULL)
+      )
+    },
     start_workers = function(workers) {
-      private$tasks <- tibble::tibble(
+      self$tasks <- tibble::tibble(
         id = character(),
         idle = logical(),
         state = character(0),
@@ -26,45 +38,34 @@ class_queue <- R6::R6Class(
         worker = list(),
         result = list()
       )
-      for (index in seq_len(workers)) {
-        handle <- callr::r_session$new(wait = FALSE)
-        private$tasks <- tibble::add_row(
-          private$tasks,
-          id = paste0(".idle-", index),
-          idle = TRUE,
-          state = "running",
-          fun = list(NULL),
-          args = list(NULL),
-          worker = list(handle),
-          result = list(NULL)
-        )
-      }
+      lapply(workers, private$add_worker)
+      invisible()
     },
     schedule = function() {
-      ready <- which(private$tasks$state == "ready")
+      ready <- which(self$tasks$state == "ready")
       if (!length(ready)) {
         return()
       }
-      handles <- private$tasks$worker[ready]
-      private$tasks$result[ready] <- lapply(handles, function(x) x$read())
-      private$tasks$worker[ready] <- replicate(length(ready), NULL)
-      private$tasks$state[ready] <- ifelse(
-        private$tasks$idle[ready],
+      handles <- self$tasks$worker[ready]
+      self$tasks$result[ready] <- lapply(handles, function(x) x$read())
+      self$tasks$worker[ready] <- replicate(length(ready), NULL)
+      self$tasks$state[ready] <- ifelse(
+        self$tasks$idle[ready],
         "waiting",
         "done"
       )
-      waiting <- which(private$tasks$state == "waiting")[seq_along(ready)]
-      private$tasks$worker[waiting] <- handles
-      private$tasks$state[waiting] <- ifelse(
-        private$tasks$idle[waiting],
+      waiting <- which(self$tasks$state == "waiting")[seq_along(ready)]
+      self$tasks$worker[waiting] <- handles
+      self$tasks$state[waiting] <- ifelse(
+        self$tasks$idle[waiting],
         "ready",
         "running"
       )
       lapply(waiting, function(index) {
-        if (!private$tasks$idle[index]) {
-          private$tasks$worker[[index]]$call(
-            private$tasks$fun[[index]],
-            private$tasks$args[[index]]
+        if (!self$tasks$idle[index]) {
+          self$tasks$worker[[index]]$call(
+            self$tasks$fun[[index]],
+            self$tasks$args[[index]]
           )
         }
       })
@@ -79,17 +80,17 @@ class_queue <- R6::R6Class(
         }
       }
       repeat{
-        to_poll <- which(private$tasks$state == "running")
+        to_poll <- which(self$tasks$state == "running")
         connections <- lapply(
-          private$tasks$worker[to_poll],
+          self$tasks$worker[to_poll],
           function(x) {
             x$get_poll_connection()
           }
         )
         result <- processx::poll(connections, as_ms(timeout))
-        private$tasks$state[to_poll][result == "ready"] <- "ready"
+        self$tasks$state[to_poll][result == "ready"] <- "ready"
         private$schedule()
-        out <- private$tasks$id[private$tasks$state == "done"]
+        out <- self$tasks$id[self$tasks$state == "done"]
         if (is.finite(timeout)) {
           timeout <- limit - Sys.time()
         }
@@ -113,14 +114,14 @@ class_queue <- R6::R6Class(
       invisible()
     },
     #' @description Push a task to the queue.
-    #' @return `NULL` (invsibly)
+    #' @return The ID of the assigned task.
     #' @param fun Function to run for the task.
     #' @param args Arguments to `fun`.
     push = function(fun, args = list()) {
       id <- private$get_next_id()
-      before <- which(private$tasks$idle)[1]
-      private$tasks <- tibble::add_row(
-        .data = private$tasks,
+      before <- which(self$tasks$idle)[1]
+      self$tasks <- tibble::add_row(
+        .data = self$tasks,
         .before = before,
         id = id,
         idle = FALSE,
@@ -131,22 +132,33 @@ class_queue <- R6::R6Class(
         result = list(NULL)
       )
       private$schedule()
-      invisible()
+      id
     },
     #' @description Poll the workers and pop a result off the queue
     #'   if available.
-    #' @return The result of a done task if available, `NULL` if there
-    #'   are no done tasks. The return value is a list with the return
-    #'   value of the function and the task ID.
+    #' @return The result of a done task (a list) if available, `NULL` if
+    #'   there are no done tasks. Contains a list of `callr` output fields
+    #'   and the task ID.
     #' @param timeout Number of seconds of timeout for polling.
     pop = function(timeout = 0) {
-      if (is.na(done <- self$poll(timeout)[1])) {
+      if (is.na(done <- private$poll(timeout)[1])) {
         return(NULL)
       }
-      row <- match(done, private$tasks$id)
-      result <- private$tasks$result[[row]]
-      private$tasks <- private$tasks[-row, ]
-      list(value = result, is = done)
+      row <- match(done, self$tasks$id)
+      result <- self$tasks$result[[row]]
+      self$tasks <- self$tasks[-row, ]
+      c(result, task_id = done)
+    },
+    #' @description Terminate all workers. The queue is no longer usable
+    #'   after termination.
+    #' @return `NULL` (invisibly).
+    terminate = function() {
+      for (worker in self$tasks$worker) {
+        if (!is.null(worker)) {
+          worker$kill()
+        }
+      }
+      invisible()
     }
   )
 )

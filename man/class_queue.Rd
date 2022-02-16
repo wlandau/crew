@@ -24,6 +24,7 @@ under the MIT license. See also the \code{crew} package \code{NOTICE} file.
 \item \href{#method-new}{\code{class_queue$new()}}
 \item \href{#method-push}{\code{class_queue$push()}}
 \item \href{#method-pop}{\code{class_queue$pop()}}
+\item \href{#method-terminate}{\code{class_queue$terminate()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -67,7 +68,7 @@ Push a task to the queue.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{NULL} (invsibly)
+The ID of the assigned task.
 }
 }
 \if{html}{\out{<hr>}}
@@ -88,9 +89,23 @@ if available.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The result of a done task if available, \code{NULL} if there
-are no done tasks. The return value is a list with the return
-value of the function and the task ID.
+The result of a done task (a list) if available, \code{NULL} if
+there are no done tasks. Contains a list of \code{callr} output fields
+and the task ID.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-terminate"></a>}}
+\if{latex}{\out{\hypertarget{method-terminate}{}}}
+\subsection{Method \code{terminate()}}{
+Terminate all workers. The queue is no longer usable
+after termination.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{class_queue$terminate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 }

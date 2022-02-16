@@ -3,6 +3,7 @@
 S3method(crew_worker_loop_job_finalize,job)
 S3method(crew_worker_loop_job_finalize,shutdown)
 export(class_crew)
+export(class_queue)
 export(class_store)
 export(class_store_local)
 export(class_worker)

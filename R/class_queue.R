@@ -10,7 +10,6 @@ class_queue <- R6::R6Class(
   portable = FALSE,
   cloneable = FALSE,
   private = list(
-    tasks = NULL,
     next_id = 1L,
     get_next_id = function() {
       id <- private$next_id
@@ -69,45 +68,7 @@ class_queue <- R6::R6Class(
           )
         }
       })
-    }
-  ),
-  public = list(
-    #' @description Task queue constructor.
-    #' @return The `new()` method calls the constructor
-    #'   and returns a task queue object.
-    #' @param workers Number of local processes that
-    #'   iterate through tasks.
-    initialize = function(workers = 4L) {
-      private$start_workers(workers)
-      invisible()
     },
-    #' @description Get the data frame of tasks.
-    #' @return The data frame of tasks.
-    get_tasks = function() {
-      private$tasks
-    },
-    #' @description Push a task to the queue.
-    #' @return `NULL` (invsibly)
-    #' @param fun Function to run for the task.
-    #' @param args Arguments to `fun`.
-    push = function(fun, args = list()) {
-      id <- private$get_next_id()
-      before <- which(private$tasks$idle)[1]
-      private$tasks <- tibble::add_row(
-        .data = private$tasks,
-        .before = before,
-        id = id,
-        idle = FALSE,
-        state = "waiting",
-        fun = list(fun),
-        args = list(args),
-        worker = list(NULL),
-        result = list(NULL)
-      )
-      private$schedule()
-      invisible()
-    },
-    #' @description
     poll = function(timeout = 0) {
       limit <- Sys.time() + timeout
       as_ms <- function(x) {
@@ -137,7 +98,47 @@ class_queue <- R6::R6Class(
         }
       }
       out
+    }
+  ),
+  public = list(
+    #' @field tasks Data frame of tasks.
+    tasks = NULL,
+    #' @description Task queue constructor.
+    #' @return The `new()` method calls the constructor
+    #'   and returns a task queue object.
+    #' @param workers Number of local processes that
+    #'   iterate through tasks.
+    initialize = function(workers = 4L) {
+      private$start_workers(workers)
+      invisible()
     },
+    #' @description Push a task to the queue.
+    #' @return `NULL` (invsibly)
+    #' @param fun Function to run for the task.
+    #' @param args Arguments to `fun`.
+    push = function(fun, args = list()) {
+      id <- private$get_next_id()
+      before <- which(private$tasks$idle)[1]
+      private$tasks <- tibble::add_row(
+        .data = private$tasks,
+        .before = before,
+        id = id,
+        idle = FALSE,
+        state = "waiting",
+        fun = list(fun),
+        args = list(args),
+        worker = list(NULL),
+        result = list(NULL)
+      )
+      private$schedule()
+      invisible()
+    },
+    #' @description Poll the workers and pop a result off the queue
+    #'   if available.
+    #' @return The result of a done task if available, `NULL` if there
+    #'   are no done tasks. The return value is a list with the return
+    #'   value of the function and the task ID.
+    #' @param timeout Number of seconds of timeout for polling.
     pop = function(timeout = 0) {
       if (is.na(done <- self$poll(timeout)[1])) {
         return(NULL)
@@ -145,7 +146,7 @@ class_queue <- R6::R6Class(
       row <- match(done, private$tasks$id)
       result <- private$tasks$result[[row]]
       private$tasks <- private$tasks[-row, ]
-      c(result, list(task_id = done))
+      list(value = result, is = done)
     }
   )
 )

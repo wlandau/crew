@@ -16,4 +16,5 @@
 #' @importFrom qs qsave
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function
+#' @importFrom uuid UUIDgenerate
 NULL

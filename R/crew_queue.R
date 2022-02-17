@@ -20,6 +20,8 @@ crew_queue <- R6::R6Class(
     initialize_workers = function() {
       private$workers <- tibble::tibble(
         worker = character(0),
+        timeout = numeric(0),
+        wait = numeric(0),
         tags = list(NULL),
         handle = list(NULL),
         up = logical(0),
@@ -34,7 +36,7 @@ crew_queue <- R6::R6Class(
       )
       invisible()
     },
-    insert_task = function(fun, args, tags) {
+    add_task = function(fun, args, tags) {
       private$tasks <- tibble::add_row(
         .data = private$tasks,
         task = uuid::UUIDgenerate(),
@@ -44,10 +46,12 @@ crew_queue <- R6::R6Class(
       )
       invisible()
     },
-    insert_worker = function(tags) {
+    add_worker = function(timeout, wait, tags) {
       private$workers <- tibble::add_row(
         .data = private$workers,
         worker = uuid::UUIDgenerate(),
+        timeout = timeout,
+        wait = wait,
         tags = list(tags),
         handle = list(NULL),
         up = FALSE,
@@ -61,6 +65,12 @@ crew_queue <- R6::R6Class(
         result = list(NULL)
       )
       invisible()
+    },
+    remove_task = function(task) {
+      private$tasks <- private$tasks[private$tasks$task != task, ]
+    },
+    remove_worker = function(worker) {
+      private$workers <- private$workers[private$workers$worker != worker, ]
     }
   ),
   public = list(
@@ -75,17 +85,21 @@ crew_queue <- R6::R6Class(
     get_workers = function() {
       private$workers
     },
-    add_task = function(fun, args = list(), tags = character(0)) {
-      private$insert_task(fun = fun, args = args, tags = tags)
-    },
-    add_workers = function(workers = 1, tags = character(0)) {
-      walk(seq_len(workers), ~private$insert_worker(tags = tags))
-    },
-    remove_task = function(task) {
-      private$tasks <- private$tasks[private$tasks$task != task, ]
-    },
-    remove_worker = function(worker) {
-      private$workers <- private$workers[private$workers$worker != worker, ]
+    add_workers = function(
+      workers = 1,
+      timeout = Inf,
+      wait = 0,
+      tags = character(0)
+    ) {
+      walk(
+        seq_len(workers),
+        ~private$add_worker(
+          timeout = timeout,
+          wait = wait,
+          tags = tags
+        )
+      )
+      invisible()
     }
   )
 )

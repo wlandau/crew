@@ -5,6 +5,17 @@ crew_assert <- function(condition, message = NULL) {
   }
 }
 
+crew_assert_chr <- function(x, message = NULL) {
+  default <- paste(
+    x,
+    "must be a character string."
+  )
+  crew_assert(
+    condition = is.character(x),
+    message = default %||% message
+  )
+}
+
 crew_assert_chr_scalar <- function(x, message = NULL) {
   default <- paste(
     x,

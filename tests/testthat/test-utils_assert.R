@@ -3,6 +3,14 @@ crew_test("crew_assert", {
   expect_error(crew_assert(FALSE), class = "crew_error")
 })
 
+crew_test("crew_assert_chr", {
+  expect_silent(crew_assert_chr("abc"))
+  expect_silent(crew_assert_chr(character(0)))
+  expect_silent(crew_assert_chr(letters))
+  expect_error(crew_assert_chr(NULL), class = "crew_error")
+  expect_error(crew_assert_chr(1), class = "crew_error")
+})
+
 crew_test("crew_assert_chr_scalar", {
   expect_silent(crew_assert_chr_scalar("abc"))
   expect_error(crew_assert_chr_scalar(NULL), class = "crew_error")

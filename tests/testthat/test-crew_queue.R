@@ -11,7 +11,7 @@ test_that("add task", {
   fun <- function(x) x
   args <- list(x = 1)
   tags <- letters
-  x$add_task(fun = fun, args = args, tags = tags)
+  x$private$add_task(fun = fun, args = args, tags = tags)
   out <- x$get_tasks()
   expect_equal(nrow(out), 1)
   expect_true(is.character(out$task))
@@ -19,7 +19,7 @@ test_that("add task", {
   expect_equal(out$tags, list(letters))
 })
 
-test_that("add worker", {
+test_that("add workers", {
   x <- crew_queue$new()
   x$add_workers(workers = 2, tags = letters)
   out <- x$get_workers()
@@ -43,15 +43,15 @@ test_that("remove task", {
   fun <- function(x) x
   args <- list(x = 1)
   tags <- letters
-  x$add_task(fun = fun, args = args, tags = tags)
-  x$add_task(fun = fun, args = args, tags = tags)
+  x$private$add_task(fun = fun, args = args, tags = tags)
+  x$private$add_task(fun = fun, args = args, tags = tags)
   out <- x$get_tasks()
   expect_equal(nrow(out), 2)
   expect_true(out$task[1] != out$task[2])
-  x$remove_task("nope")
+  x$private$remove_task("nope")
   out2 <- x$get_tasks()
   expect_equal(out, out2)
-  x$remove_task(out$task[1])
+  x$private$remove_task(out$task[1])
   expect_equal(x$get_tasks(), out[2, ])
 })
 
@@ -61,9 +61,9 @@ test_that("remove worker", {
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
   expect_true(out$worker[1] != out$worker[2])
-  x$remove_worker("nope")
+  x$private$remove_worker("nope")
   out2 <- x$get_workers()
   expect_equal(out, out2)
-  x$remove_worker(out$worker[1])
+  x$private$remove_worker(out$worker[1])
   expect_equal(x$get_workers(), out[2, ])
 })

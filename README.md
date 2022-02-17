@@ -31,21 +31,6 @@ remotes::install_github("wlandau/crew")
 -   Design specification for developers who extend `crew`:
     <https://wlandau.github.io/crew/articles/specification.html>.
 
-## Future development: new backends
-
-The `crew` package is extensible. It is designed to support multiple
-backend services (e.g. Amazon, Google, Azure) with minimal changes to
-the `R6` interface. For Amazon S3 storage for jobs, one can write a new
-subclass of `class_store` and write methods analogous to those of
-`class_store_local`. Likewise, for Amazon AWS Batch or Google Cloud Run
-workers, one can write new worker subclasses analogous to
-`class_worker_callr` and `class_worker_future`. All these classes are
-documented in help files, and a specification of required methods and
-fields is in the [specification
-vignette](https://wlandau.github.io/crew/articles/specification.html).
-The new subclasses will be supported in separate R packages that import
-`crew`, ideally one package per cloud platform.
-
 ## Thanks
 
 The `crew` package incorporates insightful ideas from the following

@@ -6,23 +6,20 @@ crew_queue <- R6::R6Class(
   portable = FALSE,
   cloneable = FALSE,
   private = list(
+    timeout = NULL,
+    wait = NULL,
     tasks = NULL,
     workers = NULL,
     initialize_tasks = function() {
       private$tasks <- tibble::tibble(
         task = character(0),
-        tags = list(NULL),
         fun = list(NULL),
         args = list(NULL)
       )
-      invisible()
     },
     initialize_workers = function() {
       private$workers <- tibble::tibble(
         worker = character(0),
-        timeout = numeric(0),
-        wait = numeric(0),
-        tags = list(NULL),
         handle = list(NULL),
         up = logical(0),
         lock = logical(0),
@@ -34,25 +31,19 @@ crew_queue <- R6::R6Class(
         args = list(NULL),
         result = list(NULL)
       )
-      invisible()
     },
-    add_task = function(fun, args, tags) {
+    add_task = function(fun, args) {
       private$tasks <- tibble::add_row(
         .data = private$tasks,
         task = uuid::UUIDgenerate(),
-        tags = list(tags),
         fun = list(fun),
         args = list(args)
       )
-      invisible()
     },
-    add_worker = function(timeout, wait, tags) {
+    add_worker = function() {
       private$workers <- tibble::add_row(
         .data = private$workers,
         worker = uuid::UUIDgenerate(),
-        timeout = timeout,
-        wait = wait,
-        tags = list(tags),
         handle = list(NULL),
         up = FALSE,
         lock = FALSE,
@@ -64,17 +55,25 @@ crew_queue <- R6::R6Class(
         args = list(NULL),
         result = list(NULL)
       )
-      invisible()
     },
-    remove_task = function(task) {
-      private$tasks <- private$tasks[private$tasks$task != task, ]
-    },
-    remove_worker = function(worker) {
-      private$workers <- private$workers[private$workers$worker != worker, ]
+    assign_tasks = function() {
+      while(nrow(private$tasks) && any(private$workers$free)) {
+        index <- min(which(private$workers$free))
+        for (field in colnames(private$tasks$task)) {
+          value <- private$tasks[[field]]
+          private$workers[[field]][index] <- value
+        }
+        for (field in c("free", "sent", "done")) {
+          private$workers$[[field]][index] <- FALSE
+        }
+        private$tasks <- private$tasks[-1, ]
+      }
     }
   ),
   public = list(
-    initialize = function() {
+    initialize = function(timeout = Inf, wait = 0) {
+      private$timeout <- timeout
+      private$wait <- wait
       private$initialize_workers()
       private$initialize_tasks()
       invisible()
@@ -85,20 +84,14 @@ crew_queue <- R6::R6Class(
     get_workers = function() {
       private$workers
     },
-    add_workers = function(
-      workers = 1,
-      timeout = Inf,
-      wait = 0,
-      tags = character(0)
-    ) {
-      walk(
-        seq_len(workers),
-        ~private$add_worker(
-          timeout = timeout,
-          wait = wait,
-          tags = tags
-        )
-      )
+    add_workers = function(workers = 1) {
+      walk(seq_len(workers), private$add_worker)
+    }
+    prune_workers = function() {
+      free <- private$workers$free
+      up <- private$workers$up
+      lock <- private$workers$lock
+      private$workers <- private$workers[free & !up & !lock, ]
       invisible()
     }
   )

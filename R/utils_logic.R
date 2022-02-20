@@ -30,6 +30,7 @@ if_any <- function(condition, true, false) {
 #' @param wait Nonnegative numeric of length 1,
 #'   number of seconds to wait between calls to `fun`.
 crew_wait <- function(fun, args = list(), timeout = 60, wait = 1) {
+  fun <- rlang::as_function(fun)
   crew_assert(is.function(fun))
   crew_assert(is.list(args))
   crew_assert_named(args)

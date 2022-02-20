@@ -113,24 +113,18 @@ test_that("private methods to submit and receive_results work", {
   expect_false(any(x$get_workers()$done))
   x$private$send_tasks()
   expect_true(all(x$get_workers()$sent))
-  crew_wait(
-    ~{
-      x$private$poll_up()
-      all(x$private$workers$up)
-    },
-    wait = 0.1
-  )
+  while (!all(x$private$workers$up)) {
+    x$private$poll_up()
+    Sys.sleep(0.1)
+  }
   expect_true(all(x$get_workers()$up))
   expect_false(any(x$get_workers()$free))
   expect_true(all(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
-  crew_wait(
-    ~{
-      x$private$poll_done()
-      all(x$private$workers$done)
-    },
-    wait = 0.1
-  )
+  while (!all(x$private$workers$done)) {
+    x$private$poll_done()
+    Sys.sleep(0.1)
+  }
   expect_true(all(x$get_workers()$up))
   expect_false(any(x$get_workers()$free))
   expect_true(all(x$get_workers()$sent))
@@ -151,13 +145,10 @@ test_that("private methods to submit and receive_results work", {
     expect_null(x$private$pop_result())
   }
   x$shutdown()
-  crew_wait(
-    ~{
-      x$private$poll_up()
-      !any(x$private$workers$up)
-    },
-    wait = 0.1
-  )
+  while (any(x$private$workers$up)) {
+    x$private$poll_up()
+    Sys.sleep(0.1)
+  }
   walk(x$get_workers()$handle, ~expect_false(.x$is_alive()))
   expect_false(any(x$get_workers()$up))
   expect_true(all(x$get_workers()$free))
@@ -169,20 +160,5 @@ test_that("push and pop", {
   x <- crew_sync$new()
   on.exit(x$shutdown())
   fun <- function(x) x
-  x$add_workers(workers = 2)
-  for (index in seq_len(10)) {
-    x$push(fun = fun, args = list(x = index))
-  }
-  done <- rep(FALSE, 10)
-  retries <- 600
-  while (!all(done) && retries > 0) {
-    out <- x$pop()
-    if (!is.null(out)) {
-      done[out$result$result] <- TRUE
-    }
-    retries <- retries - 1
-    Sys.sleep(0.1)
-  }
-  expect_true(all(done))
 })
 

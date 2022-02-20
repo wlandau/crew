@@ -1,8 +1,8 @@
 # Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
-crew_queue <- R6::R6Class(
-  classname = "crew_queue",
+crew_sync <- R6::R6Class(
+  classname = "crew_sync",
   portable = FALSE,
   cloneable = FALSE,
   private = list(
@@ -138,6 +138,12 @@ crew_queue <- R6::R6Class(
         private$results <- private$results[-1, ]
       }
       out
+    },
+    update_tasks = function() {
+      private$poll_done()
+      private$receive_results()
+      private$assign_tasks()
+      private$send_tasks()
     }
   ),
   public = list(
@@ -170,15 +176,14 @@ crew_queue <- R6::R6Class(
       invisible()
     },
     push = function(fun, args, task = uuid::UUIDgenerate()) {
+      fun <- rlang::as_function(fun)
       private$add_task(fun = fun, args = args, task = task)
-      private$assign_tasks()
-      private$send_tasks()
+      private$update_tasks()
       invisible()
     },
     pop = function() {
-      private$poll_done()
-      private$receive_results()
-      private$pop_task()
+      private$update_tasks()
+      private$pop_result()
     },
     shutdown = function() {
       for (handle in private$workers$handle) {

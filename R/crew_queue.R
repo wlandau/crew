@@ -83,7 +83,7 @@ crew_queue <- R6::R6Class(
       free <- private$workers$free
       up <- private$workers$up
       lock <- private$workers$lock
-      private$workers <- private$workers[free & !up & !lock, ]
+      private$workers <- private$workers[!free | up | lock, ]
       invisible()
     },
     push = function(fun, args, task = uuid::UUIDgenerate()) {

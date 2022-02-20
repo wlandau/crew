@@ -64,3 +64,20 @@ test_that("assign tasks, more tasks than workers", {
   out <- x$get_workers()
   expect_false(anyNA(out$task))
 })
+
+test_that("prune workers", {
+  x <- crew_queue$new()
+  x$add_workers(workers = 8)
+  grid <- expand.grid(
+    free = c(TRUE, FALSE),
+    up = c(TRUE, FALSE),
+    lock = c(TRUE, FALSE)
+  )
+  for (field in colnames(grid)) {
+    x$private$workers[[field]] <- grid[[field]]
+  }
+  x$prune_workers()
+  workers <- x$get_workers()
+  expect_equal(nrow(x$get_workers()), 7)
+  expect_true(all(!workers$free | workers$up | workers$lock))
+})

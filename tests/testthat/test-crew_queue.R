@@ -168,7 +168,10 @@ test_that("private methods to submit and receive_results work", {
 test_that("push and pop", {
   x <- crew_sync$new()
   on.exit(x$shutdown())
-  fun <- function(x) x
+  fun <- function(x) {
+    Sys.sleep(1)
+    x
+  }
   x$add_workers(workers = 2)
   for (index in seq_len(10)) {
     x$push(fun = fun, args = list(x = index))

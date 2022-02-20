@@ -19,7 +19,7 @@ crew_queue <- R6::R6Class(
       )
     },
     initialize_results = function() {
-      private$tasks <- tibble::tibble(
+      private$results <- tibble::tibble(
         task = character(0),
         result = list(NULL)
       )
@@ -35,14 +35,10 @@ crew_queue <- R6::R6Class(
         done = logical(0),
         task = character(0),
         fun = list(NULL),
-        args = list(NULL),
-        result = list(NULL)
+        args = list(NULL)
       )
     },
     add_task = function(task, fun, args) {
-      
-      browser()
-      
       dup <- task %in% private$tasks$task || task %in% private$workers$task
       crew_assert(!dup, paste("duplicate task name", task))
       private$tasks <- tibble::add_row(
@@ -56,7 +52,7 @@ crew_queue <- R6::R6Class(
       private$results <- tibble::add_row(
         .data = private$results,
         task = task,
-        results = list(result)
+        result = list(result)
       )
     },
     add_worker = function() {
@@ -71,12 +67,11 @@ crew_queue <- R6::R6Class(
         done = FALSE,
         task = NA_character_,
         fun = list(NULL),
-        args = list(NULL),
-        result = list(NULL)
+        args = list(NULL)
       )
     },
     assign_tasks = function() {
-      while(nrow(private$tasks) && any(private$workers$free)) {
+      while (nrow(private$tasks) && any(private$workers$free)) {
         index <- min(which(private$workers$free))
         for (field in colnames(private$tasks)) {
           private$workers[[field]][index] <- private$tasks[[field]][1]
@@ -93,7 +88,6 @@ crew_queue <- R6::R6Class(
       workers <- workers[which, ]
       for (worker in workers$worker) {
         index <- which(private$workers$worker == worker)
-        private$workers$lock[index] <- TRUE
         private$send(
           worker = worker,
           fun = private$workers$fun[[index]],
@@ -159,6 +153,9 @@ crew_queue <- R6::R6Class(
     get_tasks = function() {
       private$tasks
     },
+    get_results = function() {
+      private$results
+    },
     get_workers = function() {
       private$workers
     },
@@ -174,9 +171,9 @@ crew_queue <- R6::R6Class(
       invisible()
     },
     push = function(fun, args, task = uuid::UUIDgenerate()) {
-      private$push_task(fun = fun, args = args, task = task)
+      private$add_task(fun = fun, args = args, task = task)
       invisible()
-    }
+    },
     pop = function() {
       private$pop_task()
     },

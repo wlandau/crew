@@ -29,7 +29,6 @@ crew_queue <- R6::R6Class(
         worker = character(0),
         handle = list(NULL),
         up = logical(0),
-        lock = logical(0),
         free = logical(0),
         sent = logical(0),
         done = logical(0),
@@ -61,7 +60,6 @@ crew_queue <- R6::R6Class(
         worker = uuid::UUIDgenerate(),
         handle = list(NULL),
         up = FALSE,
-        lock = FALSE,
         free = TRUE,
         sent = FALSE,
         done = FALSE,
@@ -84,28 +82,26 @@ crew_queue <- R6::R6Class(
     },
     send_tasks = function() {
       workers <- private$workers
-      which <- !workers$free & !workers$lock & !workers$sent
+      which <- !workers$free & !workers$sent
       workers <- workers[which, ]
       for (worker in workers$worker) {
         index <- which(private$workers$worker == worker)
-        private$send(
+        private$send_task(
           worker = worker,
           fun = private$workers$fun[[index]],
           args = private$workers$args[[index]]
         )
       }
     },
-    launch = function() {
-      callr::r_session$new(wait = TRUE)
-    },
-    send = function(worker, fun, args) {
+    send_task = function(worker, fun, args) {
       index <- which(private$workers$worker == worker)
       handle <- private$workers$handle[[index]]
       if (is.null(handle) || !handle$is_alive()) {
-        handle <- private$launch()
+        handle <- callr::r_session$new(wait = TRUE)
         private$workers$handle[[index]] <- handle
       }
       handle$call(func = fun, args = args)
+      private$workers$sent[index] <- TRUE
     },
     poll_up = function() {
       for (index in seq_len(nrow(private$workers))) {
@@ -122,12 +118,15 @@ crew_queue <- R6::R6Class(
         )
       }
     },
-    receive = function() {
+    receive_results = function() {
       for (index in seq_len(nrow(private$workers))) {
         if (private$workers$done[index]) {
           task <- private$workers$task[index]
           result <- private$workers$handle[[index]]$read()
           private$add_result(task = task, result = result)
+          private$workers$free[index] <- TRUE
+          private$workers$sent[index] <- FALSE
+          private$workers$done[index] <- FALSE
         }
       }
     },
@@ -159,22 +158,26 @@ crew_queue <- R6::R6Class(
     get_workers = function() {
       private$workers
     },
-    scale_out = function(workers = 1) {
+    add_workers = function(workers = 1) {
       replicate(workers, private$add_worker())
       invisible()
     },
-    scale_back = function() {
+    remove_workers = function() {
+      private$poll_up()
       free <- private$workers$free
       up <- private$workers$up
-      lock <- private$workers$lock
-      private$workers <- private$workers[!free | up | lock, ]
+      private$workers <- private$workers[!free | up, ]
       invisible()
     },
     push = function(fun, args, task = uuid::UUIDgenerate()) {
       private$add_task(fun = fun, args = args, task = task)
+      private$assign_tasks()
+      private$send_tasks()
       invisible()
     },
     pop = function() {
+      private$poll_done()
+      private$receive_results()
       private$pop_task()
     },
     shutdown = function() {

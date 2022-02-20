@@ -11,9 +11,9 @@ test_that("initial queue", {
   expect_gt(ncol(x$get_workers()), 0)
 })
 
-test_that("scale out", {
+test_that("add workers", {
   x <- crew_queue$new()
-  x$scale_out(workers = 2)
+  x$add_workers(workers = 2)
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
   expect_true(out$worker[1] != out$worker[2])
@@ -22,27 +22,31 @@ test_that("scale out", {
   expect_equal(out$done, rep(FALSE, 2))
   expect_equal(out$free, rep(TRUE, 2))
   expect_equal(out$sent, rep(FALSE, 2))
-  expect_equal(out$lock, rep(FALSE, 2))
   expect_true(all(is.na(out$task)))
   expect_equal(out$fun, list(NULL, NULL))
   expect_equal(out$args, list(NULL, NULL))
 })
 
-test_that("scale back", {
+test_that("remove workers", {
   x <- crew_queue$new()
-  x$scale_out(workers = 8)
+  on.exit(x$shutdown())
+  x$add_workers(workers = 4)
   grid <- expand.grid(
     free = c(TRUE, FALSE),
-    up = c(TRUE, FALSE),
-    lock = c(TRUE, FALSE)
+    up = c(TRUE, FALSE)
   )
   for (field in colnames(grid)) {
     x$private$workers[[field]] <- grid[[field]]
   }
-  x$scale_back()
+  for (index in seq_len(4)) {
+    if (grid$up[index]) {
+      x$private$workers$handle[[index]] <- callr::r_session$new(wait = TRUE)
+    }
+  }
+  x$remove_workers()
   workers <- x$get_workers()
-  expect_equal(nrow(x$get_workers()), 7)
-  expect_true(all(!workers$free | workers$up | workers$lock))
+  expect_equal(nrow(x$get_workers()), 3)
+  expect_true(all(!workers$free | workers$up))
 })
 
 test_that("add task", {
@@ -62,7 +66,7 @@ test_that("push task, more workers than tasks", {
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
   x$private$add_task(fun = fun, args = args, task = "123")
-  x$scale_out(workers = 4)
+  x$add_workers(workers = 4)
   x$private$workers$free[2] <- FALSE
   x$private$assign_tasks()
   expect_equal(nrow(x$get_tasks()), 0)
@@ -79,14 +83,14 @@ test_that("push task, more tasks than workers", {
   for (index in seq_len(4)) {
     x$private$add_task(fun = fun, args = args, task = as.character(index))
   }
-  x$scale_out(workers = 2)
+  x$add_workers(workers = 2)
   x$private$assign_tasks()
   expect_equal(nrow(x$get_tasks()), 2)
   out <- x$get_workers()
   expect_false(anyNA(out$task))
 })
 
-test_that("private methods to submit and receive work", {
+test_that("private methods to submit and receive_results work", {
   x <- crew_queue$new()
   on.exit(x$shutdown())
   fun <- function(x) x
@@ -97,7 +101,7 @@ test_that("private methods to submit and receive work", {
       task = as.character(index)
     )
   }
-  x$scale_out(workers = 2)
+  x$add_workers(workers = 2)
   x$private$assign_tasks()
   x$private$send_tasks()
   while (!all(x$private$workers$up & x$private$workers$done)) {
@@ -106,7 +110,7 @@ test_that("private methods to submit and receive work", {
     Sys.sleep(0.1)
   }
   expect_equal(nrow(x$get_results()), 0)
-  x$private$receive()
+  x$private$receive_results()
   expect_equal(nrow(x$get_results()), 2)
   for (index in seq_len(2)) {
     out <- x$private$pop_result()
@@ -124,3 +128,10 @@ test_that("private methods to submit and receive work", {
   expect_false(any(x$get_workers()$up))
   walk(x$get_workers()$handle, ~expect_false(.x$is_alive()))
 })
+
+test_that("push and pop", {
+  x <- crew_queue$new()
+  on.exit(x$shutdown())
+  fun <- function(x) x
+})
+

@@ -9,12 +9,19 @@ crew_queue <- R6::R6Class(
     timeout = NULL,
     wait = NULL,
     tasks = NULL,
+    results = NULL,
     workers = NULL,
     initialize_tasks = function() {
       private$tasks <- tibble::tibble(
         task = character(0),
         fun = list(NULL),
         args = list(NULL)
+      )
+    },
+    initialize_results = function() {
+      private$tasks <- tibble::tibble(
+        task = character(0),
+        result = list(NULL)
       )
     },
     initialize_workers = function() {
@@ -30,6 +37,26 @@ crew_queue <- R6::R6Class(
         fun = list(NULL),
         args = list(NULL),
         result = list(NULL)
+      )
+    },
+    add_task = function(task, fun, args) {
+      
+      browser()
+      
+      dup <- task %in% private$tasks$task || task %in% private$workers$task
+      crew_assert(!dup, paste("duplicate task name", task))
+      private$tasks <- tibble::add_row(
+        .data = private$tasks,
+        task = task,
+        fun = list(fun),
+        args = list(args)
+      )
+    },
+    add_result = function(task, result) {
+      private$results <- tibble::add_row(
+        .data = private$results,
+        task = task,
+        results = list(result)
       )
     },
     add_worker = function() {
@@ -65,7 +92,7 @@ crew_queue <- R6::R6Class(
       which <- !workers$free & !workers$lock & !workers$sent
       workers <- workers[which, ]
       for (worker in workers$worker) {
-        index <- private$workers$worker == worker
+        index <- which(private$workers$worker == worker)
         private$workers$lock[index] <- TRUE
         private$send(
           worker = worker,
@@ -73,14 +100,60 @@ crew_queue <- R6::R6Class(
           args = private$workers$args[[index]]
         )
       }
+    },
+    launch = function() {
+      callr::r_session$new(wait = TRUE)
+    },
+    send = function(worker, fun, args) {
+      index <- which(private$workers$worker == worker)
+      handle <- private$workers$handle[[index]]
+      if (is.null(handle) || !handle$is_alive()) {
+        handle <- private$launch()
+        private$workers$handle[[index]] <- handle
+      }
+      handle$call(func = fun, args = args)
+    },
+    poll_up = function() {
+      for (index in seq_len(nrow(private$workers))) {
+        handle <- private$workers$handle[[index]]
+        private$workers$up[index] <- !is.null(handle) && handle$is_alive()
+      }
+    },
+    poll_done = function() {
+      for (index in seq_len(nrow(private$workers))) {
+        handle <- private$workers$handle[[index]]
+        private$workers$done[index] <- !is.null(handle) && identical(
+          processx::poll(list(handle$get_poll_connection()), 0)[[1]],
+          "ready"
+        )
+      }
+    },
+    receive = function() {
+      for (index in seq_len(nrow(private$workers))) {
+        if (private$workers$done[index]) {
+          task <- private$workers$task[index]
+          result <- private$workers$handle[[index]]$read()
+          private$add_result(task = task, result = result)
+        }
+      }
+    },
+    pop_result = function() {
+      results <- private$results
+      out <- NULL
+      if (nrow(results)) {
+        out <- list(task = results$tasks[1], result = results$result[[1]])
+        private$results <- private$results[-1, ]
+      }
+      out
     }
   ),
   public = list(
     initialize = function(timeout = Inf, wait = 0) {
       private$timeout <- timeout
       private$wait <- wait
-      private$initialize_workers()
       private$initialize_tasks()
+      private$initialize_results()
+      private$initialize_workers()
       invisible()
     },
     get_tasks = function() {
@@ -101,15 +174,18 @@ crew_queue <- R6::R6Class(
       invisible()
     },
     push = function(fun, args, task = uuid::UUIDgenerate()) {
-      dup <- task %in% private$tasks$task || task %in% private$workers$task
-      crew_assert(!dup, paste("duplicate task name", task))
-      private$tasks <- tibble::add_row(
-        .data = private$tasks,
-        task = task,
-        fun = list(fun),
-        args = list(args)
-      )
+      private$push_task(fun = fun, args = args, task = task)
       invisible()
+    }
+    pop = function() {
+      private$pop_task()
+    },
+    shutdown = function() {
+      for (handle in private$workers$handle) {
+        if (!is.null(handle) && handle$is_alive()) {
+          handle$kill()
+        }
+      }
     }
   )
 )

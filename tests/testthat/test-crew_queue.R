@@ -41,23 +41,23 @@ test_that("scale back", {
   expect_true(all(!workers$free | workers$up | workers$lock))
 })
 
-test_that("push", {
+test_that("push task", {
   x <- crew_queue$new()
   fun <- function(x) x
   args <- list(x = 1)
-  x$push(fun = fun, args = args)
+  x$private$push_task(fun = fun, args = args)
   out <- x$get_tasks()
   expect_equal(nrow(out), 1)
   expect_true(is.character(out$task))
   expect_equal(out$args[[1]], args)
 })
 
-test_that("push, more workers than tasks", {
+test_that("push task, more workers than tasks", {
   x <- crew_queue$new()
   fun <- function(x) x
   args <- list(x = 1)
-  x$push(fun = fun, args = args)
-  x$push(fun = fun, args = args)
+  x$private$push_task(fun = fun, args = args)
+  x$private$push_task(fun = fun, args = args)
   x$scale_out(workers = 4)
   x$private$workers$free[2] <- FALSE
   x$private$assign_tasks()
@@ -68,12 +68,12 @@ test_that("push, more workers than tasks", {
   expect_equal(out$fun, list(fun, NULL, fun, NULL))
 })
 
-test_that("push, more tasks than workers", {
+test_that("push task, more tasks than workers", {
   x <- crew_queue$new()
   fun <- function(x) x
   args <- list(x = 1)
   for (index in seq_len(4)) {
-    x$push(fun = fun, args = args)
+    x$private$push_task(fun = fun, args = args)
   }
   x$scale_out(workers = 2)
   x$private$assign_tasks()
@@ -87,7 +87,7 @@ test_that("send tasks", {
   fun <- function(x) x
   args <- list(x = 1)
   for (index in seq_len(2)) {
-    x$push(fun = fun, args = args)
+    x$private$push_task(fun = fun, args = args)
   }
   x$scale_out(workers = 2)
   x$private$assign_tasks()

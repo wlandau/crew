@@ -6,20 +6,9 @@ test_that("initial queue", {
   expect_equal(nrow(x$get_workers()), 0)
 })
 
-test_that("push", {
+test_that("scale out", {
   x <- crew_queue$new()
-  fun <- function(x) x
-  args <- list(x = 1)
-  x$push(fun = fun, args = args)
-  out <- x$get_tasks()
-  expect_equal(nrow(out), 1)
-  expect_true(is.character(out$task))
-  expect_equal(out$args[[1]], args)
-})
-
-test_that("add workers", {
-  x <- crew_queue$new()
-  x$add_workers(workers = 2)
+  x$scale_out(workers = 2)
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
   expect_true(out$worker[1] != out$worker[2])
@@ -35,13 +24,41 @@ test_that("add workers", {
   expect_equal(out$result, list(NULL, NULL))
 })
 
-test_that("assign tasks, more workers than tasks", {
+test_that("scale back", {
+  x <- crew_queue$new()
+  x$scale_out(workers = 8)
+  grid <- expand.grid(
+    free = c(TRUE, FALSE),
+    up = c(TRUE, FALSE),
+    lock = c(TRUE, FALSE)
+  )
+  for (field in colnames(grid)) {
+    x$private$workers[[field]] <- grid[[field]]
+  }
+  x$scale_back()
+  workers <- x$get_workers()
+  expect_equal(nrow(x$get_workers()), 7)
+  expect_true(all(!workers$free | workers$up | workers$lock))
+})
+
+test_that("push", {
+  x <- crew_queue$new()
+  fun <- function(x) x
+  args <- list(x = 1)
+  x$push(fun = fun, args = args)
+  out <- x$get_tasks()
+  expect_equal(nrow(out), 1)
+  expect_true(is.character(out$task))
+  expect_equal(out$args[[1]], args)
+})
+
+test_that("push, more workers than tasks", {
   x <- crew_queue$new()
   fun <- function(x) x
   args <- list(x = 1)
   x$push(fun = fun, args = args)
   x$push(fun = fun, args = args)
-  x$add_workers(workers = 4)
+  x$scale_out(workers = 4)
   x$private$workers$free[2] <- FALSE
   x$private$assign_tasks()
   expect_equal(nrow(x$get_tasks()), 0)
@@ -51,33 +68,16 @@ test_that("assign tasks, more workers than tasks", {
   expect_equal(out$fun, list(fun, NULL, fun, NULL))
 })
 
-test_that("assign tasks, more tasks than workers", {
+test_that("push, more tasks than workers", {
   x <- crew_queue$new()
   fun <- function(x) x
   args <- list(x = 1)
   for (index in seq_len(4)) {
     x$push(fun = fun, args = args)
   }
-  x$add_workers(workers = 2)
+  x$scale_out(workers = 2)
   x$private$assign_tasks()
   expect_equal(nrow(x$get_tasks()), 2)
   out <- x$get_workers()
   expect_false(anyNA(out$task))
-})
-
-test_that("prune workers", {
-  x <- crew_queue$new()
-  x$add_workers(workers = 8)
-  grid <- expand.grid(
-    free = c(TRUE, FALSE),
-    up = c(TRUE, FALSE),
-    lock = c(TRUE, FALSE)
-  )
-  for (field in colnames(grid)) {
-    x$private$workers[[field]] <- grid[[field]]
-  }
-  x$prune_workers()
-  workers <- x$get_workers()
-  expect_equal(nrow(x$get_workers()), 7)
-  expect_true(all(!workers$free | workers$up | workers$lock))
 })

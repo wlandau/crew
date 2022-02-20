@@ -75,11 +75,11 @@ crew_queue <- R6::R6Class(
     get_workers = function() {
       private$workers
     },
-    add_workers = function(workers = 1) {
+    scale_out = function(workers = 1) {
       replicate(workers, private$add_worker())
       invisible()
     },
-    prune_workers = function() {
+    scale_back = function() {
       free <- private$workers$free
       up <- private$workers$up
       lock <- private$workers$lock

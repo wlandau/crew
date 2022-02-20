@@ -135,7 +135,7 @@ crew_queue <- R6::R6Class(
       results <- private$results
       out <- NULL
       if (nrow(results)) {
-        out <- list(task = results$tasks[1], result = results$result[[1]])
+        out <- list(task = results$task[1], result = results$result[[1]])
         private$results <- private$results[-1, ]
       }
       out

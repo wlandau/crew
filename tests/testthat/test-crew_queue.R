@@ -108,9 +108,14 @@ test_that("private methods to submit and receive work", {
   expect_equal(nrow(x$get_results()), 0)
   x$private$receive()
   expect_equal(nrow(x$get_results()), 2)
-  out <- x$get_results()
-  expect_equal(out$result[[which(out$task == "1")]]$result, 1)
-  expect_equal(out$result[[which(out$task == "2")]]$result, 2)
+  for (index in seq_len(2)) {
+    out <- x$private$pop_result()
+    expect_false(is.null(out))
+    expect_equal(out$task, as.character(out$result$result))
+  }
+  for (index in seq_len(2)) {
+    expect_null(x$private$pop_result())
+  }
   x$shutdown()
   while (any(x$private$workers$up)) {
     x$private$poll_up()

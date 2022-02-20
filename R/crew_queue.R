@@ -32,14 +32,6 @@ crew_queue <- R6::R6Class(
         result = list(NULL)
       )
     },
-    add_task = function(fun, args) {
-      private$tasks <- tibble::add_row(
-        .data = private$tasks,
-        task = uuid::UUIDgenerate(),
-        fun = list(fun),
-        args = list(args)
-      )
-    },
     add_worker = function() {
       private$workers <- tibble::add_row(
         .data = private$workers,
@@ -59,12 +51,11 @@ crew_queue <- R6::R6Class(
     assign_tasks = function() {
       while(nrow(private$tasks) && any(private$workers$free)) {
         index <- min(which(private$workers$free))
-        for (field in colnames(private$tasks$task)) {
-          value <- private$tasks[[field]]
-          private$workers[[field]][index] <- value
+        for (field in colnames(private$tasks)) {
+          private$workers[[field]][index] <- private$tasks[[field]][1]
         }
         for (field in c("free", "sent", "done")) {
-          private$workers$[[field]][index] <- FALSE
+          private$workers[[field]][index] <- FALSE
         }
         private$tasks <- private$tasks[-1, ]
       }
@@ -85,13 +76,25 @@ crew_queue <- R6::R6Class(
       private$workers
     },
     add_workers = function(workers = 1) {
-      walk(seq_len(workers), private$add_worker)
-    }
+      replicate(workers, private$add_worker())
+      invisible()
+    },
     prune_workers = function() {
       free <- private$workers$free
       up <- private$workers$up
       lock <- private$workers$lock
       private$workers <- private$workers[free & !up & !lock, ]
+      invisible()
+    },
+    push = function(fun, args, task = uuid::UUIDgenerate()) {
+      dup <- task %in% private$tasks$task || task %in% private$workers$task
+      crew_assert(!dup, paste("duplicate task name", task))
+      private$tasks <- tibble::add_row(
+        .data = private$tasks,
+        task = task,
+        fun = list(fun),
+        args = list(args)
+      )
       invisible()
     }
   )

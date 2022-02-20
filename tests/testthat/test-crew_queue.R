@@ -102,15 +102,39 @@ test_that("private methods to submit and receive_results work", {
     )
   }
   x$add_workers(workers = 2)
+  expect_false(any(x$get_workers()$up))
+  expect_true(all(x$get_workers()$free))
+  expect_false(any(x$get_workers()$sent))
+  expect_false(any(x$get_workers()$done))
   x$private$assign_tasks()
+  expect_false(any(x$get_workers()$up))
+  expect_false(any(x$get_workers()$free))
+  expect_false(any(x$get_workers()$sent))
+  expect_false(any(x$get_workers()$done))
   x$private$send_tasks()
-  while (!all(x$private$workers$up & x$private$workers$done)) {
+  expect_true(all(x$get_workers()$sent))
+  while (!all(x$private$workers$up)) {
     x$private$poll_up()
+    Sys.sleep(0.1)
+  }
+  expect_true(all(x$get_workers()$up))
+  expect_false(any(x$get_workers()$free))
+  expect_true(all(x$get_workers()$sent))
+  expect_false(any(x$get_workers()$done))
+  while (!all(x$private$workers$done)) {
     x$private$poll_done()
     Sys.sleep(0.1)
   }
+  expect_true(all(x$get_workers()$up))
+  expect_false(any(x$get_workers()$free))
+  expect_true(all(x$get_workers()$sent))
+  expect_true(all(x$get_workers()$done))
   expect_equal(nrow(x$get_results()), 0)
   x$private$receive_results()
+  expect_true(all(x$get_workers()$up))
+  expect_true(all(x$get_workers()$free))
+  expect_false(any(x$get_workers()$sent))
+  expect_false(any(x$get_workers()$done))
   expect_equal(nrow(x$get_results()), 2)
   for (index in seq_len(2)) {
     out <- x$private$pop_result()

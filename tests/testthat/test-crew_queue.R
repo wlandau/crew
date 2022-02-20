@@ -81,3 +81,17 @@ test_that("push, more tasks than workers", {
   out <- x$get_workers()
   expect_false(anyNA(out$task))
 })
+
+test_that("send tasks", {
+  x <- crew_queue$new()
+  fun <- function(x) x
+  args <- list(x = 1)
+  for (index in seq_len(2)) {
+    x$push(fun = fun, args = args)
+  }
+  x$scale_out(workers = 2)
+  x$private$assign_tasks()
+  x$private$send_tasks()
+  
+})
+

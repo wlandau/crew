@@ -59,6 +59,20 @@ crew_queue <- R6::R6Class(
         }
         private$tasks <- private$tasks[-1, ]
       }
+    },
+    send_tasks = function() {
+      workers <- private$workers
+      which <- !workers$free & !workers$lock & !workers$sent
+      workers <- workers[which, ]
+      for (worker in workers$worker) {
+        index <- private$workers$worker == worker
+        private$workers$lock[index] <- TRUE
+        private$send(
+          worker = worker,
+          fun = private$workers$fun[[index]],
+          args = private$workers$args[[index]]
+        )
+      }
     }
   ),
   public = list(

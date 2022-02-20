@@ -13,6 +13,7 @@
 #' @family help
 #' @importFrom callr r_bg
 #' @importFrom future future resolved
+#' @importFrom later later
 #' @importFrom qs qsave
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function

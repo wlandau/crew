@@ -149,8 +149,11 @@ test_that("private methods to submit and receive_results work", {
     x$private$poll_up()
     Sys.sleep(0.1)
   }
-  expect_false(any(x$get_workers()$up))
   walk(x$get_workers()$handle, ~expect_false(.x$is_alive()))
+  expect_false(any(x$get_workers()$up))
+  expect_true(all(x$get_workers()$free))
+  expect_false(any(x$get_workers()$sent))
+  expect_false(any(x$get_workers()$done))
 })
 
 test_that("push and pop", {

@@ -103,6 +103,9 @@ crew_store <- R6::R6Class(
       from <- file.path(private$dir_root, "worker_output", worker)
       to <- file.path(private$dir_root, "main_output", worker)
       private$send_file(from = from, to = to)
+    },
+    destroy = function() {
+      unlink(private$dir_root, recursive = TRUE, force = TRUE)
     }
   )
 )

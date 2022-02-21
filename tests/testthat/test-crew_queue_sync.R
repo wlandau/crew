@@ -1,5 +1,5 @@
 test_that("initial queue", {
-  x <- crew_sync$new()
+  x <- crew_queue_sync$new()
   expect_true(is.data.frame(x$get_tasks()))
   expect_true(is.data.frame(x$get_results()))
   expect_true(is.data.frame(x$get_workers()))
@@ -12,7 +12,7 @@ test_that("initial queue", {
 })
 
 test_that("add workers", {
-  x <- crew_sync$new()
+  x <- crew_queue_sync$new()
   x$add_workers(workers = 2)
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
@@ -28,7 +28,7 @@ test_that("add workers", {
 })
 
 test_that("remove workers", {
-  x <- crew_sync$new()
+  x <- crew_queue_sync$new()
   on.exit(x$shutdown())
   x$add_workers(workers = 4)
   grid <- expand.grid(
@@ -50,7 +50,7 @@ test_that("remove workers", {
 })
 
 test_that("add task", {
-  x <- crew_sync$new()
+  x <- crew_queue_sync$new()
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
@@ -61,7 +61,7 @@ test_that("add task", {
 })
 
 test_that("push task, more workers than tasks", {
-  x <- crew_sync$new()
+  x <- crew_queue_sync$new()
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
@@ -77,7 +77,7 @@ test_that("push task, more workers than tasks", {
 })
 
 test_that("push task, more tasks than workers", {
-  x <- crew_sync$new()
+  x <- crew_queue_sync$new()
   fun <- function(x) x
   args <- list(x = 1)
   for (index in seq_len(4)) {
@@ -91,7 +91,7 @@ test_that("push task, more tasks than workers", {
 })
 
 test_that("private methods to submit and receive_results work", {
-  x <- crew_sync$new()
+  x <- crew_queue_sync$new()
   on.exit(x$shutdown())
   fun <- function(x) x
   for (index in seq_len(2)) {
@@ -166,7 +166,7 @@ test_that("private methods to submit and receive_results work", {
 })
 
 test_that("push and pop", {
-  x <- crew_sync$new()
+  x <- crew_queue_sync$new()
   on.exit(x$shutdown())
   fun <- function(x) {
     Sys.sleep(1)

@@ -5,10 +5,13 @@ crew_store_local <- R6::R6Class(
   cloneable = FALSE,
   private = list(
     send_file = function(from, to) {
+      crew_assert_file_scalar(from)
+      crew_assert_chr_scalar(to)
+      dir_create(dirname(to))
       file.rename(from = from, to = to)
       crew_wait(
-        fun = function(path) file.exists(to) && !file.exists(from),
-        args = list(path = path),
+        fun = function(from, to) file.exists(to) && !file.exists(from),
+        args = list(from = from, to = to),
         timeout = private$timeout,
         wait = private$wait
       )

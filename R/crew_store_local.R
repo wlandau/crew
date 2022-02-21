@@ -42,6 +42,13 @@ crew_store_local <- R6::R6Class(
     },
     delete_worker_output = function(worker) {
       private$delete_local(dir = "worker_output", worker = worker)
+    },
+    marshal = function() {
+      expr <- substitute(
+        crew:::crew_store_local$new(dir_root = dir_root),
+        list(dir_root = private$dir_root)
+      )
+      paste(deparse(expr), collapse = "\n")
     }
   )
 )

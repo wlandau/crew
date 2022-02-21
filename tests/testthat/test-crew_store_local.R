@@ -37,3 +37,12 @@ test_that("download output", {
   expect_false(x$exists_worker_output("worker"))
   expect_true(x$exists_main_output("worker"))
 })
+
+test_that("marshal", {
+  x <- crew_store_local$new()
+  out <- x$marshal()
+  expect_true(is.character(out) && length(out) == 1L && nzchar(out))
+  y <- eval(parse(text = out))
+  expect_equal(class(x), class(y))
+  expect_equal(x$get_root(), y$get_root())
+})

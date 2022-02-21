@@ -191,6 +191,7 @@ crew_queue_sync <- R6::R6Class(
           handle$kill()
         }
       }
+      invisible()
     }
   )
 )

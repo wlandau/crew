@@ -27,6 +27,14 @@ crew_assert_chr_scalar <- function(x, message = NULL) {
   )
 }
 
+crew_assert_file_scalar <- function(x, message = NULL) {
+  default <- paste("file", x, "does not exist.")
+  crew_assert(
+    condition = is.character(x) && length(x) == 1L && all(file.exists(x)),
+    message = default %||% message
+  )
+}
+
 crew_assert_pos_dbl_scalar <- function(x, message = NULL) {
   default <- paste(
     x,

@@ -20,6 +20,16 @@ crew_test("crew_assert_chr_scalar", {
   expect_error(crew_assert_chr_scalar(letters), class = "crew_error")
 })
 
+crew_test("crew_assert_file_scalar()", {
+  tmp <- tempfile()
+  expect_error(crew_assert_file_scalar(123), class = "crew_error")
+  expect_error(crew_assert_file_scalar(tmp), class = "crew_error")
+  file.create(tmp)
+  expect_error(crew_assert_file_scalar(c(tmp, tmp)), class = "crew_error")
+  expect_silent(crew_assert_file_scalar(tmp))
+  unlink(tmp)
+})
+
 crew_test("crew_assert_pos_dbl_scalar()", {
   expect_silent(crew_assert_pos_dbl_scalar(1))
   expect_error(crew_assert_pos_dbl_scalar(-1), class = "crew_error")

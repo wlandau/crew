@@ -188,4 +188,3 @@ test_that("push and pop", {
   }
   expect_true(all(done))
 })
-

@@ -98,7 +98,7 @@ crew_queue_callr <- R6::R6Class(
       handles <- private$workers$handle[index]
       connections <- map(handles, ~.x$get_poll_connection())
       poll <- as.character(processx::poll(processes = connections, ms = 0))
-      crew_assert(!any(poll == "closed"))
+      crew_assert(!any(poll == "closed"), "a callr worker is down.")
       private$workers$done[index] <- poll == "ready"
     },
     poll = function() {

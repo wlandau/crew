@@ -1,7 +1,6 @@
 proffer::pprof({
 library(crew)
-x <- crew:::crew_queue_sync$new()
-x$add_workers(4)
+x <- crew:::crew_queue_callr$new(workers = 4)
 for (index in 1:1000) {
   x$push(
     fun = function(x) x,

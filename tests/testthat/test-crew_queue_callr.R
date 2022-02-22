@@ -1,24 +1,23 @@
 test_that("initial queue", {
-  x <- crew_queue_sync$new()
+  x <- crew_queue_callr$new(start = FALSE)
   expect_true(is.data.frame(x$get_tasks()))
   expect_true(is.data.frame(x$get_results()))
   expect_true(is.data.frame(x$get_workers()))
   expect_equal(nrow(x$get_tasks()), 0)
   expect_equal(nrow(x$get_results()), 0)
-  expect_equal(nrow(x$get_workers()), 0)
+  expect_equal(nrow(x$get_workers()), 1)
   expect_gt(ncol(x$get_tasks()), 0)
   expect_gt(ncol(x$get_results()), 0)
-  expect_gt(ncol(x$get_workers()), 0)
+  expect_gt(ncol(x$get_workers()), 1)
 })
 
 test_that("add workers", {
-  x <- crew_queue_sync$new()
-  x$add_workers(workers = 2)
+  x <- crew_queue_callr$new(workers = 2, start = FALSE)
+  on.exit(x$shutdown())
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
   expect_true(out$worker[1] != out$worker[2])
   expect_equal(out$handle, list(NULL, NULL))
-  expect_equal(out$up, rep(FALSE, 2))
   expect_equal(out$done, rep(FALSE, 2))
   expect_equal(out$free, rep(TRUE, 2))
   expect_equal(out$sent, rep(FALSE, 2))
@@ -27,30 +26,9 @@ test_that("add workers", {
   expect_equal(out$args, list(NULL, NULL))
 })
 
-test_that("remove workers", {
-  x <- crew_queue_sync$new()
-  on.exit(x$shutdown())
-  x$add_workers(workers = 4)
-  grid <- expand.grid(
-    free = c(TRUE, FALSE),
-    up = c(TRUE, FALSE)
-  )
-  for (field in colnames(grid)) {
-    x$private$workers[[field]] <- grid[[field]]
-  }
-  for (index in seq_len(4)) {
-    if (grid$up[index]) {
-      x$private$workers$handle[[index]] <- callr::r_session$new(wait = TRUE)
-    }
-  }
-  x$remove_workers()
-  workers <- x$get_workers()
-  expect_equal(nrow(x$get_workers()), 3)
-  expect_true(all(!workers$free | workers$up))
-})
-
 test_that("add task", {
-  x <- crew_queue_sync$new()
+  x <- crew_queue_callr$new(start = FALSE)
+  on.exit(x$shutdown())
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
@@ -61,12 +39,11 @@ test_that("add task", {
 })
 
 test_that("push task, more workers than tasks", {
-  x <- crew_queue_sync$new()
+  x <- crew_queue_callr$new(workers = 4, start = FALSE)
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
   x$private$add_task(fun = fun, args = args, task = "123")
-  x$add_workers(workers = 4)
   x$private$workers$free[2] <- FALSE
   x$private$assign_tasks()
   expect_equal(nrow(x$get_tasks()), 0)
@@ -77,13 +54,12 @@ test_that("push task, more workers than tasks", {
 })
 
 test_that("push task, more tasks than workers", {
-  x <- crew_queue_sync$new()
+  x <- crew_queue_callr$new(workers = 2, start = FALSE)
   fun <- function(x) x
   args <- list(x = 1)
   for (index in seq_len(4)) {
     x$private$add_task(fun = fun, args = args, task = as.character(index))
   }
-  x$add_workers(workers = 2)
   x$private$assign_tasks()
   expect_equal(nrow(x$get_tasks()), 2)
   out <- x$get_workers()
@@ -91,8 +67,9 @@ test_that("push task, more tasks than workers", {
 })
 
 test_that("private methods to submit and receive_results work", {
-  x <- crew_queue_sync$new()
+  x <- crew_queue_callr$new(workers = 2, start = TRUE)
   on.exit(x$shutdown())
+  on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
   for (index in seq_len(2)) {
     x$private$add_task(
@@ -101,28 +78,16 @@ test_that("private methods to submit and receive_results work", {
       task = as.character(index)
     )
   }
-  x$add_workers(workers = 2)
-  expect_false(any(x$get_workers()$up))
   expect_true(all(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
   x$private$assign_tasks()
-  expect_false(any(x$get_workers()$up))
   expect_false(any(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
   x$private$send_tasks()
   expect_true(all(x$get_workers()$sent))
-  crew_wait(
-    ~{
-      x$private$poll_up()
-      all(x$private$workers$up)
-    },
-    wait = 0.1
-  )
-  expect_true(all(x$get_workers()$up))
   expect_false(any(x$get_workers()$free))
-  expect_true(all(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
   crew_wait(
     ~{
@@ -131,13 +96,11 @@ test_that("private methods to submit and receive_results work", {
     },
     wait = 0.1
   )
-  expect_true(all(x$get_workers()$up))
   expect_false(any(x$get_workers()$free))
   expect_true(all(x$get_workers()$sent))
   expect_true(all(x$get_workers()$done))
   expect_equal(nrow(x$get_results()), 0)
   x$private$receive_results()
-  expect_true(all(x$get_workers()$up))
   expect_true(all(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
@@ -152,27 +115,24 @@ test_that("private methods to submit and receive_results work", {
   }
   x$shutdown()
   crew_wait(
-    ~{
-      x$private$poll_up()
-      !any(x$private$workers$up)
-    },
+    fun = function(x) !any(map_lgl(x$get_workers()$handle, ~.x$is_alive())),
+    args = list(x = x),
     wait = 0.1
   )
   walk(x$get_workers()$handle, ~expect_false(.x$is_alive()))
-  expect_false(any(x$get_workers()$up))
   expect_true(all(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
 })
 
 test_that("push and pop", {
-  x <- crew_queue_sync$new()
+  x <- crew_queue_callr$new(workers = 2, start = TRUE)
   on.exit(x$shutdown())
+  on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) {
     Sys.sleep(1)
     x
   }
-  x$add_workers(workers = 2)
   for (index in seq_len(10)) {
     x$push(fun = fun, args = list(x = index))
   }

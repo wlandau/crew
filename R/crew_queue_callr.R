@@ -97,8 +97,14 @@ crew_queue_callr <- R6::R6Class(
       index <- which(private$workers$sent)
       handles <- private$workers$handle[index]
       connections <- map(handles, ~.x$get_poll_connection())
-      poll <- processx::poll(processes = connections, ms = 1000)
-      private$workers$done[index] <- as.character(poll) == "ready"
+      poll <- as.character(processx::poll(processes = connections, ms = 0))
+      crew_assert(!any(poll == "closed"))
+      private$workers$done[index] <- poll == "ready"
+    },
+    poll = function() {
+      handles <- private$workers$handle
+      connections <- map(handles, ~.x$get_poll_connection())
+      as.character(processx::poll(processes = connections, ms = 0))
     },
     receive_results = function() {
       for (index in seq_len(nrow(private$workers))) {

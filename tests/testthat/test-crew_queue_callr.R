@@ -70,6 +70,7 @@ test_that("private methods to submit and receive_results work", {
   x <- crew_queue_callr$new(workers = 2, start = TRUE)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
+  expect_equal(x$private$poll(), rep("timeout", 2))
   fun <- function(x) x
   for (index in seq_len(2)) {
     x$private$add_task(

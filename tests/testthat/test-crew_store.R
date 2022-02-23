@@ -7,8 +7,10 @@ test_that("get_root()", {
 test_that("main input", {
   x <- crew_store$new()
   expect_false(x$exists_main_input("worker"))
+  expect_equal(x$list_main_input(), character(0))
   x$write_main_input("worker", value = "x")
   expect_true(x$exists_main_input("worker"))
+  expect_equal(x$list_main_input(), "worker")
   expect_equal(x$read_main_input("worker"), "x")
   x$delete_main_input("worker")
   expect_false(x$exists_main_input("worker"))
@@ -17,8 +19,10 @@ test_that("main input", {
 test_that("main output", {
   x <- crew_store$new()
   expect_false(x$exists_main_output("worker"))
+  expect_equal(x$list_main_output(), character(0))
   x$write_main_output("worker", value = "x")
   expect_true(x$exists_main_output("worker"))
+  expect_equal(x$list_main_output(), "worker")
   expect_equal(x$read_main_output("worker"), "x")
   x$delete_main_output("worker")
   expect_false(x$exists_main_output("worker"))

@@ -12,16 +12,16 @@
 #' @examples
 #' dir_root <- tempfile()
 #' dir.create(dir_root)
-#' store <- class_store_local$new(dir_root = dir_root)
+#' store <- crew_store_local$new(dir_root = dir_root)
 #' fun <- function(x) {
 #'   x + 1
 #' }
 #' args <- list(x = 1)
-#' data <- list(fun = deparse(fun), args = args, class = "crew_job")
-#' store$write_worker_input(name = "my_worker", data = data)
+#' value <- list(fun = deparse(fun), args = args, class = "crew_task")
+#' store$write_worker_input(worker = "my_worker", value = value)
 #' try( # The worker throws a special error class when it times out.
 #'   crew_worker_loop(
-#'     name = "my_worker",
+#'     worker = "my_worker",
 #'     store = store$marshal(),
 #'     timeout = 0,
 #'     wait = 0
@@ -96,7 +96,7 @@ crew_worker_loop_job_finalize <- function(input) {
 }
 
 #' @export
-crew_worker_loop_job_finalize.crew_job <- function(input) {
+crew_worker_loop_job_finalize.crew_task <- function(input) {
 }
 
 #' @export
@@ -115,7 +115,7 @@ crew_worker_loop_monad <- function(fun, args) {
   }
   state <- new.env(hash = FALSE, parent = emptyenv())
   start <- as.numeric(proc.time()["elapsed"])
-  value <- tryCatch(
+  result <- tryCatch(
     expr = withCallingHandlers(
       expr = do.call(what = fun, args = args),
       error = capture_error,
@@ -125,7 +125,7 @@ crew_worker_loop_monad <- function(fun, args) {
   )
   seconds <- as.numeric(proc.time()["elapsed"]) - start
   list(
-    value = value,
+    result = result,
     seconds = seconds,
     error = state$error,
     traceback = state$traceback,

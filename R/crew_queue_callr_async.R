@@ -80,36 +80,51 @@ crew_queue_callr_async <- R6::R6Class(
         )
       }
     },
+    launch_worker = function(worker) {
+      handle <- callr::r_bg(
+        func = crew::crew_worker_loop,
+        args = list(
+          worker = worker,
+          store = private$store$marshal(),
+          timeout = private$timeout,
+          wait = private$wait
+        ),
+        supervise = TRUE
+      )
+      crew_wait(
+        fun = function(handle) handle$is_alive(),
+        args = list(handle = handle),
+        timeout = private$timeout,
+        wait = private$wait
+      )
+      handle
+    },
     send_task = function(worker, fun, args) {
       index <- which(private$workers$worker == worker)
       handle <- private$workers$handle[[index]]
       if (is.null(handle) || !handle$is_alive()) {
-        private$workers$handle[[index]] <- callr::r_session$new(
-          wait = TRUE,
-          options = callr::r_session_options(extra = list(supervise = TRUE))
-        )
+        private$workers$handle[[index]] <- private$launch_worker(worker)
       }
-      private$workers$handle[[index]]$call(func = fun, args = args)
+      task <- structure(
+        list(fun = deparse(fun), args = args),
+        class = "crew_task"
+      )
+      private$store$write_worker_input(
+        worker = worker,
+        value = task
+      )
       private$workers$sent[index] <- TRUE
     },
     poll_done = function() {
-      index <- which(private$workers$sent)
-      handles <- private$workers$handle[index]
-      connections <- map(handles, ~.x$get_poll_connection())
-      poll <- as.character(processx::poll(processes = connections, ms = 0))
-      crew_assert(!any(poll == "closed"), "a callr worker is down.")
-      private$workers$done[index] <- poll == "ready"
-    },
-    poll = function() {
-      handles <- private$workers$handle
-      connections <- map(handles, ~.x$get_poll_connection())
-      as.character(processx::poll(processes = connections, ms = 0))
+      names <- private$store$list_worker_output()
+      private$workers$done[private$workers$worker %in% names] <- TRUE
     },
     receive_results = function() {
       for (index in seq_len(nrow(private$workers))) {
         if (private$workers$done[index]) {
+          worker <- private$workers$worker[index]
           task <- private$workers$task[index]
-          result <- private$workers$handle[[index]]$read()
+          result <- private$store$read_worker_output(worker = worker)
           private$add_result(task = task, result = result)
           private$workers$free[index] <- TRUE
           private$workers$sent[index] <- FALSE

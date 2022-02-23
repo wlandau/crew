@@ -38,16 +38,16 @@ loop exits.
 \examples{
 dir_root <- tempfile()
 dir.create(dir_root)
-store <- class_store_local$new(dir_root = dir_root)
+store <- crew_store_local$new(dir_root = dir_root)
 fun <- function(x) {
   x + 1
 }
 args <- list(x = 1)
-data <- list(fun = deparse(fun), args = args, class = "crew_job")
-store$write_worker_input(name = "my_worker", data = data)
+value <- list(fun = deparse(fun), args = args, class = "crew_task")
+store$write_worker_input(worker = "my_worker", value = value)
 try( # The worker throws a special error class when it times out.
   crew_worker_loop(
-    name = "my_worker",
+    worker = "my_worker",
     store = store$marshal(),
     timeout = 0,
     wait = 0

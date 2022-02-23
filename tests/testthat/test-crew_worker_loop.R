@@ -20,7 +20,7 @@ crew_test("one simple job", {
   }
   value <- structure(
     list(fun = deparse(fun), args = list(x = 1L)),
-    class = "crew_job"
+    class = "crew_task"
   )
   store$write_worker_input(worker = "worker", value = value)
   expect_error(
@@ -35,8 +35,8 @@ crew_test("one simple job", {
   expect_false(store$exists_worker_input("worker"))
   expect_true(store$exists_worker_output("worker"))
   job <- store$read_worker_output("worker")
-  expect_s3_class(job, "crew_job")
-  expect_equal(job$value, 2L)
+  expect_s3_class(job, "crew_task")
+  expect_equal(job$result, 2L)
 })
 
 crew_test("shutdown job", {
@@ -62,7 +62,7 @@ crew_test("shutdown job", {
 
 crew_test("crew_worker_loop_monad() without errors", {
   out <- crew_worker_loop_monad(fun = identity, args = list(x = "x"))
-  expect_equal(out$value, "x")
+  expect_equal(out$result, "x")
   expect_true(is.numeric(out$seconds) && length(out$seconds) == 1)
   expect_null(out$error)
   expect_null(out$warnings)
@@ -76,7 +76,7 @@ crew_test("crew_worker_loop_monad() with errors", {
     stop("error1")
   }
   suppressWarnings(out <- crew_worker_loop_monad(fun = fun, args = list()))
-  expect_null(out$value)
+  expect_null(out$result)
   expect_true(is.numeric(out$seconds))
   expect_equal(length(out$seconds), 1)
   expect_equal(out$error, "error1")

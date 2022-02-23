@@ -66,6 +66,65 @@ test_that("push task, more tasks than workers", {
   expect_false(anyNA(out$task))
 })
 
+test_that("private methods to submit and receive_results work", {
+  x <- crew_queue_callr_async$new(workers = 2)
+  on.exit(x$shutdown())
+  on.exit(processx::supervisor_kill(), add = TRUE)
+  fun <- function(x) x
+  for (index in seq_len(2)) {
+    x$private$add_task(
+      fun = fun,
+      args = list(x = index),
+      task = as.character(index)
+    )
+  }
+  expect_true(all(x$get_workers()$free))
+  expect_false(any(x$get_workers()$sent))
+  expect_false(any(x$get_workers()$done))
+  x$private$assign_tasks()
+  expect_false(any(x$get_workers()$free))
+  expect_false(any(x$get_workers()$sent))
+  expect_false(any(x$get_workers()$done))
+  x$private$send_tasks()
+  expect_true(all(x$get_workers()$sent))
+  expect_false(any(x$get_workers()$free))
+  expect_false(any(x$get_workers()$done))
+  crew_wait(
+    ~{
+      x$private$poll_done()
+      all(x$private$workers$done)
+    },
+    wait = 0.1
+  )
+  expect_false(any(x$get_workers()$free))
+  expect_true(all(x$get_workers()$sent))
+  expect_true(all(x$get_workers()$done))
+  expect_equal(nrow(x$get_results()), 0)
+  x$private$receive_results()
+  expect_true(all(x$get_workers()$free))
+  expect_false(any(x$get_workers()$sent))
+  expect_false(any(x$get_workers()$done))
+  expect_equal(nrow(x$get_results()), 2)
+  for (index in seq_len(2)) {
+    out <- x$private$pop_result()
+    expect_false(is.null(out))
+    expect_equal(out$task, as.character(out$result$result))
+  }
+  for (index in seq_len(2)) {
+    expect_null(x$private$pop_result())
+  }
+  x$shutdown()
+  crew_wait(
+    fun = function(x) !any(map_lgl(x$get_workers()$handle, ~.x$is_alive())),
+    args = list(x = x),
+    wait = 0.1
+  )
+  walk(x$get_workers()$handle, ~expect_false(.x$is_alive()))
+  expect_true(all(x$get_workers()$free))
+  expect_false(any(x$get_workers()$sent))
+  expect_false(any(x$get_workers()$done))
+})
+
 test_that("push and pop", {
   x <- crew_queue_callr_async$new(workers = 2)
   on.exit(x$shutdown())
@@ -84,6 +143,9 @@ test_that("push and pop", {
     if (!is.null(out)) {
       done[out$result$result] <- TRUE
     }
+    
+    print(done)
+    
     retries <- retries - 1
     Sys.sleep(0.1)
   }

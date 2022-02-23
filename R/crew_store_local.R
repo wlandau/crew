@@ -37,6 +37,12 @@ crew_store_local <- R6::R6Class(
     exists_worker_output = function(worker) {
       private$exists_local(dir = "worker_output", worker = worker)
     },
+    list_worker_input = function() {
+      private$list_local(dir = "worker_input")
+    },
+    list_worker_output = function() {
+      private$list_local(dir = "worker_output")
+    },
     delete_worker_input = function(worker) {
       private$delete_local(dir = "worker_input", worker = worker)
     },

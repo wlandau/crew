@@ -42,6 +42,10 @@ crew_store <- R6::R6Class(
       crew_assert_chr_scalar(worker)
       all(file.exists(file.path(private$dir_root, dir, worker)))
     },
+    list_local = function(dir) {
+      crew_assert_chr_scalar(dir)
+      list.files(file.path(private$dir_root, dir))
+    },
     delete_local = function(dir, worker) {
       crew_assert_chr_scalar(dir)
       crew_assert_chr_scalar(worker)
@@ -87,6 +91,12 @@ crew_store <- R6::R6Class(
     },
     exists_main_output = function(worker) {
       private$exists_local(dir = "main_output", worker = worker)
+    },
+    list_main_input = function() {
+      private$list_local(dir = "main_input")
+    },
+    list_main_output = function() {
+      private$list_local(dir = "main_output")
     },
     delete_main_input = function(worker) {
       private$delete_local(dir = "main_input", worker = worker)

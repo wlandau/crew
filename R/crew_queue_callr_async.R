@@ -9,6 +9,9 @@ crew_queue_callr_async <- R6::R6Class(
     tasks = NULL,
     results = NULL,
     workers = NULL,
+    store = NULL,
+    timeout = NULL,
+    wait = NULL,
     initialize_tasks = function() {
       private$tasks <- tibble::tibble(
         task = character(0),
@@ -131,7 +134,15 @@ crew_queue_callr_async <- R6::R6Class(
     }
   ),
   public = list(
-    initialize = function(workers = 1) {
+    initialize = function(
+      workers = 1,
+      timeout = 60,
+      wait = 0.1,
+      store = crew_store_local$new(timeout = timeout, wait = wait)
+    ) {
+      private$store <- store
+      private$timeout <- timeout
+      private$wait <- wait
       private$initialize_tasks()
       private$initialize_results()
       private$initialize_workers(workers = workers)

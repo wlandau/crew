@@ -126,6 +126,9 @@ test_that("private methods to submit and receive_results work", {
 })
 
 test_that("push and pop", {
+  
+  stop("need to debug this")
+  
   x <- crew_queue_callr_async$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)

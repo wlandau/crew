@@ -1,8 +1,8 @@
 # Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
-crew_queue_callr <- R6::R6Class(
-  classname = "crew_queue_callr",
+crew_queue_callr_async <- R6::R6Class(
+  classname = "crew_queue_callr_async",
   portable = FALSE,
   cloneable = FALSE,
   private = list(
@@ -22,24 +22,14 @@ crew_queue_callr <- R6::R6Class(
         result = list(NULL)
       )
     },
-    initialize_workers = function(workers, start) {
-      handles <- if_any(
-        start,
-        replicate(
-          workers,
-          callr::r_session$new(
-            wait = TRUE,
-            options = callr::r_session_options(extra = list(supervise = TRUE))
-          )
-        ),
-        replicate(workers, NULL)
-      )
+    initialize_workers = function(workers) {
       private$workers <- tibble::tibble(
         worker = uuid::UUIDgenerate(n = workers),
-        handle = handles,
+        handle = replicate(workers, NULL),
         free = rep(TRUE, workers),
         sent = rep(FALSE, workers),
         done = rep(FALSE, workers),
+        lock = rep(FALSE, workers),
         task = rep(NA_character_, workers),
         fun = replicate(workers, NULL),
         args = replicate(workers, NULL)
@@ -90,7 +80,13 @@ crew_queue_callr <- R6::R6Class(
     send_task = function(worker, fun, args) {
       index <- which(private$workers$worker == worker)
       handle <- private$workers$handle[[index]]
-      handle$call(func = fun, args = args)
+      if (is.null(handle) || !handle$is_alive()) {
+        private$workers$handle[[index]] <- callr::r_session$new(
+          wait = TRUE,
+          options = callr::r_session_options(extra = list(supervise = TRUE))
+        )
+      }
+      private$workers$handle[[index]]$call(func = fun, args = args)
       private$workers$sent[index] <- TRUE
     },
     poll_done = function() {
@@ -135,10 +131,10 @@ crew_queue_callr <- R6::R6Class(
     }
   ),
   public = list(
-    initialize = function(workers = 1, start = TRUE) {
+    initialize = function(workers = 1) {
       private$initialize_tasks()
       private$initialize_results()
-      private$initialize_workers(workers = workers, start = start)
+      private$initialize_workers(workers = workers)
       invisible()
     },
     get_tasks = function() {

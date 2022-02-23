@@ -1,5 +1,5 @@
 test_that("initial queue", {
-  x <- crew_queue_callr$new(start = FALSE)
+  x <- crew_queue_callr_async$new()
   expect_true(is.data.frame(x$get_tasks()))
   expect_true(is.data.frame(x$get_results()))
   expect_true(is.data.frame(x$get_workers()))
@@ -12,7 +12,7 @@ test_that("initial queue", {
 })
 
 test_that("get workers", {
-  x <- crew_queue_callr$new(workers = 2, start = FALSE)
+  x <- crew_queue_callr_async$new(workers = 2)
   on.exit(x$shutdown())
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
@@ -21,14 +21,14 @@ test_that("get workers", {
   expect_equal(out$done, rep(FALSE, 2))
   expect_equal(out$free, rep(TRUE, 2))
   expect_equal(out$sent, rep(FALSE, 2))
+  expect_equal(out$lock, rep(FALSE, 2))
   expect_true(all(is.na(out$task)))
   expect_equal(out$fun, list(NULL, NULL))
   expect_equal(out$args, list(NULL, NULL))
 })
 
 test_that("add task", {
-  x <- crew_queue_callr$new(start = FALSE)
-  on.exit(x$shutdown())
+  x <- crew_queue_callr_async$new()
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
@@ -39,7 +39,7 @@ test_that("add task", {
 })
 
 test_that("push task, more workers than tasks", {
-  x <- crew_queue_callr$new(workers = 4, start = FALSE)
+  x <- crew_queue_callr_async$new(workers = 4)
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
@@ -54,7 +54,7 @@ test_that("push task, more workers than tasks", {
 })
 
 test_that("push task, more tasks than workers", {
-  x <- crew_queue_callr$new(workers = 2, start = FALSE)
+  x <- crew_queue_callr_async$new(workers = 2)
   fun <- function(x) x
   args <- list(x = 1)
   for (index in seq_len(4)) {
@@ -66,68 +66,8 @@ test_that("push task, more tasks than workers", {
   expect_false(anyNA(out$task))
 })
 
-test_that("private methods to submit and receive_results work", {
-  x <- crew_queue_callr$new(workers = 2, start = TRUE)
-  on.exit(x$shutdown())
-  on.exit(processx::supervisor_kill(), add = TRUE)
-  expect_equal(x$private$poll(), rep("timeout", 2))
-  fun <- function(x) x
-  for (index in seq_len(2)) {
-    x$private$add_task(
-      fun = fun,
-      args = list(x = index),
-      task = as.character(index)
-    )
-  }
-  expect_true(all(x$get_workers()$free))
-  expect_false(any(x$get_workers()$sent))
-  expect_false(any(x$get_workers()$done))
-  x$private$assign_tasks()
-  expect_false(any(x$get_workers()$free))
-  expect_false(any(x$get_workers()$sent))
-  expect_false(any(x$get_workers()$done))
-  x$private$send_tasks()
-  expect_true(all(x$get_workers()$sent))
-  expect_false(any(x$get_workers()$free))
-  expect_false(any(x$get_workers()$done))
-  crew_wait(
-    ~{
-      x$private$poll_done()
-      all(x$private$workers$done)
-    },
-    wait = 0.1
-  )
-  expect_false(any(x$get_workers()$free))
-  expect_true(all(x$get_workers()$sent))
-  expect_true(all(x$get_workers()$done))
-  expect_equal(nrow(x$get_results()), 0)
-  x$private$receive_results()
-  expect_true(all(x$get_workers()$free))
-  expect_false(any(x$get_workers()$sent))
-  expect_false(any(x$get_workers()$done))
-  expect_equal(nrow(x$get_results()), 2)
-  for (index in seq_len(2)) {
-    out <- x$private$pop_result()
-    expect_false(is.null(out))
-    expect_equal(out$task, as.character(out$result$result))
-  }
-  for (index in seq_len(2)) {
-    expect_null(x$private$pop_result())
-  }
-  x$shutdown()
-  crew_wait(
-    fun = function(x) !any(map_lgl(x$get_workers()$handle, ~.x$is_alive())),
-    args = list(x = x),
-    wait = 0.1
-  )
-  walk(x$get_workers()$handle, ~expect_false(.x$is_alive()))
-  expect_true(all(x$get_workers()$free))
-  expect_false(any(x$get_workers()$sent))
-  expect_false(any(x$get_workers()$done))
-})
-
 test_that("push and pop", {
-  x <- crew_queue_callr$new(workers = 2, start = TRUE)
+  x <- crew_queue_callr_async$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) {
@@ -149,3 +89,4 @@ test_that("push and pop", {
   }
   expect_true(all(done))
 })
+

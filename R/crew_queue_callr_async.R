@@ -1,6 +1,11 @@
 # Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
+# TODO:
+# 1. Debug push and pop
+# 2. add a synchronous callr queue as a field.
+# 3. write directly to main input and main output, and make the sync queue upload/download. collect the result asynchronously.
+# 4. make the sync queue poll for done workers. collect the result asynchronously. 
 crew_queue_callr_async <- R6::R6Class(
   classname = "crew_queue_callr_async",
   portable = FALSE,

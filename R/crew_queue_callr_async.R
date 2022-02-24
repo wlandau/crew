@@ -2,8 +2,7 @@
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
 # TODO:
-# 1. Debug push and pop
-# 1a. test handling of crashes
+# 1. test handling of crashes
 # 2. add a synchronous callr queue as a field.
 # 3. write directly to main input and main output, and make the sync queue upload/download. collect the result asynchronously.
 # 4. make the sync queue poll for done workers. collect the result asynchronously. 

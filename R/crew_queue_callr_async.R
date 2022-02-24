@@ -2,8 +2,8 @@
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
 # TODO:
-# 0. poll_done() should just be poll() everywhere
 # 1. Debug push and pop
+# 1a. test handling of crashes
 # 2. add a synchronous callr queue as a field.
 # 3. write directly to main input and main output, and make the sync queue upload/download. collect the result asynchronously.
 # 4. make the sync queue poll for done workers. collect the result asynchronously. 
@@ -38,6 +38,7 @@ crew_queue_callr_async <- R6::R6Class(
         free = rep(TRUE, workers),
         sent = rep(FALSE, workers),
         done = rep(FALSE, workers),
+        up = rep(FALSE, workers),
         lock = rep(FALSE, workers),
         task = rep(NA_character_, workers),
         fun = replicate(workers, NULL),
@@ -121,9 +122,20 @@ crew_queue_callr_async <- R6::R6Class(
       )
       private$workers$sent[index] <- TRUE
     },
+    poll_up = function() {
+      private$workers$up <- map_lgl(
+        private$workers$handle,
+        ~!is.null(.x) && .x$is_alive()
+      )
+    },
     poll_done = function() {
       names <- private$store$list_worker_output()
       private$workers$done[private$workers$worker %in% names] <- TRUE
+    },
+    handle_crashes = function() {
+      x <- private$workers
+      crashed <- x$sent & !x$done & !x$up
+      crew_assert(!any(crashed), "a worker crashed.")
     },
     receive_results = function() {
       for (index in seq_len(nrow(private$workers))) {
@@ -148,7 +160,9 @@ crew_queue_callr_async <- R6::R6Class(
       out
     },
     update_tasks = function() {
+      private$poll_up()
       private$poll_done()
+      private$handle_crashes()
       private$receive_results()
       private$assign_tasks()
       private$send_tasks()

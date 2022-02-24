@@ -1,6 +1,8 @@
 # Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
+# TODO:
+# 1. test handling of crashes
 crew_queue_callr <- R6::R6Class(
   classname = "crew_queue_callr",
   portable = FALSE,

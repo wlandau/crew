@@ -39,6 +39,7 @@ crew_queue_callr <- R6::R6Class(
         handle = handles,
         free = rep(TRUE, workers),
         sent = rep(FALSE, workers),
+        up = map_lgl(handles, ~!is.null(.x) && .x$is_alive()),
         done = rep(FALSE, workers),
         task = rep(NA_character_, workers),
         fun = replicate(workers, NULL),
@@ -93,18 +94,23 @@ crew_queue_callr <- R6::R6Class(
       handle$call(func = fun, args = args)
       private$workers$sent[index] <- TRUE
     },
+    poll_up = function() {
+      private$workers$up <- map_lgl(
+        private$workers$handle,
+        ~!is.null(.x) && .x$is_alive()
+      )
+    },
     poll_done = function() {
       index <- which(private$workers$sent)
       handles <- private$workers$handle[index]
       connections <- map(handles, ~.x$get_poll_connection())
       poll <- as.character(processx::poll(processes = connections, ms = 0))
-      crew_assert(!any(poll == "closed"), "a callr worker is down.")
       private$workers$done[index] <- poll == "ready"
     },
-    poll = function() {
-      handles <- private$workers$handle
-      connections <- map(handles, ~.x$get_poll_connection())
-      as.character(processx::poll(processes = connections, ms = 0))
+    handle_crashes = function() {
+      x <- private$workers
+      crashed <- x$sent & !x$done & !x$up
+      crew_assert(!any(crashed), "a worker crashed.")
     },
     receive_results = function() {
       for (index in seq_len(nrow(private$workers))) {
@@ -128,7 +134,9 @@ crew_queue_callr <- R6::R6Class(
       out
     },
     update_tasks = function() {
+      private$poll_up()
       private$poll_done()
+      private$handle_crashes()
       private$receive_results()
       private$assign_tasks()
       private$send_tasks()

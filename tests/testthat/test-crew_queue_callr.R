@@ -21,6 +21,7 @@ test_that("get workers", {
   expect_equal(out$done, rep(FALSE, 2))
   expect_equal(out$free, rep(TRUE, 2))
   expect_equal(out$sent, rep(FALSE, 2))
+  expect_equal(out$up, rep(FALSE, 2))
   expect_true(all(is.na(out$task)))
   expect_equal(out$fun, list(NULL, NULL))
   expect_equal(out$args, list(NULL, NULL))
@@ -70,7 +71,6 @@ test_that("private methods to submit and receive_results work", {
   x <- crew_queue_callr$new(workers = 2, start = TRUE)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
-  expect_equal(x$private$poll(), rep("timeout", 2))
   fun <- function(x) x
   for (index in seq_len(2)) {
     x$private$add_task(
@@ -116,8 +116,10 @@ test_that("private methods to submit and receive_results work", {
   }
   x$shutdown()
   crew_wait(
-    fun = function(x) !any(map_lgl(x$get_workers()$handle, ~.x$is_alive())),
-    args = list(x = x),
+    ~{
+      x$private$poll_up()
+      !any(x$private$workers$up)
+    },
     wait = 0.1
   )
   walk(x$get_workers()$handle, ~expect_false(.x$is_alive()))

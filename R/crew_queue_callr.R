@@ -65,7 +65,7 @@ crew_queue_callr <- R6::R6Class(
         result = list(result)
       )
     },
-    assign_tasks = function() {
+    send_tasks = function() {
       while (nrow(private$tasks) && any(private$workers$free)) {
         index <- min(which(private$workers$free))
         for (field in colnames(private$tasks)) {
@@ -77,44 +77,44 @@ crew_queue_callr <- R6::R6Class(
         private$tasks <- private$tasks[-1, ]
       }
     },
-    send_tasks = function() {
+    send_workers = function() {
       workers <- private$workers
       which <- !workers$free & !workers$sent
       workers <- workers[which, ]
       for (worker in workers$worker) {
         index <- which(private$workers$worker == worker)
-        private$send_task(
+        private$send_worker(
           worker = worker,
           fun = private$workers$fun[[index]],
           args = private$workers$args[[index]]
         )
       }
     },
-    send_task = function(worker, fun, args) {
+    send_worker = function(worker, fun, args) {
       index <- which(private$workers$worker == worker)
       handle <- private$workers$handle[[index]]
       handle$call(func = fun, args = args)
       private$workers$sent[index] <- TRUE
     },
-    poll_up = function() {
+    update_up = function() {
       private$workers$up <- map_lgl(
         private$workers$handle,
         ~!is.null(.x) && .x$is_alive()
       )
     },
-    poll_done = function() {
+    update_done = function() {
       index <- which(private$workers$sent)
       handles <- private$workers$handle[index]
       connections <- map(handles, ~.x$get_poll_connection())
       poll <- as.character(processx::poll(processes = connections, ms = 0))
       private$workers$done[index] <- poll == "ready"
     },
-    handle_crashes = function() {
+    update_crashed = function() {
       x <- private$workers
       crashed <- x$sent & !x$done & !x$up
       crew_assert(!any(crashed), "a worker crashed.")
     },
-    receive_results = function() {
+    update_results = function() {
       for (index in seq_len(nrow(private$workers))) {
         if (private$workers$done[index]) {
           task <- private$workers$task[index]
@@ -123,25 +123,18 @@ crew_queue_callr <- R6::R6Class(
           private$workers$free[index] <- TRUE
           private$workers$sent[index] <- FALSE
           private$workers$done[index] <- FALSE
+          private$workers$task[index] <- NA_character_
+          private$workers$fun[index] <- list(NULL)
         }
       }
     },
-    pop_result = function() {
-      results <- private$results
-      out <- NULL
-      if (nrow(results)) {
-        out <- list(task = results$task[1], result = results$result[[1]])
-        private$results <- private$results[-1, ]
-      }
-      out
-    },
-    update_tasks = function() {
-      private$poll_up()
-      private$poll_done()
-      private$handle_crashes()
-      private$receive_results()
-      private$assign_tasks()
+    update = function() {
+      private$update_up()
+      private$update_done()
+      private$update_crashed()
+      private$update_results()
       private$send_tasks()
+      private$send_workers()
     }
   ),
   public = list(
@@ -160,15 +153,25 @@ crew_queue_callr <- R6::R6Class(
     get_workers = function() {
       private$workers
     },
-    push = function(fun, args, task = uuid::UUIDgenerate()) {
+    push = function(fun, args, task = uuid::UUIDgenerate(), update = TRUE) {
       fun <- rlang::as_function(fun)
       private$add_task(fun = fun, args = args, task = task)
-      private$update_tasks()
+      if (update) {
+        private$update()
+      }
       invisible()
     },
-    pop = function() {
-      private$update_tasks()
-      private$pop_result()
+    pop = function(update = TRUE) {
+      if (update) {
+        private$update()
+      }
+      results <- private$results
+      out <- NULL
+      if (nrow(results)) {
+        out <- list(task = results$task[1], result = results$result[[1]])
+        private$results <- private$results[-1, ]
+      }
+      out
     },
     shutdown = function() {
       for (handle in private$workers$handle) {

@@ -46,7 +46,7 @@ test_that("push task, more workers than tasks", {
   x$private$add_task(fun = fun, args = args, task = "abc")
   x$private$add_task(fun = fun, args = args, task = "123")
   x$private$workers$free[2] <- FALSE
-  x$private$assign_tasks()
+  x$private$send_tasks()
   expect_equal(nrow(x$get_tasks()), 0)
   out <- x$get_workers()
   expect_equal(is.na(out$task), c(FALSE, TRUE, FALSE, TRUE))
@@ -61,13 +61,13 @@ test_that("push task, more tasks than workers", {
   for (index in seq_len(4)) {
     x$private$add_task(fun = fun, args = args, task = as.character(index))
   }
-  x$private$assign_tasks()
+  x$private$send_tasks()
   expect_equal(nrow(x$get_tasks()), 2)
   out <- x$get_workers()
   expect_false(anyNA(out$task))
 })
 
-test_that("private methods to submit and receive_results work", {
+test_that("private methods to submit and update_results work", {
   x <- crew_queue_callr$new(workers = 2, start = TRUE)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
@@ -82,17 +82,17 @@ test_that("private methods to submit and receive_results work", {
   expect_true(all(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
-  x$private$assign_tasks()
+  x$private$send_tasks()
   expect_false(any(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
-  x$private$send_tasks()
+  x$private$send_workers()
   expect_true(all(x$get_workers()$sent))
   expect_false(any(x$get_workers()$free))
   expect_false(any(x$get_workers()$done))
   crew_wait(
     ~{
-      x$private$poll_done()
+      x$private$update_done()
       all(x$private$workers$done)
     },
     wait = 0.1
@@ -101,23 +101,23 @@ test_that("private methods to submit and receive_results work", {
   expect_true(all(x$get_workers()$sent))
   expect_true(all(x$get_workers()$done))
   expect_equal(nrow(x$get_results()), 0)
-  x$private$receive_results()
+  x$private$update_results()
   expect_true(all(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
   expect_equal(nrow(x$get_results()), 2)
   for (index in seq_len(2)) {
-    out <- x$private$pop_result()
+    out <- x$pop()
     expect_false(is.null(out))
     expect_equal(out$task, as.character(out$result$result))
   }
   for (index in seq_len(2)) {
-    expect_null(x$private$pop_result())
+    expect_null(x$pop())
   }
   x$shutdown()
   crew_wait(
     ~{
-      x$private$poll_up()
+      x$private$update_up()
       !any(x$private$workers$up)
     },
     wait = 0.1

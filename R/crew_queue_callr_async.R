@@ -62,7 +62,7 @@ crew_queue_callr_async <- R6::R6Class(
         result = list(result)
       )
     },
-    assign_tasks = function() {
+    send_tasks = function() {
       while (nrow(private$tasks) && any(private$workers$free)) {
         index <- min(which(private$workers$free))
         for (field in colnames(private$tasks)) {
@@ -74,18 +74,39 @@ crew_queue_callr_async <- R6::R6Class(
         private$tasks <- private$tasks[-1, ]
       }
     },
-    send_tasks = function() {
+    send_workers = function() {
       workers <- private$workers
       which <- !workers$free & !workers$sent
       workers <- workers[which, ]
       for (worker in workers$worker) {
         index <- which(private$workers$worker == worker)
-        private$send_task(
+        private$send_worker(
           worker = worker,
           fun = private$workers$fun[[index]],
           args = private$workers$args[[index]]
         )
       }
+    },
+    send_worker = function(worker, fun, args) {
+      index <- which(private$workers$worker == worker)
+      handle <- private$workers$handle[[index]]
+      private$workers$up[index] <- if_any(
+        is.null(handle),
+        FALSE,
+        handle$is_alive()
+      )
+      if (!private$workers$up[index]) {
+        private$workers$handle[[index]] <- private$launch_worker(worker)
+      }
+      task <- structure(
+        list(fun = deparse(fun), args = args),
+        class = "crew_task"
+      )
+      private$store$write_worker_input(
+        worker = worker,
+        value = task
+      )
+      private$workers$sent[index] <- TRUE
     },
     launch_worker = function(worker) {
       handle <- callr::r_bg(
@@ -106,66 +127,44 @@ crew_queue_callr_async <- R6::R6Class(
       )
       handle
     },
-    send_task = function(worker, fun, args) {
-      index <- which(private$workers$worker == worker)
-      handle <- private$workers$handle[[index]]
-      if (is.null(handle) || !handle$is_alive()) {
-        private$workers$handle[[index]] <- private$launch_worker(worker)
-      }
-      task <- structure(
-        list(fun = deparse(fun), args = args),
-        class = "crew_task"
-      )
-      private$store$write_worker_input(
-        worker = worker,
-        value = task
-      )
-      private$workers$sent[index] <- TRUE
-    },
-    poll_up = function() {
+    update_up = function() {
       private$workers$up <- map_lgl(
         private$workers$handle,
         ~!is.null(.x) && .x$is_alive()
       )
     },
-    poll_done = function() {
+    update_done = function() {
       names <- private$store$list_worker_output()
       private$workers$done[private$workers$worker %in% names] <- TRUE
     },
-    handle_crashes = function() {
+    update_crashed = function() {
       x <- private$workers
       crashed <- x$sent & !x$done & !x$up
       crew_assert(!any(crashed), "a worker crashed.")
     },
-    receive_results = function() {
+    update_results = function() {
       for (index in seq_len(nrow(private$workers))) {
         if (private$workers$done[index]) {
           worker <- private$workers$worker[index]
           task <- private$workers$task[index]
           result <- private$store$read_worker_output(worker = worker)
+          private$store$delete_worker_output(worker = worker)
           private$add_result(task = task, result = result)
           private$workers$free[index] <- TRUE
           private$workers$sent[index] <- FALSE
           private$workers$done[index] <- FALSE
+          private$workers$task[index] <- NA_character_
+          private$workers$fun[index] <- list(NULL)
         }
       }
     },
-    pop_result = function() {
-      results <- private$results
-      out <- NULL
-      if (nrow(results)) {
-        out <- list(task = results$task[1], result = results$result[[1]])
-        private$results <- private$results[-1, ]
-      }
-      out
-    },
-    update_tasks = function() {
-      private$poll_up()
-      private$poll_done()
-      private$handle_crashes()
-      private$receive_results()
-      private$assign_tasks()
+    update = function() {
+      private$update_up()
+      private$update_done()
+      private$update_crashed()
+      private$update_results()
       private$send_tasks()
+      private$send_workers()
     }
   ),
   public = list(
@@ -192,15 +191,25 @@ crew_queue_callr_async <- R6::R6Class(
     get_workers = function() {
       private$workers
     },
-    push = function(fun, args, task = uuid::UUIDgenerate()) {
+    push = function(fun, args, task = uuid::UUIDgenerate(), update = TRUE) {
       fun <- rlang::as_function(fun)
       private$add_task(fun = fun, args = args, task = task)
-      private$update_tasks()
+      if (update) {
+        private$update()
+      }
       invisible()
     },
-    pop = function() {
-      private$update_tasks()
-      private$pop_result()
+    pop = function(update = TRUE) {
+      if (update) {
+        private$update()
+      }
+      results <- private$results
+      out <- NULL
+      if (nrow(results)) {
+        out <- list(task = results$task[1], result = results$result[[1]])
+        private$results <- private$results[-1, ]
+      }
+      out
     },
     shutdown = function() {
       for (handle in private$workers$handle) {

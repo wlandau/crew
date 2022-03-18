@@ -10,6 +10,6 @@ crew_shutdown <- function(message = NULL) {
   rlang::abort(message = message, class = c("crew_shutdown", "crew"))
 }
 
-crew_timeout <- function(message = NULL) {
-  rlang::abort(message = message, class = c("crew_timeout", "crew"))
+crew_expire <- function(message = NULL) {
+  rlang::abort(message = message, class = c("crew_expire", "crew"))
 }

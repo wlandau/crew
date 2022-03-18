@@ -12,7 +12,7 @@ crew_test("crew_wait with argless function", {
   expect_silent(crew_wait(fun = function() TRUE))
   expect_error(
     crew_wait(fun = function() FALSE, timeout = 0.05, wait = 0.01),
-    class = "crew_timeout"
+    class = "crew_expire"
   )
 })
 
@@ -22,7 +22,7 @@ crew_test("crew_wait on a file", {
   args <- list(x = tmp)
   expect_error(
     crew_wait(fun = fun, args = args, timeout = 0.05, wait = 0),
-    class = "crew_timeout"
+    class = "crew_expire"
   )
   file.create(tmp)
   on.exit(unlink(tmp))

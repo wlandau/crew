@@ -7,7 +7,7 @@ crew_test("no work then worker timeout", {
       timeout = 0,
       wait = 0
     ),
-    class = "crew_timeout"
+    class = "crew_expire"
   )
 })
 
@@ -30,7 +30,7 @@ crew_test("one simple job", {
       timeout = 0,
       wait = 0
     ),
-    class = "crew_timeout"
+    class = "crew_expire"
   )
   expect_false(store$exists_worker_input("worker"))
   expect_true(store$exists_worker_output("worker"))

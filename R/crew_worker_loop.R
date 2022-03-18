@@ -85,8 +85,8 @@ crew_worker_loop_job <- function(worker, store, timeout, wait) {
   input$fun <- eval(parse(text = input$fun))
   value <- crew_worker_loop_monad(fun = input$fun, args = input$args)
   class(value) <- class(input)
-  store$write_worker_output(worker = worker, value = value)
   store$delete_worker_input(worker = worker)
+  store$write_worker_output(worker = worker, value = value)
   crew_worker_loop_job_finalize(input)
   invisible()
 }

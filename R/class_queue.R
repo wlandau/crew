@@ -110,6 +110,8 @@ queue <- R6::R6Class(
     launch_worker = function(worker) {
       handle <- callr::r_bg(
         func = function(worker, store, jobs, timeout, wait) {
+          # executed inside the worker
+          # nocov start
           crew::crew_worker(
             worker = worker,
             store = store,
@@ -117,6 +119,7 @@ queue <- R6::R6Class(
             timeout = timeout,
             wait = wait
           )
+          # nocov end
         },
         args = list(
           worker = worker,

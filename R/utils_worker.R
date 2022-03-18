@@ -42,7 +42,7 @@ crew_worker <- function(worker, store, jobs, timeout, wait) {
   wait <- as.numeric(wait)
   job <- 0
   tryCatch(
-    while(job < jobs) {
+    while (job < jobs) {
       crew_wait(
         fun = ~.x$exists_worker_input(worker = .y),
         args = list(store = store, worker = worker),

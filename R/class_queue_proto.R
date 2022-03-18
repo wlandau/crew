@@ -1,10 +1,10 @@
 # Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
-# Same as `crew_queue_callr` except it uses the custom data store
+# Same as `queue_callr` except it uses the custom data store
 #  and worker event loop.
-crew_queue_proto <- R6::R6Class(
-  classname = "crew_queue_proto",
+queue_proto <- R6::R6Class(
+  classname = "queue_proto",
   portable = FALSE,
   cloneable = FALSE,
   private = list(
@@ -172,7 +172,7 @@ crew_queue_proto <- R6::R6Class(
       timeout = 60,
       wait = 0.1
     ) {
-      private$store <- crew_store_local$new(timeout = timeout, wait = wait)
+      private$store <- store_local$new(timeout = timeout, wait = wait)
       private$timeout <- timeout
       private$wait <- wait
       private$initialize_tasks()

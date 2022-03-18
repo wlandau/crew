@@ -1,11 +1,11 @@
 test_that("get_root()", {
   tmp <- tempfile()
-  x <- crew_store$new(dir_root = tmp)
+  x <- store$new(dir_root = tmp)
   expect_equal(x$get_root(), tmp)
 })
 
 test_that("main input", {
-  x <- crew_store$new()
+  x <- store$new()
   expect_false(x$exists_main_input("worker"))
   expect_equal(x$list_main_input(), character(0))
   x$write_main_input("worker", value = "x")
@@ -17,7 +17,7 @@ test_that("main input", {
 })
 
 test_that("main output", {
-  x <- crew_store$new()
+  x <- store$new()
   expect_false(x$exists_main_output("worker"))
   expect_equal(x$list_main_output(), character(0))
   x$write_main_output("worker", value = "x")
@@ -29,7 +29,7 @@ test_that("main output", {
 })
 
 test_that("destroy", {
-  x <- crew_store$new()
+  x <- store$new()
   expect_false(file.exists(x$get_root()))
   x$write_main_output("worker", value = "x")
   expect_true(file.exists(x$get_root()))

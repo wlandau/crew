@@ -1,5 +1,5 @@
 crew_test("no work then worker timeout", {
-  store <- crew_store_local$new()
+  store <- store_local$new()
   expect_error(
     crew_worker_loop(
       worker = "name",
@@ -14,7 +14,7 @@ crew_test("no work then worker timeout", {
 crew_test("one simple job", {
   dir_root <- tempfile()
   dir_create(dir_root)
-  store <- crew_store_local$new(dir_root = dir_root)
+  store <- store_local$new(dir_root = dir_root)
   fun <- function(x) {
     x + 1
   }
@@ -42,7 +42,7 @@ crew_test("one simple job", {
 crew_test("shutdown job", {
   dir_root <- tempfile()
   dir_create(dir_root)
-  store <- crew_store_local$new(dir_root = dir_root)
+  store <- store_local$new(dir_root = dir_root)
   fun <- function() FALSE
   value <- structure(
     list(fun = deparse(fun), args = list()),

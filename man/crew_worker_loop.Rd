@@ -25,7 +25,7 @@ that the worker waits between checking if a job exists.}
 \code{NULL} (invisibly).
 }
 \description{
-Run the worker event loop.
+Not a user-side function. Do not invoke directly.
 }
 \details{
 The worker event loop runs inside the underlying process
@@ -38,7 +38,7 @@ loop exits.
 \examples{
 dir_root <- tempfile()
 dir.create(dir_root)
-store <- crew_store_local$new(dir_root = dir_root)
+store <- store_local$new(dir_root = dir_root)
 fun <- function(x) {
   x + 1
 }
@@ -56,3 +56,4 @@ try( # The worker throws a special error class when it times out.
 )
 store$read_worker_output("my_worker")$value
 }
+\keyword{internal}

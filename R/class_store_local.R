@@ -1,6 +1,6 @@
-crew_store_local <- R6::R6Class(
-  classname = "crew_store_local",
-  inherit = crew_store,
+store_local <- R6::R6Class(
+  classname = "store_local",
+  inherit = store,
   portable = FALSE,
   cloneable = FALSE,
   private = list(
@@ -51,7 +51,7 @@ crew_store_local <- R6::R6Class(
     },
     marshal = function() {
       expr <- substitute(
-        crew:::crew_store_local$new(dir_root = dir_root),
+        crew:::store_local$new(dir_root = dir_root),
         list(dir_root = private$dir_root)
       )
       paste(deparse(expr), collapse = "\n")

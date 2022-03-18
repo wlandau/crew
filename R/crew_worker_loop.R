@@ -1,6 +1,7 @@
 #' @title Worker event loop.
 #' @export
-#' @description Run the worker event loop.
+#' @keywords internal
+#' @description Not a user-side function. Do not invoke directly.
 #' @details The worker event loop runs inside the underlying process
 #'   of a worker. It waits for the next job (timing out
 #'   if it idles for too long at one time) runs any incoming jobs
@@ -12,7 +13,7 @@
 #' @examples
 #' dir_root <- tempfile()
 #' dir.create(dir_root)
-#' store <- crew_store_local$new(dir_root = dir_root)
+#' store <- store_local$new(dir_root = dir_root)
 #' fun <- function(x) {
 #'   x + 1
 #' }
@@ -49,7 +50,7 @@ crew_worker_loop <- function(worker, store, timeout, wait) {
 #' @title Local worker inner event loop.
 #' @export
 #' @keywords internal
-#' @description Not a user-side function. for internal use only.
+#' @description Not a user-side function. Do not invoke directly.
 #' @details See [crew_worker_loop()] for details. `crew_worker_loop_run()`
 #'   is the function that actually runs inside the loop and may
 #'   error out with class `"crew_shutdown"`

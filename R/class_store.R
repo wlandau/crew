@@ -1,5 +1,5 @@
-crew_store <- R6::R6Class(
-  classname = "crew_store",
+store <- R6::R6Class(
+  classname = "store",
   portable = FALSE,
   cloneable = FALSE,
   private = list(

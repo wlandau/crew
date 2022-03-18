@@ -1,5 +1,5 @@
 test_that("initial queue", {
-  x <- crew_queue_callr$new(start = FALSE)
+  x <- queue_proto$new()
   expect_true(is.data.frame(x$get_tasks()))
   expect_true(is.data.frame(x$get_results()))
   expect_true(is.data.frame(x$get_workers()))
@@ -12,7 +12,7 @@ test_that("initial queue", {
 })
 
 test_that("get workers", {
-  x <- crew_queue_callr$new(workers = 2, start = FALSE)
+  x <- queue_proto$new(workers = 2)
   on.exit(x$shutdown())
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
@@ -21,6 +21,7 @@ test_that("get workers", {
   expect_equal(out$done, rep(FALSE, 2))
   expect_equal(out$free, rep(TRUE, 2))
   expect_equal(out$sent, rep(FALSE, 2))
+  expect_equal(out$lock, rep(FALSE, 2))
   expect_equal(out$up, rep(FALSE, 2))
   expect_true(all(is.na(out$task)))
   expect_equal(out$fun, list(NULL, NULL))
@@ -28,8 +29,7 @@ test_that("get workers", {
 })
 
 test_that("add task", {
-  x <- crew_queue_callr$new(start = FALSE)
-  on.exit(x$shutdown())
+  x <- queue_proto$new()
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
@@ -40,7 +40,7 @@ test_that("add task", {
 })
 
 test_that("push task, more workers than tasks", {
-  x <- crew_queue_callr$new(workers = 4, start = FALSE)
+  x <- queue_proto$new(workers = 4)
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
@@ -55,7 +55,7 @@ test_that("push task, more workers than tasks", {
 })
 
 test_that("push task, more tasks than workers", {
-  x <- crew_queue_callr$new(workers = 2, start = FALSE)
+  x <- queue_proto$new(workers = 2)
   fun <- function(x) x
   args <- list(x = 1)
   for (index in seq_len(4)) {
@@ -67,8 +67,22 @@ test_that("push task, more tasks than workers", {
   expect_false(anyNA(out$task))
 })
 
+test_that("detect crash and shut down workers", {
+  x <- queue_proto$new(workers = 2)
+  on.exit(x$shutdown())
+  replicate(2, x$push(fun = function() Sys.sleep(Inf)))
+  crew_wait(
+    fun = function() all(map_lgl(x$get_workers()$handle, ~.x$is_alive()))
+  )
+  x$get_workers()$handle[[1]]$kill()
+  expect_error(x$pop(), class = "crew_error")
+  crew_wait(
+    fun = function() !any(map_lgl(x$get_workers()$handle, ~.x$is_alive()))
+  )
+})
+
 test_that("private methods to submit and update_results work", {
-  x <- crew_queue_callr$new(workers = 2, start = TRUE)
+  x <- queue_proto$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
@@ -129,7 +143,7 @@ test_that("private methods to submit and update_results work", {
 })
 
 test_that("push and pop", {
-  x <- crew_queue_callr$new(workers = 2, start = TRUE)
+  x <- queue_proto$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) {
@@ -150,18 +164,4 @@ test_that("push and pop", {
     Sys.sleep(0.1)
   }
   expect_true(all(done))
-})
-
-test_that("detect crash and shut down workers", {
-  x <- crew_queue_callr$new(workers = 2)
-  on.exit(x$shutdown())
-  replicate(2, x$push(fun = function() Sys.sleep(Inf)))
-  crew_wait(
-    fun = function() all(map_lgl(x$get_workers()$handle, ~.x$is_alive()))
-  )
-  x$get_workers()$handle[[1]]$kill()
-  expect_error(x$pop(), class = "crew_error")
-  crew_wait(
-    fun = function() !any(map_lgl(x$get_workers()$handle, ~.x$is_alive()))
-  )
 })

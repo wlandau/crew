@@ -25,7 +25,7 @@ that the worker waits between checking if a job exists.}
 \code{NULL} (invisibly).
 }
 \description{
-Not a user-side function. for internal use only.
+Not a user-side function. Do not invoke directly.
 }
 \details{
 See \code{\link[=crew_worker_loop]{crew_worker_loop()}} for details. \code{crew_worker_loop_run()}

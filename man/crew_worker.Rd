@@ -4,9 +4,11 @@
 \alias{crew_worker}
 \title{Worker event loop.}
 \usage{
-crew_worker(worker, store, timeout, wait)
+crew_worker(worker, store, jobs, timeout, wait)
 }
 \arguments{
+\item{jobs}{Maximum number of jobs before returning.}
+
 \item{timeout}{Positive numeric of length 1, number of seconds
 that a worker can idle before timing out.}
 
@@ -38,14 +40,12 @@ fun <- function(x) {
 args <- list(x = 1)
 value <- list(fun = deparse(fun), args = args)
 store$write_worker_input(worker = "my_worker", value = value)
-try( # The worker throws a special error class when it times out.
-  crew_worker(
-    worker = "my_worker",
-    store = store$marshal(),
-    timeout = 0,
-    wait = 0
-  ),
-  silent = TRUE
+crew_worker(
+  worker = "my_worker",
+  store = store$marshal(),
+  jobs = 1,
+  timeout = 0,
+  wait = 0
 )
 store$read_worker_output("my_worker")$result # 2
 }

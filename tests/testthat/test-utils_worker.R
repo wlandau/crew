@@ -4,6 +4,7 @@ crew_test("no work then worker timeout", {
     crew_worker(
       worker = "name",
       store = store$marshal(),
+      jobs = Inf,
       timeout = 0,
       wait = 0
     ),
@@ -27,10 +28,36 @@ crew_test("one simple job", {
     crew_worker(
       worker = "worker",
       store = store$marshal(),
+      jobs = Inf,
       timeout = 0,
       wait = 0
     ),
     class = "crew_expire"
+  )
+  expect_false(store$exists_worker_input("worker"))
+  expect_true(store$exists_worker_output("worker"))
+  job <- store$read_worker_output("worker")
+  expect_equal(job$result, 2L)
+})
+
+crew_test("one job", {
+  dir_root <- tempfile()
+  dir_create(dir_root)
+  store <- store_local$new(dir_root = dir_root)
+  fun <- function(x) {
+    x + 1
+  }
+  value <- structure(
+    list(fun = deparse(fun), args = list(x = 1L)),
+    class = "crew_task"
+  )
+  store$write_worker_input(worker = "worker", value = value)
+  crew_worker(
+    worker = "worker",
+    store = store$marshal(),
+    jobs = 1,
+    timeout = 0,
+    wait = 0
   )
   expect_false(store$exists_worker_input("worker"))
   expect_true(store$exists_worker_output("worker"))
@@ -47,6 +74,7 @@ crew_test("shutdown job", {
   crew_worker(
     worker = "worker",
     store = store$marshal(),
+    jobs = Inf,
     timeout = 1,
     wait = 0
   )

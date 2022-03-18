@@ -12,6 +12,7 @@ queue_proto <- R6::R6Class(
     results = NULL,
     workers = NULL,
     store = NULL,
+    jobs = NULL,
     timeout = NULL,
     wait = NULL,
     initialize_tasks = function() {
@@ -108,10 +109,11 @@ queue_proto <- R6::R6Class(
     },
     launch_worker = function(worker) {
       handle <- callr::r_bg(
-        func = function(worker, store, timeout, wait) {
+        func = function(worker, store, jobs, timeout, wait) {
           crew::crew_worker(
             worker = worker,
             store = store,
+            jobs = jobs,
             timeout = timeout,
             wait = wait
           )
@@ -119,6 +121,7 @@ queue_proto <- R6::R6Class(
         args = list(
           worker = worker,
           store = private$store$marshal(),
+          jobs = private$jobs,
           timeout = private$timeout,
           wait = private$wait
         ),
@@ -182,10 +185,12 @@ queue_proto <- R6::R6Class(
   public = list(
     initialize = function(
       workers = 1,
+      jobs = Inf,
       timeout = 60,
       wait = 0.1
     ) {
       private$store <- store_local$new(timeout = timeout, wait = wait)
+      private$jobs <- jobs
       private$timeout <- timeout
       private$wait <- wait
       private$initialize_tasks()

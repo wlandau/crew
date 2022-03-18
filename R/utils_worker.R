@@ -13,6 +13,7 @@
 #'   that a worker can idle before timing out.
 #' @param wait Positive numeric of length 1, number of seconds
 #'   that the worker waits between checking if a job exists.
+#' @param jobs Maximum number of jobs before returning.
 #' @examples
 #' if (!identical(Sys.getenv("CREW_EXAMPLES", unset = ""), "")) {
 #' dir_root <- tempfile()
@@ -24,24 +25,24 @@
 #' args <- list(x = 1)
 #' value <- list(fun = deparse(fun), args = args)
 #' store$write_worker_input(worker = "my_worker", value = value)
-#' try( # The worker throws a special error class when it times out.
-#'   crew_worker(
-#'     worker = "my_worker",
-#'     store = store$marshal(),
-#'     timeout = 0,
-#'     wait = 0
-#'   ),
-#'   silent = TRUE
+#' crew_worker(
+#'   worker = "my_worker",
+#'   store = store$marshal(),
+#'   jobs = 1,
+#'   timeout = 0,
+#'   wait = 0
 #' )
 #' store$read_worker_output("my_worker")$result # 2
 #' }
-crew_worker <- function(worker, store, timeout, wait) {
+crew_worker <- function(worker, store, jobs, timeout, wait) {
   worker <- as.character(worker)
   store <- eval(parse(text = store))
+  jobs <- as.numeric(jobs)
   timeout <- as.numeric(timeout)
   wait <- as.numeric(wait)
+  job <- 0
   tryCatch(
-    while (TRUE) {
+    while(job < jobs) {
       crew_wait(
         fun = ~.x$exists_worker_input(worker = .y),
         args = list(store = store, worker = worker),
@@ -49,6 +50,7 @@ crew_worker <- function(worker, store, timeout, wait) {
         wait = wait
       )
       crew_job(worker, store, timeout, wait)
+      job <- job + 1
     },
     crew_shutdown = identity
   )

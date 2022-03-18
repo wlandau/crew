@@ -19,7 +19,7 @@ queue_proto <- R6::R6Class(
         task = character(0),
         fun = list(NULL),
         args = list(NULL),
-        class = character(0)
+        shutdown = logical(0)
       )
     },
     initialize_results = function() {
@@ -40,10 +40,10 @@ queue_proto <- R6::R6Class(
         task = rep(NA_character_, workers),
         fun = replicate(workers, NULL),
         args = replicate(workers, NULL),
-        class = rep(NA_character_, workers)
+        shutdown = rep(NA, workers)
       )
     },
-    add_task = function(task, fun, args, class = "crew_job", cut = FALSE) {
+    add_task = function(task, fun, args, shutdown = FALSE) {
       dup <- task %in% private$tasks$task || task %in% private$workers$task
       crew_assert(!dup, paste("duplicate task name", task))
       args <- list(
@@ -51,9 +51,9 @@ queue_proto <- R6::R6Class(
         task = task,
         fun = list(fun),
         args = list(args),
-        class = class
+        shutdown = shutdown
       )
-      if (cut) {
+      if (shutdown) {
         args$.before <- 1L
       }
       private$tasks <- do.call(what = tibble::add_row, args = args)
@@ -87,11 +87,11 @@ queue_proto <- R6::R6Class(
           worker = worker,
           fun = private$workers$fun[[index]],
           args = private$workers$args[[index]],
-          class = private$workers$class[index]
+          shutdown = private$workers$shutdown[index]
         )
       }
     },
-    send_worker = function(worker, fun, args, class) {
+    send_worker = function(worker, fun, args, shutdown) {
       index <- which(private$workers$worker == worker)
       handle <- private$workers$handle[[index]]
       private$workers$up[index] <- if_any(
@@ -99,7 +99,7 @@ queue_proto <- R6::R6Class(
         FALSE,
         handle$is_alive()
       )
-      if (!private$workers$up[index] && !identical(class, "crew_shutdown")) {
+      if (!private$workers$up[index] && !shutdown) {
         private$workers$handle[[index]] <- private$launch_worker(worker)
       }
       task <- list(fun = deparse(fun), args = args)
@@ -164,7 +164,7 @@ queue_proto <- R6::R6Class(
           private$workers$task[index] <- NA_character_
           private$workers$fun[index] <- list(NULL)
           private$workers$args[index] <- list(NULL)
-          private$workers$class[index] <- NA_character_
+          private$workers$shutdown[index] <- NA
         }
       }
     },
@@ -234,7 +234,7 @@ queue_proto <- R6::R6Class(
         private$add_task(
           fun = crew_shutdown,
           args = list(),
-          class = "crew_shutdown",
+          shutdown = TRUE,
           task = uuid::UUIDgenerate()
         )
       )

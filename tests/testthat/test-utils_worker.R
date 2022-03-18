@@ -52,7 +52,7 @@ crew_test("shutdown job", {
   )
   expect_false(store$exists_worker_input("worker"))
   expect_true(store$exists_worker_output("worker"))
-  expect_equal(store$read_worker_output("worker")$class, "crew_shutdown")
+  expect_true(store$read_worker_output("worker")$shutdown)
 })
 
 crew_test("crew_monad() without errors", {

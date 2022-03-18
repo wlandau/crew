@@ -36,7 +36,7 @@ fun <- function(x) {
   x + 1
 }
 args <- list(x = 1)
-value <- list(fun = deparse(fun), args = args, class = "crew_task")
+value <- list(fun = deparse(fun), args = args)
 store$write_worker_input(worker = "my_worker", value = value)
 try( # The worker throws a special error class when it times out.
   crew_worker(
@@ -47,7 +47,7 @@ try( # The worker throws a special error class when it times out.
   ),
   silent = TRUE
 )
-store$read_worker_output("my_worker")$value
+store$read_worker_output("my_worker")$result # 2
 }
 }
 \keyword{internal}

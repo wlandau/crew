@@ -22,7 +22,7 @@
 #'   x + 1
 #' }
 #' args <- list(x = 1)
-#' value <- list(fun = deparse(fun), args = args, class = "crew_task")
+#' value <- list(fun = deparse(fun), args = args)
 #' store$write_worker_input(worker = "my_worker", value = value)
 #' try( # The worker throws a special error class when it times out.
 #'   crew_worker(
@@ -33,7 +33,7 @@
 #'   ),
 #'   silent = TRUE
 #' )
-#' store$read_worker_output("my_worker")$value
+#' store$read_worker_output("my_worker")$result # 2
 #' }
 crew_worker <- function(worker, store, timeout, wait) {
   worker <- as.character(worker)
@@ -61,14 +61,14 @@ crew_job <- function(worker, store, timeout, wait) {
   value <- crew_monad(fun = input$fun, args = input$args)
   store$delete_worker_input(worker = worker)
   store$write_worker_output(worker = worker, value = value)
-  if (identical(value$class, "crew_shutdown")) {
+  if (isTRUE(value$shutdown)) {
     crew_shutdown()
   }
 }
 
 crew_monad <- function(fun, args) {
   capture_error <- function(condition) {
-    state$class <- class(condition)[1]
+    state$shutdown <- inherits(condition, "crew_shutdown")
     state$error <- conditionMessage(condition)
     state$traceback <- as.character(sys.calls())
     NULL
@@ -91,7 +91,7 @@ crew_monad <- function(fun, args) {
     result = result,
     seconds = seconds,
     error = state$error,
-    class = state$class,
+    shutdown = state$shutdown,
     traceback = state$traceback,
     warnings = state$warnings
   )

@@ -43,13 +43,9 @@ crew_test("shutdown job", {
   dir_root <- tempfile()
   dir_create(dir_root)
   store <- store_local$new(dir_root = dir_root)
-  fun <- function() FALSE
-  value <- structure(
-    list(fun = deparse(fun), args = list()),
-    class = "crew_shutdown"
-  )
+  value <- list(fun = deparse(crew_shutdown), args = list())
   store$write_worker_input(worker = "worker", value = value)
-  crew_worker_loop(
+  crew_worker(
     worker = "worker",
     store = store$marshal(),
     timeout = 1,
@@ -57,7 +53,7 @@ crew_test("shutdown job", {
   )
   expect_false(store$exists_worker_input("worker"))
   expect_true(store$exists_worker_output("worker"))
-  expect_s3_class(store$read_worker_output("worker"), "crew_shutdown")
+  expect_equal(store$read_worker_output("worker")$class, "crew_shutdown")
 })
 
 crew_test("crew_worker_loop_monad() without errors", {

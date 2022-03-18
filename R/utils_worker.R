@@ -9,7 +9,10 @@
 #'   (which throws an error of class `"crew_shutdown"`) then the
 #'   loop exits.
 #' @return `NULL` (invisibly).
-#' @inheritParams crew_worker_loop_run
+#' @param timeout Positive numeric of length 1, number of seconds
+#'   that a worker can idle before timing out.
+#' @param wait Positive numeric of length 1, number of seconds
+#'   that the worker waits between checking if a job exists.
 #' @examples
 #' if (!identical(Sys.getenv("CREW_EXAMPLES", unset = ""), "")) {
 #' dir_root <- tempfile()
@@ -22,7 +25,7 @@
 #' value <- list(fun = deparse(fun), args = args, class = "crew_task")
 #' store$write_worker_input(worker = "my_worker", value = value)
 #' try( # The worker throws a special error class when it times out.
-#'   crew_worker_loop(
+#'   crew_worker(
 #'     worker = "my_worker",
 #'     store = store$marshal(),
 #'     timeout = 0,
@@ -32,83 +35,40 @@
 #' )
 #' store$read_worker_output("my_worker")$value
 #' }
-crew_worker_loop <- function(worker, store, timeout, wait) {
+crew_worker <- function(worker, store, timeout, wait) {
   worker <- as.character(worker)
   store <- eval(parse(text = store))
   timeout <- as.numeric(timeout)
   wait <- as.numeric(wait)
   tryCatch(
-    crew::crew_worker_loop_run(
-      worker = worker,
-      store = store,
-      timeout = timeout,
-      wait = wait
-    ),
+    while (TRUE) {
+      crew_wait(
+        fun = ~.x$exists_worker_input(worker = .y),
+        args = list(store = store, worker = worker),
+        timeout = timeout,
+        wait = wait
+      )
+      crew_job(worker, store, timeout, wait)
+    },
     crew_shutdown = identity
   )
   invisible()
 }
 
-#' @title Local worker inner event loop.
-#' @export
-#' @keywords internal
-#' @description Not a user-side function. Do not invoke directly.
-#' @details See [crew_worker_loop()] for details. `crew_worker_loop_run()`
-#'   is the function that actually runs inside the loop and may
-#'   error out with class `"crew_shutdown"`
-#' @return `NULL` (invisibly).
-#' @param worker Character of length 1, name of the worker.
-#' @param store Marshaled `R6` data store object to
-#'   send/receive job data from the crew.
-#'   Constructed from the `$marshal()` method of the store.
-#'   `eval(parse(text = store))`
-#'   should reconstruct the usable store object inside the worker event loop.
-#' @param timeout Positive numeric of length 1, number of seconds
-#'   that a worker can idle before timing out.
-#' @param wait Positive numeric of length 1, number of seconds
-#'   that the worker waits between checking if a job exists.
-#' @examples
-#' # See the examples of crew_worker_loop().
-crew_worker_loop_run <- function(worker, store, timeout, wait) {
-  start <- proc.time()["elapsed"]
-  do_while <- FALSE
-  while (TRUE) {
-    crew_wait(
-      fun = function(worker, store) store$exists_worker_input(worker = worker),
-      args = list(worker = worker, store = store),
-      timeout = timeout,
-      wait = wait
-    )
-    crew_worker_loop_job(worker, store, timeout, wait)
+crew_job <- function(worker, store, timeout, wait) {
+  input <- store$read_worker_input(worker = worker)
+  input$fun <- eval(parse(text = input$fun))
+  value <- crew_monad(fun = input$fun, args = input$args)
+  store$delete_worker_input(worker = worker)
+  store$write_worker_output(worker = worker, value = value)
+  if (identical(value$class, "crew_shutdown")) {
+    crew_shutdown()
   }
 }
 
-crew_worker_loop_job <- function(worker, store, timeout, wait) {
-  input <- store$read_worker_input(worker = worker)
-  input$fun <- eval(parse(text = input$fun))
-  value <- crew_worker_loop_monad(fun = input$fun, args = input$args)
-  class(value) <- class(input)
-  store$delete_worker_input(worker = worker)
-  store$write_worker_output(worker = worker, value = value)
-  crew_worker_loop_job_finalize(input)
-  invisible()
-}
-
-crew_worker_loop_job_finalize <- function(input) {
-  UseMethod("crew_worker_loop_job_finalize")
-}
-
-#' @export
-crew_worker_loop_job_finalize.crew_task <- function(input) {
-}
-
-#' @export
-crew_worker_loop_job_finalize.crew_shutdown <- function(input) {
-  crew_shutdown()
-}
-
-crew_worker_loop_monad <- function(fun, args) {
+crew_monad <- function(fun, args) {
   capture_error <- function(condition) {
+    state$class <- class(condition)[1]
     state$error <- conditionMessage(condition)
     state$traceback <- as.character(sys.calls())
     NULL
@@ -131,6 +91,7 @@ crew_worker_loop_monad <- function(fun, args) {
     result = result,
     seconds = seconds,
     error = state$error,
+    class = state$class,
     traceback = state$traceback,
     warnings = state$warnings
   )

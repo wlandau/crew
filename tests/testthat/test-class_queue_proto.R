@@ -67,18 +67,15 @@ test_that("push task, more tasks than workers", {
   expect_false(anyNA(out$task))
 })
 
-test_that("detect crash and shut down workers", {
+test_that("detect crash", {
   x <- queue_proto$new(workers = 2)
-  on.exit(x$shutdown())
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
   crew_wait(
     fun = function() all(map_lgl(x$get_workers()$handle, ~.x$is_alive()))
   )
   x$get_workers()$handle[[1]]$kill()
+  on.exit(x$get_workers()$handle[[2]]$kill())
   expect_error(x$pop(), class = "crew_error")
-  crew_wait(
-    fun = function() !any(map_lgl(x$get_workers()$handle, ~.x$is_alive()))
-  )
 })
 
 test_that("private methods to submit and update_results work", {
@@ -128,7 +125,7 @@ test_that("private methods to submit and update_results work", {
   for (index in seq_len(2)) {
     expect_null(x$pop())
   }
-  x$shutdown()
+  x$shutdown(wait = TRUE)
   crew_wait(
     ~{
       x$private$update_up()

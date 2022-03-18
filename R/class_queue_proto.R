@@ -18,7 +18,8 @@ queue_proto <- R6::R6Class(
       private$tasks <- tibble::tibble(
         task = character(0),
         fun = list(NULL),
-        args = list(NULL)
+        args = list(NULL),
+        class = character(0)
       )
     },
     initialize_results = function() {
@@ -38,18 +39,24 @@ queue_proto <- R6::R6Class(
         lock = rep(FALSE, workers),
         task = rep(NA_character_, workers),
         fun = replicate(workers, NULL),
-        args = replicate(workers, NULL)
+        args = replicate(workers, NULL),
+        class = rep(NA_character_, workers)
       )
     },
-    add_task = function(task, fun, args) {
+    add_task = function(task, fun, args, class = "crew_job", cut = FALSE) {
       dup <- task %in% private$tasks$task || task %in% private$workers$task
       crew_assert(!dup, paste("duplicate task name", task))
-      private$tasks <- tibble::add_row(
+      args <- list(
         .data = private$tasks,
         task = task,
         fun = list(fun),
-        args = list(args)
+        args = list(args),
+        class = class
       )
+      if (cut) {
+        args$.before <- 1L
+      }
+      private$tasks <- do.call(what = tibble::add_row, args = args)
     },
     add_result = function(task, result) {
       private$results <- tibble::add_row(
@@ -79,11 +86,12 @@ queue_proto <- R6::R6Class(
         private$send_worker(
           worker = worker,
           fun = private$workers$fun[[index]],
-          args = private$workers$args[[index]]
+          args = private$workers$args[[index]],
+          class = private$workers$class[index]
         )
       }
     },
-    send_worker = function(worker, fun, args) {
+    send_worker = function(worker, fun, args, class) {
       index <- which(private$workers$worker == worker)
       handle <- private$workers$handle[[index]]
       private$workers$up[index] <- if_any(
@@ -91,22 +99,23 @@ queue_proto <- R6::R6Class(
         FALSE,
         handle$is_alive()
       )
-      if (!private$workers$up[index]) {
+      if (!private$workers$up[index] && !identical(class, "crew_shutdown")) {
         private$workers$handle[[index]] <- private$launch_worker(worker)
       }
-      task <- structure(
-        list(fun = deparse(fun), args = args),
-        class = "crew_task"
-      )
-      private$store$write_worker_input(
-        worker = worker,
-        value = task
-      )
+      task <- list(fun = deparse(fun), args = args)
+      private$store$write_worker_input(worker = worker, value = task)
       private$workers$sent[index] <- TRUE
     },
     launch_worker = function(worker) {
       handle <- callr::r_bg(
-        func = crew::crew_worker_loop,
+        func = function(worker, store, timeout, wait) {
+          crew::crew_worker(
+            worker = worker,
+            store = store,
+            timeout = timeout,
+            wait = wait
+          )
+        },
         args = list(
           worker = worker,
           store = private$store$marshal(),
@@ -137,8 +146,8 @@ queue_proto <- R6::R6Class(
       x <- private$workers
       crashed <- x$sent & !x$done & !x$up
       if (any(crashed)) {
-        self$shutdown()
-        crew_error("worker crashed. Shutting down all workers.")
+        self$shutdown(wait = FALSE)
+        crew_error("worker crashed. Scheduling worker shutdown.")
       }
     },
     update_results = function() {
@@ -154,13 +163,17 @@ queue_proto <- R6::R6Class(
           private$workers$done[index] <- FALSE
           private$workers$task[index] <- NA_character_
           private$workers$fun[index] <- list(NULL)
+          private$workers$args[index] <- list(NULL)
+          private$workers$class[index] <- NA_character_
         }
       }
     },
-    update = function() {
+    update = function(crashed = TRUE) {
       private$update_up()
       private$update_done()
-      private$update_crashed()
+      if (crashed) {
+        private$update_crashed()
+      }
       private$update_results()
       private$send_tasks()
       private$send_workers()
@@ -214,11 +227,26 @@ queue_proto <- R6::R6Class(
       }
       out
     },
-    shutdown = function() {
-      for (handle in private$workers$handle) {
-        if (!is.null(handle)) {
-          handle$kill()
-        }
+    shutdown = function(wait = TRUE) {
+      private$initialize_tasks()
+      replicate(
+        nrow(private$workers),
+        private$add_task(
+          fun = crew_shutdown,
+          args = list(),
+          class = "crew_shutdown",
+          task = uuid::UUIDgenerate()
+        )
+      )
+      if (wait) {
+        crew_wait(
+          fun = function() {
+            private$update(crashed = FALSE)
+            !any(private$workers$up)
+          },
+          timeout = private$timeout,
+          wait = private$wait
+        )
       }
       invisible()
     }

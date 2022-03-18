@@ -190,7 +190,12 @@ crew_queue_callr_async <- R6::R6Class(
     get_workers = function() {
       private$workers
     },
-    push = function(fun, args, task = uuid::UUIDgenerate(), update = TRUE) {
+    push = function(
+      fun,
+      args = list(),
+      task = uuid::UUIDgenerate(),
+      update = TRUE
+    ) {
       fun <- rlang::as_function(fun)
       private$add_task(fun = fun, args = args, task = task)
       if (update) {

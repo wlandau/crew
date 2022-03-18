@@ -1,8 +1,6 @@
-# Adapted from
+#' Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
-# TODO:
-# 1. test handling of crashes
 crew_queue_callr <- R6::R6Class(
   classname = "crew_queue_callr",
   portable = FALSE,
@@ -112,7 +110,10 @@ crew_queue_callr <- R6::R6Class(
     update_crashed = function() {
       x <- private$workers
       crashed <- x$sent & !x$done & !x$up
-      crew_assert(!any(crashed), "a worker crashed.")
+      if (any(crashed)) {
+        self$shutdown()
+        crew_error("worker crashed. Shutting down all workers.")
+      }
     },
     update_results = function() {
       for (index in seq_len(nrow(private$workers))) {
@@ -153,7 +154,12 @@ crew_queue_callr <- R6::R6Class(
     get_workers = function() {
       private$workers
     },
-    push = function(fun, args, task = uuid::UUIDgenerate(), update = TRUE) {
+    push = function(
+      fun,
+      args = list(),
+      task = uuid::UUIDgenerate(),
+      update = TRUE
+    ) {
       fun <- rlang::as_function(fun)
       private$add_task(fun = fun, args = args, task = task)
       if (update) {

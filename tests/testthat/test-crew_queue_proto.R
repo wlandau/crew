@@ -1,5 +1,5 @@
 test_that("initial queue", {
-  x <- crew_queue_callr_async$new()
+  x <- crew_queue_proto$new()
   expect_true(is.data.frame(x$get_tasks()))
   expect_true(is.data.frame(x$get_results()))
   expect_true(is.data.frame(x$get_workers()))
@@ -12,7 +12,7 @@ test_that("initial queue", {
 })
 
 test_that("get workers", {
-  x <- crew_queue_callr_async$new(workers = 2)
+  x <- crew_queue_proto$new(workers = 2)
   on.exit(x$shutdown())
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
@@ -29,7 +29,7 @@ test_that("get workers", {
 })
 
 test_that("add task", {
-  x <- crew_queue_callr_async$new()
+  x <- crew_queue_proto$new()
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
@@ -40,7 +40,7 @@ test_that("add task", {
 })
 
 test_that("push task, more workers than tasks", {
-  x <- crew_queue_callr_async$new(workers = 4)
+  x <- crew_queue_proto$new(workers = 4)
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
@@ -55,7 +55,7 @@ test_that("push task, more workers than tasks", {
 })
 
 test_that("push task, more tasks than workers", {
-  x <- crew_queue_callr_async$new(workers = 2)
+  x <- crew_queue_proto$new(workers = 2)
   fun <- function(x) x
   args <- list(x = 1)
   for (index in seq_len(4)) {
@@ -68,7 +68,7 @@ test_that("push task, more tasks than workers", {
 })
 
 test_that("private methods to submit and update_results work", {
-  x <- crew_queue_callr_async$new(workers = 2)
+  x <- crew_queue_proto$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
@@ -129,7 +129,7 @@ test_that("private methods to submit and update_results work", {
 })
 
 test_that("push and pop", {
-  x <- crew_queue_callr_async$new(workers = 2)
+  x <- crew_queue_proto$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) {
@@ -153,7 +153,7 @@ test_that("push and pop", {
 })
 
 test_that("detect crash and shut down workers", {
-  x <- crew_queue_callr_async$new(workers = 2)
+  x <- crew_queue_proto$new(workers = 2)
   on.exit(x$shutdown())
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
   crew_wait(

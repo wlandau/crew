@@ -1,13 +1,10 @@
 # Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
-# TODO:
-# 1. test handling of crashes
-# 2. add a synchronous callr queue as a field.
-# 3. write directly to main input and main output, and make the sync queue upload/download. collect the result asynchronously.
-# 4. make the sync queue poll for done workers. collect the result asynchronously. 
-crew_queue_callr_async <- R6::R6Class(
-  classname = "crew_queue_callr_async",
+# Same as `crew_queue_callr` except it uses the custom data store
+#  and worker event loop.
+crew_queue_proto <- R6::R6Class(
+  classname = "crew_queue_proto",
   portable = FALSE,
   cloneable = FALSE,
   private = list(
@@ -36,8 +33,8 @@ crew_queue_callr_async <- R6::R6Class(
         handle = replicate(workers, NULL),
         free = rep(TRUE, workers),
         sent = rep(FALSE, workers),
-        done = rep(FALSE, workers),
         up = rep(FALSE, workers),
+        done = rep(FALSE, workers),
         lock = rep(FALSE, workers),
         task = rep(NA_character_, workers),
         fun = replicate(workers, NULL),
@@ -173,10 +170,9 @@ crew_queue_callr_async <- R6::R6Class(
     initialize = function(
       workers = 1,
       timeout = 60,
-      wait = 0.1,
-      store = crew_store_local$new(timeout = timeout, wait = wait)
+      wait = 0.1
     ) {
-      private$store <- store
+      private$store <- crew_store_local$new(timeout = timeout, wait = wait)
       private$timeout <- timeout
       private$wait <- wait
       private$initialize_tasks()

@@ -36,6 +36,7 @@ and puts the output in the data store. If sent a shutdown job
 loop exits.
 }
 \examples{
+if (!identical(Sys.getenv("CREW_EXAMPLES", unset = ""), "")) {
 dir_root <- tempfile()
 dir.create(dir_root)
 store <- store_local$new(dir_root = dir_root)
@@ -55,5 +56,6 @@ try( # The worker throws a special error class when it times out.
   silent = TRUE
 )
 store$read_worker_output("my_worker")$value
+}
 }
 \keyword{internal}

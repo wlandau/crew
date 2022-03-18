@@ -3,8 +3,8 @@
 #  under the MIT license. See also the `crew` package `NOTICE` file.
 # Same as `queue_callr` except it uses the custom data store
 #  and worker event loop.
-queue_proto <- R6::R6Class(
-  classname = "queue_proto",
+queue <- R6::R6Class(
+  classname = "queue",
   portable = FALSE,
   cloneable = FALSE,
   private = list(

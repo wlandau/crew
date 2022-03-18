@@ -1,7 +1,7 @@
 crew_test("no work then worker timeout", {
   store <- store_local$new()
   expect_error(
-    crew_worker_loop(
+    crew_worker(
       worker = "name",
       store = store$marshal(),
       timeout = 0,
@@ -24,7 +24,7 @@ crew_test("one simple job", {
   )
   store$write_worker_input(worker = "worker", value = value)
   expect_error(
-    crew_worker_loop(
+    crew_worker(
       worker = "worker",
       store = store$marshal(),
       timeout = 0,
@@ -35,7 +35,6 @@ crew_test("one simple job", {
   expect_false(store$exists_worker_input("worker"))
   expect_true(store$exists_worker_output("worker"))
   job <- store$read_worker_output("worker")
-  expect_s3_class(job, "crew_task")
   expect_equal(job$result, 2L)
 })
 
@@ -56,8 +55,8 @@ crew_test("shutdown job", {
   expect_equal(store$read_worker_output("worker")$class, "crew_shutdown")
 })
 
-crew_test("crew_worker_loop_monad() without errors", {
-  out <- crew_worker_loop_monad(fun = identity, args = list(x = "x"))
+crew_test("crew_monad() without errors", {
+  out <- crew_monad(fun = identity, args = list(x = "x"))
   expect_equal(out$result, "x")
   expect_true(is.numeric(out$seconds) && length(out$seconds) == 1)
   expect_null(out$error)
@@ -65,13 +64,13 @@ crew_test("crew_worker_loop_monad() without errors", {
   expect_null(out$traceback)
 })
 
-crew_test("crew_worker_loop_monad() with errors", {
+crew_test("crew_monad() with errors", {
   fun <- function() {
     warning("warning1")
     warning("warning2")
     stop("error1")
   }
-  suppressWarnings(out <- crew_worker_loop_monad(fun = fun, args = list()))
+  suppressWarnings(out <- crew_monad(fun = fun, args = list()))
   expect_null(out$result)
   expect_true(is.numeric(out$seconds))
   expect_equal(length(out$seconds), 1)

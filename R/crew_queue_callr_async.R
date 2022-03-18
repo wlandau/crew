@@ -139,7 +139,10 @@ crew_queue_callr_async <- R6::R6Class(
     update_crashed = function() {
       x <- private$workers
       crashed <- x$sent & !x$done & !x$up
-      crew_assert(!any(crashed), "a worker crashed.")
+      if (any(crashed)) {
+        self$shutdown()
+        crew_error("worker crashed. Shutting down all workers.")
+      }
     },
     update_results = function() {
       for (index in seq_len(nrow(private$workers))) {

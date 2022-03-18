@@ -151,3 +151,17 @@ test_that("push and pop", {
   }
   expect_true(all(done))
 })
+
+test_that("detect crash and shut down workers", {
+  x <- crew_queue_callr_async$new(workers = 2)
+  on.exit(x$shutdown())
+  replicate(2, x$push(fun = function() Sys.sleep(Inf)))
+  crew_wait(
+    fun = function() all(map_lgl(x$get_workers()$handle, ~.x$is_alive()))
+  )
+  x$get_workers()$handle[[1]]$kill()
+  expect_error(x$pop(), class = "crew_error")
+  crew_wait(
+    fun = function() !any(map_lgl(x$get_workers()$handle, ~.x$is_alive()))
+  )
+})

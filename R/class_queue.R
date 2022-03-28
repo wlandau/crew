@@ -243,6 +243,10 @@ queue <- R6::R6Class(
           task = uuid::UUIDgenerate()
         )
       )
+      message <- paste(
+        "Could not shut down workers. Consider manually shutting them down",
+        "using the worker handles at <YOUR_QUEUE>$get_workers()$handle."
+      )
       if (wait) {
         crew_wait(
           fun = function() {
@@ -250,7 +254,8 @@ queue <- R6::R6Class(
             !any(private$workers$up)
           },
           timeout = private$timeout,
-          wait = private$wait
+          wait = private$wait,
+          message = message
         )
       }
       invisible()

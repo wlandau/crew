@@ -95,19 +95,15 @@ queue <- R6::R6Class(
     send_worker = function(worker, fun, args, shutdown) {
       index <- which(private$workers$worker == worker)
       handle <- private$workers$handle[[index]]
-      private$workers$up[index] <- if_any(
-        is.null(handle),
-        FALSE,
-        handle$is_alive()
-      )
+      private$workers$up[index] <- private$worker_up(handle)
       if (!private$workers$up[index] && !shutdown) {
-        private$workers$handle[[index]] <- private$launch_worker(worker)
+        private$workers$handle[[index]] <- private$worker_launch(worker)
       }
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
       private$workers$sent[index] <- TRUE
     },
-    launch_worker = function(worker) {
+    worker_launch = function(worker) {
       handle <- callr::r_bg(
         func = function(worker, store, jobs, timeout, wait) {
           # executed inside the worker
@@ -138,11 +134,12 @@ queue <- R6::R6Class(
       )
       handle
     },
+    worker_up = function(handle) {
+      !is.null(handle) && handle$is_alive()
+    },
     update_up = function() {
-      private$workers$up <- map_lgl(
-        private$workers$handle,
-        ~!is.null(.x) && .x$is_alive()
-      )
+      up <- map_lgl(private$workers$handle, private$worker_up)
+      private$workers$up <- up
     },
     update_done = function() {
       names <- private$store$list_worker_output()

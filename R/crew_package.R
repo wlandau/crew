@@ -12,7 +12,7 @@
 #'   to specific high-performance computing platforms or cloud services.
 #' @family help
 #' @importFrom callr r_bg
-#' @importFrom future future resolved
+#' @importFrom future future plan resolved
 #' @importFrom qs qsave
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function

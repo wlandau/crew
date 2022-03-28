@@ -15,6 +15,7 @@ queue <- R6::R6Class(
     jobs = NULL,
     timeout = NULL,
     wait = NULL,
+    loop = NULL,
     initialize_tasks = function() {
       private$tasks <- tibble::tibble(
         task = character(0),
@@ -171,7 +172,7 @@ queue <- R6::R6Class(
         }
       }
     },
-    update = function(crashed = TRUE) {
+    update_all = function(crashed = TRUE) {
       private$update_up()
       private$update_done()
       if (crashed) {
@@ -216,13 +217,13 @@ queue <- R6::R6Class(
       fun <- rlang::as_function(fun)
       private$add_task(fun = fun, args = args, task = task)
       if (update) {
-        private$update()
+        private$update_all()
       }
       invisible()
     },
     pop = function(update = TRUE) {
       if (update) {
-        private$update()
+        private$update_all()
       }
       results <- private$results
       out <- NULL
@@ -231,6 +232,9 @@ queue <- R6::R6Class(
         private$results <- private$results[-1, ]
       }
       out
+    },
+    update = function(crashed = TRUE) {
+      private$update_all(crashed = crashed)
     },
     shutdown = function(wait = TRUE) {
       private$initialize_tasks()
@@ -250,7 +254,7 @@ queue <- R6::R6Class(
       if (wait) {
         crew_wait(
           fun = function() {
-            private$update(crashed = FALSE)
+            private$update_all(crashed = FALSE)
             !any(private$workers$up)
           },
           timeout = private$timeout,

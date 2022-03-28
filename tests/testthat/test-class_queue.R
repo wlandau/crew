@@ -181,3 +181,18 @@ test_that("push and pop", {
   }
   expect_true(all(done))
 })
+
+test_that("update", {
+  x <- queue$new(workers = 2)
+  on.exit(callr_force_shutdown(x))
+  on.exit(processx::supervisor_kill(), add = TRUE)
+  fun <- function(x) x
+  x$push(fun = fun, args = list(x = 1L), update = FALSE)
+  x$get_tasks()
+  wait <- function() {
+    x$update()
+    nrow(x$get_results())
+  }
+  crew_wait(wait, wait = 0.1)
+  expect_equal(x$pop(update = FALSE)$result$result, 1L)
+})

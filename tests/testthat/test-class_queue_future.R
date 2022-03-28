@@ -82,7 +82,9 @@ test_that("detect crash", {
   x <- queue_future$new(workers = 2, plan = future.callr::callr)
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
   crew_wait(
-    fun = function() all(map_lgl(x$get_workers()$handle, ~!future::resolved(.x)))
+    fun = function() {
+      all(map_lgl(x$get_workers()$handle, ~!future::resolved(.x)))
+    }
   )
   x$get_workers()$handle[[1]]$process$kill()
   expect_error(x$pop(), class = "crew_error")

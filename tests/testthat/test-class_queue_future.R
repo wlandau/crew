@@ -78,6 +78,7 @@ test_that("push task, more tasks than workers", {
 
 test_that("detect crash", {
   future::plan(future::sequential)
+  on.exit(processx::supervisor_kill(), add = TRUE)
   x <- queue_future$new(workers = 2, plan = future.callr::callr)
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
   crew_wait(
@@ -92,7 +93,7 @@ test_that("shutdown", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 2,
-    timeout = Inf,
+    timeout = 30,
     plan = future.callr::callr
   )
   on.exit(processx::supervisor_kill(), add = TRUE)
@@ -103,13 +104,17 @@ test_that("shutdown", {
     x$push(fun = fun, args = list(x = index))
   }
   expect_true(all(x$get_workers()$up))
-  x$shutdown()
+  x$shutdown(wait = TRUE)
   expect_false(any(x$get_workers()$up))
 })
 
 test_that("private methods to submit and update_results work", {
   future::plan(future::sequential)
-  x <- queue_future$new(workers = 2, plan = future.callr::callr)
+  x <- queue_future$new(
+    workers = 2,
+    timeout = 30,
+    plan = future.callr::callr
+  )
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
   for (index in seq_len(2)) {
@@ -155,13 +160,6 @@ test_that("private methods to submit and update_results work", {
     expect_null(x$pop())
   }
   x$shutdown(wait = TRUE)
-  crew_wait(
-    ~{
-      x$private$update_up()
-      !any(x$private$workers$up)
-    },
-    wait = 0.1
-  )
   walk(x$get_workers()$handle, ~expect_true(future::resolved(.x)))
   expect_true(all(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
@@ -170,7 +168,11 @@ test_that("private methods to submit and update_results work", {
 
 test_that("push and pop", {
   future::plan(future::sequential)
-  x <- queue_future$new(workers = 2, plan = future.callr::callr)
+  x <- queue_future$new(
+    workers = 2,
+    plan = future.callr::callr,
+    timeout = 30
+  )
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) {
     Sys.sleep(1)

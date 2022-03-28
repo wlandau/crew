@@ -93,15 +93,15 @@ queue <- R6::R6Class(
       }
     },
     send_worker = function(worker, fun, args, shutdown) {
+      task <- list(fun = deparse(fun), args = args)
+      private$store$write_worker_input(worker = worker, value = task)
       index <- which(private$workers$worker == worker)
+      private$workers$sent[index] <- TRUE
       handle <- private$workers$handle[[index]]
       private$workers$up[index] <- private$worker_up(handle)
       if (!private$workers$up[index] && !shutdown) {
         private$workers$handle[[index]] <- private$worker_launch(worker)
       }
-      task <- list(fun = deparse(fun), args = args)
-      private$store$write_worker_input(worker = worker, value = task)
-      private$workers$sent[index] <- TRUE
     },
     worker_launch = function(worker) {
       handle <- callr::r_bg(

@@ -54,7 +54,7 @@ crew_test("push task, more workers than tasks", {
   x$private$add_task(fun = fun, args = args, task = "abc")
   x$private$add_task(fun = fun, args = args, task = "123")
   x$private$workers$free[2] <- FALSE
-  x$private$tasks_stage()
+  x$private$update_tasks()
   expect_equal(nrow(x$get_tasks()), 0)
   out <- x$get_workers()
   expect_equal(is.na(out$task), c(FALSE, TRUE, FALSE, TRUE))
@@ -70,7 +70,7 @@ crew_test("push task, more tasks than workers", {
   for (index in seq_len(4)) {
     x$private$add_task(fun = fun, args = args, task = as.character(index))
   }
-  x$private$tasks_stage()
+  x$private$update_tasks()
   expect_equal(nrow(x$get_tasks()), 2)
   out <- x$get_workers()
   expect_false(anyNA(out$task))
@@ -86,7 +86,7 @@ crew_test("detect crash", {
     fun = function() all(map_lgl(x$get_workers()$handle, ~!future::resolved(.x)))
   )
   x$get_workers()$handle[[1]]$process$kill()
-  expect_error(x$pop(), class = "crew_error")
+  expect_error(x$crashed(), class = "crew_error")
   x$get_workers()$handle[[2]]$process$kill()
 })
 
@@ -110,11 +110,11 @@ crew_test("private methods to submit and update_results work", {
   expect_true(all(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
-  x$private$tasks_stage()
+  x$private$update_tasks()
   expect_false(any(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
-  x$private$tasks_run()
+  x$private$update_workers()
   expect_true(all(x$get_workers()$sent))
   expect_false(any(x$get_workers()$free))
   expect_false(any(x$get_workers()$done))

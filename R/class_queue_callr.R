@@ -24,9 +24,6 @@ queue_callr <- R6::R6Class(
       handle$call(func = fun, args = args)
       handle
     },
-    worker_up_run = function(handle) {
-      TRUE
-    },
     update_done = function() {
       index <- which(private$workers$sent)
       handles <- private$workers$handle[index]

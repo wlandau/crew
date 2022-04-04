@@ -12,9 +12,9 @@ queue <- R6::R6Class(
     results = NULL,
     workers = NULL,
     store = NULL,
-    jobs = NULL,
     timeout = NULL,
     wait = NULL,
+    jobs = NULL,
     loop = NULL,
     initialize_tasks = function() {
       private$tasks <- tibble::tibble(
@@ -61,7 +61,7 @@ queue <- R6::R6Class(
         result = list(result)
       )
     },
-    tasks_stage = function() {
+    update_tasks = function() {
       while (nrow(private$tasks) && any(private$workers$free)) {
         index <- min(which(private$workers$free))
         for (field in colnames(private$tasks)) {
@@ -73,14 +73,13 @@ queue <- R6::R6Class(
         private$tasks <- private$tasks[-1, ]
       }
     },
-    tasks_run = function() {
+    update_workers = function() {
       workers <- private$workers
       which <- !workers$free & !workers$sent
       workers <- workers[which, ]
       for (worker in workers$worker) {
         index <- which(private$workers$worker == worker)
         handle <- private$workers$handle[[index]]
-        private$workers$up[index] <- private$worker_up_run(handle)
         private$workers$handle[[index]] <- private$worker_run(
           handle = handle,
           worker = worker,
@@ -89,12 +88,58 @@ queue <- R6::R6Class(
           args = private$workers$args[[index]]
         )
         private$workers$sent[index] <- TRUE
+        private$workers$up[index] <- TRUE
+      }
+    },
+    update_results = function() {
+      for (index in seq_len(nrow(private$workers))) {
+        if (private$workers$done[index]) {
+          worker <- private$workers$worker[index]
+          task <- private$workers$task[index]
+          result <- private$store$read_worker_output(worker = worker)
+          private$store$delete_worker_output(worker = worker)
+          private$add_result(task = task, result = result)
+          private$workers$free[index] <- TRUE
+          private$workers$sent[index] <- FALSE
+          private$workers$done[index] <- FALSE
+          private$workers$task[index] <- NA_character_
+          private$workers$fun[index] <- list(NULL)
+          private$workers$args[index] <- list(NULL)
+        }
+      }
+    },
+    update_up = function() {
+      up <- map_lgl(private$workers$handle, private$worker_up)
+      private$workers$up <- up
+    },
+    update_done = function(force = FALSE) {
+      names <- private$store$list_worker_output()
+      private$workers$done[private$workers$worker %in% names] <- TRUE
+    },
+    update_work = function() {
+      private$update_done()
+      private$update_results()
+      private$update_tasks()
+      private$update_workers()
+    },
+    update_crashed = function() {
+      private$update_up()
+      private$update_done()
+      x <- private$workers
+      crashed <- x$sent & !x$done & !x$up
+      if (any(crashed)) {
+        workers <- private$workers$worker[crashed]
+        crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))
       }
     },
     worker_run = function(handle, worker, up, fun, args) {
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
-      if_any(up, handle, private$worker_start(worker))
+      if_any(
+        private$worker_up(handle),
+        handle,
+        private$worker_start(worker)
+      )
     },
     worker_start = function(worker) {
       handle <- callr::r_bg(
@@ -127,68 +172,22 @@ queue <- R6::R6Class(
       )
       handle
     },
-    worker_up_run = function(handle) {
+    worker_up = function(handle) {
       !is.null(handle) && handle$is_alive()
-    },
-    worker_up_update = function(handle) {
-      !is.null(handle) && handle$is_alive()
-    },
-    update_up = function() {
-      up <- map_lgl(private$workers$handle, private$worker_up_update)
-      private$workers$up <- up
-    },
-    update_done = function() {
-      names <- private$store$list_worker_output()
-      private$workers$done[private$workers$worker %in% names] <- TRUE
-    },
-    update_crashed = function() {
-      x <- private$workers
-      crashed <- x$sent & !x$done & !x$up
-      if (any(crashed)) {
-        workers <- private$workers$worker[crashed]
-        crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))
-      }
-    },
-    update_results = function() {
-      for (index in seq_len(nrow(private$workers))) {
-        if (private$workers$done[index]) {
-          worker <- private$workers$worker[index]
-          task <- private$workers$task[index]
-          result <- private$store$read_worker_output(worker = worker)
-          private$store$delete_worker_output(worker = worker)
-          private$add_result(task = task, result = result)
-          private$workers$free[index] <- TRUE
-          private$workers$sent[index] <- FALSE
-          private$workers$done[index] <- FALSE
-          private$workers$task[index] <- NA_character_
-          private$workers$fun[index] <- list(NULL)
-          private$workers$args[index] <- list(NULL)
-        }
-      }
-    },
-    update_all = function(crashed = TRUE) {
-      private$update_up()
-      private$update_done()
-      if (crashed) {
-        private$update_crashed()
-      }
-      private$update_results()
-      private$tasks_stage()
-      private$tasks_run()
     }
   ),
   public = list(
     initialize = function(
       workers = 1,
       store = store_local$new(timeout = timeout, wait = wait),
-      jobs = Inf,
       timeout = 60,
-      wait = 0.1
+      wait = 0.1,
+      jobs = Inf
     ) {
       private$store <- store
-      private$jobs <- jobs
       private$timeout <- timeout
       private$wait <- wait
+      private$jobs <- jobs
       private$initialize_tasks()
       private$initialize_results()
       private$initialize_workers(workers = workers)
@@ -212,13 +211,13 @@ queue <- R6::R6Class(
       fun <- rlang::as_function(fun)
       private$add_task(fun = fun, args = args, task = task)
       if (update) {
-        private$update_all()
+        private$update_work()
       }
       invisible()
     },
     pop = function(update = TRUE) {
       if (update) {
-        private$update_all()
+        private$update_work()
       }
       results <- private$results
       out <- NULL
@@ -228,8 +227,11 @@ queue <- R6::R6Class(
       }
       out
     },
-    update = function(crashed = TRUE) {
-      private$update_all(crashed = crashed)
+    update = function() {
+      private$update_work()
+    },
+    crashed = function() {
+      private$update_crashed()
     }
   )
 )

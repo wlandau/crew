@@ -44,7 +44,10 @@ queue_future <- R6::R6Class(
       )
       handle
     },
-    worker_up = function(handle) {
+    worker_up_run = function(handle) {
+      !is.null(handle) && !future::resolved(handle)
+    },
+    worker_up_update = function(handle) {
       !is.null(handle) && !future::resolved(handle)
     }
   ),

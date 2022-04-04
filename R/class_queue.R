@@ -80,7 +80,7 @@ queue <- R6::R6Class(
       for (worker in workers$worker) {
         index <- which(private$workers$worker == worker)
         handle <- private$workers$handle[[index]]
-        private$workers$up[index] <- private$worker_up(handle)
+        private$workers$up[index] <- private$worker_up_run(handle)
         private$workers$handle[[index]] <- private$worker_run(
           handle = handle,
           worker = worker,
@@ -127,11 +127,14 @@ queue <- R6::R6Class(
       )
       handle
     },
-    worker_up = function(handle) {
+    worker_up_run = function(handle) {
+      !is.null(handle) && handle$is_alive()
+    },
+    worker_up_update = function(handle) {
       !is.null(handle) && handle$is_alive()
     },
     update_up = function() {
-      up <- map_lgl(private$workers$handle, private$worker_up)
+      up <- map_lgl(private$workers$handle, private$worker_up_update)
       private$workers$up <- up
     },
     update_done = function() {

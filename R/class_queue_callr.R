@@ -9,17 +9,18 @@ queue_callr <- R6::R6Class(
   private = list(
     initialize_workers = function(workers, start) {
       super$initialize_workers(workers)
-      if (start) {
-        private$workers$handle <- replicate(
-          workers,
-          callr::r_session$new(
-            wait = TRUE,
-            options = callr::r_session_options(extra = list(supervise = TRUE))
-          )
-        )
+      if (!start) {
+        return()
       }
+      private$workers$handle <- replicate(
+        workers,
+        callr::r_session$new(
+          wait = TRUE,
+          options = callr::r_session_options(extra = list(supervise = TRUE))
+        )
+      )
     },
-    send_worker = function(worker, fun, args, shutdown = FALSE) {
+    send_worker = function(worker, fun, args) {
       index <- which(private$workers$worker == worker)
       handle <- private$workers$handle[[index]]
       handle$call(func = fun, args = args)
@@ -54,7 +55,7 @@ queue_callr <- R6::R6Class(
       private$initialize_workers(workers = workers, start = start)
       invisible()
     },
-    shutdown = function(wait = FALSE) {
+    shutdown = function() {
       for (handle in private$workers$handle) {
         if (!is.null(handle)) {
           handle$kill()

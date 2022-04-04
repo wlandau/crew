@@ -1,4 +1,4 @@
-test_that("initial queue", {
+crew_test("initial queue", {
   future::plan(future::sequential)
   x <- queue_future$new()
   expect_true(is.data.frame(x$get_tasks()))
@@ -12,7 +12,7 @@ test_that("initial queue", {
   expect_gt(ncol(x$get_workers()), 1)
 })
 
-test_that("get workers", {
+crew_test("get workers", {
   future::plan(future::sequential)
   x <- queue_future$new(workers = 2)
   out <- x$get_workers()
@@ -29,12 +29,12 @@ test_that("get workers", {
   expect_equal(out$args, list(NULL, NULL))
 })
 
-test_that("get plan", {
+crew_test("get plan", {
   x <- queue_future$new(workers = 2, plan = future::sequential)
   expect_s3_class(x$get_plan(), "sequential")
 })
 
-test_that("add task", {
+crew_test("add task", {
   future::plan(future::sequential)
   x <- queue_future$new()
   fun <- function(x) x
@@ -46,7 +46,7 @@ test_that("add task", {
   expect_equal(out$args[[1]], args)
 })
 
-test_that("push task, more workers than tasks", {
+crew_test("push task, more workers than tasks", {
   future::plan(future::sequential)
   x <- queue_future$new(workers = 4)
   fun <- function(x) x
@@ -62,7 +62,7 @@ test_that("push task, more workers than tasks", {
   expect_equal(out$fun, list(fun, NULL, fun, NULL))
 })
 
-test_that("push task, more tasks than workers", {
+crew_test("push task, more tasks than workers", {
   future::plan(future::sequential)
   x <- queue_future$new(workers = 2)
   fun <- function(x) x
@@ -76,7 +76,7 @@ test_that("push task, more tasks than workers", {
   expect_false(anyNA(out$task))
 })
 
-test_that("detect crash", {
+crew_test("detect crash", {
   future::plan(future::sequential)
   on.exit(future_callr_force_shutdown(x))
   on.exit(processx::supervisor_kill(), add = TRUE)
@@ -90,7 +90,7 @@ test_that("detect crash", {
   x$get_workers()$handle[[2]]$process$kill()
 })
 
-test_that("private methods to submit and update_results work", {
+crew_test("private methods to submit and update_results work", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 2,
@@ -144,7 +144,7 @@ test_that("private methods to submit and update_results work", {
   }
 })
 
-test_that("push and pop", {
+crew_test("push and pop", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 2,

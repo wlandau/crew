@@ -5,9 +5,7 @@
 #' @details The worker event loop runs inside the underlying process
 #'   of a worker. It waits for the next job (timing out
 #'   if it idles for too long at one time) runs any incoming jobs
-#'   and puts the output in the data store. If sent a shutdown job
-#'   (which throws an error of class `"crew_shutdown"`) then the
-#'   loop exits.
+#'   and puts the output in the data store.
 #' @return `NULL` (invisibly).
 #' @param timeout Positive numeric of length 1, number of seconds
 #'   that a worker can idle before timing out.
@@ -41,20 +39,26 @@ crew_worker <- function(worker, store, jobs, timeout, wait) {
   timeout <- as.numeric(timeout)
   wait <- as.numeric(wait)
   job <- 0
-  tryCatch(
-    while (job < jobs) {
-      crew_wait(
-        fun = ~.x$exists_worker_input(worker = .y),
-        args = list(store = store, worker = worker),
-        timeout = timeout,
-        wait = wait
-      )
-      crew_job(worker, store, timeout, wait)
-      job <- job + 1
-    },
-    crew_shutdown = identity
-  )
+  while (job < jobs) {
+    crew_iterate(
+      worker = worker,
+      store = store,
+      timeout = timeout,
+      wait = wait
+    )
+    job <- job + 1
+  }
   invisible()
+}
+
+crew_iterate <- function(worker, store, timeout, wait) {
+  crew_wait(
+    fun = ~.x$exists_worker_input(worker = .y),
+    args = list(store = store, worker = worker),
+    timeout = timeout,
+    wait = wait
+  )
+  crew_job(worker = worker, store = store, timeout = timeout, wait = wait)
 }
 
 crew_job <- function(worker, store, timeout, wait) {
@@ -63,14 +67,10 @@ crew_job <- function(worker, store, timeout, wait) {
   value <- crew_monad(fun = input$fun, args = input$args)
   store$delete_worker_input(worker = worker)
   store$write_worker_output(worker = worker, value = value)
-  if (isTRUE(value$shutdown)) {
-    crew_shutdown()
-  }
 }
 
 crew_monad <- function(fun, args) {
   capture_error <- function(condition) {
-    state$shutdown <- inherits(condition, "crew_shutdown")
     state$error <- conditionMessage(condition)
     state$traceback <- as.character(sys.calls())
     NULL
@@ -93,7 +93,6 @@ crew_monad <- function(fun, args) {
     result = result,
     seconds = seconds,
     error = state$error,
-    shutdown = state$shutdown,
     traceback = state$traceback,
     warnings = state$warnings
   )

@@ -1,4 +1,4 @@
-test_that("initial queue", {
+crew_test("initial queue", {
   x <- queue$new()
   on.exit(callr_force_shutdown(x))
   expect_true(is.data.frame(x$get_tasks()))
@@ -12,7 +12,7 @@ test_that("initial queue", {
   expect_gt(ncol(x$get_workers()), 1)
 })
 
-test_that("get workers", {
+crew_test("get workers", {
   x <- queue$new(workers = 2)
   on.exit(callr_force_shutdown(x))
   out <- x$get_workers()
@@ -29,7 +29,7 @@ test_that("get workers", {
   expect_equal(out$args, list(NULL, NULL))
 })
 
-test_that("add task", {
+crew_test("add task", {
   x <- queue$new()
   on.exit(callr_force_shutdown(x))
   fun <- function(x) x
@@ -41,7 +41,7 @@ test_that("add task", {
   expect_equal(out$args[[1]], args)
 })
 
-test_that("push task, more workers than tasks", {
+crew_test("push task, more workers than tasks", {
   x <- queue$new(workers = 4)
   on.exit(callr_force_shutdown(x))
   fun <- function(x) x
@@ -57,7 +57,7 @@ test_that("push task, more workers than tasks", {
   expect_equal(out$fun, list(fun, NULL, fun, NULL))
 })
 
-test_that("push task, more tasks than workers", {
+crew_test("push task, more tasks than workers", {
   x <- queue$new(workers = 2)
   on.exit(callr_force_shutdown(x))
   fun <- function(x) x
@@ -71,7 +71,7 @@ test_that("push task, more tasks than workers", {
   expect_false(anyNA(out$task))
 })
 
-test_that("detect crash", {
+crew_test("detect crash", {
   x <- queue$new(workers = 2)
   on.exit(callr_force_shutdown(x))
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
@@ -82,22 +82,7 @@ test_that("detect crash", {
   expect_error(x$pop(), class = "crew_error")
 })
 
-test_that("shutdown", {
-  x <- queue$new(workers = 2, timeout = Inf)
-  on.exit(callr_force_shutdown(x))
-  on.exit(processx::supervisor_kill(), add = TRUE)
-  fun <- function(x) {
-    x
-  }
-  for (index in seq_len(10)) {
-    x$push(fun = fun, args = list(x = index))
-  }
-  expect_true(all(x$get_workers()$up))
-  x$shutdown()
-  expect_false(any(x$get_workers()$up))
-})
-
-test_that("private methods to submit and update_results work", {
+crew_test("private methods to submit and update_results work", {
   x <- queue$new(workers = 2)
   on.exit(callr_force_shutdown(x))
   on.exit(processx::supervisor_kill(), add = TRUE)
@@ -144,21 +129,9 @@ test_that("private methods to submit and update_results work", {
   for (index in seq_len(2)) {
     expect_null(x$pop())
   }
-  x$shutdown(wait = TRUE)
-  crew_wait(
-    ~{
-      x$private$update_up()
-      !any(x$private$workers$up)
-    },
-    wait = 0.1
-  )
-  walk(x$get_workers()$handle, ~expect_false(.x$is_alive()))
-  expect_true(all(x$get_workers()$free))
-  expect_false(any(x$get_workers()$sent))
-  expect_false(any(x$get_workers()$done))
 })
 
-test_that("push and pop", {
+crew_test("push and pop", {
   x <- queue$new(workers = 2)
   on.exit(callr_force_shutdown(x))
   on.exit(processx::supervisor_kill(), add = TRUE)
@@ -182,7 +155,7 @@ test_that("push and pop", {
   expect_true(all(done))
 })
 
-test_that("update", {
+crew_test("update", {
   x <- queue$new(workers = 2)
   on.exit(callr_force_shutdown(x))
   on.exit(processx::supervisor_kill(), add = TRUE)

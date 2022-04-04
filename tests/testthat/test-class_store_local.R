@@ -1,4 +1,4 @@
-test_that("worker input", {
+crew_test("worker input", {
   x <- store_local$new()
   expect_false(x$exists_worker_input("worker"))
   expect_equal(x$list_worker_input(), character(0))
@@ -10,7 +10,7 @@ test_that("worker input", {
   expect_false(x$exists_worker_input("worker"))
 })
 
-test_that("worker output", {
+crew_test("worker output", {
   x <- store_local$new()
   expect_false(x$exists_worker_output("worker"))
   expect_equal(x$list_worker_output(), character(0))
@@ -22,7 +22,7 @@ test_that("worker output", {
   expect_false(x$exists_worker_output("worker"))
 })
 
-test_that("upload input", {
+crew_test("upload input", {
   x <- store_local$new()
   x$write_main_input("worker", value = "x")
   expect_true(x$exists_main_input("worker"))
@@ -32,7 +32,7 @@ test_that("upload input", {
   expect_true(x$exists_worker_input("worker"))
 })
 
-test_that("download output", {
+crew_test("download output", {
   x <- store_local$new()
   x$write_worker_output("worker", value = "x")
   expect_true(x$exists_worker_output("worker"))
@@ -42,7 +42,7 @@ test_that("download output", {
   expect_true(x$exists_main_output("worker"))
 })
 
-test_that("marshal", {
+crew_test("marshal", {
   x <- store_local$new()
   out <- x$marshal()
   expect_true(is.character(out) && length(out) == 1L && nzchar(out))

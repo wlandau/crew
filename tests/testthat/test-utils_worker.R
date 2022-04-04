@@ -65,24 +65,6 @@ crew_test("one job", {
   expect_equal(job$result, 2L)
 })
 
-crew_test("shutdown job", {
-  dir_root <- tempfile()
-  dir_create(dir_root)
-  store <- store_local$new(dir_root = dir_root)
-  value <- list(fun = deparse(crew_shutdown), args = list())
-  store$write_worker_input(worker = "worker", value = value)
-  crew_worker(
-    worker = "worker",
-    store = store$marshal(),
-    jobs = Inf,
-    timeout = 1,
-    wait = 0
-  )
-  expect_false(store$exists_worker_input("worker"))
-  expect_true(store$exists_worker_output("worker"))
-  expect_true(store$read_worker_output("worker")$shutdown)
-})
-
 crew_test("crew_monad() without errors", {
   out <- crew_monad(fun = identity, args = list(x = "x"))
   expect_equal(out$result, "x")

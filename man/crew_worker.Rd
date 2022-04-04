@@ -25,9 +25,7 @@ Not a user-side function. Do not invoke directly.
 The worker event loop runs inside the underlying process
 of a worker. It waits for the next job (timing out
 if it idles for too long at one time) runs any incoming jobs
-and puts the output in the data store. If sent a shutdown job
-(which throws an error of class \code{"crew_shutdown"}) then the
-loop exits.
+and puts the output in the data store.
 }
 \examples{
 if (!identical(Sys.getenv("CREW_EXAMPLES", unset = ""), "")) {

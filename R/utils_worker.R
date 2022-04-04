@@ -31,6 +31,7 @@
 #' }
 crew_worker <- function(worker, store, jobs, timeout, wait) {
   worker <- as.character(worker)
+  store <- eval(parse(text = store))
   jobs <- as.numeric(jobs)
   timeout <- as.numeric(timeout)
   wait <- as.numeric(wait)
@@ -62,7 +63,8 @@ crew_iterate <- function(worker, store, timeout, wait) {
 #' @export
 #' @keywords internal
 #' @param worker Character of length 1, name of the worker.
-#' @param store Data store object.
+#' @param store Either a data store object or a character string
+#'   with a marshaled data store.
 #' @param timeout Positive numeric of length 1, number of seconds
 #'   that a worker can idle before timing out.
 #' @param wait Positive numeric of length 1, number of seconds
@@ -78,17 +80,18 @@ crew_iterate <- function(worker, store, timeout, wait) {
 #' args <- list(x = 1)
 #' value <- list(fun = deparse(fun), args = args)
 #' store$write_worker_input(worker = "my_worker", value = value)
-#' crew_worker(
+#' crew_job(
 #'   worker = "my_worker",
 #'   store = store$marshal(),
-#'   jobs = 1,
 #'   timeout = 0,
 #'   wait = 0
 #' )
 #' store$read_worker_output("my_worker")$result # 2
 #' }
 crew_job <- function(worker, store, timeout, wait) {
-  store <- eval(parse(text = store))
+  if (is.character(store)) {
+    store <- eval(parse(text = store))
+  }
   input <- store$read_worker_input(worker = worker)
   input$fun <- eval(parse(text = input$fun))
   value <- crew_monad(fun = input$fun, args = input$args)

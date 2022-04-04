@@ -9,7 +9,8 @@ crew_job(worker, store, timeout, wait)
 \arguments{
 \item{worker}{Character of length 1, name of the worker.}
 
-\item{store}{Data store object.}
+\item{store}{Either a data store object or a character string
+with a marshaled data store.}
 
 \item{timeout}{Positive numeric of length 1, number of seconds
 that a worker can idle before timing out.}
@@ -31,10 +32,9 @@ fun <- function(x) {
 args <- list(x = 1)
 value <- list(fun = deparse(fun), args = args)
 store$write_worker_input(worker = "my_worker", value = value)
-crew_worker(
+crew_job(
   worker = "my_worker",
   store = store$marshal(),
-  jobs = 1,
   timeout = 0,
   wait = 0
 )

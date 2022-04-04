@@ -9,7 +9,8 @@ crew_worker(worker, store, jobs, timeout, wait)
 \arguments{
 \item{worker}{Character of length 1, name of the worker.}
 
-\item{store}{Data store object.}
+\item{store}{Either a data store object or a character string
+with a marshaled data store.}
 
 \item{jobs}{Maximum number of jobs before returning.}
 

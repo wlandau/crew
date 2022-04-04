@@ -20,7 +20,7 @@ queue_callr <- R6::R6Class(
         )
       )
     },
-    worker_run = function(handle, worker, up, fun, args) {
+    worker_run = function(handle, worker, fun, args) {
       handle$call(func = fun, args = args)
       handle
     },

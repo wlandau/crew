@@ -35,7 +35,6 @@ queue <- R6::R6Class(
         handle = replicate(workers, NULL),
         free = rep(TRUE, workers),
         sent = rep(FALSE, workers),
-        up = rep(FALSE, workers),
         done = rep(FALSE, workers),
         lock = rep(FALSE, workers),
         task = rep(NA_character_, workers),
@@ -83,12 +82,10 @@ queue <- R6::R6Class(
         private$workers$handle[[index]] <- private$worker_run(
           handle = handle,
           worker = worker,
-          up = private$workers$up[index],
           fun = private$workers$fun[[index]],
           args = private$workers$args[[index]]
         )
         private$workers$sent[index] <- TRUE
-        private$workers$up[index] <- TRUE
       }
     },
     update_results = function() {
@@ -108,10 +105,6 @@ queue <- R6::R6Class(
         }
       }
     },
-    update_up = function() {
-      up <- map_lgl(private$workers$handle, private$worker_up)
-      private$workers$up <- up
-    },
     update_done = function(force = FALSE) {
       names <- private$store$list_worker_output()
       private$workers$done[private$workers$worker %in% names] <- TRUE
@@ -123,16 +116,16 @@ queue <- R6::R6Class(
       private$update_workers()
     },
     update_crashed = function() {
-      private$update_up()
+      up <- map_lgl(private$workers$handle, private$worker_up)
       private$update_done()
       x <- private$workers
-      crashed <- x$sent & !x$done & !x$up
+      crashed <- x$sent & !x$done & !up
       if (any(crashed)) {
         workers <- private$workers$worker[crashed]
         crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))
       }
     },
-    worker_run = function(handle, worker, up, fun, args) {
+    worker_run = function(handle, worker, fun, args) {
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
       if_any(

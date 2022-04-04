@@ -21,7 +21,6 @@ crew_test("get workers", {
   expect_equal(out$done, rep(FALSE, 2))
   expect_equal(out$free, rep(TRUE, 2))
   expect_equal(out$sent, rep(FALSE, 2))
-  expect_equal(out$up, rep(FALSE, 2))
   expect_true(all(is.na(out$task)))
   expect_equal(out$fun, list(NULL, NULL))
   expect_equal(out$args, list(NULL, NULL))
@@ -127,10 +126,7 @@ crew_test("private methods to submit and update_results work", {
   }
   x$shutdown()
   crew_wait(
-    ~{
-      x$private$update_up()
-      !any(x$private$workers$up)
-    },
+    ~!any(map_lgl(x$private$workers$handle, x$private$worker_up)),
     wait = 0.1
   )
   walk(x$get_workers()$handle, ~expect_false(.x$is_alive()))

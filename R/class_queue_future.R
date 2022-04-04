@@ -8,41 +8,23 @@ queue_future <- R6::R6Class(
   cloneable = FALSE,
   private = list(
     plan = NULL,
-    worker_start = function(worker) {
+    worker_run = function(handle, worker, fun, args) {
       plan_old <- future::plan()
       on.exit(future::plan(plan_old, .cleanup = FALSE))
       future::plan(private$plan, .cleanup = FALSE)
-      expr <- quote(
-        crew::crew_worker(
-          worker = worker,
-          store = store,
-          jobs = jobs,
-          timeout = timeout,
-          wait = wait
-        )
-      )
-      globals <- list(
-        worker = worker,
-        store = private$store$marshal(),
-        jobs = private$jobs,
-        timeout = private$timeout,
-        wait = private$wait
-      )
-      handle <- future::future(
-        expr = expr,
-        substitute = FALSE,
-        packages = "crew",
-        globals = globals,
+      task <- list(fun = deparse(fun), args = args)
+      private$store$write_worker_input(worker = worker, value = task)
+      future::future(
+        expr = crew::crew_job(fun = fun, args = args),
+        substitute = TRUE,
+        packages = character(0),
+        globals = list(fun = fun, args = args),
         lazy = FALSE,
         seed = TRUE
       )
-      crew_wait(
-        fun = function(handle) !future::resolved(handle),
-        args = list(handle = handle),
-        timeout = private$timeout,
-        wait = private$wait
-      )
-      handle
+    },
+    worker_reuse = function(handle) {
+      NULL
     },
     worker_up = function(handle) {
       !is.null(handle) && !future::resolved(handle)

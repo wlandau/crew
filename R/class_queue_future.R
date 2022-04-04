@@ -15,10 +15,20 @@ queue_future <- R6::R6Class(
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
       future::future(
-        expr = crew::crew_job(fun = fun, args = args),
+        expr = crew::crew_job(
+          worker = worker,
+          store = store,
+          timeout = timeout,
+          wait = wait
+        ),
         substitute = TRUE,
         packages = character(0),
-        globals = list(fun = fun, args = args),
+        globals = list(
+          worker = worker,
+          store = private$store$marshal(),
+          timeout = private$timeout,
+          wait = private$wait
+        ),
         lazy = FALSE,
         seed = TRUE
       )

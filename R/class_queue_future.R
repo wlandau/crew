@@ -8,7 +8,7 @@ queue_future <- R6::R6Class(
   cloneable = FALSE,
   private = list(
     plan = NULL,
-    worker_launch = function(worker) {
+    worker_start = function(worker) {
       plan_old <- future::plan()
       on.exit(future::plan(plan_old, .cleanup = FALSE))
       future::plan(private$plan, .cleanup = FALSE)

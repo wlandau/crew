@@ -46,7 +46,7 @@ crew_test("push task, more workers than tasks", {
   x$private$add_task(fun = fun, args = args, task = "abc")
   x$private$add_task(fun = fun, args = args, task = "123")
   x$private$workers$free[2] <- FALSE
-  x$private$send_tasks()
+  x$private$tasks_stage()
   expect_equal(nrow(x$get_tasks()), 0)
   out <- x$get_workers()
   expect_equal(is.na(out$task), c(FALSE, TRUE, FALSE, TRUE))
@@ -61,7 +61,7 @@ crew_test("push task, more tasks than workers", {
   for (index in seq_len(4)) {
     x$private$add_task(fun = fun, args = args, task = as.character(index))
   }
-  x$private$send_tasks()
+  x$private$tasks_stage()
   expect_equal(nrow(x$get_tasks()), 2)
   out <- x$get_workers()
   expect_false(anyNA(out$task))
@@ -93,11 +93,11 @@ crew_test("private methods to submit and update_results work", {
   expect_true(all(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
-  x$private$send_tasks()
+  x$private$tasks_stage()
   expect_false(any(x$get_workers()$free))
   expect_false(any(x$get_workers()$sent))
   expect_false(any(x$get_workers()$done))
-  x$private$send_workers()
+  x$private$tasks_run()
   expect_true(all(x$get_workers()$sent))
   expect_false(any(x$get_workers()$free))
   expect_false(any(x$get_workers()$done))
@@ -144,7 +144,7 @@ crew_test("push and pop", {
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) {
-    Sys.sleep(1)
+    Sys.sleep(0.25)
     x
   }
   for (index in seq_len(10)) {

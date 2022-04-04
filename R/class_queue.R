@@ -61,7 +61,7 @@ queue <- R6::R6Class(
         result = list(result)
       )
     },
-    send_tasks = function() {
+    tasks_stage = function() {
       while (nrow(private$tasks) && any(private$workers$free)) {
         index <- min(which(private$workers$free))
         for (field in colnames(private$tasks)) {
@@ -73,31 +73,30 @@ queue <- R6::R6Class(
         private$tasks <- private$tasks[-1, ]
       }
     },
-    send_workers = function() {
+    tasks_run = function() {
       workers <- private$workers
       which <- !workers$free & !workers$sent
       workers <- workers[which, ]
       for (worker in workers$worker) {
         index <- which(private$workers$worker == worker)
-        private$send_worker(
+        handle <- private$workers$handle[[index]]
+        private$workers$up[index] <- private$worker_up(handle)
+        private$workers$handle[[index]] <- private$worker_run(
+          handle = handle,
           worker = worker,
+          up = private$workers$up[index],
           fun = private$workers$fun[[index]],
           args = private$workers$args[[index]]
         )
+        private$workers$sent[index] <- TRUE
       }
     },
-    send_worker = function(worker, fun, args) {
+    worker_run = function(handle, worker, up, fun, args) {
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
-      index <- which(private$workers$worker == worker)
-      private$workers$sent[index] <- TRUE
-      handle <- private$workers$handle[[index]]
-      private$workers$up[index] <- private$worker_up(handle)
-      if (!private$workers$up[index]) {
-        private$workers$handle[[index]] <- private$worker_launch(worker)
-      }
+      if_any(up, handle, private$worker_start(worker))
     },
-    worker_launch = function(worker) {
+    worker_start = function(worker) {
       handle <- callr::r_bg(
         func = function(worker, store, jobs, timeout, wait) {
           # executed inside the worker
@@ -171,18 +170,19 @@ queue <- R6::R6Class(
         private$update_crashed()
       }
       private$update_results()
-      private$send_tasks()
-      private$send_workers()
+      private$tasks_stage()
+      private$tasks_run()
     }
   ),
   public = list(
     initialize = function(
       workers = 1,
+      store = store_local$new(timeout = timeout, wait = wait),
       jobs = Inf,
       timeout = 60,
       wait = 0.1
     ) {
-      private$store <- store_local$new(timeout = timeout, wait = wait)
+      private$store <- store
       private$jobs <- jobs
       private$timeout <- timeout
       private$wait <- wait

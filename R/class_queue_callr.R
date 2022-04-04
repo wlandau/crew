@@ -20,11 +20,9 @@ queue_callr <- R6::R6Class(
         )
       )
     },
-    send_worker = function(worker, fun, args) {
-      index <- which(private$workers$worker == worker)
-      handle <- private$workers$handle[[index]]
+    worker_run = function(handle, worker, up, fun, args) {
       handle$call(func = fun, args = args)
-      private$workers$sent[index] <- TRUE
+      handle
     },
     update_done = function() {
       index <- which(private$workers$sent)

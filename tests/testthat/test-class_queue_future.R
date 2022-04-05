@@ -1,6 +1,8 @@
 crew_test("initial queue", {
   future::plan(future::sequential)
   x <- queue_future$new()
+  on.exit(future_force_shutdown(x))
+  on.exit(processx::supervisor_kill(), add = TRUE)
   expect_true(is.data.frame(x$get_tasks()))
   expect_true(is.data.frame(x$get_results()))
   expect_true(is.data.frame(x$get_workers()))
@@ -15,6 +17,8 @@ crew_test("initial queue", {
 crew_test("get workers", {
   future::plan(future::sequential)
   x <- queue_future$new(workers = 2)
+  on.exit(future_force_shutdown(x))
+  on.exit(processx::supervisor_kill(), add = TRUE)
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
   expect_true(out$worker[1] != out$worker[2])
@@ -36,6 +40,8 @@ crew_test("get plan", {
 crew_test("add task", {
   future::plan(future::sequential)
   x <- queue_future$new()
+  on.exit(future_force_shutdown(x))
+  on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
@@ -48,6 +54,8 @@ crew_test("add task", {
 crew_test("push task, more workers than tasks", {
   future::plan(future::sequential)
   x <- queue_future$new(workers = 4)
+  on.exit(future_force_shutdown(x))
+  on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
   args <- list(x = 1)
   x$private$add_task(fun = fun, args = args, task = "abc")
@@ -64,6 +72,8 @@ crew_test("push task, more workers than tasks", {
 crew_test("push task, more tasks than workers", {
   future::plan(future::sequential)
   x <- queue_future$new(workers = 2)
+  on.exit(future_force_shutdown(x))
+  on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
   args <- list(x = 1)
   for (index in seq_len(4)) {
@@ -77,12 +87,14 @@ crew_test("push task, more tasks than workers", {
 
 crew_test("detect crash", {
   future::plan(future::sequential)
-  on.exit(future_callr_force_shutdown(x))
+  x <- queue_future$new(workers = 2, plan = future::sequential)
+  on.exit(future_force_shutdown(x))
   on.exit(processx::supervisor_kill(), add = TRUE)
-  x <- queue_future$new(workers = 2, plan = future.callr::callr)
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
   crew_wait(
-    fun = function() all(map_lgl(x$get_workers()$handle, ~!future::resolved(.x)))
+    fun = function() {
+      all(map_lgl(x$get_workers()$handle$process, ~.x$is_alive()))
+    }
   )
   x$get_workers()$handle[[1]]$process$kill()
   expect_error(x$crashed(), class = "crew_error")
@@ -94,9 +106,9 @@ crew_test("private methods to submit and update_results work", {
   x <- queue_future$new(
     workers = 2,
     timeout = 30,
-    plan = future.callr::callr
+    plan = future::sequential
   )
-  on.exit(future_callr_force_shutdown(x))
+  on.exit(future_force_shutdown(x))
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
   for (index in seq_len(2)) {
@@ -150,7 +162,7 @@ crew_test("push and pop", {
     plan = future::sequential,
     timeout = 30
   )
-  on.exit(future_callr_force_shutdown(x))
+  on.exit(future_force_shutdown(x))
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) {
     Sys.sleep(1)

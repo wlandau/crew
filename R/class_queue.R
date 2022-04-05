@@ -96,9 +96,6 @@ queue <- R6::R6Class(
           result <- private$store$read_worker_output(worker = worker)
           private$store$delete_worker_output(worker = worker)
           private$add_result(task = task, result = result)
-          private$workers$handle[[index]] <- private$worker_reuse(
-            private$workers$handle[[index]]
-          )
           private$workers$free[index] <- TRUE
           private$workers$sent[index] <- FALSE
           private$workers$done[index] <- FALSE
@@ -161,9 +158,6 @@ queue <- R6::R6Class(
         ),
         supervise = TRUE
       )
-    },
-    worker_reuse = function(handle) {
-      handle
     },
     worker_up = function(handle) {
       !is.null(handle) && handle$is_alive()

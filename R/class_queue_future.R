@@ -51,21 +51,21 @@ queue_future <- R6::R6Class(
       handle$process <- process
       handle
     },
-    worker_reuse = function(handle) {
-      handle$process$kill()
-      NULL
-    },
     worker_up = function(handle) {
-      if (is.null(handle)) {
+      process <- handle$process
+      if (is.null(process)) {
         return(FALSE)
       }
-      process <- handle$process
       if (process$is_alive()) {
         return(TRUE)
       }
       future <- crew_catch_crash(process$get_result())
       if (all(is.logical(future))) {
-        return(!future)
+        resolved <- !any(future)
+        if (resolved) {
+          handle$process <- NULL
+        }
+        return(resolved)
       }
       handle$process <- callr::r_bg(
         func = function(future) {

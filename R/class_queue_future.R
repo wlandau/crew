@@ -68,9 +68,7 @@ queue_future <- R6::R6Class(
         return(resolved)
       }
       handle$process <- callr::r_bg(
-        func = function(future) {
-          future::resolved(future)
-        },
+        func = function(future) future::resolved(future), # nocov
         args = list(future = future)
       )
       TRUE

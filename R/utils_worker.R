@@ -92,11 +92,18 @@ crew_job <- function(worker, store, timeout, wait) {
   if (is.character(store)) {
     store <- eval(parse(text = store))
   }
-  input <- store$read_worker_input(worker = worker)
-  input$fun <- eval(parse(text = input$fun))
-  value <- crew_monad(fun = input$fun, args = input$args)
-  store$delete_worker_input(worker = worker)
-  store$write_worker_output(worker = worker, value = value)
+  tryCatch({
+      input <- store$read_worker_input(worker = worker)
+      input$fun <- eval(parse(text = input$fun))
+      value <- crew_monad(fun = input$fun, args = input$args)
+      store$delete_worker_input(worker = worker)
+      store$write_worker_output(worker = worker, value = value)
+    },
+    error = function(condition) {
+      store$write_worker_error(worker = worker, value = condition)
+      crew_error(conditionMessage(condition))
+    }
+  )
 }
 
 crew_monad <- function(fun, args) {

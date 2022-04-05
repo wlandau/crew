@@ -147,7 +147,7 @@ crew_test("push and pop", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 2,
-    plan = future.callr::callr,
+    plan = future::sequential,
     timeout = 30
   )
   on.exit(future_callr_force_shutdown(x))

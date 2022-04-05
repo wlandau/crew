@@ -25,11 +25,17 @@ store_local <- R6::R6Class(
     read_worker_output = function(worker) {
       private$read_local(dir = "worker_output", worker = worker)
     },
+    read_worker_error = function(worker) {
+      private$read_local(dir = "worker_error", worker = worker)
+    },
     write_worker_input = function(worker, value) {
       private$write_local(dir = "worker_input", worker = worker, value = value)
     },
     write_worker_output = function(worker, value) {
       private$write_local(dir = "worker_output", worker = worker, value = value)
+    },
+    write_worker_error = function(worker, value) {
+      private$write_local(dir = "worker_error", worker = worker, value = value)
     },
     exists_worker_input = function(worker) {
       private$exists_local(dir = "worker_input", worker = worker)
@@ -37,17 +43,26 @@ store_local <- R6::R6Class(
     exists_worker_output = function(worker) {
       private$exists_local(dir = "worker_output", worker = worker)
     },
+    exists_worker_error = function(worker) {
+      private$exists_local(dir = "worker_error", worker = worker)
+    },
     list_worker_input = function() {
       private$list_local(dir = "worker_input")
     },
     list_worker_output = function() {
       private$list_local(dir = "worker_output")
     },
+    list_worker_error = function() {
+      private$list_local(dir = "worker_error")
+    },
     delete_worker_input = function(worker) {
       private$delete_local(dir = "worker_input", worker = worker)
     },
     delete_worker_output = function(worker) {
       private$delete_local(dir = "worker_output", worker = worker)
+    },
+    delete_worker_error = function(worker) {
+      private$delete_local(dir = "worker_error", worker = worker)
     },
     marshal = function() {
       expr <- substitute(

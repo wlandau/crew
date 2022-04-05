@@ -128,6 +128,9 @@ queue <- R6::R6Class(
         crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))
       }
     },
+    update_all = function() {
+      private$update_work()
+    },
     worker_run = function(handle, worker, fun, args) {
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
@@ -210,13 +213,13 @@ queue <- R6::R6Class(
       fun <- rlang::as_function(fun)
       private$add_task(fun = fun, args = args, task = task)
       if (update) {
-        private$update_work()
+        private$update_all()
       }
       invisible()
     },
     pop = function(update = TRUE) {
       if (update) {
-        private$update_work()
+        private$update_all()
       }
       results <- private$results
       out <- NULL
@@ -227,7 +230,7 @@ queue <- R6::R6Class(
       out
     },
     update = function() {
-      private$update_work()
+      private$update_all()
     },
     crashed = function() {
       private$update_crashed()

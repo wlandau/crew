@@ -33,6 +33,9 @@ queue_future <- R6::R6Class(
         seed = TRUE
       )
     },
+    update_all = function() {
+      private$update_work()
+    },
     worker_reuse = function(handle) {
       NULL
     },

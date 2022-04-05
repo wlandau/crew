@@ -47,12 +47,9 @@ queue_callr <- R6::R6Class(
         }
       }
     },
-    update_work = function() {
+    update_all = function() {
       private$update_crashed()
-      private$update_done()
-      private$update_results()
-      private$update_tasks()
-      private$update_workers()
+      private$update_work()
     },
     update_crashed = function() {
       up <- map_lgl(private$workers$handle, private$worker_up)

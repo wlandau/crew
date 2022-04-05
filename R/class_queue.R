@@ -113,6 +113,7 @@ queue <- R6::R6Class(
       private$workers$done[private$workers$worker %in% names] <- TRUE
     },
     update_work = function() {
+      private$update_crashed()
       private$update_done()
       private$update_results()
       private$update_tasks()
@@ -128,9 +129,6 @@ queue <- R6::R6Class(
         crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))
       }
     },
-    update_all = function() {
-      private$update_work()
-    },
     worker_run = function(handle, worker, fun, args) {
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
@@ -141,7 +139,7 @@ queue <- R6::R6Class(
       )
     },
     worker_start = function(worker) {
-      handle <- callr::r_bg(
+      callr::r_bg(
         func = function(worker, store, jobs, timeout, wait) {
           # executed inside the worker
           # nocov start
@@ -163,13 +161,6 @@ queue <- R6::R6Class(
         ),
         supervise = TRUE
       )
-      crew_wait(
-        fun = function(handle) handle$is_alive(),
-        args = list(handle = handle),
-        timeout = private$timeout,
-        wait = private$wait
-      )
-      handle
     },
     worker_reuse = function(handle) {
       handle
@@ -213,13 +204,13 @@ queue <- R6::R6Class(
       fun <- rlang::as_function(fun)
       private$add_task(fun = fun, args = args, task = task)
       if (update) {
-        private$update_all()
+        private$update_work()
       }
       invisible()
     },
     pop = function(update = TRUE) {
       if (update) {
-        private$update_all()
+        private$update_work()
       }
       results <- private$results
       out <- NULL
@@ -230,7 +221,7 @@ queue <- R6::R6Class(
       out
     },
     update = function() {
-      private$update_all()
+      private$update_work()
     },
     crashed = function() {
       private$update_crashed()

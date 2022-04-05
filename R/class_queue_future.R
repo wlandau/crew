@@ -9,38 +9,71 @@ queue_future <- R6::R6Class(
   private = list(
     plan = NULL,
     worker_run = function(handle, worker, fun, args) {
-      plan_old <- future::plan()
-      on.exit(future::plan(plan_old, .cleanup = FALSE))
-      future::plan(private$plan, .cleanup = FALSE)
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
-      future::future(
-        expr = crew::crew_job(
-          worker = worker,
-          store = store,
-          timeout = timeout,
-          wait = wait
-        ),
-        substitute = TRUE,
-        packages = character(0),
-        globals = list(
+      process <- callr::r_bg(
+        func = function(worker, store, timeout, wait, plan) {
+          # executed inside the worker
+          # nocov start
+          plan_old <- future::plan()
+          on.exit(future::plan(plan_old, .cleanup = FALSE))
+          future::plan(plan, .cleanup = FALSE)
+          future::future(
+            expr = crew::crew_job(
+              worker = worker,
+              store = store,
+              timeout = timeout,
+              wait = wait
+            ),
+            substitute = TRUE,
+            packages = character(0),
+            globals = list(
+              worker = worker,
+              store = store,
+              timeout = timeout,
+              wait = wait
+            ),
+            lazy = FALSE,
+            seed = TRUE
+          )
+          # nocov end
+        },
+        args = list(
           worker = worker,
           store = private$store$marshal(),
           timeout = private$timeout,
-          wait = private$wait
+          wait = private$wait,
+          plan = private$plan
         ),
-        lazy = FALSE,
-        seed = TRUE
+        supervise = TRUE
       )
-    },
-    update_all = function() {
-      private$update_work()
+      handle <- new.env(parent = emptyenv())
+      handle$process <- process
+      handle
     },
     worker_reuse = function(handle) {
+      handle$process$kill()
       NULL
     },
     worker_up = function(handle) {
-      !is.null(handle) && !future::resolved(handle)
+      if (is.null(handle)) {
+        return(FALSE)
+      }
+      process <- handle$process
+      if (process$is_alive()) {
+        return(TRUE)
+      }
+      future <- crew_catch_crash(process$get_result())
+      if (all(is.logical(future))) {
+        return(!future)
+      }
+      handle$process <- callr::r_bg(
+        func = function(future) {
+          future::resolved(future)
+        },
+        args = list(future = future)
+      )
+      TRUE
     }
   ),
   public = list(

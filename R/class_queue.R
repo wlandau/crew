@@ -108,7 +108,7 @@ queue <- R6::R6Class(
         }
       }
     },
-    update_done = function(force = FALSE) {
+    update_done = function() {
       names <- private$store$list_worker_output()
       private$workers$done[private$workers$worker %in% names] <- TRUE
     },

@@ -21,14 +21,16 @@ queue_callr <- R6::R6Class(
       )
     },
     worker_run = function(handle, worker, fun, args) {
-      handle$call(func = fun, args = args)
+      crew_catch_crash(handle$call(func = fun, args = args))
       handle
     },
     update_done = function() {
       index <- which(private$workers$sent)
       handles <- private$workers$handle[index]
-      connections <- map(handles, ~.x$get_poll_connection())
-      poll <- as.character(processx::poll(processes = connections, ms = 0))
+      crew_catch_crash({
+        connections <- map(handles, ~.x$get_poll_connection())
+        poll <- as.character(processx::poll(processes = connections, ms = 0))
+      })
       private$workers$done[index] <- poll == "ready"
     },
     update_results = function() {
@@ -43,6 +45,20 @@ queue_callr <- R6::R6Class(
           private$workers$task[index] <- NA_character_
           private$workers$fun[index] <- list(NULL)
         }
+      }
+    },
+    update_work = function() {
+      private$update_crashed()
+      private$update_done()
+      private$update_results()
+      private$update_tasks()
+      private$update_workers()
+    },
+    update_crashed = function() {
+      up <- map_lgl(private$workers$handle, private$worker_up)
+      if (!all(up)) {
+        workers <- private$workers$worker[!up]
+        crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))
       }
     }
   ),

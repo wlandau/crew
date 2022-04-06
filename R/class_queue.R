@@ -35,6 +35,7 @@ queue <- R6::R6Class(
         handle = replicate(workers, NULL),
         free = rep(TRUE, workers),
         sent = rep(FALSE, workers),
+        up = rep(FALSE, workers),
         done = rep(FALSE, workers),
         lock = rep(FALSE, workers),
         task = rep(NA_character_, workers),
@@ -74,8 +75,8 @@ queue <- R6::R6Class(
     },
     update_workers = function() {
       workers <- private$workers
-      which <- !workers$free & !workers$sent
-      workers <- workers[which, ]
+      workers <- workers[order(workers$up, decreasing = TRUE),, drop = FALSE] # nolint
+      workers <- workers[!workers$free & !workers$sent,, drop = FALSE] # nolint
       for (worker in workers$worker) {
         index <- which(private$workers$worker == worker)
         handle <- private$workers$handle[[index]]
@@ -117,7 +118,7 @@ queue <- R6::R6Class(
       private$update_workers()
     },
     update_crashed = function() {
-      up <- map_lgl(private$workers$handle, private$worker_up)
+      up <- map_lgl(private$workers$worker, private$worker_up_name)
       private$update_done()
       x <- private$workers
       crashed <- x$sent & !x$done & !up
@@ -130,7 +131,7 @@ queue <- R6::R6Class(
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
       if_any(
-        private$worker_up(handle),
+        private$worker_up_name(worker),
         handle,
         private$worker_start(worker)
       )
@@ -158,6 +159,13 @@ queue <- R6::R6Class(
         ),
         supervise = TRUE
       )
+    },
+    worker_up_name = function(worker) {
+      index <- which(private$workers$worker == worker)
+      handle <- private$workers$handle[[index]]
+      up <- private$worker_up(handle)
+      private$workers$up[index] <- up
+      up
     },
     worker_up = function(handle) {
       !is.null(handle) && handle$is_alive()

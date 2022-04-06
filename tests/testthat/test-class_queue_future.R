@@ -88,7 +88,11 @@ crew_test("push task, more tasks than workers", {
 
 crew_test("detect crash", {
   future::plan(future::sequential)
-  x <- queue_future$new(workers = 2, plan = future::sequential)
+  x <- queue_future$new(
+    workers = 2,
+    processes = 2,
+    plan = future::sequential
+  )
   on.exit(future_force_shutdown(x))
   on.exit(processx::supervisor_kill(), add = TRUE)
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
@@ -106,6 +110,7 @@ crew_test("private methods to submit and update_results work", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 2,
+    processes = 2,
     timeout = 30,
     plan = future::sequential
   )
@@ -160,6 +165,7 @@ crew_test("push and pop", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 2,
+    processes = 2,
     plan = future::sequential,
     timeout = 30
   )

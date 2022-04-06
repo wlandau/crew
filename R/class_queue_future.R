@@ -8,9 +8,11 @@ queue_future <- R6::R6Class(
   cloneable = FALSE,
   private = list(
     plan = NULL,
+    processes = NULL,
     worker_run = function(handle, worker, fun, args) {
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
+      private$process_wait()
       process <- callr::r_bg(
         func = function(worker, store, timeout, wait, plan) {
           # executed inside the worker
@@ -67,16 +69,33 @@ queue_future <- R6::R6Class(
         }
         return(resolved)
       }
+      private$process_wait()
       handle$process <- callr::r_bg(
         func = function(future) future::resolved(future), # nocov
         args = list(future = future)
       )
       TRUE
+    },
+    process_up = function(handle) {
+      if_any(is.null(handle$process), FALSE, handle$process$is_alive())
+    },
+    process_available = function() {
+      up <- map_lgl(private$workers$handle, private$process_up)
+      sum(up) < private$processes
+    },
+    process_wait = function() {
+      crew_wait(
+        private$process_available,
+        timeout = private$timeout,
+        wait = private$wait,
+        message = "timed out waiting for local processes to be available."
+      )
     }
   ),
   public = list(
     initialize = function(
       workers = 1,
+      processes = 1,
       jobs = Inf,
       timeout = 60,
       wait = 0.1,
@@ -88,6 +107,7 @@ queue_future <- R6::R6Class(
         timeout = timeout,
         wait = wait
       )
+      private$processes <- processes
       private$plan <- plan
       invisible()
     },

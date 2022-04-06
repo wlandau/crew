@@ -62,16 +62,15 @@ queue_future <- R6::R6Class(
         return(TRUE)
       }
       future <- crew_catch_crash(process$get_result())
-      if (all(is.logical(future))) {
-        resolved <- !any(future)
-        if (resolved) {
+      if (length(future) == 1L && is.logical(future)) {
+        if (future) {
           handle$process <- NULL
         }
-        return(resolved)
+        return(future)
       }
       private$process_wait()
       handle$process <- callr::r_bg(
-        func = function(future) future::resolved(future), # nocov
+        func = function(future) !all(future::resolved(future)), # nocov
         args = list(future = future)
       )
       TRUE

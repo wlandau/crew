@@ -101,9 +101,25 @@ crew_test("detect crash", {
       all(map_lgl(x$get_workers()$handle$process, ~.x$is_alive()))
     }
   )
+  x$update()
   x$get_workers()$handle[[1]]$process$kill()
   expect_error(x$crashed(), class = "crew_error")
+  expect_error(x$update(), class = "crew_error")
   x$get_workers()$handle[[2]]$process$kill()
+})
+
+crew_test("worker up", {
+  future::plan(future::sequential)
+  x <- queue_future$new(
+    workers = 2,
+    processes = 2,
+    plan = future::sequential
+  )
+  handle <- new.env(parent = emptyenv())
+  handle$process <- callr::r_bg(func = function() TRUE)
+  crew_wait(~!handle$process$is_alive(), wait = 0.01)
+  expect_false(handle$process$is_alive())
+  expect_true(x$private$worker_up(handle))
 })
 
 crew_test("private methods to submit and update_results work", {

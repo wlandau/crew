@@ -88,3 +88,19 @@ crew_test("crew_monad() with errors", {
   expect_true(is.character(out$traceback) && length(out$traceback) > 0)
   expect_equal(out$warnings, c("warning1", "warning2"))
 })
+
+crew_test("crew job error", {
+  dir_root <- tempfile()
+  store <- store_local$new(dir_root = dir_root)
+  expect_error(
+    crew_job(
+      worker = "my_worker",
+      store = store$marshal(),
+      timeout = 0,
+      wait = 0
+    )
+  )
+  expect_true(store$exists_worker_error("my_worker"))
+  error <- store$read_worker_error("my_worker")
+  expect_s3_class(error, "crew_error")
+})

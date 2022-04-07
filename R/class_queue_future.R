@@ -54,24 +54,16 @@ queue_future <- R6::R6Class(
       
       browser()
       
-      process <- handle$process
-      if (is.null(process)) {
+      if (is.null(handle)) {
         return(FALSE)
       }
-      if (process$is_alive()) {
-        return(TRUE)
-      }
-      future <- crew_catch_crash(process$get_result())
-      if (length(future) == 1L && is.logical(future)) {
-        if (future) {
-          handle$process <- NULL
-        }
-        return(future)
+      if (length(handle) == 1L && is.logical(handle)) {
+        return(handle)
       }
       private$subqueue_wait()
       private$subqueue$push(
         fun = function(future) !all(future::resolved(future)), # nocov
-        args = list(future = future),
+        args = list(future = handle),
         task = worker
       )
       TRUE

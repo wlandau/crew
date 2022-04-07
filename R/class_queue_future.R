@@ -9,51 +9,51 @@ queue_future <- R6::R6Class(
   private = list(
     plan = NULL,
     processes = NULL,
+    subqueue = NULL,
     worker_run = function(handle, worker, fun, args) {
+      private$subqueue_wait()
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
-      private$process_wait()
-      process <- callr::r_bg(
-        func = function(worker, store, timeout, wait, plan) {
-          # executed inside the worker
-          # nocov start
-          plan_old <- future::plan()
-          on.exit(future::plan(plan_old, .cleanup = FALSE))
-          future::plan(plan, .cleanup = FALSE)
-          future::future(
-            expr = crew::crew_job(
-              worker = worker,
-              store = store,
-              timeout = timeout,
-              wait = wait
-            ),
-            substitute = TRUE,
-            packages = character(0),
-            globals = list(
-              worker = worker,
-              store = store,
-              timeout = timeout,
-              wait = wait
-            ),
-            lazy = FALSE,
-            seed = TRUE
-          )
-          # nocov end
-        },
-        args = list(
-          worker = worker,
-          store = private$store$marshal(),
-          timeout = private$timeout,
-          wait = private$wait,
-          plan = private$plan
-        ),
-        supervise = TRUE
+      fun <- function(worker, store, timeout, wait, plan) {
+        # executed in the subqueue
+        # nocov start
+        plan_old <- future::plan()
+        on.exit(future::plan(plan_old, .cleanup = FALSE))
+        future::plan(plan, .cleanup = FALSE)
+        future::future(
+          expr = crew::crew_job(
+            worker = worker,
+            store = store,
+            timeout = timeout,
+            wait = wait
+          ),
+          substitute = TRUE,
+          packages = character(0),
+          globals = list(
+            worker = worker,
+            store = store,
+            timeout = timeout,
+            wait = wait
+          ),
+          lazy = FALSE,
+          seed = TRUE
+        )
+        # nocov end
+      }
+      args <- list(
+        worker = worker,
+        store = private$store$marshal(),
+        timeout = private$timeout,
+        wait = private$wait,
+        plan = private$plan
       )
-      handle <- new.env(parent = emptyenv())
-      handle$process <- process
-      handle
+      private$subqueue$push(fun = fun, args = args, task = worker)
+      list(worker = worker)
     },
-    worker_up = function(handle) {
+    worker_up = function(handle, worker) {
+      
+      browser()
+      
       process <- handle$process
       if (is.null(process)) {
         return(FALSE)
@@ -68,27 +68,42 @@ queue_future <- R6::R6Class(
         }
         return(future)
       }
-      private$process_wait()
-      handle$process <- callr::r_bg(
-        func = function(future) !all(future::resolved(future)), # nocov
-        args = list(future = future)
+      private$subqueue_wait()
+      private$subqueue$push(
+        fun = function(future) !all(future::resolved(future)), # nocov
+        args = list(future = future),
+        task = worker
       )
       TRUE
     },
-    process_up = function(handle) {
-      if_any(is.null(handle$process), FALSE, handle$process$is_alive())
+    update_subqueue = function() {
+      while(!is.null(result <- private$subqueue$pop())) {
+        
+        browser()
+        
+        if (!is.null(result$result$error)) {
+          crew_error(result$result$error)
+        }
+        index <- which(private$workers$worker == result$task)
+        private$workers$handle[[index]] <- result$result$result
+      }
     },
-    process_available = function() {
-      up <- map_lgl(private$workers$handle, private$process_up)
-      sum(up) < private$processes
-    },
-    process_wait = function() {
+    subqueue_wait = function() {
       crew_wait(
-        private$process_available,
+        private$subqueue_available,
         timeout = private$timeout,
         wait = private$wait,
         message = "timed out waiting for local processes to be available."
       )
+    },
+    subqueue_available = function() {
+      subtasks <- private$subqueue$get_tasks()
+      free <- private$subqueue$get_workers()$free
+      out <- !nrow(subtasks) && any(free)
+      if (!out) {
+        private$subqueue$update()
+      }
+      out
     }
   ),
   public = list(
@@ -107,6 +122,12 @@ queue_future <- R6::R6Class(
         wait = wait
       )
       private$processes <- processes
+      private$subqueue <- queue_callr$new(
+        workers = processes,
+        wait = wait,
+        timeout = timeout,
+        start = TRUE
+      )
       private$plan <- plan
       invisible()
     },

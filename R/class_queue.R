@@ -15,7 +15,6 @@ queue <- R6::R6Class(
     timeout = NULL,
     wait = NULL,
     jobs = NULL,
-    loop = NULL,
     initialize_tasks = function() {
       private$tasks <- tibble::tibble(
         task = character(0),
@@ -110,15 +109,18 @@ queue <- R6::R6Class(
       names <- private$store$list_worker_output()
       private$workers$done[private$workers$worker %in% names] <- TRUE
     },
-    update_work = function() {
+    update_subqueue = function() {
+    },
+    update_all = function() {
       private$update_crashed()
+      private$update_subqueue()
       private$update_done()
       private$update_results()
       private$update_tasks()
       private$update_workers()
     },
     update_crashed = function() {
-      up <- map_lgl(private$workers$worker, private$worker_up_name)
+      up <- map_lgl(private$workers$worker, private$worker_up_log)
       private$update_done()
       x <- private$workers
       crashed <- x$sent & !x$done & !up
@@ -131,7 +133,7 @@ queue <- R6::R6Class(
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
       if_any(
-        private$worker_up_name(worker),
+        private$worker_up_log(worker),
         handle,
         private$worker_start(worker)
       )
@@ -160,14 +162,14 @@ queue <- R6::R6Class(
         supervise = TRUE
       )
     },
-    worker_up_name = function(worker) {
+    worker_up_log = function(worker) {
       index <- which(private$workers$worker == worker)
       handle <- private$workers$handle[[index]]
-      up <- private$worker_up(handle)
+      up <- private$worker_up(handle = handle, worker = worker)
       private$workers$up[index] <- up
       up
     },
-    worker_up = function(handle) {
+    worker_up = function(handle, worker = NULL) {
       !is.null(handle) && handle$is_alive()
     }
   ),
@@ -206,13 +208,13 @@ queue <- R6::R6Class(
       fun <- rlang::as_function(fun)
       private$add_task(fun = fun, args = args, task = task)
       if (update) {
-        private$update_work()
+        private$update_all()
       }
       invisible()
     },
     pop = function(update = TRUE) {
       if (update) {
-        private$update_work()
+        private$update_all()
       }
       results <- private$results
       out <- NULL
@@ -223,7 +225,7 @@ queue <- R6::R6Class(
       out
     },
     update = function() {
-      private$update_work()
+      private$update_all()
     },
     crashed = function() {
       private$update_crashed()

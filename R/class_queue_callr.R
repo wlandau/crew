@@ -48,7 +48,7 @@ queue_callr <- R6::R6Class(
       }
     },
     update_crashed = function() {
-      up <- map_lgl(private$workers$handle, private$worker_up)
+      up <- map_lgl(private$workers$worker, private$worker_up_log)
       if (!all(up)) {
         workers <- private$workers$worker[!up]
         crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))
@@ -56,7 +56,14 @@ queue_callr <- R6::R6Class(
     }
   ),
   public = list(
-    initialize = function(workers = 1, start = TRUE) {
+    initialize = function(
+      workers = 1,
+      timeout = 60,
+      wait = 0.1,
+      start = TRUE
+    ) {
+      private$timeout <- timeout
+      private$wait <- wait
       private$initialize_tasks()
       private$initialize_results()
       private$initialize_workers(workers = workers, start = start)

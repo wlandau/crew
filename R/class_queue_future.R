@@ -20,7 +20,7 @@ queue_future <- R6::R6Class(
         plan_old <- future::plan()
         on.exit(future::plan(plan_old, .cleanup = FALSE))
         future::plan(plan, .cleanup = FALSE)
-        future::future(
+        future <- future::future(
           expr = crew::crew_job(
             worker = worker,
             store = store,
@@ -38,6 +38,7 @@ queue_future <- R6::R6Class(
           lazy = FALSE,
           seed = TRUE
         )
+        list(future = future, resolved = FALSE)
         # nocov end
       }
       args <- list(
@@ -48,22 +49,24 @@ queue_future <- R6::R6Class(
         plan = private$plan
       )
       private$subqueue$push(fun = fun, args = args, task = worker)
-      list(worker = worker)
+      list(future = NULL, resolved = FALSE)
     },
     worker_up = function(handle, worker) {
       
       browser()
       
-      if (is.null(handle)) {
+      if (is.null(handle$future)) {
         return(FALSE)
       }
-      if (length(handle) == 1L && is.logical(handle)) {
-        return(handle)
+      if (handle$resolved) {
+        return(TRUE)
       }
       private$subqueue_wait()
       private$subqueue$push(
-        fun = function(future) !all(future::resolved(future)), # nocov
-        args = list(future = handle),
+        fun = function(future) {
+          list(future = future, resolved = future::resolved(future)) # nocov
+        },
+        args = list(future = handle$future),
         task = worker
       )
       TRUE

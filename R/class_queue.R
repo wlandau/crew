@@ -144,18 +144,7 @@ queue <- R6::R6Class(
     },
     worker_start = function(worker) {
       callr::r_bg(
-        func = function(worker, store, jobs, timeout, wait) {
-          # executed inside the worker
-          # nocov start
-          crew::crew_worker(
-            worker = worker,
-            store = store,
-            jobs = jobs,
-            timeout = timeout,
-            wait = wait
-          )
-          # nocov end
-        },
+        func = queue_worker_start,
         args = list(
           worker = worker,
           store = private$store$marshal(),
@@ -262,3 +251,13 @@ queue <- R6::R6Class(
     }
   )
 )
+
+queue_worker_start <- function(worker, store, jobs, timeout, wait) {
+  crew::crew_worker(
+    worker = worker,
+    store = store,
+    jobs = jobs,
+    timeout = timeout,
+    wait = wait
+  )
+}

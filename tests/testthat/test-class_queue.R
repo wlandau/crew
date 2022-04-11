@@ -1,3 +1,28 @@
+crew_test("queue_worker_start()", {
+  dir_root <- tempfile()
+  dir_create(dir_root)
+  store <- store_local$new(dir_root = dir_root)
+  fun <- function(x) {
+    x + 1
+  }
+  value <- structure(
+    list(fun = deparse(fun), args = list(x = 1L)),
+    class = "crew_task"
+  )
+  store$write_worker_input(worker = "worker", value = value)
+  queue_worker_start(
+    worker = "worker",
+    store = store$marshal(),
+    jobs = 1,
+    timeout = 0,
+    wait = 0
+  )
+  expect_false(store$exists_worker_input("worker"))
+  expect_true(store$exists_worker_output("worker"))
+  job <- store$read_worker_output("worker")
+  expect_equal(job$result, 2L)
+})
+
 crew_test("initial queue", {
   x <- queue$new()
   on.exit(callr_force_shutdown(x))

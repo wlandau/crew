@@ -23,7 +23,7 @@ queue_future <- R6::R6Class(
         task = task
       )
       private$subqueue$push(
-        fun = queue_future_worker_launch,
+        fun = queue_future_worker_start,
         args = args,
         task = worker
       )
@@ -88,7 +88,7 @@ queue_future <- R6::R6Class(
   )
 )
 
-queue_future_worker_launch <- function(
+queue_future_worker_start <- function(
   worker,
   store,
   timeout,

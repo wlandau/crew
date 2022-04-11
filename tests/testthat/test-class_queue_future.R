@@ -1,10 +1,10 @@
-crew_test("queue_future_worker_launch()", {
+crew_test("queue_future_worker_start()", {
   fun <- function(x) x
   args <- list(x = "x")
   value <- list(fun = deparse(fun), args = args)
   store <- store_local$new()
   store$write_worker_input(worker = "worker", value = value)
-  out <- queue_future_worker_launch(
+  out <- queue_future_worker_start(
     worker = "worker",
     store = store$marshal(),
     timeout = 30,
@@ -18,7 +18,7 @@ crew_test("queue_future_worker_launch()", {
   expect_equal(store$read_worker_output("worker")$result, "x")
 })
 
-crew_test("queue_future_worker_launch()", {
+crew_test("queue_future_worker_start()", {
   future::plan(future::sequential)
   future <- future::future("x")
   expect_true(queue_future_worker_resolve(future)$resolved)

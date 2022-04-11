@@ -49,9 +49,12 @@ queue_future <- R6::R6Class(
     },
     update_subqueue = function() {
       while (!is.null(result <- private$subqueue$pop())) {
-        if (!is.null(result$result$error)) {
+        if_any(is.null(result$error), NULL, crew_error(result$error))
+        if_any(
+          is.null(result$result$error),
+          NULL,
           crew_error(result$result$error)
-        }
+        )
         index <- which(private$workers$worker == result$task)
         private$workers$handle[[index]] <- result$result$result
       }

@@ -47,9 +47,12 @@ queue_future <- R6::R6Class(
       TRUE
     },
     update_subqueue = function() {
+      
+      browser()
+      
       while(!is.null(result <- private$subqueue$pop())) {
         
-        browser()
+        
         
         if (!is.null(result$result$error)) {
           crew_error(result$result$error)

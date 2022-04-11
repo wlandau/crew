@@ -181,11 +181,11 @@ queue <- R6::R6Class(
       )
     },
     available = function() {
-      out <- nrow(private$tasks) || !any(private$workers$free)
-      if (out) {
+      occupied <- nrow(private$tasks) || !any(private$workers$free)
+      if (occupied) {
         private$update_all()
       }
-      out
+      !occupied
     }
   ),
   public = list(

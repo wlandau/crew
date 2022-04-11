@@ -12,7 +12,7 @@ crew_crash <- function(message = NULL) {
 }
 
 crew_error <- function(message = NULL) {
-  rlang::abort(message = message, class = c("crew_error", "crew"))
+  rlang::abort(message = message, class = c("crew_error", "crew"), parent = NA)
 }
 
 crew_expire <- function(message = NULL) {

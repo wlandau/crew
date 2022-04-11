@@ -29,9 +29,6 @@ queue_future <- R6::R6Class(
       list(future = NULL, resolved = FALSE)
     },
     worker_up = function(handle, worker) {
-      
-      browser()
-      
       if (is.null(handle$future)) {
         return(FALSE)
       }
@@ -47,13 +44,7 @@ queue_future <- R6::R6Class(
       TRUE
     },
     update_subqueue = function() {
-      
-      browser()
-      
       while(!is.null(result <- private$subqueue$pop())) {
-        
-        
-        
         if (!is.null(result$result$error)) {
           crew_error(result$result$error)
         }

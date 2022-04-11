@@ -11,36 +11,9 @@ queue_future <- R6::R6Class(
     processes = NULL,
     subqueue = NULL,
     worker_run = function(handle, worker, fun, args) {
-      private$subqueue_wait()
+      private$subqueue$block()
       task <- list(fun = deparse(fun), args = args)
       private$store$write_worker_input(worker = worker, value = task)
-      fun <- function(worker, store, timeout, wait, plan) {
-        # executed in the subqueue
-        # nocov start
-        plan_old <- future::plan()
-        on.exit(future::plan(plan_old, .cleanup = FALSE))
-        future::plan(plan, .cleanup = FALSE)
-        future <- future::future(
-          expr = crew::crew_job(
-            worker = worker,
-            store = store,
-            timeout = timeout,
-            wait = wait
-          ),
-          substitute = TRUE,
-          packages = character(0),
-          globals = list(
-            worker = worker,
-            store = store,
-            timeout = timeout,
-            wait = wait
-          ),
-          lazy = FALSE,
-          seed = TRUE
-        )
-        list(future = future, resolved = FALSE)
-        # nocov end
-      }
       args <- list(
         worker = worker,
         store = private$store$marshal(),
@@ -48,7 +21,11 @@ queue_future <- R6::R6Class(
         wait = private$wait,
         plan = private$plan
       )
-      private$subqueue$push(fun = fun, args = args, task = worker)
+      private$subqueue$push(
+        fun = queue_future_worker_launch,
+        args = args,
+        task = worker
+      )
       list(future = NULL, resolved = FALSE)
     },
     worker_up = function(handle, worker) {
@@ -61,11 +38,9 @@ queue_future <- R6::R6Class(
       if (handle$resolved) {
         return(TRUE)
       }
-      private$subqueue_wait()
+      private$subqueue$block()
       private$subqueue$push(
-        fun = function(future) {
-          list(future = future, resolved = future::resolved(future)) # nocov
-        },
+        fun = queue_future_worker_resolve,
         args = list(future = handle$future),
         task = worker
       )
@@ -82,23 +57,6 @@ queue_future <- R6::R6Class(
         index <- which(private$workers$worker == result$task)
         private$workers$handle[[index]] <- result$result$result
       }
-    },
-    subqueue_wait = function() {
-      crew_wait(
-        private$subqueue_available,
-        timeout = private$timeout,
-        wait = private$wait,
-        message = "timed out waiting for local processes to be available."
-      )
-    },
-    subqueue_available = function() {
-      subtasks <- private$subqueue$get_tasks()
-      free <- private$subqueue$get_workers()$free
-      out <- !nrow(subtasks) && any(free)
-      if (!out) {
-        private$subqueue$update()
-      }
-      out
     }
   ),
   public = list(
@@ -131,3 +89,32 @@ queue_future <- R6::R6Class(
     }
   )
 )
+
+queue_future_worker_launch <- function(worker, store, timeout, wait, plan) {
+  plan_old <- future::plan()
+  on.exit(future::plan(plan_old, .cleanup = FALSE))
+  future::plan(plan, .cleanup = FALSE)
+  future <- future::future(
+    expr = crew::crew_job(
+      worker = worker,
+      store = store,
+      timeout = timeout,
+      wait = wait
+    ),
+    substitute = TRUE,
+    packages = character(0),
+    globals = list(
+      worker = worker,
+      store = store,
+      timeout = timeout,
+      wait = wait
+    ),
+    lazy = FALSE,
+    seed = TRUE
+  )
+  list(future = future, resolved = FALSE)
+}
+
+queue_future_worker_resolve <- function(future) {
+  list(future = future, resolved = future::resolved(future))
+}

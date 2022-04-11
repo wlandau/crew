@@ -169,3 +169,19 @@ crew_test("update", {
   crew_wait(wait, wait = 0.1)
   expect_equal(x$pop(update = FALSE)$result$result, 1L)
 })
+
+crew_test("block", {
+  x <- queue$new(workers = 2)
+  on.exit(callr_force_shutdown(x))
+  on.exit(processx::supervisor_kill(), add = TRUE)
+  fun <- function(x) x
+  x$push(fun = fun, args = list(x = 1L), update = FALSE)
+  expect_equal(nrow(x$get_tasks()), 1L)
+  x$block()
+  expect_equal(nrow(x$get_tasks()), 0L)
+  crew_wait(~{
+    x$update()
+    all(x$get_workers()$free)
+  })
+  expect_equal(x$pop()$result$result, 1L)
+})

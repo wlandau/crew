@@ -171,6 +171,21 @@ queue <- R6::R6Class(
     },
     worker_up = function(handle, worker = NULL) {
       !is.null(handle) && handle$is_alive()
+    },
+    available_wait = function(timeout = private$timeout, wait = private$wait) {
+      crew_wait(
+        private$available,
+        timeout = timeout %|||% private$timeout,
+        wait = wait %|||% private$wait,
+        message = "timed out waiting for workers to be available."
+      )
+    },
+    available = function() {
+      out <- nrow(private$tasks) || !any(private$workers$free)
+      if (out) {
+        private$update_all()
+      }
+      out
     }
   ),
   public = list(
@@ -229,6 +244,9 @@ queue <- R6::R6Class(
     },
     crashed = function() {
       private$update_crashed()
+    },
+    block = function(timeout = NULL, wait = NULL) {
+      private$available_wait(timeout = timeout, wait = wait)
     }
   )
 )

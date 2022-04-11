@@ -18,28 +18,28 @@ queue <- R6::R6Class(
     initialize_tasks = function() {
       private$tasks <- tibble::tibble(
         task = character(0),
-        fun = list(NULL),
-        args = list(NULL)
+        fun = list(),
+        args = list()
       )
     },
     initialize_results = function() {
       private$results <- tibble::tibble(
         task = character(0),
-        result = list(NULL)
+        result = list()
       )
     },
     initialize_workers = function(workers) {
       private$workers <- tibble::tibble(
         worker = uuid::UUIDgenerate(n = workers),
-        handle = replicate(workers, NULL),
+        handle = replicate(workers, list(), simplify = FALSE),
         free = rep(TRUE, workers),
         sent = rep(FALSE, workers),
         up = rep(FALSE, workers),
         done = rep(FALSE, workers),
         lock = rep(FALSE, workers),
         task = rep(NA_character_, workers),
-        fun = replicate(workers, NULL),
-        args = replicate(workers, NULL)
+        fun = replicate(workers, list(), simplify = FALSE),
+        args = replicate(workers, list(), simplify = FALSE)
       )
     },
     add_task = function(task, fun, args) {
@@ -83,7 +83,8 @@ queue <- R6::R6Class(
           handle = handle,
           worker = worker,
           fun = private$workers$fun[[index]],
-          args = private$workers$args[[index]]
+          args = private$workers$args[[index]],
+          task = private$workers$task[index]
         )
         private$workers$sent[index] <- TRUE
       }
@@ -96,12 +97,15 @@ queue <- R6::R6Class(
           result <- private$store$read_worker_output(worker = worker)
           private$store$delete_worker_output(worker = worker)
           private$add_result(task = task, result = result)
+          private$workers$handle[[index]] <- private$worker_reuse(
+            private$workers$handle[[index]]
+          )
           private$workers$free[index] <- TRUE
           private$workers$sent[index] <- FALSE
           private$workers$done[index] <- FALSE
           private$workers$task[index] <- NA_character_
-          private$workers$fun[index] <- list(NULL)
-          private$workers$args[index] <- list(NULL)
+          private$workers$fun[[index]] <- list()
+          private$workers$args[[index]] <- list()
         }
       }
     },
@@ -129,9 +133,9 @@ queue <- R6::R6Class(
         crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))
       }
     },
-    worker_run = function(handle, worker, fun, args) {
-      task <- list(fun = deparse(fun), args = args)
-      private$store$write_worker_input(worker = worker, value = task)
+    worker_run = function(handle, worker, fun, args, task) {
+      value <- list(fun = deparse(fun), args = args)
+      private$store$write_worker_input(worker = worker, value = value)
       if_any(
         private$worker_up_log(worker),
         handle,
@@ -170,7 +174,10 @@ queue <- R6::R6Class(
       up
     },
     worker_up = function(handle, worker = NULL) {
-      !is.null(handle) && handle$is_alive()
+      length(handle) && handle$is_alive()
+    },
+    worker_reuse = function(handle) {
+      handle
     },
     available_wait = function(timeout = private$timeout, wait = private$wait) {
       crew_wait(

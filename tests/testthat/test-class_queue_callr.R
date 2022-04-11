@@ -17,14 +17,14 @@ crew_test("get workers", {
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
   expect_true(out$worker[1] != out$worker[2])
-  expect_equal(out$handle, list(NULL, NULL))
+  expect_equal(out$handle, list(list(), list()))
   expect_equal(out$done, rep(FALSE, 2))
   expect_equal(out$up, rep(FALSE, 2))
   expect_equal(out$free, rep(TRUE, 2))
   expect_equal(out$sent, rep(FALSE, 2))
   expect_true(all(is.na(out$task)))
-  expect_equal(out$fun, list(NULL, NULL))
-  expect_equal(out$args, list(NULL, NULL))
+  expect_equal(out$fun, list(list(), list()))
+  expect_equal(out$args, list(list(), list()))
 })
 
 crew_test("add task", {
@@ -51,7 +51,7 @@ crew_test("push task, more workers than tasks", {
   out <- x$get_workers()
   expect_equal(is.na(out$task), c(FALSE, TRUE, FALSE, TRUE))
   expect_equal(out$free, c(FALSE, FALSE, FALSE, TRUE))
-  expect_equal(out$fun, list(fun, NULL, fun, NULL))
+  expect_equal(out$fun, list(fun, list(), fun, list()))
 })
 
 crew_test("push task, more tasks than workers", {

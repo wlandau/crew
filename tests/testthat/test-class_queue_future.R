@@ -22,15 +22,15 @@ crew_test("get workers", {
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
   expect_true(out$worker[1] != out$worker[2])
-  expect_equal(out$handle, list(NULL, NULL))
+  expect_equal(out$handle, list(list(), list()))
   expect_equal(out$up, rep(FALSE, 2))
   expect_equal(out$done, rep(FALSE, 2))
   expect_equal(out$free, rep(TRUE, 2))
   expect_equal(out$sent, rep(FALSE, 2))
   expect_equal(out$lock, rep(FALSE, 2))
   expect_true(all(is.na(out$task)))
-  expect_equal(out$fun, list(NULL, NULL))
-  expect_equal(out$args, list(NULL, NULL))
+  expect_equal(out$fun, list(list(), list()))
+  expect_equal(out$args, list(list(), list()))
 })
 
 crew_test("get plan", {
@@ -67,7 +67,7 @@ crew_test("push task, more workers than tasks", {
   out <- x$get_workers()
   expect_equal(is.na(out$task), c(FALSE, TRUE, FALSE, TRUE))
   expect_equal(out$free, c(FALSE, FALSE, FALSE, TRUE))
-  expect_equal(out$fun, list(fun, NULL, fun, NULL))
+  expect_equal(out$fun, list(fun, list(), fun, list()))
 })
 
 crew_test("push task, more tasks than workers", {
@@ -89,37 +89,38 @@ crew_test("push task, more tasks than workers", {
 crew_test("detect crash", {
   future::plan(future::sequential)
   x <- queue_future$new(
-    workers = 2,
-    processes = 2,
+    workers = 1,
+    processes = 1,
     plan = future::sequential
   )
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
-  replicate(2, x$push(fun = function() Sys.sleep(Inf)))
+  x$push(fun = function() Sys.sleep(Inf))
   crew_wait(
     fun = function() {
-      all(map_lgl(x$get_workers()$handle$process, ~.x$is_alive()))
+      all(x$get_workers()$sent) &&
+        !any(x$get_workers()$free)
+        !any(x$private$subqueue$get_workers()$free)
     }
   )
-  x$update()
-  x$get_workers()$handle[[1]]$process$kill()
+  x$private$subqueue$get_workers()$handle[[1]]$kill()
+  x$private$workers$handle[[1]]$resolved <- TRUE
   expect_error(x$crashed(), class = "crew_error")
-  expect_error(x$update(), class = "crew_error")
-  x$get_workers()$handle[[2]]$process$kill()
 })
 
 crew_test("worker up", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 2,
-    processes = 2,
+    processes = 1,
     plan = future::sequential
   )
-  handle <- new.env(parent = emptyenv())
-  handle$process <- callr::r_bg(func = function() TRUE)
-  crew_wait(~!handle$process$is_alive(), wait = 0.01)
-  expect_false(handle$process$is_alive())
-  expect_true(x$private$worker_up(handle))
+  on.exit(x$shutdown())
+  on.exit(processx::supervisor_kill(), add = TRUE)
+  expect_false(x$private$worker_up(list()))
+  expect_false(x$private$worker_up(list(future = "x", resolved = TRUE)))
+  handle <- list(future = future::future("x"), resolved = FALSE)
+  expect_true(x$private$worker_up(handle, "abc"))
 })
 
 crew_test("private methods to submit and update_results work", {

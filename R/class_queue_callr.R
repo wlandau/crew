@@ -20,7 +20,7 @@ queue_callr <- R6::R6Class(
         )
       )
     },
-    worker_run = function(handle, worker, fun, args) {
+    worker_run = function(handle, worker, fun, args, task) {
       crew_catch_crash(handle$call(func = fun, args = args))
       handle
     },
@@ -72,7 +72,7 @@ queue_callr <- R6::R6Class(
     shutdown = function() {
       super$shutdown()
       for (handle in private$workers$handle) {
-        if (!is.null(handle)) {
+        if (length(handle)) {
           handle$kill()
         }
       }

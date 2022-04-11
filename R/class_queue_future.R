@@ -10,29 +10,30 @@ queue_future <- R6::R6Class(
     plan = NULL,
     processes = NULL,
     subqueue = NULL,
-    worker_run = function(handle, worker, fun, args) {
+    worker_run = function(handle, worker, fun, args, task) {
       private$subqueue$block()
-      task <- list(fun = deparse(fun), args = args)
-      private$store$write_worker_input(worker = worker, value = task)
+      value <- list(fun = deparse(fun), args = args)
+      private$store$write_worker_input(worker = worker, value = value)
       args <- list(
         worker = worker,
         store = private$store$marshal(),
         timeout = private$timeout,
         wait = private$wait,
-        plan = private$plan
+        plan = private$plan,
+        task = task
       )
       private$subqueue$push(
         fun = queue_future_worker_launch,
         args = args,
         task = worker
       )
-      list(future = NULL, resolved = FALSE)
+      list(future = list(), resolved = FALSE)
     },
     worker_up = function(handle, worker) {
-      if (is.null(handle$future)) {
+      if (!length(handle) || isTRUE(handle$resolved)) {
         return(FALSE)
       }
-      if (handle$resolved) {
+      if (!length(handle$future)) {
         return(TRUE)
       }
       private$subqueue$block()
@@ -43,8 +44,11 @@ queue_future <- R6::R6Class(
       )
       TRUE
     },
+    worker_reuse = function(handle) {
+      list()
+    },
     update_subqueue = function() {
-      while(!is.null(result <- private$subqueue$pop())) {
+      while (!is.null(result <- private$subqueue$pop())) {
         if (!is.null(result$result$error)) {
           crew_error(result$result$error)
         }
@@ -84,7 +88,14 @@ queue_future <- R6::R6Class(
   )
 )
 
-queue_future_worker_launch <- function(worker, store, timeout, wait, plan) {
+queue_future_worker_launch <- function(
+  worker,
+  store,
+  timeout,
+  wait,
+  plan,
+  task
+) {
   plan_old <- future::plan()
   on.exit(future::plan(plan_old, .cleanup = FALSE))
   future::plan(plan, .cleanup = FALSE)
@@ -95,14 +106,15 @@ queue_future_worker_launch <- function(worker, store, timeout, wait, plan) {
       timeout = timeout,
       wait = wait
     ),
-    substitute = TRUE,
-    packages = character(0),
     globals = list(
       worker = worker,
       store = store,
       timeout = timeout,
       wait = wait
     ),
+    label = task,
+    substitute = TRUE,
+    packages = character(0),
     lazy = FALSE,
     seed = TRUE
   )

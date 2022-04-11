@@ -104,6 +104,7 @@ crew_job <- function(worker, store, timeout, wait) {
       crew_error(conditionMessage(condition))
     }
   )
+  invisible()
 }
 
 crew_monad <- function(fun, args) {

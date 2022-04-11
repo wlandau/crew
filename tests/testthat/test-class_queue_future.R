@@ -1,7 +1,7 @@
 crew_test("initial queue", {
   future::plan(future::sequential)
   x <- queue_future$new()
-  on.exit(future_force_shutdown(x))
+  on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   expect_true(is.data.frame(x$get_tasks()))
   expect_true(is.data.frame(x$get_results()))
@@ -17,7 +17,7 @@ crew_test("initial queue", {
 crew_test("get workers", {
   future::plan(future::sequential)
   x <- queue_future$new(workers = 2)
-  on.exit(future_force_shutdown(x))
+  on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
@@ -41,7 +41,7 @@ crew_test("get plan", {
 crew_test("add task", {
   future::plan(future::sequential)
   x <- queue_future$new()
-  on.exit(future_force_shutdown(x))
+  on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
   args <- list(x = 1)
@@ -55,7 +55,7 @@ crew_test("add task", {
 crew_test("push task, more workers than tasks", {
   future::plan(future::sequential)
   x <- queue_future$new(workers = 4)
-  on.exit(future_force_shutdown(x))
+  on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
   args <- list(x = 1)
@@ -73,7 +73,7 @@ crew_test("push task, more workers than tasks", {
 crew_test("push task, more tasks than workers", {
   future::plan(future::sequential)
   x <- queue_future$new(workers = 2)
-  on.exit(future_force_shutdown(x))
+  on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
   args <- list(x = 1)
@@ -93,7 +93,7 @@ crew_test("detect crash", {
     processes = 2,
     plan = future::sequential
   )
-  on.exit(future_force_shutdown(x))
+  on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
   crew_wait(
@@ -130,7 +130,7 @@ crew_test("private methods to submit and update_results work", {
     timeout = 30,
     plan = future::sequential
   )
-  on.exit(future_force_shutdown(x))
+  on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
   for (index in seq_len(2)) {
@@ -185,7 +185,7 @@ crew_test("push and pop", {
     plan = future::sequential,
     timeout = 30
   )
-  on.exit(future_force_shutdown(x))
+  on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) {
     Sys.sleep(0.1)

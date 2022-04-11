@@ -247,6 +247,11 @@ queue <- R6::R6Class(
     },
     block = function(timeout = NULL, wait = NULL) {
       private$available_wait(timeout = timeout, wait = wait)
+    },
+    shutdown = function() {
+      if (!is.null(private$subqueue$shutdown)) {
+        private$subqueue$shutdown()
+      }
     }
   )
 )

@@ -70,6 +70,7 @@ queue_callr <- R6::R6Class(
       invisible()
     },
     shutdown = function() {
+      super$shutdown()
       for (handle in private$workers$handle) {
         if (!is.null(handle)) {
           handle$kill()

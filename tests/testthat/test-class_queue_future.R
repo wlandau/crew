@@ -55,8 +55,7 @@ crew_test("get workers", {
   expect_equal(out$sent, rep(FALSE, 2))
   expect_equal(out$lock, rep(FALSE, 2))
   expect_true(all(is.na(out$task)))
-  expect_equal(out$fun, list(list(), list()))
-  expect_equal(out$args, list(list(), list()))
+  expect_equal(out$input, list(list(), list()))
 })
 
 crew_test("get plan", {
@@ -69,13 +68,12 @@ crew_test("add task", {
   x <- queue_future$new()
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
-  fun <- function(x) x
-  args <- list(x = 1)
-  x$private$add_task(fun = fun, args = args, task = "abc")
+  input <- list(fun = function(x) x, args = list(x = 1))
+  x$private$add_task(input = input, task = "abc")
   out <- x$get_tasks()
   expect_equal(nrow(out), 1)
   expect_true(is.character(out$task))
-  expect_equal(out$args[[1]], args)
+  expect_equal(out$input[[1]], input)
 })
 
 crew_test("push task, more workers than tasks", {
@@ -83,17 +81,16 @@ crew_test("push task, more workers than tasks", {
   x <- queue_future$new(workers = 4)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
-  fun <- function(x) x
-  args <- list(x = 1)
-  x$private$add_task(fun = fun, args = args, task = "abc")
-  x$private$add_task(fun = fun, args = args, task = "123")
+  input <- list(fun = function(x) x, args = list(x = 1))
+  x$private$add_task(input = input, task = "abc")
+  x$private$add_task(input = input, task = "123")
   x$private$workers$free[2] <- FALSE
   x$private$update_tasks()
   expect_equal(nrow(x$get_tasks()), 0)
   out <- x$get_workers()
   expect_equal(is.na(out$task), c(FALSE, TRUE, FALSE, TRUE))
   expect_equal(out$free, c(FALSE, FALSE, FALSE, TRUE))
-  expect_equal(out$fun, list(fun, list(), fun, list()))
+  expect_equal(out$input, list(input, list(), input, list()))
 })
 
 crew_test("push task, more tasks than workers", {
@@ -101,10 +98,9 @@ crew_test("push task, more tasks than workers", {
   x <- queue_future$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
-  fun <- function(x) x
-  args <- list(x = 1)
+  input <- list(fun = function(x) x, args = list(x = 1))
   for (index in seq_len(4)) {
-    x$private$add_task(fun = fun, args = args, task = as.character(index))
+    x$private$add_task(input = input, task = as.character(index))
   }
   x$private$update_tasks()
   expect_equal(nrow(x$get_tasks()), 2)
@@ -159,11 +155,11 @@ crew_test("private methods to submit and update_results work", {
   )
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
-  fun <- function(x) x
+  
   for (index in seq_len(2)) {
+    input = list(fun = function(x) x, args = list(x = index))
     x$private$add_task(
-      fun = fun,
-      args = list(x = index),
+      input = input,
       task = as.character(index)
     )
   }

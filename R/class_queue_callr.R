@@ -20,8 +20,8 @@ queue_callr <- R6::R6Class(
         )
       )
     },
-    worker_run = function(handle, worker, fun, args, task) {
-      crew_catch_crash(handle$call(func = fun, args = args))
+    worker_run = function(handle, worker, task, input) {
+      crew_catch_crash(handle$call(func = input$fun, args = input$args))
       handle
     },
     update_done = function() {
@@ -36,14 +36,11 @@ queue_callr <- R6::R6Class(
     update_results = function() {
       for (index in seq_len(nrow(private$workers))) {
         if (private$workers$done[index]) {
+          worker <- private$workers$worker[index]
           task <- private$workers$task[index]
           result <- private$workers$handle[[index]]$read()
           private$add_result(task = task, result = result)
-          private$workers$free[index] <- TRUE
-          private$workers$sent[index] <- FALSE
-          private$workers$done[index] <- FALSE
-          private$workers$task[index] <- NA_character_
-          private$workers$fun[index] <- list(NULL)
+          private$worker_free(worker)
         }
       }
     },
@@ -68,6 +65,14 @@ queue_callr <- R6::R6Class(
       private$initialize_results()
       private$initialize_workers(workers = workers, start = start)
       invisible()
+    },
+    push = function(
+      fun,
+      args = list(),
+      task = uuid::UUIDgenerate(),
+      update = TRUE
+    ) {
+      super$push(fun = fun, args = args, task = task, update = update)
     },
     shutdown = function() {
       super$shutdown()

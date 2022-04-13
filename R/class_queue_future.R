@@ -10,16 +10,16 @@ queue_future <- R6::R6Class(
     plan = NULL,
     processes = NULL,
     subqueue = NULL,
-    worker_run = function(handle, worker, fun, args, task) {
+    worker_run = function(handle, worker, task, input) {
       private$subqueue$block()
-      value <- list(fun = deparse(fun), args = args)
+      value <- list(fun = deparse(input$fun), args = input$args)
       private$store$write_worker_input(worker = worker, value = value)
       args <- list(
         worker = worker,
         store = private$store$marshal(),
         timeout = private$timeout,
         wait = private$wait,
-        plan = private$plan,
+        plan = input$plan %|||% private$plan,
         task = task
       )
       private$subqueue$push(
@@ -87,6 +87,21 @@ queue_future <- R6::R6Class(
     },
     get_plan = function() {
       private$plan
+    },
+    push = function(
+      fun,
+      args = list(),
+      task = uuid::UUIDgenerate(),
+      update = TRUE,
+      plan = NULL
+    ) {
+      super$push(
+        fun = fun,
+        args = args,
+        task = task,
+        update = update,
+        plan = plan
+      )
     }
   )
 )

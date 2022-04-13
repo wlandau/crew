@@ -157,7 +157,7 @@ crew_test("private methods to submit and update_results work", {
   on.exit(processx::supervisor_kill(), add = TRUE)
   
   for (index in seq_len(2)) {
-    input = list(fun = function(x) x, args = list(x = index))
+    input <- list(fun = function(x) x, args = list(x = index))
     x$private$add_task(
       input = input,
       task = as.character(index)

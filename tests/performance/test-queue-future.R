@@ -1,5 +1,5 @@
-x <- queue_future$new(workers = 1, processes = 1)
-n <- 3
+x <- queue_future$new(workers = 2, processes = 2)
+n <- 200
 submitted <- integer(0)
 done <- integer(0)
 for (index in seq_len(n)) {
@@ -11,12 +11,12 @@ for (index in seq_len(n)) {
     task = sprintf("job_%s", index)
   )
   submitted <- c(submitted, index)
-  # out <- x$pop()
-  # if (!is.null(out)) {
-  #   out <- out$result$result
-  #   print(out)
-  #   done <- c(done, out)
-  # }
+  out <- x$pop()
+  if (!is.null(out)) {
+    out <- out$result$result
+    print(out)
+    done <- c(done, out)
+  }
 }
 not_done <- function(x) {
   nrow(x$get_tasks()) ||
@@ -33,4 +33,5 @@ for (index in seq_len(n)) {
     }
   }
 }
+crew_assert(all(sort(done) == sort(seq_len(n))))
 x$shutdown()

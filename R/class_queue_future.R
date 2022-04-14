@@ -25,9 +25,9 @@ queue_future <- R6::R6Class(
       private$subqueue$push(
         fun = queue_future_worker_start,
         args = args,
-        task = paste0("start-", worker)
+        task = sprintf("%s|%s", worker, uuid::UUIDgenerate())
       )
-      list(future = list(), resolved = FALSE)
+      list(future = list(), task = task, resolved = FALSE)
     },
     worker_up = function(handle, worker) {
       if (!length(handle) || isTRUE(handle$resolved)) {
@@ -39,8 +39,8 @@ queue_future <- R6::R6Class(
       private$subqueue$block()
       private$subqueue$push(
         fun = queue_future_worker_resolve,
-        args = list(future = handle$future),
-        task = paste0("up-", worker)
+        args = list(handle = handle),
+        task = sprintf("%s|%s", worker, uuid::UUIDgenerate())
       )
       TRUE
     },
@@ -49,14 +49,17 @@ queue_future <- R6::R6Class(
     },
     update_subqueue = function() {
       while (!is.null(result <- private$subqueue$pop())) {
-        error <- result$error %|||% result$result$error
-        if (!is.null(error)) {
-          crew_error(conditionMessage(error))
+        if (!is.null(result$result$error)) {
+          crew_error(conditionMessage(result$result$error))
         }
-        worker <- gsub("^start-|^up-", "", result$task)
+        worker <- gsub("\\|.*$", "", result$task)
         index <- which(private$workers$worker == worker)
-        crew_assert_pos_dbl_scalar(index)
-        private$workers$handle[[index]] <- result$result$result
+        if (length(index) == 1L) {
+          task <- private$workers$task[index]
+          if (identical(result$result$result$task, task)) {
+            private$workers$handle[[index]] <- result$result$result
+          }
+        }
       }
     }
   ),
@@ -136,9 +139,10 @@ queue_future_worker_start <- function(
     lazy = FALSE,
     seed = TRUE
   )
-  list(future = future, resolved = FALSE)
+  list(future = future, task = task, resolved = FALSE)
 }
 
-queue_future_worker_resolve <- function(future) {
-  list(future = future, resolved = future::resolved(future))
+queue_future_worker_resolve <- function(handle) {
+  handle$resolved <- future::resolved(handle$future)
+  handle
 }

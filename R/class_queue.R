@@ -35,7 +35,6 @@ queue <- R6::R6Class(
         sent = rep(FALSE, workers),
         up = rep(FALSE, workers),
         done = rep(FALSE, workers),
-        lock = rep(FALSE, workers),
         task = rep(NA_character_, workers),
         input = replicate(workers, list(), simplify = FALSE)
       )

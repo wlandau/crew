@@ -48,7 +48,6 @@ crew_test("get workers", {
   expect_equal(out$done, rep(FALSE, 2))
   expect_equal(out$free, rep(TRUE, 2))
   expect_equal(out$sent, rep(FALSE, 2))
-  expect_equal(out$lock, rep(FALSE, 2))
   expect_true(all(is.na(out$task)))
   expect_equal(out$input, list(list(), list()))
 })

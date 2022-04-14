@@ -47,6 +47,7 @@ queue_future <- R6::R6Class(
     worker_reuse = function(handle) {
       list()
     },
+  #  update_crashed = function() {},
     update_subqueue = function() {
       while (!is.null(result <- private$subqueue$pop())) {
         error <- result$error %|||% result$result$error

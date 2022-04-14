@@ -254,3 +254,38 @@ crew_test("push and pop", {
   }
   expect_true(all(done))
 })
+
+crew_test("push and pop", {
+  future::plan(future::sequential)
+  x <- queue_future$new(
+    workers = 2,
+    processes = 2,
+    plan = future::sequential,
+    timeout = 30
+  )
+  on.exit(x$shutdown())
+  on.exit(processx::supervisor_kill(), add = TRUE)
+  fun <- function(x) {
+    Sys.sleep(0.1)
+    x
+  }
+  done <- rep(FALSE, 10)
+  for (index in seq_len(10)) {
+    x$push(fun = fun, args = list(x = index))
+    out <- x$pop()
+    if (!is.null(out)) {
+      done[out$result$result] <- TRUE
+    }
+  }
+  retries <- 600
+  while (!all(done) && retries > 0) {
+    out <- x$pop()
+    if (!is.null(out)) {
+      done[out$result$result] <- TRUE
+    }
+    retries <- retries - 1
+    Sys.sleep(0.1)
+  }
+  expect_true(all(done))
+})
+

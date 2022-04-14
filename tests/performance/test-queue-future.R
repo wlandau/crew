@@ -1,11 +1,10 @@
-x <- queue_future$new(workers = 4, processes = 4)
-n <- 8
+x <- queue_future$new(workers = 1, processes = 1)
+n <- 3
 submitted <- integer(0)
 done <- integer(0)
 for (index in seq_len(n)) {
   x$push(
     fun = function(x) {
-      Sys.sleep(1)
       x
     },
     args = list(x = index),

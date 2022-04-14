@@ -130,6 +130,32 @@ crew_test("detect crash", {
   expect_error(x$crashed(), class = "crew_error")
 })
 
+crew_test("custom plan", {
+  future::plan(future::sequential)
+  x <- queue_future$new(
+    workers = 1,
+    processes = 1,
+    plan = future::sequential
+  )
+  on.exit(x$shutdown())
+  on.exit(processx::supervisor_kill(), add = TRUE)
+  expect_false(file.exists("nope"))
+  plan <- future::tweak(future.batchtools::batchtools_slurm, template = "nope")
+  x$push(fun = function() "x", plan = plan)
+  crew_wait(
+    ~tryCatch({
+        x$pop()
+        FALSE
+      },
+      crew_error = function(condition) {
+        TRUE
+      }
+    ),
+    timeout = 30,
+    wait = 0.1
+  )
+})
+
 crew_test("worker up", {
   future::plan(future::sequential)
   x <- queue_future$new(

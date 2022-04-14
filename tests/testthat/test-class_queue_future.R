@@ -287,4 +287,3 @@ crew_test("push and pop", {
   }
   expect_true(all(done))
 })
-

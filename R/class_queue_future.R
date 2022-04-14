@@ -25,7 +25,7 @@ queue_future <- R6::R6Class(
       private$subqueue$push(
         fun = queue_future_worker_start,
         args = args,
-        task = worker
+        task = paste0("start-", worker)
       )
       list(future = list(), resolved = FALSE)
     },
@@ -40,7 +40,7 @@ queue_future <- R6::R6Class(
       private$subqueue$push(
         fun = queue_future_worker_resolve,
         args = list(future = handle$future),
-        task = worker
+        task = paste0("up-", worker)
       )
       TRUE
     },
@@ -53,7 +53,9 @@ queue_future <- R6::R6Class(
         if (!is.null(error)) {
           crew_error(conditionMessage(error))
         }
-        index <- which(private$workers$worker == result$task)
+        worker <- gsub("^start-|^up-", "", result$task)
+        index <- which(private$workers$worker == worker)
+        crew_assert_pos_dbl_scalar(index)
         private$workers$handle[[index]] <- result$result$result
       }
     }

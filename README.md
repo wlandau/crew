@@ -37,7 +37,7 @@ The `crew` package incorporates insightful ideas from the following
 people.
 
 -   [Kirill Müller](https://github.com/krlmlr/). The
-    [`workers`](https://github.com/wlandau/worker) prototype was
+    [`workers`](https://github.com/wlandau/workers) prototype was
     entirely his vision, and `crew` would not exist without it. `crew`
     reflects this and many other insights from Kirill about
     orchestration models for R processes.

@@ -69,7 +69,7 @@ queue_callr <- R6::R6Class(
     push = function(
       fun,
       args = list(),
-      task = uuid::UUIDgenerate(),
+      task = crew_name(),
       update = TRUE
     ) {
       super$push(fun = fun, args = args, task = task, update = update)

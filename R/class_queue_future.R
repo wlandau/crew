@@ -25,8 +25,11 @@ queue_future <- R6::R6Class(
       private$subqueue$push(
         fun = queue_future_worker_start,
         args = args,
-        task = sprintf("%s|%s", worker, uuid::UUIDgenerate())
+        task = sprintf("%s|%s", worker, crew_name())
       )
+      
+      browser()
+      
       list(future = list(), task = task, resolved = FALSE)
     },
     worker_up = function(handle, worker) {
@@ -40,7 +43,7 @@ queue_future <- R6::R6Class(
       private$subqueue$push(
         fun = queue_future_worker_resolve,
         args = list(handle = handle),
-        task = sprintf("%s|%s", worker, uuid::UUIDgenerate())
+        task = sprintf("%s|%s", worker, crew_name())
       )
       TRUE
     },
@@ -67,6 +70,7 @@ queue_future <- R6::R6Class(
     initialize = function(
       workers = 1,
       processes = 1,
+      store = store_local$new(),
       jobs = Inf,
       timeout = 60,
       wait = 0.1,
@@ -74,6 +78,7 @@ queue_future <- R6::R6Class(
     ) {
       super$initialize(
         workers = workers,
+        store = store,
         jobs = jobs,
         timeout = timeout,
         wait = wait
@@ -94,7 +99,7 @@ queue_future <- R6::R6Class(
     push = function(
       fun,
       args = list(),
-      task = uuid::UUIDgenerate(),
+      task = crew_name(),
       update = TRUE,
       plan = NULL
     ) {

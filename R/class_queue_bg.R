@@ -1,0 +1,65 @@
+# Adapted from
+#  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
+#  under the MIT license. See also the `crew` package `NOTICE` file.
+queue_bg <- R6::R6Class(
+  classname = "queue_bg",
+  inherit = queue,
+  portable = FALSE,
+  cloneable = FALSE,
+  private = list(
+    initialize_workers = function(workers) {
+      super$initialize_workers(workers)
+      private$workers$handle <- replicate(
+        workers,
+        callr::r_bg(
+          func = queue_worker_start,
+          args = list(
+            worker = worker,
+            store = private$store$marshal(),
+            jobs = private$jobs,
+            timeout = private$timeout,
+            wait = private$wait
+          ),
+          supervise = TRUE
+        )
+      )
+    },
+    worker_start = function(worker) {
+      crew_error(sprintf("bg worker %s should already be up.", worker))
+    },
+    worker_up = function(handle, worker = NULL) {
+      length(handle) && handle$is_alive()
+    },
+    update_crashed = function() {
+      crashed <- !map_lgl(private$workers$worker, private$worker_up_log)
+      if (any(crashed)) {
+        workers <- private$workers$worker[crashed]
+        crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))
+      }
+    }
+  ),
+  public = list(
+    initialize = function(
+      workers = 1,
+      wait = 0.1,
+      store = store_local$new(timeout = Inf, wait = wait)
+    ) {
+      super$initialize(
+        workers = workers,
+        store = store,
+        timeout = Inf,
+        wait = wait,
+        jobs = Inf
+      )
+    },
+    shutdown = function() {
+      super$shutdown()
+      for (handle in private$workers$handle) {
+        if (length(handle)) {
+          handle$kill()
+        }
+      }
+      invisible()
+    }
+  )
+)

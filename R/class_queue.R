@@ -1,8 +1,6 @@
 # Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
-# Same as `queue_callr` except it uses the custom data store
-#  and worker event loop.
 queue <- R6::R6Class(
   classname = "queue",
   portable = FALSE,
@@ -129,28 +127,12 @@ queue <- R6::R6Class(
         private$worker_start(worker)
       )
     },
-    worker_start = function(worker) {
-      callr::r_bg(
-        func = queue_worker_start,
-        args = list(
-          worker = worker,
-          store = private$store$marshal(),
-          jobs = private$jobs,
-          timeout = private$timeout,
-          wait = private$wait
-        ),
-        supervise = TRUE
-      )
-    },
     worker_up_log = function(worker) {
       index <- which(private$workers$worker == worker)
       handle <- private$workers$handle[[index]]
       up <- private$worker_up(handle = handle, worker = worker)
       private$workers$up[index] <- up
       up
-    },
-    worker_up = function(handle, worker = NULL) {
-      length(handle) && handle$is_alive()
     },
     worker_reuse = function(handle) {
       handle

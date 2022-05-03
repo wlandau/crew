@@ -7,11 +7,8 @@ queue_session <- R6::R6Class(
   portable = FALSE,
   cloneable = FALSE,
   private = list(
-    initialize_workers = function(workers, start) {
+    initialize_workers = function(workers) {
       super$initialize_workers(workers)
-      if (!start) {
-        return()
-      }
       private$workers$handle <- replicate(
         workers,
         callr::r_session$new(
@@ -23,6 +20,9 @@ queue_session <- R6::R6Class(
     worker_run = function(handle, worker, task, input) {
       crew_catch_crash(handle$call(func = input$fun, args = input$args))
       handle
+    },
+    worker_up = function(handle, worker = NULL) {
+      length(handle) && handle$is_alive()
     },
     update_done = function() {
       index <- which(private$workers$sent)
@@ -58,14 +58,13 @@ queue_session <- R6::R6Class(
     initialize = function(
       workers = 1,
       timeout = 60,
-      wait = 0.1,
-      start = TRUE
+      wait = 0.1
     ) {
       private$timeout <- timeout
       private$wait <- wait
       private$initialize_tasks()
       private$initialize_results()
-      private$initialize_workers(workers = workers, start = start)
+      private$initialize_workers(workers = workers)
       invisible()
     },
     push = function(

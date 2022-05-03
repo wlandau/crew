@@ -1,5 +1,5 @@
 crew_test("detect crash and shut down workers", {
-  x <- queue_session$new(workers = 2)
+  x <- queue_bg$new(workers = 2)
   on.exit(x$shutdown())
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
   crew_wait(
@@ -10,7 +10,7 @@ crew_test("detect crash and shut down workers", {
 })
 
 crew_test("private methods to submit and update_results work", {
-  x <- queue_session$new(workers = 2)
+  x <- queue_bg$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
@@ -65,7 +65,7 @@ crew_test("private methods to submit and update_results work", {
 })
 
 crew_test("push and pop", {
-  x <- queue_session$new(workers = 2)
+  x <- queue_bg$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) {

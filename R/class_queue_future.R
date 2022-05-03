@@ -8,7 +8,6 @@ queue_future <- R6::R6Class(
   cloneable = FALSE,
   private = list(
     plan = NULL,
-    processes = NULL,
     subqueue = NULL,
     worker_run = function(handle, worker, task, input) {
       private$subqueue$block()
@@ -66,26 +65,28 @@ queue_future <- R6::R6Class(
   public = list(
     initialize = function(
       workers = 1,
-      processes = 1,
-      jobs = Inf,
+      store = store_local$new(timeout = timeout, wait = wait),
       timeout = 60,
       wait = 0.1,
-      plan = future::plan()
-    ) {
-      super$initialize(
-        workers = workers,
-        jobs = jobs,
-        timeout = timeout,
-        wait = wait
-      )
-      private$processes <- processes
-      private$subqueue <- queue_session$new(
+      jobs = Inf,
+      plan = future::plan(),
+      processes = 1,
+      subqueue = queue_session$new(
         workers = processes,
         wait = wait,
         timeout = timeout,
         start = TRUE
       )
+    ) {
+      super$initialize(
+        workers = workers,
+        store = store,
+        timeout = timeout,
+        wait = wait,
+        jobs = jobs
+      )
       private$plan <- plan
+      private$subqueue <- subqueue
       invisible()
     },
     get_plan = function() {

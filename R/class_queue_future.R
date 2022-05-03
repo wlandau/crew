@@ -79,7 +79,7 @@ queue_future <- R6::R6Class(
         wait = wait
       )
       private$processes <- processes
-      private$subqueue <- queue_callr$new(
+      private$subqueue <- queue_session$new(
         workers = processes,
         wait = wait,
         timeout = timeout,

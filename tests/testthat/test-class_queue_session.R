@@ -1,5 +1,5 @@
 crew_test("initial queue", {
-  x <- queue_callr$new(start = FALSE)
+  x <- queue_session$new(start = FALSE)
   expect_true(is.data.frame(x$get_tasks()))
   expect_true(is.data.frame(x$get_results()))
   expect_true(is.data.frame(x$get_workers()))
@@ -12,7 +12,7 @@ crew_test("initial queue", {
 })
 
 crew_test("get workers", {
-  x <- queue_callr$new(workers = 2, start = FALSE)
+  x <- queue_session$new(workers = 2, start = FALSE)
   on.exit(x$shutdown())
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
@@ -27,7 +27,7 @@ crew_test("get workers", {
 })
 
 crew_test("add task", {
-  x <- queue_callr$new(start = FALSE)
+  x <- queue_session$new(start = FALSE)
   on.exit(x$shutdown())
   fun <- function(x) x
   args <- list(x = 1)
@@ -40,7 +40,7 @@ crew_test("add task", {
 })
 
 crew_test("push task, more workers than tasks", {
-  x <- queue_callr$new(workers = 4, start = FALSE)
+  x <- queue_session$new(workers = 4, start = FALSE)
   fun <- function(x) x
   args <- list(x = 1)
   input <- list(fun = fun, args = args)
@@ -56,7 +56,7 @@ crew_test("push task, more workers than tasks", {
 })
 
 crew_test("push task, more tasks than workers", {
-  x <- queue_callr$new(workers = 2, start = FALSE)
+  x <- queue_session$new(workers = 2, start = FALSE)
   input <- list(fun = function(x) x, args = list(x = 1))
   for (index in seq_len(4)) {
     x$private$add_task(input = input, task = as.character(index))
@@ -68,7 +68,7 @@ crew_test("push task, more tasks than workers", {
 })
 
 crew_test("detect crash and shut down workers", {
-  x <- queue_callr$new(workers = 2)
+  x <- queue_session$new(workers = 2)
   on.exit(x$shutdown())
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
   crew_wait(
@@ -79,7 +79,7 @@ crew_test("detect crash and shut down workers", {
 })
 
 crew_test("private methods to submit and update_results work", {
-  x <- queue_callr$new(workers = 2, start = TRUE)
+  x <- queue_session$new(workers = 2, start = TRUE)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
@@ -134,7 +134,7 @@ crew_test("private methods to submit and update_results work", {
 })
 
 crew_test("push and pop", {
-  x <- queue_callr$new(workers = 2, start = TRUE)
+  x <- queue_session$new(workers = 2, start = TRUE)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) {

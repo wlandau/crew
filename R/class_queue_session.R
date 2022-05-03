@@ -1,8 +1,8 @@
 # Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
-queue_callr <- R6::R6Class(
-  classname = "queue_callr",
+queue_session <- R6::R6Class(
+  classname = "queue_session",
   inherit = queue,
   portable = FALSE,
   cloneable = FALSE,
@@ -48,7 +48,9 @@ queue_callr <- R6::R6Class(
       up <- map_lgl(private$workers$worker, private$worker_up_log)
       if (!all(up)) {
         workers <- private$workers$worker[!up]
-        crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))
+        crew_error(
+          paste("crashed session workers:", paste(workers, collapse = ", "))
+        )
       }
     }
   ),

@@ -74,8 +74,7 @@ queue_future <- R6::R6Class(
       subqueue = queue_session$new(
         workers = processes,
         wait = wait,
-        timeout = timeout,
-        start = TRUE
+        timeout = timeout
       )
     ) {
       super$initialize(

@@ -1,3 +1,10 @@
+crew_test("worker_start()", {
+  x <- queue_bg$new(workers = 1)
+  on.exit(x$shutdown())
+  worker <- x$get_workers()$worker[1]
+  expect_error(x$private$worker_start(worker), class = "crew_error")
+})
+
 crew_test("detect crash and shut down workers", {
   x <- queue_bg$new(workers = 2)
   on.exit(x$shutdown())

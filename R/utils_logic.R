@@ -1,8 +1,7 @@
 `%||%` <- function(x, y) {
   if (length(x) <= 0L) {
     y
-  }
-  else {
+  } else {
     x
   }
 }
@@ -10,8 +9,7 @@
 `%|||%` <- function(x, y) {
   if (is.null(x)) {
     y
-  }
-  else {
+  } else {
     x
   }
 }
@@ -19,8 +17,7 @@
 if_any <- function(condition, true, false) {
   if (any(condition)) {
     true
-  }
-  else {
+  } else {
     false
   }
 }

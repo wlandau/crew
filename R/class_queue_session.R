@@ -12,12 +12,14 @@ queue_session <- R6::R6Class(
       private$workers$handle <- replicate(
         workers,
         callr::r_session$new(
-          wait = TRUE,
+          wait = FALSE,
           options = callr::r_session_options(extra = list(supervise = TRUE))
         )
       )
       crew_wait(
-        fun = ~all(map_lgl(private$workers$handle, ~.x$is_alive())),
+        fun = ~all(
+          map_lgl(private$workers$handle, ~callr_session_ready(.x))
+        ),
         timeout = private$timeout,
         wait = private$wait,
         message = "timed out waiting for session workers to start."

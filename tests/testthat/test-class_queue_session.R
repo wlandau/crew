@@ -64,6 +64,31 @@ crew_test("private methods to submit and update_results work", {
   expect_false(any(x$get_workers()$done))
 })
 
+crew_test("available", {
+  x <- queue_session$new(workers = 2)
+  on.exit(x$shutdown())
+  fun <- function() "x"
+  x$push(fun = fun, update = FALSE)
+  expect_false(x$private$available())
+})
+
+crew_test("update", {
+  x <- queue_session$new(workers = 2)
+  on.exit(x$shutdown())
+  fun <- function() "x"
+  x$push(fun = fun, update = FALSE)
+  expect_null(x$pop(update = FALSE))
+  retries <- 600
+  result <- NULL
+  while (is.null(result) && retries > 0) {
+    x$update()
+    result <- x$pop(update = FALSE)$result$result
+    retries <- retries - 1
+    Sys.sleep(0.1)
+  }
+  expect_equal(result, "x")
+})
+
 crew_test("push and pop", {
   x <- queue_session$new(workers = 2)
   on.exit(x$shutdown())

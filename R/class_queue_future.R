@@ -165,7 +165,7 @@ queue_future_worker_resolve <- function(handle, worker, store, timeout) {
     error = crew_condition_false
   )
   if (resolved && !output) {
-    if(!isTRUE(handle$checked_value)) {
+    if (!isTRUE(handle$checked_value)) {
       handle$value <- tryCatch(
         future::value(handle$future),
         error = crew_condition_message

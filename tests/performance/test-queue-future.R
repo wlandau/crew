@@ -15,7 +15,6 @@ x$update()
 x$shutdown()
 store$destroy()
 
-
 # Longer test
 start <- unname(proc.time()["elapsed"])
 future::plan(

@@ -1,3 +1,4 @@
+# Small test
 start <- unname(proc.time()["elapsed"])
 future::plan(
   future.batchtools::batchtools_sge,
@@ -11,9 +12,22 @@ x <- queue_future$new(
 )
 x$push(fun = function() "x")
 x$update()
+x$shutdown()
+store$destroy()
 
 
-
+# Longer test
+start <- unname(proc.time()["elapsed"])
+future::plan(
+  future.batchtools::batchtools_sge,
+  template = file.path(getwd(), "sge.tmpl")
+)
+store <- store_local$new(dir_root = "store")
+x <- queue_future$new(
+  workers = 8,
+  store = store,
+  subqueue = queue_bg$new(workers = 4)
+)
 n <- 10 #200
 submitted <- integer(0)
 done <- integer(0)
@@ -51,4 +65,4 @@ for (index in seq_len(n)) {
 crew_assert(all(sort(done) == sort(seq_len(n))))
 x$shutdown()
 store$destroy()
-print(targets:::units_seconds(start - unname(proc.time()["elapsed"])))
+print(sprintf("%s min", (unname(proc.time()["elapsed"]) - start) / 60))

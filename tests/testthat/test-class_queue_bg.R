@@ -1,6 +1,7 @@
 crew_test("worker_start()", {
   x <- queue_bg$new(workers = 1)
   on.exit(x$shutdown())
+  on.exit(processx::supervisor_kill(), add = TRUE)
   worker <- x$get_workers()$worker[1]
   expect_error(x$private$worker_start(worker), class = "crew_error")
 })
@@ -8,6 +9,7 @@ crew_test("worker_start()", {
 crew_test("detect crash and shut down workers", {
   x <- queue_bg$new(workers = 2)
   on.exit(x$shutdown())
+  on.exit(processx::supervisor_kill(), add = TRUE)
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
   crew_wait(
     fun = function() all(map_lgl(x$get_workers()$handle, ~.x$is_alive()))

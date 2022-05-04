@@ -154,7 +154,7 @@ queue_future_worker_resolve <- function(handle, worker, store, timeout) {
   store <- eval(parse(text = store))
   resolved <- tryCatch(
     future::resolved(handle$future),
-    error = crew_condition_false
+    error = crew::crew_condition_false
   )
   time <- Sys.time()
   if (resolved) {
@@ -162,19 +162,19 @@ queue_future_worker_resolve <- function(handle, worker, store, timeout) {
   }
   output <- tryCatch(
     store$exists_worker_output(worker),
-    error = crew_condition_false
+    error = crew::crew_condition_false
   )
   if (resolved && !output) {
     if (!isTRUE(handle$checked_value)) {
       handle$value <- tryCatch(
         future::value(handle$future),
-        error = crew_condition_message
+        error = crew::crew_condition_message
       )
       handle$checked_value <- TRUE
     }
     diff <- as.numeric(difftime(time, handle$time_resolved))
     if (isTRUE(any(diff > timeout))) {
-      stop("future worker ", worker, " crashed: ", handle$value)
+      crew::crew_error("future worker ", worker, " crashed: ", handle$value)
     }
   }
   handle$resolved <- resolved && output

@@ -8,7 +8,7 @@ store <- store_local$new(dir_root = "store", timeout = Inf)
 x <- queue_future$new(
   workers = 1,
   store = store,
-  subqueue = queue_bg$new(workers = 1)
+  subqueue = queue_session$new(workers = 1)
 )
 x$push(fun = function() "x")
 x$update()
@@ -25,7 +25,7 @@ store <- store_local$new(dir_root = "store", timeout = Inf)
 x <- queue_future$new(
   workers = 20,
   store = store,
-  subqueue = queue_bg$new(workers = 6)
+  subqueue = queue_session$new(workers = 6)
 )
 n <- 200
 submitted <- integer(0)

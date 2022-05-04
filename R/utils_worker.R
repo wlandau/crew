@@ -135,3 +135,9 @@ crew_monad <- function(fun, args) {
     warnings = state$warnings
   )
 }
+
+crew_name <- function() {
+  out <- uuid::UUIDgenerate()
+  out <- gsub("-", "_", out)
+  paste0("x", out)
+}

@@ -42,6 +42,7 @@ remotes::install_github("wlandau/crew")
 
 The `crew` package incorporates insightful ideas from the following people.
 
+* [Gábor Csárdi](https://github.com/gaborcsardi/). Gábor created the [`callr`](https://github.com/r-lib/callr) R package, and he wrote about [how to build a task queue](https://www.tidyverse.org/blog/2019/09/callr-task-q/) using `callr::r_session` workers. His work heavily influenced the design of `crew`.
 * [Kirill Müller](https://github.com/krlmlr/). The [`workers`](https://github.com/wlandau/workers) prototype was entirely his vision, and `crew` would not exist without it. `crew` reflects this and many other insights from Kirill about orchestration models for R processes.
 * [Henrik Bengtsson](https://github.com/HenrikBengtsson/). Henrik's [`future`](https://github.com/HenrikBengtsson/future/) package ecosystem demonstrates the incredible power of a consistent R interface on top of a varying collection of high-performance computing technologies.
 * [Michael Schubert](https://github.com/mschubert/). Michael's [`clustermq`](https://mschubert.github.io/clustermq/) package supports efficient high-performance computing on traditional clusters, and it demonstrates the value of a central `R6` object to manage an entire collection of persistent workers.

@@ -36,6 +36,12 @@ remotes::install_github("wlandau/crew")
 The `crew` package incorporates insightful ideas from the following
 people.
 
+-   [Gábor Csárdi](https://github.com/gaborcsardi/). Gábor created the
+    [`callr`](https://github.com/r-lib/callr) R package, and he wrote
+    about [how to build a task
+    queue](https://www.tidyverse.org/blog/2019/09/callr-task-q/) using
+    `callr::r_session` workers. His work heavily influenced the design
+    of `crew`.
 -   [Kirill Müller](https://github.com/krlmlr/). The
     [`workers`](https://github.com/wlandau/workers) prototype was
     entirely his vision, and `crew` would not exist without it. `crew`

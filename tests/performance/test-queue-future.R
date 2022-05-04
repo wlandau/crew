@@ -24,11 +24,11 @@ future::plan(
 )
 store <- store_local$new(dir_root = "store")
 x <- queue_future$new(
-  workers = 8,
+  workers = 20,
   store = store,
-  subqueue = queue_bg$new(workers = 4)
+  subqueue = queue_bg$new(workers = 6)
 )
-n <- 10 #200
+n <- 200
 submitted <- integer(0)
 done <- integer(0)
 for (index in seq_len(n)) {

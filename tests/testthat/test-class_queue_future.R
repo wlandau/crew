@@ -88,7 +88,6 @@ crew_test("detect crash", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 1,
-    processes = 1,
     plan = future::sequential
   )
   on.exit(x$shutdown())
@@ -110,7 +109,6 @@ crew_test("custom plan", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 1,
-    processes = 1,
     plan = future::sequential
   )
   on.exit(x$shutdown())
@@ -136,7 +134,6 @@ crew_test("worker up", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 2,
-    processes = 1,
     plan = future::sequential
   )
   on.exit(x$shutdown())
@@ -151,9 +148,9 @@ crew_test("private methods to submit and update_results work", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 2,
-    processes = 2,
     timeout = 30,
-    plan = future::sequential
+    plan = future::sequential,
+    subqueue = queue_session$new(workers = 2)
   )
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
@@ -205,7 +202,7 @@ crew_test("push and pop", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 2,
-    processes = 2,
+    subqueue = queue_session$new(workers = 2),
     plan = future::sequential,
     timeout = 30
   )
@@ -235,7 +232,7 @@ crew_test("push and pop", {
   future::plan(future::sequential)
   x <- queue_future$new(
     workers = 2,
-    processes = 2,
+    subqueue = queue_session$new(workers = 2),
     plan = future::sequential,
     timeout = 30
   )

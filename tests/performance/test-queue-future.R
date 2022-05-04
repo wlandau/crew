@@ -6,9 +6,8 @@ future::plan(
 store <- store_local$new(dir_root = "store")
 x <- queue_future$new(
   workers = 1,
-  processes = 1,
   store = store,
-  subqueue = queue_bg$new(processes = 1)
+  subqueue = queue_bg$new(workers = 1)
 )
 x$push(fun = function() "x")
 x$update()

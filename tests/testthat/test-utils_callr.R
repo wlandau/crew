@@ -1,14 +1,14 @@
-test_that("callr_session_ready() starting", {
+crew_test("callr_session_ready() starting", {
   handle <- list(get_state = function() "not starting")
   expect_true(callr_session_ready(handle))
 })
 
-test_that("callr_session_ready() read NULL", {
+crew_test("callr_session_ready() read NULL", {
   handle <- list(get_state = function() "starting", read = function() NULL)
   expect_false(callr_session_ready(handle))
 })
 
-test_that("callr_session_ready() read good code", {
+crew_test("callr_session_ready() read good code", {
   handle <- list(
     get_state = function() "starting",
     read = function() list(code = 201L)
@@ -16,7 +16,7 @@ test_that("callr_session_ready() read good code", {
   expect_true(callr_session_ready(handle))
 })
 
-test_that("callr_session_ready() read bad code", {
+crew_test("callr_session_ready() read bad code", {
   handle <- list(
     get_state = function() "starting",
     read = function() list(code = 202L)

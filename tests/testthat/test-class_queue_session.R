@@ -1,6 +1,7 @@
 crew_test("detect crash and shut down workers", {
   x <- queue_session$new(workers = 2)
   on.exit(x$shutdown())
+  on.exit(processx::supervisor_kill(), add = TRUE)
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
   crew_wait(
     fun = function() all(map_lgl(x$get_workers()$handle, ~.x$is_alive()))
@@ -67,6 +68,7 @@ crew_test("private methods to submit and update_results work", {
 crew_test("available", {
   x <- queue_session$new(workers = 2)
   on.exit(x$shutdown())
+  on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function() "x"
   x$push(fun = fun, update = FALSE)
   expect_false(x$private$available())

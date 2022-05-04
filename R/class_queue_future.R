@@ -38,7 +38,12 @@ queue_future <- R6::R6Class(
       private$subqueue$block()
       private$subqueue$push(
         fun = queue_future_worker_resolve,
-        args = list(handle = handle),
+        args = list(
+          handle = handle,
+          worker = worker,
+          store = private$store$marshal(),
+          timeout = private$timeout
+        ),
         task = sprintf("%s|%s", worker, crew_name())
       )
       TRUE
@@ -49,7 +54,11 @@ queue_future <- R6::R6Class(
     update_subqueue = function() {
       while (!is.null(result <- private$subqueue$pop())) {
         if (!is.null(result$result$error)) {
-          crew_error(conditionMessage(result$result$error))
+          if_any(
+            is.character(result$result$error),
+            crew_error(result$result$error),
+            crew_error(conditionMessage(result$result$error))
+          )
         }
         worker <- gsub("\\|.*$", "", result$task)
         index <- which(private$workers$worker == worker)
@@ -139,10 +148,36 @@ queue_future_worker_start <- function(
     lazy = FALSE,
     seed = TRUE
   )
-  list(future = future, task = task, resolved = FALSE)
+  list(future = future, task = task)
 }
 
-queue_future_worker_resolve <- function(handle) {
-  handle$resolved <- future::resolved(handle$future)
+queue_future_worker_resolve <- function(handle, worker, store, timeout) {
+  store <- eval(parse(text = store))
+  resolved <- tryCatch(
+    future::resolved(handle$future),
+    error = crew_condition_false
+  )
+  time <- Sys.time()
+  if (resolved) {
+    handle$time_resolved <- time
+  }
+  output <- tryCatch(
+    store$exists_worker_output(worker),
+    error = crew_condition_false
+  )
+  if (resolved && !output) {
+    if(!isTRUE(handle$checked_value)) {
+      handle$value <- tryCatch(
+        future::value(handle$future),
+        error = crew_condition_message
+      )
+      handle$checked_value <- TRUE
+    }
+    diff <- as.numeric(difftime(time, handle$time_resolved))
+    if (isTRUE(any(diff > timeout))) {
+      stop("future worker ", worker, " crashed: ", handle$value)
+    }
+  }
+  handle$resolved <- resolved && output
   handle
 }

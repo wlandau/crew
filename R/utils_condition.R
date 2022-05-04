@@ -24,3 +24,11 @@ crew_expire <- function(message = NULL) {
     class = c("crew_expire", "crew_error", "crew")
   )
 }
+
+crew_condition_false <- function(condition) {
+  FALSE
+}
+
+crew_condition_message <- function(condition) {
+  conditionMessage(condition)
+}

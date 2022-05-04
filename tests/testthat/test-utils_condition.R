@@ -14,3 +14,22 @@ crew_test("crew_error()", {
 crew_test("crew_expire()", {
   expect_error(crew_expire("x"), class = "crew_expire")
 })
+
+crew_test("crew_condition_false", {
+  expect_false(
+    tryCatch(
+      stop("123"),
+      error = crew_condition_false
+    )
+  )
+})
+
+crew_test("crew_condition_message", {
+  expect_equal(
+    tryCatch(
+      stop("123"),
+      error = crew_condition_message
+    ),
+    "123"
+  )
+})

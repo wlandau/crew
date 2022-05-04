@@ -4,7 +4,7 @@ future::plan(
   future.batchtools::batchtools_sge,
   template = file.path(getwd(), "sge.tmpl")
 )
-store <- store_local$new(dir_root = "store")
+store <- store_local$new(dir_root = "store", timeout = Inf)
 x <- queue_future$new(
   workers = 1,
   store = store,
@@ -21,7 +21,7 @@ future::plan(
   future.batchtools::batchtools_sge,
   template = file.path(getwd(), "sge.tmpl")
 )
-store <- store_local$new(dir_root = "store")
+store <- store_local$new(dir_root = "store", timeout = Inf)
 x <- queue_future$new(
   workers = 20,
   store = store,

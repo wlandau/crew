@@ -24,7 +24,8 @@ store <- R6::R6Class(
         fun = function(path_temp) file.exists(path_temp),
         args = list(path_temp = path_temp),
         timeout = private$timeout,
-        wait = private$wait
+        wait = private$wait,
+        message = "store timeout writing local file"
       )
       file.rename(from = path_temp, to = path)
       crew_wait(
@@ -33,7 +34,8 @@ store <- R6::R6Class(
         },
         args = list(path = path, path_temp = path_temp),
         timeout = private$timeout,
-        wait = private$wait
+        wait = private$wait,
+        message = "store timeout moving local file"
       )
       invisible()
     },
@@ -55,7 +57,8 @@ store <- R6::R6Class(
         fun = function(path) !file.exists(path),
         args = list(path = path),
         timeout = private$timeout,
-        wait = private$wait
+        wait = private$wait,
+        message = "store timeout deleting local file"
       )
       invisible()
     }

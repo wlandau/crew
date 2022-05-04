@@ -13,7 +13,8 @@ store_local <- R6::R6Class(
         fun = function(from, to) file.exists(to) && !file.exists(from),
         args = list(from = from, to = to),
         timeout = private$timeout,
-        wait = private$wait
+        wait = private$wait,
+        "local store timeout sending file"
       )
       invisible()
     }
@@ -66,8 +67,16 @@ store_local <- R6::R6Class(
     },
     marshal = function() {
       expr <- substitute(
-        crew:::store_local$new(dir_root = dir_root),
-        list(dir_root = private$dir_root)
+        crew:::store_local$new(
+          dir_root = dir_root,
+          timeout = timeout,
+          wait = wait
+        ),
+        list(
+          dir_root = private$dir_root,
+          timeout = private$timeout,
+          wait = private$wait
+        )
       )
       paste(deparse(expr), collapse = "\n")
     }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_condition.R
 \name{crew_condition_message}
 \alias{crew_condition_message}
-\title{}
+\title{Return the condition message in a \code{tryCatch()} statement.}
 \usage{
 crew_condition_message(condition)
 }

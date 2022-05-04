@@ -47,7 +47,7 @@ crew_condition_false <- function(condition) {
   FALSE
 }
 
-#' @title 
+#' @title Return the condition message in a `tryCatch()` statement.
 #' @export
 #' @keywords internal
 #' @description For internal use only. Not a user-side function.

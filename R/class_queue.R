@@ -27,7 +27,7 @@ queue <- R6::R6Class(
     },
     initialize_workers = function(workers) {
       private$workers <- tibble::tibble(
-        worker = uuid::UUIDgenerate(n = workers),
+        worker = crew_name(n = workers),
         handle = replicate(workers, list(), simplify = FALSE),
         free = rep(TRUE, workers),
         sent = rep(FALSE, workers),

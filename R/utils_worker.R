@@ -136,8 +136,8 @@ crew_monad <- function(fun, args) {
   )
 }
 
-crew_name <- function() {
-  out <- uuid::UUIDgenerate()
+crew_name <- function(n = 1) {
+  out <- uuid::UUIDgenerate(n = n)
   out <- gsub("-", "_", out)
   paste0("x", out)
 }

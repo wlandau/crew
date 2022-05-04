@@ -9,12 +9,12 @@ queue_bg <- R6::R6Class(
   private = list(
     initialize_workers = function(workers) {
       super$initialize_workers(workers)
-      private$workers$handle <- replicate(
-        workers,
-        callr::r_bg(
+      private$workers$handle <- map(
+        private$workers$worker,
+        ~callr::r_bg(
           func = queue_worker_start,
           args = list(
-            worker = worker,
+            worker = .x,
             store = private$store$marshal(),
             jobs = private$jobs,
             timeout = private$timeout,
@@ -22,6 +22,12 @@ queue_bg <- R6::R6Class(
           ),
           supervise = TRUE
         )
+      )
+      crew_wait(
+        fun = ~all(map_lgl(private$workers$handle, ~.x$is_alive())),
+        timeout = private$timeout,
+        wait = private$wait,
+        message = "timed out waiting for bg workers to start."
       )
     },
     worker_start = function(worker) {
@@ -33,8 +39,8 @@ queue_bg <- R6::R6Class(
     update_crashed = function() {
       crashed <- !map_lgl(private$workers$worker, private$worker_up_log)
       if (any(crashed)) {
-        workers <- private$workers$worker[crashed]
-        crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))
+        workers <- paste(private$workers$worker[crashed], collapse = ", ")
+        crew_error(paste("crashed bg workers:", workers))
       }
     }
   ),

@@ -16,6 +16,12 @@ queue_session <- R6::R6Class(
           options = callr::r_session_options(extra = list(supervise = TRUE))
         )
       )
+      crew_wait(
+        fun = ~all(map_lgl(private$workers$handle, ~.x$is_alive())),
+        timeout = private$timeout,
+        wait = private$wait,
+        message = "timed out waiting for session workers to start."
+      )
     },
     worker_run = function(handle, worker, task, input) {
       crew_catch_crash(handle$call(func = input$fun, args = input$args))

@@ -1,30 +1,13 @@
-start <- unname(proc.time()["elapsed"])
-future::plan(
-  future.batchtools::batchtools_sge,
-  template = file.path(getwd(), "sge.tmpl")
-)
-store <- store_local$new(dir_root = "store")
-x <- queue_future$new(
-  workers = 1,
-  processes = 1,
-  store = store,
-  subqueue = queue_bg$new(processes = 1)
-)
-x$push(fun = function() "x")
-x$update()
-
-
-
-n <- 10 #200
+proffer::pprof({
+x <- queue_bg$new(workers = 4)
+n <- 2e2
 submitted <- integer(0)
 done <- integer(0)
 for (index in seq_len(n)) {
   x$push(
-    fun = function(x) {
-      x
-    },
+    fun = function(x) x,
     args = list(x = index),
-    task = sprintf("job_%s", index)
+    task = as.character(index)
   )
   submitted <- c(submitted, index)
   out <- x$pop()
@@ -49,7 +32,5 @@ for (index in seq_len(n)) {
     }
   }
 }
-crew_assert(all(sort(done) == sort(seq_len(n))))
 x$shutdown()
-store$destroy()
-print(targets:::units_seconds(start - unname(proc.time()["elapsed"])))
+})

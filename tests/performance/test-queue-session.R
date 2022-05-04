@@ -1,5 +1,5 @@
 proffer::pprof({
-x <- queue_callr$new(workers = 4)
+x <- queue_session$new(workers = 4)
 n <- 2e2
 submitted <- integer(0)
 done <- integer(0)

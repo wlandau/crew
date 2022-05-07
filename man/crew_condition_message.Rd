@@ -10,7 +10,7 @@ crew_condition_message(condition)
 \item{condition}{Condition object in the \code{tryCatch()} statement.}
 }
 \value{
-
+Character string with the condition message.
 }
 \description{
 For internal use only. Not a user-side function.

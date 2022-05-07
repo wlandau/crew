@@ -52,7 +52,7 @@ crew_condition_false <- function(condition) {
 #' @keywords internal
 #' @description For internal use only. Not a user-side function.
 #'   Do not invoke directly.
-#' @return
+#' @return Character string with the condition message.
 #' @param condition Condition object in the `tryCatch()` statement.
 #' @examples
 #' tryCatch(stop("error message"), error = crew_condition_message)

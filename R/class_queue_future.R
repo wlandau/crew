@@ -29,6 +29,9 @@ queue_future <- R6::R6Class(
       list(future = list(), task = task, resolved = FALSE)
     },
     worker_up = function(handle, worker) {
+      if (all(private$workers$done[private$workers$worker == worker])) {
+        return(TRUE)
+      }
       if (!length(handle) || isTRUE(handle$resolved)) {
         return(FALSE)
       }

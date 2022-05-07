@@ -109,10 +109,13 @@ queue <- R6::R6Class(
       private$update_workers()
     },
     update_crashed = function() {
-      up <- map_lgl(private$workers$worker, private$worker_up_log)
+      workers <- private$workers
+      index <- workers$sent & !workers$done
+      workers <- workers[index,, drop = FALSE] # nolint
+      up <- map_lgl(workers$worker, private$worker_up_log)
       private$update_done()
-      x <- private$workers
-      crashed <- x$sent & !x$done & !up
+      workers <- private$workers[index,, drop = FALSE] # nolint
+      crashed <- workers$sent & !workers$done & !up
       if (any(crashed)) {
         workers <- private$workers$worker[crashed]
         crew_error(paste("crashed workers:", paste(workers, collapse = ", ")))

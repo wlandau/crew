@@ -138,10 +138,13 @@ crew_test("worker up", {
   )
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
-  expect_false(x$private$worker_up(list()))
-  expect_false(x$private$worker_up(list(future = "x", resolved = TRUE)))
+  worker <- x$get_workers()$worker[1]
+  expect_false(x$private$worker_up(list(), worker))
+  expect_false(
+    x$private$worker_up(list(future = "x", resolved = TRUE), worker)
+  )
   handle <- list(future = future::future("x"), resolved = FALSE)
-  expect_true(x$private$worker_up(handle, "abc"))
+  expect_true(x$private$worker_up(handle, "abc"), worker)
 })
 
 crew_test("private methods to submit and update_results work", {

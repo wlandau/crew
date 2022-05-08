@@ -62,6 +62,6 @@ for (index in seq_len(n)) {
   }
 }
 crew_assert(all(sort(done) == sort(seq_len(n))))
+print(sprintf("%s min", (unname(proc.time()["elapsed"]) - start) / 60))
 x$shutdown()
 store$destroy()
-print(sprintf("%s min", (unname(proc.time()["elapsed"]) - start) / 60))

@@ -1,6 +1,6 @@
-store_local <- R6::R6Class(
-  classname = "store_local",
-  inherit = store,
+crew_store_local <- R6::R6Class(
+  classname = "crew_store_local",
+  inherit = crew_store,
   portable = FALSE,
   cloneable = FALSE,
   private = list(
@@ -67,7 +67,7 @@ store_local <- R6::R6Class(
     },
     marshal = function() {
       expr <- substitute(
-        crew:::store_local$new(
+        crew:::crew_store_local$new(
           dir_root = dir_root,
           timeout = timeout,
           wait = wait

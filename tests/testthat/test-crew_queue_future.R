@@ -1,10 +1,10 @@
-crew_test("queue_future_worker_start()", {
+crew_test("crew_queue_future_worker_start()", {
   fun <- function(x) x
   args <- list(x = "x")
   value <- list(fun = deparse(fun), args = args)
-  store <- store_local$new()
+  store <- crew_store_local$new()
   store$write_worker_input(worker = "worker", value = value)
-  out <- queue_future_worker_start(
+  out <- crew_queue_future_worker_start(
     worker = "worker",
     store = store$marshal(),
     timeout = 30,
@@ -18,32 +18,32 @@ crew_test("queue_future_worker_start()", {
   expect_equal(store$read_worker_output("worker")$result, "x")
 })
 
-crew_test("queue_future_worker_resolve() detects crashes", {
+crew_test("crew_queue_future_worker_resolve() detects crashes", {
   future::plan(future::sequential)
   handle <- list(
     future = future::future("x"),
     task = "x"
   )
   expect_error(
-    queue_future_worker_resolve(
+    crew_queue_future_worker_resolve(
       handle = handle,
       worker = "x_worker",
-      store = store_local$new()$marshal(),
+      store = crew_store_local$new()$marshal(),
       timeout = -1
     )
   )
 })
 
-crew_test("queue_future_worker_resolve() gives time to time out", {
+crew_test("crew_queue_future_worker_resolve() gives time to time out", {
   future::plan(future::sequential)
   handle <- list(
     future = future::future("x_value"),
     task = "x_task"
   )
-  out <- queue_future_worker_resolve(
+  out <- crew_queue_future_worker_resolve(
     handle = handle,
     worker = "x_worker",
-    store = store_local$new()$marshal(),
+    store = crew_store_local$new()$marshal(),
     timeout = Inf
   )
   expect_s3_class(out$future, "Future")
@@ -54,16 +54,16 @@ crew_test("queue_future_worker_resolve() gives time to time out", {
   expect_false(out$resolved)
 })
 
-crew_test("queue_future_worker_resolve() needs output to resolve", {
+crew_test("crew_queue_future_worker_resolve() needs output to resolve", {
   future::plan(future::sequential)
   handle <- list(
     future = future::future("x_value"),
     task = "x_task"
   )
-  store <- store_local$new()
+  store <- crew_store_local$new()
   worker <- "x_worker"
   store$write_worker_output(worker = worker, value = "x_output")
-  out <- queue_future_worker_resolve(
+  out <- crew_queue_future_worker_resolve(
     handle = handle,
     worker = worker,
     store = store$marshal(),
@@ -78,7 +78,7 @@ crew_test("queue_future_worker_resolve() needs output to resolve", {
 })
 
 crew_test("get plan", {
-  x <- queue_future$new(workers = 2, plan = future::sequential)
+  x <- crew_queue_future$new(workers = 2, plan = future::sequential)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   expect_s3_class(x$get_plan(), "sequential")
@@ -86,7 +86,7 @@ crew_test("get plan", {
 
 crew_test("detect crash", {
   future::plan(future::sequential)
-  x <- queue_future$new(
+  x <- crew_queue_future$new(
     workers = 1,
     plan = future::sequential
   )
@@ -107,7 +107,7 @@ crew_test("detect crash", {
 
 crew_test("custom plan", {
   future::plan(future::sequential)
-  x <- queue_future$new(
+  x <- crew_queue_future$new(
     workers = 1,
     plan = future::sequential
   )
@@ -132,7 +132,7 @@ crew_test("custom plan", {
 
 crew_test("worker up", {
   future::plan(future::sequential)
-  x <- queue_future$new(
+  x <- crew_queue_future$new(
     workers = 2,
     plan = future::sequential
   )
@@ -152,11 +152,11 @@ crew_test("worker up", {
 
 crew_test("private methods to submit and update_results work", {
   future::plan(future::sequential)
-  x <- queue_future$new(
+  x <- crew_queue_future$new(
     workers = 2,
     timeout = 30,
     plan = future::sequential,
-    subqueue = queue_session$new(workers = 2)
+    subqueue = crew_queue_session$new(workers = 2)
   )
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
@@ -206,9 +206,9 @@ crew_test("private methods to submit and update_results work", {
 
 crew_test("push and pop", {
   future::plan(future::sequential)
-  x <- queue_future$new(
+  x <- crew_queue_future$new(
     workers = 2,
-    subqueue = queue_session$new(workers = 2),
+    subqueue = crew_queue_session$new(workers = 2),
     plan = future::sequential,
     timeout = 30
   )
@@ -236,9 +236,9 @@ crew_test("push and pop", {
 
 crew_test("push and pop", {
   future::plan(future::sequential)
-  x <- queue_future$new(
+  x <- crew_queue_future$new(
     workers = 2,
-    subqueue = queue_session$new(workers = 2),
+    subqueue = crew_queue_session$new(workers = 2),
     plan = future::sequential,
     timeout = 30
   )

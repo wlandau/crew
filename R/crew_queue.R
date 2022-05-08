@@ -1,8 +1,8 @@
 # Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
-queue <- R6::R6Class(
-  classname = "queue",
+crew_queue <- R6::R6Class(
+  classname = "crew_queue",
   portable = FALSE,
   cloneable = FALSE,
   private = list(
@@ -170,7 +170,7 @@ queue <- R6::R6Class(
   public = list(
     initialize = function(
       workers = 1,
-      store = store_local$new(timeout = timeout, wait = wait),
+      store = crew_store_local$new(timeout = timeout, wait = wait),
       timeout = 60,
       wait = 0.1,
       jobs = Inf
@@ -237,7 +237,7 @@ queue <- R6::R6Class(
   )
 )
 
-queue_worker_start <- function(worker, store, jobs, timeout, wait) {
+crew_queue_worker_start <- function(worker, store, jobs, timeout, wait) {
   crew::crew_worker(
     worker = worker,
     store = store,

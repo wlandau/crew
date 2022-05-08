@@ -1,9 +1,9 @@
 # Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
-queue_future <- R6::R6Class(
-  classname = "queue_future",
-  inherit = queue,
+crew_queue_future <- R6::R6Class(
+  classname = "crew_queue_future",
+  inherit = crew_queue,
   portable = FALSE,
   cloneable = FALSE,
   private = list(
@@ -22,7 +22,7 @@ queue_future <- R6::R6Class(
         task = task
       )
       private$subqueue$push(
-        fun = queue_future_worker_start,
+        fun = crew_queue_future_worker_start,
         args = args,
         task = sprintf("%s|%s", worker, crew_name())
       )
@@ -40,7 +40,7 @@ queue_future <- R6::R6Class(
       }
       private$subqueue$block()
       private$subqueue$push(
-        fun = queue_future_worker_resolve,
+        fun = crew_queue_future_worker_resolve,
         args = list(
           handle = handle,
           worker = worker,
@@ -77,12 +77,12 @@ queue_future <- R6::R6Class(
   public = list(
     initialize = function(
       workers = 1,
-      store = store_local$new(timeout = timeout, wait = wait),
+      store = crew_store_local$new(timeout = timeout, wait = wait),
       timeout = 60,
       wait = 0.1,
       jobs = Inf,
       plan = future::plan(),
-      subqueue = queue_session$new(
+      subqueue = crew_queue_session$new(
         workers = 1,
         wait = wait,
         timeout = timeout
@@ -120,7 +120,7 @@ queue_future <- R6::R6Class(
   )
 )
 
-queue_future_worker_start <- function(
+crew_queue_future_worker_start <- function(
   worker,
   store,
   timeout,
@@ -153,7 +153,7 @@ queue_future_worker_start <- function(
   list(future = future, task = task)
 }
 
-queue_future_worker_resolve <- function(handle, worker, store, timeout) {
+crew_queue_future_worker_resolve <- function(handle, worker, store, timeout) {
   store <- eval(parse(text = store))
   resolved <- tryCatch(
     future::resolved(handle$future),

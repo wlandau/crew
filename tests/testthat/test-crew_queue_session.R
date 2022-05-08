@@ -1,13 +1,5 @@
-crew_test("worker_start()", {
-  x <- queue_bg$new(workers = 1)
-  on.exit(x$shutdown())
-  on.exit(processx::supervisor_kill(), add = TRUE)
-  worker <- x$get_workers()$worker[1]
-  expect_error(x$private$worker_start(worker), class = "crew_error")
-})
-
 crew_test("detect crash and shut down workers", {
-  x <- queue_bg$new(workers = 2)
+  x <- crew_queue_session$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   replicate(2, x$push(fun = function() Sys.sleep(Inf)))
@@ -19,7 +11,7 @@ crew_test("detect crash and shut down workers", {
 })
 
 crew_test("private methods to submit and update_results work", {
-  x <- queue_bg$new(workers = 2)
+  x <- crew_queue_session$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) x
@@ -73,8 +65,34 @@ crew_test("private methods to submit and update_results work", {
   expect_false(any(x$get_workers()$done))
 })
 
+crew_test("available", {
+  x <- crew_queue_session$new(workers = 2)
+  on.exit(x$shutdown())
+  on.exit(processx::supervisor_kill(), add = TRUE)
+  fun <- function() "x"
+  x$push(fun = fun, update = FALSE)
+  expect_false(x$private$available())
+})
+
+crew_test("update", {
+  x <- crew_queue_session$new(workers = 2)
+  on.exit(x$shutdown())
+  fun <- function() "x"
+  x$push(fun = fun, update = FALSE)
+  expect_null(x$pop(update = FALSE))
+  retries <- 600
+  result <- NULL
+  while (is.null(result) && retries > 0) {
+    x$update()
+    result <- x$pop(update = FALSE)$result$result
+    retries <- retries - 1
+    Sys.sleep(0.1)
+  }
+  expect_equal(result, "x")
+})
+
 crew_test("push and pop", {
-  x <- queue_bg$new(workers = 2)
+  x <- crew_queue_session$new(workers = 2)
   on.exit(x$shutdown())
   on.exit(processx::supervisor_kill(), add = TRUE)
   fun <- function(x) {

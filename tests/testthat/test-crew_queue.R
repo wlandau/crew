@@ -1,7 +1,7 @@
-crew_test("queue_worker_start()", {
+crew_test("crew_queue_worker_start()", {
   dir_root <- tempfile()
   dir_create(dir_root)
-  store <- store_local$new(dir_root = dir_root)
+  store <- crew_store_local$new(dir_root = dir_root)
   fun <- function(x) {
     x + 1
   }
@@ -10,7 +10,7 @@ crew_test("queue_worker_start()", {
     class = "crew_task"
   )
   store$write_worker_input(worker = "worker", value = value)
-  queue_worker_start(
+  crew_queue_worker_start(
     worker = "worker",
     store = store$marshal(),
     jobs = 1,
@@ -24,7 +24,7 @@ crew_test("queue_worker_start()", {
 })
 
 crew_test("initial queue", {
-  x <- queue$new()
+  x <- crew_queue$new()
   expect_true(is.data.frame(x$get_tasks()))
   expect_true(is.data.frame(x$get_results()))
   expect_true(is.data.frame(x$get_workers()))
@@ -37,7 +37,7 @@ crew_test("initial queue", {
 })
 
 crew_test("get workers", {
-  x <- queue$new(workers = 2)
+  x <- crew_queue$new(workers = 2)
   on.exit(callr_force_shutdown(x))
   out <- x$get_workers()
   expect_equal(nrow(out), 2)
@@ -52,7 +52,7 @@ crew_test("get workers", {
 })
 
 crew_test("add task", {
-  x <- queue$new()
+  x <- crew_queue$new()
   input <- list(fun = function(x) x, args = list(x = 1))
   x$private$add_task(input = input, task = "abc")
   out <- x$get_tasks()
@@ -62,7 +62,7 @@ crew_test("add task", {
 })
 
 crew_test("push task, more workers than tasks", {
-  x <- queue$new(workers = 4)
+  x <- crew_queue$new(workers = 4)
   input <- list(fun = function(x) x, args = list(x = 1))
   x$private$add_task(input = input, task = "abc")
   x$private$add_task(input = input, task = "123")
@@ -76,7 +76,7 @@ crew_test("push task, more workers than tasks", {
 })
 
 crew_test("push task, more tasks than workers", {
-  x <- queue$new(workers = 2)
+  x <- crew_queue$new(workers = 2)
   input <- list(fun = function(x) x, args = list(x = 1))
   for (index in seq_len(4)) {
     x$private$add_task(input = input, task = as.character(index))

@@ -13,7 +13,7 @@
 #' if (!identical(Sys.getenv("CREW_EXAMPLES", unset = ""), "")) {
 #' dir_root <- tempfile()
 #' dir.create(dir_root)
-#' store <- store_local$new(dir_root = dir_root)
+#' store <- crew_store_local$new(dir_root = dir_root)
 #' fun <- function(x) {
 #'   x + 1
 #' }
@@ -73,7 +73,7 @@ crew_iterate <- function(worker, store, timeout, wait) {
 #' if (!identical(Sys.getenv("CREW_EXAMPLES", unset = ""), "")) {
 #' dir_root <- tempfile()
 #' dir.create(dir_root)
-#' store <- store_local$new(dir_root = dir_root)
+#' store <- crew_store_local$new(dir_root = dir_root)
 #' fun <- function(x) {
 #'   x + 1
 #' }

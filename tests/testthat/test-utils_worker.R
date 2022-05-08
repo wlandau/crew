@@ -1,5 +1,5 @@
 crew_test("no work then worker timeout", {
-  store <- store_local$new()
+  store <- crew_store_local$new()
   expect_error(
     crew_worker(
       worker = "name",
@@ -15,7 +15,7 @@ crew_test("no work then worker timeout", {
 crew_test("one simple job", {
   dir_root <- tempfile()
   dir_create(dir_root)
-  store <- store_local$new(dir_root = dir_root)
+  store <- crew_store_local$new(dir_root = dir_root)
   fun <- function(x) {
     x + 1
   }
@@ -43,7 +43,7 @@ crew_test("one simple job", {
 crew_test("one job", {
   dir_root <- tempfile()
   dir_create(dir_root)
-  store <- store_local$new(dir_root = dir_root)
+  store <- crew_store_local$new(dir_root = dir_root)
   fun <- function(x) {
     x + 1
   }
@@ -91,7 +91,7 @@ crew_test("crew_monad() with errors", {
 
 crew_test("crew job error", {
   dir_root <- tempfile()
-  store <- store_local$new(dir_root = dir_root)
+  store <- crew_store_local$new(dir_root = dir_root)
   expect_error(
     crew_job(
       worker = "my_worker",

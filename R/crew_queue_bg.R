@@ -1,9 +1,9 @@
 # Adapted from
 #  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
 #  under the MIT license. See also the `crew` package `NOTICE` file.
-queue_bg <- R6::R6Class(
-  classname = "queue_bg",
-  inherit = queue,
+crew_queue_bg <- R6::R6Class(
+  classname = "crew_queue_bg",
+  inherit = crew_queue,
   portable = FALSE,
   cloneable = FALSE,
   private = list(
@@ -12,7 +12,7 @@ queue_bg <- R6::R6Class(
       private$workers$handle <- map(
         private$workers$worker,
         ~callr::r_bg(
-          func = queue_worker_start,
+          func = crew_queue_worker_start,
           args = list(
             worker = .x,
             store = private$store$marshal(),
@@ -48,7 +48,7 @@ queue_bg <- R6::R6Class(
     initialize = function(
       workers = 1,
       wait = 0.1,
-      store = store_local$new(timeout = Inf, wait = wait)
+      store = crew_store_local$new(timeout = Inf, wait = wait)
     ) {
       super$initialize(
         workers = workers,

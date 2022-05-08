@@ -4,11 +4,11 @@ future::plan(
   future.batchtools::batchtools_sge,
   template = file.path(getwd(), "sge.tmpl")
 )
-store <- store_local$new(dir_root = "store", timeout = Inf)
-x <- queue_future$new(
+store <- crew_store_local$new(dir_root = "store", timeout = Inf)
+x <- crew_queue_future$new(
   workers = 1,
   store = store,
-  subqueue = queue_session$new(workers = 1)
+  subqueue = crew_queue_session$new(workers = 1)
 )
 x$push(fun = function() "x")
 x$update()
@@ -21,11 +21,11 @@ future::plan(
   future.batchtools::batchtools_sge,
   template = file.path(getwd(), "sge.tmpl")
 )
-store <- store_local$new(dir_root = "store", timeout = Inf)
-x <- queue_future$new(
+store <- crew_store_local$new(dir_root = "store", timeout = Inf)
+x <- crew_queue_future$new(
   workers = 20,
   store = store,
-  subqueue = queue_session$new(workers = 6)
+  subqueue = crew_queue_session$new(workers = 6)
 )
 n <- 200
 submitted <- integer(0)

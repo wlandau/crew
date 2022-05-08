@@ -1,5 +1,5 @@
 crew_test("worker input", {
-  x <- store_local$new()
+  x <- crew_store_local$new()
   expect_false(x$exists_worker_input("worker"))
   expect_equal(x$list_worker_input(), character(0))
   x$write_worker_input("worker", value = "x")
@@ -11,7 +11,7 @@ crew_test("worker input", {
 })
 
 crew_test("worker output", {
-  x <- store_local$new()
+  x <- crew_store_local$new()
   expect_false(x$exists_worker_output("worker"))
   expect_equal(x$list_worker_output(), character(0))
   x$write_worker_output("worker", value = "x")
@@ -23,7 +23,7 @@ crew_test("worker output", {
 })
 
 crew_test("worker error", {
-  x <- store_local$new()
+  x <- crew_store_local$new()
   expect_false(x$exists_worker_error("worker"))
   expect_equal(x$list_worker_error(), character(0))
   x$write_worker_error("worker", value = "x")
@@ -35,7 +35,7 @@ crew_test("worker error", {
 })
 
 crew_test("upload input", {
-  x <- store_local$new()
+  x <- crew_store_local$new()
   x$write_main_input("worker", value = "x")
   expect_true(x$exists_main_input("worker"))
   expect_false(x$exists_worker_input("worker"))
@@ -45,7 +45,7 @@ crew_test("upload input", {
 })
 
 crew_test("download output", {
-  x <- store_local$new()
+  x <- crew_store_local$new()
   x$write_worker_output("worker", value = "x")
   expect_true(x$exists_worker_output("worker"))
   expect_false(x$exists_main_output("worker"))
@@ -55,7 +55,7 @@ crew_test("download output", {
 })
 
 crew_test("marshal", {
-  x <- store_local$new()
+  x <- crew_store_local$new()
   out <- x$marshal()
   expect_true(is.character(out) && length(out) == 1L && nzchar(out))
   y <- eval(parse(text = out))

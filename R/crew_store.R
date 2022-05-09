@@ -7,14 +7,20 @@ crew_store <- R6::R6Class(
     timeout = NULL,
     wait = NULL,
     read_local = function(dir, worker) {
-      crew_assert_chr_scalar(dir)
+      crew_true(dir, is.character(.), !anyNA(.), length(.) == 1L)
       path <- file.path(private$dir_root, dir, worker)
-      crew_assert_file_scalar(path)
+      crew_true(
+        path,
+        is.character(.),
+        !anyNA(.),
+        length(.) == 1L,
+        all(file.exists(.))
+      )
       qs::qread(file = path)
     },
     write_local = function(dir, worker, value) {
-      crew_assert_chr_scalar(dir)
-      crew_assert_chr_scalar(worker)
+      crew_true(dir, is.character(.), !anyNA(.), length(.) == 1L)
+      crew_true(worker, is.character(.), !anyNA(.), length(.) == 1L)
       path_temp <- file.path(private$dir_root, "temp", basename(tempfile()))
       path <- file.path(private$dir_root, dir, worker)
       dir_create(dirname(path_temp))
@@ -40,17 +46,17 @@ crew_store <- R6::R6Class(
       invisible()
     },
     exists_local = function(dir, worker) {
-      crew_assert_chr_scalar(dir)
-      crew_assert_chr_scalar(worker)
+      crew_true(dir, is.character(.), !anyNA(.), length(.) == 1L)
+      crew_true(worker, is.character(.), !anyNA(.), length(.) == 1L)
       all(file.exists(file.path(private$dir_root, dir, worker)))
     },
     list_local = function(dir) {
-      crew_assert_chr_scalar(dir)
+      crew_true(dir, is.character(.), !anyNA(.), length(.) == 1L)
       list.files(file.path(private$dir_root, dir))
     },
     delete_local = function(dir, worker) {
-      crew_assert_chr_scalar(dir)
-      crew_assert_chr_scalar(worker)
+      crew_true(dir, is.character(.), !anyNA(.), length(.) == 1L)
+      crew_true(worker, is.character(.), !anyNA(.), length(.) == 1L)
       path <- file.path(private$dir_root, dir, worker)
       unlink(path, recursive = TRUE, force = TRUE)
       crew_wait(
@@ -69,7 +75,7 @@ crew_store <- R6::R6Class(
       timeout = 60,
       wait = 1
     ) {
-      crew_assert_chr_scalar(dir_root)
+      crew_true(dir_root, is.character(.), !anyNA(.), length(.) == 1L)
       private$dir_root <- dir_root
       private$timeout <- timeout
       private$wait <- wait

@@ -39,7 +39,7 @@ crew_queue <- R6::R6Class(
     },
     add_task = function(task, input) {
       dup <- task %in% private$tasks$task || task %in% private$workers$task
-      crew_assert(!dup, paste("duplicate task name", task))
+      crew_true(!dup, message = paste("duplicate task name", task))
       args <- list(
         .data = private$tasks,
         task = task,

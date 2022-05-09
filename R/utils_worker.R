@@ -101,7 +101,7 @@ crew_job <- function(worker, store, timeout, wait) {
     },
     error = function(condition) {
       store$write_worker_error(worker = worker, value = condition)
-      crew_error(conditionMessage(condition))
+      crew::crew_error(conditionMessage(condition))
     }
   )
   invisible()

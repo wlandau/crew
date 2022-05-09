@@ -4,10 +4,12 @@
 \alias{crew_error}
 \title{Throw a crew error.}
 \usage{
-crew_error(message = NULL)
+crew_error(message = NULL, class = character(0))
 }
 \arguments{
 \item{message}{Character of length 1, error message to print.}
+
+\item{class}{Character vector of S3 classes to}
 }
 \value{
 Throw an error of class \code{c("crew_error", "crew")}.

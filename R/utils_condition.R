@@ -11,6 +11,13 @@ crew_crash <- function(message = NULL) {
   crew_error(paste("crew worker crashed:", message))
 }
 
+crew_expire <- function(message = NULL) {
+  crew_stop(
+    message = message,
+    class = c("crew_expire", "crew_error", "crew")
+  )
+}
+
 #' @title Throw a crew error.
 #' @export
 #' @keywords internal
@@ -18,20 +25,19 @@ crew_crash <- function(message = NULL) {
 #'   Do not invoke directly.
 #' @return Throw an error of class `c("crew_error", "crew")`.
 #' @param message Character of length 1, error message to print.
+#' @param class Character vector of S3 classes to
 #' @examples
 #' try(crew_error("custom error message"))
-crew_error <- function(message = NULL) {
-  rlang::abort(
+crew_error <- function(message = NULL, class = character(0)) {
+  crew_stop(
     message = message,
     class = c("crew_error", "crew")
   )
 }
 
-crew_expire <- function(message = NULL) {
-  rlang::abort(
-    message = message,
-    class = c("crew_expire", "crew_error", "crew")
-  )
+crew_stop <- function(message, class) {
+  withr::local_options(list(rlang_backtrace_on_error = "none"))
+  rlang::abort(message = message, class = class, call = crew_empty_envir)
 }
 
 #' @title Return `FALSE` on error in a `tryCatch()` statement.
@@ -59,3 +65,5 @@ crew_condition_false <- function(condition) {
 crew_condition_message <- function(condition) {
   conditionMessage(condition)
 }
+
+crew_empty_envir <- new.env(parent = emptyenv())

@@ -37,11 +37,15 @@ The `crew` package incorporates insightful ideas from the following
 people.
 
 -   [Gábor Csárdi](https://github.com/gaborcsardi/). Gábor created the
-    [`callr`](https://github.com/r-lib/callr) R package, and he wrote
-    about [how to build a task
-    queue](https://www.tidyverse.org/blog/2019/09/callr-task-q/) using
-    `callr::r_session` workers. His work heavily influenced the design
-    of `crew`.
+    [`callr`](https://github.com/r-lib/callr) R package and wrote
+    instructional code for creating task queues using
+    [`callr::r_session`](https://callr.r-lib.org/reference/r_session.html)
+    (links below). `crew` borrows and modifies the [vignette
+    code](https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R)
+    under the MIT license. See also the `crew` package `NOTICE` file.
+    -   Blog post:<https://www.tidyverse.org/blog/2019/09/callr-task-q/>
+    -   `callr` vignette code:
+        <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R>
 -   [Kirill Müller](https://github.com/krlmlr/). The
     [`workers`](https://github.com/wlandau/workers) prototype was
     entirely his vision, and `crew` would not exist without it. `crew`
@@ -90,17 +94,17 @@ By contributing to this project, you agree to abide by its terms.
 
 ``` r
 citation("crew")
-#> 
-#> To cite package 'crew' in publications use:
-#> 
-#>   William Michael Landau (NA). crew: Centralized Reusable Workers.
-#>   https://wlandau.github.io/crew/, https://github.com/wlandau/crew.
-#> 
-#> A BibTeX entry for LaTeX users is
-#> 
-#>   @Manual{,
-#>     title = {crew: Centralized Reusable Workers},
-#>     author = {William Michael Landau},
-#>     note = {https://wlandau.github.io/crew/, https://github.com/wlandau/crew},
-#>   }
+
+To cite package 'crew' in publications use:
+
+  Landau WM (????). _crew: Centralized Reusable Workers_.
+  https://wlandau.github.io/crew/, https://github.com/wlandau/crew.
+
+A BibTeX entry for LaTeX users is
+
+  @Manual{,
+    title = {crew: Centralized Reusable Workers},
+    author = {William Michael Landau},
+    note = {https://wlandau.github.io/crew/, https://github.com/wlandau/crew},
+  }
 ```

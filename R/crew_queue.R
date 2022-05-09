@@ -12,7 +12,7 @@ crew_queue <- R6::R6Class(
     store = NULL,
     timeout = NULL,
     wait = NULL,
-    jobs = NULL,
+    max_tasks = NULL,
     initialize_tasks = function() {
       private$tasks <- tibble::tibble(
         task = character(0),
@@ -173,12 +173,12 @@ crew_queue <- R6::R6Class(
       store = crew_store_local$new(timeout = timeout, wait = wait),
       timeout = 60,
       wait = 0.1,
-      jobs = Inf
+      max_tasks = Inf
     ) {
       private$store <- store
       private$timeout <- timeout
       private$wait <- wait
-      private$jobs <- jobs
+      private$max_tasks <- max_tasks
       private$initialize_tasks()
       private$initialize_results()
       private$initialize_workers(workers = workers)
@@ -237,11 +237,11 @@ crew_queue <- R6::R6Class(
   )
 )
 
-crew_queue_worker_start <- function(worker, store, jobs, timeout, wait) {
+crew_queue_worker_start <- function(worker, store, max_tasks, timeout, wait) {
   crew::crew_worker(
     worker = worker,
     store = store,
-    jobs = jobs,
+    max_tasks = max_tasks,
     timeout = timeout,
     wait = wait
   )

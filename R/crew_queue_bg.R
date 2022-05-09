@@ -16,7 +16,7 @@ crew_queue_bg <- R6::R6Class(
           args = list(
             worker = .x,
             store = private$store$marshal(),
-            jobs = private$jobs,
+            max_tasks = private$max_tasks,
             timeout = private$timeout,
             wait = private$wait
           ),
@@ -55,7 +55,7 @@ crew_queue_bg <- R6::R6Class(
         store = store,
         timeout = Inf,
         wait = wait,
-        jobs = Inf
+        max_tasks = Inf
       )
     },
     shutdown = function() {

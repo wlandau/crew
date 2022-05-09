@@ -4,7 +4,7 @@
 \alias{crew_worker}
 \title{Worker event loop.}
 \usage{
-crew_worker(worker, store, jobs, timeout, wait)
+crew_worker(worker, store, max_tasks, timeout, wait)
 }
 \arguments{
 \item{worker}{Character of length 1, name of the worker.}
@@ -12,13 +12,13 @@ crew_worker(worker, store, jobs, timeout, wait)
 \item{store}{Either a data store object or a character string
 with a marshaled data store.}
 
-\item{jobs}{Maximum number of jobs before returning.}
+\item{max_tasks}{Maximum number of tasks before returning.}
 
 \item{timeout}{Positive numeric of length 1, number of seconds
 that a worker can idle before timing out.}
 
 \item{wait}{Positive numeric of length 1, number of seconds
-that the worker waits between checking if a job exists.}
+that the worker waits between checking if a task exists.}
 }
 \value{
 \code{NULL} (invisibly).
@@ -28,8 +28,8 @@ Not a user-side function. Do not invoke directly.
 }
 \details{
 The worker event loop runs inside the underlying process
-of a worker. It waits for the next job (timing out
-if it idles for too long at one time) runs any incoming jobs
+of a worker. It waits for the next task (timing out
+if it idles for too long at one time) runs any incoming tasks
 and puts the output in the data store.
 }
 \examples{
@@ -46,7 +46,7 @@ store$write_worker_input(worker = "my_worker", value = value)
 crew_worker(
   worker = "my_worker",
   store = store$marshal(),
-  jobs = 1,
+  max_tasks = 1,
   timeout = 0,
   wait = 0
 )

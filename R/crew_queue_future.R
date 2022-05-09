@@ -80,7 +80,7 @@ crew_queue_future <- R6::R6Class(
       store = crew_store_local$new(timeout = timeout, wait = wait),
       timeout = 60,
       wait = 0.1,
-      jobs = Inf,
+      max_tasks = Inf,
       plan = future::plan(),
       subqueue = crew_queue_session$new(
         workers = 1,
@@ -93,7 +93,7 @@ crew_queue_future <- R6::R6Class(
         store = store,
         timeout = timeout,
         wait = wait,
-        jobs = jobs
+        max_tasks = max_tasks
       )
       private$plan <- plan
       private$subqueue <- subqueue
@@ -132,7 +132,7 @@ crew_queue_future_worker_start <- function(
   on.exit(future::plan(plan_old, .cleanup = FALSE))
   future::plan(plan, .cleanup = FALSE)
   future <- future::future(
-    expr = crew::crew_job(
+    expr = crew::crew_task(
       worker = worker,
       store = store,
       timeout = timeout,

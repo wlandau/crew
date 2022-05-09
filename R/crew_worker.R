@@ -3,12 +3,12 @@
 #' @keywords internal
 #' @description Not a user-side function. Do not invoke directly.
 #' @details The worker event loop runs inside the underlying process
-#'   of a worker. It waits for the next job (timing out
-#'   if it idles for too long at one time) runs any incoming jobs
+#'   of a worker. It waits for the next task (timing out
+#'   if it idles for too long at one time) runs any incoming tasks
 #'   and puts the output in the data store.
 #' @return `NULL` (invisibly).
-#' @inheritParams crew_job
-#' @param jobs Maximum number of jobs before returning.
+#' @inheritParams crew_task
+#' @param max_tasks Maximum number of tasks before returning.
 #' @examples
 #' if (!identical(Sys.getenv("CREW_EXAMPLES", unset = ""), "")) {
 #' dir_root <- tempfile()
@@ -23,42 +23,45 @@
 #' crew_worker(
 #'   worker = "my_worker",
 #'   store = store$marshal(),
-#'   jobs = 1,
+#'   max_tasks = 1,
 #'   timeout = 0,
 #'   wait = 0
 #' )
 #' store$read_worker_output("my_worker")$result # 2
 #' }
-crew_worker <- function(worker, store, jobs, timeout, wait) {
+crew_worker <- function(worker, store, max_tasks, timeout, wait) {
   worker <- as.character(worker)
   store <- eval(parse(text = store))
-  jobs <- as.numeric(jobs)
+  max_tasks <- as.numeric(max_tasks)
   timeout <- as.numeric(timeout)
   wait <- as.numeric(wait)
-  job <- 0
-  while (job < jobs) {
+  task <- 0
+  while (task < max_tasks) {
+    crew_log(worker, "task", task, "of", max_tasks)
     crew_iterate(
       worker = worker,
       store = store,
       timeout = timeout,
       wait = wait
     )
-    job <- job + 1
+    task <- task + 1
   }
   invisible()
 }
 
 crew_iterate <- function(worker, store, timeout, wait) {
+  crew_log( worker, "waiting for input")
   crew_wait(
     fun = ~.x$exists_worker_input(worker = .y),
     args = list(store = store, worker = worker),
     timeout = timeout,
     wait = wait
   )
-  crew_job(worker = worker, store = store, timeout = timeout, wait = wait)
+  crew_log(worker, "found task")
+  crew_task(worker = worker, store = store, timeout = timeout, wait = wait)
 }
 
-#' @title Run a job in a crew worker.
+#' @title Run a task in a crew worker.
 #' @description Not a user-side function. Do not invoke directly.
 #' @export
 #' @keywords internal
@@ -68,7 +71,7 @@ crew_iterate <- function(worker, store, timeout, wait) {
 #' @param timeout Positive numeric of length 1, number of seconds
 #'   that a worker can idle before timing out.
 #' @param wait Positive numeric of length 1, number of seconds
-#'   that the worker waits between checking if a job exists.
+#'   that the worker waits between checking if a task exists.
 #' @examples
 #' if (!identical(Sys.getenv("CREW_EXAMPLES", unset = ""), "")) {
 #' dir_root <- tempfile()
@@ -80,7 +83,7 @@ crew_iterate <- function(worker, store, timeout, wait) {
 #' args <- list(x = 1)
 #' value <- list(fun = deparse(fun), args = args)
 #' store$write_worker_input(worker = "my_worker", value = value)
-#' crew_job(
+#' crew_task(
 #'   worker = "my_worker",
 #'   store = store$marshal(),
 #'   timeout = 0,
@@ -88,18 +91,26 @@ crew_iterate <- function(worker, store, timeout, wait) {
 #' )
 #' store$read_worker_output("my_worker")$result # 2
 #' }
-crew_job <- function(worker, store, timeout, wait) {
+crew_task <- function(worker, store, timeout, wait) {
   if (is.character(store)) {
     store <- eval(parse(text = store))
   }
+  crew_log("worker", worker, "found store")
   tryCatch({
+      crew_log(worker, "reading input")
       input <- store$read_worker_input(worker = worker)
+      crew_log(worker, "parsing function")
       input$fun <- eval(parse(text = input$fun))
+      crew_log(worker, "running task", input$task)
       value <- crew_monad(fun = input$fun, args = input$args)
+      crew_log(worker, "deleting old input")
       store$delete_worker_input(worker = worker)
+      crew_log(worker, "writing worker output")
       store$write_worker_output(worker = worker, value = value)
+      crew_log(worker, "done writing task", input$task)
     },
     error = function(condition) {
+      crew_log(worker, "error")
       store$write_worker_error(worker = worker, value = condition)
       crew::crew_error(conditionMessage(condition))
     }
@@ -140,4 +151,17 @@ crew_name <- function(n = 1) {
   out <- uuid::UUIDgenerate(n = n)
   out <- gsub("-", "_", out)
   paste0("x", out)
+}
+
+#' @title Print a [crew_worker()] log message.
+#' @description Not a user-side function. Do not invoke directly.
+#' @export
+#' @keywords internal
+#' @return Nothing (invisibly) but print a message.
+#' @param ... Character strings to print.
+#' @examples
+#' crew_log("done")
+crew_log <- function(...) {
+  time <- format(Sys.time(), "%z UTC %Y-%m-%d | %H:%M %OS2 |")
+  crew_message(paste(time, ...))
 }

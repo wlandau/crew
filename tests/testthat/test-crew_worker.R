@@ -4,7 +4,7 @@ crew_test("no work then worker timeout", {
     crew_worker(
       worker = "name",
       store = store$marshal(),
-      jobs = Inf,
+      max_tasks = Inf,
       timeout = 0,
       wait = 0
     ),
@@ -12,7 +12,7 @@ crew_test("no work then worker timeout", {
   )
 })
 
-crew_test("one simple job", {
+crew_test("one simple task", {
   dir_root <- tempfile()
   dir_create(dir_root)
   store <- crew_store_local$new(dir_root = dir_root)
@@ -28,7 +28,7 @@ crew_test("one simple job", {
     crew_worker(
       worker = "worker",
       store = store$marshal(),
-      jobs = Inf,
+      max_tasks = Inf,
       timeout = 0,
       wait = 0
     ),
@@ -36,11 +36,11 @@ crew_test("one simple job", {
   )
   expect_false(store$exists_worker_input("worker"))
   expect_true(store$exists_worker_output("worker"))
-  job <- store$read_worker_output("worker")
-  expect_equal(job$result, 2L)
+  task <- store$read_worker_output("worker")
+  expect_equal(task$result, 2L)
 })
 
-crew_test("one job", {
+crew_test("one task", {
   dir_root <- tempfile()
   dir_create(dir_root)
   store <- crew_store_local$new(dir_root = dir_root)
@@ -55,14 +55,14 @@ crew_test("one job", {
   crew_worker(
     worker = "worker",
     store = store$marshal(),
-    jobs = 1,
+    max_tasks = 1,
     timeout = 0,
     wait = 0
   )
   expect_false(store$exists_worker_input("worker"))
   expect_true(store$exists_worker_output("worker"))
-  job <- store$read_worker_output("worker")
-  expect_equal(job$result, 2L)
+  task <- store$read_worker_output("worker")
+  expect_equal(task$result, 2L)
 })
 
 crew_test("crew_monad() without errors", {
@@ -89,11 +89,11 @@ crew_test("crew_monad() with errors", {
   expect_equal(out$warnings, c("warning1", "warning2"))
 })
 
-crew_test("crew job error", {
+crew_test("crew task error", {
   dir_root <- tempfile()
   store <- crew_store_local$new(dir_root = dir_root)
   expect_error(
-    crew_job(
+    crew_task(
       worker = "my_worker",
       store = store$marshal(),
       timeout = 0,

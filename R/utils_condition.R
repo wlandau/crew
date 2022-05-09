@@ -40,6 +40,11 @@ crew_stop <- function(message, class) {
   rlang::abort(message = message, class = class, call = crew_empty_envir)
 }
 
+crew_message <- function(message) {
+  withr::local_options(list(rlang_backtrace_on_error = "none"))
+  rlang::inform(message = message, class = c("crew_message", "crew"))
+}
+
 #' @title Return `FALSE` on error in a `tryCatch()` statement.
 #' @export
 #' @keywords internal

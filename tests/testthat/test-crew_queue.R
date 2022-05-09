@@ -13,14 +13,14 @@ crew_test("crew_queue_worker_start()", {
   crew_queue_worker_start(
     worker = "worker",
     store = store$marshal(),
-    jobs = 1,
+    max_tasks = 1,
     timeout = 0,
     wait = 0
   )
   expect_false(store$exists_worker_input("worker"))
   expect_true(store$exists_worker_output("worker"))
-  job <- store$read_worker_output("worker")
-  expect_equal(job$result, 2L)
+  task <- store$read_worker_output("worker")
+  expect_equal(task$result, 2L)
 })
 
 crew_test("initial queue", {

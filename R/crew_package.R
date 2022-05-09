@@ -16,5 +16,9 @@
 #' @importFrom qs qsave
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function
+#' @importFrom utils globalVariables
 #' @importFrom uuid UUIDgenerate
+#' @importFrom withr local_options
 NULL
+
+utils::globalVariables(".")

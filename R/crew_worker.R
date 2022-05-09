@@ -50,7 +50,7 @@ crew_worker <- function(worker, store, max_tasks, timeout, wait) {
 }
 
 crew_iterate <- function(worker, store, timeout, wait) {
-  crew_log( worker, "waiting for input")
+  crew_log(worker, "waiting for input")
   crew_wait(
     fun = ~.x$exists_worker_input(worker = .y),
     args = list(store = store, worker = worker),

@@ -23,18 +23,18 @@ reference:
 - title: Crew classes
   contents:
   - '`class_crew`'
-- title: Worker classes
+- title: Queues
   contents:
-  - '`class_worker`'
-  - '`class_worker_callr`'
-  - '`class_worker_future`'
-- title: Store classes
+  - '`class_queue`'
+  - '`class_queue_session`'
+  - '`class_queue_bg`'
+  - '`class_queue_future`'
+- title: Stores
   contents:
   - '`class_store`'
   - '`class_store_local`'
-- title: Worker loops
-  contents:
-  - '`crew_worker_loop`'
 - title: Utilities
   contents:
+  - '`crew_true`'
   - '`crew_wait`'
+  - '`crew_worker`'

@@ -13,7 +13,7 @@
 #'   which was also released in commit
 #'   `811a02f604de2cf03264f6b35ce9ec8a412f2581`
 #'   of <https://github.com/r-lib/callr> in the `vignettes/taskq.R`
-#'   file under the MIT license. See the `crew` package `README` and
+#'   file under the MIT license. See the `crew` package `README.md` and
 #'   `NOTICE` files for other mentions of this attribution.
 #' @examples
 #' fun <- function(x) x + 1

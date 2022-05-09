@@ -1,3 +1,33 @@
+#' @title Abstract store
+#' @export
+#' @aliases crew_store
+#' @family store
+#' @description Abstract class for a data store.
+#' @details Most `crew` queues use data stores to send and receive task data.
+#'   Some use entirely local data, others may use cloud data to support
+#'   cloud workers. Stores have a "main" file space and a "worker" file space.
+#'   The main file space is usually on the local machine, and the worker
+#'   file space may be in the cloud. Sending and collecting data may involve
+#'   shuffling files to and from the main file space and the worker file space.
+#' @examples
+#' # Usage on its own:
+#' store <- crew_store_local$new(timeout = Inf)
+#' store$write_main_input("worker", list(value = "x"))
+#' store$list_main_input()
+#' store$exists_main_input("worker")
+#' store$read_main_input("worker")
+#' # Usage in a queue:
+#' fun <- function(x) x + 1
+#' args <- list(x = 1)
+#' queue <- crew_queue_future$new(timeout = 60, store = store)
+#' queue$push(fun = fun, args = args)
+#' queue$block()
+#' result <- queue$pop()
+#' str(result)
+#' result$result$result
+#' queue$shutdown()
+#' processx::supervisor_kill()
+#' store$destroy()
 crew_store <- R6::R6Class(
   classname = "crew_store",
   portable = FALSE,
@@ -70,59 +100,101 @@ crew_store <- R6::R6Class(
     }
   ),
   public = list(
+    #' @description Abstract store constructor.
+    #' @return An abstract store object.
+    #' @param dir_root Character of length 1, root directory of the data store
+    #'   on the local file system.
+    #' @param timeout Numeric of length 1, number of seconds to wait
+    #'   to receive worker input or shuffle files in the worker loop.
+    #' @param wait Numeric of length 1, number of seconds to pause between
+    #'   iterations waiting for files to arrive in their proper places
+    #'   in internal operations.
     initialize = function(
       dir_root = tempfile(),
       timeout = 60,
       wait = 1
     ) {
       crew_true(dir_root, is.character(.), !anyNA(.), length(.) == 1L)
+      crew_true(timeout, is.numeric(.), length(.) == 1, . >= 0, !anyNA(.))
+      crew_true(wait, is.numeric(.), length(.) == 1, . >= 0, !anyNA(.))
       private$dir_root <- dir_root
       private$timeout <- timeout
       private$wait <- wait
     },
+    #' @description Get the root directory of the data store.
+    #' @return The root directory of the data store.
     get_root = function() {
       private$dir_root
     },
+    #' @description Read worker input data from the main file space.
+    #' @return Worker input data from the main file space.
+    #' @param worker Character of length 1, name of the worker.
     read_main_input = function(worker) {
       private$read_local(dir = "main_input", worker = worker)
     },
+    #' @description Read worker output data from the main file space.
+    #' @return Worker output data from the main file space.
+    #' @param worker Character of length 1, name of the worker.
     read_main_output = function(worker) {
       private$read_local(dir = "main_output", worker = worker)
     },
+    #' @description Write worker input data to the main file space.
+    #' @return `NULL` (invisibly).
+    #' @param worker Character of length 1, name of the worker.
+    #' @param value R object to write.
     write_main_input = function(worker, value) {
       private$write_local(dir = "main_input", worker = worker, value = value)
     },
+    #' @description Write worker output data to the main file space.
+    #' @return `NULL` (invisibly).
+    #' @param worker Character of length 1, name of the worker.
+    #' @param value R object to output.
     write_main_output = function(worker, value) {
       private$write_local(dir = "main_output", worker = worker, value = value)
     },
+    #' @description Check if worker input data exists in the main file space.
+    #' @return Logical of length 1, whether worker input data exists
+    #'   in the main file space.
+    #' @param worker Character of length 1, name of the worker.
     exists_main_input = function(worker) {
       private$exists_local(dir = "main_input", worker = worker)
     },
+    #' @description Check if worker output data exists in the main file space.
+    #' @return Logical of length 1, whether worker output data exists
+    #'   in the main file space.
+    #' @param worker Character of length 1, name of the worker.
     exists_main_output = function(worker) {
       private$exists_local(dir = "main_output", worker = worker)
     },
+    #' @description List workers with input data in the main file space.
+    #' @return Character vector of workers with input data
+    #'   in the main file space.
     list_main_input = function() {
       private$list_local(dir = "main_input")
     },
+    #' @description List workers with output data in the main file space.
+    #' @return Character vector of workers with output data
+    #'   in the main file space.
     list_main_output = function() {
       private$list_local(dir = "main_output")
     },
+    #' @description Delete worker input data from the main file space.
+    #' @return `NULL` (invisibly).
+    #' @param worker Character of length 1, name of the worker.
     delete_main_input = function(worker) {
       private$delete_local(dir = "main_input", worker = worker)
     },
+    #' @description Delete worker output data from the main file space.
+    #' @return `NULL` (invisibly).
+    #' @param worker Character of length 1, name of the worker.
     delete_main_output = function(worker) {
       private$delete_local(dir = "main_output", worker = worker)
     },
-    upload_input = function(worker) {
-      from <- file.path(private$dir_root, "main_input", worker)
-      to <- file.path(private$dir_root, "worker_input", worker)
-      private$send_file(from = from, to = to)
-    },
-    download_output = function(worker) {
-      from <- file.path(private$dir_root, "worker_output", worker)
-      to <- file.path(private$dir_root, "main_output", worker)
-      private$send_file(from = from, to = to)
-    },
+    #' @description Delete the files of the data store.
+    #' @details The local files, along with the main file space,
+    #'   are always deleted. Other deletions may depend on the
+    #'   specific store subclass.
+    #' @return `NULL` (invisibly).
     destroy = function() {
       unlink(private$dir_root, recursive = TRUE, force = TRUE)
     }

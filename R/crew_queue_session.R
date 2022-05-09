@@ -1,6 +1,26 @@
-# Adapted from
-#  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
-#  under the MIT license. See also the `crew` package `NOTICE` file.
+#' @title Local session queue
+#' @export
+#' @aliases crew_queue_session
+#' @family queue
+#' @description Task queue with `callr::r_session` workers.
+#' @details The session queue is a slightly enhanced version of
+#'   <https://www.tidyverse.org/blog/2019/09/callr-task-q/>,
+#'   with the ability to detect crashes and block the R session
+#'   until the backlog clears. See the "Queue attribution"
+#'   section, the `crew` `README.md` file, and the `crew` `NOTICE` file
+#'   for attribution.
+#' @inheritSection crew_queue Queue attribution
+#' @examples
+#' fun <- function(x) x + 1
+#' args <- list(x = 1)
+#' queue <- crew_queue_session$new(timeout = 60, wait = 0.1)
+#' queue$push(fun = fun, args = args)
+#' queue$block()
+#' result <- queue$pop()
+#' str(result)
+#' result$result$result
+#' queue$shutdown()
+#' processx::supervisor_kill()
 crew_queue_session <- R6::R6Class(
   classname = "crew_queue_session",
   inherit = crew_queue,
@@ -63,11 +83,22 @@ crew_queue_session <- R6::R6Class(
     }
   ),
   public = list(
+    #' @description Local session queue constructor.
+    #' @return A local session queue object.
+    #' @param workers Number of workers in the queue.
+    #' @param timeout Number of seconds to for a worker to wait
+    #'   for something to happen (e.g. worker initialization)
+    #'   before timing out and quitting.
+    #' @param wait Number of seconds to wait in between iterations while
+    #'   waiting for something to happen (e.g. worker initialization).
     initialize = function(
       workers = 1,
       timeout = 60,
       wait = 0.1
     ) {
+      crew_true(workers, is.numeric(.), is.finite(.), length(.) == 1, . > 0)
+      crew_true(timeout, is.numeric(.), !anyNA(.), length(.) == 1, . >= 0)
+      crew_true(wait, is.numeric(.), !anyNA(.), length(.) == 1, . >= 0)
       private$timeout <- timeout
       private$wait <- wait
       private$initialize_tasks()
@@ -75,6 +106,14 @@ crew_queue_session <- R6::R6Class(
       private$initialize_workers(workers = workers)
       invisible()
     },
+    #' @description Push a new task on to the queue.
+    #' @return `NULL` (invisibly)
+    #' @param fun R function that runs the task.
+    #' @param args Named list of arguments to `fun`.
+    #' @param task Character of length 1 with the task ID.
+    #' @param update Logical of length 1, whether to update the
+    #'   internal state of the queue after pushing. See the
+    #'   `update()` method for details.
     push = function(
       fun,
       args = list(),
@@ -83,6 +122,8 @@ crew_queue_session <- R6::R6Class(
     ) {
       super$push(fun = fun, args = args, task = task, update = update)
     },
+    #' @description Shut down the workers.
+    #' @return `NULL` (invisibly)
     shutdown = function() {
       super$shutdown()
       for (handle in private$workers$handle) {

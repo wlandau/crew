@@ -110,8 +110,7 @@ crew_task <- function(worker, store, timeout, wait) {
       crew_log(worker, "done writing task", input$task)
     },
     error = function(condition) {
-      crew_log(worker, "error")
-      store$write_worker_error(worker = worker, value = condition)
+      crew_log(worker, "worker error:", conditionMessage(condition))
       crew::crew_error(conditionMessage(condition))
     }
   )

@@ -1,6 +1,31 @@
-# Adapted from
-#  <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R> # nolint
-#  under the MIT license. See also the `crew` package `NOTICE` file.
+#' @title Future queue
+#' @export
+#' @aliases crew_queue_future
+#' @family queue
+#' @description Task queue with `future` workers.
+#' @details The workers in this queue are futures with the `future` package.
+#'   In `push()`, it is possible to supply different `future::plan()`s
+#'   to different futures, and the queue itself has its own default plan.
+#'   Plans must be serializable, so only the `sequential` and `future.batchtools`
+#'   plans are supported.
+#'   The queue has a subqueue from [callr_queue_session] (or [callr_queue_bg]
+#'   if absolutely necessary) to submit and poll futures in order to
+#'   eliminate the otherwise heavy overhead of `future::future()` and
+#'   `future::resolved()` in `future.batchtools` futures. Tasks are
+#'   sent and collected using a [crew_store_local] data store
+#'   in order to eliminate the normally heavy overhead of `future::value()`.
+#' @inheritSection crew_queue Queue attribution
+#' @examples
+#' fun <- function(x) x + 1
+#' args <- list(x = 1)
+#' queue <- crew_queue_future$new(timeout = 60, wait = 0.1)
+#' queue$push(fun = fun, args = args)
+#' queue$block()
+#' result <- queue$pop()
+#' str(result)
+#' result$result$result
+#' queue$shutdown()
+#' processx::supervisor_kill()
 crew_queue_future <- R6::R6Class(
   classname = "crew_queue_future",
   inherit = crew_queue,
@@ -75,6 +100,22 @@ crew_queue_future <- R6::R6Class(
     }
   ),
   public = list(
+    #' @description Abstract queue constructor.
+    #' @return An abstract queue object.
+    #' @param workers Number of workers in the queue.
+    #' @param store Data store object created with [crew_store_local]
+    #'   or similar.
+    #' @param timeout Number of seconds to for a worker to wait
+    #'   for something to happen (e.g. the arrival of a task)
+    #'   before timing out and quitting.
+    #' @param wait Number of seconds to wait in between iterations while
+    #'   waiting for something to happen (e.g. the arrival of a task).
+    #' @param max_tasks Number of tasks a worker can run before quitting.
+    #'   Some queues allow the worker to restart when launching a new task.
+    #' @param plan A `future::plan()` object with the default plan.
+    #' @param subqueue An object from [crew_queue_session] (or
+    #'   [crew_queue_bg] if absolutely necessary) with the subqueue
+    #'   which submits and collects futures in order to reduce overhead.
     initialize = function(
       workers = 1,
       store = crew_store_local$new(timeout = timeout, wait = wait),
@@ -88,6 +129,11 @@ crew_queue_future <- R6::R6Class(
         timeout = timeout
       )
     ) {
+      crew_true(inherits(plan, "future"))
+      crew_true(
+        inherits(subqueue, "crew_queue_session") ||
+          inherits(subqueue, "crew_queue_bg")
+      )
       super$initialize(
         workers = workers,
         store = store,
@@ -99,9 +145,23 @@ crew_queue_future <- R6::R6Class(
       private$subqueue <- subqueue
       invisible()
     },
+    #' @description Get the default `future` plan of the queue.
+    #' @return The default `future` plan object of the queue.
     get_plan = function() {
       private$plan
     },
+    #' @description Push a new task on to the queue.
+    #' @return `NULL` (invisibly)
+    #' @param fun R function that runs the task.
+    #' @param args Named list of arguments to `fun`.
+    #' @param task Character of length 1 with the task ID. This ID
+    #'   gets passed to the `label` object of `future::future()`
+    #'   which shows up on `htop` and cluster viewing commands
+    #'   such as `squeue` for SLURM and `qstat` for SGE.
+    #' @param update Logical of length 1, whether to update the
+    #'   internal state of the queue after pushing. See the
+    #'   `update()` method for details.
+    #' @param plan An optional `future` plan object for the task.
     push = function(
       fun,
       args = list(),
@@ -109,6 +169,9 @@ crew_queue_future <- R6::R6Class(
       update = TRUE,
       plan = NULL
     ) {
+      if (!is.null(plan)) {
+        crew_true(inherits(plan, "future"))
+      }
       super$push(
         fun = fun,
         args = args,

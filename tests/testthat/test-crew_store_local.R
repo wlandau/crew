@@ -22,18 +22,6 @@ crew_test("worker output", {
   expect_false(x$exists_worker_output("worker"))
 })
 
-crew_test("worker error", {
-  x <- crew_store_local$new()
-  expect_false(x$exists_worker_error("worker"))
-  expect_equal(x$list_worker_error(), character(0))
-  x$write_worker_error("worker", value = "x")
-  expect_true(x$exists_worker_error("worker"))
-  expect_equal(x$list_worker_error(), "worker")
-  expect_equal(x$read_worker_error("worker"), "x")
-  x$delete_worker_error("worker")
-  expect_false(x$exists_worker_error("worker"))
-})
-
 crew_test("upload input", {
   x <- crew_store_local$new()
   x$write_main_input("worker", value = "x")

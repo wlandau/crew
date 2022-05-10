@@ -10,8 +10,8 @@ Task queue with \code{future} workers.
 The workers in this queue are futures with the \code{future} package.
 In \code{push()}, it is possible to supply different \code{future::plan()}s
 to different futures, and the queue itself has its own default plan.
-Plans must be serializable, so only the \code{sequential} and \code{future.batchtools}
-plans are supported.
+Plans must be serializable, so only the \code{sequential}
+and \code{future.batchtools} plans are supported.
 The queue has a subqueue from \link{crew_queue_session} (or \link{crew_queue_bg}
 if absolutely necessary) to submit and poll futures in order to
 eliminate the otherwise heavy overhead of \code{future::future()} and

@@ -52,3 +52,7 @@ subqueue
 taskq
 tidyverse
 www
+bg
+serializable
+SGE
+SLURM

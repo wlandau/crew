@@ -6,8 +6,8 @@
 #' @details The workers in this queue are futures with the `future` package.
 #'   In `push()`, it is possible to supply different `future::plan()`s
 #'   to different futures, and the queue itself has its own default plan.
-#'   Plans must be serializable, so only the `sequential` and `future.batchtools`
-#'   plans are supported.
+#'   Plans must be serializable, so only the `sequential`
+#'   and `future.batchtools` plans are supported.
 #'   The queue has a subqueue from [crew_queue_session] (or [crew_queue_bg]
 #'   if absolutely necessary) to submit and poll futures in order to
 #'   eliminate the otherwise heavy overhead of `future::future()` and

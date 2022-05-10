@@ -72,7 +72,7 @@ crew_queue_bg <- R6::R6Class(
     #'   before timing out and quitting.
     #' @param wait Number of seconds to wait in between iterations while
     #'   waiting for something to happen (e.g. the arrival of a task).
-    #' @param store A local store object from [crew_store_local]. 
+    #' @param store A local store object from [crew_store_local].
     initialize = function(
       workers = 1,
       timeout = 60,

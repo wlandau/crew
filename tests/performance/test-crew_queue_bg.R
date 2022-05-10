@@ -1,5 +1,6 @@
 proffer::pprof({
-x <- crew_queue_bg$new(workers = 1)
+store <- crew_store_local$new(timeout = 5)
+x <- crew_queue_bg$new(workers = 1, store = store)
 n <- 2e2
 submitted <- integer(0)
 done <- integer(0)

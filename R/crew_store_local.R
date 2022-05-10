@@ -41,9 +41,8 @@ crew_store_local <- R6::R6Class(
       )
       crew_true(to, is.character(.), !anyNA(.), length(.) == 1L)
       dir_create(dirname(to))
-      file.rename(from = from, to = to)
       crew_wait(
-        fun = function(from, to) file.exists(to) && !file.exists(from),
+        fun = function(from, to) file.rename(from = from, to = to),
         args = list(from = from, to = to),
         timeout = private$timeout,
         wait = private$wait,

@@ -51,7 +51,7 @@ crew_store <- R6::R6Class(
     write_local = function(dir, worker, value) {
       crew_true(dir, is.character(.), !anyNA(.), length(.) == 1L)
       crew_true(worker, is.character(.), !anyNA(.), length(.) == 1L)
-      path_temp <- file.path(private$dir_root, "temp", basename(tempfile()))
+      path_temp <- file.path(private$dir_root, "temp", crew_name())
       path <- file.path(private$dir_root, dir, worker)
       dir_create(dirname(path_temp))
       dir_create(dirname(path))
@@ -63,15 +63,12 @@ crew_store <- R6::R6Class(
         wait = private$wait,
         message = "store timeout writing local file"
       )
-      file.rename(from = path_temp, to = path)
       crew_wait(
-        fun = function(path, path_temp) {
-          file.exists(path) && !file.exists(path_temp)
-        },
+        fun = function(path, path_temp) file.rename(from = path_temp, to = path),
         args = list(path = path, path_temp = path_temp),
         timeout = private$timeout,
         wait = private$wait,
-        message = "store timeout moving local file"
+        message = "store timeout moving local file after writing"
       )
       invisible()
     },
@@ -88,14 +85,15 @@ crew_store <- R6::R6Class(
       crew_true(dir, is.character(.), !anyNA(.), length(.) == 1L)
       crew_true(worker, is.character(.), !anyNA(.), length(.) == 1L)
       path <- file.path(private$dir_root, dir, worker)
-      unlink(path, recursive = TRUE, force = TRUE)
+      path_temp <- file.path(private$dir_root, "temp", crew_name())
       crew_wait(
-        fun = function(path) !file.exists(path),
-        args = list(path = path),
+        fun = function(path, path_temp) file.rename(from = path, to = path_temp),
+        args = list(path = path, path_temp = path_temp),
         timeout = private$timeout,
         wait = private$wait,
-        message = "store timeout deleting local file"
+        message = "store timeout moving local file for deletion"
       )
+      unlink(path_temp, recursive = TRUE, force = TRUE)
       invisible()
     }
   ),

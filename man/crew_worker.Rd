@@ -4,7 +4,7 @@
 \alias{crew_worker}
 \title{Worker event loop.}
 \usage{
-crew_worker(worker, store, max_tasks, timeout, wait)
+crew_worker(worker, store, max_tasks, timeout, wait, log = tempfile())
 }
 \arguments{
 \item{worker}{Character of length 1, name of the worker.}
@@ -19,6 +19,8 @@ that a worker can idle before timing out.}
 
 \item{wait}{Positive numeric of length 1, number of seconds
 that the worker waits between checking if a task exists.}
+
+\item{log}{Character of length 1, path to a log file to write.}
 }
 \value{
 \code{NULL} (invisibly).

@@ -50,7 +50,7 @@ crew_worker <- function(
   wait <- as.numeric(wait)
   task <- 0
   while (task < max_tasks) {
-    crew_log(worker, "task", task, "of", max_tasks)
+    # crew_log(worker, "task", task, "of", max_tasks)
     crew_iterate(
       worker = worker,
       store = store,
@@ -63,14 +63,14 @@ crew_worker <- function(
 }
 
 crew_iterate <- function(worker, store, timeout, wait) {
-  crew_log(worker, "waiting for input")
+  # crew_log(worker, "waiting for input")
   crew_wait(
     fun = ~.x$exists_worker_input(worker = .y),
     args = list(store = store, worker = worker),
     timeout = timeout,
     wait = wait
   )
-  crew_log(worker, "found task")
+  # crew_log(worker, "found task")
   crew_task(worker = worker, store = store, timeout = timeout, wait = wait)
 }
 
@@ -108,22 +108,30 @@ crew_task <- function(worker, store, timeout, wait) {
   if (is.character(store)) {
     store <- eval(parse(text = store))
   }
-  crew_log("worker", worker, "found store")
+  # crew_log("worker", worker, "found store")
   tryCatch({
-      crew_log(worker, "reading input")
+      # crew_log(worker, "reading input")
       input <- store$read_worker_input(worker = worker)
-      crew_log(worker, "parsing function")
+      # crew_log(worker, "parsing function")
       input$fun <- eval(parse(text = input$fun))
-      crew_log(worker, "running task", input$task)
+      # crew_log(worker, "running task", input$task)
       value <- crew_monad(fun = input$fun, args = input$args)
-      crew_log(worker, "deleting old input")
+      # crew_log(worker, "deleting old input")
       store$delete_worker_input(worker = worker)
-      crew_log(worker, "writing worker output")
-      store$write_worker_output(worker = worker, value = value)
-      crew_log(worker, "done writing task", input$task)
+      
+      writeLines("x", "~/Desktop/worker.txt", worker)
+      
+      # crew_log(worker, "writing worker output")
+      
+       store$write_worker_output(worker = worker, value = value)
+       
+       writeLines("y", "~/Desktop/worker.txt")
+       
+       
+      # crew_log(worker, "done writing task", input$task)
     },
     error = function(condition) {
-      crew_log(worker, "worker error:", conditionMessage(condition))
+      # crew_log(worker, "worker error:", conditionMessage(condition))
       crew::crew_error(conditionMessage(condition))
     }
   )
@@ -174,6 +182,7 @@ crew_name <- function(n = 1) {
 #' @examples
 #' crew_log("done")
 crew_log <- function(...) {
-  time <- format(Sys.time(), "%z UTC %Y-%m-%d | %H:%M %OS2 |")
-  crew_message(paste(time, ...))
+  message("x")
+ # time <- format(Sys.time(), "%z UTC %Y-%m-%d | %H:%M %OS2 |")
+#  crew_message(paste(time, ...))
 }

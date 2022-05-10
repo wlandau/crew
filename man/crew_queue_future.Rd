@@ -12,7 +12,7 @@ In \code{push()}, it is possible to supply different \code{future::plan()}s
 to different futures, and the queue itself has its own default plan.
 Plans must be serializable, so only the \code{sequential} and \code{future.batchtools}
 plans are supported.
-The queue has a subqueue from \link{callr_queue_session} (or \link{callr_queue_bg}
+The queue has a subqueue from \link{crew_queue_session} (or \link{crew_queue_bg}
 if absolutely necessary) to submit and poll futures in order to
 eliminate the otherwise heavy overhead of \code{future::future()} and
 \code{future::resolved()} in \code{future.batchtools} futures. Tasks are

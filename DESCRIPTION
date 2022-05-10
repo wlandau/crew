@@ -33,7 +33,7 @@ Imports:
   future (>= 1.22.0),
   qs (>= 0.24.1),
   R6 (>= 2.5.0),
-  rlang (>= 0.4.10),
+  rlang (>= 1.0.0),
   utils,
   uuid (>= 1.0.0),
   withr (>= 2.3.0)

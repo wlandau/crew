@@ -8,7 +8,7 @@
 #'   to different futures, and the queue itself has its own default plan.
 #'   Plans must be serializable, so only the `sequential` and `future.batchtools`
 #'   plans are supported.
-#'   The queue has a subqueue from [callr_queue_session] (or [callr_queue_bg]
+#'   The queue has a subqueue from [crew_queue_session] (or [crew_queue_bg]
 #'   if absolutely necessary) to submit and poll futures in order to
 #'   eliminate the otherwise heavy overhead of `future::future()` and
 #'   `future::resolved()` in `future.batchtools` futures. Tasks are

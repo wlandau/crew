@@ -25,10 +25,9 @@ crew_expire <- function(message = NULL) {
 #'   Do not invoke directly.
 #' @return Throw an error of class `c("crew_error", "crew")`.
 #' @param message Character of length 1, error message to print.
-#' @param class Character vector of S3 classes to
 #' @examples
 #' try(crew_error("custom error message"))
-crew_error <- function(message = NULL, class = character(0)) {
+crew_error <- function(message = NULL) {
   crew_stop(
     message = message,
     class = c("crew_error", "crew")

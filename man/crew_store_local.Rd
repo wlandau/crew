@@ -14,10 +14,10 @@ cloud workers. The local store works with files on the local file system.
 \examples{
 # Usage on its own:
 store <- crew_store_local$new(timeout = Inf)
-store$write_main_input("worker", list(value = "x"))
-store$list_main_input()
-store$exists_main_input("worker")
-store$read_main_input("worker")
+store$write_input("worker", list(value = "x"))
+store$list_input()
+store$exists_input("worker")
+store$read_input("worker")
 # Usage in a queue:
 fun <- function(x) x + 1
 args <- list(x = 1)

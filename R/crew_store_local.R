@@ -31,134 +31,81 @@ crew_store_local <- R6::R6Class(
   portable = FALSE,
   cloneable = FALSE,
   private = list(
-    send_file = function(from, to) {
+    read_task = function(direction, worker) {
+      crew_true(direction, is.character(.), !anyNA(.), length(.) == 1L)
+      path <- file.path(private$root, direction, worker)
       crew_true(
-        from,
+        path,
         is.character(.),
         !anyNA(.),
         length(.) == 1L,
         all(file.exists(.))
       )
-      crew_true(to, is.character(.), !anyNA(.), length(.) == 1L)
-      dir_create(dirname(to))
+      qs::qread(file = path)
+    },
+    write_task = function(direction, worker, value) {
+      crew_true(direction, is.character(.), !anyNA(.), length(.) == 1L)
+      crew_true(worker, is.character(.), !anyNA(.), length(.) == 1L)
+      path_temp <- file.path(private$root, "temp", crew_name())
+      path <- file.path(private$root, direction, worker)
+      dir_create(dirname(path_temp))
+      dir_create(dirname(path))
+      qs::qsave(x = value, file = path_temp)
       crew_wait(
-        fun = function(from, to) file.rename(from = from, to = to),
-        args = list(from = from, to = to),
+        fun = function(path_temp) file.exists(path_temp),
+        args = list(path_temp = path_temp),
         timeout = private$timeout,
         wait = private$wait,
-        "local store timeout sending file"
+        message = "store timeout writing local file"
       )
-      invisible()
-    }
-  ),
-  public = list(
-    #' @description Read worker input data from the worker file space.
-    #' @return Worker input data from the worker file space.
-    #' @param worker Character of length 1, name of the worker.
-    read_worker_input = function(worker) {
-      private$read_local(dir = "worker_input", worker = worker)
+      crew_wait(
+        fun = function(path, path_temp) file.rename(from = path_temp, to = path),
+        args = list(path = path, path_temp = path_temp),
+        timeout = private$timeout,
+        wait = private$wait,
+        message = "store timeout moving local file after writing"
+      )
     },
-    #' @description Read worker output data from the worker file space.
-    #' @return Worker output data from the worker file space.
-    #' @param worker Character of length 1, name of the worker.
-    read_worker_output = function(worker) {
-      private$read_local(dir = "worker_output", worker = worker)
+    exists_task = function(direction, worker) {
+      crew_true(direction, is.character(.), !anyNA(.), length(.) == 1L)
+      crew_true(worker, is.character(.), !anyNA(.), length(.) == 1L)
+      all(file.exists(file.path(private$root, direction, worker)))
     },
-    #' @description Write worker input data to the worker file space.
-    #' @return `NULL` (invisibly).
-    #' @param worker Character of length 1, name of the worker.
-    #' @param value R object to write.
-    write_worker_input = function(worker, value) {
-      private$write_local(dir = "worker_input", worker = worker, value = value)
+    list_tasks = function(direction) {
+      crew_true(direction, is.character(.), !anyNA(.), length(.) == 1L)
+      list.files(file.path(private$root, direction))
     },
-    #' @description Write worker output data to the worker file space.
-    #' @return `NULL` (invisibly).
-    #' @param worker Character of length 1, name of the worker.
-    #' @param value R object to output.
-    write_worker_output = function(worker, value) {
-      private$write_local(dir = "worker_output", worker = worker, value = value)
+    delete_task = function(direction, worker) {
+      crew_true(direction, is.character(.), !anyNA(.), length(.) == 1L)
+      crew_true(worker, is.character(.), !anyNA(.), length(.) == 1L)
+      path <- file.path(private$root, direction, worker)
+      path_temp <- file.path(private$root, "temp", crew_name())
+      crew_wait(
+        fun = function(path, path_temp) file.rename(from = path, to = path_temp),
+        args = list(path = path, path_temp = path_temp),
+        timeout = private$timeout,
+        wait = private$wait,
+        message = "store timeout moving local file for deletion"
+      )
+      unlink(path_temp, recursive = TRUE, force = TRUE)
     },
-    #' @description Check if worker input data exists in the worker file space.
-    #' @return Logical of length 1, whether worker input data exists
-    #'   in the worker file space.
-    #' @param worker Character of length 1, name of the worker.
-    exists_worker_input = function(worker) {
-      private$exists_local(dir = "worker_input", worker = worker)
-    },
-    #' @description Check if worker output data exists in the worker file space.
-    #' @return Logical of length 1, whether worker output data exists
-    #'   in the worker file space.
-    #' @param worker Character of length 1, name of the worker.
-    exists_worker_output = function(worker) {
-      private$exists_local(dir = "worker_output", worker = worker)
-    },
-    #' @description List workers with input data in the worker file space.
-    #' @return Character vector of workers with input data
-    #'   in the worker file space.
-    list_worker_input = function() {
-      private$list_local(dir = "worker_input")
-    },
-    #' @description List workers with output data in the worker file space.
-    #' @return Character vector of workers with output data
-    #'   in the worker file space.
-    list_worker_output = function() {
-      private$list_local(dir = "worker_output")
-    },
-    #' @description Delete worker input data from the worker file space.
-    #' @return `NULL` (invisibly).
-    #' @param worker Character of length 1, name of the worker.
-    delete_worker_input = function(worker) {
-      private$delete_local(dir = "worker_input", worker = worker)
-    },
-    #' @description Delete worker output data from the worker file space.
-    #' @return `NULL` (invisibly).
-    #' @param worker Character of length 1, name of the worker.
-    delete_worker_output = function(worker) {
-      private$delete_local(dir = "worker_output", worker = worker)
-    },
-    #' @description Upload worker input data from the main file space
-    #'   to the worker file space.
-    #' @details For the local store, this is not a true upload. It is
-    #'   just moving a file.
-    #' @return `NULL` (invisibly)
-    #' @param worker Character of length 1, name of the worker.
-    upload_input = function(worker) {
-      from <- file.path(private$dir_root, "main_input", worker)
-      to <- file.path(private$dir_root, "worker_input", worker)
-      private$send_file(from = from, to = to)
-    },
-    #' @description Download worker input data from the worker file space
-    #'   to the main file space.
-    #' @details For the local store, this is not a true upload. It is
-    #'   just moving a file.
-    #' @return `NULL` (invisibly)
-    #' @param worker Character of length 1, name of the worker.
-    download_output = function(worker) {
-      from <- file.path(private$dir_root, "worker_output", worker)
-      to <- file.path(private$dir_root, "main_output", worker)
-      private$send_file(from = from, to = to)
-    },
-    #' @description Marshal the data store.
-    #' @details Represent the store object as a concise
-    #'   character string that can be recovered
-    #'   with `parse()` and `eval()` in a different R process.
-    #' @return A concise character string that returns the data store
-    #'   object when evaluated with `parse()` and `eval()`
-    #'   in a different R process.
-    marshal = function() {
+    marshal_store = function() {
       expr <- substitute(
         crew:::crew_store_local$new(
-          dir_root = dir_root,
+          root = root,
           timeout = timeout,
           wait = wait
         ),
         list(
-          dir_root = private$dir_root,
+          root = private$root,
           timeout = private$timeout,
           wait = private$wait
         )
       )
       paste(deparse(expr), collapse = "\n")
+    },
+    destroy_store = function() {
+      unlink(private$root, recursive = TRUE, force = TRUE)
     }
   )
 )

@@ -1,45 +1,27 @@
-crew_test("worker input", {
+crew_test("input", {
   x <- crew_store_local$new()
-  expect_false(x$exists_worker_input("worker"))
-  expect_equal(x$list_worker_input(), character(0))
-  x$write_worker_input("worker", value = "x")
-  expect_true(x$exists_worker_input("worker"))
-  expect_equal(x$list_worker_input(), "worker")
-  expect_equal(x$read_worker_input("worker"), "x")
-  x$delete_worker_input("worker")
-  expect_false(x$exists_worker_input("worker"))
+  worker <- "worker_x"
+  expect_false(x$exists_input(worker = worker))
+  expect_equal(x$list_input(), character(0))
+  x$write_input(worker = worker, value = "value_x")
+  expect_true(x$exists_input(worker))
+  expect_equal(x$list_input(), worker)
+  expect_equal(x$read_input(worker), "value_x")
+  x$delete_input(worker = worker)
+  expect_false(x$exists_input(worker = worker))
 })
 
-crew_test("worker output", {
+crew_test("output", {
   x <- crew_store_local$new()
-  expect_false(x$exists_worker_output("worker"))
-  expect_equal(x$list_worker_output(), character(0))
-  x$write_worker_output("worker", value = "x")
-  expect_true(x$exists_worker_output("worker"))
-  expect_equal(x$list_worker_output(), "worker")
-  expect_equal(x$read_worker_output("worker"), "x")
-  x$delete_worker_output("worker")
-  expect_false(x$exists_worker_output("worker"))
-})
-
-crew_test("upload input", {
-  x <- crew_store_local$new()
-  x$write_main_input("worker", value = "x")
-  expect_true(x$exists_main_input("worker"))
-  expect_false(x$exists_worker_input("worker"))
-  x$upload_input("worker")
-  expect_false(x$exists_main_input("worker"))
-  expect_true(x$exists_worker_input("worker"))
-})
-
-crew_test("download output", {
-  x <- crew_store_local$new()
-  x$write_worker_output("worker", value = "x")
-  expect_true(x$exists_worker_output("worker"))
-  expect_false(x$exists_main_output("worker"))
-  x$download_output("worker")
-  expect_false(x$exists_worker_output("worker"))
-  expect_true(x$exists_main_output("worker"))
+  worker <- "worker_x"
+  expect_false(x$exists_output(worker = worker))
+  expect_equal(x$list_output(), character(0))
+  x$write_output(worker = worker, value = "value_x")
+  expect_true(x$exists_output(worker))
+  expect_equal(x$list_output(), worker)
+  expect_equal(x$read_output(worker), "value_x")
+  x$delete_output(worker = worker)
+  expect_false(x$exists_output(worker = worker))
 })
 
 crew_test("marshal", {
@@ -49,4 +31,17 @@ crew_test("marshal", {
   y <- eval(parse(text = out))
   expect_equal(class(x), class(y))
   expect_equal(x$get_root(), y$get_root())
+})
+
+crew_test("destroy", {
+  x <- crew_store_local$new()
+  worker <- "worker_x"
+  task <- "task_x"
+  expect_false(file.exists(x$get_root()))
+  x$write_output(worker = worker, value = "x")
+  expect_true(file.exists(x$get_root()))
+  expect_true(x$exists_output(worker = worker))
+  x$destroy()
+  expect_false(file.exists(x$get_root()))
+  expect_false(x$exists_output(worker = worker))
 })

@@ -1,40 +1,5 @@
 crew_test("get_root()", {
   tmp <- tempfile()
-  x <- crew_store$new(dir_root = tmp)
+  x <- crew_store$new(root = tmp)
   expect_equal(x$get_root(), tmp)
-})
-
-crew_test("main input", {
-  x <- crew_store$new()
-  expect_false(x$exists_main_input("worker"))
-  expect_equal(x$list_main_input(), character(0))
-  x$write_main_input("worker", value = "x")
-  expect_true(x$exists_main_input("worker"))
-  expect_equal(x$list_main_input(), "worker")
-  expect_equal(x$read_main_input("worker"), "x")
-  x$delete_main_input("worker")
-  expect_false(x$exists_main_input("worker"))
-})
-
-crew_test("main output", {
-  x <- crew_store$new()
-  expect_false(x$exists_main_output("worker"))
-  expect_equal(x$list_main_output(), character(0))
-  x$write_main_output("worker", value = "x")
-  expect_true(x$exists_main_output("worker"))
-  expect_equal(x$list_main_output(), "worker")
-  expect_equal(x$read_main_output("worker"), "x")
-  x$delete_main_output("worker")
-  expect_false(x$exists_main_output("worker"))
-})
-
-crew_test("destroy", {
-  x <- crew_store$new()
-  expect_false(file.exists(x$get_root()))
-  x$write_main_output("worker", value = "x")
-  expect_true(file.exists(x$get_root()))
-  expect_true(x$exists_main_output("worker"))
-  x$destroy()
-  expect_false(file.exists(x$get_root()))
-  expect_false(x$exists_main_output("worker"))
 })

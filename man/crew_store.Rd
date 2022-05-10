@@ -12,15 +12,15 @@ Some use entirely local data, others may use cloud data to support
 cloud workers. Stores have a "main" file space and a "worker" file space.
 The main file space is usually on the local machine, and the worker
 file space may be in the cloud. Sending and collecting data may involve
-shuffling files to and from the main file space and the worker file space.
+shuffling files to and and the worker file space.
 }
 \examples{
 # Usage on its own:
-store <- crew_store_local$new(timeout = Inf)
-store$write_main_input("worker", list(value = "x"))
-store$list_main_input()
-store$exists_main_input("worker")
-store$read_main_input("worker")
+store <- crew_store_task$new(timeout = Inf)
+store$write_input("worker", list(value = "x"))
+store$list_input()
+store$exists_input("worker")
+store$read_input("worker")
 # Usage in a queue:
 fun <- function(x) x + 1
 args <- list(x = 1)
@@ -44,16 +44,17 @@ Other store:
 \itemize{
 \item \href{#method-new}{\code{crew_store$new()}}
 \item \href{#method-get_root}{\code{crew_store$get_root()}}
-\item \href{#method-read_main_input}{\code{crew_store$read_main_input()}}
-\item \href{#method-read_main_output}{\code{crew_store$read_main_output()}}
-\item \href{#method-write_main_input}{\code{crew_store$write_main_input()}}
-\item \href{#method-write_main_output}{\code{crew_store$write_main_output()}}
-\item \href{#method-exists_main_input}{\code{crew_store$exists_main_input()}}
-\item \href{#method-exists_main_output}{\code{crew_store$exists_main_output()}}
-\item \href{#method-list_main_input}{\code{crew_store$list_main_input()}}
-\item \href{#method-list_main_output}{\code{crew_store$list_main_output()}}
-\item \href{#method-delete_main_input}{\code{crew_store$delete_main_input()}}
-\item \href{#method-delete_main_output}{\code{crew_store$delete_main_output()}}
+\item \href{#method-read_input}{\code{crew_store$read_input()}}
+\item \href{#method-read_output}{\code{crew_store$read_output()}}
+\item \href{#method-write_input}{\code{crew_store$write_input()}}
+\item \href{#method-write_output}{\code{crew_store$write_output()}}
+\item \href{#method-exists_input}{\code{crew_store$exists_input()}}
+\item \href{#method-exists_output}{\code{crew_store$exists_output()}}
+\item \href{#method-list_input}{\code{crew_store$list_input()}}
+\item \href{#method-list_output}{\code{crew_store$list_output()}}
+\item \href{#method-delete_input}{\code{crew_store$delete_input()}}
+\item \href{#method-delete_output}{\code{crew_store$delete_output()}}
+\item \href{#method-marshal}{\code{crew_store$marshal()}}
 \item \href{#method-destroy}{\code{crew_store$destroy()}}
 }
 }
@@ -63,13 +64,13 @@ Other store:
 \subsection{Method \code{new()}}{
 Abstract store constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_store$new(dir_root = tempfile(), timeout = 60, wait = 1)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$new(root = tempfile(), timeout = 60, wait = 1)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{dir_root}}{Character of length 1, root directory of the data store
+\item{\code{root}}{Character of length 1, root directory of the data store
 on the local file system.}
 
 \item{\code{timeout}}{Numeric of length 1, number of seconds to wait
@@ -99,12 +100,12 @@ The root directory of the data store.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-read_main_input"></a>}}
-\if{latex}{\out{\hypertarget{method-read_main_input}{}}}
-\subsection{Method \code{read_main_input()}}{
-Read worker input data from the main file space.
+\if{html}{\out{<a id="method-read_input"></a>}}
+\if{latex}{\out{\hypertarget{method-read_input}{}}}
+\subsection{Method \code{read_input()}}{
+Read worker input data.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_store$read_main_input(worker)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$read_input(worker)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -115,16 +116,16 @@ Read worker input data from the main file space.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Worker input data from the main file space.
+Worker input data.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-read_main_output"></a>}}
-\if{latex}{\out{\hypertarget{method-read_main_output}{}}}
-\subsection{Method \code{read_main_output()}}{
-Read worker output data from the main file space.
+\if{html}{\out{<a id="method-read_output"></a>}}
+\if{latex}{\out{\hypertarget{method-read_output}{}}}
+\subsection{Method \code{read_output()}}{
+Read worker output data.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_store$read_main_output(worker)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$read_output(worker)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -135,16 +136,16 @@ Read worker output data from the main file space.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Worker output data from the main file space.
+Worker output data.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-write_main_input"></a>}}
-\if{latex}{\out{\hypertarget{method-write_main_input}{}}}
-\subsection{Method \code{write_main_input()}}{
+\if{html}{\out{<a id="method-write_input"></a>}}
+\if{latex}{\out{\hypertarget{method-write_input}{}}}
+\subsection{Method \code{write_input()}}{
 Write worker input data to the main file space.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_store$write_main_input(worker, value)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$write_input(worker, value)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -161,12 +162,12 @@ Write worker input data to the main file space.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-write_main_output"></a>}}
-\if{latex}{\out{\hypertarget{method-write_main_output}{}}}
-\subsection{Method \code{write_main_output()}}{
+\if{html}{\out{<a id="method-write_output"></a>}}
+\if{latex}{\out{\hypertarget{method-write_output}{}}}
+\subsection{Method \code{write_output()}}{
 Write worker output data to the main file space.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_store$write_main_output(worker, value)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$write_output(worker, value)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -183,12 +184,12 @@ Write worker output data to the main file space.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-exists_main_input"></a>}}
-\if{latex}{\out{\hypertarget{method-exists_main_input}{}}}
-\subsection{Method \code{exists_main_input()}}{
-Check if worker input data exists in the main file space.
+\if{html}{\out{<a id="method-exists_input"></a>}}
+\if{latex}{\out{\hypertarget{method-exists_input}{}}}
+\subsection{Method \code{exists_input()}}{
+Check if worker input data exists.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_store$exists_main_input(worker)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$exists_input(worker)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -199,17 +200,16 @@ Check if worker input data exists in the main file space.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Logical of length 1, whether worker input data exists
-in the main file space.
+Logical of length 1, whether worker input data exists.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-exists_main_output"></a>}}
-\if{latex}{\out{\hypertarget{method-exists_main_output}{}}}
-\subsection{Method \code{exists_main_output()}}{
-Check if worker output data exists in the main file space.
+\if{html}{\out{<a id="method-exists_output"></a>}}
+\if{latex}{\out{\hypertarget{method-exists_output}{}}}
+\subsection{Method \code{exists_output()}}{
+Check if worker output data exists.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_store$exists_main_output(worker)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$exists_output(worker)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -220,45 +220,62 @@ Check if worker output data exists in the main file space.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Logical of length 1, whether worker output data exists
-in the main file space.
+Logical of length 1, whether worker output data exists.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-list_main_input"></a>}}
-\if{latex}{\out{\hypertarget{method-list_main_input}{}}}
-\subsection{Method \code{list_main_input()}}{
-List workers with input data in the main file space.
+\if{html}{\out{<a id="method-list_input"></a>}}
+\if{latex}{\out{\hypertarget{method-list_input}{}}}
+\subsection{Method \code{list_input()}}{
+List workers with input data.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_store$list_main_input()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$list_input()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-Character vector of workers with input data
-in the main file space.
+Character vector of workers with input data.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-list_main_output"></a>}}
-\if{latex}{\out{\hypertarget{method-list_main_output}{}}}
-\subsection{Method \code{list_main_output()}}{
-List workers with output data in the main file space.
+\if{html}{\out{<a id="method-list_output"></a>}}
+\if{latex}{\out{\hypertarget{method-list_output}{}}}
+\subsection{Method \code{list_output()}}{
+List workers with output data.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_store$list_main_output()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$list_output()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-Character vector of workers with output data
-in the main file space.
+Character vector of workers with output data.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-delete_main_input"></a>}}
-\if{latex}{\out{\hypertarget{method-delete_main_input}{}}}
-\subsection{Method \code{delete_main_input()}}{
-Delete worker input data from the main file space.
+\if{html}{\out{<a id="method-delete_input"></a>}}
+\if{latex}{\out{\hypertarget{method-delete_input}{}}}
+\subsection{Method \code{delete_input()}}{
+Delete worker input data.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_store$delete_main_input(worker)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$delete_input(worker)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{worker}}{Character of length 1, name of the worker.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-delete_output"></a>}}
+\if{latex}{\out{\hypertarget{method-delete_output}{}}}
+\subsection{Method \code{delete_output()}}{
+Delete worker output data.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$delete_output(worker)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -273,23 +290,24 @@ Delete worker input data from the main file space.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-delete_main_output"></a>}}
-\if{latex}{\out{\hypertarget{method-delete_main_output}{}}}
-\subsection{Method \code{delete_main_output()}}{
-Delete worker output data from the main file space.
+\if{html}{\out{<a id="method-marshal"></a>}}
+\if{latex}{\out{\hypertarget{method-marshal}{}}}
+\subsection{Method \code{marshal()}}{
+Marshal the data store.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_store$delete_main_output(worker)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$marshal()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{worker}}{Character of length 1, name of the worker.}
+\subsection{Details}{
+Represent the store object as a concise
+character string that can be recovered
+with \code{parse()} and \code{eval()} in a different R process.
 }
-\if{html}{\out{</div>}}
-}
+
 \subsection{Returns}{
-\code{NULL} (invisibly).
+A concise character string that returns the data store
+object when evaluated with \code{parse()} and \code{eval()}
+in a different R process.
 }
 }
 \if{html}{\out{<hr>}}

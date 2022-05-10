@@ -9,6 +9,7 @@
 #' @return `NULL` (invisibly).
 #' @inheritParams crew_task
 #' @param max_tasks Maximum number of tasks before returning.
+#' @param log Character of length 1, path to a log file to write.
 #' @examples
 #' if (!identical(Sys.getenv("CREW_EXAMPLES", unset = ""), "")) {
 #' dir_root <- tempfile()
@@ -29,7 +30,19 @@
 #' )
 #' store$read_worker_output("my_worker")$result # 2
 #' }
-crew_worker <- function(worker, store, max_tasks, timeout, wait) {
+crew_worker <- function(
+    worker,
+    store,
+    max_tasks,
+    timeout,
+    wait,
+    log = tempfile()
+  ) {
+  crew_true(log, is.character(.), !anyNA(.), nzchar(.), length(.) == 1)
+  connection <- file(log, open = "wt")
+  sink(connection, type = "message")
+  on.exit(sink(NULL, type = "message"))
+  on.exit(close(connection), add = TRUE)
   worker <- as.character(worker)
   store <- eval(parse(text = store))
   max_tasks <- as.numeric(max_tasks)

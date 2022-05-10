@@ -1,5 +1,5 @@
 proffer::pprof({
-x <- crew_queue_bg$new(workers = 4)
+x <- crew_queue_bg$new(workers = 1)
 n <- 2e2
 submitted <- integer(0)
 done <- integer(0)

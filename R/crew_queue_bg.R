@@ -37,8 +37,7 @@ crew_queue_bg <- R6::R6Class(
             store = private$store$marshal(),
             max_tasks = private$max_tasks,
             timeout = private$timeout,
-            wait = private$wait,
-            log = file.path(private$store$root, "log", .x)
+            wait = private$wait
           ),
           supervise = TRUE
         )

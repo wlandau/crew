@@ -59,7 +59,9 @@ crew_store_local <- R6::R6Class(
         message = "store timeout writing local file"
       )
       crew_wait(
-        fun = function(path, path_temp) file.rename(from = path_temp, to = path),
+        fun = function(path, path_temp) {
+          file.rename(from = path_temp, to = path)
+        },
         args = list(path = path, path_temp = path_temp),
         timeout = private$timeout,
         wait = private$wait,

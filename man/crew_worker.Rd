@@ -19,9 +19,6 @@ that a worker can idle before timing out.}
 
 \item{wait}{Positive numeric of length 1, number of seconds
 that the worker waits between checking if a task exists.}
-
-\item{log}{Character of length 1 with the path
-to a log file. If \code{NULL}, then no log is written.}
 }
 \value{
 \code{NULL} (invisibly).

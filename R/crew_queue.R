@@ -375,7 +375,6 @@ crew_queue_worker_start <- function(
     store = store,
     max_tasks = max_tasks,
     timeout = timeout,
-    wait = wait,
-    log = log
+    wait = wait
   )
 }

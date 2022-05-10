@@ -3,7 +3,6 @@
 export(crew_condition_false)
 export(crew_condition_message)
 export(crew_error)
-export(crew_log)
 export(crew_queue)
 export(crew_queue_bg)
 export(crew_queue_future)

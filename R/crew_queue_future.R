@@ -199,8 +199,7 @@ crew_queue_future_worker_start <- function(
       worker = worker,
       store = store,
       timeout = timeout,
-      wait = wait,
-      log = file.path(private$store$root, "log", worker)
+      wait = wait
     ),
     globals = list(
       worker = worker,

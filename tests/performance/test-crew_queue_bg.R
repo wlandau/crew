@@ -1,9 +1,4 @@
-install.packages("~/projects/crew", type = "source", repos = NULL)
-rstudioapi::restartSession()
-la()
-
-{
-#proffer::pprof({
+system.time({
 store <- crew_store_local$new(timeout = 5, wait = 0.1)
 x <- crew_queue_bg$new(workers = 1, store = store, timeout = 5)
 n <- 2e2
@@ -40,5 +35,4 @@ for (index in seq_len(n)) {
 }
 stopifnot(all(sort(done) == seq_len(n)))
 x$shutdown()
-}
-#})
+})

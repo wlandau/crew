@@ -1,5 +1,7 @@
 system.time({
-store <- crew_store_local$new(timeout = 5, wait = 0.1)
+rstudioapi::restartSession()
+la()
+store <- crew_store_local$new(timeout = 5, wait = 0.1, root = "~/Desktop/store")
 x <- crew_queue_bg$new(workers = 1, store = store, timeout = 5)
 n <- 2e2
 submitted <- integer(0)

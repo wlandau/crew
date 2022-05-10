@@ -67,6 +67,8 @@ crew_store_local <- R6::R6Class(
         wait = private$wait,
         message = "store timeout moving local file after writing"
       )
+      
+      write(paste("ok writing file", path, Sys.getpid()), "~/Desktop/log.txt", append = TRUE)
     },
     exists_task = function(direction, worker) {
       crew_true(direction, is.character(.), !anyNA(.), length(.) == 1L)

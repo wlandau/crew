@@ -116,12 +116,32 @@ crew_task <- function(worker, store, timeout, wait, log = NULL) {
   if (is.character(store)) {
     store <- eval(parse(text = store))
   }
+
   tryCatch({
+    message("reading worker ", worker, " input")
+    write("reading", "~/Desktop/log.txt", append = TRUE)
       input <- store$read_input(worker = worker)
+      
+      message("parsing worker ", worker, " function")
+      write("parsing", "~/Desktop/log.txt", append = TRUE)
       input$fun <- eval(parse(text = input$fun))
+      
+      message("running worker ", worker, " task")
+      write("running", "~/Desktop/log.txt", append = TRUE)
       value <- crew_monad(fun = input$fun, args = input$args)
+      
+      message("deleting worker ", worker, " input")
+      write("deleting", "~/Desktop/log.txt", append = TRUE)
       store$delete_input(worker = worker)
-      store$write_output(worker = worker, value = value)
+      
+      message("writing worker ", worker, " output")
+      write("writing", "~/Desktop/log.txt", append = TRUE)
+      #store$write_output(worker = worker, value = value)
+      
+      store$private$write_task(direction = "output", worker = worker, value = value)
+      
+      message("wrote worker ", worker, " output")
+      write("done", "~/Desktop/log.txt", append = TRUE)
     },
     error = function(condition) {
       message <- paste(worker, "worker error:", conditionMessage(condition))

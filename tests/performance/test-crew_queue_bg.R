@@ -1,5 +1,5 @@
-rstudioapi::restartSession()
 install.packages("~/projects/crew", type = "source", repos = NULL)
+rstudioapi::restartSession()
 la()
 
 {

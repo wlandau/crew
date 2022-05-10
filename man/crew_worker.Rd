@@ -4,7 +4,7 @@
 \alias{crew_worker}
 \title{Worker event loop.}
 \usage{
-crew_worker(worker, store, max_tasks, timeout, wait)
+crew_worker(worker, store, max_tasks, timeout, wait, log = NULL)
 }
 \arguments{
 \item{worker}{Character of length 1, name of the worker.}
@@ -19,6 +19,9 @@ that a worker can idle before timing out.}
 
 \item{wait}{Positive numeric of length 1, number of seconds
 that the worker waits between checking if a task exists.}
+
+\item{log}{Character of length 1 with the path
+to a log file. If \code{NULL}, then no log is written.}
 }
 \value{
 \code{NULL} (invisibly).
@@ -43,14 +46,17 @@ fun <- function(x) {
 args <- list(x = 1)
 value <- list(fun = deparse(fun), args = args)
 store$write_input(worker = "my_worker", value = value)
+log <- tempfile()
 crew_worker(
   worker = "my_worker",
   store = store$marshal(),
   max_tasks = 1,
   timeout = 0,
-  wait = 0
+  wait = 0,
+  log = log
 )
 store$read_output("my_worker")$result # 2
+writeLines(readLines(log))
 }
 }
 \keyword{internal}

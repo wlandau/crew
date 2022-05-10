@@ -362,12 +362,20 @@ crew_queue <- R6::R6Class(
   )
 )
 
-crew_queue_worker_start <- function(worker, store, max_tasks, timeout, wait) {
+crew_queue_worker_start <- function(
+  worker,
+  store,
+  max_tasks,
+  timeout,
+  wait,
+  log
+) {
   crew::crew_worker(
     worker = worker,
     store = store,
     max_tasks = max_tasks,
     timeout = timeout,
-    wait = wait
+    wait = wait,
+    log = log
   )
 }

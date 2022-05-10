@@ -4,7 +4,7 @@
 \alias{crew_task}
 \title{Run a task in a crew worker.}
 \usage{
-crew_task(worker, store, timeout, wait)
+crew_task(worker, store, timeout, wait, log = NULL)
 }
 \arguments{
 \item{worker}{Character of length 1, name of the worker.}
@@ -17,6 +17,9 @@ that a worker can idle before timing out.}
 
 \item{wait}{Positive numeric of length 1, number of seconds
 that the worker waits between checking if a task exists.}
+
+\item{log}{Character of length 1 with the path
+to a log file. If \code{NULL}, then no log is written.}
 }
 \description{
 Not a user-side function. Do not invoke directly.
@@ -32,13 +35,16 @@ fun <- function(x) {
 args <- list(x = 1)
 value <- list(fun = deparse(fun), args = args)
 store$write_input(worker = "my_worker", value = value)
+log <- tempfile()
 crew_task(
   worker = "my_worker",
   store = store$marshal(),
   timeout = 0,
-  wait = 0
+  wait = 0,
+  log = log
 )
 store$read_output("my_worker")$result # 2
+writeLines(readLines(log))
 }
 }
 \keyword{internal}

@@ -20,28 +20,30 @@
 #' args <- list(x = 1)
 #' value <- list(fun = deparse(fun), args = args)
 #' store$write_input(worker = "my_worker", value = value)
+#' log <- tempfile()
 #' crew_worker(
 #'   worker = "my_worker",
 #'   store = store$marshal(),
 #'   max_tasks = 1,
 #'   timeout = 0,
-#'   wait = 0
+#'   wait = 0,
+#'   log = log
 #' )
 #' store$read_output("my_worker")$result # 2
+#' writeLines(readLines(log))
 #' }
 crew_worker <- function(
   worker,
   store,
   max_tasks,
   timeout,
-  wait
+  wait,
+  log = NULL
 ) {
-  con <- file(tempfile(), open = "wt")
-  sink(con, type = "message")
-  on.exit({
-    sink(NULL, type = "message")
-    close(con)
-  })
+  if (!is.null(log)) {
+    crew_true(log, is.character(.), nzchar(.), !anyNA(.), length(.) == 1)
+    unlink(log)
+  }
   worker <- as.character(worker)
   store <- eval(parse(text = store))
   max_tasks <- as.numeric(max_tasks)
@@ -49,19 +51,20 @@ crew_worker <- function(
   wait <- as.numeric(wait)
   task <- 0
   while (task < max_tasks) {
-    crew_log(worker, "task", task, "of", max_tasks)
+    crew_log(worker, "task", task, "of", max_tasks, log = log)
     crew_iterate(
       worker = worker,
       store = store,
       timeout = timeout,
-      wait = wait
+      wait = wait,
+      log = log
     )
     task <- task + 1
   }
   invisible()
 }
 
-crew_iterate <- function(worker, store, timeout, wait) {
+crew_iterate <- function(worker, store, timeout, wait, log) {
   crew_log(worker, "waiting for input")
   crew_wait(
     fun = ~.x$exists_input(worker = .y),
@@ -69,14 +72,21 @@ crew_iterate <- function(worker, store, timeout, wait) {
     timeout = timeout,
     wait = wait
   )
-  crew_log(worker, "found task")
-  crew_task(worker = worker, store = store, timeout = timeout, wait = wait)
+  crew_log(worker, "found task", log = log)
+  crew_task(
+    worker = worker,
+    store = store,
+    timeout = timeout,
+    wait = wait,
+    log = log
+  )
 }
 
 #' @title Run a task in a crew worker.
 #' @description Not a user-side function. Do not invoke directly.
 #' @export
 #' @keywords internal
+#' @inheritParams crew_log
 #' @param worker Character of length 1, name of the worker.
 #' @param store Either a data store object or a character string
 #'   with a marshaled data store.
@@ -95,35 +105,38 @@ crew_iterate <- function(worker, store, timeout, wait) {
 #' args <- list(x = 1)
 #' value <- list(fun = deparse(fun), args = args)
 #' store$write_input(worker = "my_worker", value = value)
+#' log <- tempfile()
 #' crew_task(
 #'   worker = "my_worker",
 #'   store = store$marshal(),
 #'   timeout = 0,
-#'   wait = 0
+#'   wait = 0,
+#'   log = log
 #' )
 #' store$read_output("my_worker")$result # 2
+#' writeLines(readLines(log))
 #' }
-crew_task <- function(worker, store, timeout, wait) {
+crew_task <- function(worker, store, timeout, wait, log = NULL) {
   if (is.character(store)) {
     store <- eval(parse(text = store))
   }
-  crew_log("worker", worker, "found store")
+  crew_log("worker", worker, "found store", log = log)
   tryCatch({
       crew_log(worker, "reading input")
       input <- store$read_input(worker = worker)
-      crew_log(worker, "parsing function")
+      crew_log(worker, "parsing function", log = log)
       input$fun <- eval(parse(text = input$fun))
-      crew_log(worker, "running task", input$task)
+      crew_log(worker, "running task", input$task, log = log)
       value <- crew_monad(fun = input$fun, args = input$args)
-      crew_log(worker, "deleting old input")
+      crew_log(worker, "deleting old input", log = log)
       store$delete_input(worker = worker)
-      crew_log(worker, "writing worker output")
+      crew_log(worker, "writing worker output", log = log)
       store$write_output(worker = worker, value = value)
-      crew_log(worker, "done writing task", input$task)
+      crew_log(worker, "done writing task", input$task, log = log)
     },
     error = function(condition) {
       message <- paste(worker, "worker error:", conditionMessage(condition))
-      crew_log(message)
+      crew_log(message, log = log)
       crew::crew_error(message)
     }
   )
@@ -171,10 +184,17 @@ crew_name <- function(n = 1) {
 #' @keywords internal
 #' @return Nothing (invisibly) but print a message.
 #' @param ... Character strings to print.
+#' @param log Character of length 1 with the path
+#'   to a log file. If `NULL`, then no log is written.
 #' @examples
-#' crew_log("done")
-crew_log <- function(...) {
-  time <- format(Sys.time(), "%z UTC %Y-%m-%d | %H:%M %OS2 |")
-#  crew_message(paste(time, ...))
-  print(paste(time, ...))
+#' log <- tempfile()
+#' crew_log("done", log = log)
+#' writeLines(readLines(log))
+crew_log <- function(..., log = NULL) {
+  if (!is.null(log)) {
+    time <- format(Sys.time(), "%z UTC %Y-%m-%d | %H:%M %OS2 |")
+    line <- paste(time, ...)
+    dir_create(dirname(log))
+    write(line, file = log, append = TRUE)
+  }
 }

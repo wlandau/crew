@@ -4,10 +4,13 @@
 \alias{crew_log}
 \title{Print a \code{\link[=crew_worker]{crew_worker()}} log message.}
 \usage{
-crew_log(...)
+crew_log(..., log = NULL)
 }
 \arguments{
 \item{...}{Character strings to print.}
+
+\item{log}{Character of length 1 with the path
+to a log file. If \code{NULL}, then no log is written.}
 }
 \value{
 Nothing (invisibly) but print a message.
@@ -16,6 +19,8 @@ Nothing (invisibly) but print a message.
 Not a user-side function. Do not invoke directly.
 }
 \examples{
-crew_log("done")
+log <- tempfile()
+crew_log("done", log = log)
+writeLines(readLines(log))
 }
 \keyword{internal}

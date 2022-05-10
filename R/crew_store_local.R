@@ -79,15 +79,15 @@ crew_store_local <- R6::R6Class(
       crew_true(direction, is.character(.), !anyNA(.), length(.) == 1L)
       crew_true(worker, is.character(.), !anyNA(.), length(.) == 1L)
       path <- file.path(private$root, direction, worker)
-      path_temp <- file.path(private$root, "temp", crew_name())
-      crew_wait(
-        fun = function(path, path_temp) file.rename(from = path, to = path_temp),
-        args = list(path = path, path_temp = path_temp),
-        timeout = private$timeout,
-        wait = private$wait,
-        message = "store timeout moving local file for deletion"
-      )
-      unlink(path_temp, recursive = TRUE, force = TRUE)
+     path_temp <- file.path(private$root, "temp", crew_name())
+     crew_wait(
+       fun = function(path, path_temp) file.rename(from = path, to = path_temp),
+       args = list(path = path, path_temp = path_temp),
+       timeout = private$timeout,
+       wait = private$wait,
+       message = "store timeout moving local file for deletion"
+     )
+     unlink(path_temp, recursive = TRUE, force = TRUE)
     },
     marshal_store = function() {
       expr <- substitute(

@@ -112,15 +112,15 @@ crew_queue <- R6::R6Class(
         if (private$workers$done[index]) {
           worker <- private$workers$worker[index]
           task <- private$workers$task[index]
-          result <- private$store$read_worker_output(worker = worker)
-          private$store$delete_worker_output(worker = worker)
+          result <- private$store$read_output(worker = worker)
+          private$store$delete_output(worker = worker)
           private$add_result(task = task, result = result)
           private$worker_free(private$workers$worker[index])
         }
       }
     },
     update_done = function() {
-      names <- private$store$list_worker_output()
+      names <- private$store$list_output()
       private$workers$done[private$workers$worker %in% names] <- TRUE
     },
     update_subqueue = function() {
@@ -148,7 +148,7 @@ crew_queue <- R6::R6Class(
     },
     worker_run = function(handle, worker, task, input) {
       value <- list(fun = deparse(input$fun), args = input$args)
-      private$store$write_worker_input(worker = worker, value = value)
+      private$store$write_input(worker = worker, value = value)
       if_any(
         private$worker_up_log(worker),
         handle,

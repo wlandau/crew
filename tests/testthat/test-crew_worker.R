@@ -13,9 +13,9 @@ crew_test("no work then worker timeout", {
 })
 
 crew_test("one simple task", {
-  dir_root <- tempfile()
-  dir_create(dir_root)
-  store <- crew_store_local$new(dir_root = dir_root)
+  root <- tempfile()
+  dir_create(root)
+  store <- crew_store_local$new(root = root)
   fun <- function(x) {
     x + 1
   }
@@ -23,7 +23,7 @@ crew_test("one simple task", {
     list(fun = deparse(fun), args = list(x = 1L)),
     class = "crew_task"
   )
-  store$write_worker_input(worker = "worker", value = value)
+  store$write_input(worker = "worker", value = value)
   expect_error(
     crew_worker(
       worker = "worker",
@@ -34,16 +34,16 @@ crew_test("one simple task", {
     ),
     class = "crew_expire"
   )
-  expect_false(store$exists_worker_input("worker"))
-  expect_true(store$exists_worker_output("worker"))
-  task <- store$read_worker_output("worker")
+  expect_false(store$exists_input("worker"))
+  expect_true(store$exists_output("worker"))
+  task <- store$read_output("worker")
   expect_equal(task$result, 2L)
 })
 
 crew_test("one task", {
-  dir_root <- tempfile()
-  dir_create(dir_root)
-  store <- crew_store_local$new(dir_root = dir_root)
+  root <- tempfile()
+  dir_create(root)
+  store <- crew_store_local$new(root = root)
   fun <- function(x) {
     x + 1
   }
@@ -51,7 +51,7 @@ crew_test("one task", {
     list(fun = deparse(fun), args = list(x = 1L)),
     class = "crew_task"
   )
-  store$write_worker_input(worker = "worker", value = value)
+  store$write_input(worker = "worker", value = value)
   crew_worker(
     worker = "worker",
     store = store$marshal(),
@@ -59,9 +59,9 @@ crew_test("one task", {
     timeout = 0,
     wait = 0
   )
-  expect_false(store$exists_worker_input("worker"))
-  expect_true(store$exists_worker_output("worker"))
-  task <- store$read_worker_output("worker")
+  expect_false(store$exists_input("worker"))
+  expect_true(store$exists_output("worker"))
+  task <- store$read_output("worker")
   expect_equal(task$result, 2L)
 })
 

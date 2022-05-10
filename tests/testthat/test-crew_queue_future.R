@@ -3,7 +3,7 @@ crew_test("crew_queue_future_worker_start()", {
   args <- list(x = "x")
   value <- list(fun = deparse(fun), args = args)
   store <- crew_store_local$new()
-  store$write_worker_input(worker = "worker", value = value)
+  store$write_input(worker = "worker", value = value)
   out <- crew_queue_future_worker_start(
     worker = "worker",
     store = store$marshal(),
@@ -15,7 +15,7 @@ crew_test("crew_queue_future_worker_start()", {
   expect_null(out$resolved)
   future <- out$future
   expect_null(future::value(future))
-  expect_equal(store$read_worker_output("worker")$result, "x")
+  expect_equal(store$read_output("worker")$result, "x")
 })
 
 crew_test("crew_queue_future_worker_resolve() detects crashes", {
@@ -62,7 +62,7 @@ crew_test("crew_queue_future_worker_resolve() needs output to resolve", {
   )
   store <- crew_store_local$new()
   worker <- "x_worker"
-  store$write_worker_output(worker = worker, value = "x_output")
+  store$write_output(worker = worker, value = "x_output")
   out <- crew_queue_future_worker_resolve(
     handle = handle,
     worker = worker,

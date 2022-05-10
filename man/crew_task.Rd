@@ -23,22 +23,22 @@ Not a user-side function. Do not invoke directly.
 }
 \examples{
 if (!identical(Sys.getenv("CREW_EXAMPLES", unset = ""), "")) {
-dir_root <- tempfile()
-dir.create(dir_root)
-store <- crew_store_local$new(dir_root = dir_root)
+root <- tempfile()
+dir.create(root)
+store <- crew_store_local$new(root = root)
 fun <- function(x) {
   x + 1
 }
 args <- list(x = 1)
 value <- list(fun = deparse(fun), args = args)
-store$write_worker_input(worker = "my_worker", value = value)
+store$write_input(worker = "my_worker", value = value)
 crew_task(
   worker = "my_worker",
   store = store$marshal(),
   timeout = 0,
   wait = 0
 )
-store$read_worker_output("my_worker")$result # 2
+store$read_output("my_worker")$result # 2
 }
 }
 \keyword{internal}

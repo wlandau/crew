@@ -37,7 +37,7 @@ crew_queue_future <- R6::R6Class(
     worker_run = function(handle, worker, task, input) {
       private$subqueue$block()
       value <- list(fun = deparse(input$fun), args = input$args)
-      private$store$write_worker_input(worker = worker, value = value)
+      private$store$write_input(worker = worker, value = value)
       args <- list(
         worker = worker,
         store = private$store$marshal(),
@@ -227,7 +227,7 @@ crew_queue_future_worker_resolve <- function(handle, worker, store, timeout) {
     handle$time_resolved <- time
   }
   output <- tryCatch(
-    store$exists_worker_output(worker),
+    store$exists_output(worker),
     error = crew::crew_condition_false
   )
   if (resolved && !output) {

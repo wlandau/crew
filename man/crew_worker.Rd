@@ -4,7 +4,7 @@
 \alias{crew_worker}
 \title{Worker event loop.}
 \usage{
-crew_worker(worker, store, max_tasks, timeout, wait, log = tempfile())
+crew_worker(worker, store, max_tasks, timeout, wait)
 }
 \arguments{
 \item{worker}{Character of length 1, name of the worker.}
@@ -19,8 +19,6 @@ that a worker can idle before timing out.}
 
 \item{wait}{Positive numeric of length 1, number of seconds
 that the worker waits between checking if a task exists.}
-
-\item{log}{Character of length 1, path to a log file to write.}
 }
 \value{
 \code{NULL} (invisibly).
@@ -36,15 +34,15 @@ and puts the output in the data store.
 }
 \examples{
 if (!identical(Sys.getenv("CREW_EXAMPLES", unset = ""), "")) {
-dir_root <- tempfile()
-dir.create(dir_root)
-store <- crew_store_local$new(dir_root = dir_root)
+root <- tempfile()
+dir.create(root)
+store <- crew_store_local$new(root = root)
 fun <- function(x) {
   x + 1
 }
 args <- list(x = 1)
 value <- list(fun = deparse(fun), args = args)
-store$write_worker_input(worker = "my_worker", value = value)
+store$write_input(worker = "my_worker", value = value)
 crew_worker(
   worker = "my_worker",
   store = store$marshal(),
@@ -52,7 +50,7 @@ crew_worker(
   timeout = 0,
   wait = 0
 )
-store$read_worker_output("my_worker")$result # 2
+store$read_output("my_worker")$result # 2
 }
 }
 \keyword{internal}

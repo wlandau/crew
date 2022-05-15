@@ -40,6 +40,32 @@ crew_test("one simple task", {
   expect_equal(task$result, 2L)
 })
 
+crew_test("worker crash handling", {
+  root <- tempfile()
+  dir_create(root)
+  store <- crew_store_local$new(root = root)
+  fun <- function(x) {
+    x + 1
+  }
+  value <- structure(
+    list(fun = deparse(fun), args = list(x = 1L)),
+    class = "crew_task"
+  )
+  path <- file.path(root, "input", "worker")
+  dir.create(dirname(path))
+  saveRDS(object = value, file = path)
+  expect_error(
+    crew_worker(
+      worker = "worker",
+      store = store$marshal(),
+      max_tasks = Inf,
+      timeout = 0,
+      wait = 0
+    ),
+    class = "crew_error"
+  )
+})
+
 crew_test("one task", {
   root <- tempfile()
   dir_create(root)

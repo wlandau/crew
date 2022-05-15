@@ -9,6 +9,7 @@ crew_test("input", {
   expect_equal(x$read_input(worker), "value_x")
   x$delete_input(worker = worker)
   expect_false(x$exists_input(worker = worker))
+  expect_silent(x$delete_input(worker = worker))
 })
 
 crew_test("output", {
@@ -22,6 +23,7 @@ crew_test("output", {
   expect_equal(x$read_output(worker), "value_x")
   x$delete_output(worker = worker)
   expect_false(x$exists_output(worker = worker))
+  expect_silent(x$delete_output(worker = worker))
 })
 
 crew_test("log path", {

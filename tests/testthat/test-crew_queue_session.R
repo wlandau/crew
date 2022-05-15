@@ -6,6 +6,7 @@ crew_test("detect crash and shut down workers", {
   crew_wait(
     fun = function() all(map_lgl(x$get_workers()$handle, ~.x$is_alive()))
   )
+  expect_silent(x$crashed())
   x$get_workers()$handle[[1]]$kill()
   expect_error(x$crashed(), class = "crew_error")
 })

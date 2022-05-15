@@ -81,7 +81,9 @@ crew_store_local <- R6::R6Class(
       crew_true(direction, is.character(.), !anyNA(.), length(.) == 1L)
       crew_true(worker, is.character(.), !anyNA(.), length(.) == 1L)
       path <- file.path(private$root, direction, worker)
-      if (!any(file.exists(path))) return()
+      if (!any(file.exists(path))) {
+        return()
+      }
       path_temp <- file.path(private$root, "temp", crew_name())
       crew_wait(
         fun = function(path, path_temp) {

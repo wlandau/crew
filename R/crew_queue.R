@@ -122,7 +122,7 @@ crew_queue <- R6::R6Class(
     update_done = function() {
       output <- private$store$list_output()
       sent <- private$workers$worker[private$workers$sent]
-      names <-intersect(output, sent)
+      names <- intersect(output, sent)
       private$workers$done[private$workers$worker %in% names] <- TRUE
     },
     update_subqueue = function() {

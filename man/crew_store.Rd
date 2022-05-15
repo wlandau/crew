@@ -54,6 +54,7 @@ Other store:
 \item \href{#method-list_output}{\code{crew_store$list_output()}}
 \item \href{#method-delete_input}{\code{crew_store$delete_input()}}
 \item \href{#method-delete_output}{\code{crew_store$delete_output()}}
+\item \href{#method-path_log}{\code{crew_store$path_log()}}
 \item \href{#method-marshal}{\code{crew_store$marshal()}}
 \item \href{#method-destroy}{\code{crew_store$destroy()}}
 }
@@ -287,6 +288,26 @@ Delete worker output data.
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-path_log"></a>}}
+\if{latex}{\out{\hypertarget{method-path_log}{}}}
+\subsection{Method \code{path_log()}}{
+Get worker log path. Not valid for all stores.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_store$path_log(worker)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{worker}}{Character of length 1, name of the worker.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Character of length 1, path to the worker log file.
 }
 }
 \if{html}{\out{<hr>}}

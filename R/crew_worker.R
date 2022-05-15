@@ -18,32 +18,25 @@
 #'   x + 1
 #' }
 #' args <- list(x = 1)
-#' value <- list(fun = deparse(fun), args = args)
+#' value <- list(fun = deparse(fun), args = args, task  = "my_task")
 #' store$write_input(worker = "my_worker", value = value)
-#' log <- tempfile()
 #' crew_worker(
 #'   worker = "my_worker",
 #'   store = store$marshal(),
 #'   max_tasks = 1,
 #'   timeout = 0,
-#'   wait = 0,
-#'   log = log
+#'   wait = 0
 #' )
 #' store$read_output("my_worker")$result # 2
-#' writeLines(readLines(log))
 #' }
 crew_worker <- function(
   worker,
   store,
   max_tasks,
   timeout,
-  wait,
-  log = NULL
+  wait
 ) {
-  if (!is.null(log)) {
-    crew_true(log, is.character(.), nzchar(.), !anyNA(.), length(.) == 1)
-    unlink(log)
-  }
+  crew_log(worker, "start")
   worker <- as.character(worker)
   store <- eval(parse(text = store))
   max_tasks <- as.numeric(max_tasks)
@@ -51,31 +44,32 @@ crew_worker <- function(
   wait <- as.numeric(wait)
   task <- 0
   while (task < max_tasks) {
+    crew_log(worker, "task count", task, "of", max_tasks)
     crew_iterate(
       worker = worker,
       store = store,
       timeout = timeout,
-      wait = wait,
-      log = log
+      wait = wait
     )
     task <- task + 1
   }
   invisible()
 }
 
-crew_iterate <- function(worker, store, timeout, wait, log) {
+crew_iterate <- function(worker, store, timeout, wait) {
+  crew_log(worker, "waiting for input")
   crew_wait(
     fun = ~.x$exists_input(worker = .y),
     args = list(store = store, worker = worker),
     timeout = timeout,
     wait = wait
   )
+  crew_log(worker, "got input")
   crew_task(
     worker = worker,
     store = store,
     timeout = timeout,
-    wait = wait,
-    log = log
+    wait = wait
   )
 }
 
@@ -99,49 +93,34 @@ crew_iterate <- function(worker, store, timeout, wait, log) {
 #'   x + 1
 #' }
 #' args <- list(x = 1)
-#' value <- list(fun = deparse(fun), args = args)
+#' value <- list(fun = deparse(fun), args = args, task = "my_task")
 #' store$write_input(worker = "my_worker", value = value)
-#' log <- tempfile()
 #' crew_task(
 #'   worker = "my_worker",
 #'   store = store$marshal(),
 #'   timeout = 0,
-#'   wait = 0,
-#'   log = log
+#'   wait = 0
 #' )
 #' store$read_output("my_worker")$result # 2
-#' writeLines(readLines(log))
 #' }
-crew_task <- function(worker, store, timeout, wait, log = NULL) {
+crew_task <- function(worker, store, timeout, wait) {
   if (is.character(store)) {
     store <- eval(parse(text = store))
   }
-
+  crew_log(worker, "got store")
   tryCatch({
-    message("reading worker ", worker, " input")
-    write("reading", "~/Desktop/log.txt", append = TRUE)
+      crew_log(worker, "reading input")
       input <- store$read_input(worker = worker)
-      
-      message("parsing worker ", worker, " function")
-      write("parsing", "~/Desktop/log.txt", append = TRUE)
+      task <- input$task
+      crew_log(worker, "task", task, "parsing input")
       input$fun <- eval(parse(text = input$fun))
-      
-      message("running worker ", worker, " task")
-      write("running", "~/Desktop/log.txt", append = TRUE)
+      crew_log(worker, "task", task, "running")
       value <- crew_monad(fun = input$fun, args = input$args)
-      
-      message("deleting worker ", worker, " input")
-      write("deleting", "~/Desktop/log.txt", append = TRUE)
+      crew_log(worker, "task", task, "deleting input")
       store$delete_input(worker = worker)
-      
-      message("writing worker ", worker, " output")
-      write("writing", "~/Desktop/log.txt", append = TRUE)
-      #store$write_output(worker = worker, value = value)
-      
-      store$private$write_task(direction = "output", worker = worker, value = value)
-      
-      message("wrote worker ", worker, " output")
-      write("done", "~/Desktop/log.txt", append = TRUE)
+      crew_log(worker, "task", task, "writing output")
+      store$write_output(worker = worker, value = value)
+      crew_log(worker, "task", task, "done")
     },
     error = function(condition) {
       message <- paste(worker, "worker error:", conditionMessage(condition))
@@ -184,4 +163,9 @@ crew_name <- function(n = 1) {
   out <- uuid::UUIDgenerate(n = n)
   out <- gsub("-", "_", out)
   paste0("x", out)
+}
+
+crew_log <- function(worker, ...) {
+  prefix <- format(Sys.time(), "UTC %z | %Y-%m-%d | %H:%M %OS2 | worker")
+  crew_message(paste(prefix, worker, "|", ...))
 }

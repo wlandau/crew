@@ -24,6 +24,12 @@ crew_test("output", {
   expect_false(x$exists_output(worker = worker))
 })
 
+crew_test("log path", {
+  x <- crew_store_local$new()
+  path <- x$path_log(worker = "x")
+  expect_true(file.exists(dirname(path)))
+})
+
 crew_test("marshal", {
   x <- crew_store_local$new()
   out <- x$marshal()

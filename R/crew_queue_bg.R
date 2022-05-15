@@ -39,7 +39,9 @@ crew_queue_bg <- R6::R6Class(
             timeout = private$timeout,
             wait = private$wait
           ),
-          supervise = TRUE
+          supervise = TRUE,
+          stdout = private$store$path_log(worker = .x),
+          stderr = private$store$path_log(worker = .x)
         )
       )
       crew_wait(

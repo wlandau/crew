@@ -36,7 +36,7 @@ crew_queue_future <- R6::R6Class(
     subqueue = NULL,
     worker_run = function(handle, worker, task, input) {
       private$subqueue$block()
-      value <- list(fun = deparse(input$fun), args = input$args)
+      value <- list(fun = deparse(input$fun), args = input$args, task = task)
       private$store$write_input(worker = worker, value = value)
       args <- list(
         worker = worker,

@@ -4,7 +4,7 @@
 \alias{crew_task}
 \title{Run a task in a crew worker.}
 \usage{
-crew_task(worker, store, timeout, wait, log = NULL)
+crew_task(worker, store, timeout, wait)
 }
 \arguments{
 \item{worker}{Character of length 1, name of the worker.}
@@ -30,18 +30,15 @@ fun <- function(x) {
   x + 1
 }
 args <- list(x = 1)
-value <- list(fun = deparse(fun), args = args)
+value <- list(fun = deparse(fun), args = args, task = "my_task")
 store$write_input(worker = "my_worker", value = value)
-log <- tempfile()
 crew_task(
   worker = "my_worker",
   store = store$marshal(),
   timeout = 0,
-  wait = 0,
-  log = log
+  wait = 0
 )
 store$read_output("my_worker")$result # 2
-writeLines(readLines(log))
 }
 }
 \keyword{internal}

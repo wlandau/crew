@@ -4,7 +4,7 @@
 \alias{crew_worker}
 \title{Worker event loop.}
 \usage{
-crew_worker(worker, store, max_tasks, timeout, wait, log = NULL)
+crew_worker(worker, store, max_tasks, timeout, wait)
 }
 \arguments{
 \item{worker}{Character of length 1, name of the worker.}
@@ -41,19 +41,16 @@ fun <- function(x) {
   x + 1
 }
 args <- list(x = 1)
-value <- list(fun = deparse(fun), args = args)
+value <- list(fun = deparse(fun), args = args, task  = "my_task")
 store$write_input(worker = "my_worker", value = value)
-log <- tempfile()
 crew_worker(
   worker = "my_worker",
   store = store$marshal(),
   max_tasks = 1,
   timeout = 0,
-  wait = 0,
-  log = log
+  wait = 0
 )
 store$read_output("my_worker")$result # 2
-writeLines(readLines(log))
 }
 }
 \keyword{internal}

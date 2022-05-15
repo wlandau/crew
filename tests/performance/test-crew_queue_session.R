@@ -1,4 +1,4 @@
-proffer::pprof({
+system.time({
 x <- crew_queue_session$new(workers = 4)
 n <- 2e2
 submitted <- integer(0)

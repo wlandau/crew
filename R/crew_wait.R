@@ -34,9 +34,8 @@ crew_wait <- function(
   start <- as.numeric(proc.time()["elapsed"])
   while (!all(do.call(what = fun, args = args))) {
     if (as.numeric(proc.time()["elapsed"]) - start > timeout) {
-      crew_expire(
-        paste("timed out after waiting", timeout, "seconds.", message)
-      )
+      message <- paste("timed out after waiting", timeout, "seconds.", message)
+      crew_expire(message)
     }
     Sys.sleep(wait)
   }

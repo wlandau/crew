@@ -128,6 +128,12 @@ crew_store <- R6::R6Class(
       private$delete_task(direction = "output", worker = worker)
       invisible()
     },
+    #' @description Get worker log path. Not valid for all stores.
+    #' @return Character of length 1, path to the worker log file.
+    #' @param worker Character of length 1, name of the worker.
+    path_log = function(worker) {
+      private$log_worker(worker = worker)
+    },
     #' @description Marshal the data store.
     #' @details Represent the store object as a concise
     #'   character string that can be recovered

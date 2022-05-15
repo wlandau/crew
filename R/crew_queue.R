@@ -120,7 +120,9 @@ crew_queue <- R6::R6Class(
       }
     },
     update_done = function() {
-      names <- private$store$list_output()
+      output <- private$store$list_output()
+      sent <- private$workers$worker[private$workers$sent]
+      names <-intersect(output, sent)
       private$workers$done[private$workers$worker %in% names] <- TRUE
     },
     update_subqueue = function() {
@@ -147,7 +149,7 @@ crew_queue <- R6::R6Class(
       }
     },
     worker_run = function(handle, worker, task, input) {
-      value <- list(fun = deparse(input$fun), args = input$args)
+      value <- list(fun = deparse(input$fun), args = input$args, task = task)
       private$store$write_input(worker = worker, value = value)
       if_any(
         private$worker_up_log(worker),

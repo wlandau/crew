@@ -7,7 +7,9 @@
 Task queue with \code{callr::r_bg()} workers.
 }
 \details{
-Most users should choose for the session queue
+The interface is the same as \link{crew_queue_session} except
+there is a data store (e.g. \link{crew_store_local}) which
+the user can customize. Most users should choose for the session queue
 \link{crew_queue_session} instead of the background queue
 \link{crew_queue_bg}. The only reason to use \link{crew_queue_bg}
 is for subqueues for \link{crew_queue_future} on clusters

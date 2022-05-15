@@ -3,7 +3,9 @@
 #' @aliases crew_queue_bg
 #' @family queue
 #' @description Task queue with `callr::r_bg()` workers.
-#' @details Most users should choose for the session queue
+#' @details The interface is the same as [crew_queue_session] except
+#'   there is a data store (e.g. [crew_store_local]) which
+#'   the user can customize. Most users should choose for the session queue
 #'   [crew_queue_session] instead of the background queue
 #'   [crew_queue_bg]. The only reason to use [crew_queue_bg]
 #'   is for subqueues for [crew_queue_future] on clusters

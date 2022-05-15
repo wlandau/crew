@@ -20,19 +20,16 @@ reference:
 - title: Help
   contents:
   - '`crew-package`'
-- title: Crew classes
-  contents:
-  - '`class_crew`'
 - title: Queues
   contents:
-  - '`class_queue`'
-  - '`class_queue_session`'
-  - '`class_queue_bg`'
-  - '`class_queue_future`'
+  - '`crew_queue`'
+  - '`crew_queue_session`'
+  - '`crew_queue_bg`'
+  - '`crew_queue_future`'
 - title: Stores
   contents:
-  - '`class_store`'
-  - '`class_store_local`'
+  - '`crew_store`'
+  - '`crew_store_local`'
 - title: Utilities
   contents:
   - '`crew_true`'

@@ -12,7 +12,8 @@
 #'   <https://www.tidyverse.org/blog/2019/09/callr-task-q/>,
 #'   which was also released in commit
 #'   `811a02f604de2cf03264f6b35ce9ec8a412f2581`
-#'   of <https://github.com/r-lib/callr> in the `vignettes/taskq.R`
+#'   of <https://github.com/r-lib/callr> in the
+#'   `vignettes/Task-queue-with-callr.Rmd`
 #'   file under the MIT license. See the `crew` package `README.md` and
 #'   `NOTICE` files for other mentions of this attribution.
 #' @examples

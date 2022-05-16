@@ -8,15 +8,60 @@
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
 [![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
 
-The [`R6`](https://r6.r-lib.org) classes of `crew` establish a
-standardized user interface to high-performance computing technologies.
-Unlike its closely related [`future`](https://future.futureverse.org/)
-package, `crew` prioritizes centralized scheduling, heterogeneous
-semi-persistent workers, and user-driven customization. The primary goal
-is to help pipeline tools such as such
-[`targets`](https://docs.ropensci.org/targets/) efficiently orchestrate
-tasks without having to support individual low-level interfaces to
-specific high-performance computing platforms or cloud services.
+A task queue is a central hub for orchestrating computationally
+demanding workloads dynamically and asynchronously. The `crew` package
+supports a variety of task queues with a common interface and different
+types of workers for different backend technologies, similar to the way
+the [`future`](https://future.futureverse.org/) package provides a
+unified R interface for single jobs and individual map-reduce calls. The
+`crew` package borrows the task queue design from the [`callr` package
+vignettes](https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/Task-queue-with-callr.Rmd)
+and <https://www.tidyverse.org/blog/2019/09/callr-task-q/>, enhances the
+core feature set (for example, crash detection), and establishes an
+extensible [`R6`](https://r6.r-lib.org/) class system to add more worker
+types as development continues (e.g. jobs on Amazon and Google cloud
+computing platforms). Multi-queue structures, such as the
+already-supported ’[`future`](https://future.futureverse.org/)-based
+task queue, increase efficiency in heavily parallel
+[cluster](https://future.batchtools.futureverse.org/) workloads with an
+inner local task queue to asynchronicity manage task submission,
+monitoring, and collection.
+
+## Similar work
+
+-   [`targets`](https://docs.ropensci.org/targets/): a Make-like
+    pipeline tool for R. Event loops in
+    [`targets`](https://docs.ropensci.org/targets/) invoke packages
+    [`clustermq`](https://mschubert.github.io/clustermq/) and
+    [`future`](https://future.futureverse.org/) to run tasks
+    concurrently and asynchronously.
+    [`targets`](https://docs.ropensci.org/targets/) would be able to
+    support different scheduling techniques and run on more platforms if
+    it incorporated a formal task queue behind the scenes. That task
+    queue is probably going to be `crew` or
+    [`rrq`](https://mrc-ide.github.io/rrq/).
+-   [`callr`](https://github.com/r-lib/callr): the previous [task queue
+    vignette](https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/Task-queue-with-callr.Rmd),
+    as well as the blog post at
+    <https://www.tidyverse.org/blog/2019/09/callr-task-q/>, show how to
+    create an efficient multi-process task queue using
+    [`callr::r_session`](https://callr.r-lib.org/reference/r_session.html).
+    The goal of `crew` is to extend this idea to different worker types,
+    such as [Amazon Web Services (AWS)
+    Batch](https://aws.amazon.com/batch/) jobs.
+-   [`rrqueue`](http://traitecoevo.github.io/rrqueue/): an R-focused
+    task queue built on Redis, no longer maintained.
+-   [`rrq`](https://mrc-ide.github.io/rrq/): an R-focused task queue
+    built on Redis, successor of
+    [`rrqueue`](http://traitecoevo.github.io/rrqueue/).
+-   [`future`](https://future.futureverse.org/): a unified interface for
+    asynchronous evaluation of single tasks and map-reduce calls on a
+    wide variety of backend technologies. One of the backends of `crew`.
+-   [`promises`](https://rstudio.github.io/promises/):
+    minimally-invasive asynchronous programming for a small number of
+    tasks within Shiny apps.
+-   [`later`](https://r-lib.github.io/later/): delayed evaluation of
+    synchronous tasks.
 
 ## Installation
 
@@ -43,7 +88,8 @@ people.
     (links below). `crew` borrows and modifies the [vignette
     code](https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R)
     under the MIT license. See also the `crew` package `NOTICE` file.
-    -   Blog post:<https://www.tidyverse.org/blog/2019/09/callr-task-q/>
+    -   Blog post:
+        <https://www.tidyverse.org/blog/2019/09/callr-task-q/>
     -   `callr` vignette code:
         <https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/taskq.R>
 -   [Kirill Müller](https://github.com/krlmlr/). The

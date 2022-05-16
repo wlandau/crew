@@ -106,6 +106,7 @@ crew_test("detect crash", {
 })
 
 crew_test("custom plan", {
+  skip_if_not_installed("future.batchtools")
   future::plan(future::sequential)
   x <- crew_queue_future$new(
     workers = 1,

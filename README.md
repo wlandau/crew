@@ -24,7 +24,7 @@ computing platforms). Multi-queue structures, such as the
 already-supported ’[`future`](https://future.futureverse.org/)-based
 task queue, increase efficiency in heavily parallel
 [cluster](https://future.batchtools.futureverse.org/) workloads with an
-inner local task queue to asynchronicity manage task submission,
+inner local asynchronous task queue to manage task submission,
 monitoring, and collection.
 
 ## Similar work

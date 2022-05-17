@@ -4,7 +4,7 @@ Description: A task queue is a central hub for orchestrating
   computationally demanding workloads dynamically and asynchronously.
   The 'crew' package supports a variety of task queues with
   a common interface and different types of workers for different
-  backend technologies, similar to the way the
+  platforms, similar to the way the
   'future' package (2021, <doi:10.32614/RJ-2021-048>)
   provides a unified R interface for single jobs and
   individual map-reduce calls. The 'crew' package borrows

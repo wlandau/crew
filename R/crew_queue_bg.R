@@ -3,7 +3,10 @@
 #' @aliases crew_queue_bg
 #' @family queue
 #' @description Task queue with `callr::r_bg()` workers.
-#' @details The interface is the same as [crew_queue_session] except
+#' @details  Some public methods are inherited from [crew_queue].
+#'   See the [crew_queue] help file for details on those.
+#'
+#'   The interface is the same as [crew_queue_session] except
 #'   there is a data store (e.g. [crew_store_local]) which
 #'   the user can customize. Most users should choose for the session queue
 #'   [crew_queue_session] instead of the background queue

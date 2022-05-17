@@ -3,7 +3,10 @@
 #' @aliases crew_queue_future
 #' @family queue
 #' @description Task queue with `future` workers.
-#' @details The workers in this queue are futures with the `future` package.
+#' @details  Some public methods are inherited from [crew_queue].
+#'   See the [crew_queue] help file for details on those.
+#'
+#'   The workers in this queue are futures with the `future` package.
 #'   In `push()`, it is possible to supply different `future::plan()`s
 #'   to different futures, and the queue itself has its own default plan.
 #'   Plans must be serializable, so only the `sequential`

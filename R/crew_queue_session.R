@@ -3,7 +3,10 @@
 #' @aliases crew_queue_session
 #' @family queue
 #' @description Task queue with `callr::r_session` workers.
-#' @details The session queue is a slightly enhanced version of
+#' @details Some public methods are inherited from [crew_queue].
+#'   See the [crew_queue] help file for details on those.
+#'
+#'   The session queue is a slightly enhanced version of
 #'   <https://www.tidyverse.org/blog/2019/09/callr-task-q/>,
 #'   with the ability to detect crashes and block the R session
 #'   until the backlog clears. See the "Queue attribution"

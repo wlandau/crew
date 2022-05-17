@@ -18,7 +18,8 @@ the work of Gábor Csárdi, particularly
 \url{https://www.tidyverse.org/blog/2019/09/callr-task-q/},
 which was also released in commit
 \verb{811a02f604de2cf03264f6b35ce9ec8a412f2581}
-of \url{https://github.com/r-lib/callr} in the \code{vignettes/taskq.R}
+of \url{https://github.com/r-lib/callr} in the
+\code{vignettes/Task-queue-with-callr.Rmd}
 file under the MIT license. See the \code{crew} package \code{README.md} and
 \code{NOTICE} files for other mentions of this attribution.
 }

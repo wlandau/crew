@@ -7,6 +7,9 @@
 Task queue with \code{callr::r_bg()} workers.
 }
 \details{
+Some public methods are inherited from \link{crew_queue}.
+See the \link{crew_queue} help file for details on those.
+
 The interface is the same as \link{crew_queue_session} except
 there is a data store (e.g. \link{crew_store_local}) which
 the user can customize. Most users should choose for the session queue
@@ -23,7 +26,8 @@ the work of Gábor Csárdi, particularly
 \url{https://www.tidyverse.org/blog/2019/09/callr-task-q/},
 which was also released in commit
 \verb{811a02f604de2cf03264f6b35ce9ec8a412f2581}
-of \url{https://github.com/r-lib/callr} in the \code{vignettes/taskq.R}
+of \url{https://github.com/r-lib/callr} in the
+\code{vignettes/Task-queue-with-callr.Rmd}
 file under the MIT license. See the \code{crew} package \code{README.md} and
 \code{NOTICE} files for other mentions of this attribution.
 }

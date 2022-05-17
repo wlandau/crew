@@ -7,6 +7,9 @@
 Task queue with \code{future} workers.
 }
 \details{
+Some public methods are inherited from \link{crew_queue}.
+See the \link{crew_queue} help file for details on those.
+
 The workers in this queue are futures with the \code{future} package.
 In \code{push()}, it is possible to supply different \code{future::plan()}s
 to different futures, and the queue itself has its own default plan.
@@ -27,7 +30,8 @@ the work of Gábor Csárdi, particularly
 \url{https://www.tidyverse.org/blog/2019/09/callr-task-q/},
 which was also released in commit
 \verb{811a02f604de2cf03264f6b35ce9ec8a412f2581}
-of \url{https://github.com/r-lib/callr} in the \code{vignettes/taskq.R}
+of \url{https://github.com/r-lib/callr} in the
+\code{vignettes/Task-queue-with-callr.Rmd}
 file under the MIT license. See the \code{crew} package \code{README.md} and
 \code{NOTICE} files for other mentions of this attribution.
 }

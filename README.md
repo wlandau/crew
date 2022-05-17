@@ -46,8 +46,8 @@ monitoring, and collection.
     <https://www.tidyverse.org/blog/2019/09/callr-task-q/>, show how to
     create an efficient multi-process task queue using
     [`callr::r_session`](https://callr.r-lib.org/reference/r_session.html).
-    The goal of `crew` is to extend this idea to different worker types,
-    such as [Amazon Web Services (AWS)
+    The goal of `crew` is to eventually extend this idea to different
+    worker types, such as [Amazon Web Services (AWS)
     Batch](https://aws.amazon.com/batch/) jobs.
 -   [`rrq`](https://mrc-ide.github.io/rrq/): an R-focused task queue
     built on Redis, successor of
@@ -59,18 +59,18 @@ monitoring, and collection.
 -   [`future`](https://future.futureverse.org/): a unified interface for
     asynchronous evaluation of single tasks and map-reduce calls on a
     wide variety of backend technologies. One of the backends of `crew`.
--   [`clustermq`](http://mschubert.github.io/clustermq/): an R layer on
+-   [`clustermq`](https://mschubert.github.io/clustermq/): an R layer on
     top of [ZeroMQ](https://zeromq.org/) for submitting tasks as array
     jobs on traditional clusters.
--   [`mirai`](https://shikokuchuo.net/mirai/): an R framework for
-    asychronous tasks built on [NNG](https://nng.nanomsg.org).
+-   [`mirai`](https://github.com/shikokuchuo/mirai): an R framework for
+    asynchronous tasks built on [NNG](https://nng.nanomsg.org).
 -   [`promises`](https://rstudio.github.io/promises/):
     minimally-invasive asynchronous programming for a small number of
     tasks within Shiny apps.
 -   [`later`](https://r-lib.github.io/later/): delayed evaluation of
     synchronous tasks.
 -   [High-performance computing CRAN task
-    view](https://cran.r-project.org/web/views/HighPerformanceComputing.html).
+    view](https://CRAN.R-project.org/view=HighPerformanceComputing).
 
 ## Installation
 
@@ -89,7 +89,10 @@ tutorial.
 will serve as a backend to get
 [`targets`](https://docs.ropensci.org/targets/) running distributed
 workers on the cloud (AWS Batch, AWS Fargate, Google Cloud Run, etc.).
-If `crew` fills this role, new [task queues]() and [data stores]() will
+If `crew` fills this role, new [task
+queues](https://wlandau.github.io/crew/reference/index.html#queues) and
+[data
+stores](https://wlandau.github.io/crew/reference/index.html#stores) will
 be developed for cloud platforms.
 
 ## Thanks

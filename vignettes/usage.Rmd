@@ -8,164 +8,123 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
+set.seed(0)
+library(crew)
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
-)
-library(crew)
-library(future)
-library(future.callr)
-```
-
-# Setup
-
-First, create a `crew` object.
-
-```{r}
-library(crew)
-crew <- class_crew$new()
-```
-
-Optionally, supply the store and worker classes you plan to use. The store determines where the input and output data live for jobs (local file system, Amazon S3 bucket, Google Cloud bucket, etc.), and worker classes control where and how the workers run (locally in a different R session, Amazon Web Services, Google Cloud Platform, etc.).
-
-```{r}
-crew <- class_crew$new(
-  store = class_store_local$new(),
-  worker_classes = list(
-    class_worker_callr,
-    class_worker_future
-  )
+  comment = "#>",
+  paged.print = FALSE
 )
 ```
 
-If you use `class_worker_future`, choose a plan.
+## Local task queues
+
+`crew`'s multi-session task queue is much like <https://www.tidyverse.org/blog/2019/09/callr-task-q/>. To start a queue, call `crew_queue_session$new()` and supply the number of workers, or background processes, that are capable of accepting tasks.
 
 ```{r}
-library(future)
-library(future.callr)
-plan(callr)
+queue <- crew_queue_session$new(workers = 2)
 ```
 
-# Specify workers.
-
-Create worker objects with the `recruit()` method.
+Immediately, two background processes start. We can inspect them with the `get_workers()` method. The `handle` column is a list column with [`callr::r_session`](https://callr.r-lib.org/reference/r_session.html) handles.
 
 ```{r}
-crew$recruit(workers = 2) # callr workers
+queue$get_workers()
 ```
 
-Optionally, create worker objects of a specified class and set fields like timeout and tags.
+No tasks are waiting to be assigned to workers,
 
 ```{r}
-names(crew$worker_classes)
-crew$recruit(
-  workers = 2,
-  class = "worker_future",
-  tags = c("long_jobs_go_here", "my_future_workers")
-)
+queue$get_tasks()
 ```
 
-The individual worker interfaces are `R6` objects available in `crew$workers`.
+and no results are available from completed tasks.
 
 ```{r}
-lapply(crew$workers, class)
+queue$get_results()
 ```
 
-# Launch workers and send jobs
-
-No workers are running yet.
+To assign a task, we create a function in R and a named list of arguments. We supply that information to the `push()` method of the queue.
 
 ```{r}
-crew$up()
-```
-
-To start any or all workers, either use `launch()` or `send()`. The latter finds a suitable available worker, launches it if necessary, and then sends a job. Poll with `receivable()` and get the output with `receive()`. Tags let you control which kinds of workers get the jobs, and they are are supported and optional in all relevant crew methods.
-
-```{r, warning = FALSE}
-job <- function(seconds) {
+fun <- function(seconds) {
   Sys.sleep(seconds)
-  warning("This is a warning.")
-  sprintf("Job ran in %s seconds.", seconds)
+  return(paste("ran for", seconds, "seconds and completed successfully"))
+}
+  
+queue$push(fun = fun, args = list(seconds = 1))
+```
+
+Control returns to the main R session immediately, and the the task runs in the background. Call `pop()` to check on the results and return the latest one if available.
+
+```{r}
+while (is.null(result <- queue$pop())) {
+  Sys.sleep(0.25)
+  message("still waiting")
 }
 
-# The job runs on a worker of class "worker_future" in this case
-# because those two workers are tagged with "long_jobs_go_here".
-crew$send(fun = job, args = list(seconds = 4), tags = "long_jobs_go_here")
+str(result)
+```
 
-# Do other tasks while the job runs in the background.
-do_other_tasks <- function () {
-  start <- as.numeric(proc.time()["elapsed"])
-  while (!crew$receivable()) {
-    Sys.sleep(1)
-    print(as.numeric(proc.time()["elapsed"]) - start)
+```{r}
+result$result$result
+```
+
+Internally, `push()` and `pop()` call the `update()` method,^[Actually, they all call the private `update_all()` method, and the public `update()` method does nothing else.] which is like the `schedule()` method in the [100-line task queue](https://www.tidyverse.org/blog/2019/09/callr-task-q/). `update()` shuffles waiting tasks to available works, checks if workers are done (or crashed), and collects output so it is available for `get_results()` or `pop()`. It is recommended to invoke the task queue at regular intervals to assign new tasks and collect results. Here is a sketch of such an event loop. The [`targets`](https://docs.ropensci.org/targets/) package and heavy-duty [Shiny](https://shiny.rstudio.com) apps have event loops like this one.
+
+```{r}
+fun <- function(seconds) {
+  Sys.sleep(seconds)
+  seconds
+}
+
+tasks <- runif(n = 25, min = 0.1, max = 1)
+results <- numeric(0)
+
+for (task in tasks) {
+  queue$push(fun = fun, args = list(seconds = task))
+  result <- queue$pop()
+  if (!is.null(result)) {
+    results <- c(results, result$result$result)
   }
 }
 
-do_other_tasks()
-
-# Get the output when ready.
-output <- crew$receive()
-```
-
-The output contains the result of the job, as well as warnings, errors, etc.
-
-```{r}
-str(output)
-```
-
-Once launched, workers stay running until they time out or shut down.
-
-```{r}
-is_up <- vapply(crew$workers, function(x) x$up(), FUN.VALUE = logical(1))
-is_up
-```
-
-Sure enough, the running worker has the tags of the previous job.
-
-```{r}
-name <- names(is_up[is_up])
-crew$workers[[name]]$tags
-```
-
-# Send more jobs
-
-`crew` tries to send jobs to workers that are already running. If all running workers are busy, new ones will launch automatically. Use `sendable()` to check if any workers can accept new work.
-
-```{r, warning = FALSE}
-crew$send(fun = job, args = list(seconds = 8), tags = "long_jobs_go_here")
-crew$send(fun = job, args = list(seconds = 4)) # May run on any available worker.
-
-do_other_tasks()
-
-output_first <- crew$receive()
-
-do_other_tasks()
-
-output_second <- crew$receive()
-
-str(output_first)
-
-str(output_second)
-```
-
-# Shut down and dismiss workers
-
-To shut down one or more workers, use `shutdown()`. By default, only idle workers are shut down.
-
-```{r}
-crew$shutdown()
-while (crew$up()) {
-  Sys.sleep(0.1)
+while (length(results) < length(tasks)) {
+  result <- queue$pop()
+  if (!is.null(result)) {
+    results <- c(results, result$result$result)
+  }
 }
 ```
 
-To delete one or more worker objects from the crew, use `dismiss()`.
+Because the tasks run asynchronously, they may finish in a different order than you submitted them.
 
 ```{r}
-crew$dismiss(tags = "long_jobs_go_here")
-length(crew$workers) # Should be 2.
+round(tasks, 3)
 ```
 
-# Crashes and restarts
+```{r}
+round(results, 3)
+```
 
-If eventually a worker gets stuck (not sendable, not receivable, not running) then the `stuck()` method of the worker will return `TRUE` and the `restart()` method will restart it. Use the `restart()` method of the crew object to restart one or more stuck workers.
+When you are done with the queue, call the `shutdown()` method to terminate the workers.
+
+```{r}
+queue$shutdown()
+```
+
+## Other task queues
+
+The `crew_queue_future` task queue uses transient [`future`](https://future.futureverse.org)'s as workers. The queue has a default `future::plan()`, and you can set an individual plan for each task you push. The plan can either be the sequential plan or a plan from [`future.batchtools`](https://future.batchtools.futureverse.org)^[other plans are nmot supported because they cannot be sent to the [`callr::r_session`](https://callr.r-lib.org/reference/r_session.html) workers in the subqueue). [`future.batchtools`](https://future.batchtools.futureverse.org) workers have high overhead for submitting, polling, and collecting tasks, so `crew_queue_future` supports a subqueue, a local multi-process queue inside the larger queue to asynchronously manage the [`future`](https://future.futureverse.org)'s internally. 
+
+A `crew_queue_future` queue is created just like a `crew_queue_session` queue, except there are a couple more arguments.
+
+```{r, eval = FALSE}
+queue <- crew_queue_future(
+  workers = 16, # Max future workers running at a time,
+  store = crew_store_local$new(root = "my_store"),
+  plan = future.batchtools::batchtools_slurm(template = "my_template.tmpl"),
+  subqueue = crew_queue_session$new(workers = 4)
+)
+```
+
+The meanings of most of these arguments are covered in the paragraph above. The `store` argument is a local data store for sending and receiving work that the [`future`](https://future.futureverse.org)'s do. For [`future.batchtools`](https://future.batchtools.futureverse.org) futures, the `root` of the data store should point to a file system that all the workers can access, not just the main R process on the login node.

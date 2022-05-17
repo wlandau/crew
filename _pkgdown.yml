@@ -9,8 +9,6 @@ navbar:
     href: reference/index.html
   - text: Usage
     href: articles/usage.html
-  - text: Specification
-    href: articles/specification.html
   - text: News
     href: news/index.html
   right:
@@ -20,21 +18,18 @@ reference:
 - title: Help
   contents:
   - '`crew-package`'
-- title: Crew classes
+- title: Queues
   contents:
-  - '`class_crew`'
-- title: Worker classes
+  - '`crew_queue`'
+  - '`crew_queue_session`'
+  - '`crew_queue_bg`'
+  - '`crew_queue_future`'
+- title: Stores
   contents:
-  - '`class_worker`'
-  - '`class_worker_callr`'
-  - '`class_worker_future`'
-- title: Store classes
-  contents:
-  - '`class_store`'
-  - '`class_store_local`'
-- title: Worker loops
-  contents:
-  - '`crew_worker_loop`'
+  - '`crew_store`'
+  - '`crew_store_local`'
 - title: Utilities
   contents:
+  - '`crew_true`'
   - '`crew_wait`'
+  - '`crew_worker`'

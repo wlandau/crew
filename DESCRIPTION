@@ -1,15 +1,23 @@
 Package: crew
-Title: Centralized Reusable Workers
-Description: The 'R6' classes of 'crew' establish a standardized
-  user interface to high-performance computing technologies.
-  Unlike the closely related 'future' package
-  (2021, <doi:10.32614/RJ-2021-048>), 'crew' prioritizes centralized
-  scheduling, heterogeneous semi-persistent workers,
-  and user-driven customization. The purpose is to enable pipeline
-  tools such as such 'targets' (2021, <doi:10.21105/joss.02959>)
-  to efficiently orchestrate tasks without having to support
-  individual low-level interfaces to specific high-performance
-  computing platforms or cloud services.
+Title: Centralized Workers
+Description: A task queue is a central hub for orchestrating
+  computationally demanding workloads dynamically and asynchronously.
+  The 'crew' package supports a variety of task queues with
+  a common interface and different types of workers for different
+  backend technologies, similar to the way the
+  'future' package (2021, <doi:10.32614/RJ-2021-048>)
+  provides a unified R interface for single jobs and
+  individual map-reduce calls. The 'crew' package borrows
+  the task queue design from the 'callr' package vignettes and
+  <https://www.tidyverse.org/blog/2019/09/callr-task-q/>,
+  enhances the core feature set (for example, crash detection),
+  and establishes an extensible 'R6' class system to add more worker types
+  as development continues (e.g. jobs on Amazon and Google cloud
+  computing platforms). Multi-queue structures, such as the
+  already-supported 'future'-based task queue, increase
+  efficiency in heavily parallel cluster workloads
+  with an inner local task queue to asynchronicity manage
+  task submission, monitoring, and collection.
 Version: 0.0.0.9000
 License: MIT + file LICENSE
 URL: https://wlandau.github.io/crew/, https://github.com/wlandau/crew
@@ -33,9 +41,13 @@ Imports:
   future (>= 1.22.0),
   qs (>= 0.24.1),
   R6 (>= 2.5.0),
-  rlang (>= 0.4.10)
+  rlang (>= 1.0.0),
+  utils,
+  uuid (>= 1.0.0),
+  withr (>= 2.3.0)
 Suggests:
   future.callr (>= 0.7.0),
+  future.batchtools (>= 0.8.0),
   knitr (>= 1.30),
   markdown (>= 1.1),
   processx (>= 3.4.4),

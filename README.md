@@ -1,9 +1,7 @@
 
 # crew
 
-<!--[![CRAN](https://www.r-pkg.org/badges/version/crew)](https://CRAN.R-project.org/package=crew)-->
-
-[![status](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![status](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#Concept)
 [![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
 [![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
@@ -11,10 +9,10 @@
 A task queue is a central hub for orchestrating computationally
 demanding workloads dynamically and asynchronously. The `crew` package
 supports a variety of task queues with a common interface and different
-types of workers for different platforms, similar to the way
-the [`future`](https://future.futureverse.org/) package provides a
-unified R interface for single jobs and individual map-reduce calls. The
-`crew` package borrows the task queue design from the [`callr` package
+types of workers for different platforms, similar to the way the
+[`future`](https://future.futureverse.org/) package provides a unified R
+interface for single jobs and individual map-reduce calls. The `crew`
+package borrows the task queue design from the [`callr` package
 vignettes](https://github.com/r-lib/callr/blob/811a02f604de2cf03264f6b35ce9ec8a412f2581/vignettes/Task-queue-with-callr.Rmd)
 and <https://www.tidyverse.org/blog/2019/09/callr-task-q/>, enhances the
 core feature set (for example, crash detection), and establishes an
@@ -162,13 +160,13 @@ citation("crew")
 
 To cite package 'crew' in publications use:
 
-  Landau WM (????). _crew: Centralized Reusable Workers_.
+  Landau WM (????). _crew: Centralized Workers_.
   https://wlandau.github.io/crew/, https://github.com/wlandau/crew.
 
 A BibTeX entry for LaTeX users is
 
   @Manual{,
-    title = {crew: Centralized Reusable Workers},
+    title = {crew: Centralized Workers},
     author = {William Michael Landau},
     note = {https://wlandau.github.io/crew/, https://github.com/wlandau/crew},
   }

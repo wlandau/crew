@@ -56,27 +56,27 @@ Other queue:
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{crew_queue_session$new()}}
-\item \href{#method-push}{\code{crew_queue_session$push()}}
-\item \href{#method-shutdown}{\code{crew_queue_session$shutdown()}}
+\item \href{#method-crew_queue_session-new}{\code{crew_queue_session$new()}}
+\item \href{#method-crew_queue_session-push}{\code{crew_queue_session$push()}}
+\item \href{#method-crew_queue_session-shutdown}{\code{crew_queue_session$shutdown()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="block">}\href{../../crew/html/crew_queue.html#method-block}{\code{crew::crew_queue$block()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="crashed">}\href{../../crew/html/crew_queue.html#method-crashed}{\code{crew::crew_queue$crashed()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_results">}\href{../../crew/html/crew_queue.html#method-get_results}{\code{crew::crew_queue$get_results()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_tasks">}\href{../../crew/html/crew_queue.html#method-get_tasks}{\code{crew::crew_queue$get_tasks()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_workers">}\href{../../crew/html/crew_queue.html#method-get_workers}{\code{crew::crew_queue$get_workers()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="pop">}\href{../../crew/html/crew_queue.html#method-pop}{\code{crew::crew_queue$pop()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="update">}\href{../../crew/html/crew_queue.html#method-update}{\code{crew::crew_queue$update()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="block"><a href='../../crew/html/crew_queue.html#method-crew_queue-block'><code>crew::crew_queue$block()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="crashed"><a href='../../crew/html/crew_queue.html#method-crew_queue-crashed'><code>crew::crew_queue$crashed()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_results"><a href='../../crew/html/crew_queue.html#method-crew_queue-get_results'><code>crew::crew_queue$get_results()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_tasks"><a href='../../crew/html/crew_queue.html#method-crew_queue-get_tasks'><code>crew::crew_queue$get_tasks()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_workers"><a href='../../crew/html/crew_queue.html#method-crew_queue-get_workers'><code>crew::crew_queue$get_workers()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="pop"><a href='../../crew/html/crew_queue.html#method-crew_queue-pop'><code>crew::crew_queue$pop()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="update"><a href='../../crew/html/crew_queue.html#method-crew_queue-update'><code>crew::crew_queue$update()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-crew_queue_session-new"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue_session-new}{}}}
 \subsection{Method \code{new()}}{
 Local session queue constructor.
 \subsection{Usage}{
@@ -102,8 +102,8 @@ A local session queue object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-push"></a>}}
-\if{latex}{\out{\hypertarget{method-push}{}}}
+\if{html}{\out{<a id="method-crew_queue_session-push"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue_session-push}{}}}
 \subsection{Method \code{push()}}{
 Push a new task on to the queue.
 \subsection{Usage}{
@@ -130,8 +130,8 @@ internal state of the queue after pushing. See the
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-shutdown"></a>}}
-\if{latex}{\out{\hypertarget{method-shutdown}{}}}
+\if{html}{\out{<a id="method-crew_queue_session-shutdown"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue_session-shutdown}{}}}
 \subsection{Method \code{shutdown()}}{
 Shut down the workers.
 \subsection{Usage}{

@@ -42,26 +42,26 @@ Other store:
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{crew_store$new()}}
-\item \href{#method-get_root}{\code{crew_store$get_root()}}
-\item \href{#method-read_input}{\code{crew_store$read_input()}}
-\item \href{#method-read_output}{\code{crew_store$read_output()}}
-\item \href{#method-write_input}{\code{crew_store$write_input()}}
-\item \href{#method-write_output}{\code{crew_store$write_output()}}
-\item \href{#method-exists_input}{\code{crew_store$exists_input()}}
-\item \href{#method-exists_output}{\code{crew_store$exists_output()}}
-\item \href{#method-list_input}{\code{crew_store$list_input()}}
-\item \href{#method-list_output}{\code{crew_store$list_output()}}
-\item \href{#method-delete_input}{\code{crew_store$delete_input()}}
-\item \href{#method-delete_output}{\code{crew_store$delete_output()}}
-\item \href{#method-path_log}{\code{crew_store$path_log()}}
-\item \href{#method-marshal}{\code{crew_store$marshal()}}
-\item \href{#method-destroy}{\code{crew_store$destroy()}}
+\item \href{#method-crew_store-new}{\code{crew_store$new()}}
+\item \href{#method-crew_store-get_root}{\code{crew_store$get_root()}}
+\item \href{#method-crew_store-read_input}{\code{crew_store$read_input()}}
+\item \href{#method-crew_store-read_output}{\code{crew_store$read_output()}}
+\item \href{#method-crew_store-write_input}{\code{crew_store$write_input()}}
+\item \href{#method-crew_store-write_output}{\code{crew_store$write_output()}}
+\item \href{#method-crew_store-exists_input}{\code{crew_store$exists_input()}}
+\item \href{#method-crew_store-exists_output}{\code{crew_store$exists_output()}}
+\item \href{#method-crew_store-list_input}{\code{crew_store$list_input()}}
+\item \href{#method-crew_store-list_output}{\code{crew_store$list_output()}}
+\item \href{#method-crew_store-delete_input}{\code{crew_store$delete_input()}}
+\item \href{#method-crew_store-delete_output}{\code{crew_store$delete_output()}}
+\item \href{#method-crew_store-path_log}{\code{crew_store$path_log()}}
+\item \href{#method-crew_store-marshal}{\code{crew_store$marshal()}}
+\item \href{#method-crew_store-destroy}{\code{crew_store$destroy()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-crew_store-new"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-new}{}}}
 \subsection{Method \code{new()}}{
 Abstract store constructor.
 \subsection{Usage}{
@@ -88,8 +88,8 @@ An abstract store object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_root"></a>}}
-\if{latex}{\out{\hypertarget{method-get_root}{}}}
+\if{html}{\out{<a id="method-crew_store-get_root"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-get_root}{}}}
 \subsection{Method \code{get_root()}}{
 Get the root directory of the data store.
 \subsection{Usage}{
@@ -101,8 +101,8 @@ The root directory of the data store.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-read_input"></a>}}
-\if{latex}{\out{\hypertarget{method-read_input}{}}}
+\if{html}{\out{<a id="method-crew_store-read_input"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-read_input}{}}}
 \subsection{Method \code{read_input()}}{
 Read worker input data.
 \subsection{Usage}{
@@ -121,8 +121,8 @@ Worker input data.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-read_output"></a>}}
-\if{latex}{\out{\hypertarget{method-read_output}{}}}
+\if{html}{\out{<a id="method-crew_store-read_output"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-read_output}{}}}
 \subsection{Method \code{read_output()}}{
 Read worker output data.
 \subsection{Usage}{
@@ -141,8 +141,8 @@ Worker output data.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-write_input"></a>}}
-\if{latex}{\out{\hypertarget{method-write_input}{}}}
+\if{html}{\out{<a id="method-crew_store-write_input"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-write_input}{}}}
 \subsection{Method \code{write_input()}}{
 Write worker input data to the main file space.
 \subsection{Usage}{
@@ -163,8 +163,8 @@ Write worker input data to the main file space.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-write_output"></a>}}
-\if{latex}{\out{\hypertarget{method-write_output}{}}}
+\if{html}{\out{<a id="method-crew_store-write_output"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-write_output}{}}}
 \subsection{Method \code{write_output()}}{
 Write worker output data to the main file space.
 \subsection{Usage}{
@@ -185,8 +185,8 @@ Write worker output data to the main file space.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-exists_input"></a>}}
-\if{latex}{\out{\hypertarget{method-exists_input}{}}}
+\if{html}{\out{<a id="method-crew_store-exists_input"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-exists_input}{}}}
 \subsection{Method \code{exists_input()}}{
 Check if worker input data exists.
 \subsection{Usage}{
@@ -205,8 +205,8 @@ Logical of length 1, whether worker input data exists.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-exists_output"></a>}}
-\if{latex}{\out{\hypertarget{method-exists_output}{}}}
+\if{html}{\out{<a id="method-crew_store-exists_output"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-exists_output}{}}}
 \subsection{Method \code{exists_output()}}{
 Check if worker output data exists.
 \subsection{Usage}{
@@ -225,8 +225,8 @@ Logical of length 1, whether worker output data exists.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-list_input"></a>}}
-\if{latex}{\out{\hypertarget{method-list_input}{}}}
+\if{html}{\out{<a id="method-crew_store-list_input"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-list_input}{}}}
 \subsection{Method \code{list_input()}}{
 List workers with input data.
 \subsection{Usage}{
@@ -238,8 +238,8 @@ Character vector of workers with input data.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-list_output"></a>}}
-\if{latex}{\out{\hypertarget{method-list_output}{}}}
+\if{html}{\out{<a id="method-crew_store-list_output"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-list_output}{}}}
 \subsection{Method \code{list_output()}}{
 List workers with output data.
 \subsection{Usage}{
@@ -251,8 +251,8 @@ Character vector of workers with output data.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-delete_input"></a>}}
-\if{latex}{\out{\hypertarget{method-delete_input}{}}}
+\if{html}{\out{<a id="method-crew_store-delete_input"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-delete_input}{}}}
 \subsection{Method \code{delete_input()}}{
 Delete worker input data.
 \subsection{Usage}{
@@ -271,8 +271,8 @@ Delete worker input data.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-delete_output"></a>}}
-\if{latex}{\out{\hypertarget{method-delete_output}{}}}
+\if{html}{\out{<a id="method-crew_store-delete_output"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-delete_output}{}}}
 \subsection{Method \code{delete_output()}}{
 Delete worker output data.
 \subsection{Usage}{
@@ -291,8 +291,8 @@ Delete worker output data.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-path_log"></a>}}
-\if{latex}{\out{\hypertarget{method-path_log}{}}}
+\if{html}{\out{<a id="method-crew_store-path_log"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-path_log}{}}}
 \subsection{Method \code{path_log()}}{
 Get worker log path. Not valid for all stores.
 \subsection{Usage}{
@@ -311,8 +311,8 @@ Character of length 1, path to the worker log file.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-marshal"></a>}}
-\if{latex}{\out{\hypertarget{method-marshal}{}}}
+\if{html}{\out{<a id="method-crew_store-marshal"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-marshal}{}}}
 \subsection{Method \code{marshal()}}{
 Marshal the data store.
 \subsection{Usage}{
@@ -332,8 +332,8 @@ in a different R process.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-destroy"></a>}}
-\if{latex}{\out{\hypertarget{method-destroy}{}}}
+\if{html}{\out{<a id="method-crew_store-destroy"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_store-destroy}{}}}
 \subsection{Method \code{destroy()}}{
 Delete the files of the data store.
 \subsection{Usage}{

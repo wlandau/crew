@@ -61,28 +61,28 @@ Other queue:
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{crew_queue_future$new()}}
-\item \href{#method-get_plan}{\code{crew_queue_future$get_plan()}}
-\item \href{#method-push}{\code{crew_queue_future$push()}}
+\item \href{#method-crew_queue_future-new}{\code{crew_queue_future$new()}}
+\item \href{#method-crew_queue_future-get_plan}{\code{crew_queue_future$get_plan()}}
+\item \href{#method-crew_queue_future-push}{\code{crew_queue_future$push()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="block">}\href{../../crew/html/crew_queue.html#method-block}{\code{crew::crew_queue$block()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="crashed">}\href{../../crew/html/crew_queue.html#method-crashed}{\code{crew::crew_queue$crashed()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_results">}\href{../../crew/html/crew_queue.html#method-get_results}{\code{crew::crew_queue$get_results()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_tasks">}\href{../../crew/html/crew_queue.html#method-get_tasks}{\code{crew::crew_queue$get_tasks()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_workers">}\href{../../crew/html/crew_queue.html#method-get_workers}{\code{crew::crew_queue$get_workers()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="pop">}\href{../../crew/html/crew_queue.html#method-pop}{\code{crew::crew_queue$pop()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="shutdown">}\href{../../crew/html/crew_queue.html#method-shutdown}{\code{crew::crew_queue$shutdown()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="update">}\href{../../crew/html/crew_queue.html#method-update}{\code{crew::crew_queue$update()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="block"><a href='../../crew/html/crew_queue.html#method-crew_queue-block'><code>crew::crew_queue$block()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="crashed"><a href='../../crew/html/crew_queue.html#method-crew_queue-crashed'><code>crew::crew_queue$crashed()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_results"><a href='../../crew/html/crew_queue.html#method-crew_queue-get_results'><code>crew::crew_queue$get_results()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_tasks"><a href='../../crew/html/crew_queue.html#method-crew_queue-get_tasks'><code>crew::crew_queue$get_tasks()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="get_workers"><a href='../../crew/html/crew_queue.html#method-crew_queue-get_workers'><code>crew::crew_queue$get_workers()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="pop"><a href='../../crew/html/crew_queue.html#method-crew_queue-pop'><code>crew::crew_queue$pop()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="shutdown"><a href='../../crew/html/crew_queue.html#method-crew_queue-shutdown'><code>crew::crew_queue$shutdown()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_queue" data-id="update"><a href='../../crew/html/crew_queue.html#method-crew_queue-update'><code>crew::crew_queue$update()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-crew_queue_future-new"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue_future-new}{}}}
 \subsection{Method \code{new()}}{
 Abstract queue constructor.
 \subsection{Usage}{
@@ -128,8 +128,8 @@ An abstract queue object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_plan"></a>}}
-\if{latex}{\out{\hypertarget{method-get_plan}{}}}
+\if{html}{\out{<a id="method-crew_queue_future-get_plan"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue_future-get_plan}{}}}
 \subsection{Method \code{get_plan()}}{
 Get the default \code{future} plan of the queue.
 \subsection{Usage}{
@@ -141,8 +141,8 @@ The default \code{future} plan object of the queue.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-push"></a>}}
-\if{latex}{\out{\hypertarget{method-push}{}}}
+\if{html}{\out{<a id="method-crew_queue_future-push"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue_future-push}{}}}
 \subsection{Method \code{push()}}{
 Push a new task on to the queue.
 \subsection{Usage}{

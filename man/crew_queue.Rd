@@ -46,21 +46,21 @@ Other queue:
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{crew_queue$new()}}
-\item \href{#method-get_tasks}{\code{crew_queue$get_tasks()}}
-\item \href{#method-get_results}{\code{crew_queue$get_results()}}
-\item \href{#method-get_workers}{\code{crew_queue$get_workers()}}
-\item \href{#method-push}{\code{crew_queue$push()}}
-\item \href{#method-pop}{\code{crew_queue$pop()}}
-\item \href{#method-update}{\code{crew_queue$update()}}
-\item \href{#method-crashed}{\code{crew_queue$crashed()}}
-\item \href{#method-block}{\code{crew_queue$block()}}
-\item \href{#method-shutdown}{\code{crew_queue$shutdown()}}
+\item \href{#method-crew_queue-new}{\code{crew_queue$new()}}
+\item \href{#method-crew_queue-get_tasks}{\code{crew_queue$get_tasks()}}
+\item \href{#method-crew_queue-get_results}{\code{crew_queue$get_results()}}
+\item \href{#method-crew_queue-get_workers}{\code{crew_queue$get_workers()}}
+\item \href{#method-crew_queue-push}{\code{crew_queue$push()}}
+\item \href{#method-crew_queue-pop}{\code{crew_queue$pop()}}
+\item \href{#method-crew_queue-update}{\code{crew_queue$update()}}
+\item \href{#method-crew_queue-crashed}{\code{crew_queue$crashed()}}
+\item \href{#method-crew_queue-block}{\code{crew_queue$block()}}
+\item \href{#method-crew_queue-shutdown}{\code{crew_queue$shutdown()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-crew_queue-new"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue-new}{}}}
 \subsection{Method \code{new()}}{
 Abstract queue constructor.
 \subsection{Usage}{
@@ -98,8 +98,8 @@ An abstract queue object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_tasks"></a>}}
-\if{latex}{\out{\hypertarget{method-get_tasks}{}}}
+\if{html}{\out{<a id="method-crew_queue-get_tasks"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue-get_tasks}{}}}
 \subsection{Method \code{get_tasks()}}{
 Show the queued tasks pushed with the \code{push()} method
 but not yet assigned to workers.
@@ -113,8 +113,8 @@ and columns describing each task.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_results"></a>}}
-\if{latex}{\out{\hypertarget{method-get_results}{}}}
+\if{html}{\out{<a id="method-crew_queue-get_results"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue-get_results}{}}}
 \subsection{Method \code{get_results()}}{
 Show the results completed by the workers and available
 to retrieve with the \code{pop()} method.
@@ -128,8 +128,8 @@ and columns describing each task.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_workers"></a>}}
-\if{latex}{\out{\hypertarget{method-get_workers}{}}}
+\if{html}{\out{<a id="method-crew_queue-get_workers"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue-get_workers}{}}}
 \subsection{Method \code{get_workers()}}{
 Show the workers of the queue.
 \subsection{Usage}{
@@ -142,8 +142,8 @@ and columns describing each worker.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-push"></a>}}
-\if{latex}{\out{\hypertarget{method-push}{}}}
+\if{html}{\out{<a id="method-crew_queue-push"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue-push}{}}}
 \subsection{Method \code{push()}}{
 Push a new task on to the queue.
 \subsection{Usage}{
@@ -173,8 +173,8 @@ internal state of the queue after pushing. See the
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-pop"></a>}}
-\if{latex}{\out{\hypertarget{method-pop}{}}}
+\if{html}{\out{<a id="method-crew_queue-pop"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue-pop}{}}}
 \subsection{Method \code{pop()}}{
 Pop the results of a completed task off the queue.
 \subsection{Usage}{
@@ -195,8 +195,8 @@ A named list with the results of the task.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-update"></a>}}
-\if{latex}{\out{\hypertarget{method-update}{}}}
+\if{html}{\out{<a id="method-crew_queue-update"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue-update}{}}}
 \subsection{Method \code{update()}}{
 Update the internal state of the queue.
 \subsection{Usage}{
@@ -219,8 +219,8 @@ balances the tradeoffs.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crashed"></a>}}
-\if{latex}{\out{\hypertarget{method-crashed}{}}}
+\if{html}{\out{<a id="method-crew_queue-crashed"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue-crashed}{}}}
 \subsection{Method \code{crashed()}}{
 Detect crashed workers.
 \subsection{Usage}{
@@ -237,8 +237,8 @@ Throw an error if at least one worker crashed.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-block"></a>}}
-\if{latex}{\out{\hypertarget{method-block}{}}}
+\if{html}{\out{<a id="method-crew_queue-block"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue-block}{}}}
 \subsection{Method \code{block()}}{
 Block the R session until there are no unassigned
 tasks and at least one worker is available.
@@ -270,8 +270,8 @@ assign tasks with \code{push()} and retrieve available ones with \code{pop()}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-shutdown"></a>}}
-\if{latex}{\out{\hypertarget{method-shutdown}{}}}
+\if{html}{\out{<a id="method-crew_queue-shutdown"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_queue-shutdown}{}}}
 \subsection{Method \code{shutdown()}}{
 Shut down the workers.
 \subsection{Usage}{

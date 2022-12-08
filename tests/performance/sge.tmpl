@@ -1,9 +1,0 @@
-#!/bin/bash
-#$ -cwd
-#$ -j y
-#$ -o <%= log.file %>
-#$ -V
-#$ -N <%= job.name %>
-module load R/4.1.2
-Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
-exit 0

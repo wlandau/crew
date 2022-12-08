@@ -30,20 +30,13 @@ Authors@R: c(
 Depends:
   R (>= 3.5.0)
 Imports:
-  callr (>= 3.5.0),
-  future (>= 1.22.0),
-  qs (>= 0.24.1),
-  R6 (>= 2.5.0),
-  rlang (>= 1.0.0),
+  R6,
+  rlang,
   utils,
-  uuid (>= 1.0.0),
-  withr (>= 2.3.0)
+  withr
 Suggests:
-  future.callr (>= 0.7.0),
-  future.batchtools (>= 0.8.0),
   knitr (>= 1.30),
   markdown (>= 1.1),
-  processx (>= 3.4.4),
   rmarkdown (>= 2.4),
   testthat (>= 3.0.0)
 Encoding: UTF-8

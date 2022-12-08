@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_condition.R
 \name{crew_condition_message}
 \alias{crew_condition_message}
-\title{Return the condition message in a \code{tryCatch()} statement.}
+\title{Return \code{FALSE} on error in a \code{tryCatch()} statement.}
 \usage{
 crew_condition_message(condition)
 }
@@ -10,7 +10,7 @@ crew_condition_message(condition)
 \item{condition}{Condition object in the \code{tryCatch()} statement.}
 }
 \value{
-Character string with the condition message.
+\code{FALSE}
 }
 \description{
 For internal use only. Not a user-side function.

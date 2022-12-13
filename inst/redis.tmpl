@@ -1,0 +1,54 @@
+# set dynamically
+bind {{insert_local_IP_on_the_LAN_or_VPC}} # 127.0.0.1 -::1
+port {{insert_random_ephemeral_port}} # 6379
+# requirepass {{insert_random_long_password}}
+proc-title-template "{{insert_name}} {title} {port} {tls-port}"
+loglevel {{insert_loglevel}} # notice
+maxclients {{insert_maxclients}} # 10000
+
+# logs
+set-proc-title yes
+logfile ""
+
+# scale
+daemonize no
+cluster-enabled no
+timeout 0
+tcp-keepalive 300
+databases 1
+# io-threads 4
+# io-threads-do-reads no
+
+# storage
+save ""
+appendonly no
+appendfsync no
+shutdown-timeout 0
+shutdown-on-sigint nosave
+shutdown-on-sigterm nosave
+
+# security
+protected-mode yes
+enable-protected-configs no
+enable-debug-command no
+enable-module-command no
+
+# tls
+# tls-port 6379
+# tls-cert-file redis.crt
+# tls-key-file redis.key
+# tls-key-file-pass secret
+# tls-cert-file redis.crt
+# tls-key-file redis.key
+# tls-key-file-pass secret
+# tls-client-cert-file client.crt
+# tls-client-key-file client.key
+# tls-client-key-file-pass secret
+# tls-ca-cert-file ca.crt
+# tls-ca-cert-dir /etc/ssl/certs
+# tls-auth-clients no
+# tls-auth-clients optional
+# tls-protocols "TLSv1.2 TLSv1.3"
+# tls-ciphers DEFAULT:!MEDIUM
+# tls-ciphersuites TLS_CHACHA20_POLY1305_SHA256
+# tls-prefer-server-ciphers yes

@@ -31,6 +31,8 @@ Depends:
   R (>= 3.5.0)
 Imports:
   R6,
+  redux,
+  rrq,
   rlang,
   utils,
   withr
@@ -39,6 +41,9 @@ Suggests:
   markdown (>= 1.1),
   rmarkdown (>= 2.4),
   testthat (>= 3.0.0)
+Remotes:
+  mrc-ide/rrq
+SystemRequirements: Redis
 Encoding: UTF-8
 Language: en-US
 VignetteBuilder: knitr

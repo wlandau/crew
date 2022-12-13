@@ -12,6 +12,8 @@
 #'   to specific high-performance computing platforms or cloud services.
 #' @family help
 #' @importFrom R6 R6Class
+#' @importFrom redux redis_available
+#' @importFrom rrq rrq_worker
 #' @importFrom rlang abort as_function
 #' @importFrom utils globalVariables
 #' @importFrom withr local_options

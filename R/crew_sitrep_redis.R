@@ -15,23 +15,23 @@ crew_sitrep_redis <- function() {
 
 sitrep_redis_server <- function() {
   if_any(
-    redis_server_exists(),
-    sitrep_redis_server_exists(),
+    redis_server_path_binary_exists(),
+    sitrep_redis_server_path_binary_exists(),
     sitrep_redis_server_not_exist()
   )
 }
 
-sitrep_redis_server_exists <- function() {
-  cli_good("Redis server found: {.path {redis_server_path()}}")
+sitrep_redis_server_path_binary_exists <- function() {
+  cli_good("Redis server found: {.path {redis_server_path_binary()}}")
   if_any(
-    redis_server_ok(),
+    redis_server_path_binary_ok(),
     cli_good("Redis server ok"),
     sitrep_redis_server_not_ok()
   )
 }
 
 sitrep_redis_server_not_exist <- function() {
-  cli_bad("Redis server not found: {.path {redis_server_path()}}")
+  cli_bad("Redis server not found: {.path {redis_server_path_binary()}}")
   cli_li("Install Redis server: {.url https://redis.io/download/}")
 }
 

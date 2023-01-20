@@ -1,5 +1,5 @@
 test_that("crew_sitrep_redis()", {
-  if (redis_server_ok()) {
+  if (redis_server_binary_ok()) {
     suppressMessages(expect_message(crew_sitrep_redis()))
   }
 })

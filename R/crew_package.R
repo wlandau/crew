@@ -11,6 +11,8 @@
 #'   tasks without having to support individual low-level interfaces
 #'   to specific high-performance computing platforms or cloud services.
 #' @family help
+#' @importFrom cli cli_alert_danger cli_alert_success cli_end cli_li cli_ul
+#' @importFrom processx process
 #' @importFrom R6 R6Class
 #' @importFrom redux redis_available
 #' @importFrom rrq rrq_worker

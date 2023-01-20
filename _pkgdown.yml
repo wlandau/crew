@@ -18,18 +18,10 @@ reference:
 - title: Help
   contents:
   - '`crew-package`'
-- title: Queues
+- title: Sitrep
   contents:
-  - '`crew_queue`'
-  - '`crew_queue_session`'
-  - '`crew_queue_bg`'
-  - '`crew_queue_future`'
-- title: Stores
-  contents:
-  - '`crew_store`'
-  - '`crew_store_local`'
+  - '`crew_sitrep_redis`'
 - title: Utilities
   contents:
   - '`crew_true`'
   - '`crew_wait`'
-  - '`crew_worker`'

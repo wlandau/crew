@@ -30,6 +30,8 @@ Authors@R: c(
 Depends:
   R (>= 3.5.0)
 Imports:
+  cli,
+  processx,
   R6,
   redux,
   rrq,
@@ -49,4 +51,4 @@ Language: en-US
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3

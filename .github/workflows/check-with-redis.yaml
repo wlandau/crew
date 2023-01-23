@@ -25,8 +25,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Redis Server
-        uses: supercharge/redis-github-action@1.4.0
+      - name: Install Redis server
+        run: sudo apt-get install redis-server
 
       - uses: r-lib/actions/setup-pandoc@v2
 

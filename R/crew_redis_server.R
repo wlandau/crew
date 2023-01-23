@@ -39,22 +39,32 @@
 #'   a random cryptographically-generated 256-bit 64-character password.
 #'   Visit <https://redis.io/docs/management/security/> to learn about
 #'   Redis security.
+#' @param start_timeout Positive numeric of length 1, number of seconds
+#'   to wait for the Redis server to start up and begin accepting clients.
+#' @param start_wait Positive numeric of length 1, polling interval
+#'   (seconds) while waiting for the Redis server to start up and
+#'   begin accepting clients.
 #' @examples
 #' server <- crew_redis_server()
-#' 
+#' server$validate() # Should be silent.
+#' server$test() # 
 crew_redis_server <- function(
   binary = NULL,
   conf = NULL,
   host = NULL,
   port = NULL,
-  password = NULL
+  password = NULL,
+  start_timeout = 30,
+  start_wait = 0.25
 ) {
   out <- redis_server$new(
     binary = binary %|||% redis_server_default_binary(),
     conf = conf %|||% redis_server_default_conf(),
     host = host %|||% redis_server_default_host(),
     port = port %|||% redis_server_default_port(),
-    password = password %|||% redis_server_default_password()
+    password = password %|||% redis_server_default_password(),
+    start_timeout = start_timeout,
+    start_wait = start_wait
   )
   out$validate()
   out
@@ -69,18 +79,24 @@ redis_server <- R6::R6Class(
     port = NULL,
     password = NULL,
     process = NULL,
+    start_timeout = NULL,
+    start_wait = NULL,
     initialize = function(
       binary = NULL,
       conf = NULL,
       host = NULL,
       port = NULL,
-      password = NULL
+      password = NULL,
+      start_timeout = NULL,
+      start_wait = NULL
     ) {
       self$binary <- binary
       self$conf <- conf
       self$host <- host
       self$port <- port
       self$password <- password
+      self$start_timeout <- start_timeout
+      self$start_wait <- start_wait
     },
     finalize = function() {
       self$stop()
@@ -91,14 +107,20 @@ redis_server <- R6::R6Class(
     client = function() {
       redis_server_client(self)
     },
-    alive = function() {
-      redis_server_alive(self)
-    },
     start = function() {
       redis_server_start(self)
     },
     stop = function() {
       redis_server_stop(self)
+    },
+    alive = function() {
+      redis_server_alive(self)
+    },
+    ready = function() {
+      redis_server_ready(self)
+    },
+    ping = function() {
+      redis_server_ping(self)
     },
     test = function() {
       redis_server_test(self)
@@ -156,18 +178,6 @@ redis_server_serialize <- function(self) {
   paste(pairs, collapse = "&")
 }
 
-redis_server_client <- function(self) {
-  redux::hiredis(
-    host = self$host,
-    port = self$port,
-    password = self$password
-  )
-}
-
-redis_server_alive <- function(self) {
-  (!is.null(self$process)) && (self$process$is_alive())
-}
-
 redis_server_start <- function(self) {
   if (!self$alive()) {
     self$process <- redis_server_process(
@@ -178,6 +188,18 @@ redis_server_start <- function(self) {
       password = self$password
     )
   }
+  crew_wait(
+    fun = self$alive,
+    timeout = self$start_timeout,
+    wait = self$start_wait,
+    message = "Redis server could not start."
+  )
+  crew_wait(
+    fun = self$ready,
+    timeout = self$start_timeout,
+    wait = self$start_wait,
+    message = "Redis server could not initialize or receive connections."
+  )
 }
 
 redis_server_process <- function(
@@ -212,18 +234,35 @@ redis_server_stop <- function(self) {
   }
 }
 
-redis_server_test <- function(self) {
-  crew_true(!self$alive(), message = "Redis server already running.")
-  on.exit(self$stop())
-  self$start()
-  client <- redux::hiredis(
+redis_server_alive <- function(self) {
+  (!is.null(self$process)) && (self$process$is_alive())
+}
+
+redis_server_client <- function(self) {
+  redux::hiredis(
     host = self$host,
     port = self$port,
     password = self$password
   )
-  pong <- client$PING()
-  message = "Failed to ping Redis server."
-  crew_true(pong, . == "PONG", inherits(., "redis_status"), message = message)
+}
+
+redis_server_ping <- function(self) {
+  client <- self$client()
+  client$PING()
+}
+
+redis_server_ready <- function(self) {
+  tryCatch(
+    identical(tolower(as.character(self$ping())), "pong"),
+    error = crew_condition_false
+  )
+}
+
+redis_server_test <- function(self) {
+  crew_true(!self$alive(), message = "Redis server already running.")
+  on.exit(self$stop())
+  self$start()
+  self$ready()
 }
 
 redis_server_validate <- function(self) {

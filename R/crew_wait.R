@@ -5,7 +5,7 @@
 #'   and exit the loop when it returns `TRUE`
 #' @return `NULL` (invisibly).
 #' @param fun Function that returns `FALSE` to keep waiting
-#'   `TRUE` to stop waiting.
+#'   or `TRUE` to stop waiting.
 #' @param args A named list of arguments to `fun`.
 #' @param timeout Nonnegative numeric of length 1,
 #'   number of seconds to loop before timing out.

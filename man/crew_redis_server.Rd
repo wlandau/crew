@@ -9,7 +9,9 @@ crew_redis_server(
   conf = NULL,
   host = NULL,
   port = NULL,
-  password = NULL
+  password = NULL,
+  start_timeout = 30,
+  start_wait = 0.25
 )
 }
 \arguments{
@@ -51,6 +53,13 @@ if this environment variable is set. Otherwise, the default is a
 a random cryptographically-generated 256-bit 64-character password.
 Visit \url{https://redis.io/docs/management/security/} to learn about
 Redis security.}
+
+\item{start_timeout}{Positive numeric of length 1, number of seconds
+to wait for the Redis server to start up and begin accepting clients.}
+
+\item{start_wait}{Positive numeric of length 1, polling interval
+(seconds) while waiting for the Redis server to start up and
+begin accepting clients.}
 }
 \value{
 An \code{R6} object with methods to configure, run,
@@ -61,7 +70,13 @@ Create a handle to configure, run, and manage
 an instance of Redis server.
 }
 \examples{
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 server <- crew_redis_server()
-
+server$validate()
+server$test() # TRUE
+server$start()
+server$ping() # [Redis: PONG]
+server$stop()
+}
 }
 \concept{redis}

@@ -1,0 +1,12 @@
+test_that("redis_server_random_port()", {
+  port <- redis_server_random_port(lower = 49152L, upper = 65355L)
+  expect_true(is.character(port))
+  expect_false(anyNA(port))
+  expect_true(nzchar(port) > 0L)
+  expect_true(length(port) == 1L)
+  port <- as.integer(port)
+  expect_true(is.integer(port))
+  expect_true(is.finite(port))
+  expect_true(port >= 49152L)
+  expect_true(port <= 65355L)
+})

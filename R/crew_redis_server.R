@@ -45,9 +45,14 @@
 #'   (seconds) while waiting for the Redis server to start up and
 #'   begin accepting clients.
 #' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' server <- crew_redis_server()
-#' server$validate() # Should be silent.
-#' server$test() # 
+#' server$validate()
+#' server$test() # TRUE
+#' server$start()
+#' server$ping() # [Redis: PONG]
+#' server$stop()
+#' }
 crew_redis_server <- function(
   binary = NULL,
   conf = NULL,
@@ -200,14 +205,15 @@ redis_server_start <- function(self) {
     wait = self$start_wait,
     message = "Redis server could not initialize or receive connections."
   )
+  invisible()
 }
 
 redis_server_process <- function(
-    binary,
-    conf,
-    host,
-    port,
-    password
+  binary,
+  conf,
+  host,
+  port,
+  password
 ) {
   args <- c(
     conf,
@@ -232,6 +238,7 @@ redis_server_stop <- function(self) {
   if (!is.null(self$process)) {
     self$process$kill()
   }
+  invisible()
 }
 
 redis_server_alive <- function(self) {
@@ -297,4 +304,5 @@ redis_server_validate <- function(self) {
     message <- sprintf("Redis configuration file %s not found.", self$conf)
     crew_true(file.exists(self$conf), message = message)
   }
+  invisible()
 }

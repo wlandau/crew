@@ -31,6 +31,8 @@ Depends:
   R (>= 3.5.0)
 Imports:
   cli,
+  digest,
+  openssl,
   processx,
   R6,
   redux,

@@ -12,9 +12,11 @@
 #'   to specific high-performance computing platforms or cloud services.
 #' @family help
 #' @importFrom cli cli_alert_danger cli_alert_success cli_end cli_li cli_ul
+#' @importFrom digest digest
+#' @importFrom openssl rand_bytes
 #' @importFrom processx process
 #' @importFrom R6 R6Class
-#' @importFrom redux redis_available
+#' @importFrom redux hiredis
 #' @importFrom rrq rrq_worker
 #' @importFrom rlang abort as_function
 #' @importFrom utils globalVariables

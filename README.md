@@ -1,7 +1,7 @@
 
-# crew: components to extend rrq workers <img src='man/figures/logo.png' align="right" height="139"/>
+# crew: components to extend rrq workers <img src='man/figures/logo-readme.png' align="right" height="139"/>
 
-[![status](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#Concept)
+[![status](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#WIP)
 [![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
 [![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
@@ -122,13 +122,13 @@ citation("crew")
 
 To cite package 'crew' in publications use:
 
-  Landau WM (????). _crew: Centralized Workers_.
+  Landau WM (????). _crew: Components to Extend 'rrq' Workers_.
   https://wlandau.github.io/crew/, https://github.com/wlandau/crew.
 
 A BibTeX entry for LaTeX users is
 
   @Manual{,
-    title = {crew: Centralized Workers},
+    title = {crew: Components to Extend 'rrq' Workers},
     author = {William Michael Landau},
     note = {https://wlandau.github.io/crew/, https://github.com/wlandau/crew},
   }

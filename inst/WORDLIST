@@ -78,3 +78,4 @@ loopback
 redis
 Redis
 cryptographic
+cloneable

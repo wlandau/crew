@@ -76,7 +76,7 @@ crew_redis_server <- function(
   out
 }
 
-#' @title Redis server class 
+#' @title Redis server class
 #' @export
 #' @family redis
 #' @description `R6` class to create Redis server objects.

@@ -132,6 +132,9 @@ redis_server <- R6::R6Class(
     },
     validate = function() {
       redis_server_validate(self)
+    },
+    configured = function() {
+      redis_server_configured(self)
     }
   )
 )
@@ -305,4 +308,11 @@ redis_server_validate <- function(self) {
     crew_true(file.exists(self$conf), message = message)
   }
   invisible()
+}
+
+redis_server_configured <- function(self) {
+  tryCatch(
+    redis_server_validate(self) %|||% TRUE,
+    error = crew_condition_false
+  )
 }

@@ -30,7 +30,6 @@ Authors@R: c(
 Depends:
   R (>= 3.5.0)
 Imports:
-  cli,
   digest,
   openssl,
   processx,

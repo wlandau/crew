@@ -10,7 +10,7 @@ crew_redis_server(
   host = NULL,
   port = NULL,
   password = NULL,
-  start_timeout = 30,
+  start_timeout = 5,
   start_wait = 0.25
 )
 }
@@ -50,7 +50,7 @@ with at most 64 characters,
 password to the Redis server (default user).
 The default value is \code{Sys.getenv("CREW_REDIS_SERVER_PASSWORD")}
 if this environment variable is set. Otherwise, the default is a
-a random cryptographically-generated 256-bit 64-character password.
+a random cryptographic 256-bit 64-character password.
 Visit \url{https://redis.io/docs/management/security/} to learn about
 Redis security.}
 

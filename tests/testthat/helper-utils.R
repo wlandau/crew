@@ -5,3 +5,9 @@ crew_test <- function(label, code) {
   )
   suppressMessages(eval(expr, envir = parent.frame()))
 }
+
+skip_redis <- function() {
+  if (!file.exists(redis_server_default_binary())) {
+    skip("Redis not installed.")
+  }
+}

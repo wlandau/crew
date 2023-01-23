@@ -36,7 +36,7 @@
 #'   password to the Redis server (default user).
 #'   The default value is `Sys.getenv("CREW_REDIS_SERVER_PASSWORD")`
 #'   if this environment variable is set. Otherwise, the default is a
-#'   a random cryptographically-generated 256-bit 64-character password.
+#'   a random cryptographic 256-bit 64-character password.
 #'   Visit <https://redis.io/docs/management/security/> to learn about
 #'   Redis security.
 #' @param start_timeout Positive numeric of length 1, number of seconds
@@ -59,7 +59,7 @@ crew_redis_server <- function(
   host = NULL,
   port = NULL,
   password = NULL,
-  start_timeout = 30,
+  start_timeout = 5,
   start_wait = 0.25
 ) {
   out <- redis_server$new(
@@ -159,7 +159,7 @@ redis_server_default_port <- function() {
   Sys.getenv("CREW_REDIS_SERVER_PORT", unset = redis_server_random_port())
 }
 
-redis_server_random_port <- function(lower = 49152L, upper = 65355L) {
+redis_server_random_port <- function(lower = 49152L, upper = 65535L) {
   ports <- seq.int(from = lower, to = upper, by = 1L)
   as.character(sample(ports, size = 1L))
 }
@@ -200,7 +200,14 @@ redis_server_start <- function(self) {
     fun = self$alive,
     timeout = self$start_timeout,
     wait = self$start_wait,
-    message = "Redis server could not start."
+    message = paste(
+      c(
+        "Redis server could not start.\n",
+        self$process$read_all_output(),
+        self$process$read_all_error()
+      ),
+      collapse = ""
+    )
   )
   crew_wait(
     fun = self$ready,
@@ -249,6 +256,10 @@ redis_server_alive <- function(self) {
 }
 
 redis_server_client <- function(self) {
+  crew_true(
+    self$alive(),
+    message = "Redis server must start before accepting clients."
+  )
   redux::hiredis(
     host = self$host,
     port = self$port,
@@ -263,7 +274,7 @@ redis_server_ping <- function(self) {
 
 redis_server_ready <- function(self) {
   tryCatch(
-    identical(tolower(as.character(self$ping())), "pong"),
+    identical(as.character(self$ping()), "PONG"),
     error = crew_condition_false
   )
 }
@@ -271,7 +282,7 @@ redis_server_ready <- function(self) {
 redis_server_test <- function(self) {
   crew_true(!self$alive(), message = "Redis server already running.")
   on.exit(self$stop())
-  self$start()
+  try(self$start(), silent = TRUE)
   self$ready()
 }
 
@@ -297,6 +308,14 @@ redis_server_validate <- function(self) {
       message = message
     )
   }
+  crew_true(
+    as.integer(self$port),
+    !anyNA(.),
+    length(.) == 1L,
+    . >= 0L,
+    . <= 65535L,
+    message = "invalid TCP port"
+  )
   crew_true(
     nchar(self$password) <= 64L,
     message = "password must be at most 64 characters."

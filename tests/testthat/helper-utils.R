@@ -7,6 +7,7 @@ crew_test <- function(label, code) {
 }
 
 skip_redis <- function() {
+  skip_on_cran()
   if (!file.exists(redis_server_default_binary())) {
     skip("Redis not installed.")
   }

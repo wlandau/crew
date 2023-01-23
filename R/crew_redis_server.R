@@ -151,16 +151,16 @@ redis_server_default_port <- function() {
   Sys.getenv("CREW_REDIS_SERVER_PORT", unset = redis_server_random_port())
 }
 
+redis_server_random_port <- function(lower = 49152L, upper = 65355L) {
+  ports <- seq.int(from = lower, to = upper, by = 1L)
+  as.character(sample(ports, size = 1L))
+}
+
 redis_server_default_password <- function() {
   Sys.getenv(
     "CREW_REDIS_SERVER_PASSWORD",
     unset = redis_server_random_password()
   )
-}
-
-redis_server_random_port <- function(lower = 49152L, upper = 65355L) {
-  ports <- seq.int(from = lower, to = upper, by = 1L)
-  as.character(sample(ports, size = 1L))
 }
 
 redis_server_random_password <- function() {

@@ -62,7 +62,8 @@ to wait for the Redis server to start up and begin accepting clients.}
 begin accepting clients.}
 }
 \value{
-An \code{R6} object with methods to configure, run,
+An \code{R6} object of class \link{crew_class_redis_server}
+with methods to configure, run,
 and manage an instance of Redis server.
 }
 \description{
@@ -78,5 +79,9 @@ server$start()
 server$ping() # [Redis: PONG]
 server$stop()
 }
+}
+\seealso{
+Other redis: 
+\code{\link{crew_class_redis_server}}
 }
 \concept{redis}

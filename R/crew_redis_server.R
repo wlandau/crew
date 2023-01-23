@@ -3,7 +3,8 @@
 #' @family redis
 #' @description Create a handle to configure, run, and manage
 #'   an instance of Redis server.
-#' @return An `R6` object with methods to configure, run,
+#' @return An `R6` object of class [crew_class_redis_server]
+#'   with methods to configure, run,
 #'   and manage an instance of Redis server.
 #' @param binary Nonempty non-missing character of length 1,
 #'   path to the Redis server executable.
@@ -62,7 +63,7 @@ crew_redis_server <- function(
   start_timeout = 5,
   start_wait = 0.25
 ) {
-  out <- redis_server$new(
+  out <- crew_class_redis_server$new(
     binary = binary %|||% redis_server_default_binary(),
     conf = conf %|||% redis_server_default_conf(),
     host = host %|||% redis_server_default_host(),
@@ -75,17 +76,51 @@ crew_redis_server <- function(
   out
 }
 
-redis_server <- R6::R6Class(
-  classname = "redis_server",
+#' @title Redis server class 
+#' @export
+#' @family redis
+#' @description `R6` class to create Redis server objects.
+#' @details See [crew_redis_server()] for fields and default values.
+crew_class_redis_server <- R6::R6Class(
+  classname = "crew_class_redis_server",
   public = list(
+    #' @field binary Path to the Redis server executable.
     binary = NULL,
+    #' @field conf Path to the Redis configuration file.
     conf = NULL,
+    #' @field host IP address of the Redis host.
     host = NULL,
+    #' @field port TCP port of the Redis server.
     port = NULL,
+    #' @field password Temporary session-specific password for Redis
+    #'   authentication.
     password = NULL,
-    process = NULL,
+    #' @field start_timeout Number of seconds to wait for the Redis
+    #'   server to start and get ready to accept connections from clients.
     start_timeout = NULL,
+    #' @field start_wait Polling interval (seconds) to wait for the Redis
+    #'   server to start and get ready to accept connections from clients.
     start_wait = NULL,
+    #' @field process `processx::process` object with the Redis server process.
+    process = NULL,
+    #' @description Redis server object constructor.
+    #' @return An `R6` object handle to a Redis server.
+    #' @param binary Path to the Redis server executable.
+    #' @param conf Path to the Redis configuration file.
+    #' @param host IP address of the Redis host.
+    #' @param port TCP port of the Redis server.
+    #' @param password Temporary session-specific password
+    #' @param start_timeout Seconds to wait for Redis to fully start.
+    #' @param start_wait Seconds to poll for the Redis to fully start.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' server <- crew_redis_server()
+    #' server$validate()
+    #' server$test() # TRUE
+    #' server$start()
+    #' server$ping() # [Redis: PONG]
+    #' server$stop()
+    #' }
     initialize = function(
       binary = NULL,
       conf = NULL,
@@ -103,36 +138,151 @@ redis_server <- R6::R6Class(
       self$start_timeout <- start_timeout
       self$start_wait <- start_wait
     },
+    #' @description Clean up a Redis server object
+    #'   (stop the server at garbage collection).
     finalize = function() {
       self$stop()
     },
+    #' @description Represent the Redis server connection details
+    #'   as a concise string.
+    #' @return A length-one string representation of the Redis server
+    #'   connection details.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' server <- crew_redis_server(password = "random")
+    #' server$serialize() # "host=127.0.0.1&port=54034&password=random"
+    #' }
     serialize = function() {
       redis_server_serialize(self)
     },
+    #' @description Create a `redux` Redis client object that
+    #'   connects to the Redis server.
+    #' @details The client runs on the same host as the server.
+    #'   This method is intended for testing and exploratory
+    #'   purposes only.
+    #' @return A `redux::hiredis()` object that can send
+    #'   transactions to the Redis server.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' server <- crew_redis_server()
+    #' server$start()
+    #' client <- server$client()
+    #' client$PING() # [Redis: PONG]
+    #' server$stop()
+    #' }
     client = function() {
       redis_server_client(self)
     },
+    #' @description Start a Redis server process.
+    #' @details The Redis server object will only run one Redis
+    #'   process at a time. If you call `start()` when the server is
+    #'   already running, no new process will be created.
+    #' @return `NULL` (invisibly).
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' server <- crew_redis_server()
+    #' server$start()
+    #' server$alive() # TRUE
+    #' server$stop()
+    #' }
     start = function() {
       redis_server_start(self)
     },
+    #' @description Stop the active Redis server process.
+    #' @return `NULL` (invisibly).
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' server <- crew_redis_server()
+    #' server$start()
+    #' server$alive() # TRUE
+    #' server$stop()
+    #' server$alive() # FALSE
+    #' }
     stop = function() {
       redis_server_stop(self)
     },
+    #' @description Check if the Redis server is running.
+    #' @return `TRUE` if the Redis server process is running,
+    #'   `FALSE` otherwise. If the Redis server is just starting,
+    #'   then the server may not be ready for new clients
+    #'   even though `alive()` returns `TRUE`. The `ready()`
+    #'   method will detect if the server can accept connections.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' server <- crew_redis_server()
+    #' server$start()
+    #' server$alive() # TRUE
+    #' server$stop()
+    #' server$alive() # FALSE
+    #' }
     alive = function() {
       redis_server_alive(self)
     },
+    #' @description Check if the Redis server is running and ready
+    #'   to accept connections from clients.
+    #' @return `TRUE` if the Redis server is running and ready to
+    #'   accept connections from clients. `FALSE` otherwise.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' server <- crew_redis_server()
+    #' server$ready() # FALSE
+    #' server$start()
+    #' server$ready() # TRUE
+    #' server$ping() # [Redis: PONG]
+    #' server$stop()
+    #' }
     ready = function() {
       redis_server_ready(self)
     },
+    #' @description Ping the Redis server.
+    #' @details Send a short transaction to test the connection
+    #'   between the server and a new temporary client.
+    #' @return An S3 object of class `"redis_status"` with value `"PONG"`.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' server <- crew_redis_server()
+    #' server$start()
+    #' server$ping() # [Redis: PONG]
+    #' server$stop()
+    #' }
     ping = function() {
       redis_server_ping(self)
     },
+    #' @description Test the Redis server.
+    #' @details Start the Redis server, test it on a new client with
+    #'   a ping, then stop the server.
+    #' @return `TRUE` if the test succeeded, `FALSE` if there were issues.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' server <- crew_redis_server()
+    #' server$test() # TRUE
+    #' }
     test = function() {
       redis_server_test(self)
     },
+    #' @description Validate the Redis server object.
+    #' @details This method does not actually start the Redis server,
+    #'   so the check is superficial, quick, and non-invasive.
+    #' @return Nothing (invisibly). This method throws an error
+    #'   if it detects any configuration problems.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' server <- crew_redis_server()
+    #' server$validate() # silent
+    #' }
     validate = function() {
       redis_server_validate(self)
     },
+    #' @description Check that the fields of the `R6` object are valid.
+    #' @details This method does not actually start the Redis server,
+    #'   so the check is superficial, quick, and non-invasive.
+    #' @return `TRUE` if the Redis server object is configured correctly
+    #'   and `FALSE` otherwise.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' server <- crew_redis_server()
+    #' server$configured() # TRUE
+    #' }
     configured = function() {
       redis_server_configured(self)
     }

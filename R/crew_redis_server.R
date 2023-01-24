@@ -395,6 +395,7 @@ redis_server_process <- function(
 }
 
 redis_server_stop <- function(self) {
+  gc()
   if (!is.null(self$process)) {
     self$process$kill()
   }

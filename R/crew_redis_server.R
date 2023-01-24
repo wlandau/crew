@@ -383,13 +383,12 @@ redis_server_process <- function(
     stdout = NULL,
     stderr = NULL,
     poll_connection = FALSE,
-    cleanup = FALSE,
-    supervise = FALSE
+    cleanup = TRUE,
+    supervise = TRUE
   )
 }
 
 redis_server_stop <- function(self) {
-  gc()
   if (!is.null(self$process)) {
     self$process$kill()
   }

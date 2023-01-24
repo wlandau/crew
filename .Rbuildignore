@@ -31,6 +31,7 @@
 ^_targets\.yaml$
 ^skeleton\.html$
 ^docs$
+^dump\.rdb$
 ^CODE_OF_CONDUCT.md$
 ^codemeta\.json$
 ^CONTRIBUTING.md$

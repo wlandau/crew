@@ -350,14 +350,7 @@ redis_server_start <- function(self) {
     fun = self$alive,
     timeout = self$start_timeout,
     wait = self$start_wait,
-    message = paste(
-      c(
-        "Redis server could not start.\n",
-        self$process$read_all_output(),
-        self$process$read_all_error()
-      ),
-      collapse = ""
-    )
+    message = "Redis server could not start."
   )
   crew_wait(
     fun = self$ready,
@@ -387,10 +380,11 @@ redis_server_process <- function(
   processx::process$new(
     command = binary,
     args = args,
-    stdout = "|",
-    stderr = "|",
-    cleanup = TRUE,
-    supervise = TRUE
+    stdout = NULL,
+    stderr = NULL,
+    poll_connection = FALSE,
+    cleanup = FALSE,
+    supervise = FALSE
   )
 }
 
@@ -399,6 +393,12 @@ redis_server_stop <- function(self) {
   if (!is.null(self$process)) {
     self$process$kill()
   }
+  crew_wait(
+    fun = ~!self$alive(),
+    args = list(self = self),
+    timeout = self$start_timeout,
+    wait = self$start_wait
+  )
   invisible()
 }
 

@@ -32,6 +32,7 @@ Depends:
 Imports:
   digest,
   openssl,
+  parallelly,
   processx,
   R6,
   redux,

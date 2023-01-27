@@ -43,7 +43,7 @@ is the IPv4 loopback address \code{"127.0.0.1"}.}
 TCP port of the Redis server.
 The default value is \code{Sys.getenv("CREW_REDIS_SERVER_PORT")}
 if this environment variable is set. Otherwise, the default is
-a random ephemeral port.}
+a random unoccupied ephemeral port.}
 
 \item{password}{Non-missing character of length 1
 with at most 64 characters,

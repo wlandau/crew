@@ -31,7 +31,7 @@
 #'   TCP port of the Redis server.
 #'   The default value is `Sys.getenv("CREW_REDIS_SERVER_PORT")`
 #'   if this environment variable is set. Otherwise, the default is
-#'   a random ephemeral port.
+#'   a random unoccupied ephemeral port.
 #' @param password Non-missing character of length 1
 #'   with at most 64 characters,
 #'   password to the Redis server (default user).
@@ -311,7 +311,8 @@ redis_server_default_port <- function() {
 
 redis_server_random_port <- function(lower = 49152L, upper = 65535L) {
   ports <- seq.int(from = lower, to = upper, by = 1L)
-  as.character(sample(ports, size = 1L))
+  port <- parallelly::freePort(ports = ports)
+  as.character(port)
 }
 
 redis_server_default_password <- function() {

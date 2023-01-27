@@ -13,6 +13,7 @@
 #' @family help
 #' @importFrom digest digest
 #' @importFrom openssl rand_bytes
+#' @importFrom parallelly freePort
 #' @importFrom processx process
 #' @importFrom R6 R6Class
 #' @importFrom redux hiredis

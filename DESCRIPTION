@@ -1,17 +1,15 @@
 Package: crew
-Title: Components to Extend 'rrq' Workers
-Description: The 'rrq' package leverages Redis, a state-of-the-art
-  transactional in-memory database, to provide a powerful task queue for R.
-  With interprocess communication, automatic down-scaling, and error handling,
-  'rrq' orchestrates tasks at scale.
-  The 'crew' package extends 'rrq' with components to deploy workers
-  to a variety of distributed computing environments.
-  With its unifying interface to multiple high-performance
-  computing platforms, 'crew' resembles packages
+Title: A Distributed Worker Launcher
+Description: In computationally demanding analysis workflows,
+  statisticians and data scientists asynchronously deploy long-running tasks
+  to distributed systems, ranging from traditional clusters to cloud services.
+  The 'crew' package extends existing task schedulers to run workers
+  on these systems. With its unifying interface to multiple backends,
+  'crew' resembles packages
   'clustermq' (2019, <doi:10.1093/bioinformatics/btz284>),
   'future' (2021, <doi:10.32614/RJ-2021-048>),
   and 'batchtools' (2017, <doi:10.21105/joss.00135>).
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 License: MIT + file LICENSE
 URL: https://wlandau.github.io/crew/, https://github.com/wlandau/crew
 BugReports: https://github.com/wlandau/crew/issues
@@ -30,13 +28,10 @@ Authors@R: c(
 Depends:
   R (>= 3.5.0)
 Imports:
-  digest,
-  openssl,
+  getip,
+  mirai,
   parallelly,
-  processx,
   R6,
-  redux,
-  rrq,
   rlang,
   utils,
   withr
@@ -46,8 +41,7 @@ Suggests:
   rmarkdown (>= 2.4),
   testthat (>= 3.0.0)
 Remotes:
-  mrc-ide/rrq
-SystemRequirements: Redis
+  shikokuchuo/mirai
 Encoding: UTF-8
 Language: en-US
 VignetteBuilder: knitr

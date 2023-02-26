@@ -6,15 +6,12 @@
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
 [![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
 
-The [`rrq`](https://mrc-ide.github.io/rrq/) package leverages
-[Redis](https://redis.io), a state-of-the-art transactional in-memory
-database, to provide a powerful task queue for R. With interprocess
-communication, automatic down-scaling, and error handling,
-[`rrq`](https://mrc-ide.github.io/rrq/) orchestrates tasks at scale. The
-`crew` package extends [`rrq`](https://mrc-ide.github.io/rrq/) with
-components to deploy workers to a variety of distributed computing
-environments. With its unifying interface to multiple high-performance
-computing platforms, `crew` resembles packages
+In computationally demanding analysis workflows, statisticians and data
+scientists asynchronously deploy long-running tasks to distributed
+systems, ranging from traditional clusters to cloud services. The `crew`
+package extends existing task schedulers to run workers on these
+systems. With its unifying interface to multiple backends, `crew`
+resembles packages
 [`clustermq`](https://mschubert.github.io/clustermq/),
 [`future`](https://future.futureverse.org/), and
 [`batchtools`](https://mllg.github.io/batchtools/).
@@ -32,15 +29,15 @@ including a full function reference and usage tutorial vignettes.
 
 ## Similar work
 
+- [`mirai`](https://github.com/shikokuchuo/mirai): an R framework for
+  asynchronous tasks built on [NNG](https://nng.nanomsg.org). `crew`
+  builds directly on [`mirai`](https://github.com/shikokuchuo/mirai).
 - [`rrq`](https://mrc-ide.github.io/rrq/): a task queue for R powered by
-  [Redis](https://redis.io). The goal of `crew` is to extend
-  [`rrq`](https://mrc-ide.github.io/rrq/).
+  [Redis](https://redis.io).
 - [`rrqueue`](http://traitecoevo.github.io/rrqueue/): predecessor of
   [`rrq`](https://mrc-ide.github.io/rrq/).
 - [`clustermq`](https://mschubert.github.io/clustermq/): sends R
   function calls as jobs to computing clusters.
-- [`mirai`](https://github.com/shikokuchuo/mirai): an R framework for
-  asynchronous tasks built on [NNG](https://nng.nanomsg.org).
 - [`future`](https://future.futureverse.org/): a unified interface for
   asynchronous evaluation of single tasks and map-reduce calls on a wide
   variety of backend technologies.
@@ -63,6 +60,9 @@ including a full function reference and usage tutorial vignettes.
 The `crew` package incorporates insightful ideas from the following
 people.
 
+- [Charlie Gao](https://github.com/shikokuchuo) for his work on
+  [`mirai`](https://github.com/shikokuchuo/mirai) and for accommodating
+  the feature requests that made `crew` possible.
 - [Rich FitzJohn](https://github.com/richfitz) and [Robert
   Ashton](https://github.com/r-ash) developed
   [`rrq`](https://mrc-ide.github.io/rrq//). `crew` is merely an

@@ -1,0 +1,12 @@
+crew_test("random_port()", {
+  port <- random_port(lower = 49152L, upper = 65355L)
+  expect_true(is.character(port))
+  expect_false(anyNA(port))
+  expect_true(nzchar(port) > 0L)
+  expect_equal(length(port), 1L)
+  port <- as.integer(port)
+  expect_true(is.integer(port))
+  expect_true(is.finite(port))
+  expect_true(port >= 49152L)
+  expect_true(port <= 65535L)
+})

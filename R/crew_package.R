@@ -1,23 +1,19 @@
-#' crew: abstract interface specification for semi-persistent
-#'   high-performance computing workers
+#' crew: a distributed worker launcher
 #' @docType package
 #' @name crew-package
-#' @description The `R6` classes of `crew` establish a standardized
-#'   user interface to high-performance computing technologies.
-#'   Unlike its closely related `future` package, `crew` prioritizes
-#'   centralized scheduling, heterogeneous semi-persistent workers,
-#'   and user-driven customization. The primary goal is to help
-#'   pipeline tools such as such `targets` efficiently orchestrate
-#'   tasks without having to support individual low-level interfaces
-#'   to specific high-performance computing platforms or cloud services.
+#' @description In computationally demanding analysis workflows,
+#'   statisticians and data scientists asynchronously deploy
+#'   long-running tasks to distributed systems, ranging from
+#'   traditional clusters to cloud services. The `crew` package
+#'   extends existing task schedulers to run workers on these systems.
+#'   With its unifying interface to multiple backends,
+#'   `crew` resembles packages `clustermq`,
+#'   `future`, and `batchtools`.
 #' @family help
-#' @importFrom digest digest
-#' @importFrom openssl rand_bytes
+#' @importFrom getip getip
+#' @importFrom mirai daemons mirai server
 #' @importFrom parallelly freePort
-#' @importFrom processx process
 #' @importFrom R6 R6Class
-#' @importFrom redux hiredis
-#' @importFrom rrq rrq_worker
 #' @importFrom rlang abort as_function
 #' @importFrom utils globalVariables
 #' @importFrom withr local_options

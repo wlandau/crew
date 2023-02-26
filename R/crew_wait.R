@@ -16,11 +16,11 @@
 #' @examples
 #' crew_wait(fun = function() TRUE)
 crew_wait <- function(
-    fun,
-    args = list(),
-    timeout = 60,
-    wait = 1,
-    message = character(0)
+  fun,
+  args = list(),
+  timeout = 60,
+  wait = 1,
+  message = character(0)
 ) {
   fun <- rlang::as_function(fun)
   crew_true(is.function(fun))

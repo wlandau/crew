@@ -18,11 +18,13 @@ reference:
 - title: Help
   contents:
   - '`crew-package`'
-- title: Redis
+- title: mirai
   contents:
-  - '`crew_redis_server`'
-  - '`crew_class_redis_server`'
-- title: Utilities
+  - '`crew_mirai_controller`'
+  - '`crew_mirai_launcher`'
+  - '`crew_mirai_router`'
+- title: mirai
   contents:
-  - '`crew_true`'
-  - '`crew_wait`'
+  - '`crew_class_mirai_controller`'
+  - '`crew_class_mirai_launcher`'
+  - '`crew_class_mirai_router`'

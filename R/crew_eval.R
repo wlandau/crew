@@ -1,20 +1,21 @@
 #' @export
-crew_monad <- function(command, envir = parent.frame()) {
+#' @keywords internal
+crew_eval <- function(command, envir = parent.frame()) {
   force(envir)
   command <- substitute(command)
   capture_error <- function(condition) {
-    state$error <- monad_message(condition)
+    state$error <- crew_eval_message(condition)
     state$error_class <- class(condition)
     state$traceback <- as.character(sys.calls())
     NULL
   }
   capture_warning <- function(condition) {
     state$count_warnings <- (state$count_warnings %||% 0L) + 1L
-    should_store_warning <- (state$count_warnings < monad_max_warnings) &&
-      (nchar(state$warnings %||% "") < monad_max_nchar)
+    should_store_warning <- (state$count_warnings < crew_eval_max_warnings) &&
+      (nchar(state$warnings %||% "") < crew_eval_max_nchar)
     if (should_store_warning) {
       state$warnings <- paste(
-        c(state$warnings, monad_message(condition)),
+        c(state$warnings, crew_eval_message(condition)),
         collapse = ". "
       )
     }
@@ -31,31 +32,31 @@ crew_monad <- function(command, envir = parent.frame()) {
     ),
     error = function(condition) NULL
   )
-  seconds <- as.numeric(proc.time()["elapsed"]) - start
-  tibble::tibble(
-    command = command,
+  runtime <- as.numeric(proc.time()["elapsed"]) - start
+  out <- crew_monad_init(
+    command = deparse_safe(command),
     result = result,
-    seconds = seconds,
+    runtime = runtime,
     error = state$error,
     traceback = state$traceback,
     warnings = state$warnings
   )
 }
 
-monad_message <- function(condition, prefix = character(0)) {
-  out <- monad_message_text_substring(
+crew_eval_message <- function(condition, prefix = character(0)) {
+  out <- crew_eval_text_substring(
     message = conditionMessage(condition),
     prefix = prefix
   )
   if_any(nzchar(out), out, ".")
 }
 
-monad_message_text_substring <- function(message, prefix = character(0)) {
+crew_eval_text_substring <- function(message, prefix = character(0)) {
   tryCatch(
     substr(
       paste(c(prefix, message), collapse = " "),
       start = 0L,
-      stop = monad_max_nchar
+      stop = crew_eval_max_nchar
     ),
     error = function(condition) {
       paste(
@@ -66,5 +67,5 @@ monad_message_text_substring <- function(message, prefix = character(0)) {
   )
 }
 
-monad_max_nchar <- 2048L
-monad_max_warnings <- 51L
+crew_eval_max_nchar <- 2048L
+crew_eval_max_warnings <- 51L

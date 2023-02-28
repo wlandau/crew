@@ -7,7 +7,7 @@ monad_init <- function(
   traceback = NA_character_,
   warnings = NA_character_
 ) {
-  monad_new(
+  out <- monad_new(
     name = name %|||% NA_character_,
     command = command %|||% NA_character_,
     result = result %|||% NA,
@@ -16,6 +16,8 @@ monad_init <- function(
     traceback = traceback %|||% NA_character_,
     warnings = warnings %|||% NA_character_
   )
+  monad_validate(out)
+  out
 }
 
 monad_new <- function(

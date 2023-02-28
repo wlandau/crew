@@ -72,7 +72,7 @@ crew_class_mirai_controller <- R6::R6Class(
     push = function(command, args = list(), timeout = NULL, name = NULL) {
       message <- "router must be connected to push tasks."
       true(self$connected(), message = message)
-      while (is.null(name) || name %in% self$tasks$name) name <- ids::proquint()
+      while (is.null(name) || name %in% self$tasks$name) name <- random_name()
       monad <- as.call(list(quote(crew::crew_eval), substitute(command)))
       submitted <- time_stamp()
       handle <- mirai::mirai(.expr = monad, .args = args, .timeout = timeout)

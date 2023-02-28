@@ -4,9 +4,12 @@
 \alias{crew_mirai_router}
 \title{Create a \code{mirai} router.}
 \usage{
-crew_mirai_router(host = NULL, port = NULL)
+crew_mirai_router(name = NULL, host = NULL, port = NULL)
 }
 \arguments{
+\item{name}{Name of the \code{mirai} router.
+Defaults to a string from \code{ids::proquint()}.}
+
 \item{host}{IP address the router uses to connect to the workers.
 If a character string, the router uses the specified IP address.
 If \code{NULL}, the IP address defaults to \code{getip::getip(type = "local")}.}

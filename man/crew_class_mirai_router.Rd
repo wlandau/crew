@@ -31,6 +31,8 @@ Other routers:
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
+\item{\code{name}}{Name of the router.}
+
 \item{\code{host}}{IP address the router uses to connect to the workers.}
 
 \item{\code{port}}{TCP port the router uses to connect to the workers.}
@@ -43,11 +45,11 @@ Other routers:
 \item \href{#method-crew_class_mirai_router-new}{\code{crew_class_mirai_router$new()}}
 \item \href{#method-crew_class_mirai_router-finalize}{\code{crew_class_mirai_router$finalize()}}
 \item \href{#method-crew_class_mirai_router-validate}{\code{crew_class_mirai_router$validate()}}
+\item \href{#method-crew_class_mirai_router-socket}{\code{crew_class_mirai_router$socket()}}
 \item \href{#method-crew_class_mirai_router-connected}{\code{crew_class_mirai_router$connected()}}
 \item \href{#method-crew_class_mirai_router-connections}{\code{crew_class_mirai_router$connections()}}
 \item \href{#method-crew_class_mirai_router-connect}{\code{crew_class_mirai_router$connect()}}
 \item \href{#method-crew_class_mirai_router-disconnect}{\code{crew_class_mirai_router$disconnect()}}
-\item \href{#method-crew_class_mirai_router-clone}{\code{crew_class_mirai_router$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -56,12 +58,14 @@ Other routers:
 \subsection{Method \code{new()}}{
 \code{mirai} router constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$new(host = NULL, port = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$new(name = NULL, host = NULL, port = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{name}}{Name of the router.}
+
 \item{\code{host}}{Host of the router. See \code{\link[=crew_mirai_router]{crew_mirai_router()}}.}
 
 \item{\code{port}}{TCP port of the router. See \code{\link[=crew_mirai_router]{crew_mirai_router()}}.}
@@ -110,6 +114,19 @@ Validate the router.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_mirai_router-socket"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_router-socket}{}}}
+\subsection{Method \code{socket()}}{
+Get the TCP socket of the router.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$socket()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character string with the TCP socket of the router.
 }
 }
 \if{html}{\out{<hr>}}
@@ -162,23 +179,6 @@ Disconnect the router from the host and port.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_mirai_router-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_mirai_router-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$clone(deep = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
 }
 }
 }

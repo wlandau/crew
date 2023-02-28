@@ -33,7 +33,6 @@ crew_class_mirai_controller <- R6::R6Class(
     tasks = tibble::tibble(
       name = character(0),
       command = character(0),
-      submitted = character(0),
       handle = list()
     ),
     #' @description `mirai` controller constructor.
@@ -74,13 +73,11 @@ crew_class_mirai_controller <- R6::R6Class(
       true(self$connected(), message = message)
       while (is.null(name) || name %in% self$tasks$name) name <- random_name()
       monad <- as.call(list(quote(crew::crew_eval), substitute(command)))
-      submitted <- time_stamp()
       handle <- mirai::mirai(.expr = monad, .args = args, .timeout = timeout)
       tibble::add_row(
         self$tasks,
         name = name,
         command = deparse_safe(command),
-        submitted = submitted,
         handle = handle,
         .before = 1L
       )

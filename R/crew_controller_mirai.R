@@ -98,16 +98,11 @@ crew_class_mirai_controller <- R6::R6Class(
         data <- task$handle$data
         if (!inherits(data, "unresolvedValue")) {
           if (inherits(data, "crew_monad")) {
-            out <- monad_mutate(
-              monad = data,
-              name = task$name,
-              overhead = proc.time() - task$submitted - data$runtime
-            )
+            out <- monad_mutate(monad = data, name = task$name)
           } else {
             out <- monad_init(
               name = task$name,
               command = task$command,
-              overhead = proc.time() - task$submitted,
               error = utils::capture.output(print(data), type = "output")
             )
           }

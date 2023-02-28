@@ -1,9 +1,9 @@
-# test_that("crew_mirai_router() validate", {
-#   router <- crew_mirai_router()
-#   expect_silent(router$validate())
-#   router$name <- NULL
-#   expect_crew_error(router$validate())
-# })
+test_that("crew_mirai_router() validate", {
+  router <- crew_mirai_router()
+  expect_silent(router$validate())
+  router$name <- NULL
+  expect_crew_error(router$validate())
+})
 
 test_that("crew_mirai_router() works", {
   skip_on_cran()

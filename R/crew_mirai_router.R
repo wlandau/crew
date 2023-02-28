@@ -115,7 +115,7 @@ crew_class_mirai_router <- R6::R6Class(
     #' @description Disconnect the router from the host and port.
     #' @return `NULL` (invisibly).
     disconnect = function() {
-      mirai::daemons(value = 0L, .compute = self$name)
+      try(mirai::daemons(value = 0L, .compute = self$name), silent = TRUE)
       invisible()
     }
   )

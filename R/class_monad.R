@@ -8,13 +8,13 @@ monad_init <- function(
   warnings = NA_character_
 ) {
   monad_new(
-    name = name,
-    command = command,
-    result = result,
-    seconds = seconds,
-    error = error,
-    traceback = traceback,
-    warnings = warnings
+    name = name %|||% NA_character_,
+    command = command %|||% NA_character_,
+    result = result %|||% NA,
+    seconds = seconds %|||% NA_real_,
+    error = error %|||% NA_character_,
+    traceback = traceback %|||% NA_character_,
+    warnings = warnings %|||% NA_character_
   )
 }
 
@@ -43,10 +43,7 @@ monad_validate <- function(monad) {
   true(inherits(monad, "crew_monad"))
   true(tibble::is_tibble(monad))
   true(nrow(monad), 1L)
-  true(
-    identical(colnames(monad), names(formals(monad_new))),
-    message = "bad columns in crew monad."
-  )
+  true(identical(colnames(monad), names(formals(monad_new))))
   for (col in c("name", "command", "error", "traceback", "warnings")) {
     true(is.character(monad[[col]]))
   }

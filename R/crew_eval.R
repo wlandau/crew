@@ -1,12 +1,20 @@
+#' @title Evaluate an R command and return results as a monad.
 #' @export
 #' @keywords internal
+#' @description Not a user-side function. Do not call directly.
+#' @return A monad object with results and metadata.
+#' @param command Language object with R code to run.
+#' @param envir Environment to run `command`.
+#' @examples
+#' crew_eval(quote(1 + 1))
 crew_eval <- function(command, envir = parent.frame()) {
   force(envir)
-  command <- substitute(command)
+  true(is.language(command))
+  true(is.environment(envir))
   capture_error <- function(condition) {
     state$error <- crew_eval_message(condition)
     state$error_class <- class(condition)
-    state$traceback <- as.character(sys.calls())
+    state$traceback <- paste(as.character(sys.calls()), collapse = "\n")
     NULL
   }
   capture_warning <- function(condition) {
@@ -18,8 +26,12 @@ crew_eval <- function(command, envir = parent.frame()) {
         c(state$warnings, crew_eval_message(condition)),
         collapse = ". "
       )
+      state$warnings <- substr(
+        state$warnings,
+        start = 0,
+        stop = crew_eval_max_nchar
+      )
     }
-    warning(as_immediate_condition(condition))
     invokeRestart("muffleWarning")
   }
   state <- new.env(hash = FALSE, parent = emptyenv())
@@ -28,18 +40,18 @@ crew_eval <- function(command, envir = parent.frame()) {
     expr = withCallingHandlers(
       expr = eval(expr = command, envir = envir),
       error = capture_error,
-      warning = capture_warnings
+      warning = capture_warning
     ),
     error = function(condition) NULL
   )
-  runtime <- as.numeric(proc.time()["elapsed"]) - start
-  out <- crew_monad_init(
+  seconds <- as.numeric(proc.time()["elapsed"]) - start
+  monad_init(
     command = deparse_safe(command),
     result = result,
-    runtime = runtime,
-    error = state$error,
-    traceback = state$traceback,
-    warnings = state$warnings
+    seconds = seconds,
+    error = state$error %|||% NA_character_,
+    traceback = state$traceback %|||% NA_character_,
+    warnings = state$warnings %|||% NA_character_
   )
 }
 

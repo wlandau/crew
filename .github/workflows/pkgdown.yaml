@@ -14,13 +14,15 @@ name: pkgdown
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
-    # Only restrict concurrency for non-PR jobs
     concurrency:
       group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
+
+      - name: system dependencies
+        run: sudo apt-get install -y libmbedtls-dev redis-server
 
       - uses: r-lib/actions/setup-pandoc@v2
 

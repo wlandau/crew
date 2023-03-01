@@ -28,9 +28,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Redis server
+      - name: system dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get install redis-server
+        run: sudo apt-get install -y libmbedtls-dev redis-server
 
       - uses: r-lib/actions/setup-pandoc@v2
 

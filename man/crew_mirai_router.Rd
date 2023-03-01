@@ -4,20 +4,22 @@
 \alias{crew_mirai_router}
 \title{Create a \code{mirai} router.}
 \usage{
-crew_mirai_router(name = NULL, host = NULL, port = NULL)
+crew_mirai_router(name = NULL, host = NULL, ports = NULL)
 }
 \arguments{
 \item{name}{Name of the \code{mirai} router.
 Defaults to a string from \code{ids::proquint()}.}
 
-\item{host}{IP address the router uses to connect to the workers.
+\item{host}{IP address of the client process that the workers can dial
+into inside the local network.
 If a character string, the router uses the specified IP address.
 If \code{NULL}, the IP address defaults to \code{getip::getip(type = "local")}.}
 
-\item{port}{TCP port the router uses to connect to the workers.
-If an integer or character string, the router uses the specified port.
-If \code{NULL}, the port defaults to an available port in the ephemeral
-port range (49152 through 65355).}
+\item{ports}{Integer vector of TCP port numbers, one for each port
+on the client where a worker (\code{mirai} server) may dial in and accept tasks.
+For random available ports, you can use \code{parallelly::freePort()}.
+Defaults to a single port from \code{parallelly::freePort()}
+in the ephemeral range (49152 to 65535).}
 }
 \description{
 Create an \code{R6} object to route tasks to \code{mirai} workers

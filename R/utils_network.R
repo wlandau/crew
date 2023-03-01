@@ -1,5 +1,5 @@
-tcp_socket <- function(host, port) {
-  sprintf("tcp://%s:%s", host, as.character(as.integer(port)))
+tcp_sockets <- function(host, ports) {
+  sprintf("tcp://%s:%s", host, as.character(as.integer(ports)))
 }
 
 local_ipv4 <- function() {

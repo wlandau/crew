@@ -3,7 +3,6 @@
 #' @family launchers
 #' @description Create an `R6` object to launch and maintain
 #'   `callr` workers for a `mirai` controller.
-#' @inheritParams mirai::server
 #' @param sockets TCP sockets for listening to the workers.
 #' @param seconds_idle Maximum number of seconds that a worker can idle
 #'   since the completion of the last task. If exceeded, the worker exits.
@@ -13,6 +12,8 @@
 #'   active queue.
 #' @param seconds_poll_low Low polling interval in seconds for the `mirai`
 #'   active queue.
+#' @param max_tasks Maximum number of tasks that a worker will do before
+#'   exiting.
 #' @param async_dial Logical, whether the `mirai` workers should dial in
 #'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
 #' @examples
@@ -31,7 +32,7 @@ crew_mirai_launcher_callr <- function(
 ) {
   true(sockets, length(.) > 0L, is.character(.), nzchar(.), !anyNA(.))
   workers <- as.list(rep(NA, length(sockets)))
-  launcher <- crew_class_mirai_launcher$new(
+  launcher <- crew_class_mirai_launcher_callr$new(
     sockets = sockets,
     workers = workers,
     seconds_idle = seconds_idle,

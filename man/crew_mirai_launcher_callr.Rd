@@ -29,6 +29,9 @@ active queue.}
 \item{seconds_poll_low}{Low polling interval in seconds for the \code{mirai}
 active queue.}
 
+\item{max_tasks}{Maximum number of tasks that a worker will do before
+exiting.}
+
 \item{async_dial}{Logical, whether the \code{mirai} workers should dial in
 asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 }

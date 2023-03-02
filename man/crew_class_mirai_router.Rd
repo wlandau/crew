@@ -33,9 +33,7 @@ Other routers:
 \describe{
 \item{\code{name}}{Name of the router.}
 
-\item{\code{host}}{Client IP address. See \code{\link[=crew_mirai_router]{crew_mirai_router()}} for details.}
-
-\item{\code{ports}}{TCP ports. See \code{\link[=crew_mirai_router]{crew_mirai_router()}} for details.}
+\item{\code{sockets}}{TCP sockets to listen to workers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -45,10 +43,9 @@ Other routers:
 \item \href{#method-crew_class_mirai_router-new}{\code{crew_class_mirai_router$new()}}
 \item \href{#method-crew_class_mirai_router-finalize}{\code{crew_class_mirai_router$finalize()}}
 \item \href{#method-crew_class_mirai_router-validate}{\code{crew_class_mirai_router$validate()}}
-\item \href{#method-crew_class_mirai_router-sockets}{\code{crew_class_mirai_router$sockets()}}
-\item \href{#method-crew_class_mirai_router-available_sockets}{\code{crew_class_mirai_router$available_sockets()}}
-\item \href{#method-crew_class_mirai_router-connected}{\code{crew_class_mirai_router$connected()}}
-\item \href{#method-crew_class_mirai_router-connections}{\code{crew_class_mirai_router$connections()}}
+\item \href{#method-crew_class_mirai_router-sockets_occupied}{\code{crew_class_mirai_router$sockets_occupied()}}
+\item \href{#method-crew_class_mirai_router-sockets_available}{\code{crew_class_mirai_router$sockets_available()}}
+\item \href{#method-crew_class_mirai_router-is_connected}{\code{crew_class_mirai_router$is_connected()}}
 \item \href{#method-crew_class_mirai_router-connect}{\code{crew_class_mirai_router$connect()}}
 \item \href{#method-crew_class_mirai_router-disconnect}{\code{crew_class_mirai_router$disconnect()}}
 }
@@ -59,7 +56,7 @@ Other routers:
 \subsection{Method \code{new()}}{
 \code{mirai} router constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$new(name = NULL, host = NULL, ports = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$new(name = NULL, sockets = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -118,25 +115,26 @@ Validate the router.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_mirai_router-sockets"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_mirai_router-sockets}{}}}
-\subsection{Method \code{sockets()}}{
-Get the TCP socket of the router.
+\if{html}{\out{<a id="method-crew_class_mirai_router-sockets_occupied"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_router-sockets_occupied}{}}}
+\subsection{Method \code{sockets_occupied()}}{
+Show worker connections.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$sockets()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$sockets_occupied()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-Character string with the TCP socket of the router.
+Character vector of TCP sockets where the client is
+listening to currently dialed-in running workers.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_mirai_router-available_sockets"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_mirai_router-available_sockets}{}}}
-\subsection{Method \code{available_sockets()}}{
+\if{html}{\out{<a id="method-crew_class_mirai_router-sockets_available"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_router-sockets_available}{}}}
+\subsection{Method \code{sockets_available()}}{
 Get available TCP sockets for listening to workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$available_sockets(n = 1L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$sockets_available(n = 1L)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -151,31 +149,17 @@ Character string with available TCP sockets.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_mirai_router-connected"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_mirai_router-connected}{}}}
-\subsection{Method \code{connected()}}{
+\if{html}{\out{<a id="method-crew_class_mirai_router-is_connected"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_router-is_connected}{}}}
+\subsection{Method \code{is_connected()}}{
 Check if the router is connected.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$connected()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$is_connected()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
 \code{TRUE} if successfully listening for dialed-in workers,
 \code{FALSE} otherwise.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_mirai_router-connections"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_mirai_router-connections}{}}}
-\subsection{Method \code{connections()}}{
-Show worker connections.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$connections()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Character vector of TCP sockets where the client is
-listening to currently dialed-in running workers.
 }
 }
 \if{html}{\out{<hr>}}

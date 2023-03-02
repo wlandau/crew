@@ -19,7 +19,7 @@ Other launchers:
 \describe{
 \item{\code{sockets}}{TCP sockets for listening to the workers.}
 
-\item{\code{workers}}{List of \code{callr::r_session()} handles for workers.
+\item{\code{workers}}{List of \code{callr::r_bg()} handles for workers.
 The handle is \code{NA} if it is not yet called.}
 
 \item{\code{idle}}{Argument to \code{crew_mirai_launcher_callr()}.}
@@ -30,7 +30,9 @@ The handle is \code{NA} if it is not yet called.}
 
 \item{\code{poll_low}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{poll_launch}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{poll_launch_timeout}}{Argument to \code{crew_mirai_launcher_callr()}.}
+
+\item{\code{poll_launch_wait}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
 \item{\code{max_tasks}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
@@ -63,7 +65,8 @@ The handle is \code{NA} if it is not yet called.}
   wall_time = NULL,
   poll_high = NULL,
   poll_low = NULL,
-  poll_launch = NULL,
+  poll_launch_timeout = NULL,
+  poll_launch_wait = NULL,
   max_tasks = NULL,
   async_dial = NULL
 )}\if{html}{\out{</div>}}
@@ -84,7 +87,9 @@ The handle is \code{NA} if it is not yet called.}
 
 \item{\code{poll_low}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{poll_launch}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{poll_launch_timeout}}{Argument to \code{crew_mirai_launcher_callr()}.}
+
+\item{\code{poll_launch_wait}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
 \item{\code{max_tasks}}{Argument to \code{crew_mirai_launcher_callr()}.}
 

@@ -10,13 +10,14 @@
 #'   `crew` resembles packages `clustermq`,
 #'   `future`, and `batchtools`.
 #' @family help
-#' @importFrom callr r_session
+#' @importFrom callr r_bg
 #' @importFrom getip getip
 #' @importFrom mirai daemons is_error_value mirai server
 #' @importFrom R6 R6Class
+#' @importFrom processx poll
 #' @importFrom rlang abort as_function
 #' @importFrom tibble tibble
-#' @importFrom utils globalVariables
+#' @importFrom utils globalVariables head
 #' @importFrom withr local_options
 NULL
 

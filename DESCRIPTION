@@ -31,6 +31,7 @@ Imports:
   callr,
   getip,
   mirai (>= 0.7.2.9014),
+  processx,
   R6,
   rlang,
   tibble,

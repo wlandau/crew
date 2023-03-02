@@ -6,7 +6,6 @@ test_that("crew_mirai_router() validate", {
 })
 
 test_that("crew_mirai_router() works", {
-  skip_on_cran()
   router <- crew_mirai_router()
   expect_false(router$is_connected())
   expect_equal(router$sockets_listening(), character(0))
@@ -28,7 +27,7 @@ test_that("crew_mirai_router() works", {
   )
   expect_equal(router$sockets_occupied(), socket)
   expect_equal(router$sockets_available(), character(0))
-  m <- mirai::mirai(ps::ps_pid())
+  m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
   crew::crew_wait(~!anyNA(m$data), timeout = 5, wait = 0.1)
   expect_false(anyNA(m$data))
   expect_true(is.numeric(m$data))

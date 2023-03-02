@@ -11,8 +11,10 @@
 #'   active queue.
 #' @param poll_low Low polling interval in seconds for the `mirai`
 #'   active queue.
-#' @param poll_launch Maximum number of seconds to wait for a new group
-#'   of workers to launch.
+#' @param poll_launch_timeout Number of seconds to time out
+#'   waiting for a new group of workers to launch.
+#' @param poll_launch_wait Number of seconds to wait between checks
+#'   that newly launched workers are ready to receive tasks.
 #' @param max_tasks Maximum number of tasks that a worker will do before
 #'   exiting.
 #' @param async_dial Logical, whether the `mirai` workers should dial in
@@ -27,7 +29,8 @@ crew_mirai_launcher_callr <- function(
   wall_time = Inf,
   poll_high = 5,
   poll_low = 50,
-  poll_launch = 5,
+  poll_launch_timeout = 5,
+  poll_launch_wait = 0.1,
   max_tasks = Inf,
   async_dial = TRUE
 ) {
@@ -38,7 +41,8 @@ crew_mirai_launcher_callr <- function(
     wall_time = wall_time,
     poll_high = poll_high,
     poll_low = poll_low,
-    poll_launch = poll_launch,
+    poll_launch_timeout = poll_launch_timeout,
+    poll_launch_wait = poll_launch_wait,
     max_tasks = max_tasks,
     async_dial = async_dial
   )
@@ -57,7 +61,7 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
   public = list(
     #' @field sockets TCP sockets for listening to the workers.
     sockets = NULL,
-    #' @field workers List of `callr::r_session()` handles for workers.
+    #' @field workers List of `callr::r_bg()` handles for workers.
     #'   The handle is `NA` if it is not yet called.
     workers = NULL,
     #' @field idle Argument to `crew_mirai_launcher_callr()`.
@@ -68,8 +72,10 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
     poll_high = NULL,
     #' @field poll_low Argument to `crew_mirai_launcher_callr()`.
     poll_low = NULL,
-    #' @field poll_launch Argument to `crew_mirai_launcher_callr()`.
-    poll_launch = NULL,
+    #' @field poll_launch_timeout Argument to `crew_mirai_launcher_callr()`.
+    poll_launch_timeout = NULL,
+    #' @field poll_launch_wait Argument to `crew_mirai_launcher_callr()`.
+    poll_launch_wait = NULL,
     #' @field max_tasks Argument to `crew_mirai_launcher_callr()`.
     max_tasks = NULL,
     #' @field async_dial Argument to `crew_mirai_launcher_callr()`.
@@ -82,7 +88,8 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
     #' @param wall_time Argument to `crew_mirai_launcher_callr()`.
     #' @param poll_high Argument to `crew_mirai_launcher_callr()`.
     #' @param poll_low Argument to `crew_mirai_launcher_callr()`.
-    #' @param poll_launch Argument to `crew_mirai_launcher_callr()`.
+    #' @param poll_launch_timeout Argument to `crew_mirai_launcher_callr()`.
+    #' @param poll_launch_wait Argument to `crew_mirai_launcher_callr()`.
     #' @param max_tasks Argument to `crew_mirai_launcher_callr()`.
     #' @param async_dial Argument to `crew_mirai_launcher_callr()`.
     initialize = function(
@@ -92,7 +99,8 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
       wall_time = NULL,
       poll_high = NULL,
       poll_low = NULL,
-      poll_launch = NULL,
+      poll_launch_timeout = NULL,
+      poll_launch_wait = NULL,
       max_tasks = NULL,
       async_dial = NULL
     ) {
@@ -102,7 +110,8 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
       self$wall_time <- wall_time
       self$poll_high <- poll_high
       self$poll_low <- poll_low
-      self$poll_launch <- poll_launch
+      self$poll_launch_timeout <- poll_launch_timeout
+      self$poll_launch_wait <- poll_launch_wait
       self$max_tasks <- max_tasks
       self$async_dial <- async_dial
     },
@@ -114,14 +123,15 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
     validate = function() {
-      true(self$sockets, is.character(.), length(.) > 0L, nzchar(.), !anyNA(.))
+      true(self$sockets, is.character(.), nzchar(.), !anyNA(.))
       true(self$workers, is.list(.), length(.) == length(self$sockets))
       fields <- c(
         "idle",
         "wall_time",
         "poll_high",
         "poll_low",
-        "poll_launch",
+        "poll_launch_timeout",
+        "poll_launch_wait",
         "max_tasks"
       )
       for (field in fields) {
@@ -138,12 +148,13 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
       true(sockets, length(.) > 0L, is.character(.), nzchar(.), !anyNA(.))
       self$sockets <- sockets
       self$workers <- as.list(rep(NA, length(sockets)))
+      self$validate()
       invisible()
     },
     #' @description Count the number of running workers.
     #' @return Number of running workers.
     running = function() {
-      sum(vapply(self$workers, \(x) x$is_alive(), VALUE = logical(1L)))
+      sum(map_lgl(self$workers, ~process_running(.x)))
     },
     #' @description Launch one or more workers.
     #' @details The actual number of newly launched workers
@@ -153,29 +164,14 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param n Maximum number of workers to launch.
     launch = function(n = 1L) {
-      launched <- integer(0)
-      for (index in seq_along(self$workers)) {
-        worker <- self$workers[[index]]
-        if (!is.na(worker) && !worker$is_alive()) {
-          self$workers[[index]] <- callr::r_session$new(wait = FALSE)
-          launched <- c(index, launched)
-          if (length(launched) >= n) {
-            break
-          }
-        }
-      }
-      if (length(launched)) {
-        con <- lapply(
-          self$workers[launched],
-          \(x) x$get_poll_connection()
-        )
-        processx::poll(processes = con, ms = 1000 * self$poll_launch)
-      }
-      for (index in launched) {
-        self$workers[[index]]$call(
+      available <- map_lgl(x = self$workers, f = ~!process_running(.x))
+      index <- utils::head(which(available), n = n)
+      self$workers[index] <- map(
+        x = index,
+        f = ~callr::r_bg(
           func = \(...) do.call(what = mirai::server, args = list(...)),
           args = list(
-            url = self$sockets[index],
+            url = self$sockets[.x],
             idletime = self$idle,
             walltime = self$wall_time,
             tasklimit = self$max_tasks,
@@ -184,14 +180,18 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
             asyncdial = self$async_dial
           )
         )
-      }
+      )
       invisible()
     },
     #' @description Terminate all workers.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      lapply(self$workers, \(x) if (!is.na(x)) x$kill())
+      lapply(self$workers, \(x) if (inherits(x, "r_process")) x$kill())
       invisible()
     }
   )
 )
+
+process_running <- function(process) {
+  inherits(process, "r_process") && process$is_alive()
+}

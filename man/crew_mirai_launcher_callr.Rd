@@ -9,7 +9,8 @@ crew_mirai_launcher_callr(
   wall_time = Inf,
   poll_high = 5,
   poll_low = 50,
-  poll_launch = 5,
+  poll_launch_timeout = 5,
+  poll_launch_wait = 0.1,
   max_tasks = Inf,
   async_dial = TRUE
 )
@@ -27,8 +28,11 @@ active queue.}
 \item{poll_low}{Low polling interval in seconds for the \code{mirai}
 active queue.}
 
-\item{poll_launch}{Maximum number of seconds to wait for a new group
-of workers to launch.}
+\item{poll_launch_timeout}{Number of seconds to time out
+waiting for a new group of workers to launch.}
+
+\item{poll_launch_wait}{Number of seconds to wait between checks
+that newly launched workers are ready to receive tasks.}
 
 \item{max_tasks}{Maximum number of tasks that a worker will do before
 exiting.}

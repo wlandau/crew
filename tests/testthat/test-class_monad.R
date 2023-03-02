@@ -1,20 +1,20 @@
-test_that("empty monad is valid", {
+crew_test("empty monad is valid", {
   expect_silent(monad_validate(monad_init()))
 })
 
-test_that("bad name", {
+crew_test("bad name", {
   out <- monad_init()
   out$name <- 0
   expect_crew_error(monad_validate(out))
 })
 
-test_that("bad field", {
+crew_test("bad field", {
   out <- monad_init()
   out$nope <- 0
   expect_crew_error(monad_validate(out))
 })
 
-test_that("monads can be row-bound together", {
+crew_test("monads can be row-bound together", {
   out <- rbind(
     monad_init(name = "a"),
     monad_init(name = "b"),

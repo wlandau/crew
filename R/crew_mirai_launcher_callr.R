@@ -173,7 +173,8 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
             pollfreqh = self$poll_high,
             pollfreql = self$poll_low,
             asyncdial = self$async_dial
-          )
+          ),
+          supervise = TRUE
         )
       )
       invisible()

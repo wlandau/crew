@@ -1,11 +1,11 @@
-test_that("crew_mirai_router() validate", {
+crew_test("crew_mirai_router() validate", {
   router <- crew_mirai_router()
   expect_silent(router$validate())
   router$name <- NULL
   expect_crew_error(router$validate())
 })
 
-test_that("crew_mirai_router() works", {
+crew_test("crew_mirai_router() works", {
   router <- crew_mirai_router()
   expect_false(router$is_connected())
   expect_equal(router$sockets_listening(), character(0))

@@ -22,13 +22,15 @@ Other launchers:
 \item{\code{workers}}{List of \code{callr::r_session()} handles for workers.
 The handle is \code{NA} if it is not yet called.}
 
-\item{\code{seconds_idle}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{idle}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{seconds_wall_time}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{wall_time}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{seconds_poll_high}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{poll_high}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{seconds_poll_low}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{poll_low}}{Argument to \code{crew_mirai_launcher_callr()}.}
+
+\item{\code{poll_launch}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
 \item{\code{max_tasks}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
@@ -42,6 +44,10 @@ The handle is \code{NA} if it is not yet called.}
 \item \href{#method-crew_class_mirai_launcher_callr-new}{\code{crew_class_mirai_launcher_callr$new()}}
 \item \href{#method-crew_class_mirai_launcher_callr-finalize}{\code{crew_class_mirai_launcher_callr$finalize()}}
 \item \href{#method-crew_class_mirai_launcher_callr-validate}{\code{crew_class_mirai_launcher_callr$validate()}}
+\item \href{#method-crew_class_mirai_launcher_callr-populate}{\code{crew_class_mirai_launcher_callr$populate()}}
+\item \href{#method-crew_class_mirai_launcher_callr-running}{\code{crew_class_mirai_launcher_callr$running()}}
+\item \href{#method-crew_class_mirai_launcher_callr-launch}{\code{crew_class_mirai_launcher_callr$launch()}}
+\item \href{#method-crew_class_mirai_launcher_callr-terminate}{\code{crew_class_mirai_launcher_callr$terminate()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -53,10 +59,11 @@ The handle is \code{NA} if it is not yet called.}
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_launcher_callr$new(
   sockets = NULL,
   workers = NULL,
-  seconds_idle = NULL,
-  seconds_wall_time = NULL,
-  seconds_poll_high = NULL,
-  seconds_poll_low = NULL,
+  idle = NULL,
+  wall_time = NULL,
+  poll_high = NULL,
+  poll_low = NULL,
+  poll_launch = NULL,
   max_tasks = NULL,
   async_dial = NULL
 )}\if{html}{\out{</div>}}
@@ -69,13 +76,15 @@ The handle is \code{NA} if it is not yet called.}
 
 \item{\code{workers}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{seconds_idle}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{idle}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{seconds_wall_time}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{wall_time}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{seconds_poll_high}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{poll_high}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{seconds_poll_low}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{poll_low}}{Argument to \code{crew_mirai_launcher_callr()}.}
+
+\item{\code{poll_launch}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
 \item{\code{max_tasks}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
@@ -107,6 +116,80 @@ Disconnect at garbage collection time.
 Validate the launcher.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_launcher_callr$validate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_mirai_launcher_callr-populate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_launcher_callr-populate}{}}}
+\subsection{Method \code{populate()}}{
+Populate workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_launcher_callr$populate(sockets = character(0))}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sockets}}{Character vector of local TCP sockets that the workers
+will use to dial in to receive tasks.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_mirai_launcher_callr-running"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_launcher_callr-running}{}}}
+\subsection{Method \code{running()}}{
+Count the number of running workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_launcher_callr$running()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Number of running workers.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_mirai_launcher_callr-launch"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_launcher_callr-launch}{}}}
+\subsection{Method \code{launch()}}{
+Launch one or more workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_launcher_callr$launch(n = 1L)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Maximum number of workers to launch.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+The actual number of newly launched workers
+is less than or equal to the number of sockets
+supplied to \verb{$populate()} minus the number of workers
+already running.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_mirai_launcher_callr-terminate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_launcher_callr-terminate}{}}}
+\subsection{Method \code{terminate()}}{
+Terminate all workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_launcher_callr$terminate()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

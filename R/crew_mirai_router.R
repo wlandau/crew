@@ -105,7 +105,6 @@ crew_class_mirai_router <- R6::R6Class(
       self$ports <- ports
       self$timeout <- timeout
       self$wait <- wait
-      invisible()
     },
     #' @description Disconnect at garbage collection time.
     #' @return `NULL` (invisibly).

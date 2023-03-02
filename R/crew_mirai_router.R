@@ -3,16 +3,28 @@
 #' @family routers
 #' @description Create an `R6` object to route tasks to `mirai` workers
 #'   on the local network.
+#' @section Ports:
+#'   In the `mirai`-based task scheduling in `crew`, each parallel worker
+#'   dials into a different TCP port on the local machine.
+#'   If you launch hundreds of workers, then hundreds of ports will
+#'   not be available to other users or processes.
+#'   Large numbers of workers on shared machines or clusters may
+#'   seriously disrupt the tasks of other users, so please be careful.
 #' @param name Name of the `mirai` router.
 #'   Defaults to a string from `ids::proquint()`.
+#' @param workers Integer, maximum number of parallel workers to run.
+#'   `crew` will reserve one ephemeral port for each worker. See the
+#'   Ports section for an important cautionary note.
 #' @param host IP address of the client process that the workers can dial
 #'   into inside the local network.
 #'   If a character string, the router uses the specified IP address.
 #'   If `NULL`, the IP address defaults to `getip::getip(type = "local")`.
-#' @param ports Integer vector of TCP port numbers, one for each port
+#' @param ports Optional integer vector of TCP port numbers, one for each port
 #'   on the client where a worker (`mirai` server) may dial in and accept tasks.
-#'   For random available ports, you can use `parallelly::freePort()`.
-#'   Defaults to a single port from `parallelly::freePort()`
+#'   Supersedes `workers` if supplied.
+#'   For a vector of random available ports,
+#'   you can use `parallelly::freePort()`.
+#'   Defaults to a vector of length `workers` from `parallelly::freePort()`
 #'   in the ephemeral range (49152 to 65535).
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -24,13 +36,14 @@
 #' }
 crew_mirai_router <- function(
   name = NULL,
+  workers = 1L,
   host = NULL,
   ports = NULL
 ) {
   router <- crew_class_mirai_router$new(
     name = as.character(name %|||% random_name()),
     host = as.character(host %|||% local_ipv4()),
-    ports = as.integer(ports %|||% random_port())
+    ports = as.integer(ports %|||% random_ports(n = workers))
   )
   router$validate()
   router
@@ -94,24 +107,37 @@ crew_class_mirai_router <- R6::R6Class(
       tcp_sockets(host = self$host, ports = self$ports)
     },
     #' @description Check if the router is connected.
-    #' @return `TRUE` if connected and `FALSE` otherwise.
+    #' @return `TRUE` if successfully listening for dialed-in workers,
+    #'   `FALSE` otherwise.
     connected = function() {
-      identical(mirai::daemons(.compute = self$name)$daemons, "remote")
+      info <- mirai::daemons(.compute = self$name)
+      identical(info$daemons, "remote") &&
+        !anyNA(info$nodes) &&
+        !mirai::is_error_value(info$nodes)
     },
     #' @description Show worker connections.
     #' @return Character vector of TCP sockets where the client is
     #'   listening to currently dialed-in running workers.
     connections = function() {
-      out <- mirai::daemons(.compute = self$name)$nodes
-      as.character(names(out)[out > 0L])
+      nodes <- mirai::daemons(.compute = self$name)$nodes
+      if_any(
+        mirai::is_error_value(nodes),
+        character(0),
+        as.character(names(nodes)[nodes > 0L])
+      )
     },
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
     connect = function() {
       if (!self$connected()) {
         tcp <- self$sockets()
-        mirai::daemons(value = tcp, nodes = length(tcp), .compute = self$name)
+        args <- list(value = tcp, nodes = length(tcp), .compute = self$name)
+        do.call(what = mirai::daemons, args = args)
       }
+      true(
+        self$connected(),
+        message = "mirai client cannot connect. Please try different ports."
+      )
       invisible()
     },
     #' @description Disconnect the router.

@@ -7,7 +7,7 @@
 #' @param launcher An `R6` launcher object created by one of the
 #'   `crew_mirai_launcher_*()` functions.
 #' @examples
-#' stop("TBD")
+#' # TBD
 crew_mirai_controller <- function(router, launcher) {
   controller <- crew_class_mirai_controller$new(
     router = router,

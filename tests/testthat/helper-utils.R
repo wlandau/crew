@@ -6,7 +6,7 @@ crew_test <- function(label, code) {
   suppressMessages(eval(expr, envir = parent.frame()))
 }
 
-expect_crew_error = function(object) {
+expect_crew_error <- function(object) {
   testthat::expect_error(object, class = "crew_error")
 }
 

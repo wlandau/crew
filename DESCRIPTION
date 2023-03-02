@@ -30,10 +30,12 @@ Depends:
 Imports:
   callr,
   getip,
+  ids,
   mirai (>= 0.7.2.9013),
   parallelly,
   R6,
   rlang,
+  tibble,
   utils,
   withr
 Suggests:

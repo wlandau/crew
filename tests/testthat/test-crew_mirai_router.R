@@ -14,17 +14,17 @@ test_that("crew_mirai_router() works", {
   expect_true(router$connected())
   expect_equal(length(router$connections()), 0L)
   socket <- router$sockets()
-  exp <- tcp_socket(host = router$host, port = router$port)
+  exp <- tcp_sockets(host = router$host, ports = router$ports)
   expect_equal(socket, exp)
   px <- callr::r_session$new(wait = TRUE)
   px$call(function(socket) mirai::server(socket), args = list(socket = socket))
   for (index in seq_len(300)) {
-    if (identical(router$connections(), 1L)) {
+    if (identical(router$connections(), socket)) {
       break
     }
     Sys.sleep(0.1)
   }
-  expect_equal(router$connections(), 1L)
+  expect_equal(router$connections(), socket)
   m <- mirai::mirai(ps::ps_pid())
   for (index in seq_len(300)) {
     if (!anyNA(m$data)) {

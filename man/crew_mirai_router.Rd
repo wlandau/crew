@@ -4,27 +4,43 @@
 \alias{crew_mirai_router}
 \title{Create a \code{mirai} router.}
 \usage{
-crew_mirai_router(name = NULL, host = NULL, ports = NULL)
+crew_mirai_router(name = NULL, workers = 1L, host = NULL, ports = NULL)
 }
 \arguments{
 \item{name}{Name of the \code{mirai} router.
 Defaults to a string from \code{ids::proquint()}.}
+
+\item{workers}{Integer, maximum number of parallel workers to run.
+\code{crew} will reserve one ephemeral port for each worker. See the
+Ports section for an important cautionary note.}
 
 \item{host}{IP address of the client process that the workers can dial
 into inside the local network.
 If a character string, the router uses the specified IP address.
 If \code{NULL}, the IP address defaults to \code{getip::getip(type = "local")}.}
 
-\item{ports}{Integer vector of TCP port numbers, one for each port
+\item{ports}{Optional integer vector of TCP port numbers, one for each port
 on the client where a worker (\code{mirai} server) may dial in and accept tasks.
-For random available ports, you can use \code{parallelly::freePort()}.
-Defaults to a single port from \code{parallelly::freePort()}
+Supersedes \code{workers} if supplied.
+For a vector of random available ports,
+you can use \code{parallelly::freePort()}.
+Defaults to a vector of length \code{workers} from \code{parallelly::freePort()}
 in the ephemeral range (49152 to 65535).}
 }
 \description{
 Create an \code{R6} object to route tasks to \code{mirai} workers
 on the local network.
 }
+\section{Ports}{
+
+In the \code{mirai}-based task scheduling in \code{crew}, each parallel worker
+dials into a different TCP port on the local machine.
+If you launch hundreds of workers, then hundreds of ports will
+not be available to other users or processes.
+Large numbers of workers on shared machines or clusters may
+seriously disrupt the tasks of other users, so please be careful.
+}
+
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_mirai_router()

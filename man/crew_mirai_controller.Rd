@@ -17,6 +17,6 @@ Create an \code{R6} object to submit tasks and launch workers
 on \code{mirai}-based infrastructure.
 }
 \examples{
-stop("TBD")
+# TBD
 }
 \concept{mirai}

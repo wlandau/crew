@@ -139,7 +139,8 @@ Check if the router is connected.
 }
 
 \subsection{Returns}{
-\code{TRUE} if connected and \code{FALSE} otherwise.
+\code{TRUE} if successfully listening for dialed-in workers,
+\code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}
@@ -160,7 +161,7 @@ listening to currently dialed-in running workers.
 \if{html}{\out{<a id="method-crew_class_mirai_router-connect"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_mirai_router-connect}{}}}
 \subsection{Method \code{connect()}}{
-Connect the router to the host and port.
+Start listening for workers on the available sockets.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$connect()}\if{html}{\out{</div>}}
 }
@@ -173,7 +174,7 @@ Connect the router to the host and port.
 \if{html}{\out{<a id="method-crew_class_mirai_router-disconnect"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_mirai_router-disconnect}{}}}
 \subsection{Method \code{disconnect()}}{
-Disconnect the router from the host and port.
+Disconnect the router.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$disconnect()}\if{html}{\out{</div>}}
 }

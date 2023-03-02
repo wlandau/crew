@@ -86,15 +86,15 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
     #' @param max_tasks Argument to `crew_mirai_launcher_callr()`.
     #' @param async_dial Argument to `crew_mirai_launcher_callr()`.
     initialize = function(
-    sockets = NULL,
-    workers = NULL,
-    idle = NULL,
-    wall_time = NULL,
-    poll_high = NULL,
-    poll_low = NULL,
-    poll_launch = NULL,
-    max_tasks = NULL,
-    async_dial = NULL
+      sockets = NULL,
+      workers = NULL,
+      idle = NULL,
+      wall_time = NULL,
+      poll_high = NULL,
+      poll_low = NULL,
+      poll_launch = NULL,
+      max_tasks = NULL,
+      async_dial = NULL
     ) {
       self$sockets <- sockets
       self$workers <- workers

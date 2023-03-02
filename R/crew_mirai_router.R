@@ -149,10 +149,8 @@ crew_class_mirai_router <- R6::R6Class(
     #' @return `TRUE` if successfully listening for dialed-in workers,
     #'   `FALSE` otherwise.
     is_connected = function() {
-      info <- mirai::daemons(.compute = self$name)
-      (info$connections > 0L) &&
-        !anyNA(info$nodes) &&
-        !mirai::is_error_value(info$nodes)
+      out <- mirai::daemons(.compute = self$name)$connections
+      (length(out) == 1L) && !anyNA(out) && is.numeric(out) && out > 0L
     },
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).

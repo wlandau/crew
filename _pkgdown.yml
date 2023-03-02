@@ -23,8 +23,11 @@ reference:
   - '`crew_mirai_controller`'
   - '`crew_mirai_launcher`'
   - '`crew_mirai_router`'
-- title: mirai
+- title: mirai classes
   contents:
   - '`crew_class_mirai_controller`'
   - '`crew_class_mirai_launcher`'
   - '`crew_class_mirai_router`'
+- title: Utilities
+  contents:
+  - '`crew_wait`'

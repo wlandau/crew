@@ -4,7 +4,14 @@
 \alias{crew_mirai_router}
 \title{Create a \code{mirai} router.}
 \usage{
-crew_mirai_router(name = NULL, workers = 1L, host = NULL, ports = NULL)
+crew_mirai_router(
+  name = NULL,
+  workers = 1L,
+  host = NULL,
+  ports = NULL,
+  timeout = 5,
+  wait = 0.1
+)
 }
 \arguments{
 \item{name}{Name of the \code{mirai} router.
@@ -19,13 +26,17 @@ into inside the local network.
 If a character string, the router uses the specified IP address.
 If \code{NULL}, the IP address defaults to \code{getip::getip(type = "local")}.}
 
-\item{ports}{Optional integer vector of TCP port numbers, one for each port
-on the client where a worker (\code{mirai} server) may dial in and accept tasks.
-Supersedes \code{workers} if supplied.
-For a vector of random available ports,
-you can use \code{parallelly::freePort()}.
-Defaults to a vector of length \code{workers} from \code{parallelly::freePort()}
-in the ephemeral range (49152 to 65535).}
+\item{ports}{Optional integer vector of TCP port numbers.
+Supersedes \code{workers} if supplied. Except for 0,
+which defers to NNG to automatically assign a port, each unique port
+value corresponds to a local port where a worker will dial in
+to accept tasks.}
+
+\item{timeout}{Number of seconds to time out waiting for the \code{mirai}
+router to (dis)connect.}
+
+\item{wait}{Number of seconds to wait between iterations checking
+if the \code{mirai} router is (dis)connected.}
 }
 \description{
 Create an \code{R6} object to route tasks to \code{mirai} workers

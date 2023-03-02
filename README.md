@@ -65,8 +65,7 @@ people.
   the feature requests that made `crew` possible.
 - [Rich FitzJohn](https://github.com/richfitz) and [Robert
   Ashton](https://github.com/r-ash) developed
-  [`rrq`](https://mrc-ide.github.io/rrq//). `crew` is merely an
-  extension of their work.
+  [`rrq`](https://mrc-ide.github.io/rrq//).
 - [Gábor Csárdi](https://github.com/gaborcsardi/) developed
   [`callr`](https://github.com/r-lib/callr) and wrote an [edifying blog
   post on implementing task
@@ -122,13 +121,13 @@ citation("crew")
 
 To cite package 'crew' in publications use:
 
-  Landau WM (????). _crew: Components to Extend 'rrq' Workers_.
+  Landau WM (????). _crew: A Distributed Worker Launcher_.
   https://wlandau.github.io/crew/, https://github.com/wlandau/crew.
 
 A BibTeX entry for LaTeX users is
 
   @Manual{,
-    title = {crew: Components to Extend 'rrq' Workers},
+    title = {crew: A Distributed Worker Launcher},
     author = {William Michael Landau},
     note = {https://wlandau.github.io/crew/, https://github.com/wlandau/crew},
   }

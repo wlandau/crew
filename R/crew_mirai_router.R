@@ -19,13 +19,15 @@
 #'   into inside the local network.
 #'   If a character string, the router uses the specified IP address.
 #'   If `NULL`, the IP address defaults to `getip::getip(type = "local")`.
-#' @param ports Optional integer vector of TCP port numbers, one for each port
-#'   on the client where a worker (`mirai` server) may dial in and accept tasks.
-#'   Supersedes `workers` if supplied.
-#'   For a vector of random available ports,
-#'   you can use `parallelly::freePort()`.
-#'   Defaults to a vector of length `workers` from `parallelly::freePort()`
-#'   in the ephemeral range (49152 to 65535).
+#' @param ports Optional integer vector of TCP port numbers.
+#'   Supersedes `workers` if supplied. Except for 0,
+#'   which defers to NNG to automatically assign a port, each unique port
+#'   value corresponds to a local port where a worker will dial in
+#'   to accept tasks.
+#' @param timeout Number of seconds to time out waiting for the `mirai`
+#'   router to (dis)connect.
+#' @param wait Number of seconds to wait between iterations checking
+#'   if the `mirai` router is (dis)connected.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_mirai_router()
@@ -38,18 +40,28 @@ crew_mirai_router <- function(
   name = NULL,
   workers = 1L,
   host = NULL,
-  ports = NULL
+  ports = NULL,
+  timeout = 5,
+  wait = 0.1
 ) {
   true(workers, is.numeric(.), length(.) == 1L, . > 0L, !anyNA(.))
   name <- as.character(name %|||% random_name())
   host <- as.character(host %|||% local_ipv4())
-  ports <- as.integer(ports %|||% random_ports(n = workers))
+  ports <- as.integer(ports %|||% rep(0, workers))
   true(name, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
   true(host, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
-  true(ports, is.integer(.), length(.) > 0L, . > 0L, !anyNA(.))
+  true(ports, is.integer(.), length(.) > 0L, !anyNA(.))
   true(ports, . >= 0L, . <= 65535L)
-  sockets <- tcp_sockets(host = host, ports = ports)
-  router <- crew_class_mirai_router$new(name = name, sockets = sockets)
+  true(timeout, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
+  true(wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
+  true(timeout >= wait)
+  router <- crew_class_mirai_router$new(
+    name = name,
+    host = host,
+    ports = ports,
+    timeout = timeout,
+    wait = wait
+  )
   router$validate()
   router
 }
@@ -65,24 +77,34 @@ crew_class_mirai_router <- R6::R6Class(
   public = list(
     #' @field name Name of the router.
     name = NULL,
-    #' @field sockets TCP sockets to listen to workers.
-    sockets = NULL,
+    #' @field host Local IP address.
+    host = NULL,
+    #' @field ports TCP ports to listen to workers.
+    ports = NULL,
+    #' @field timeout Timeout in seconds (dis)connecting the `mirai` router.
+    timeout = NULL,
+    #' @field wait Polling interval in seconds checking if the `mirai`
+    #'   router successfully (dis)connected.
+    wait = NULL,
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
-    #' @param name Name of the router object.
-    #' @param host Client IP address. See [crew_mirai_router()] for details.
-    #' @param ports TCP ports. See [crew_mirai_router()] for details.
-    #' @examples
-    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' router <- crew_mirai_router()
-    #' router$validate()
-    #' router$connect()
-    #' # Now launch workers with a mirai launcher.
-    #' router$disconnect()
-    #' }
-    initialize = function(name = NULL, sockets = NULL) {
+    #' @param name Argument passed from [crew_mirai_router()].
+    #' @param host Argument passed from [crew_mirai_router()].
+    #' @param ports Argument passed from [crew_mirai_router()].
+    #' @param timeout Argument passed from [crew_mirai_router()].
+    #' @param wait Argument passed from [crew_mirai_router()].
+    initialize = function(
+      name = NULL,
+      host = NULL,
+      ports = NULL,
+      timeout = NULL,
+      wait = NULL
+    ) {
       self$name <- name
-      self$sockets <- sockets
+      self$host <- host
+      self$ports <- ports
+      self$timeout <- timeout
+      self$wait <- wait
       invisible()
     },
     #' @description Disconnect at garbage collection time.
@@ -94,12 +116,28 @@ crew_class_mirai_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     validate = function() {
       true(self$name, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
-      true(self$sockets, is.character(.), length(.) > 0L, nzchar(.), !anyNA(.))
+      true(self$host, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
+      true(self$ports, is.integer(.), length(.) > 0L, !anyNA(.))
+      true(self$ports, . >= 0L, . <= 65535L)
+      true(self$timeout, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
+      true(self$wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
+      true(self$timeout >= self$wait)
       invisible()
     },
+    #' @description Get all sockets
+    #' @return Character vector of all sockets if connected, or
+    #'   `character(0)` if the router is not connected.
+    sockets_listening = function() {
+      nodes <- mirai::daemons(.compute = self$name)$nodes
+      if_any(
+        mirai::is_error_value(nodes),
+        character(0),
+        as.character(names(nodes))
+      )
+    },
     #' @description Show worker connections.
-    #' @return Character vector of TCP sockets where the client is
-    #'   listening to currently dialed-in running workers.
+    #' @return Character vector of TCP sockets where workers
+    #'   are currently dialed in.
     sockets_occupied = function() {
       nodes <- mirai::daemons(.compute = self$name)$nodes
       if_any(
@@ -108,18 +146,17 @@ crew_class_mirai_router <- R6::R6Class(
         as.character(names(nodes)[nodes > 0L])
       )
     },
-    #' @description Get available TCP sockets for listening to workers.
+    #' @description Get TCP sockets that are available for workers to dial in.
     #' @return Character string with available TCP sockets.
-    #' @param n Maximum number of sockets to return.
-    sockets_available = function(n = 1L) {
-      utils::head(setdiff(self$sockets, self$sockets_occupied()), n = n)
+    sockets_available = function() {
+      as.character(setdiff(self$sockets_listening(), self$sockets_occupied()))
     },
     #' @description Check if the router is connected.
     #' @return `TRUE` if successfully listening for dialed-in workers,
     #'   `FALSE` otherwise.
     is_connected = function() {
       info <- mirai::daemons(.compute = self$name)
-      identical(info$daemons, "remote") &&
+      (info$connections > 0L) &&
         !anyNA(info$nodes) &&
         !mirai::is_error_value(info$nodes)
     },
@@ -127,13 +164,15 @@ crew_class_mirai_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     connect = function() {
       if (!self$is_connected()) {
-        tcp <- self$sockets
+        tcp <- tcp_sockets(host = self$host, ports = self$ports)
         args <- list(value = tcp, nodes = length(tcp), .compute = self$name)
         do.call(what = mirai::daemons, args = args)
       }
-      true(
-        self$is_connected(),
-        message = "mirai client cannot connect. Please try different ports."
+      crew_wait(
+        fun = self$is_connected,
+        timeout = self$timeout,
+        wait = self$wait,
+        message = "mirai client cannot connect."
       )
       invisible()
     },
@@ -141,6 +180,15 @@ crew_class_mirai_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     disconnect = function() {
       try(mirai::daemons(value = 0L, .compute = self$name), silent = TRUE)
+      try(
+        crew_wait(
+          fun = function() !self$is_connected(),
+          timeout = self$timeout,
+          wait = self$wait,
+          message = "mirai client cannot disconnect."
+        ),
+        silent = TRUE
+      )
       invisible()
     }
   )

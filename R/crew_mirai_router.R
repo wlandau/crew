@@ -106,11 +106,6 @@ crew_class_mirai_router <- R6::R6Class(
       self$timeout <- timeout
       self$wait <- wait
     },
-    #' @description Disconnect at garbage collection time.
-    #' @return `NULL` (invisibly).
-    finalize = function() {
-      self$disconnect()
-    },
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
     validate = function() {

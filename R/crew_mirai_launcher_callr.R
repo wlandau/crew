@@ -115,11 +115,6 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
       self$max_tasks <- max_tasks
       self$async_dial <- async_dial
     },
-    #' @description Disconnect at garbage collection time.
-    #' @return `NULL` (invisibly).
-    finalize = function() {
-      self$terminate()
-    },
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
     validate = function() {

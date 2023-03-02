@@ -34,7 +34,6 @@ router successfully (dis)connected.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-crew_class_mirai_router-new}{\code{crew_class_mirai_router$new()}}
-\item \href{#method-crew_class_mirai_router-finalize}{\code{crew_class_mirai_router$finalize()}}
 \item \href{#method-crew_class_mirai_router-validate}{\code{crew_class_mirai_router$validate()}}
 \item \href{#method-crew_class_mirai_router-sockets_listening}{\code{crew_class_mirai_router$sockets_listening()}}
 \item \href{#method-crew_class_mirai_router-sockets_occupied}{\code{crew_class_mirai_router$sockets_occupied()}}
@@ -76,19 +75,6 @@ router successfully (dis)connected.}
 }
 \subsection{Returns}{
 An \code{R6} object with the router.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_mirai_router-finalize"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_mirai_router-finalize}{}}}
-\subsection{Method \code{finalize()}}{
-Disconnect at garbage collection time.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$finalize()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}

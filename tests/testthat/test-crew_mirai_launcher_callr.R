@@ -15,7 +15,7 @@ test_that("crew_mirai_launcher_callr() can run a task on a worker", {
     timeout = 5,
     wait = 0.1
   )
-  m <- mirai::mirai(ps::ps_pid(), .compute = router$name)  
+  m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
   crew::crew_wait(~!anyNA(m$data), timeout = 5, wait = 0.1)
   expect_equal(m$data, launcher$workers[[1]]$get_pid())
   router$disconnect()
@@ -35,7 +35,7 @@ test_that("crew_mirai_launcher_callr() can run a task and then exit worker", {
     timeout = 5,
     wait = 0.1
   )
-  m <- mirai::mirai(ps::ps_pid(), .compute = router$name) 
+  m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
   crew::crew_wait(~!anyNA(m$data), timeout = 5, wait = 0.1)
   expect_equal(m$data, launcher$workers[[1]]$get_pid())
   crew::crew_wait(~!launcher$running(), timeout = 5, wait = 0.1)

@@ -44,7 +44,6 @@ The handle is \code{NA} if it is not yet called.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-crew_class_mirai_launcher_callr-new}{\code{crew_class_mirai_launcher_callr$new()}}
-\item \href{#method-crew_class_mirai_launcher_callr-finalize}{\code{crew_class_mirai_launcher_callr$finalize()}}
 \item \href{#method-crew_class_mirai_launcher_callr-validate}{\code{crew_class_mirai_launcher_callr$validate()}}
 \item \href{#method-crew_class_mirai_launcher_callr-populate}{\code{crew_class_mirai_launcher_callr$populate()}}
 \item \href{#method-crew_class_mirai_launcher_callr-running}{\code{crew_class_mirai_launcher_callr$running()}}
@@ -99,19 +98,6 @@ The handle is \code{NA} if it is not yet called.}
 }
 \subsection{Returns}{
 An \code{R6} object with the launcher.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_mirai_launcher_callr-finalize"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_mirai_launcher_callr-finalize}{}}}
-\subsection{Method \code{finalize()}}{
-Disconnect at garbage collection time.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_launcher_callr$finalize()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}

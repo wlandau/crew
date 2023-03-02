@@ -106,6 +106,11 @@ crew_class_mirai_router <- R6::R6Class(
     sockets = function() {
       tcp_sockets(host = self$host, ports = self$ports)
     },
+    #' @description Get an available TCP socket for launching a worker.
+    #' @return Character string with an available TCP socket.
+    available_socket = function() {
+      utils::head(setdiff(self$sockets(), self$connections()), n = 1L)
+    },
     #' @description Check if the router is connected.
     #' @return `TRUE` if successfully listening for dialed-in workers,
     #'   `FALSE` otherwise.

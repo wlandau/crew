@@ -46,6 +46,7 @@ Other routers:
 \item \href{#method-crew_class_mirai_router-finalize}{\code{crew_class_mirai_router$finalize()}}
 \item \href{#method-crew_class_mirai_router-validate}{\code{crew_class_mirai_router$validate()}}
 \item \href{#method-crew_class_mirai_router-sockets}{\code{crew_class_mirai_router$sockets()}}
+\item \href{#method-crew_class_mirai_router-available_socket}{\code{crew_class_mirai_router$available_socket()}}
 \item \href{#method-crew_class_mirai_router-connected}{\code{crew_class_mirai_router$connected()}}
 \item \href{#method-crew_class_mirai_router-connections}{\code{crew_class_mirai_router$connections()}}
 \item \href{#method-crew_class_mirai_router-connect}{\code{crew_class_mirai_router$connect()}}
@@ -127,6 +128,19 @@ Get the TCP socket of the router.
 
 \subsection{Returns}{
 Character string with the TCP socket of the router.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_mirai_router-available_socket"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_router-available_socket}{}}}
+\subsection{Method \code{available_socket()}}{
+Get an available TCP socket for launching a worker.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$available_socket()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character string with an available TCP socket.
 }
 }
 \if{html}{\out{<hr>}}

@@ -54,6 +54,10 @@ crew_test("crew_multi_controller() collect", {
     }
   )
   out <- x$pop(collect = FALSE, names = "a")
+  expect_equal(
+    out$result[[1]],
+    x$controllers[[1]]$launcher$workers[[1]]$get_pid()
+  )
   expect_false(is.null(out))
 })
 

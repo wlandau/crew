@@ -166,8 +166,6 @@ crew_class_mirai_controller <- R6::R6Class(
       scale = TRUE
     ) {
       true(scale, isTRUE(.) || isFALSE(.))
-      message <- "router must be connected to push tasks to the queue."
-      true(self$router$is_connected(), message = message)
       while (is.null(name) || name %in% self$queue$name) name <- random_name()
       command <- substitute(command)
       expr <- rlang::call2("quote", command)
@@ -180,7 +178,7 @@ crew_class_mirai_controller <- R6::R6Class(
       )
       handle <- do.call(what = mirai::mirai, args = mirai_args)
       command <- deparse_safe(command)
-      task <- tibble::tibble(
+      task <- list(
         name = name,
         command = command,
         handle = list(handle)

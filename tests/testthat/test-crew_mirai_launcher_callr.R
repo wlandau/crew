@@ -68,7 +68,7 @@ crew_test("crew_mirai_launcher_callr() can run a task and end a worker", {
     timeout = 5,
     wait = 0.1
   )
-  launcher$terminate()
+  expect_silent(launcher$terminate())
   crew::crew_wait(
     ~identical(launcher$running(), 0L),
     timeout = 5,

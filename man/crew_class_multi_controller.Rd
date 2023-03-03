@@ -176,7 +176,7 @@ Push a task to the head of the task list.
   timeout = NULL,
   name = NULL,
   scale = TRUE,
-  name_controller = NULL
+  controller = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -196,7 +196,7 @@ if \code{NULL} or in conflict with an existing name in the task list.}
 demand. If \code{TRUE}, then \code{collect()} runs first so demand can be
 properly assessed before scaling.}
 
-\item{\code{name_controller}}{Name of the controller to submit the task.
+\item{\code{controller}}{Name of the controller to submit the task.
 If \code{NULL}, the controller defaults to the
 first controller in the list.}
 }
@@ -267,7 +267,7 @@ completed tasks.}
 Terminate the workers and disconnect the router
 for one or more controllers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$terminate()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$terminate(names = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

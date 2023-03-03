@@ -143,6 +143,7 @@ crew_class_mirai_controller <- R6::R6Class(
         self$scale_method,
         demand = demand,
         single = min(1L, demand),
+        none = 0L
       ) %|||% 0L
       self$launcher$launch(n = n)
       invisible()

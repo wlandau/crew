@@ -21,6 +21,7 @@ crew_test("crew_mirai_controller_callr()", {
 })
 
 crew_test("crew_mirai_controller_callr() warnings and errors", {
+  skip_on_cran()
   x <- crew_mirai_controller_callr()
   expect_silent(x$validate())
   expect_false(x$router$is_connected())
@@ -43,6 +44,7 @@ crew_test("crew_mirai_controller_callr() warnings and errors", {
 })
 
 crew_test("crew_mirai_controller_callr() launch method", {
+  skip_on_cran()
   x <- crew_mirai_controller_callr()
   x$connect()
   expect_equal(x$launcher$running(), 0L)

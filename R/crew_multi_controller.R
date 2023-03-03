@@ -22,6 +22,22 @@ crew_multi_controller <- function(...) {
 #' @details See [crew_mirai_controller()].
 crew_class_multi_controller <- R6::R6Class(
   classname = "crew_class_multi_controller",
+  private = list(
+    controller_names = function(names = NULL) {
+      names <- as.character(names %|||% names(self$controllers))
+      true(
+        names,
+        is.character(.), !anyNA(.), nzchar(.),
+        message = "invalid controller names."
+      )
+      true(
+        all(names %in% names(self$controllers)),
+        message = "bad controller names."
+      )
+      true(length(names) > 0L, message = "no controllers selected.")
+      names
+    }
+  ),
   public = list(
     #' @field controllers List of `R6` controller objects.
     controllers = NULL,
@@ -41,10 +57,9 @@ crew_class_multi_controller <- R6::R6Class(
         map_lgl(self$controllers, is_controller),
         message = "All objects in a multi-controller must be controllers."
       )
-      true(
-        identical(map_chr(controllers, ~.x$router$name), names(controllers)),
-        message = "bad controller names"
-      )
+      out <- unname(map_chr(self$controllers, ~.x$router$name))
+      exp <- names(self$controllers)
+      true(identical(out, exp), message = "bad controller names")
       invisible()
     },
     #' @description Connect one or more controllers.
@@ -52,7 +67,7 @@ crew_class_multi_controller <- R6::R6Class(
     #' @param names Character vector of controller names.
     #'   If `NULL`, it defaults to all controllers in the list.
     connect = function(names = NULL) {
-      control <- self$controllers[controller_names(names)]
+      control <- self$controllers[private$controller_names(names)]
       walk(control, ~.x$connect())
     },
     #' @description Launch one or more workers on one or more controllers.
@@ -61,7 +76,7 @@ crew_class_multi_controller <- R6::R6Class(
     #' @param names Character vector of controller names.
     #'   If `NULL`, it defaults to all controllers in the list.
     launch = function(n = 1L, names = NULL) {
-      control <- self$controllers[controller_names(names)]
+      control <- self$controllers[private$controller_names(names)]
       walk(control, ~.x$launch(n = n))
     },
     #' @description Check for done tasks and move the results to
@@ -71,7 +86,7 @@ crew_class_multi_controller <- R6::R6Class(
     #' @param names Character vector of controller names.
     #'   If `NULL`, it defaults to all controllers in the list.
     collect = function(names = NULL) {
-      control <- self$controllers[controller_names(names)]
+      control <- self$controllers[private$controller_names(names)]
       walk(control, ~.x$collect())
     },
     #' @description Automatically scale up the number of workers if needed
@@ -81,7 +96,7 @@ crew_class_multi_controller <- R6::R6Class(
     #' @param names Character vector of controller names.
     #'   If `NULL`, it defaults to all controllers in the list.
     scale = function(names = NULL) {
-      control <- self$controllers[controller_names(names)]
+      control <- self$controllers[private$controller_names(names)]
       walk(control, ~.x$scale())
     },
     #' @description Push a task to the head of the task list.
@@ -94,7 +109,7 @@ crew_class_multi_controller <- R6::R6Class(
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. If `TRUE`, then `collect()` runs first so demand can be
     #'   properly assessed before scaling.
-    #' @param name_controller Name of the controller to submit the task.
+    #' @param controller Name of the controller to submit the task.
     #'   If `NULL`, the controller defaults to the
     #'   first controller in the list.
     push = function(
@@ -103,11 +118,10 @@ crew_class_multi_controller <- R6::R6Class(
       timeout = NULL,
       name = NULL,
       scale = TRUE,
-      name_controller = NULL
+      controller = NULL
     ) {
-      name_controller <- utils::head(controller_names(name_controller), n = 1L)
-      true(length(name_controller) == 1L)
-      controller <- self$controllers[[name_controller]]
+      controller <- utils::head(private$controller_names(controller), n = 1L)
+      true(length(controller) == 1L)
       args <- list(
         command = substitute(command),
         args = args,
@@ -115,7 +129,7 @@ crew_class_multi_controller <- R6::R6Class(
         name = name,
         scale = scale
       )
-      do.call(what = controller$push, args = args)
+      do.call(what = self$controllers[[controller]]$push, args = args)
     },
     #' @description Pop a completed task from the results data frame.
     #' @return If there is a completed task available to collect, the return
@@ -127,7 +141,7 @@ crew_class_multi_controller <- R6::R6Class(
     #' @param names Names of the controllers (in order) to look for
     #'   completed tasks.
     pop = function(collect = TRUE, names = NULL) {
-      control <- self$controllers[controller_names(names)]
+      control <- self$controllers[private$controller_names(names)]
       for (controller in control) {
         if (collect) {
           controller$collect()
@@ -148,7 +162,7 @@ crew_class_multi_controller <- R6::R6Class(
     #' @param names Names of the controllers (in order) to look for
     #'   completed tasks.
     wait = function(timeout = Inf, wait = 0.1, names = NULL) {
-      control <- self$controllers[controller_names(names)]
+      control <- self$controllers[private$controller_names(names)]
       crew_wait(
         fun = ~{
           for (controller in control) {
@@ -169,24 +183,9 @@ crew_class_multi_controller <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param names Names of the controllers (in order) to look for
     #'   completed tasks.
-    terminate = function() {
-      control <- self$controllers[controller_names(names)]
+    terminate = function(names = NULL) {
+      control <- self$controllers[private$controller_names(names)]
       walk(control, ~.x$terminate())
     }
   )
 )
-
-controller_names = function(names = NULL) {
-  names <- names %|||% names(self$controllers)
-  true(
-    names,
-    is.character(.), !anyNA(.), nzchar(.),
-    message = "invalid controller names."
-  )
-  true(
-    all(names %in% names(self$controllers)),
-    message = "bad controller names."
-  )
-  true(length(names) > 0L, message = "no controllers selected.")
-  names
-}

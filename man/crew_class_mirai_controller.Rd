@@ -28,6 +28,7 @@ See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.
 \itemize{
 \item \href{#method-crew_class_mirai_controller-new}{\code{crew_class_mirai_controller$new()}}
 \item \href{#method-crew_class_mirai_controller-validate}{\code{crew_class_mirai_controller$validate()}}
+\item \href{#method-crew_class_mirai_controller-connect}{\code{crew_class_mirai_controller$connect()}}
 \item \href{#method-crew_class_mirai_controller-collect}{\code{crew_class_mirai_controller$collect()}}
 \item \href{#method-crew_class_mirai_controller-scale}{\code{crew_class_mirai_controller$scale()}}
 \item \href{#method-crew_class_mirai_controller-push}{\code{crew_class_mirai_controller$push()}}
@@ -65,6 +66,20 @@ An \code{R6} object with the controller object.
 Validate the router.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$validate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_mirai_controller-connect"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_controller-connect}{}}}
+\subsection{Method \code{connect()}}{
+Connect the router and register the TCP sockets
+with the launcher.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$connect()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

@@ -126,7 +126,9 @@ crew_class_mirai_router <- R6::R6Class(
     },
     #' @description Get all sockets
     #' @return Character vector of all sockets if connected, or
-    #'   `character(0)` if the router is not connected.
+    #'   `character(0)` if the router is not connected
+    #'   or polling the sockets is unsuccessful
+    #'   (which may happen if the sockets are busy at the moment).
     sockets_listening = function() {
       nodes <- mirai::daemons(.compute = self$name)$nodes
       if_any(
@@ -138,6 +140,9 @@ crew_class_mirai_router <- R6::R6Class(
     #' @description Show worker connections.
     #' @return Character vector of TCP sockets where workers
     #'   are currently dialed in.
+    #'   Returns `character(0)` if the router is not connected
+    #'   or polling the sockets is unsuccessful
+    #'   (which may happen if the sockets are busy at the moment).
     sockets_occupied = function() {
       nodes <- mirai::daemons(.compute = self$name)$nodes
       if_any(
@@ -148,7 +153,11 @@ crew_class_mirai_router <- R6::R6Class(
     },
     #' @description Get TCP sockets that are available for workers to dial in.
     #' @return Character string with available TCP sockets.
-    sockets_available = function() {
+    #'   A return value of `character(0)` may indicate that
+    #'   the router is not connected
+    #'   or polling the sockets is unsuccessful
+    #'   (which may happen if the sockets are busy at the moment).
+   sockets_available = function() {
       as.character(setdiff(self$sockets_listening(), self$sockets_occupied()))
     },
     #' @description Check if the router is connected.
@@ -165,32 +174,34 @@ crew_class_mirai_router <- R6::R6Class(
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
     connect = function() {
-      if (!self$is_connected()) {
+      if (isFALSE(self$is_connected())) {
         tcp <- tcp_sockets(host = self$host, ports = self$ports)
         args <- list(value = tcp, nodes = length(tcp), .compute = self$name)
         do.call(what = mirai::daemons, args = args)
+        crew_wait(
+          fun = ~isTRUE(self$is_connected()),
+          timeout = self$router_timeout,
+          wait = self$router_wait,
+          message = "mirai client cannot connect."
+        )
       }
-      crew_wait(
-        fun = self$is_connected,
-        timeout = self$router_timeout,
-        wait = self$router_wait,
-        message = "mirai client cannot connect."
-      )
       invisible()
     },
     #' @description Disconnect the router.
     #' @return `NULL` (invisibly).
     disconnect = function() {
-      try(mirai::daemons(value = 0L, .compute = self$name), silent = TRUE)
-      try(
-        crew_wait(
-          fun = function() !self$is_connected(),
-          timeout = self$router_timeout,
-          wait = self$router_wait,
-          message = "mirai client cannot disconnect."
-        ),
-        silent = TRUE
-      )
+      if (isTRUE(self$is_connected())) {
+        try(mirai::daemons(value = 0L, .compute = self$name), silent = TRUE)
+        try(
+          crew_wait(
+            fun = ~isFALSE(self$is_connected()),
+            timeout = self$router_timeout,
+            wait = self$router_wait,
+            message = "mirai client cannot disconnect."
+          ),
+          silent = TRUE
+        )
+      }
       invisible()
     }
   )

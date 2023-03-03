@@ -73,6 +73,14 @@ crew_class_mirai_controller <- R6::R6Class(
       self$launcher$validate()
       invisible()
     },
+    #' @description Connect the router and register the TCP sockets
+    #'   with the launcher.
+    #' @return `NULL` (invisibly).
+    connect = function() {
+      self$router$connect()
+      self$launcher$populate(sockets = router$sockets_listening())
+      invisible()
+    },
     #' @description Check for done tasks and move the results to
     #'   the results list.
     #' @return `NULL` (invisibly). Removes elements from the `queue`

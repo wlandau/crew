@@ -102,7 +102,9 @@ Get all sockets
 
 \subsection{Returns}{
 Character vector of all sockets if connected, or
-\code{character(0)} if the router is not connected.
+\code{character(0)} if the router is not connected
+or polling the sockets is unsuccessful
+(which may happen if the sockets are busy at the moment).
 }
 }
 \if{html}{\out{<hr>}}
@@ -117,6 +119,9 @@ Show worker connections.
 \subsection{Returns}{
 Character vector of TCP sockets where workers
 are currently dialed in.
+Returns \code{character(0)} if the router is not connected
+or polling the sockets is unsuccessful
+(which may happen if the sockets are busy at the moment).
 }
 }
 \if{html}{\out{<hr>}}
@@ -130,6 +135,10 @@ Get TCP sockets that are available for workers to dial in.
 
 \subsection{Returns}{
 Character string with available TCP sockets.
+A return value of \code{character(0)} may indicate that
+the router is not connected
+or polling the sockets is unsuccessful
+(which may happen if the sockets are busy at the moment).
 }
 }
 \if{html}{\out{<hr>}}

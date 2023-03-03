@@ -16,16 +16,32 @@ resembles packages
 [`future`](https://future.futureverse.org/), and
 [`batchtools`](https://mllg.github.io/batchtools/).
 
+The current task scheduler supported is
+[`mirai`](https://github.com/shikokuchuo/mirai), and there are plans to
+incorporate [`rrq`](https://github.com/mrc-ide/rrq) as well. As for
+parallel workers, only local parallel workers are supported, but there
+are plans to eventually support distributed systems like SLURM and cloud
+services like AWS Batch.
+
 ## Installation
 
+`crew` is not yet available on CRAN, it it requires development versions
+of packages [`nanonext`](https://github.com/shikokuchuo/nanonext) and
+[`mirai`](https://github.com/shikokuchuo/mirai).
+
 ``` r
+install.packages("nanonext", repos = "https://shikokuchuo.r-universe.dev")
+install.packages("mirai", repos = "https://shikokuchuo.r-universe.dev")
 remotes::install_github("wlandau/crew")
 ```
 
 ## Documentation
 
 Please see <https://wlandau.github.io/crew/> for documentation,
-including a full function reference and usage tutorial vignettes.
+including a full function reference and usage tutorial vignettes. It is
+recommended to begin with the
+[`mirai`](https://github.com/shikokuchuo/mirai)-[`callr`](https://github.com/r-lib/callr)
+vignette in the `crew` package.
 
 ## Similar work
 
@@ -60,9 +76,12 @@ including a full function reference and usage tutorial vignettes.
 The `crew` package incorporates insightful ideas from the following
 people.
 
-- [Charlie Gao](https://github.com/shikokuchuo) for his work on
-  [`mirai`](https://github.com/shikokuchuo/mirai) and for accommodating
-  the feature requests that made `crew` possible.
+- [Charlie Gao](https://github.com/shikokuchuo) created
+  [`mirai`](https://github.com/shikokuchuo/mirai) and
+  [`nanonext`](https://github.com/shikokuchuo/nanonext), and he speedily
+  accommodated the complicated feature requests that made the
+  [`mirai`](https://github.com/shikokuchuo/mirai)-based scheduling in
+  `crew` possible.
 - [Rich FitzJohn](https://github.com/richfitz) and [Robert
   Ashton](https://github.com/r-ash) developed
   [`rrq`](https://mrc-ide.github.io/rrq//).

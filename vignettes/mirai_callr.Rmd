@@ -24,9 +24,9 @@ This vignette shows how to use the [`mirai`](https://github.com/shikokuchuo/mira
 
 # Disclaimer
 
-For these features, each parallel worker will occupy a unique ephemeral TCP/IP port. Ports range from 0 through 65535, so if you are using a shared machine with dozens of other people, launching  launching hundreds of workers could distrupt the work of your colleagues. Please be respectful of the shared resources of your particular workplace.
+For these features, each parallel worker will occupy a unique ephemeral TCP/IP port. Ports range from 0 through 65535, so if you are using a shared machine with dozens of other people, launching  launching hundreds of workers could disrupt the work of your colleagues. Please be respectful of the shared resources of your particular workplace.
 
-In addition, if you are submitting tasks which risk segfaulting the R process or running out of memory, the please select `scale_method = "single"` instead of the default `scale_method = "demand"` in `crew_mirai_controller_callr()` in order to avoid the potential infinite loop described at https://github.com/shikokuchuo/mirai/issues/20#issuecomment-1442409623.
+In addition, if you are submitting tasks which risk a segmentation fault in the R process or running out of memory, the please select `scale_method = "single"` instead of the default `scale_method = "demand"` in `crew_mirai_controller_callr()` in order to avoid the potential infinite loop described at <https://github.com/shikokuchuo/mirai/issues/20#issuecomment-1442409623>.
 
 # Usage
 
@@ -76,8 +76,8 @@ The result is a [monad](https://en.wikipedia.org/wiki/Monad_(functional_programm
 out
 #> # A tibble: 1 × 7
 #>   name                  command      result seconds error traceback warni…¹
-#>   <chr>                 <chr>        <list>   <dbl> <chr> <chr>     <chr>  
-#> 1 get worker process ID ps::ps_pid() <int>        0 NA    NA        NA     
+#>   <chr>                 <chr>        <list>   <dbl> <chr> <chr>     <chr>
+#> 1 get worker process ID ps::ps_pid() <int>        0 NA    NA        NA
 #> # … with abbreviated variable name ¹​warnings
 ```
 
@@ -88,14 +88,14 @@ out$result[[1]]
 #> [1] 69631
 ```
 
-Since it ran on a parallel worker, it is differnet from the process ID of the local R session.
+Since it ran on a parallel worker, it is different from the process ID of the local R session.
 
 ```{r}
 ps::ps_pid()
 #> [1] 69523
 ```
 
-Continue the above process of asynchonously submitting and collecting tasks until your workflow is complete. When you are done, terminate the controller to clean up the resources. 
+Continue the above process of asynchronously submitting and collecting tasks until your workflow is complete. When you are done, terminate the controller to clean up the resources. 
 
 ```{r}
 controller$terminate()

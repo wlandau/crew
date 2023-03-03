@@ -80,7 +80,7 @@ crew_class_mirai_controller <- R6::R6Class(
     #' @param scale_method Scaling method. See [crew_mirai_controller()].
     #' #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' router <- crew_mirai_router() # Use this helper instead of the constructor.
+    #' router <- crew_mirai_router() # Use instead of the constructor.
     #' launcher <- crew_mirai_launcher_callr()
     #' controller <- crew_mirai_controller(router = router, launcher = launcher)
     #' controller$connect()

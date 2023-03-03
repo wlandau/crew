@@ -18,8 +18,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::lintr, local::.
+          extra-packages: any::lintr
           needs: lint
+          cache-version: 2
 
       - name: Lint
         run: lintr::lint_package()

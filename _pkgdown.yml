@@ -7,7 +7,7 @@ reference:
   contents:
   - '`crew_multi_controller`'
   - '`crew_mirai_controller_callr`'
-- title: Multi-controller classes
+- title: General classes
   contents:
   - '`crew_class_multi_controller`'
 - title: mirai classes

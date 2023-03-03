@@ -1,0 +1,63 @@
+---
+title: "Multi-controller workflows"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Multi-controller workflows}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+set.seed(0)
+library(crew)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  paged.print = FALSE,
+  eval = FALSE
+)
+```
+
+Each controller object only supports only one type of worker configuration which you set in advance. However, different controllers may have different types of workers, and `crew` supports multi-controller functionality to coordinate among these different worker types. In future development, this mechanism will allow you to e.g. send some tasks to GPU-capable or high-memory workers while other tasks go to low-spec workers. But even now, this feature can come in handy.
+
+We demonstrate with a controller of fully persistent workers which always stay running and a controller of fully transient workers which terminate as soon as their first task is complete. We create controller objects with names.
+
+```{r}
+persistent <- crew_mirai_controller_callr(name = "persistent")
+transient <- crew_mirai_controller_callr(name = "transient", max_tasks = 1L)
+```
+
+We put these controller objects into a new multi-controller object.
+
+```{r}
+controller <- crew_multi_controller(persistent, transient)
+```
+
+This controller has a global `connect()` method to initialize both controllers.
+
+```{r}
+controller$connect()
+```
+
+You can choose which worker pool to receive tasks.
+
+```{r}
+controller$push(name = "my task", command = sqrt(4), controller = "transient")
+```
+
+The multi-controller also supports global methods for `wait()`, `pop()`, and `terminate()`. These methods operate on all controllers at once by default, but the `names` argument allows you to select a subset of controllers to act on.
+
+```{r}
+controller$wait(controller = "transient")
+controller$pop()
+#> # A tibble: 1 × 7
+#>   name    command result    seconds error traceback warnings
+#>   <chr>   <chr>   <list>      <dbl> <chr> <chr>     <chr>
+#> 1 my task sqrt(4) <dbl [1]>       0 NA    NA        NA
+```
+
+It is recommended to call `terminate()` on all the controllers globally when you are finished.
+
+```{r}
+controller$terminate()
+```

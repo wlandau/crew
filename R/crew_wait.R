@@ -1,11 +1,12 @@
 #' @title Wait for an event.
 #' @export
+#' @keywords internal
 #' @family utilities
 #' @description Repeatedly run a function while it keeps returning `FALSE`
 #'   and exit the loop when it returns `TRUE`
 #' @return `NULL` (invisibly).
 #' @param fun Function that returns `FALSE` to keep waiting
-#'   `TRUE` to stop waiting.
+#'   or `TRUE` to stop waiting.
 #' @param args A named list of arguments to `fun`.
 #' @param timeout Nonnegative numeric of length 1,
 #'   number of seconds to loop before timing out.
@@ -23,14 +24,14 @@ crew_wait <- function(
   message = character(0)
 ) {
   fun <- rlang::as_function(fun)
-  crew_true(is.function(fun))
-  crew_true(is.list(args))
+  true(is.function(fun))
+  true(is.list(args))
   if (length(args)) {
-    crew_true(names(args), !is.null(.), nzchar(.))
-    crew_true(identical(length(unique(names(args))), length(args)))
+    true(names(args), !is.null(.), nzchar(.))
+    true(identical(length(unique(names(args))), length(args)))
   }
-  crew_true(timeout, is.numeric(.), length(.) == 1L, !anyNA(.), . >= 0)
-  crew_true(wait, is.numeric(.), length(.) == 1L, !anyNA(.), . >= 0)
+  true(timeout, is.numeric(.), length(.) == 1L, !anyNA(.), . >= 0)
+  true(wait, is.numeric(.), length(.) == 1L, !anyNA(.), . >= 0)
   start <- as.numeric(proc.time()["elapsed"])
   while (!all(do.call(what = fun, args = args))) {
     if (as.numeric(proc.time()["elapsed"]) - start > timeout) {

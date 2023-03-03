@@ -9,6 +9,7 @@
 .Rhistory
 .Rproj.user/
 docs
+dump.rdb
 inst/doc
 vignettes/*.html
 README.html

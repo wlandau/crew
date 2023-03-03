@@ -1,0 +1,239 @@
+#' @title Create a multi-controller.
+#' @export
+#' @keywords internal
+#' @family controllers
+#' @description Create an `R6` object to submit tasks and launch workers
+#'   through multiple `crew` controllers.
+#' @param ... `R6` controller objects or lists of `R6` controller objects.
+#'   Nested lists are allowed, but each element must be a control object
+#'   or another list.
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' persistent <- crew_mirai_controller_callr(name = "persistent")
+#' transient <- crew_mirai_controller_callr(
+#'   name = "transient",
+#'   max_tasks = 1L
+#' )
+#' multi <- crew_multi_controller(persistent, transient)
+#' multi$connect()
+#' multi$push(name = "task", command = sqrt(4), controller = "transient")
+#' multi$wait()
+#' multi$pop()
+#' multi$controllers[["persistent"]]$launcher$running() # 0
+#' multi$controllers[["transient"]]$launcher$running() # 0
+#' multi$terminate()
+#' }
+crew_multi_controller <- function(...) {
+  controllers <- unlist(list(...), recursive = TRUE)
+  names(controllers) <- map_chr(controllers, ~.x$router$name)
+  out <- crew_class_multi_controller$new(controllers = controllers)
+  out$validate()
+  out
+}
+
+#' @title Multi-controller class
+#' @export
+#' @family controllers
+#' @description `R6` class for `mirai` controllers.
+#' @details See [crew_mirai_controller()].
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' persistent <- crew_mirai_controller_callr(name = "persistent")
+#' transient <- crew_mirai_controller_callr(
+#'   name = "transient",
+#'   max_tasks = 1L
+#' )
+#' multi <- crew_multi_controller(persistent, transient)
+#' multi$connect()
+#' multi$push(name = "task", command = sqrt(4), controller = "transient")
+#' multi$wait()
+#' multi$pop()
+#' multi$controllers[["persistent"]]$launcher$running() # 0
+#' multi$controllers[["transient"]]$launcher$running() # 0
+#' multi$terminate()
+#' }
+crew_class_multi_controller <- R6::R6Class(
+  classname = "crew_class_multi_controller",
+  private = list(
+    controller_names = function(names = NULL) {
+      names <- as.character(names %|||% names(self$controllers))
+      true(
+        names,
+        is.character(.), !anyNA(.), nzchar(.),
+        message = "invalid controller names."
+      )
+      true(
+        all(names %in% names(self$controllers)),
+        message = "bad controller names."
+      )
+      true(length(names) > 0L, message = "no controllers selected.")
+      names
+    }
+  ),
+  public = list(
+    #' @field controllers List of `R6` controller objects.
+    controllers = NULL,
+    #' @description Multi-controller constructor.
+    #' @return An `R6` object with the multi-controller object.
+    #' @param controllers List of `R6` controller objects.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' persistent <- crew_mirai_controller_callr(name = "persistent")
+    #' transient <- crew_mirai_controller_callr(
+    #'   name = "transient",
+    #'   max_tasks = 1L
+    #' )
+    #' multi <- crew_multi_controller(persistent, transient)
+    #' multi$connect()
+    #' multi$push(name = "task", command = sqrt(4), controller = "transient")
+    #' multi$wait()
+    #' multi$pop()
+    #' multi$controllers[["persistent"]]$launcher$running() # 0
+    #' multi$controllers[["transient"]]$launcher$running() # 0
+    #' multi$terminate()
+    #' }
+    initialize = function(
+      controllers = NULL
+    ) {
+      self$controllers <- controllers
+      invisible()
+    },
+    #' @description Validate the router.
+    #' @return `NULL` (invisibly).
+    validate = function() {
+      true(
+        map_lgl(self$controllers, is_controller),
+        message = "All objects in a multi-controller must be controllers."
+      )
+      out <- unname(map_chr(self$controllers, ~.x$router$name))
+      exp <- names(self$controllers)
+      true(identical(out, exp), message = "bad controller names")
+      invisible()
+    },
+    #' @description Connect one or more controllers.
+    #' @return `NULL` (invisibly).
+    #' @param names Character vector of controller names.
+    #'   If `NULL`, it defaults to all controllers in the list.
+    connect = function(names = NULL) {
+      control <- self$controllers[private$controller_names(names)]
+      walk(control, ~.x$connect())
+    },
+    #' @description Launch one or more workers on one or more controllers.
+    #' @return `NULL` (invisibly).
+    #' @param n Number of workers to launch in each controller selected.
+    #' @param names Character vector of controller names.
+    #'   If `NULL`, it defaults to all controllers in the list.
+    launch = function(n = 1L, names = NULL) {
+      control <- self$controllers[private$controller_names(names)]
+      walk(control, ~.x$launch(n = n))
+    },
+    #' @description Check for done tasks and move the results to
+    #'   the results list.
+    #' @return `NULL` (invisibly). Removes elements from the `queue`
+    #'   list as applicable and moves them to the `results` list.
+    #' @param names Character vector of controller names.
+    #'   If `NULL`, it defaults to all controllers in the list.
+    collect = function(names = NULL) {
+      control <- self$controllers[private$controller_names(names)]
+      walk(control, ~.x$collect())
+    },
+    #' @description Automatically scale up the number of workers if needed
+    #'   in one or more controller objects.
+    #' @details See the `scale()` method in individual controller classes.
+    #' @return `NULL` (invisibly).
+    #' @param names Character vector of controller names.
+    #'   If `NULL`, it defaults to all controllers in the list.
+    scale = function(names = NULL) {
+      control <- self$controllers[private$controller_names(names)]
+      walk(control, ~.x$scale())
+    },
+    #' @description Push a task to the head of the task list.
+    #' @return `NULL` (invisibly).
+    #' @param command R code with the task to run.
+    #' @param args A list of objects referenced in `expr`.
+    #' @param timeout Time in milliseconds for the task.
+    #' @param name Optional name of the task. Replaced with a random name
+    #'   if `NULL` or in conflict with an existing name in the task list.
+    #' @param scale Logical, whether to automatically scale workers to meet
+    #'   demand. If `TRUE`, then `collect()` runs first so demand can be
+    #'   properly assessed before scaling.
+    #' @param controller Name of the controller to submit the task.
+    #'   If `NULL`, the controller defaults to the
+    #'   first controller in the list.
+    push = function(
+      command,
+      args = list(),
+      timeout = NULL,
+      name = NULL,
+      scale = TRUE,
+      controller = NULL
+    ) {
+      controller <- utils::head(private$controller_names(controller), n = 1L)
+      true(length(controller) == 1L)
+      args <- list(
+        command = substitute(command),
+        args = args,
+        timeout = timeout,
+        name = name,
+        scale = scale
+      )
+      do.call(what = self$controllers[[controller]]$push, args = args)
+    },
+    #' @description Pop a completed task from the results data frame.
+    #' @return If there is a completed task available to collect, the return
+    #'   value is a one-row data frame with the results, warnings, and errors.
+    #'   Otherwise, if there are no results available to collect,
+    #'   the return value is `NULL`.
+    #' @param collect Whether to run the `collect()` method to collect all
+    #'   available results before calling `pop()`.
+    #' @param names Names of the controllers (in order) to look for
+    #'   completed tasks.
+    pop = function(collect = TRUE, names = NULL) {
+      control <- self$controllers[private$controller_names(names)]
+      for (controller in control) {
+        if (collect) {
+          controller$collect()
+        }
+        out <- controller$pop()
+        if (!is.null(out)) {
+          return(out)
+        }
+      }
+      NULL
+    },
+    #' @description Wait for a result to be ready.
+    #' @return `NULL` (invisibly). Call `pop()` to get the result.
+    #' @param timeout Timeout length in seconds waiting for
+    #'   results to become available.
+    #' @param wait Number of seconds to wait between polling intervals
+    #'   while checking for results.
+    #' @param names Names of the controllers (in order) to look for
+    #'   completed tasks.
+    wait = function(timeout = Inf, wait = 0.1, names = NULL) {
+      control <- self$controllers[private$controller_names(names)]
+      crew_wait(
+        fun = ~{
+          for (controller in control) {
+            controller$collect()
+            if (length(controller$results) > 0L) {
+              return(TRUE)
+            }
+          }
+          FALSE
+        },
+        timeout = timeout,
+        wait = wait
+      )
+      invisible()
+    },
+    #' @description Terminate the workers and disconnect the router
+    #'   for one or more controllers.
+    #' @return `NULL` (invisibly).
+    #' @param names Names of the controllers (in order) to look for
+    #'   completed tasks.
+    terminate = function(names = NULL) {
+      control <- self$controllers[private$controller_names(names)]
+      walk(control, ~.x$terminate())
+    }
+  )
+)

@@ -1,14 +1,33 @@
-crew_catch_crash <- function(code) {
-  tryCatch(
-    code,
-    error = function(condition) {
-      crew_crash(conditionMessage(condition))
-    }
+true <- function(
+  value = NULL,
+  ...,
+  message = NULL,
+  envir = parent.frame()
+) {
+  force(envir)
+  expr <- match.call(expand.dots = FALSE)$...
+  if (!length(expr)) {
+    expr <- list(quote(.))
+  }
+  conditions <- lapply(
+    expr,
+    function(expr) all(eval(expr, envir = list(. = value), enclos = envir))
   )
+  if (!all(unlist(conditions))) {
+    chr_expr <- lapply(expr, function(x) sprintf("all(%s)", deparse(x)))
+    chr_expr <- paste(unlist(chr_expr), collapse = " && ")
+    chr_value <- deparse(substitute(value))
+    out <- sprintf("%s is not true on . = %s", chr_expr, chr_value)
+    crew_error(message %|||% out)
+  }
+  invisible()
 }
 
-crew_crash <- function(message = NULL) {
-  crew_error(paste("crew worker crashed:", message))
+crew_error <- function(message = NULL) {
+  crew_stop(
+    message = message,
+    class = c("crew_error", "crew")
+  )
 }
 
 crew_expire <- function(message = NULL) {
@@ -18,25 +37,9 @@ crew_expire <- function(message = NULL) {
   )
 }
 
-#' @title Throw a crew error.
-#' @export
-#' @keywords internal
-#' @description For internal use only. Not a user-side function.
-#'   Do not invoke directly.
-#' @return Throw an error of class `c("crew_error", "crew")`.
-#' @param message Character of length 1, error message to print.
-#' @examples
-#' try(crew_error("custom error message"))
-crew_error <- function(message = NULL) {
-  crew_stop(
-    message = message,
-    class = c("crew_error", "crew")
-  )
-}
-
 crew_stop <- function(message, class) {
   withr::local_options(list(rlang_backtrace_on_error = "none"))
-  rlang::abort(message = message, class = class, call = crew_empty_envir)
+  rlang::abort(message = message, class = class, call = emptyenv())
 }
 
 crew_message <- function(message) {
@@ -44,30 +47,10 @@ crew_message <- function(message) {
   rlang::inform(message = message, class = c("crew_message", "crew"))
 }
 
-#' @title Return `FALSE` on error in a `tryCatch()` statement.
-#' @export
-#' @keywords internal
-#' @description For internal use only. Not a user-side function.
-#'   Do not invoke directly.
-#' @return `FALSE`
-#' @param condition Condition object in the `tryCatch()` statement.
-#' @examples
-#' tryCatch(stop("error message"), error = crew_condition_false)
 crew_condition_false <- function(condition) {
   FALSE
 }
 
-#' @title Return the condition message in a `tryCatch()` statement.
-#' @export
-#' @keywords internal
-#' @description For internal use only. Not a user-side function.
-#'   Do not invoke directly.
-#' @return Character string with the condition message.
-#' @param condition Condition object in the `tryCatch()` statement.
-#' @examples
-#' tryCatch(stop("error message"), error = crew_condition_message)
 crew_condition_message <- function(condition) {
   conditionMessage(condition)
 }
-
-crew_empty_envir <- new.env(parent = emptyenv())

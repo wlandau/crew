@@ -1,0 +1,102 @@
+---
+title: "mirai task scheduler with callr workers"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mirai task scheduler with callr workers}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+set.seed(0)
+library(crew)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  paged.print = FALSE,
+  eval = FALSE
+)
+```
+
+# Overview
+
+This vignette shows how to use the [`mirai`](https://github.com/shikokuchuo/mirai) task scheduler with [`callr`](https://github.com/r-lib/callr) workers in `crew`. [`mirai`](https://github.com/shikokuchuo/mirai) is a powerful, sleek, sophisticated task scheduler based on [NNG](https://nng.nanomsg.org). [`callr`](https://github.com/r-lib/callr) is an infrastructure package that safely and easily launch R processes, including the background processes that `crew` uses for parallel workers.
+
+# Disclaimer
+
+For these features, each parallel worker will occupy a unique ephemeral TCP/IP port. Ports range from 0 through 65535, so if you are using a shared machine with dozens of other people, launching  launching hundreds of workers could disrupt the work of your colleagues. Please be respectful of the shared resources of your particular workplace.
+
+In addition, if you are submitting tasks which risk a segmentation fault in the R process or running out of memory, the please select `scale_method = "single"` instead of the default `scale_method = "demand"` in `crew_mirai_controller_callr()` in order to avoid the potential infinite loop described at <https://github.com/shikokuchuo/mirai/issues/20#issuecomment-1442409623>.
+
+# Usage
+
+First, create a a controller object. Thanks to the powerful features in [`mirai`](https://github.com/shikokuchuo/mirai), `crew_mirai_controller_callr()` allows several ways to customize the way workers are launched and the conditions under which they time out. For example, arguments `max_tasks` and `idle_time` allow for a smooth continuum between fully persistent workers and fully transient workers.
+
+```{r}
+library(crew)
+controller <- crew_mirai_controller_callr(
+  workers = 2,
+  max_task = 3,
+  scale_method = "demand"
+)
+```
+
+The `connect()` method starts a local [`mirai`](https://github.com/shikokuchuo/mirai) client and a local active queue to listen to workers that dial in.
+
+```{r}
+controller$connect()
+controller$router$sockets_listening()
+#> [1] "tcp://10.0.0.9:55899" "tcp://10.0.0.9:55900"
+```
+
+Use the `push()` method to submit a task. When you do, `crew` automatically scales up the number of workers to meet demand, within the constraints of the `scale_method` and `workers` arguments of `crew_mirai_controller_callr()`.
+
+```{r}
+controller$push(
+  name = "get worker process ID",
+  command = ps::ps_pid()
+)
+```
+
+You have the option to block the R session until results are available, but this is not necessary because [`mirai`](https://github.com/shikokuchuo/mirai) supports a [local active queue daemon](https://github.com/shikokuchuo/mirai/blob/main/README.md#connecting-to-remote-servers-through-a-local-server-queue) which runs in the background and submits tasks to workers as soon as there is availability.
+
+```{r}
+controller$wait()
+```
+
+When the result is available, you can retrieve it with `pop()`.
+
+```{r}
+out <- controller$pop()
+```
+
+The result is a [monad](https://en.wikipedia.org/wiki/Monad_(functional_programming)) with the result and its metadata. Even if the command of the task throws an error, it will still return the same kind of [monad](https://en.wikipedia.org/wiki/Monad_(functional_programming)).
+
+```{r}
+out
+#> # A tibble: 1 × 7
+#>   name                  command      result seconds error traceback warni…¹
+#>   <chr>                 <chr>        <list>   <dbl> <chr> <chr>     <chr>
+#> 1 get worker process ID ps::ps_pid() <int>        0 NA    NA        NA
+#> # … with abbreviated variable name ¹​warnings
+```
+
+The return value of the command is available in the `result` column. In our case, it is the process ID of the parallel worker that ran it, as reported by `ps::ps_pid()`.
+
+```{r}
+out$result[[1]]
+#> [1] 69631
+```
+
+Since it ran on a parallel worker, it is different from the process ID of the local R session.
+
+```{r}
+ps::ps_pid()
+#> [1] 69523
+```
+
+Continue the above process of asynchronously submitting and collecting tasks until your workflow is complete. When you are done, terminate the controller to clean up the resources. 
+
+```{r}
+controller$terminate()
+```

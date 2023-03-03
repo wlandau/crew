@@ -3,16 +3,15 @@
 \docType{package}
 \name{crew-package}
 \alias{crew-package}
-\title{crew: abstract interface specification for semi-persistent
-high-performance computing workers}
+\title{crew: a distributed worker launcher}
 \description{
-The \code{R6} classes of \code{crew} establish a standardized
-user interface to high-performance computing technologies.
-Unlike its closely related \code{future} package, \code{crew} prioritizes
-centralized scheduling, heterogeneous semi-persistent workers,
-and user-driven customization. The primary goal is to help
-pipeline tools such as such \code{targets} efficiently orchestrate
-tasks without having to support individual low-level interfaces
-to specific high-performance computing platforms or cloud services.
+In computationally demanding analysis workflows,
+statisticians and data scientists asynchronously deploy
+long-running tasks to distributed systems, ranging from
+traditional clusters to cloud services. The \code{crew} package
+extends existing task schedulers to run workers on these systems.
+With its unifying interface to multiple backends,
+\code{crew} resembles packages \code{clustermq},
+\code{future}, and \code{batchtools}.
 }
 \concept{help}

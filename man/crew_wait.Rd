@@ -8,7 +8,7 @@ crew_wait(fun, args = list(), timeout = 60, wait = 1, message = character(0))
 }
 \arguments{
 \item{fun}{Function that returns \code{FALSE} to keep waiting
-\code{TRUE} to stop waiting.}
+or \code{TRUE} to stop waiting.}
 
 \item{args}{A named list of arguments to \code{fun}.}
 
@@ -33,6 +33,7 @@ crew_wait(fun = function() TRUE)
 }
 \seealso{
 Other utilities: 
-\code{\link{crew_true}()}
+\code{\link{crew_eval}()}
 }
 \concept{utilities}
+\keyword{internal}

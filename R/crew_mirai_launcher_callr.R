@@ -133,7 +133,7 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
       for (field in fields) {
         true(self[[field]], is.numeric(.), . > 0, length(.) == 1L, !anyNA(.))
       }
-      expect_true(self$async_dial, isTRUE(.) || isFALSE(.))
+      true(self$async_dial, isTRUE(.) || isFALSE(.))
       invisible()
     },
     #' @description Populate workers.

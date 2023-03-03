@@ -198,8 +198,7 @@ crew_class_mirai_controller <- R6::R6Class(
     #' @param collect Whether to run the `collect()` method to collect all
     #'   available results before calling `pop()`.
     pop = function(collect = TRUE) {
-      true(collect, isTRUE(.) || isFALSE(.))
-      if (collect) {
+      if (isTRUE(collect)) {
         self$collect()
       }
       out <- NULL

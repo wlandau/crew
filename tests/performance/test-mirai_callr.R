@@ -12,9 +12,17 @@ time <- system.time({
 })
 message(time["elapsed"])
 results <- list()
-time <- system.time({
+px <- proffer::pprof({
+#time <- system.time({
+  counter <- 0L
   while (length(results) < n) {
-    out <- x$pop()
+    counter <- counter + 1L
+    collect <- FALSE
+    if (counter > 100L) {
+      collect <- TRUE
+      counter <- 0L
+    }
+    out <- x$pop(collect = collect)
     if (!is.null(out)) {
       results[[length(results) + 1L]] <- out
       # message(paste("done", out$name, out$result[[1]])) # nolint

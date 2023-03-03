@@ -1,6 +1,7 @@
 #' @title Create a `mirai` launcher with `callr` workers.
 #' @export
-#' @family launchers
+#' @keywords internal
+#' @family mirai
 #' @description Create an `R6` object to launch and maintain
 #'   `callr` workers for a `mirai` controller.
 #' @param idle_time Maximum number of seconds that a worker can idle
@@ -52,7 +53,7 @@ crew_mirai_launcher_callr <- function(
 
 #' @title `mirai` launcher class
 #' @export
-#' @family launchers
+#' @family mirai
 #' @description `R6` class to launch and manage `mirai` workers.
 #' @details See [crew_mirai_launcher_callr()].
 crew_class_mirai_launcher_callr <- R6::R6Class(
@@ -173,8 +174,7 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
             pollfreqh = self$poll_high,
             pollfreql = self$poll_low,
             asyncdial = self$async_dial
-          ),
-          supervise = TRUE
+          )
         )
       )
       invisible()

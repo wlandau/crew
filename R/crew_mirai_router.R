@@ -1,6 +1,7 @@
 #' @title Create a `mirai` router.
 #' @export
-#' @family routers
+#' @keywords internal
+#' @family mirai
 #' @description Create an `R6` object to route tasks to `mirai` workers
 #'   on the local network.
 #' @section Ports:
@@ -68,7 +69,7 @@ crew_mirai_router <- function(
 
 #' @title `mirai` router class
 #' @export
-#' @family routers
+#' @family mirai
 #' @description `R6` class for `mirai` routers.
 #' @details See [crew_mirai_router()].
 crew_class_mirai_router <- R6::R6Class(

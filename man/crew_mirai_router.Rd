@@ -62,7 +62,13 @@ router$disconnect()
 }
 }
 \seealso{
-Other routers: 
-\code{\link{crew_class_mirai_router}}
+Other mirai: 
+\code{\link{crew_class_mirai_controller}},
+\code{\link{crew_class_mirai_launcher_callr}},
+\code{\link{crew_class_mirai_router}},
+\code{\link{crew_mirai_controller_callr}()},
+\code{\link{crew_mirai_controller}()},
+\code{\link{crew_mirai_launcher_callr}()}
 }
-\concept{routers}
+\concept{mirai}
+\keyword{internal}

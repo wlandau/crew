@@ -1,3 +1,23 @@
-crew_test("crew_mirai_controller() basic usage", {
-  expect_equal(2 * 2, 4)
+crew_test("crew_mirai_controller()", {
+  x <- crew_mirai_controller_callr()
+  expect_silent(x$validate())
+  expect_false(x$router$is_connected())
+  x$connect()
+  x$push(command = ps::ps_pid(), name = "task_pid")
+  x$wait(timeout = 5)
+  out <- x$pop()
+  expect_equal(out$result[[1]], x$launcher$workers[[1]]$get_pid())
+  x$terminate()
+  expect_false(x$router$is_connected())
+  expect_equal(x$launcher$running(), 0L)
+})
+
+crew_test("crew_mirai_controller() launch method", {
+  x <- crew_mirai_controller_callr()
+  x$connect()
+  expect_equal(x$launcher$running(), 0L)
+  x$launch(n = 1L)
+  expect_equal(x$launcher$running(), 1L)
+  x$terminate()
+  expect_equal(x$launcher$running(), 0L)
 })

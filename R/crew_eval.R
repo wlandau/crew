@@ -1,5 +1,6 @@
 #' @title Evaluate an R command and return results as a monad.
 #' @export
+#' @family utilities
 #' @keywords internal
 #' @description Not a user-side function. Do not call directly.
 #' @return A monad object with results and metadata.

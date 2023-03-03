@@ -9,13 +9,24 @@
 \details{
 See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.
 }
-\concept{mirai-classes}
+\seealso{
+Other mirai: 
+\code{\link{crew_class_mirai_launcher_callr}},
+\code{\link{crew_class_mirai_router}},
+\code{\link{crew_mirai_controller_callr}()},
+\code{\link{crew_mirai_controller}()},
+\code{\link{crew_mirai_launcher_callr}()},
+\code{\link{crew_mirai_router}()}
+}
+\concept{mirai}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{router}}{Router object.}
 
 \item{\code{launcher}}{Launcher object.}
+
+\item{\code{scale_method}}{Scaling method. See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.}
 
 \item{\code{queue}}{List of tasks in the queue.}
 
@@ -29,10 +40,12 @@ See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.
 \item \href{#method-crew_class_mirai_controller-new}{\code{crew_class_mirai_controller$new()}}
 \item \href{#method-crew_class_mirai_controller-validate}{\code{crew_class_mirai_controller$validate()}}
 \item \href{#method-crew_class_mirai_controller-connect}{\code{crew_class_mirai_controller$connect()}}
+\item \href{#method-crew_class_mirai_controller-launch}{\code{crew_class_mirai_controller$launch()}}
 \item \href{#method-crew_class_mirai_controller-collect}{\code{crew_class_mirai_controller$collect()}}
 \item \href{#method-crew_class_mirai_controller-scale}{\code{crew_class_mirai_controller$scale()}}
 \item \href{#method-crew_class_mirai_controller-push}{\code{crew_class_mirai_controller$push()}}
 \item \href{#method-crew_class_mirai_controller-pop}{\code{crew_class_mirai_controller$pop()}}
+\item \href{#method-crew_class_mirai_controller-wait}{\code{crew_class_mirai_controller$wait()}}
 \item \href{#method-crew_class_mirai_controller-terminate}{\code{crew_class_mirai_controller$terminate()}}
 \item \href{#method-crew_class_mirai_controller-clone}{\code{crew_class_mirai_controller$clone()}}
 }
@@ -43,7 +56,11 @@ See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.
 \subsection{Method \code{new()}}{
 \code{mirai} controller constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$new(router = NULL, launcher = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$new(
+  router = NULL,
+  launcher = NULL,
+  scale_method = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -52,6 +69,8 @@ See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.
 \item{\code{router}}{Router object. See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.}
 
 \item{\code{launcher}}{Launcher object. See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.}
+
+\item{\code{scale_method}}{Scaling method. See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -80,6 +99,36 @@ Connect the router and register the TCP sockets
 with the launcher.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$connect()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_mirai_controller-launch"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_controller-launch}{}}}
+\subsection{Method \code{launch()}}{
+Launch one or more workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$launch(n = 1L)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Maximum number of workers to launch.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+The actual number of newly launched workers
+is capped at the max set when the controller
+was created. Unless you are launching an array of
+persistent workers or have \code{scale_method = "none"},
+this method does not usually need to be called
+directly because \code{push(scale = TRUE)} already launches
+workers depending on \code{scale_method}.
 }
 
 \subsection{Returns}{
@@ -117,7 +166,7 @@ argument of \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}. It is
 manually. If called manually, it is recommended to call \code{collect()}
 first so \code{scale()} can accurately assess the demand.
 For finer control of the number of workers launched,
-call \verb{$launcher$launch()} on the controller with the exact desired
+call \code{launch()} on the controller with the exact desired
 number of workers.
 }
 
@@ -184,6 +233,30 @@ If there is a completed task available to collect, the return
 value is a one-row data frame with the results, warnings, and errors.
 Otherwise, if there are no results available to collect,
 the return value is \code{NULL}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_mirai_controller-wait"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_controller-wait}{}}}
+\subsection{Method \code{wait()}}{
+Wait for a result to be ready.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$wait(timeout = Inf, wait = 0.1)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{timeout}}{Timeout length in seconds waiting for
+results to become available.}
+
+\item{\code{wait}}{Number of seconds to wait between polling intervals
+while checking for results.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly). Call \code{pop()} to get the result.
 }
 }
 \if{html}{\out{<hr>}}

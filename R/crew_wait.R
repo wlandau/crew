@@ -1,5 +1,6 @@
 #' @title Wait for an event.
 #' @export
+#' @keywords internal
 #' @family utilities
 #' @description Repeatedly run a function while it keeps returning `FALSE`
 #'   and exit the loop when it returns `TRUE`

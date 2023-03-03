@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# crew: components to extend rrq workers <img src='man/figures/logo-readme.png' align="right" height="139"/>
+# crew: a distributed worker launcher <img src='man/figures/logo-readme.png' align="right" height="139"/>
 
 [![status](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#WIP)
 [![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
@@ -26,11 +26,21 @@ knitr::opts_chunk$set(
 
 In computationally demanding analysis workflows, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services. The `crew` package extends existing task schedulers to run workers on these systems. With its unifying interface to multiple backends, `crew` resembles packages [`clustermq`](https://mschubert.github.io/clustermq/), [`future`](https://future.futureverse.org/), and [`batchtools`](https://mllg.github.io/batchtools/).
 
+The current task scheduler supported is [`mirai`](https://github.com/shikokuchuo/mirai), and there are plans to incorporate [`rrq`](https://github.com/mrc-ide/rrq) as well. As for parallel workers, only local parallel workers are supported, but there are plans to eventually support distributed systems like SLURM and cloud services like AWS Batch.
+
 ## Installation
 
+`crew` is not yet available on CRAN, it it requires development versions of packages [`nanonext`](https://github.com/shikokuchuo/nanonext) and [`mirai`](https://github.com/shikokuchuo/mirai).
+
 ```{r, eval = FALSE}
+install.packages("nanonext", repos = "https://shikokuchuo.r-universe.dev")
+install.packages("mirai", repos = "https://shikokuchuo.r-universe.dev")
 remotes::install_github("wlandau/crew")
 ```
+
+## How it works
+
+
 
 ## Documentation
 

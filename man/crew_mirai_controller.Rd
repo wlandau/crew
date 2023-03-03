@@ -4,7 +4,7 @@
 \alias{crew_mirai_controller}
 \title{Create a \code{mirai} controller.}
 \usage{
-crew_mirai_controller(router, launcher, scale_method = NULL)
+crew_mirai_controller(router, launcher, scale_method = "demand")
 }
 \arguments{
 \item{router}{An \code{R6} router object created by \code{\link[=crew_mirai_router]{crew_mirai_router()}}.}
@@ -30,7 +30,14 @@ a single worker if demand \code{min(n, max(0, t - w))} is greater than 0.
 Create an \code{R6} object to submit tasks and launch workers
 on \code{mirai}-based infrastructure.
 }
-\examples{
-# TBD
+\seealso{
+Other mirai: 
+\code{\link{crew_class_mirai_controller}},
+\code{\link{crew_class_mirai_launcher_callr}},
+\code{\link{crew_class_mirai_router}},
+\code{\link{crew_mirai_controller_callr}()},
+\code{\link{crew_mirai_launcher_callr}()},
+\code{\link{crew_mirai_router}()}
 }
 \concept{mirai}
+\keyword{internal}

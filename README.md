@@ -1,5 +1,5 @@
 
-# crew: components to extend rrq workers <img src='man/figures/logo-readme.png' align="right" height="139"/>
+# crew: a distributed worker launcher <img src='man/figures/logo-readme.png' align="right" height="139"/>
 
 [![status](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#WIP)
 [![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)

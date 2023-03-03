@@ -31,4 +31,9 @@ and exit the loop when it returns \code{TRUE}
 \examples{
 crew_wait(fun = function() TRUE)
 }
+\seealso{
+Other utilities: 
+\code{\link{crew_eval}()}
+}
 \concept{utilities}
+\keyword{internal}

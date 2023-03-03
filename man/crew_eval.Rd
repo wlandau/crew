@@ -20,4 +20,9 @@ Not a user-side function. Do not call directly.
 \examples{
 crew_eval(quote(1 + 1))
 }
+\seealso{
+Other utilities: 
+\code{\link{crew_wait}()}
+}
+\concept{utilities}
 \keyword{internal}

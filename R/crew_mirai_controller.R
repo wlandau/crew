@@ -1,5 +1,6 @@
 #' @title Create a `mirai` controller.
 #' @export
+#' @keywords internal
 #' @family mirai
 #' @description Create an `R6` object to submit tasks and launch workers
 #'   on `mirai`-based infrastructure.
@@ -17,12 +18,10 @@
 #'   * `"single"`: just after pushing a new task in `push()`, launch
 #'     a single worker if demand `min(n, max(0, t - w))` is greater than 0.
 #'   * `"none"`: do not auto-scale at all.
-#' @examples
-#' # TBD
 crew_mirai_controller <- function(
   router,
   launcher,
-  scale_method = NULL
+  scale_method = "demand"
 ) {
   scale_method <- scale_method %|||% scale_methods_mirai
   controller <- crew_class_mirai_controller$new(
@@ -36,7 +35,7 @@ crew_mirai_controller <- function(
 
 #' @title `mirai` controller class
 #' @export
-#' @family mirai-classes
+#' @family mirai
 #' @description `R6` class for `mirai` controllers.
 #' @details See [crew_mirai_controller()].
 crew_class_mirai_controller <- R6::R6Class(
@@ -46,6 +45,8 @@ crew_class_mirai_controller <- R6::R6Class(
     router = NULL,
     #' @field launcher Launcher object.
     launcher = NULL,
+    #' @field scale_method Scaling method. See [crew_mirai_controller()].
+    scale_method = NULL,
     #' @field queue List of tasks in the queue.
     queue = list(),
     #' @field results List of finished tasks
@@ -54,21 +55,24 @@ crew_class_mirai_controller <- R6::R6Class(
     #' @return An `R6` object with the controller object.
     #' @param router Router object. See [crew_mirai_controller()].
     #' @param launcher Launcher object. See [crew_mirai_controller()].
+    #' @param scale_method Scaling method. See [crew_mirai_controller()].
     initialize = function(
       router = NULL,
-      launcher = NULL
+      launcher = NULL,
+      scale_method = NULL
     ) {
       self$router <- router
       self$launcher <- launcher
+      self$scale_method <- scale_method
       invisible()
     },
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
     validate = function() {
-      true(is.data.frame(self$queue))
-      true(is.data.frame(self$results))
+      true(is.list(self$queue))
+      true(is.list(self$results))
       true(inherits(self$router, "crew_class_mirai_router"))
-      true(grepl("^crew_class_mirai_launcher", class(self$launcher)))
+      true(any(grepl("^crew_class_mirai_launcher", class(self$launcher))))
       self$router$validate()
       self$launcher$validate()
       invisible()
@@ -78,8 +82,21 @@ crew_class_mirai_controller <- R6::R6Class(
     #' @return `NULL` (invisibly).
     connect = function() {
       self$router$connect()
-      self$launcher$populate(sockets = router$sockets_listening())
+      self$launcher$populate(sockets = self$router$sockets_listening())
       invisible()
+    },
+    #' @description Launch one or more workers.
+    #' @details The actual number of newly launched workers
+    #'   is capped at the max set when the controller
+    #'   was created. Unless you are launching an array of
+    #'   persistent workers or have `scale_method = "none"`,
+    #'   this method does not usually need to be called
+    #'   directly because `push(scale = TRUE)` already launches
+    #'   workers depending on `scale_method`.
+    #' @return `NULL` (invisibly).
+    #' @param n Maximum number of workers to launch.
+    launch = function(n = 1L) {
+      self$launcher$launch(n = n)
     },
     #' @description Check for done tasks and move the results to
     #'   the results list.
@@ -89,14 +106,19 @@ crew_class_mirai_controller <- R6::R6Class(
       done <- integer(0L)
       for (index in seq_along(self$queue)) {
         task <- self$queue[[index]]
-        if (!unresolved(task)) {
-          result <- task$handle$data
+        result <- task$handle[[1]]$data
+        if (!mirai::unresolved(result)) {
+          # Happens if mirai cannot evaluate the command.
+          # I cannot cover this in automated tests, but
+          # I did test it by hand.
+          # nocov start
           if (!inherits(result, "crew_monad")) {
             result <- monad_init(
               command = task$command,
               error = utils::capture.output(print(result), type = "output")
             )
           }
+          # nocov end
           result$name <- task$name
           self$results[[length(self$results) + 1L]] <- result
           done <- c(done, index)
@@ -112,7 +134,7 @@ crew_class_mirai_controller <- R6::R6Class(
     #'   manually. If called manually, it is recommended to call `collect()`
     #'   first so `scale()` can accurately assess the demand.
     #'   For finer control of the number of workers launched,
-    #'   call `$launcher$launch()` on the controller with the exact desired
+    #'   call `launch()` on the controller with the exact desired
     #'   number of workers.
     #' @return `NULL` (invisibly).
     scale = function() {
@@ -144,10 +166,18 @@ crew_class_mirai_controller <- R6::R6Class(
     ) {
       true(scale, isTRUE(.) || isFALSE(.))
       message <- "router must be connected to push tasks to the queue."
-      true(self$connected(), message = message)
+      true(self$router$is_connected(), message = message)
       while (is.null(name) || name %in% self$queue$name) name <- random_name()
-      monad <- as.call(list(quote(crew::crew_eval), substitute(command)))
-      handle <- mirai::mirai(.expr = monad, .args = args, .timeout = timeout)
+      command <- substitute(command)
+      expr <- rlang::call2("quote", command)
+      expr <- rlang::call2(quote(crew::crew_eval), expr)
+      mirai_args <- list(
+        .expr = expr,
+        .args = args,
+        .timeout = timeout,
+        .compute = self$router$name
+      )
+      handle <- do.call(what = mirai::mirai, args = mirai_args)
       command <- deparse_safe(command)
       task <- tibble::tibble(
         name = name,
@@ -179,6 +209,23 @@ crew_class_mirai_controller <- R6::R6Class(
         self$results[[1]] <- NULL
       }
       out
+    },
+    #' @description Wait for a result to be ready.
+    #' @return `NULL` (invisibly). Call `pop()` to get the result.
+    #' @param timeout Timeout length in seconds waiting for
+    #'   results to become available.
+    #' @param wait Number of seconds to wait between polling intervals
+    #'   while checking for results.
+    wait = function(timeout = Inf, wait = 0.1) {
+      crew_wait(
+        fun = ~{
+          self$collect()
+          length(self$results) > 0L
+        },
+        timeout = timeout,
+        wait = wait
+      )
+      invisible()
     },
     #' @description Terminate the workers and disconnect the router.
     #' @return `NULL` (invisibly).

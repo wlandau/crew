@@ -24,9 +24,9 @@
 #'   which defers to NNG to automatically assign a port, each unique port
 #'   value corresponds to a local port where a worker will dial in
 #'   to accept tasks.
-#' @param timeout Number of seconds to time out waiting for the `mirai`
+#' @param router_timeout Number of seconds to time out waiting for the `mirai`
 #'   router to (dis)connect.
-#' @param wait Number of seconds to wait between iterations checking
+#' @param router_wait Number of seconds to wait between iterations checking
 #'   if the `mirai` router is (dis)connected.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -41,8 +41,8 @@ crew_mirai_router <- function(
   workers = 1L,
   host = NULL,
   ports = NULL,
-  timeout = 5,
-  wait = 0.1
+  router_timeout = 5,
+  router_wait = 0.1
 ) {
   true(workers, is.numeric(.), length(.) == 1L, . > 0L, !anyNA(.))
   name <- as.character(name %|||% random_name())
@@ -52,15 +52,15 @@ crew_mirai_router <- function(
   true(host, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
   true(ports, is.integer(.), length(.) > 0L, !anyNA(.))
   true(ports, . >= 0L, . <= 65535L)
-  true(timeout, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
-  true(wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
-  true(timeout >= wait)
+  true(router_timeout, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
+  true(router_wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
+  true(router_timeout >= router_wait)
   router <- crew_class_mirai_router$new(
     name = name,
     host = host,
     ports = ports,
-    timeout = timeout,
-    wait = wait
+    router_timeout = router_timeout,
+    router_wait = router_wait
   )
   router$validate()
   router
@@ -81,30 +81,31 @@ crew_class_mirai_router <- R6::R6Class(
     host = NULL,
     #' @field ports TCP ports to listen to workers.
     ports = NULL,
-    #' @field timeout Timeout in seconds (dis)connecting the `mirai` router.
-    timeout = NULL,
-    #' @field wait Polling interval in seconds checking if the `mirai`
+    #' @field router_timeout Timeout in seconds
+    #'   (dis)connecting the `mirai` router.
+    router_timeout = NULL,
+    #' @field router_wait Polling interval in seconds checking if the `mirai`
     #'   router successfully (dis)connected.
-    wait = NULL,
+    router_wait = NULL,
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
     #' @param name Argument passed from [crew_mirai_router()].
     #' @param host Argument passed from [crew_mirai_router()].
     #' @param ports Argument passed from [crew_mirai_router()].
-    #' @param timeout Argument passed from [crew_mirai_router()].
-    #' @param wait Argument passed from [crew_mirai_router()].
+    #' @param router_timeout Argument passed from [crew_mirai_router()].
+    #' @param router_wait Argument passed from [crew_mirai_router()].
     initialize = function(
       name = NULL,
       host = NULL,
       ports = NULL,
-      timeout = NULL,
-      wait = NULL
+      router_timeout = NULL,
+      router_wait = NULL
     ) {
       self$name <- name
       self$host <- host
       self$ports <- ports
-      self$timeout <- timeout
-      self$wait <- wait
+      self$router_timeout <- router_timeout
+      self$router_wait <- router_wait
     },
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
@@ -113,9 +114,14 @@ crew_class_mirai_router <- R6::R6Class(
       true(self$host, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
       true(self$ports, is.integer(.), length(.) > 0L, !anyNA(.))
       true(self$ports, . >= 0L, . <= 65535L)
-      true(self$timeout, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
-      true(self$wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
-      true(self$timeout >= self$wait)
+      true(
+        self$router_timeout,
+        is.numeric(.),
+        length(.) == 1L,
+        !is.na(.), . >= 0
+      )
+      true(self$router_wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
+      true(self$router_timeout >= self$router_wait)
       invisible()
     },
     #' @description Get all sockets
@@ -146,6 +152,10 @@ crew_class_mirai_router <- R6::R6Class(
       as.character(setdiff(self$sockets_listening(), self$sockets_occupied()))
     },
     #' @description Check if the router is connected.
+    #' @details This method may stall and time out if there are
+    #'   tasks in the queue. Methods `connect()` and `disconnect()`
+    #'   call `is_connected()` to manage the connection before
+    #'   and after the entire workload, respectively.
     #' @return `TRUE` if successfully listening for dialed-in workers,
     #'   `FALSE` otherwise.
     is_connected = function() {
@@ -162,8 +172,8 @@ crew_class_mirai_router <- R6::R6Class(
       }
       crew_wait(
         fun = self$is_connected,
-        timeout = self$timeout,
-        wait = self$wait,
+        timeout = self$router_timeout,
+        wait = self$router_wait,
         message = "mirai client cannot connect."
       )
       invisible()
@@ -175,8 +185,8 @@ crew_class_mirai_router <- R6::R6Class(
       try(
         crew_wait(
           fun = function() !self$is_connected(),
-          timeout = self$timeout,
-          wait = self$wait,
+          timeout = self$router_timeout,
+          wait = self$router_wait,
           message = "mirai client cannot disconnect."
         ),
         silent = TRUE

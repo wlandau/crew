@@ -5,18 +5,18 @@
 \title{Create a \code{mirai} launcher with \code{callr} workers.}
 \usage{
 crew_mirai_launcher_callr(
-  idle = Inf,
+  idle_time = Inf,
   wall_time = Inf,
   poll_high = 5,
   poll_low = 50,
-  poll_launch_timeout = 5,
-  poll_launch_wait = 0.1,
+  launch_timeout = 5,
+  launch_wait = 0.1,
   max_tasks = Inf,
   async_dial = TRUE
 )
 }
 \arguments{
-\item{idle}{Maximum number of seconds that a worker can idle
+\item{idle_time}{Maximum number of seconds that a worker can idle
 since the completion of the last task. If exceeded, the worker exits.}
 
 \item{wall_time}{Soft wall time in seconds. See the \code{wall_time}
@@ -28,10 +28,10 @@ active queue.}
 \item{poll_low}{Low polling interval in seconds for the \code{mirai}
 active queue.}
 
-\item{poll_launch_timeout}{Number of seconds to time out
+\item{launch_timeout}{Number of seconds to time out
 waiting for a new group of workers to launch.}
 
-\item{poll_launch_wait}{Number of seconds to wait between checks
+\item{launch_wait}{Number of seconds to wait between checks
 that newly launched workers are ready to receive tasks.}
 
 \item{max_tasks}{Maximum number of tasks that a worker will do before

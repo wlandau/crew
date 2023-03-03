@@ -9,8 +9,8 @@ crew_mirai_router(
   workers = 1L,
   host = NULL,
   ports = NULL,
-  timeout = 5,
-  wait = 0.1
+  router_timeout = 5,
+  router_wait = 0.1
 )
 }
 \arguments{
@@ -32,10 +32,10 @@ which defers to NNG to automatically assign a port, each unique port
 value corresponds to a local port where a worker will dial in
 to accept tasks.}
 
-\item{timeout}{Number of seconds to time out waiting for the \code{mirai}
+\item{router_timeout}{Number of seconds to time out waiting for the \code{mirai}
 router to (dis)connect.}
 
-\item{wait}{Number of seconds to wait between iterations checking
+\item{router_wait}{Number of seconds to wait between iterations checking
 if the \code{mirai} router is (dis)connected.}
 }
 \description{

@@ -23,9 +23,10 @@ Other routers:
 
 \item{\code{ports}}{TCP ports to listen to workers.}
 
-\item{\code{timeout}}{Timeout in seconds (dis)connecting the \code{mirai} router.}
+\item{\code{router_timeout}}{Timeout in seconds
+(dis)connecting the \code{mirai} router.}
 
-\item{\code{wait}}{Polling interval in seconds checking if the \code{mirai}
+\item{\code{router_wait}}{Polling interval in seconds checking if the \code{mirai}
 router successfully (dis)connected.}
 }
 \if{html}{\out{</div>}}
@@ -53,8 +54,8 @@ router successfully (dis)connected.}
   name = NULL,
   host = NULL,
   ports = NULL,
-  timeout = NULL,
-  wait = NULL
+  router_timeout = NULL,
+  router_wait = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -67,9 +68,9 @@ router successfully (dis)connected.}
 
 \item{\code{ports}}{Argument passed from \code{\link[=crew_mirai_router]{crew_mirai_router()}}.}
 
-\item{\code{timeout}}{Argument passed from \code{\link[=crew_mirai_router]{crew_mirai_router()}}.}
+\item{\code{router_timeout}}{Argument passed from \code{\link[=crew_mirai_router]{crew_mirai_router()}}.}
 
-\item{\code{wait}}{Argument passed from \code{\link[=crew_mirai_router]{crew_mirai_router()}}.}
+\item{\code{router_wait}}{Argument passed from \code{\link[=crew_mirai_router]{crew_mirai_router()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -138,6 +139,13 @@ Character string with available TCP sockets.
 Check if the router is connected.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_router$is_connected()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+This method may stall and time out if there are
+tasks in the queue. Methods \code{connect()} and \code{disconnect()}
+call \code{is_connected()} to manage the connection before
+and after the entire workload, respectively.
 }
 
 \subsection{Returns}{

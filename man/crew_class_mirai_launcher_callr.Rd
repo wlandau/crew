@@ -22,7 +22,7 @@ Other launchers:
 \item{\code{workers}}{List of \code{callr::r_bg()} handles for workers.
 The handle is \code{NA} if it is not yet called.}
 
-\item{\code{idle}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{idle_time}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
 \item{\code{wall_time}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
@@ -30,9 +30,9 @@ The handle is \code{NA} if it is not yet called.}
 
 \item{\code{poll_low}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{poll_launch_timeout}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{launch_timeout}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{poll_launch_wait}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{launch_wait}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
 \item{\code{max_tasks}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
@@ -60,12 +60,12 @@ The handle is \code{NA} if it is not yet called.}
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_launcher_callr$new(
   sockets = NULL,
   workers = NULL,
-  idle = NULL,
+  idle_time = NULL,
   wall_time = NULL,
   poll_high = NULL,
   poll_low = NULL,
-  poll_launch_timeout = NULL,
-  poll_launch_wait = NULL,
+  launch_timeout = NULL,
+  launch_wait = NULL,
   max_tasks = NULL,
   async_dial = NULL
 )}\if{html}{\out{</div>}}
@@ -78,7 +78,7 @@ The handle is \code{NA} if it is not yet called.}
 
 \item{\code{workers}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{idle}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{idle_time}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
 \item{\code{wall_time}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
@@ -86,9 +86,9 @@ The handle is \code{NA} if it is not yet called.}
 
 \item{\code{poll_low}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{poll_launch_timeout}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{launch_timeout}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
-\item{\code{poll_launch_wait}}{Argument to \code{crew_mirai_launcher_callr()}.}
+\item{\code{launch_wait}}{Argument to \code{crew_mirai_launcher_callr()}.}
 
 \item{\code{max_tasks}}{Argument to \code{crew_mirai_launcher_callr()}.}
 

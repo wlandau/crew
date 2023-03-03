@@ -15,6 +15,23 @@ or another list.}
 Create an \code{R6} object to submit tasks and launch workers
 through multiple \code{crew} controllers.
 }
+\examples{
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+persistent <- crew_mirai_controller_callr(name = "persistent")
+transient <- crew_mirai_controller_callr(
+  name = "transient",
+  max_tasks = 1L
+)
+multi <- crew_multi_controller(persistent, transient)
+multi$connect()
+multi$push(name = "task", command = sqrt(4), controller = "transient")
+multi$wait()
+multi$pop()
+multi$controllers[["persistent"]]$launcher$running() # 0
+multi$controllers[["transient"]]$launcher$running() # 0
+multi$terminate()
+}
+}
 \seealso{
 Other controllers: 
 \code{\link{crew_class_multi_controller}},

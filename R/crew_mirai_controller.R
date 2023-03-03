@@ -18,6 +18,17 @@
 #'   * `"single"`: just after pushing a new task in `push()`, launch
 #'     a single worker if demand `min(n, max(0, t - w))` is greater than 0.
 #'   * `"none"`: do not auto-scale at all.
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' router <- crew_mirai_router()
+#' launcher <- crew_mirai_launcher_callr()
+#' controller <- crew_mirai_controller(router = router, launcher = launcher)
+#' controller$connect()
+#' controller$push(name = "task", command = sqrt(4))
+#' controller$wait()
+#' controller$pop()
+#' controller$terminate()
+#' }
 crew_mirai_controller <- function(
   router,
   launcher,
@@ -38,6 +49,17 @@ crew_mirai_controller <- function(
 #' @family mirai
 #' @description `R6` class for `mirai` controllers.
 #' @details See [crew_mirai_controller()].
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' router <- crew_mirai_router()
+#' launcher <- crew_mirai_launcher_callr()
+#' controller <- crew_mirai_controller(router = router, launcher = launcher)
+#' controller$connect()
+#' controller$push(name = "task", command = sqrt(4))
+#' controller$wait()
+#' controller$pop()
+#' controller$terminate()
+#' }
 crew_class_mirai_controller <- R6::R6Class(
   classname = "crew_class_mirai_controller",
   public = list(
@@ -56,6 +78,17 @@ crew_class_mirai_controller <- R6::R6Class(
     #' @param router Router object. See [crew_mirai_controller()].
     #' @param launcher Launcher object. See [crew_mirai_controller()].
     #' @param scale_method Scaling method. See [crew_mirai_controller()].
+    #' #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' router <- crew_mirai_router() # Use this helper instead of the constructor.
+    #' launcher <- crew_mirai_launcher_callr()
+    #' controller <- crew_mirai_controller(router = router, launcher = launcher)
+    #' controller$connect()
+    #' controller$push(name = "task", command = sqrt(4))
+    #' controller$wait()
+    #' controller$pop()
+    #' controller$terminate()
+    #' }
     initialize = function(
       router = NULL,
       launcher = NULL,

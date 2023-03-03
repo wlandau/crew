@@ -89,6 +89,16 @@ a single worker if demand \code{min(n, max(0, t - w))} is greater than 0.
 Create an \code{R6} object to submit tasks and launch workers
 with a \code{mirai} task queue and \code{callr} workers
 }
+\examples{
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+controller <- crew_mirai_controller_callr()
+controller$connect()
+controller$push(name = "task", command = sqrt(4))
+controller$wait()
+controller$pop()
+controller$terminate()
+}
+}
 \seealso{
 Other controllers: 
 \code{\link{crew_class_multi_controller}},

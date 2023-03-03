@@ -7,6 +7,22 @@
 #' @param ... `R6` controller objects or lists of `R6` controller objects.
 #'   Nested lists are allowed, but each element must be a control object
 #'   or another list.
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' persistent <- crew_mirai_controller_callr(name = "persistent")
+#' transient <- crew_mirai_controller_callr(
+#'   name = "transient",
+#'   max_tasks = 1L
+#' )
+#' multi <- crew_multi_controller(persistent, transient)
+#' multi$connect()
+#' multi$push(name = "task", command = sqrt(4), controller = "transient")
+#' multi$wait()
+#' multi$pop()
+#' multi$controllers[["persistent"]]$launcher$running() # 0
+#' multi$controllers[["transient"]]$launcher$running() # 0
+#' multi$terminate()
+#' }
 crew_multi_controller <- function(...) {
   controllers <- unlist(list(...), recursive = TRUE)
   names(controllers) <- map_chr(controllers, ~.x$router$name)
@@ -20,6 +36,22 @@ crew_multi_controller <- function(...) {
 #' @family controllers
 #' @description `R6` class for `mirai` controllers.
 #' @details See [crew_mirai_controller()].
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' persistent <- crew_mirai_controller_callr(name = "persistent")
+#' transient <- crew_mirai_controller_callr(
+#'   name = "transient",
+#'   max_tasks = 1L
+#' )
+#' multi <- crew_multi_controller(persistent, transient)
+#' multi$connect()
+#' multi$push(name = "task", command = sqrt(4), controller = "transient")
+#' multi$wait()
+#' multi$pop()
+#' multi$controllers[["persistent"]]$launcher$running() # 0
+#' multi$controllers[["transient"]]$launcher$running() # 0
+#' multi$terminate()
+#' }
 crew_class_multi_controller <- R6::R6Class(
   classname = "crew_class_multi_controller",
   private = list(
@@ -44,6 +76,22 @@ crew_class_multi_controller <- R6::R6Class(
     #' @description Multi-controller constructor.
     #' @return An `R6` object with the multi-controller object.
     #' @param controllers List of `R6` controller objects.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' persistent <- crew_mirai_controller_callr(name = "persistent")
+    #' transient <- crew_mirai_controller_callr(
+    #'   name = "transient",
+    #'   max_tasks = 1L
+    #' )
+    #' multi <- crew_multi_controller(persistent, transient)
+    #' multi$connect()
+    #' multi$push(name = "task", command = sqrt(4), controller = "transient")
+    #' multi$wait()
+    #' multi$pop()
+    #' multi$controllers[["persistent"]]$launcher$running() # 0
+    #' multi$controllers[["transient"]]$launcher$running() # 0
+    #' multi$terminate()
+    #' }
     initialize = function(
       controllers = NULL
     ) {

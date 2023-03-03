@@ -9,6 +9,29 @@
 \details{
 See \code{\link[=crew_mirai_router]{crew_mirai_router()}}.
 }
+\examples{
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_mirai_router()
+router$sockets_listening() # character(0)
+router$connect()
+router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
+router$disconnect()
+router$sockets_listening() # character(0)
+}
+
+## ------------------------------------------------
+## Method `crew_class_mirai_router$new`
+## ------------------------------------------------
+
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_mirai_router()
+router$sockets_listening() # character(0)
+router$connect()
+router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
+router$disconnect()
+router$sockets_listening() # character(0)
+}
+}
 \seealso{
 Other mirai: 
 \code{\link{crew_class_mirai_controller}},
@@ -81,6 +104,21 @@ router successfully (dis)connected.}
 \subsection{Returns}{
 An \code{R6} object with the router.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_mirai_router()
+router$sockets_listening() # character(0)
+router$connect()
+router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
+router$disconnect()
+router$sockets_listening() # character(0)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_mirai_router-validate"></a>}}

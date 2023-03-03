@@ -30,6 +30,18 @@ a single worker if demand \code{min(n, max(0, t - w))} is greater than 0.
 Create an \code{R6} object to submit tasks and launch workers
 on \code{mirai}-based infrastructure.
 }
+\examples{
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_mirai_router()
+launcher <- crew_mirai_launcher_callr()
+controller <- crew_mirai_controller(router = router, launcher = launcher)
+controller$connect()
+controller$push(name = "task", command = sqrt(4))
+controller$wait()
+controller$pop()
+controller$terminate()
+}
+}
 \seealso{
 Other mirai: 
 \code{\link{crew_class_mirai_controller}},

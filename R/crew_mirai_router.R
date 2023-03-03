@@ -32,10 +32,11 @@
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_mirai_router()
-#' router$validate()
+#' router$sockets_listening() # character(0)
 #' router$connect()
-#' # Now launch workers with a mirai launcher.
+#' router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
 #' router$disconnect()
+#' router$sockets_listening() # character(0)
 #' }
 crew_mirai_router <- function(
   name = NULL,
@@ -72,6 +73,15 @@ crew_mirai_router <- function(
 #' @family mirai
 #' @description `R6` class for `mirai` routers.
 #' @details See [crew_mirai_router()].
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' router <- crew_mirai_router()
+#' router$sockets_listening() # character(0)
+#' router$connect()
+#' router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
+#' router$disconnect()
+#' router$sockets_listening() # character(0)
+#' }
 crew_class_mirai_router <- R6::R6Class(
   classname = "crew_class_mirai_router",
   cloneable = FALSE,
@@ -95,6 +105,15 @@ crew_class_mirai_router <- R6::R6Class(
     #' @param ports Argument passed from [crew_mirai_router()].
     #' @param router_timeout Argument passed from [crew_mirai_router()].
     #' @param router_wait Argument passed from [crew_mirai_router()].
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' router <- crew_mirai_router()
+    #' router$sockets_listening() # character(0)
+    #' router$connect()
+    #' router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
+    #' router$disconnect()
+    #' router$sockets_listening() # character(0)
+    #' }
     initialize = function(
       name = NULL,
       host = NULL,

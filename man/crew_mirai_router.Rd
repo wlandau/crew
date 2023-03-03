@@ -55,10 +55,11 @@ seriously disrupt the tasks of other users, so please be careful.
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_mirai_router()
-router$validate()
+router$sockets_listening() # character(0)
 router$connect()
-# Now launch workers with a mirai launcher.
+router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
 router$disconnect()
+router$sockets_listening() # character(0)
 }
 }
 \seealso{

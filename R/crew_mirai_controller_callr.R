@@ -6,6 +6,15 @@
 #' @inheritParams crew_mirai_router
 #' @inheritParams crew_mirai_launcher_callr
 #' @inheritParams crew_mirai_controller
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' controller <- crew_mirai_controller_callr()
+#' controller$connect()
+#' controller$push(name = "task", command = sqrt(4))
+#' controller$wait()
+#' controller$pop()
+#' controller$terminate()
+#' }
 crew_mirai_controller_callr <- function(
   name = NULL,
   workers = 1L,

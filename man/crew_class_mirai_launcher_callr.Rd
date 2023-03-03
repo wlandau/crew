@@ -9,6 +9,37 @@
 \details{
 See \code{\link[=crew_mirai_launcher_callr]{crew_mirai_launcher_callr()}}.
 }
+\examples{
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_mirai_router()
+router$connect()
+launcher <- crew_mirai_launcher_callr()
+launcher$populate(sockets = router$sockets_listening())
+launcher$running() # 0
+launcher$launch()
+launcher$running() # 1
+launcher$terminate()
+launcher$running() # 0
+router$disconnect()
+}
+
+## ------------------------------------------------
+## Method `crew_class_mirai_launcher_callr$new`
+## ------------------------------------------------
+
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_mirai_router()
+router$connect()
+launcher <- crew_mirai_launcher_callr()
+launcher$populate(sockets = router$sockets_listening())
+launcher$running() # 0
+launcher$launch()
+launcher$running() # 1
+launcher$terminate()
+launcher$running() # 0
+router$disconnect()
+}
+}
 \seealso{
 Other mirai: 
 \code{\link{crew_class_mirai_controller}},
@@ -103,6 +134,25 @@ The handle is \code{NA} if it is not yet called.}
 \subsection{Returns}{
 An \code{R6} object with the launcher.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_mirai_router()
+router$connect()
+launcher <- crew_mirai_launcher_callr()
+launcher$populate(sockets = router$sockets_listening())
+launcher$running() # 0
+launcher$launch()
+launcher$running() # 1
+launcher$terminate()
+launcher$running() # 0
+router$disconnect()
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_mirai_launcher_callr-validate"></a>}}

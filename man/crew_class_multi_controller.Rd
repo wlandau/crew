@@ -9,6 +9,43 @@
 \details{
 See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.
 }
+\examples{
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+persistent <- crew_mirai_controller_callr(name = "persistent")
+transient <- crew_mirai_controller_callr(
+  name = "transient",
+  max_tasks = 1L
+)
+multi <- crew_multi_controller(persistent, transient)
+multi$connect()
+multi$push(name = "task", command = sqrt(4), controller = "transient")
+multi$wait()
+multi$pop()
+multi$controllers[["persistent"]]$launcher$running() # 0
+multi$controllers[["transient"]]$launcher$running() # 0
+multi$terminate()
+}
+
+## ------------------------------------------------
+## Method `crew_class_multi_controller$new`
+## ------------------------------------------------
+
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+persistent <- crew_mirai_controller_callr(name = "persistent")
+transient <- crew_mirai_controller_callr(
+  name = "transient",
+  max_tasks = 1L
+)
+multi <- crew_multi_controller(persistent, transient)
+multi$connect()
+multi$push(name = "task", command = sqrt(4), controller = "transient")
+multi$wait()
+multi$pop()
+multi$controllers[["persistent"]]$launcher$running() # 0
+multi$controllers[["transient"]]$launcher$running() # 0
+multi$terminate()
+}
+}
 \seealso{
 Other controllers: 
 \code{\link{crew_mirai_controller_callr}()},
@@ -57,6 +94,28 @@ Multi-controller constructor.
 \subsection{Returns}{
 An \code{R6} object with the multi-controller object.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+persistent <- crew_mirai_controller_callr(name = "persistent")
+transient <- crew_mirai_controller_callr(
+  name = "transient",
+  max_tasks = 1L
+)
+multi <- crew_multi_controller(persistent, transient)
+multi$connect()
+multi$push(name = "task", command = sqrt(4), controller = "transient")
+multi$wait()
+multi$pop()
+multi$controllers[["persistent"]]$launcher$running() # 0
+multi$controllers[["transient"]]$launcher$running() # 0
+multi$terminate()
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_multi_controller-validate"></a>}}

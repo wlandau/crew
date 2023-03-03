@@ -46,8 +46,16 @@ Create an \code{R6} object to launch and maintain
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_mirai_router()
+router$connect()
 launcher <- crew_mirai_launcher_callr()
-launcher$validate()
+launcher$populate(sockets = router$sockets_listening())
+launcher$running() # 0
+launcher$launch()
+launcher$running() # 1
+launcher$terminate()
+launcher$running() # 0
+router$disconnect()
 }
 }
 \seealso{

@@ -22,8 +22,16 @@
 #'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' router <- crew_mirai_router()
+#' router$connect()
 #' launcher <- crew_mirai_launcher_callr()
-#' launcher$validate()
+#' launcher$populate(sockets = router$sockets_listening())
+#' launcher$running() # 0
+#' launcher$launch()
+#' launcher$running() # 1
+#' launcher$terminate()
+#' launcher$running() # 0
+#' router$disconnect()
 #' }
 crew_mirai_launcher_callr <- function(
   idle_time = Inf,
@@ -56,6 +64,19 @@ crew_mirai_launcher_callr <- function(
 #' @family mirai
 #' @description `R6` class to launch and manage `mirai` workers.
 #' @details See [crew_mirai_launcher_callr()].
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' router <- crew_mirai_router()
+#' router$connect()
+#' launcher <- crew_mirai_launcher_callr()
+#' launcher$populate(sockets = router$sockets_listening())
+#' launcher$running() # 0
+#' launcher$launch()
+#' launcher$running() # 1
+#' launcher$terminate()
+#' launcher$running() # 0
+#' router$disconnect()
+#' }
 crew_class_mirai_launcher_callr <- R6::R6Class(
   classname = c("crew_class_mirai_launcher_callr"),
   cloneable = FALSE,
@@ -93,6 +114,19 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
     #' @param launch_wait Argument to `crew_mirai_launcher_callr()`.
     #' @param max_tasks Argument to `crew_mirai_launcher_callr()`.
     #' @param async_dial Argument to `crew_mirai_launcher_callr()`.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' router <- crew_mirai_router()
+    #' router$connect()
+    #' launcher <- crew_mirai_launcher_callr()
+    #' launcher$populate(sockets = router$sockets_listening())
+    #' launcher$running() # 0
+    #' launcher$launch()
+    #' launcher$running() # 1
+    #' launcher$terminate()
+    #' launcher$running() # 0
+    #' router$disconnect()
+    #' }
     initialize = function(
       sockets = NULL,
       workers = NULL,
@@ -168,11 +202,11 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
           func = \(...) do.call(what = mirai::server, args = list(...)),
           args = list(
             url = self$sockets[.x],
-            idletime = self$idle_time / 1000,
-            walltime = self$wall_time / 1000,
+            idletime = self$idle_time * 1000,
+            walltime = self$wall_time * 1000,
             tasklimit = self$max_tasks,
-            pollfreqh = self$poll_high / 1000,
-            pollfreql = self$poll_low / 1000,
+            pollfreqh = self$poll_high * 1000,
+            pollfreql = self$poll_low * 1000,
             asyncdial = self$async_dial
           )
         )

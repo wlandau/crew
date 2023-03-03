@@ -38,13 +38,9 @@ install.packages("mirai", repos = "https://shikokuchuo.r-universe.dev")
 remotes::install_github("wlandau/crew")
 ```
 
-## How it works
-
-
-
 ## Documentation
 
-Please see <https://wlandau.github.io/crew/> for documentation, including a full function reference and usage tutorial vignettes.
+Please see <https://wlandau.github.io/crew/> for documentation, including a full function reference and usage tutorial vignettes. It is recommended to begin with the `mirai` `callr` vignette.
 
 ## Similar work
 

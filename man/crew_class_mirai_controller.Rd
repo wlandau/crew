@@ -9,6 +9,18 @@
 \details{
 See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.
 }
+\examples{
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_mirai_router()
+launcher <- crew_mirai_launcher_callr()
+controller <- crew_mirai_controller(router = router, launcher = launcher)
+controller$connect()
+controller$push(name = "task", command = sqrt(4))
+controller$wait()
+controller$pop()
+controller$terminate()
+}
+}
 \seealso{
 Other mirai: 
 \code{\link{crew_class_mirai_launcher_callr}},
@@ -69,7 +81,18 @@ Other mirai:
 
 \item{\code{launcher}}{Launcher object. See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.}
 
-\item{\code{scale_method}}{Scaling method. See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.}
+\item{\code{scale_method}}{Scaling method. See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.
+#' @examples
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_mirai_router() # Use this helper instead of the constructor.
+launcher <- crew_mirai_launcher_callr()
+controller <- crew_mirai_controller(router = router, launcher = launcher)
+controller$connect()
+controller$push(name = "task", command = sqrt(4))
+controller$wait()
+controller$pop()
+controller$terminate()
+}}
 }
 \if{html}{\out{</div>}}
 }

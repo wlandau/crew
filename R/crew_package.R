@@ -14,7 +14,6 @@
 #' @importFrom getip getip
 #' @importFrom mirai daemons is_error_value mirai server unresolved
 #' @importFrom R6 R6Class
-#' @importFrom processx poll
 #' @importFrom rlang abort as_function
 #' @importFrom tibble tibble
 #' @importFrom utils globalVariables head

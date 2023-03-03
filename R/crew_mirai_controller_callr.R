@@ -7,21 +7,21 @@
 #' @inheritParams crew_mirai_launcher_callr
 #' @inheritParams crew_mirai_controller
 crew_mirai_controller_callr <- function(
-    name = NULL,
-    workers = 1L,
-    host = NULL,
-    ports = NULL,
-    router_timeout = 5,
-    router_wait = 0.1,
-    idle_time = Inf,
-    wall_time = Inf,
-    poll_high = 5,
-    poll_low = 50,
-    launch_timeout = 5,
-    launch_wait = 0.1,
-    max_tasks = Inf,
-    async_dial = TRUE,
-    scale_method = "demand"
+  name = NULL,
+  workers = 1L,
+  host = NULL,
+  ports = NULL,
+  router_timeout = 5,
+  router_wait = 0.1,
+  idle_time = Inf,
+  wall_time = Inf,
+  poll_high = 5,
+  poll_low = 50,
+  launch_timeout = 5,
+  launch_wait = 0.1,
+  max_tasks = Inf,
+  async_dial = TRUE,
+  scale_method = "demand"
 ) {
   router <- crew_mirai_router(
     name = name,

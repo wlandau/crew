@@ -7,6 +7,7 @@ crew_test("crew_mirai_router() validate", {
 
 crew_test("crew_mirai_router() works", {
   router <- crew_mirai_router()
+  on.exit(router$disconnect())
   expect_false(router$is_connected())
   expect_equal(router$sockets_listening(), character(0))
   expect_equal(router$sockets_occupied(), character(0))

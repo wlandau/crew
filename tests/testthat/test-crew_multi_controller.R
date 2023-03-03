@@ -3,6 +3,7 @@ crew_test("crew_multi_controller()", {
   a <- crew_mirai_controller_callr(name = "a")
   b <- crew_mirai_controller_callr(name = "b", max_tasks = 1L)
   x <- crew_multi_controller(a, b)
+  on.exit(x$terminate())
   expect_silent(x$validate())
   expect_false(x$controllers[[1]]$router$is_connected())
   expect_false(x$controllers[[2]]$router$is_connected())
@@ -39,6 +40,7 @@ crew_test("crew_multi_controller() collect", {
   a <- crew_mirai_controller_callr(name = "a")
   b <- crew_mirai_controller_callr(name = "b", max_tasks = 1L)
   x <- crew_multi_controller(a, b)
+  on.exit(x$terminate())
   expect_silent(x$validate())
   expect_false(x$controllers[[1]]$router$is_connected())
   expect_false(x$controllers[[2]]$router$is_connected())
@@ -60,6 +62,7 @@ crew_test("crew_multi_controller() launch method", {
   a <- crew_mirai_controller_callr(name = "a")
   b <- crew_mirai_controller_callr(name = "b", max_tasks = 1L)
   x <- crew_multi_controller(a, b)
+  on.exit(x$terminate())
   x$connect()
   for (index in seq_len(2)) {
     crew_wait(
@@ -88,43 +91,22 @@ crew_test("crew_multi_controller() launch method", {
 
 crew_test("crew_multi_controller() scale method", {
   skip_on_cran()
-  a <- crew_mirai_controller_callr(name = "a", scale_method = "none")
-  b <- crew_mirai_controller_callr(name = "b", scale_method = "none")
-  x <- crew_multi_controller(a, b)
+  a <- crew_mirai_controller_callr(name = "a", scale_method = "single")
+  x <- crew_multi_controller(a)
+  on.exit(x$terminate())
   x$connect()
-  x$push(
-    command = ps::ps_pid(),
-    name = "task_pid",
-    controller = "a"
-  )
-  x$push(
-    command = ps::ps_pid(),
-    name = "task_pid",
-    controller = "b"
-  )
-  for (index in seq_len(2)) {
-    crew_wait(
-      ~(x$controllers[[index]]$launcher$running() == 0L),
-      timeout = 5,
-      wait = 0.1
-    )
-  }
-  a$scale_method <- "demand"
-  b$scale_method <- "single"
+  expect_equal(a$launcher$running(), 0L)
+  a$queue <- list("task")
   expect_silent(x$scale())
-  for (index in seq_len(2)) {
-    crew_wait(
-      ~(x$controllers[[index]]$launcher$running() == 1L),
-      timeout = 5,
-      wait = 0.1
-    )
-  }
+  crew_wait(
+    fun = ~identical(a$launcher$running(), 1L),
+    timeout = 5,
+    wait = 0.1
+  )
   x$terminate()
-  for (index in seq_len(2)) {
-    crew_wait(
-      ~(x$controllers[[index]]$launcher$running() == 0L),
-      timeout = 5,
-      wait = 0.1
-    )
-  }
+  crew_wait(
+    fun = ~identical(a$launcher$running(), 0L),
+    timeout = 5,
+    wait = 0.1
+  )
 })

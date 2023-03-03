@@ -42,21 +42,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          packages: |
-            any::callr
-            any::getip
-            any::R6
-            any::rlang
-            any::tibble
-            any::withr
-            any::rcmdcheck
+          extra-packages: any::rcmdcheck
           needs: check
-
-      - name: mirai
-        run: |
-          install.packages("nanonext", repos = "https://shikokuchuo.r-universe.dev", type = "binary")
-          install.packages("mirai", repos = "https://shikokuchuo.r-universe.dev", type = "binary")
-        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
         with:

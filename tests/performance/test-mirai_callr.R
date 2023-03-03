@@ -12,8 +12,7 @@ time <- system.time({
 })
 message(time["elapsed"])
 results <- list()
-px <- proffer::pprof({
-#time <- system.time({
+time <- system.time({
   counter <- 0L
   while (length(results) < n) {
     counter <- counter + 1L

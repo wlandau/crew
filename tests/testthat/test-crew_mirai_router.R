@@ -19,8 +19,10 @@ crew_test("crew_mirai_router() works", {
   expect_true(is.character(socket) && length(socket) > 0L)
   expect_true(nzchar(socket) && !anyNA(socket))
   expect_equal(router$sockets_available(), socket)
-  px <- callr::r_session$new(wait = TRUE)
-  px$call(function(socket) mirai::server(socket), args = list(socket = socket))
+  px <- callr::r_bg(
+    function(socket) mirai::server(socket),
+    args = list(socket = socket)
+  )
   crew::crew_wait(
     ~identical(router$sockets_occupied(), socket),
     timeout = 5,

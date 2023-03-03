@@ -1,7 +1,11 @@
 crew_test("crew_multi_controller()", {
   skip_on_cran()
-  a <- crew_mirai_controller_callr(name = "a")
-  b <- crew_mirai_controller_callr(name = "b", max_tasks = 1L)
+  a <- crew_mirai_controller_callr(name = "a", idle_time = 360)
+  b <- crew_mirai_controller_callr(
+    name = "b",
+    max_tasks = 1L,
+    idle_time = 360
+  )
   x <- crew_multi_controller(a, b)
   on.exit(x$terminate())
   expect_silent(x$validate())
@@ -38,7 +42,11 @@ crew_test("crew_multi_controller()", {
 crew_test("crew_multi_controller() collect", {
   skip_on_cran()
   a <- crew_mirai_controller_callr(name = "a")
-  b <- crew_mirai_controller_callr(name = "b", max_tasks = 1L)
+  b <- crew_mirai_controller_callr(
+    name = "b",
+    max_tasks = 1L,
+    idle_time = 360
+  )
   x <- crew_multi_controller(a, b)
   on.exit(x$terminate())
   expect_silent(x$validate())
@@ -63,8 +71,12 @@ crew_test("crew_multi_controller() collect", {
 
 crew_test("crew_multi_controller() launch method", {
   skip_on_cran()
-  a <- crew_mirai_controller_callr(name = "a")
-  b <- crew_mirai_controller_callr(name = "b", max_tasks = 1L)
+  a <- crew_mirai_controller_callr(name = "a", idle_time = 360)
+  b <- crew_mirai_controller_callr(
+    name = "b",
+    max_tasks = 1L,
+    idle_time = 360
+  )
   x <- crew_multi_controller(a, b)
   on.exit(x$terminate())
   x$connect()
@@ -95,7 +107,11 @@ crew_test("crew_multi_controller() launch method", {
 
 crew_test("crew_multi_controller() scale method", {
   skip_on_cran()
-  a <- crew_mirai_controller_callr(name = "a", scale_method = "single")
+  a <- crew_mirai_controller_callr(
+    name = "a",
+    scale_method = "single",
+    idle_time = 360
+  )
   x <- crew_multi_controller(a)
   on.exit(x$terminate())
   x$connect()

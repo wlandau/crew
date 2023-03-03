@@ -5,13 +5,30 @@
 #'   on `mirai`-based infrastructure.
 #' @param router An `R6` router object created by [crew_mirai_router()].
 #' @param launcher An `R6` launcher object created by one of the
-#'   `crew_mirai_launcher_*()` functions.
+#'   `crew_mirai_launcher_*()` functions such as [crew_mirai_launcher_callr()].
+#' @param scale_method Character of length 1, name of the method for
+#'   automatically scaling workers to meet demand. `NULL` to default to
+#'   `"demand"`. Possible values include the following:
+#'   * `"demand"`: just after pushing a new task in `push()`, launch
+#'     `min(n, max(0, t - w))` workers, where `n` is the maximum number of
+#'     workers, `t` is the number of queued tasks, and `w` is the current
+#'     number of workers already running. In other words, scale up the
+#'     number of workers to meet the current demand.
+#'   * `"single"`: just after pushing a new task in `push()`, launch
+#'     a single worker if demand `min(n, max(0, t - w))` is greater than 0.
+#'   * `"none"`: do not auto-scale at all.
 #' @examples
 #' # TBD
-crew_mirai_controller <- function(router, launcher) {
+crew_mirai_controller <- function(
+  router,
+  launcher,
+  scale_method = NULL
+) {
+  scale_method <- scale_method %|||% scale_methods_mirai
   controller <- crew_class_mirai_controller$new(
     router = router,
-    launcher = launcher
+    launcher = launcher,
+    scale_method = scale_method
   )
   controller$validate()
   controller
@@ -29,12 +46,10 @@ crew_class_mirai_controller <- R6::R6Class(
     router = NULL,
     #' @field launcher Launcher object.
     launcher = NULL,
-    #' @field tasks Data frame of tasks in the queue.
-    tasks = tibble::tibble(
-      name = character(0),
-      command = character(0),
-      handle = list()
-    ),
+    #' @field queue List of tasks in the queue.
+    queue = list(),
+    #' @field results List of finished tasks
+    results = list(),
     #' @description `mirai` controller constructor.
     #' @return An `R6` object with the controller object.
     #' @param router Router object. See [crew_mirai_controller()].
@@ -47,18 +62,59 @@ crew_class_mirai_controller <- R6::R6Class(
       self$launcher <- launcher
       invisible()
     },
-    #' @description Disconnect at garbage collection time.
-    #' @return `NULL` (invisibly).
-    finalize = function() {
-      self$router$disconnect()
-    },
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
     validate = function() {
-      true(!is.null(self$router))
-      true(!is.null(self$launcher))
+      true(is.data.frame(self$queue))
+      true(is.data.frame(self$results))
+      true(inherits(self$router, "crew_class_mirai_router"))
+      true(grepl("^crew_class_mirai_launcher", class(self$launcher)))
       self$router$validate()
       self$launcher$validate()
+      invisible()
+    },
+    #' @description Check for done tasks and move the results to
+    #'   the results list.
+    #' @return `NULL` (invisibly). Removes elements from the `queue`
+    #'   list as applicable and moves them to the `results` list.
+    collect = function() {
+      done <- integer(0L)
+      for (index in seq_along(self$queue)) {
+        task <- self$queue[[index]]
+        if (!unresolved(task)) {
+          result <- task$handle$data
+          if (!inherits(result, "crew_monad")) {
+            result <- monad_init(
+              command = task$command,
+              error = utils::capture.output(print(result), type = "output")
+            )
+          }
+          result$name <- task$name
+          self$results[[length(self$results) + 1L]] <- result
+          done <- c(done, index)
+        }
+      }
+      self$queue[done] <- NULL
+      invisible()
+    },
+    #' @description Automatically scale up the number of workers if needed.
+    #' @details This method is called during `push()`, and the method for
+    #'   scaling up workers is governed by the `scale_method`
+    #'   argument of [crew_mirai_controller()]. It is not meant to be called
+    #'   manually. If called manually, it is recommended to call `collect()`
+    #'   first so `scale()` can accurately assess the demand.
+    #'   For finer control of the number of workers launched,
+    #'   call `$launcher$launch()` on the controller with the exact desired
+    #'   number of workers.
+    #' @return `NULL` (invisibly).
+    scale = function() {
+      demand <- max(0L, length(self$queue) - self$launcher$running())
+      n <- switch(
+        self$scale_method,
+        demand = demand,
+        single = min(1L, demand),
+      ) %|||% 0L
+      self$launcher$launch(n = n)
       invisible()
     },
     #' @description Push a task to the head of the task list.
@@ -68,45 +124,62 @@ crew_class_mirai_controller <- R6::R6Class(
     #' @param timeout Time in milliseconds for the task.
     #' @param name Optional name of the task. Replaced with a random name
     #'   if `NULL` or in conflict with an existing name in the task list.
-    push = function(command, args = list(), timeout = NULL, name = NULL) {
-      message <- "router must be connected to push tasks."
+    #' @param scale Logical, whether to automatically scale workers to meet
+    #'   demand. If `TRUE`, then `collect()` runs first so demand can be
+    #'   properly assessed before scaling.
+    push = function(
+      command,
+      args = list(),
+      timeout = NULL,
+      name = NULL,
+      scale = TRUE
+    ) {
+      true(scale, isTRUE(.) || isFALSE(.))
+      message <- "router must be connected to push tasks to the queue."
       true(self$connected(), message = message)
-      while (is.null(name) || name %in% self$tasks$name) name <- random_name()
+      while (is.null(name) || name %in% self$queue$name) name <- random_name()
       monad <- as.call(list(quote(crew::crew_eval), substitute(command)))
       handle <- mirai::mirai(.expr = monad, .args = args, .timeout = timeout)
-      tibble::add_row(
-        self$tasks,
+      command <- deparse_safe(command)
+      task <- tibble::tibble(
         name = name,
-        command = deparse_safe(command),
-        handle = handle,
-        .before = 1L
+        command = command,
+        handle = list(handle)
       )
+      self$queue[[length(self$queue) + 1L]] <- task
+      if (scale) {
+        self$collect()
+        self$scale()
+      }
       invisible()
     },
-    #' @description Pop a completed task from as near as possible to the tail
-    #'   of the task list.
+    #' @description Pop a completed task from the results data frame.
     #' @return If there is a completed task available to collect, the return
-    #'   value is a list object with the results, warnings, and errors.
-    #'   Otherwise, if there are no tasks or if all tasks are still running,
+    #'   value is a one-row data frame with the results, warnings, and errors.
+    #'   Otherwise, if there are no results available to collect,
     #'   the return value is `NULL`.
-    pop = function() {
-      for (index in rev(seq_len(nrow(self$tasks)))) {
-        task <- self$tasks[[index]]
-        data <- task$handle$data
-        if (!inherits(data, "unresolvedValue")) {
-          if (inherits(data, "crew_monad")) {
-            out <- monad_mutate(monad = data, name = task$name)
-          } else {
-            out <- monad_init(
-              name = task$name,
-              command = task$command,
-              error = utils::capture.output(print(data), type = "output")
-            )
-          }
-          return(out)
-        }
+    #' @param collect Whether to run the `collect()` method to collect all
+    #'   available results before calling `pop()`.
+    pop = function(collect = TRUE) {
+      true(collect, isTRUE(.) || isFALSE(.))
+      if (collect) {
+        self$collect()
       }
-      NULL
+      out <- NULL
+      if (length(self$results) > 0L) {
+        out <- self$results[[1]]
+        self$results[[1]] <- NULL
+      }
+      out
+    },
+    #' @description Terminate the workers and disconnect the router.
+    #' @return `NULL` (invisibly).
+    terminate = function() {
+      self$launcher$terminate()
+      self$router$disconnect()
+      invisible()
     }
   )
 )
+
+scale_methods_mirai <- c("demand", "single", "none")

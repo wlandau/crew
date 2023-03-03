@@ -4,13 +4,27 @@
 \alias{crew_mirai_controller}
 \title{Create a \code{mirai} controller.}
 \usage{
-crew_mirai_controller(router, launcher)
+crew_mirai_controller(router, launcher, scale_method = NULL)
 }
 \arguments{
 \item{router}{An \code{R6} router object created by \code{\link[=crew_mirai_router]{crew_mirai_router()}}.}
 
 \item{launcher}{An \code{R6} launcher object created by one of the
-\verb{crew_mirai_launcher_*()} functions.}
+\verb{crew_mirai_launcher_*()} functions such as \code{\link[=crew_mirai_launcher_callr]{crew_mirai_launcher_callr()}}.}
+
+\item{scale_method}{Character of length 1, name of the method for
+automatically scaling workers to meet demand. \code{NULL} to default to
+\code{"demand"}. Possible values include the following:
+\itemize{
+\item \code{"demand"}: just after pushing a new task in \code{push()}, launch
+\code{min(n, max(0, t - w))} workers, where \code{n} is the maximum number of
+workers, \code{t} is the number of queued tasks, and \code{w} is the current
+number of workers already running. In other words, scale up the
+number of workers to meet the current demand.
+\item \code{"single"}: just after pushing a new task in \code{push()}, launch
+a single worker if demand \code{min(n, max(0, t - w))} is greater than 0.
+\item \code{"none"}: do not auto-scale at all.
+}}
 }
 \description{
 Create an \code{R6} object to submit tasks and launch workers

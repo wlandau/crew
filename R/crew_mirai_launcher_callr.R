@@ -56,7 +56,7 @@ crew_mirai_launcher_callr <- function(
 #' @description `R6` class to launch and manage `mirai` workers.
 #' @details See [crew_mirai_launcher_callr()].
 crew_class_mirai_launcher_callr <- R6::R6Class(
-  classname = "crew_class_mirai_launcher_callr",
+  classname = c("crew_class_mirai_launcher_callr"),
   cloneable = FALSE,
   public = list(
     #' @field sockets TCP sockets for listening to the workers.

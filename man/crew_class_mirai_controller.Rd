@@ -17,7 +17,9 @@ See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.
 
 \item{\code{launcher}}{Launcher object.}
 
-\item{\code{tasks}}{Data frame of tasks in the queue.}
+\item{\code{queue}}{List of tasks in the queue.}
+
+\item{\code{results}}{List of finished tasks}
 }
 \if{html}{\out{</div>}}
 }
@@ -25,10 +27,12 @@ See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-crew_class_mirai_controller-new}{\code{crew_class_mirai_controller$new()}}
-\item \href{#method-crew_class_mirai_controller-finalize}{\code{crew_class_mirai_controller$finalize()}}
 \item \href{#method-crew_class_mirai_controller-validate}{\code{crew_class_mirai_controller$validate()}}
+\item \href{#method-crew_class_mirai_controller-collect}{\code{crew_class_mirai_controller$collect()}}
+\item \href{#method-crew_class_mirai_controller-scale}{\code{crew_class_mirai_controller$scale()}}
 \item \href{#method-crew_class_mirai_controller-push}{\code{crew_class_mirai_controller$push()}}
 \item \href{#method-crew_class_mirai_controller-pop}{\code{crew_class_mirai_controller$pop()}}
+\item \href{#method-crew_class_mirai_controller-terminate}{\code{crew_class_mirai_controller$terminate()}}
 \item \href{#method-crew_class_mirai_controller-clone}{\code{crew_class_mirai_controller$clone()}}
 }
 }
@@ -55,12 +59,12 @@ An \code{R6} object with the controller object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_mirai_controller-finalize"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_mirai_controller-finalize}{}}}
-\subsection{Method \code{finalize()}}{
-Disconnect at garbage collection time.
+\if{html}{\out{<a id="method-crew_class_mirai_controller-validate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_controller-validate}{}}}
+\subsection{Method \code{validate()}}{
+Validate the router.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$finalize()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$validate()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -68,12 +72,38 @@ Disconnect at garbage collection time.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_mirai_controller-validate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_mirai_controller-validate}{}}}
-\subsection{Method \code{validate()}}{
-Validate the router.
+\if{html}{\out{<a id="method-crew_class_mirai_controller-collect"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_controller-collect}{}}}
+\subsection{Method \code{collect()}}{
+Check for done tasks and move the results to
+the results list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$validate()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$collect()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly). Removes elements from the \code{queue}
+list as applicable and moves them to the \code{results} list.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_mirai_controller-scale"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_controller-scale}{}}}
+\subsection{Method \code{scale()}}{
+Automatically scale up the number of workers if needed.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$scale()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+This method is called during \code{push()}, and the method for
+scaling up workers is governed by the \code{scale_method}
+argument of \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}. It is not meant to be called
+manually. If called manually, it is recommended to call \code{collect()}
+first so \code{scale()} can accurately assess the demand.
+For finer control of the number of workers launched,
+call \verb{$launcher$launch()} on the controller with the exact desired
+number of workers.
 }
 
 \subsection{Returns}{
@@ -90,7 +120,8 @@ Push a task to the head of the task list.
   command,
   args = list(),
   timeout = NULL,
-  name = NULL
+  name = NULL,
+  scale = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -105,6 +136,10 @@ Push a task to the head of the task list.
 
 \item{\code{name}}{Optional name of the task. Replaced with a random name
 if \code{NULL} or in conflict with an existing name in the task list.}
+
+\item{\code{scale}}{Logical, whether to automatically scale workers to meet
+demand. If \code{TRUE}, then \code{collect()} runs first so demand can be
+properly assessed before scaling.}
 }
 \if{html}{\out{</div>}}
 }
@@ -116,17 +151,37 @@ if \code{NULL} or in conflict with an existing name in the task list.}
 \if{html}{\out{<a id="method-crew_class_mirai_controller-pop"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_mirai_controller-pop}{}}}
 \subsection{Method \code{pop()}}{
-Pop a completed task from as near as possible to the tail
-of the task list.
+Pop a completed task from the results data frame.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$pop()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$pop(collect = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{collect}}{Whether to run the \code{collect()} method to collect all
+available results before calling \code{pop()}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+If there is a completed task available to collect, the return
+value is a one-row data frame with the results, warnings, and errors.
+Otherwise, if there are no results available to collect,
+the return value is \code{NULL}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_mirai_controller-terminate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_mirai_controller-terminate}{}}}
+\subsection{Method \code{terminate()}}{
+Terminate the workers and disconnect the router.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_mirai_controller$terminate()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-If there is a completed task available to collect, the return
-value is a list object with the results, warnings, and errors.
-Otherwise, if there are no tasks or if all tasks are still running,
-the return value is \code{NULL}.
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}

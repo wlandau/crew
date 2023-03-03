@@ -1,6 +1,6 @@
 #' @title Create a `mirai` controller with a callr launcher.
 #' @export
-#' @family mirai
+#' @family controllers
 #' @description Create an `R6` object to submit tasks and launch workers
 #'   with a `mirai` task queue and `callr` workers
 #' @inheritParams crew_mirai_router

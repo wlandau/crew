@@ -90,12 +90,8 @@ Create an \code{R6} object to submit tasks and launch workers
 with a \code{mirai} task queue and \code{callr} workers
 }
 \seealso{
-Other mirai: 
-\code{\link{crew_class_mirai_controller}},
-\code{\link{crew_class_mirai_launcher_callr}},
-\code{\link{crew_class_mirai_router}},
-\code{\link{crew_mirai_controller}()},
-\code{\link{crew_mirai_launcher_callr}()},
-\code{\link{crew_mirai_router}()}
+Other controllers: 
+\code{\link{crew_class_multi_controller}},
+\code{\link{crew_multi_controller}()}
 }
-\concept{mirai}
+\concept{controllers}

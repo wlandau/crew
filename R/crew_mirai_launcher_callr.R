@@ -168,11 +168,11 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
           func = \(...) do.call(what = mirai::server, args = list(...)),
           args = list(
             url = self$sockets[.x],
-            idletime = self$idle_time,
-            walltime = self$wall_time,
+            idletime = self$idle_time / 1000,
+            walltime = self$wall_time / 1000,
             tasklimit = self$max_tasks,
-            pollfreqh = self$poll_high,
-            pollfreql = self$poll_low,
+            pollfreqh = self$poll_high / 1000,
+            pollfreql = self$poll_low / 1000,
             asyncdial = self$async_dial
           )
         )

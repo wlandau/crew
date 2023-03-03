@@ -71,8 +71,8 @@ crew_class_mirai_controller <- R6::R6Class(
     validate = function() {
       true(is.list(self$queue))
       true(is.list(self$results))
-      true(inherits(self$router, "crew_class_mirai_router"))
-      true(any(grepl("^crew_class_mirai_launcher", class(self$launcher))))
+      true(is_router(self$router))
+      true(is_launcher(self$launcher))
       self$router$validate()
       self$launcher$validate()
       invisible()
@@ -238,3 +238,9 @@ crew_class_mirai_controller <- R6::R6Class(
 )
 
 scale_methods_mirai <- c("demand", "single", "none")
+
+#' @export
+#' @keywords internal
+is_controller.crew_class_mirai_controller <- function(x) {
+  TRUE
+}

@@ -191,3 +191,9 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
 process_running <- function(process) {
   inherits(process, "r_process") && process$is_alive()
 }
+
+#' @export
+#' @keywords internal
+is_launcher.crew_class_mirai_launcher_callr <- function(x) {
+  TRUE
+}

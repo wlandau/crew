@@ -207,3 +207,9 @@ crew_class_mirai_router <- R6::R6Class(
     }
   )
 )
+
+#' @export
+#' @keywords internal
+is_router.crew_class_mirai_router <- function(x) {
+  TRUE
+}

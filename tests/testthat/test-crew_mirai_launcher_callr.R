@@ -23,7 +23,8 @@ crew_test("crew_mirai_launcher_callr() can run a task on a worker", {
   expect_equal(router$sockets_occupied(), character(0))
 })
 
-crew_test("crew_mirai_launcher_callr() can run a task and then exit worker", {
+crew_test("crew_mirai_launcher_callr() can run a task and time out a worker", {
+  skip_on_cran()
   router <- crew_mirai_router()
   launcher <- crew_mirai_launcher_callr(max_tasks = 1L)
   router$connect()
@@ -40,5 +41,26 @@ crew_test("crew_mirai_launcher_callr() can run a task and then exit worker", {
   expect_equal(m$data, launcher$workers[[1]]$get_pid())
   crew::crew_wait(~!launcher$running(), timeout = 5, wait = 0.1)
   expect_equal(router$sockets_occupied(), character(0))
+  router$disconnect()
+})
+
+crew_test("crew_mirai_launcher_callr() can run a task and end a worker", {
+  skip_on_cran()
+  router <- crew_mirai_router()
+  launcher <- crew_mirai_launcher_callr(max_tasks = 1L)
+  router$connect()
+  launcher$populate(sockets = router$sockets_listening())
+  launcher$launch(n = 1L)
+  crew::crew_wait(
+    ~identical(launcher$running(), 1L),
+    timeout = 5,
+    wait = 0.1
+  )
+  launcher$terminate()
+  crew::crew_wait(
+    ~identical(launcher$running(), 0L),
+    timeout = 5,
+    wait = 0.1
+  )
   router$disconnect()
 })

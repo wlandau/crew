@@ -16,13 +16,6 @@ deparse_direct <- function(...) {
   produce_deparse_direct()(...)
 }
 
-embody_expr <- function(expr) {
-  fun <- function() {
-  }
-  body(fun) <- expr
-  fun
-}
-
 produce_deparse_direct <- function() {
   .deparseOpts <- identity
   environment(deparse) <- environment()

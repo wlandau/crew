@@ -1,19 +1,4 @@
 destination: docs/
-navbar:
-  title: crew
-  type: default
-  left:
-  - icon: fa-home fa-lg
-    href: index.html
-  - text: Functions
-    href: reference/index.html
-  - text: Usage
-    href: articles/usage.html
-  - text: News
-    href: news/index.html
-  right:
-  - icon: fa-github fa-lg
-    href: https://github.com/ropensci/targets
 reference:
 - title: Help
   contents:
@@ -22,7 +7,7 @@ reference:
   contents:
   - '`crew_multi_controller`'
   - '`crew_mirai_controller_callr`'
-- title: Multi-controller classes
+- title: General classes
   contents:
   - '`crew_class_multi_controller`'
 - title: mirai classes

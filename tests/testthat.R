@@ -2,4 +2,6 @@ library(testthat)
 library(crew)
 
 test_check("crew")
-Sys.sleep(3)
+if (identical(tolower(Sys.info()[["sysname"]]), "windows")) {
+  Sys.sleep(3)
+}

@@ -112,39 +112,39 @@ crew_class_multi_controller <- R6::R6Class(
     },
     #' @description Connect one or more controllers.
     #' @return `NULL` (invisibly).
-    #' @param names Character vector of controller names.
+    #' @param controllers Character vector of controller names.
     #'   If `NULL`, it defaults to all controllers in the list.
-    connect = function(names = NULL) {
-      control <- self$controllers[private$controller_names(names)]
+    connect = function(controllers = NULL) {
+      control <- self$controllers[private$controller_names(controllers)]
       walk(control, ~.x$connect())
     },
     #' @description Launch one or more workers on one or more controllers.
     #' @return `NULL` (invisibly).
     #' @param n Number of workers to launch in each controller selected.
-    #' @param names Character vector of controller names.
+    #' @param controllers Character vector of controller names.
     #'   If `NULL`, it defaults to all controllers in the list.
-    launch = function(n = 1L, names = NULL) {
-      control <- self$controllers[private$controller_names(names)]
+    launch = function(n = 1L, controllers = NULL) {
+      control <- self$controllers[private$controller_names(controllers)]
       walk(control, ~.x$launch(n = n))
     },
     #' @description Check for done tasks and move the results to
     #'   the results list.
     #' @return `NULL` (invisibly). Removes elements from the `queue`
     #'   list as applicable and moves them to the `results` list.
-    #' @param names Character vector of controller names.
+    #' @param controllers Character vector of controller names.
     #'   If `NULL`, it defaults to all controllers in the list.
-    collect = function(names = NULL) {
-      control <- self$controllers[private$controller_names(names)]
+    collect = function(controllers = NULL) {
+      control <- self$controllers[private$controller_names(controllers)]
       walk(control, ~.x$collect())
     },
     #' @description Automatically scale up the number of workers if needed
     #'   in one or more controller objects.
     #' @details See the `scale()` method in individual controller classes.
     #' @return `NULL` (invisibly).
-    #' @param names Character vector of controller names.
+    #' @param controllers Character vector of controller names.
     #'   If `NULL`, it defaults to all controllers in the list.
-    scale = function(names = NULL) {
-      control <- self$controllers[private$controller_names(names)]
+    scale = function(controllers = NULL) {
+      control <- self$controllers[private$controller_names(controllers)]
       walk(control, ~.x$scale())
     },
     #' @description Push a task to the head of the task list.
@@ -186,10 +186,10 @@ crew_class_multi_controller <- R6::R6Class(
     #'   the return value is `NULL`.
     #' @param collect Whether to run the `collect()` method to collect all
     #'   available results before calling `pop()`.
-    #' @param names Names of the controllers (in order) to look for
+    #' @param controllers Names of the controllers (in order) to look for
     #'   completed tasks.
-    pop = function(collect = TRUE, names = NULL) {
-      control <- self$controllers[private$controller_names(names)]
+    pop = function(collect = TRUE, controllers = NULL) {
+      control <- self$controllers[private$controller_names(controllers)]
       for (controller in control) {
         if (collect) {
           controller$collect()
@@ -207,10 +207,9 @@ crew_class_multi_controller <- R6::R6Class(
     #'   results to become available.
     #' @param wait Number of seconds to wait between polling intervals
     #'   while checking for results.
-    #' @param names Names of the controllers (in order) to look for
-    #'   completed tasks.
-    wait = function(timeout = Inf, wait = 0.1, names = NULL) {
-      control <- self$controllers[private$controller_names(names)]
+    #' @param controllers Names of the controllers to wait for.
+    wait = function(timeout = Inf, wait = 0.1, controllers = NULL) {
+      control <- self$controllers[private$controller_names(controllers)]
       crew_wait(
         fun = ~{
           for (controller in control) {
@@ -229,10 +228,9 @@ crew_class_multi_controller <- R6::R6Class(
     #' @description Terminate the workers and disconnect the router
     #'   for one or more controllers.
     #' @return `NULL` (invisibly).
-    #' @param names Names of the controllers (in order) to look for
-    #'   completed tasks.
-    terminate = function(names = NULL) {
-      control <- self$controllers[private$controller_names(names)]
+    #' @param controllers Names of the controllers to terminate.
+    terminate = function(controllers = NULL) {
+      control <- self$controllers[private$controller_names(controllers)]
       walk(control, ~.x$terminate())
     }
   )

@@ -136,13 +136,13 @@ Validate the router.
 \subsection{Method \code{connect()}}{
 Connect one or more controllers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$connect(names = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$connect(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{names}}{Character vector of controller names.
+\item{\code{controllers}}{Character vector of controller names.
 If \code{NULL}, it defaults to all controllers in the list.}
 }
 \if{html}{\out{</div>}}
@@ -157,7 +157,7 @@ If \code{NULL}, it defaults to all controllers in the list.}
 \subsection{Method \code{launch()}}{
 Launch one or more workers on one or more controllers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$launch(n = 1L, names = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$launch(n = 1L, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -165,7 +165,7 @@ Launch one or more workers on one or more controllers.
 \describe{
 \item{\code{n}}{Number of workers to launch in each controller selected.}
 
-\item{\code{names}}{Character vector of controller names.
+\item{\code{controllers}}{Character vector of controller names.
 If \code{NULL}, it defaults to all controllers in the list.}
 }
 \if{html}{\out{</div>}}
@@ -181,13 +181,13 @@ If \code{NULL}, it defaults to all controllers in the list.}
 Check for done tasks and move the results to
 the results list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$collect(names = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$collect(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{names}}{Character vector of controller names.
+\item{\code{controllers}}{Character vector of controller names.
 If \code{NULL}, it defaults to all controllers in the list.}
 }
 \if{html}{\out{</div>}}
@@ -204,13 +204,13 @@ list as applicable and moves them to the \code{results} list.
 Automatically scale up the number of workers if needed
 in one or more controller objects.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$scale(names = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$scale(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{names}}{Character vector of controller names.
+\item{\code{controllers}}{Character vector of controller names.
 If \code{NULL}, it defaults to all controllers in the list.}
 }
 \if{html}{\out{</div>}}
@@ -271,7 +271,7 @@ first controller in the list.}
 \subsection{Method \code{pop()}}{
 Pop a completed task from the results data frame.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$pop(collect = TRUE, names = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$pop(collect = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -280,7 +280,7 @@ Pop a completed task from the results data frame.
 \item{\code{collect}}{Whether to run the \code{collect()} method to collect all
 available results before calling \code{pop()}.}
 
-\item{\code{names}}{Names of the controllers (in order) to look for
+\item{\code{controllers}}{Names of the controllers (in order) to look for
 completed tasks.}
 }
 \if{html}{\out{</div>}}
@@ -298,7 +298,7 @@ the return value is \code{NULL}.
 \subsection{Method \code{wait()}}{
 Wait for a result to be ready.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$wait(timeout = Inf, wait = 0.1, names = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$wait(timeout = Inf, wait = 0.1, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -310,8 +310,7 @@ results to become available.}
 \item{\code{wait}}{Number of seconds to wait between polling intervals
 while checking for results.}
 
-\item{\code{names}}{Names of the controllers (in order) to look for
-completed tasks.}
+\item{\code{controllers}}{Names of the controllers to wait for.}
 }
 \if{html}{\out{</div>}}
 }
@@ -326,14 +325,13 @@ completed tasks.}
 Terminate the workers and disconnect the router
 for one or more controllers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$terminate(names = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_multi_controller$terminate(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{names}}{Names of the controllers (in order) to look for
-completed tasks.}
+\item{\code{controllers}}{Names of the controllers to terminate.}
 }
 \if{html}{\out{</div>}}
 }

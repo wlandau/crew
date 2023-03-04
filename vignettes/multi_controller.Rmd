@@ -45,10 +45,10 @@ You can choose which worker pool to receive tasks.
 controller$push(name = "my task", command = sqrt(4), controller = "transient")
 ```
 
-The multi-controller also supports global methods for `wait()`, `pop()`, and `terminate()`. These methods operate on all controllers at once by default, but the `names` argument allows you to select a subset of controllers to act on.
+The multi-controller also supports global methods for `wait()`, `pop()`, and `terminate()`. These methods operate on all controllers at once by default, but the `controllers` argument allows you to select a subset of controllers to act on.
 
 ```{r}
-controller$wait(controller = "transient")
+controller$wait(controllers = "transient")
 controller$pop()
 #> # A tibble: 1 × 7
 #>   name    command result    seconds error traceback warnings

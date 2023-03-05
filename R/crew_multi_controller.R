@@ -102,7 +102,7 @@ crew_class_multi_controller <- R6::R6Class(
     #' @return `NULL` (invisibly).
     validate = function() {
       true(
-        map_lgl(self$controllers, is_controller),
+        map_lgl(self$controllers, ~inherits(.x, "crew_class_controller")),
         message = "All objects in a multi-controller must be controllers."
       )
       out <- unname(map_chr(self$controllers, ~.x$router$name))

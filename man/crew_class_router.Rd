@@ -14,7 +14,7 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$sockets_listening() # character(0)
 router$connect()
-router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
+router$sockets_listening() # "ws://xx.xx.xx:xxxxx/x"
 router$disconnect()
 router$sockets_listening() # character(0)
 }
@@ -27,7 +27,7 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$sockets_listening() # character(0)
 router$connect()
-router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
+router$sockets_listening() # "ws://xx.xx.xx:xxxxx/x"
 router$disconnect()
 router$sockets_listening() # character(0)
 }
@@ -42,15 +42,13 @@ Other routers:
 \describe{
 \item{\code{name}}{Name of the router.}
 
-\item{\code{host}}{Local IP address.}
+\item{\code{sockets}}{Websockets to listen for workers.}
 
-\item{\code{ports}}{TCP ports to listen to workers.}
+\item{\code{router_timeout}}{Timeout in seconds for checking the \code{mirai}
+client connection.}
 
-\item{\code{router_timeout}}{Timeout in seconds
-(dis)connecting the \code{mirai} router.}
-
-\item{\code{router_wait}}{Polling interval in seconds checking if the \code{mirai}
-router successfully (dis)connected.}
+\item{\code{router_wait}}{Polling interval in seconds for checking the
+\code{mirai} client connection.}
 }
 \if{html}{\out{</div>}}
 }
@@ -59,10 +57,9 @@ router successfully (dis)connected.}
 \itemize{
 \item \href{#method-crew_class_router-new}{\code{crew_class_router$new()}}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
-\item \href{#method-crew_class_router-sockets_listening}{\code{crew_class_router$sockets_listening()}}
-\item \href{#method-crew_class_router-sockets_occupied}{\code{crew_class_router$sockets_occupied()}}
-\item \href{#method-crew_class_router-sockets_available}{\code{crew_class_router$sockets_available()}}
-\item \href{#method-crew_class_router-is_connected}{\code{crew_class_router$is_connected()}}
+\item \href{#method-crew_class_router-occupied}{\code{crew_class_router$occupied()}}
+\item \href{#method-crew_class_router-unoccupied}{\code{crew_class_router$unoccupied()}}
+\item \href{#method-crew_class_router-connected}{\code{crew_class_router$connected()}}
 \item \href{#method-crew_class_router-connect}{\code{crew_class_router$connect()}}
 \item \href{#method-crew_class_router-disconnect}{\code{crew_class_router$disconnect()}}
 }
@@ -75,8 +72,7 @@ router successfully (dis)connected.}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_router$new(
   name = NULL,
-  host = NULL,
-  ports = NULL,
+  sockets = NULL,
   router_timeout = NULL,
   router_wait = NULL
 )}\if{html}{\out{</div>}}
@@ -87,9 +83,7 @@ router successfully (dis)connected.}
 \describe{
 \item{\code{name}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{host}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
-
-\item{\code{ports}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+\item{\code{sockets}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{router_timeout}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
@@ -106,7 +100,7 @@ An \code{R6} object with the router.
 router <- crew_router()
 router$sockets_listening() # character(0)
 router$connect()
-router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
+router$sockets_listening() # "ws://xx.xx.xx:xxxxx/x"
 router$disconnect()
 router$sockets_listening() # character(0)
 }
@@ -130,68 +124,46 @@ Validate the router.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-sockets_listening"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-sockets_listening}{}}}
-\subsection{Method \code{sockets_listening()}}{
-Get all sockets
+\if{html}{\out{<a id="method-crew_class_router-occupied"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-occupied}{}}}
+\subsection{Method \code{occupied()}}{
+Get occupied worker sockets.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$sockets_listening()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$occupied()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-Character vector of all sockets if connected, or
-\code{character(0)} if the router is not connected
-or polling the sockets is unsuccessful
-(which may happen if the sockets are busy at the moment).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-sockets_occupied"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-sockets_occupied}{}}}
-\subsection{Method \code{sockets_occupied()}}{
-Show worker connections.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$sockets_occupied()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Character vector of TCP sockets where workers
+Character vector of websockets sockets where workers
 are currently dialed in.
-Returns \code{character(0)} if the router is not connected
-or polling the sockets is unsuccessful
-(which may happen if the sockets are busy at the moment).
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-sockets_available"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-sockets_available}{}}}
-\subsection{Method \code{sockets_available()}}{
-Get TCP sockets that are available for workers to dial in.
+\if{html}{\out{<a id="method-crew_class_router-unoccupied"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-unoccupied}{}}}
+\subsection{Method \code{unoccupied()}}{
+Get worker sockets that are unoccupied and
+available for workers to dial in.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$sockets_available()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$unoccupied()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-Character string with available TCP sockets.
-A return value of \code{character(0)} may indicate that
-the router is not connected
-or polling the sockets is unsuccessful
-(which may happen if the sockets are busy at the moment).
+Character string with available websockets.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-is_connected"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-is_connected}{}}}
-\subsection{Method \code{is_connected()}}{
+\if{html}{\out{<a id="method-crew_class_router-connected"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-connected}{}}}
+\subsection{Method \code{connected()}}{
 Check if the router is connected.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$is_connected()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$connected()}\if{html}{\out{</div>}}
 }
 
 \subsection{Details}{
 This method may stall and time out if there are
 tasks in the queue. Methods \code{connect()} and \code{disconnect()}
-call \code{is_connected()} to manage the connection before
+call \code{connected()} to manage the connection before
 and after the entire workload, respectively.
 }
 

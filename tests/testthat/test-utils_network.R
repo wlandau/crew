@@ -13,3 +13,12 @@ crew_test("local_ipv4()", {
   expect_true(all(nzchar(split)))
   expect_equal(length(split), 4L)
 })
+
+crew_test("free_port()", {
+  port <- free_port()
+  expect_true(is.integer(port))
+  expect_true(length(port) == 1L)
+  expect_false(anyNA(port))
+  expect_true(port >= 49152L)
+  expect_true(port <= 65535L)
+})

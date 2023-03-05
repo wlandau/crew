@@ -19,7 +19,7 @@ crew_controller_callr <- function(
   name = NULL,
   workers = 1L,
   host = NULL,
-  ports = NULL,
+  port = NULL,
   router_timeout = 5,
   router_wait = 0.1,
   idle_time = Inf,
@@ -36,7 +36,7 @@ crew_controller_callr <- function(
     name = name,
     workers = workers,
     host = host,
-    ports = ports,
+    port = port,
     router_timeout = router_timeout,
     router_wait = router_wait
   )

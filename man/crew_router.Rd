@@ -8,56 +8,41 @@ crew_router(
   name = NULL,
   workers = 1L,
   host = NULL,
-  ports = NULL,
+  port = NULL,
   router_timeout = 5,
   router_wait = 0.1
 )
 }
 \arguments{
-\item{name}{Name of the \code{mirai} router.
-Defaults to a string from \code{ids::proquint()}.}
+\item{name}{Name of the router object. If \code{NULL}, a name is automatically
+generated.}
 
-\item{workers}{Integer, maximum number of parallel workers to run.
-\code{crew} will reserve one ephemeral port for each worker. See the
-Ports section for an important cautionary note.}
+\item{workers}{Integer, maximum number of parallel workers to run.}
 
 \item{host}{IP address of the client process that the workers can dial
 into inside the local network.
 If a character string, the router uses the specified IP address.
 If \code{NULL}, the IP address defaults to \code{getip::getip(type = "local")}.}
 
-\item{ports}{Optional integer vector of TCP port numbers.
-Supersedes \code{workers} if supplied. Except for 0,
-which defers to NNG to automatically assign a port, each unique port
-value corresponds to a local port where a worker will dial in
-to accept tasks.}
+\item{port}{TCP port to listen for the workers. If \code{NULL},
+then an available port is supplied through \code{parallelly::freePort()}.}
 
 \item{router_timeout}{Number of seconds to time out waiting for the \code{mirai}
-router to (dis)connect.}
+client to (dis)connect.}
 
 \item{router_wait}{Number of seconds to wait between iterations checking
-if the \code{mirai} router is (dis)connected.}
+if the \code{mirai} client is (dis)connected.}
 }
 \description{
-Create an \code{R6} object to route tasks to workers
-on the local network.
+Create an \code{R6} object to manage the \code{mirai} task scheduler
+client.
 }
-\section{Ports}{
-
-In the \code{mirai}-based task scheduling in \code{crew}, each parallel worker
-dials into a different TCP port on the local machine.
-If you launch hundreds of workers, then hundreds of ports will
-not be available to other users or processes.
-Large numbers of workers on shared machines or clusters may
-seriously disrupt the tasks of other users, so please be careful.
-}
-
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$sockets_listening() # character(0)
 router$connect()
-router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
+router$sockets_listening() # "ws://xx.xx.xx:xxxxx/x"
 router$disconnect()
 router$sockets_listening() # character(0)
 }

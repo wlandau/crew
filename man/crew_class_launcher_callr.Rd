@@ -48,7 +48,7 @@ Other launchers:
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{sockets}}{TCP sockets for listening to the workers.}
+\item{\code{sockets}}{Websockets for listening to the workers.}
 
 \item{\code{workers}}{List of \code{callr::r_bg()} handles for workers.
 The handle is \code{NA} if it is not yet called.}
@@ -77,7 +77,6 @@ The handle is \code{NA} if it is not yet called.}
 \item \href{#method-crew_class_launcher_callr-new}{\code{crew_class_launcher_callr$new()}}
 \item \href{#method-crew_class_launcher_callr-validate}{\code{crew_class_launcher_callr$validate()}}
 \item \href{#method-crew_class_launcher_callr-populate}{\code{crew_class_launcher_callr$populate()}}
-\item \href{#method-crew_class_launcher_callr-running}{\code{crew_class_launcher_callr$running()}}
 \item \href{#method-crew_class_launcher_callr-launch}{\code{crew_class_launcher_callr$launch()}}
 \item \href{#method-crew_class_launcher_callr-terminate}{\code{crew_class_launcher_callr$terminate()}}
 }
@@ -175,26 +174,13 @@ Populate workers.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{sockets}}{Character vector of local TCP sockets that the workers
+\item{\code{sockets}}{Character vector of local websockets that the workers
 will use to dial in to receive tasks.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher_callr-running"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher_callr-running}{}}}
-\subsection{Method \code{running()}}{
-Count the number of running workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$running()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Number of running workers.
 }
 }
 \if{html}{\out{<hr>}}

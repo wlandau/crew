@@ -81,7 +81,7 @@ crew_class_launcher_callr <- R6::R6Class(
   classname = c("crew_class_launcher_callr"),
   cloneable = FALSE,
   public = list(
-    #' @field sockets TCP sockets for listening to the workers.
+    #' @field sockets Websockets for listening to the workers.
     sockets = NULL,
     #' @field workers List of `callr::r_bg()` handles for workers.
     #'   The handle is `NA` if it is not yet called.
@@ -172,7 +172,7 @@ crew_class_launcher_callr <- R6::R6Class(
     },
     #' @description Populate workers.
     #' @return `NULL` (invisibly).
-    #' @param sockets Character vector of local TCP sockets that the workers
+    #' @param sockets Character vector of local websockets that the workers
     #'   will use to dial in to receive tasks.
     populate = function(sockets = character(0)) {
       true(sockets, length(.) > 0L, is.character(.), nzchar(.), !anyNA(.))
@@ -180,11 +180,6 @@ crew_class_launcher_callr <- R6::R6Class(
       self$workers <- as.list(rep(NA, length(sockets)))
       self$validate()
       invisible()
-    },
-    #' @description Count the number of running workers.
-    #' @return Number of running workers.
-    running = function() {
-      sum(map_lgl(self$workers, ~process_running(.x)))
     },
     #' @description Launch one or more workers.
     #' @details The actual number of newly launched workers

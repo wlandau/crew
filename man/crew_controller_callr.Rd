@@ -8,7 +8,7 @@ crew_controller_callr(
   name = NULL,
   workers = 1L,
   host = NULL,
-  ports = NULL,
+  port = NULL,
   router_timeout = 5,
   router_wait = 0.1,
   idle_time = Inf,
@@ -23,29 +23,24 @@ crew_controller_callr(
 )
 }
 \arguments{
-\item{name}{Name of the \code{mirai} router.
-Defaults to a string from \code{ids::proquint()}.}
+\item{name}{Name of the router object. If \code{NULL}, a name is automatically
+generated.}
 
-\item{workers}{Integer, maximum number of parallel workers to run.
-\code{crew} will reserve one ephemeral port for each worker. See the
-Ports section for an important cautionary note.}
+\item{workers}{Integer, maximum number of parallel workers to run.}
 
 \item{host}{IP address of the client process that the workers can dial
 into inside the local network.
 If a character string, the router uses the specified IP address.
 If \code{NULL}, the IP address defaults to \code{getip::getip(type = "local")}.}
 
-\item{ports}{Optional integer vector of TCP port numbers.
-Supersedes \code{workers} if supplied. Except for 0,
-which defers to NNG to automatically assign a port, each unique port
-value corresponds to a local port where a worker will dial in
-to accept tasks.}
+\item{port}{TCP port to listen for the workers. If \code{NULL},
+then an available port is supplied through \code{parallelly::freePort()}.}
 
 \item{router_timeout}{Number of seconds to time out waiting for the \code{mirai}
-router to (dis)connect.}
+client to (dis)connect.}
 
 \item{router_wait}{Number of seconds to wait between iterations checking
-if the \code{mirai} router is (dis)connected.}
+if the \code{mirai} client is (dis)connected.}
 
 \item{idle_time}{Maximum number of seconds that a worker can idle
 since the completion of the last task. If exceeded, the worker exits.}

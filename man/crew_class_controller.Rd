@@ -171,7 +171,7 @@ list as applicable and moves them to the \code{results} list.
 \if{html}{\out{<a id="method-crew_class_controller-scale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-scale}{}}}
 \subsection{Method \code{scale()}}{
-Automatically scale up the number of workers if needed.
+Run auto-scaling.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale()}\if{html}{\out{</div>}}
 }

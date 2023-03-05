@@ -159,7 +159,7 @@ crew_class_controller <- R6::R6Class(
       self$queue[done] <- NULL
       invisible()
     },
-    #' @description Automatically scale up the number of workers if needed.
+    #' @description Run auto-scaling.
     #' @details This method is called during `push()`, and the method for
     #'   scaling up workers is governed by the `auto_scale`
     #'   argument of [crew_controller()]. It is not meant to be called

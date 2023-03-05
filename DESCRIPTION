@@ -1,10 +1,14 @@
 Package: crew
 Title: A Distributed Worker Launcher
 Description: In computationally demanding analysis workflows,
-  statisticians and data scientists asynchronously deploy long-running tasks
-  to distributed systems, ranging from traditional clusters to cloud services.
-  The 'crew' package extends existing task schedulers to run workers
-  on these systems. With its unifying interface to multiple backends,
+  statisticians and data scientists asynchronously deploy
+  long-running tasks to distributed systems, ranging from
+  traditional clusters to cloud services.
+  The 'NNG'-powered 'mirai' R package is a high-performant
+  task scheduler that efficiently processes these intense workloads.
+  The role of the `crew` package is merely to extend
+  'mirai' to computing platforms beyond local multicore processing.
+  With its unifying interface to multiple backends,
   'crew' resembles packages
   'clustermq' (2019, <doi:10.1093/bioinformatics/btz284>),
   'future' (2021, <doi:10.32614/RJ-2021-048>),
@@ -30,7 +34,7 @@ Depends:
 Imports:
   callr,
   getip,
-  mirai (>= 0.7.2.9014),
+  mirai (>= 0.7.2.9018),
   R6,
   rlang,
   tibble,

@@ -1,12 +1,11 @@
-#' @title Create a `mirai` controller.
+#' @title Create a controller.
 #' @export
 #' @keywords internal
-#' @family mirai
-#' @description Create an `R6` object to submit tasks and launch workers
-#'   on `mirai`-based infrastructure.
-#' @param router An `R6` router object created by [crew_mirai_router()].
+#' @family controllers
+#' @description Create an `R6` object to submit tasks and launch workers.
+#' @param router An `R6` router object created by [crew_router()].
 #' @param launcher An `R6` launcher object created by one of the
-#'   `crew_mirai_launcher_*()` functions such as [crew_mirai_launcher_callr()].
+#'   `crew_launcher_*()` functions such as [crew_launcher_callr()].
 #' @param scale_method Character of length 1, name of the method for
 #'   automatically scaling workers to meet demand. `NULL` to default to
 #'   `"demand"`. Possible values include the following:
@@ -20,22 +19,22 @@
 #'   * `"none"`: do not auto-scale at all.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_mirai_router()
-#' launcher <- crew_mirai_launcher_callr()
-#' controller <- crew_mirai_controller(router = router, launcher = launcher)
+#' router <- crew_router()
+#' launcher <- crew_launcher_callr()
+#' controller <- crew_controller(router = router, launcher = launcher)
 #' controller$connect()
 #' controller$push(name = "task", command = sqrt(4))
 #' controller$wait()
 #' controller$pop()
 #' controller$terminate()
 #' }
-crew_mirai_controller <- function(
+crew_controller <- function(
   router,
   launcher,
   scale_method = "demand"
 ) {
   scale_method <- scale_method %|||% scale_methods_mirai
-  controller <- crew_class_mirai_controller$new(
+  controller <- crew_class_controller$new(
     router = router,
     launcher = launcher,
     scale_method = scale_method
@@ -44,30 +43,30 @@ crew_mirai_controller <- function(
   controller
 }
 
-#' @title `mirai` controller class
+#' @title Controller class
 #' @export
-#' @family mirai
-#' @description `R6` class for `mirai` controllers.
-#' @details See [crew_mirai_controller()].
+#' @family controllers
+#' @description `R6` class for controllers.
+#' @details See [crew_controller()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_mirai_router()
-#' launcher <- crew_mirai_launcher_callr()
-#' controller <- crew_mirai_controller(router = router, launcher = launcher)
+#' router <- crew_router()
+#' launcher <- crew_launcher_callr()
+#' controller <- crew_controller(router = router, launcher = launcher)
 #' controller$connect()
 #' controller$push(name = "task", command = sqrt(4))
 #' controller$wait()
 #' controller$pop()
 #' controller$terminate()
 #' }
-crew_class_mirai_controller <- R6::R6Class(
-  classname = "crew_class_mirai_controller",
+crew_class_controller <- R6::R6Class(
+  classname = "crew_class_controller",
   public = list(
     #' @field router Router object.
     router = NULL,
     #' @field launcher Launcher object.
     launcher = NULL,
-    #' @field scale_method Scaling method. See [crew_mirai_controller()].
+    #' @field scale_method Scaling method. See [crew_controller()].
     scale_method = NULL,
     #' @field queue List of tasks in the queue.
     queue = list(),
@@ -75,14 +74,14 @@ crew_class_mirai_controller <- R6::R6Class(
     results = list(),
     #' @description `mirai` controller constructor.
     #' @return An `R6` object with the controller object.
-    #' @param router Router object. See [crew_mirai_controller()].
-    #' @param launcher Launcher object. See [crew_mirai_controller()].
-    #' @param scale_method Scaling method. See [crew_mirai_controller()].
+    #' @param router Router object. See [crew_controller()].
+    #' @param launcher Launcher object. See [crew_controller()].
+    #' @param scale_method Scaling method. See [crew_controller()].
     #' #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' router <- crew_mirai_router() # Use instead of the constructor.
-    #' launcher <- crew_mirai_launcher_callr()
-    #' controller <- crew_mirai_controller(router = router, launcher = launcher)
+    #' router <- crew_router() # Use instead of the constructor.
+    #' launcher <- crew_launcher_callr()
+    #' controller <- crew_controller(router = router, launcher = launcher)
     #' controller$connect()
     #' controller$push(name = "task", command = sqrt(4))
     #' controller$wait()
@@ -163,7 +162,7 @@ crew_class_mirai_controller <- R6::R6Class(
     #' @description Automatically scale up the number of workers if needed.
     #' @details This method is called during `push()`, and the method for
     #'   scaling up workers is governed by the `scale_method`
-    #'   argument of [crew_mirai_controller()]. It is not meant to be called
+    #'   argument of [crew_controller()]. It is not meant to be called
     #'   manually. If called manually, it is recommended to call `collect()`
     #'   first so `scale()` can accurately assess the demand.
     #'   For finer control of the number of workers launched,
@@ -272,6 +271,6 @@ scale_methods_mirai <- c("demand", "single", "none")
 
 #' @export
 #' @keywords internal
-is_controller.crew_class_mirai_controller <- function(x) {
+is_controller.crew_class_controller <- function(x) {
   TRUE
 }

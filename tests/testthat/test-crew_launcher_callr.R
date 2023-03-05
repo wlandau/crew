@@ -1,6 +1,6 @@
-crew_test("crew_mirai_launcher_callr() can run a task on a worker", {
-  router <- crew_mirai_router()
-  launcher <- crew_mirai_launcher_callr(idle_time = 360)
+crew_test("crew_launcher_callr() can run a task on a worker", {
+  router <- crew_router()
+  launcher <- crew_launcher_callr(idle_time = 360)
   on.exit({
     router$disconnect()
     launcher$terminate()
@@ -27,10 +27,10 @@ crew_test("crew_mirai_launcher_callr() can run a task on a worker", {
   expect_equal(router$sockets_occupied(), character(0))
 })
 
-crew_test("crew_mirai_launcher_callr() can run a task and time out a worker", {
+crew_test("crew_launcher_callr() can run a task and time out a worker", {
   skip_on_cran()
-  router <- crew_mirai_router()
-  launcher <- crew_mirai_launcher_callr(max_tasks = 1L, idle_time = 360)
+  router <- crew_router()
+  launcher <- crew_launcher_callr(max_tasks = 1L, idle_time = 360)
   on.exit({
     router$disconnect()
     launcher$terminate()
@@ -52,10 +52,10 @@ crew_test("crew_mirai_launcher_callr() can run a task and time out a worker", {
   router$disconnect()
 })
 
-crew_test("crew_mirai_launcher_callr() can run a task and end a worker", {
+crew_test("crew_launcher_callr() can run a task and end a worker", {
   skip_on_cran()
-  router <- crew_mirai_router()
-  launcher <- crew_mirai_launcher_callr(max_tasks = 1L, idle_time = 360)
+  router <- crew_router()
+  launcher <- crew_launcher_callr(max_tasks = 1L, idle_time = 360)
   on.exit({
     router$disconnect()
     launcher$terminate()

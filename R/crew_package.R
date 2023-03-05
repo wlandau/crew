@@ -4,11 +4,18 @@
 #' @description In computationally demanding analysis workflows,
 #'   statisticians and data scientists asynchronously deploy
 #'   long-running tasks to distributed systems, ranging from
-#'   traditional clusters to cloud services. The `crew` package
-#'   extends existing task schedulers to run workers on these systems.
+#'   traditional clusters to cloud services.
+#'   The [NNG](https://nng.nanomsg.org)-powered
+#'   [`mirai`](https://github.com/shikokuchuo/mirai) R package
+#'   is a high-performant task scheduler that efficiently processes
+#'   these intense workloads. The role of the `crew` package
+#'   is merely to extend [`mirai`](https://github.com/shikokuchuo/mirai)
+#'   to computing platforms beyond local multicore processing.
 #'   With its unifying interface to multiple backends,
-#'   `crew` resembles packages `clustermq`,
-#'   `future`, and `batchtools`.
+#'   `crew` resembles packages
+#'   [`clustermq`](https://mschubert.github.io/clustermq/),
+#'   [`future`](https://future.futureverse.org/), and
+#'   [`batchtools`](https://mllg.github.io/batchtools/).
 #' @family help
 #' @importFrom callr r_bg
 #' @importFrom getip getip

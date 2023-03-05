@@ -1,21 +1,21 @@
-#' @title Create a `mirai` controller with a callr launcher.
+#' @title Create a controller with a callr launcher.
 #' @export
 #' @family controllers
-#' @description Create an `R6` object to submit tasks and launch workers
-#'   with a `mirai` task queue and `callr` workers
-#' @inheritParams crew_mirai_router
-#' @inheritParams crew_mirai_launcher_callr
-#' @inheritParams crew_mirai_controller
+#' @description Create an `R6` object to submit tasks and
+#'   launch `callr` workers.
+#' @inheritParams crew_router
+#' @inheritParams crew_launcher_callr
+#' @inheritParams crew_controller
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' controller <- crew_mirai_controller_callr()
+#' controller <- crew_controller_callr()
 #' controller$connect()
 #' controller$push(name = "task", command = sqrt(4))
 #' controller$wait()
 #' controller$pop()
 #' controller$terminate()
 #' }
-crew_mirai_controller_callr <- function(
+crew_controller_callr <- function(
   name = NULL,
   workers = 1L,
   host = NULL,
@@ -32,7 +32,7 @@ crew_mirai_controller_callr <- function(
   async_dial = TRUE,
   scale_method = "demand"
 ) {
-  router <- crew_mirai_router(
+  router <- crew_router(
     name = name,
     workers = workers,
     host = host,
@@ -40,7 +40,7 @@ crew_mirai_controller_callr <- function(
     router_timeout = router_timeout,
     router_wait = router_wait
   )
-  launcher <- crew_mirai_launcher_callr(
+  launcher <- crew_launcher_callr(
     idle_time = idle_time,
     wall_time = wall_time,
     poll_high = poll_high,
@@ -50,7 +50,7 @@ crew_mirai_controller_callr <- function(
     max_tasks = max_tasks,
     async_dial = async_dial
   )
-  controller <- crew_mirai_controller(
+  controller <- crew_controller(
     router = router,
     launcher = launcher,
     scale_method = scale_method

@@ -1,8 +1,8 @@
-#' @title Create a `mirai` router.
+#' @title Create a router.
 #' @export
 #' @keywords internal
-#' @family mirai
-#' @description Create an `R6` object to route tasks to `mirai` workers
+#' @family routers
+#' @description Create an `R6` object to route tasks to workers
 #'   on the local network.
 #' @section Ports:
 #'   In the `mirai`-based task scheduling in `crew`, each parallel worker
@@ -31,14 +31,14 @@
 #'   if the `mirai` router is (dis)connected.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_mirai_router()
+#' router <- crew_router()
 #' router$sockets_listening() # character(0)
 #' router$connect()
 #' router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
 #' router$disconnect()
 #' router$sockets_listening() # character(0)
 #' }
-crew_mirai_router <- function(
+crew_router <- function(
   name = NULL,
   workers = 1L,
   host = NULL,
@@ -57,7 +57,7 @@ crew_mirai_router <- function(
   true(router_timeout, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
   true(router_wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
   true(router_timeout >= router_wait)
-  router <- crew_class_mirai_router$new(
+  router <- crew_class_router$new(
     name = name,
     host = host,
     ports = ports,
@@ -68,22 +68,22 @@ crew_mirai_router <- function(
   router
 }
 
-#' @title `mirai` router class
+#' @title Router class
 #' @export
-#' @family mirai
+#' @family routers
 #' @description `R6` class for `mirai` routers.
-#' @details See [crew_mirai_router()].
+#' @details See [crew_router()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_mirai_router()
+#' router <- crew_router()
 #' router$sockets_listening() # character(0)
 #' router$connect()
 #' router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
 #' router$disconnect()
 #' router$sockets_listening() # character(0)
 #' }
-crew_class_mirai_router <- R6::R6Class(
-  classname = "crew_class_mirai_router",
+crew_class_router <- R6::R6Class(
+  classname = "crew_class_router",
   cloneable = FALSE,
   public = list(
     #' @field name Name of the router.
@@ -100,14 +100,14 @@ crew_class_mirai_router <- R6::R6Class(
     router_wait = NULL,
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
-    #' @param name Argument passed from [crew_mirai_router()].
-    #' @param host Argument passed from [crew_mirai_router()].
-    #' @param ports Argument passed from [crew_mirai_router()].
-    #' @param router_timeout Argument passed from [crew_mirai_router()].
-    #' @param router_wait Argument passed from [crew_mirai_router()].
+    #' @param name Argument passed from [crew_router()].
+    #' @param host Argument passed from [crew_router()].
+    #' @param ports Argument passed from [crew_router()].
+    #' @param router_timeout Argument passed from [crew_router()].
+    #' @param router_wait Argument passed from [crew_router()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' router <- crew_mirai_router()
+    #' router <- crew_router()
     #' router$sockets_listening() # character(0)
     #' router$connect()
     #' router$sockets_listening() # "tcp://xx.xx.xx:xxxxx"
@@ -229,6 +229,6 @@ crew_class_mirai_router <- R6::R6Class(
 
 #' @export
 #' @keywords internal
-is_router.crew_class_mirai_router <- function(x) {
+is_router.crew_class_router <- function(x) {
   TRUE
 }

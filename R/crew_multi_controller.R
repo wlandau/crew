@@ -9,8 +9,8 @@
 #'   or another list.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' persistent <- crew_mirai_controller_callr(name = "persistent")
-#' transient <- crew_mirai_controller_callr(
+#' persistent <- crew_controller_callr(name = "persistent")
+#' transient <- crew_controller_callr(
 #'   name = "transient",
 #'   max_tasks = 1L
 #' )
@@ -34,12 +34,12 @@ crew_multi_controller <- function(...) {
 #' @title Multi-controller class
 #' @export
 #' @family controllers
-#' @description `R6` class for `mirai` controllers.
-#' @details See [crew_mirai_controller()].
+#' @description `R6` class for multi-controllers.
+#' @details See [crew_controller()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' persistent <- crew_mirai_controller_callr(name = "persistent")
-#' transient <- crew_mirai_controller_callr(
+#' persistent <- crew_controller_callr(name = "persistent")
+#' transient <- crew_controller_callr(
 #'   name = "transient",
 #'   max_tasks = 1L
 #' )
@@ -78,8 +78,8 @@ crew_class_multi_controller <- R6::R6Class(
     #' @param controllers List of `R6` controller objects.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' persistent <- crew_mirai_controller_callr(name = "persistent")
-    #' transient <- crew_mirai_controller_callr(
+    #' persistent <- crew_controller_callr(name = "persistent")
+    #' transient <- crew_controller_callr(
     #'   name = "transient",
     #'   max_tasks = 1L
     #' )

@@ -1,9 +1,9 @@
-#' @title Create a `mirai` launcher with `callr` workers.
+#' @title Create a launcher with `callr` workers.
 #' @export
 #' @keywords internal
-#' @family mirai
+#' @family launchers
 #' @description Create an `R6` object to launch and maintain
-#'   `callr` workers for a `mirai` controller.
+#'   `callr` workers for a controller.
 #' @param idle_time Maximum number of seconds that a worker can idle
 #'   since the completion of the last task. If exceeded, the worker exits.
 #' @param wall_time Soft wall time in seconds. See the `wall_time`
@@ -22,9 +22,9 @@
 #'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_mirai_router()
+#' router <- crew_router()
 #' router$connect()
-#' launcher <- crew_mirai_launcher_callr()
+#' launcher <- crew_launcher_callr()
 #' launcher$populate(sockets = router$sockets_listening())
 #' launcher$running() # 0
 #' launcher$launch()
@@ -33,7 +33,7 @@
 #' launcher$running() # 0
 #' router$disconnect()
 #' }
-crew_mirai_launcher_callr <- function(
+crew_launcher_callr <- function(
   idle_time = Inf,
   wall_time = Inf,
   poll_high = 5,
@@ -43,7 +43,7 @@ crew_mirai_launcher_callr <- function(
   max_tasks = Inf,
   async_dial = TRUE
 ) {
-  launcher <- crew_class_mirai_launcher_callr$new(
+  launcher <- crew_class_launcher_callr$new(
     sockets = character(0),
     workers = list(),
     idle_time = idle_time,
@@ -61,14 +61,14 @@ crew_mirai_launcher_callr <- function(
 
 #' @title `mirai` launcher class
 #' @export
-#' @family mirai
+#' @family launchers
 #' @description `R6` class to launch and manage `mirai` workers.
-#' @details See [crew_mirai_launcher_callr()].
+#' @details See [crew_launcher_callr()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_mirai_router()
+#' router <- crew_router()
 #' router$connect()
-#' launcher <- crew_mirai_launcher_callr()
+#' launcher <- crew_launcher_callr()
 #' launcher$populate(sockets = router$sockets_listening())
 #' launcher$running() # 0
 #' launcher$launch()
@@ -77,8 +77,8 @@ crew_mirai_launcher_callr <- function(
 #' launcher$running() # 0
 #' router$disconnect()
 #' }
-crew_class_mirai_launcher_callr <- R6::R6Class(
-  classname = c("crew_class_mirai_launcher_callr"),
+crew_class_launcher_callr <- R6::R6Class(
+  classname = c("crew_class_launcher_callr"),
   cloneable = FALSE,
   public = list(
     #' @field sockets TCP sockets for listening to the workers.
@@ -86,39 +86,39 @@ crew_class_mirai_launcher_callr <- R6::R6Class(
     #' @field workers List of `callr::r_bg()` handles for workers.
     #'   The handle is `NA` if it is not yet called.
     workers = NULL,
-    #' @field idle_time Argument to `crew_mirai_launcher_callr()`.
+    #' @field idle_time Argument to `crew_launcher_callr()`.
     idle_time = NULL,
-    #' @field wall_time Argument to `crew_mirai_launcher_callr()`.
+    #' @field wall_time Argument to `crew_launcher_callr()`.
     wall_time = NULL,
-    #' @field poll_high Argument to `crew_mirai_launcher_callr()`.
+    #' @field poll_high Argument to `crew_launcher_callr()`.
     poll_high = NULL,
-    #' @field poll_low Argument to `crew_mirai_launcher_callr()`.
+    #' @field poll_low Argument to `crew_launcher_callr()`.
     poll_low = NULL,
-    #' @field launch_timeout Argument to `crew_mirai_launcher_callr()`.
+    #' @field launch_timeout Argument to `crew_launcher_callr()`.
     launch_timeout = NULL,
-    #' @field launch_wait Argument to `crew_mirai_launcher_callr()`.
+    #' @field launch_wait Argument to `crew_launcher_callr()`.
     launch_wait = NULL,
-    #' @field max_tasks Argument to `crew_mirai_launcher_callr()`.
+    #' @field max_tasks Argument to `crew_launcher_callr()`.
     max_tasks = NULL,
-    #' @field async_dial Argument to `crew_mirai_launcher_callr()`.
+    #' @field async_dial Argument to `crew_launcher_callr()`.
     async_dial = NULL,
     #' @description `mirai` launcher constructor.
     #' @return An `R6` object with the launcher.
-    #' @param sockets Argument to `crew_mirai_launcher_callr()`.
-    #' @param workers Argument to `crew_mirai_launcher_callr()`.
-    #' @param idle_time Argument to `crew_mirai_launcher_callr()`.
-    #' @param wall_time Argument to `crew_mirai_launcher_callr()`.
-    #' @param poll_high Argument to `crew_mirai_launcher_callr()`.
-    #' @param poll_low Argument to `crew_mirai_launcher_callr()`.
-    #' @param launch_timeout Argument to `crew_mirai_launcher_callr()`.
-    #' @param launch_wait Argument to `crew_mirai_launcher_callr()`.
-    #' @param max_tasks Argument to `crew_mirai_launcher_callr()`.
-    #' @param async_dial Argument to `crew_mirai_launcher_callr()`.
+    #' @param sockets Argument to `crew_launcher_callr()`.
+    #' @param workers Argument to `crew_launcher_callr()`.
+    #' @param idle_time Argument to `crew_launcher_callr()`.
+    #' @param wall_time Argument to `crew_launcher_callr()`.
+    #' @param poll_high Argument to `crew_launcher_callr()`.
+    #' @param poll_low Argument to `crew_launcher_callr()`.
+    #' @param launch_timeout Argument to `crew_launcher_callr()`.
+    #' @param launch_wait Argument to `crew_launcher_callr()`.
+    #' @param max_tasks Argument to `crew_launcher_callr()`.
+    #' @param async_dial Argument to `crew_launcher_callr()`.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' router <- crew_mirai_router()
+    #' router <- crew_router()
     #' router$connect()
-    #' launcher <- crew_mirai_launcher_callr()
+    #' launcher <- crew_launcher_callr()
     #' launcher$populate(sockets = router$sockets_listening())
     #' launcher$running() # 0
     #' launcher$launch()
@@ -228,6 +228,6 @@ process_running <- function(process) {
 
 #' @export
 #' @keywords internal
-is_launcher.crew_class_mirai_launcher_callr <- function(x) {
+is_launcher.crew_class_launcher_callr <- function(x) {
   TRUE
 }

@@ -8,29 +8,25 @@
 
 In computationally demanding analysis workflows, statisticians and data
 scientists asynchronously deploy long-running tasks to distributed
-systems, ranging from traditional clusters to cloud services. The `crew`
-package extends existing task schedulers to run workers on these
-systems. With its unifying interface to multiple backends, `crew`
-resembles packages
+systems, ranging from traditional clusters to cloud services. The
+[NNG](https://nng.nanomsg.org)-powered
+[`mirai`](https://github.com/shikokuchuo/mirai) R package is a
+high-performant task scheduler that efficiently processes these intense
+workloads. The role of the `crew` package is merely to extend
+[`mirai`](https://github.com/shikokuchuo/mirai) to computing platforms
+beyond local multicore processing. With its unifying interface to
+multiple backends, `crew` resembles packages
 [`clustermq`](https://mschubert.github.io/clustermq/),
 [`future`](https://future.futureverse.org/), and
 [`batchtools`](https://mllg.github.io/batchtools/).
 
-The current task scheduler supported is
-[`mirai`](https://github.com/shikokuchuo/mirai), and there are plans to
-incorporate [`rrq`](https://github.com/mrc-ide/rrq) as well. As for
-parallel workers, only local parallel workers are supported, but there
-are plans to eventually support distributed systems like SLURM and cloud
-services like AWS Batch.
-
 ## Installation
 
-`crew` is not yet available on CRAN, it it requires development versions
-of packages [`nanonext`](https://github.com/shikokuchuo/nanonext) and
-[`mirai`](https://github.com/shikokuchuo/mirai).
+`crew` is not yet available on CRAN, and it requires the development
+version of [`mirai`](https://github.com/shikokuchuo/mirai).
 
 ``` r
-install.packages("nanonext", repos = "https://shikokuchuo.r-universe.dev")
+install.packages("nanonext")
 install.packages("mirai", repos = "https://shikokuchuo.r-universe.dev")
 remotes::install_github("wlandau/crew")
 ```
@@ -38,16 +34,113 @@ remotes::install_github("wlandau/crew")
 ## Documentation
 
 Please see <https://wlandau.github.io/crew/> for documentation,
-including a full function reference and usage tutorial vignettes. It is
-recommended to begin with the
-[`mirai`](https://github.com/shikokuchuo/mirai)-[`callr`](https://github.com/r-lib/callr)
-vignette in the `crew` package.
+including a full function reference and usage tutorial vignettes.
+
+## Usage
+
+First, create a a controller object. Thanks to the powerful features in
+[`mirai`](https://github.com/shikokuchuo/mirai),
+`crew_controller_callr()` allows several ways to customize the way
+workers are launched and the conditions under which they time out. For
+example, arguments `max_tasks` and `idle_time` allow for a smooth
+continuum between fully persistent workers and fully transient workers.
+
+``` r
+library(crew)
+controller <- crew_controller_callr(
+  workers = 2,
+  max_task = 3,
+  scale_method = "demand"
+)
+```
+
+The `connect()` method starts a local
+[`mirai`](https://github.com/shikokuchuo/mirai) client and a local
+active queue to listen to workers that dial in.
+
+``` r
+controller$connect()
+controller$router$sockets_listening()
+#> [1] "tcp://10.0.0.9:55899" "tcp://10.0.0.9:55900"
+```
+
+Use the `push()` method to submit a task. When you do, `crew`
+automatically scales up the number of workers to meet demand, within the
+constraints of the `scale_method` and `workers` arguments of
+`crew_controller_callr()`.
+
+``` r
+controller$push(
+  name = "get worker process ID",
+  command = ps::ps_pid()
+)
+```
+
+You have the option to block the R session until results are available,
+but this is not necessary because
+[`mirai`](https://github.com/shikokuchuo/mirai) supports a [local active
+queue
+daemon](https://github.com/shikokuchuo/mirai/blob/main/README.md#connecting-to-remote-servers-through-a-local-server-queue)
+which runs in the background and submits tasks to workers as soon as
+there is availability.
+
+``` r
+controller$wait()
+```
+
+When the result is available, you can retrieve it with `pop()`.
+
+``` r
+out <- controller$pop()
+```
+
+The result is a
+[monad](https://en.wikipedia.org/wiki/Monad_(functional_programming))
+with the result and its metadata. Even if the command of the task throws
+an error, it will still return the same kind of
+[monad](https://en.wikipedia.org/wiki/Monad_(functional_programming)).
+
+``` r
+out
+#> # A tibble: 1 × 7
+#>   name                  command      result seconds error traceback warni…¹
+#>   <chr>                 <chr>        <list>   <dbl> <chr> <chr>     <chr>
+#> 1 get worker process ID ps::ps_pid() <int>        0 NA    NA        NA
+#> # … with abbreviated variable name ¹​warnings
+```
+
+The return value of the command is available in the `result` column. In
+our case, it is the process ID of the parallel worker that ran it, as
+reported by `ps::ps_pid()`.
+
+``` r
+out$result[[1]]
+#> [1] 69631
+```
+
+Since it ran on a parallel worker, it is different from the process ID
+of the local R session.
+
+``` r
+ps::ps_pid()
+#> [1] 69523
+```
+
+Continue the above process of asynchronously submitting and collecting
+tasks until your workflow is complete. When you are done, terminate the
+controller to clean up the resources.
+
+``` r
+controller$terminate()
+```
 
 ## Similar work
 
 - [`mirai`](https://github.com/shikokuchuo/mirai): an R framework for
-  asynchronous tasks built on [NNG](https://nng.nanomsg.org). `crew`
-  builds directly on [`mirai`](https://github.com/shikokuchuo/mirai).
+  asynchronous tasks built on [NNG](https://nng.nanomsg.org). The whole
+  point of `crew` is simply to extend
+  [`mirai`](https://github.com/shikokuchuo/mirai) to different computing
+  platforms for distributed workers.
 - [`rrq`](https://mrc-ide.github.io/rrq/): a task queue for R powered by
   [Redis](https://redis.io).
 - [`rrqueue`](http://traitecoevo.github.io/rrqueue/): predecessor of
@@ -78,10 +171,9 @@ people.
 
 - [Charlie Gao](https://github.com/shikokuchuo) created
   [`mirai`](https://github.com/shikokuchuo/mirai) and
-  [`nanonext`](https://github.com/shikokuchuo/nanonext), and he speedily
-  accommodated the complicated feature requests that made the
-  [`mirai`](https://github.com/shikokuchuo/mirai)-based scheduling in
-  `crew` possible.
+  [`nanonext`](https://github.com/shikokuchuo/nanonext), and he
+  graciously accommodated the complicated and demanding feature requests
+  that made `crew` possible.
 - [Rich FitzJohn](https://github.com/richfitz) and [Robert
   Ashton](https://github.com/r-ash) developed
   [`rrq`](https://mrc-ide.github.io/rrq//).
@@ -137,17 +229,4 @@ By contributing to this project, you agree to abide by its terms.
 
 ``` r
 citation("crew")
-
-To cite package 'crew' in publications use:
-
-  Landau WM (????). _crew: A Distributed Worker Launcher_.
-  https://wlandau.github.io/crew/, https://github.com/wlandau/crew.
-
-A BibTeX entry for LaTeX users is
-
-  @Manual{,
-    title = {crew: A Distributed Worker Launcher},
-    author = {William Michael Landau},
-    note = {https://wlandau.github.io/crew/, https://github.com/wlandau/crew},
-  }
 ```

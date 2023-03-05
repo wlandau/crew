@@ -1,5 +1,5 @@
-crew_test("crew_mirai_controller_callr()", {
-  x <- crew_mirai_controller_callr(idle_time = 360)
+crew_test("crew_controller_callr()", {
+  x <- crew_controller_callr(idle_time = 360)
   on.exit(x$terminate())
   expect_silent(x$validate())
   expect_false(x$router$is_connected())
@@ -21,9 +21,9 @@ crew_test("crew_mirai_controller_callr()", {
   expect_equal(x$launcher$running(), 0L)
 })
 
-crew_test("crew_mirai_controller_callr() warnings and errors", {
+crew_test("crew_controller_callr() warnings and errors", {
   skip_on_cran()
-  x <- crew_mirai_controller_callr(idle_time = 360)
+  x <- crew_controller_callr(idle_time = 360)
   on.exit(x$terminate())
   expect_silent(x$validate())
   expect_false(x$router$is_connected())
@@ -45,9 +45,9 @@ crew_test("crew_mirai_controller_callr() warnings and errors", {
   expect_equal(x$launcher$running(), 0L)
 })
 
-crew_test("crew_mirai_controller_callr() launch method", {
+crew_test("crew_controller_callr() launch method", {
   skip_on_cran()
-  x <- crew_mirai_controller_callr(idle_time = 360)
+  x <- crew_controller_callr(idle_time = 360)
   on.exit(x$terminate())
   x$connect()
   expect_equal(x$launcher$running(), 0L)

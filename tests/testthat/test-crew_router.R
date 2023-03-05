@@ -1,12 +1,12 @@
-crew_test("crew_mirai_router() validate", {
-  router <- crew_mirai_router()
+crew_test("crew_router() validate", {
+  router <- crew_router()
   expect_silent(router$validate())
   router$name <- NULL
   expect_crew_error(router$validate())
 })
 
-crew_test("crew_mirai_router() works", {
-  router <- crew_mirai_router()
+crew_test("crew_router() works", {
+  router <- crew_router()
   on.exit(router$disconnect())
   expect_false(router$is_connected())
   expect_equal(router$sockets_listening(), character(0))

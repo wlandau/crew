@@ -4,15 +4,15 @@
 \alias{crew_class_multi_controller}
 \title{Multi-controller class}
 \description{
-\code{R6} class for \code{mirai} controllers.
+\code{R6} class for multi-controllers.
 }
 \details{
-See \code{\link[=crew_mirai_controller]{crew_mirai_controller()}}.
+See \code{\link[=crew_controller]{crew_controller()}}.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-persistent <- crew_mirai_controller_callr(name = "persistent")
-transient <- crew_mirai_controller_callr(
+persistent <- crew_controller_callr(name = "persistent")
+transient <- crew_controller_callr(
   name = "transient",
   max_tasks = 1L
 )
@@ -31,8 +31,8 @@ multi$terminate()
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-persistent <- crew_mirai_controller_callr(name = "persistent")
-transient <- crew_mirai_controller_callr(
+persistent <- crew_controller_callr(name = "persistent")
+transient <- crew_controller_callr(
   name = "transient",
   max_tasks = 1L
 )
@@ -48,7 +48,9 @@ multi$terminate()
 }
 \seealso{
 Other controllers: 
-\code{\link{crew_mirai_controller_callr}()},
+\code{\link{crew_class_controller}},
+\code{\link{crew_controller_callr}()},
+\code{\link{crew_controller}()},
 \code{\link{crew_multi_controller}()}
 }
 \concept{controllers}
@@ -97,8 +99,8 @@ An \code{R6} object with the multi-controller object.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-persistent <- crew_mirai_controller_callr(name = "persistent")
-transient <- crew_mirai_controller_callr(
+persistent <- crew_controller_callr(name = "persistent")
+transient <- crew_controller_callr(
   name = "transient",
   max_tasks = 1L
 )

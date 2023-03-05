@@ -8,10 +8,17 @@
 In computationally demanding analysis workflows,
 statisticians and data scientists asynchronously deploy
 long-running tasks to distributed systems, ranging from
-traditional clusters to cloud services. The \code{crew} package
-extends existing task schedulers to run workers on these systems.
+traditional clusters to cloud services.
+The \href{https://nng.nanomsg.org}{NNG}-powered
+\href{https://github.com/shikokuchuo/mirai}{\code{mirai}} R package
+is a high-performant task scheduler that efficiently processes
+these intense workloads. The role of the \code{crew} package
+is merely to extend \href{https://github.com/shikokuchuo/mirai}{\code{mirai}}
+to computing platforms beyond local multicore processing.
 With its unifying interface to multiple backends,
-\code{crew} resembles packages \code{clustermq},
-\code{future}, and \code{batchtools}.
+\code{crew} resembles packages
+\href{https://mschubert.github.io/clustermq/}{\code{clustermq}},
+\href{https://future.futureverse.org/}{\code{future}}, and
+\href{https://mllg.github.io/batchtools/}{\code{batchtools}}.
 }
 \concept{help}

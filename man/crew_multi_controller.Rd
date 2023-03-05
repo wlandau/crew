@@ -17,8 +17,8 @@ through multiple \code{crew} controllers.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-persistent <- crew_mirai_controller_callr(name = "persistent")
-transient <- crew_mirai_controller_callr(
+persistent <- crew_controller_callr(name = "persistent")
+transient <- crew_controller_callr(
   name = "transient",
   max_tasks = 1L
 )
@@ -34,8 +34,10 @@ multi$terminate()
 }
 \seealso{
 Other controllers: 
+\code{\link{crew_class_controller}},
 \code{\link{crew_class_multi_controller}},
-\code{\link{crew_mirai_controller_callr}()}
+\code{\link{crew_controller_callr}()},
+\code{\link{crew_controller}()}
 }
 \concept{controllers}
 \keyword{internal}

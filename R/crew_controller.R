@@ -114,7 +114,7 @@ crew_class_controller <- R6::R6Class(
     #' @return `NULL` (invisibly).
     connect = function() {
       self$router$connect()
-      self$launcher$populate(sockets = self$router$sockets_listening())
+      self$launcher$populate(sockets = self$router$sockets)
       invisible()
     },
     #' @description Launch one or more workers.

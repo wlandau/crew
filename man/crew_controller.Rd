@@ -4,7 +4,7 @@
 \alias{crew_controller}
 \title{Create a controller.}
 \usage{
-crew_controller(router, launcher, scale_method = "demand")
+crew_controller(router, launcher, auto_scale = "demand")
 }
 \arguments{
 \item{router}{An \code{R6} router object created by \code{\link[=crew_router]{crew_router()}}.}
@@ -12,7 +12,7 @@ crew_controller(router, launcher, scale_method = "demand")
 \item{launcher}{An \code{R6} launcher object created by one of the
 \verb{crew_launcher_*()} functions such as \code{\link[=crew_launcher_callr]{crew_launcher_callr()}}.}
 
-\item{scale_method}{Character of length 1, name of the method for
+\item{auto_scale}{Character of length 1, name of the method for
 automatically scaling workers to meet demand. \code{NULL} to default to
 \code{"demand"}. Possible values include the following:
 \itemize{

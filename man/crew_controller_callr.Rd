@@ -19,7 +19,7 @@ crew_controller_callr(
   launch_wait = 0.1,
   max_tasks = Inf,
   async_dial = TRUE,
-  scale_method = "demand"
+  auto_scale = "demand"
 )
 }
 \arguments{
@@ -71,7 +71,7 @@ exiting.}
 \item{async_dial}{Logical, whether the \code{mirai} workers should dial in
 asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 
-\item{scale_method}{Character of length 1, name of the method for
+\item{auto_scale}{Character of length 1, name of the method for
 automatically scaling workers to meet demand. \code{NULL} to default to
 \code{"demand"}. Possible values include the following:
 \itemize{

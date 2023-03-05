@@ -50,7 +50,7 @@ library(crew)
 controller <- crew_controller_callr(
   workers = 2,
   max_task = 3,
-  scale_method = "demand"
+  auto_scale = "demand"
 )
 ```
 
@@ -66,7 +66,7 @@ controller$router$sockets_listening()
 
 Use the `push()` method to submit a task. When you do, `crew`
 automatically scales up the number of workers to meet demand, within the
-constraints of the `scale_method` and `workers` arguments of
+constraints of the `auto_scale` and `workers` arguments of
 `crew_controller_callr()`.
 
 ``` r

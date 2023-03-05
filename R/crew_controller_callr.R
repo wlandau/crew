@@ -30,7 +30,7 @@ crew_controller_callr <- function(
   launch_wait = 0.1,
   max_tasks = Inf,
   async_dial = TRUE,
-  scale_method = "demand"
+  auto_scale = "demand"
 ) {
   router <- crew_router(
     name = name,
@@ -53,7 +53,7 @@ crew_controller_callr <- function(
   controller <- crew_controller(
     router = router,
     launcher = launcher,
-    scale_method = scale_method
+    auto_scale = auto_scale
   )
   controller$validate()
   controller

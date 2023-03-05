@@ -109,7 +109,7 @@ crew_test("crew_multi_controller() scale method", {
   skip_on_cran()
   a <- crew_controller_callr(
     name = "a",
-    scale_method = "single",
+    auto_scale = "single",
     idle_time = 360
   )
   x <- crew_multi_controller(a)

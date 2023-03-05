@@ -36,7 +36,7 @@ Other controllers:
 
 \item{\code{launcher}}{Launcher object.}
 
-\item{\code{scale_method}}{Scaling method. See \code{\link[=crew_controller]{crew_controller()}}.}
+\item{\code{auto_scale}}{Scaling method. See \code{\link[=crew_controller]{crew_controller()}}.}
 
 \item{\code{queue}}{List of tasks in the queue.}
 
@@ -66,7 +66,7 @@ Other controllers:
 \subsection{Method \code{new()}}{
 \code{mirai} controller constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$new(router = NULL, launcher = NULL, scale_method = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$new(router = NULL, launcher = NULL, auto_scale = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -76,7 +76,7 @@ Other controllers:
 
 \item{\code{launcher}}{Launcher object. See \code{\link[=crew_controller]{crew_controller()}}.}
 
-\item{\code{scale_method}}{Scaling method. See \code{\link[=crew_controller]{crew_controller()}}.
+\item{\code{auto_scale}}{Scaling method. See \code{\link[=crew_controller]{crew_controller()}}.
 #' @examples
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router() # Use instead of the constructor.
@@ -142,10 +142,10 @@ Launch one or more workers.
 The actual number of newly launched workers
 is capped at the max set when the controller
 was created. Unless you are launching an array of
-persistent workers or have \code{scale_method = "none"},
+persistent workers or have \code{auto_scale = "none"},
 this method does not usually need to be called
 directly because \code{push(scale = TRUE)} already launches
-workers depending on \code{scale_method}.
+workers depending on \code{auto_scale}.
 }
 
 \subsection{Returns}{
@@ -178,7 +178,7 @@ Automatically scale up the number of workers if needed.
 
 \subsection{Details}{
 This method is called during \code{push()}, and the method for
-scaling up workers is governed by the \code{scale_method}
+scaling up workers is governed by the \code{auto_scale}
 argument of \code{\link[=crew_controller]{crew_controller()}}. It is not meant to be called
 manually. If called manually, it is recommended to call \code{collect()}
 first so \code{scale()} can accurately assess the demand.

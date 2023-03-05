@@ -6,7 +6,7 @@
 #' @param router An `R6` router object created by [crew_router()].
 #' @param launcher An `R6` launcher object created by one of the
 #'   `crew_launcher_*()` functions such as [crew_launcher_callr()].
-#' @param scale_method Character of length 1, name of the method for
+#' @param auto_scale Character of length 1, name of the method for
 #'   automatically scaling workers to meet demand. `NULL` to default to
 #'   `"demand"`. Possible values include the following:
 #'   * `"demand"`: just after pushing a new task in `push()`, launch
@@ -31,13 +31,13 @@
 crew_controller <- function(
   router,
   launcher,
-  scale_method = "demand"
+  auto_scale = "demand"
 ) {
-  scale_method <- scale_method %|||% scale_methods_mirai
+  auto_scale <- auto_scale %|||% auto_scales_mirai
   controller <- crew_class_controller$new(
     router = router,
     launcher = launcher,
-    scale_method = scale_method
+    auto_scale = auto_scale
   )
   controller$validate()
   controller
@@ -66,8 +66,8 @@ crew_class_controller <- R6::R6Class(
     router = NULL,
     #' @field launcher Launcher object.
     launcher = NULL,
-    #' @field scale_method Scaling method. See [crew_controller()].
-    scale_method = NULL,
+    #' @field auto_scale Scaling method. See [crew_controller()].
+    auto_scale = NULL,
     #' @field queue List of tasks in the queue.
     queue = list(),
     #' @field results List of finished tasks
@@ -76,7 +76,7 @@ crew_class_controller <- R6::R6Class(
     #' @return An `R6` object with the controller object.
     #' @param router Router object. See [crew_controller()].
     #' @param launcher Launcher object. See [crew_controller()].
-    #' @param scale_method Scaling method. See [crew_controller()].
+    #' @param auto_scale Scaling method. See [crew_controller()].
     #' #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' router <- crew_router() # Use instead of the constructor.
@@ -91,11 +91,11 @@ crew_class_controller <- R6::R6Class(
     initialize = function(
       router = NULL,
       launcher = NULL,
-      scale_method = NULL
+      auto_scale = NULL
     ) {
       self$router <- router
       self$launcher <- launcher
-      self$scale_method <- scale_method
+      self$auto_scale <- auto_scale
       invisible()
     },
     #' @description Validate the router.
@@ -121,10 +121,10 @@ crew_class_controller <- R6::R6Class(
     #' @details The actual number of newly launched workers
     #'   is capped at the max set when the controller
     #'   was created. Unless you are launching an array of
-    #'   persistent workers or have `scale_method = "none"`,
+    #'   persistent workers or have `auto_scale = "none"`,
     #'   this method does not usually need to be called
     #'   directly because `push(scale = TRUE)` already launches
-    #'   workers depending on `scale_method`.
+    #'   workers depending on `auto_scale`.
     #' @return `NULL` (invisibly).
     #' @param n Maximum number of workers to launch.
     launch = function(n = 1L) {
@@ -161,7 +161,7 @@ crew_class_controller <- R6::R6Class(
     },
     #' @description Automatically scale up the number of workers if needed.
     #' @details This method is called during `push()`, and the method for
-    #'   scaling up workers is governed by the `scale_method`
+    #'   scaling up workers is governed by the `auto_scale`
     #'   argument of [crew_controller()]. It is not meant to be called
     #'   manually. If called manually, it is recommended to call `collect()`
     #'   first so `scale()` can accurately assess the demand.
@@ -172,7 +172,7 @@ crew_class_controller <- R6::R6Class(
     scale = function() {
       demand <- max(0L, length(self$queue) - self$launcher$running())
       n <- switch(
-        self$scale_method,
+        self$auto_scale,
         demand = demand,
         single = min(1L, demand),
         none = 0L
@@ -267,7 +267,7 @@ crew_class_controller <- R6::R6Class(
   )
 )
 
-scale_methods_mirai <- c("demand", "single", "none")
+auto_scales_mirai <- c("demand", "single", "none")
 
 #' @export
 #' @keywords internal

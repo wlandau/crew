@@ -33,8 +33,8 @@ into inside the local network.
 If a character string, the router uses the specified IP address.
 If \code{NULL}, the IP address defaults to \code{getip::getip(type = "local")}.}
 
-\item{port}{TCP port to listen for the workers. If \code{NULL},
-then an available port is supplied through \code{parallelly::freePort()}.}
+\item{port}{TCP port to listen for the workers. If \code{0},
+then NNG automatically chooses an available ephemeral port.}
 
 \item{router_timeout}{Number of seconds to time out waiting for the \code{mirai}
 client to (dis)connect.}

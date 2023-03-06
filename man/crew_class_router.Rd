@@ -42,7 +42,11 @@ Other routers:
 \describe{
 \item{\code{name}}{Name of the router.}
 
-\item{\code{sockets}}{Websockets to listen for workers.}
+\item{\code{workers}}{Number of workers.}
+
+\item{\code{host}}{Local IP address.}
+
+\item{\code{port}}{Local TCP port.}
 
 \item{\code{router_timeout}}{Timeout in seconds for checking the \code{mirai}
 client connection.}
@@ -57,6 +61,7 @@ client connection.}
 \itemize{
 \item \href{#method-crew_class_router-new}{\code{crew_class_router$new()}}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
+\item \href{#method-crew_class_router-sockets}{\code{crew_class_router$sockets()}}
 \item \href{#method-crew_class_router-occupied}{\code{crew_class_router$occupied()}}
 \item \href{#method-crew_class_router-unoccupied}{\code{crew_class_router$unoccupied()}}
 \item \href{#method-crew_class_router-connected}{\code{crew_class_router$connected()}}
@@ -72,7 +77,9 @@ client connection.}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_router$new(
   name = NULL,
-  sockets = NULL,
+  workers = NULL,
+  host = NULL,
+  port = NULL,
   router_timeout = NULL,
   router_wait = NULL
 )}\if{html}{\out{</div>}}
@@ -83,11 +90,11 @@ client connection.}
 \describe{
 \item{\code{name}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{sockets}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
-
 \item{\code{router_timeout}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{router_wait}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{sockets}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -121,6 +128,20 @@ Validate the router.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-sockets"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-sockets}{}}}
+\subsection{Method \code{sockets()}}{
+Get all worker sockets.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$sockets()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character vector of websockets sockets that the
+\code{mirai} client is currently listening to.
 }
 }
 \if{html}{\out{<hr>}}

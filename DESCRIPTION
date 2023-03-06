@@ -34,7 +34,7 @@ Depends:
 Imports:
   callr,
   getip,
-  mirai (>= 0.7.2.9018),
+  mirai (>= 0.7.2.9021),
   R6,
   rlang,
   tibble,

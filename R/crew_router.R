@@ -11,8 +11,8 @@
 #'   into inside the local network.
 #'   If a character string, the router uses the specified IP address.
 #'   If `NULL`, the IP address defaults to `getip::getip(type = "local")`.
-#' @param port TCP port to listen for the workers. If `NULL`,
-#'   then an available port is supplied through `parallelly::freePort()`.
+#' @param port TCP port to listen for the workers. If `0`,
+#'   then NNG automatically chooses an available ephemeral port.
 #' @param router_timeout Number of seconds to time out waiting for the `mirai`
 #'   client to (dis)connect.
 #' @param router_wait Number of seconds to wait between iterations checking
@@ -20,35 +20,38 @@
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
-#' router$sockets_listening() # character(0)
+#' router$unoccupied() # character(0)
 #' router$connect()
-#' router$sockets_listening() # "ws://xx.xx.xx:xxxxx/x"
+#' router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
 #' router$disconnect()
-#' router$sockets_listening() # character(0)
+#' router$unoccupied() # character(0)
 #' }
 crew_router <- function(
   name = NULL,
   workers = 1L,
-  host = NULL,
-  port = NULL,
+  host = getip::getip(type = "local"),
+  port = 0L,
   router_timeout = 5,
   router_wait = 0.1
 ) {
   true(workers, is.numeric(.), length(.) == 1L, . > 0L, !anyNA(.))
   name <- as.character(name %|||% random_name())
-  host <- as.character(host %|||% local_ipv4())
-  port <- as.integer(port %|||% free_port())
+  workers <- as.integer(workers)
+  host <- as.character(host)
+  port <- as.integer(port)
   true(name, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
+  true(workers, is.integer(.), length(.) == 1L, !anyNA(.), . > 0L)
   true(host, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
   true(port, is.integer(.), length(.) == 1L, !anyNA(.))
   true(port, . >= 0L, . <= 65535L)
   true(router_timeout, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
   true(router_wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
   true(router_timeout >= router_wait)
-  sockets <- web_sockets(host = host, port = port, n = workers)
   router <- crew_class_router$new(
     name = name,
-    sockets = sockets,
+    workers = workers,
+    host = host,
+    port = port,
     router_timeout = router_timeout,
     router_wait = router_wait
   )
@@ -64,11 +67,11 @@ crew_router <- function(
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
-#' router$sockets_listening() # character(0)
+#' router$unoccupied() # character(0)
 #' router$connect()
-#' router$sockets_listening() # "ws://xx.xx.xx:xxxxx/x"
+#' router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
 #' router$disconnect()
-#' router$sockets_listening() # character(0)
+#' router$unoccupied() # character(0)
 #' }
 crew_class_router <- R6::R6Class(
   classname = "crew_class_router",
@@ -76,8 +79,12 @@ crew_class_router <- R6::R6Class(
   public = list(
     #' @field name Name of the router.
     name = NULL,
-    #' @field sockets Websockets to listen for workers.
-    sockets = NULL,
+    #' @field workers Number of workers.
+    workers = NULL,
+    #' @field host Local IP address.
+    host = NULL,
+    #' @field port Local TCP port.
+    port = NULL,
     #' @field router_timeout Timeout in seconds for checking the `mirai`
     #'   client connection.
     router_timeout = NULL,
@@ -87,26 +94,32 @@ crew_class_router <- R6::R6Class(
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
     #' @param name Argument passed from [crew_router()].
-    #' @param sockets Argument passed from [crew_router()].
+    #' @param workers Argument passed from [crew_router()].
+    #' @param host Argument passed from [crew_router()].
+    #' @param port Argument passed from [crew_router()].
     #' @param router_timeout Argument passed from [crew_router()].
     #' @param router_wait Argument passed from [crew_router()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' router <- crew_router()
-    #' router$sockets_listening() # character(0)
+    #' router$unoccupied() # character(0)
     #' router$connect()
-    #' router$sockets_listening() # "ws://xx.xx.xx:xxxxx/x"
+    #' router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
     #' router$disconnect()
-    #' router$sockets_listening() # character(0)
+    #' router$unoccupied() # character(0)
     #' }
     initialize = function(
       name = NULL,
-      sockets = NULL,
+      workers = NULL,
+      host = NULL,
+      port = NULL,
       router_timeout = NULL,
       router_wait = NULL
     ) {
       self$name <- name
-      self$sockets <- sockets
+      self$workers <- workers
+      self$host <- host
+      self$port <- port
       self$router_timeout <- router_timeout
       self$router_wait <- router_wait
     },
@@ -114,8 +127,10 @@ crew_class_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     validate = function() {
       true(self$name, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
-      true(self$sockets, is.character(.), nzchar(.), !anyNA(.))
-      true(all(grepl(pattern = "^ws\\:\\/\\/", x = self$sockets)))
+      true(self$workers, is.integer(.), length(.) == 1L, !anyNA(.), . > 0L)
+      true(self$host, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
+      true(self$port, is.integer(.), length(.) == 1L, !anyNA(.))
+      true(self$port, . >= 0L, . <= 65535L)
       true(
         self$router_timeout,
         is.numeric(.),
@@ -125,6 +140,13 @@ crew_class_router <- R6::R6Class(
       true(self$router_wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
       true(self$router_timeout >= self$router_wait)
       invisible()
+    },
+    #' @description Get all worker sockets.
+    #' @return Character vector of websockets sockets that the
+    #'   `mirai` client is currently listening to.
+    sockets = function() {
+      nodes <- mirai::daemons(.compute = self$name)$nodes
+      as.character(names(nodes))
     },
     #' @description Get occupied worker sockets.
     #' @return Character vector of websockets sockets where workers
@@ -156,8 +178,8 @@ crew_class_router <- R6::R6Class(
     connect = function() {
       if (isFALSE(self$connected())) {
         args <- list(
-          value = self$sockets,
-          nodes = length(self$sockets),
+          value = sprintf("ws://%s:%s", self$host, self$port),
+          nodes = self$workers,
           .compute = self$name
         )
         do.call(what = mirai::daemons, args = args)

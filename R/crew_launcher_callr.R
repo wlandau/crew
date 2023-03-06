@@ -4,13 +4,18 @@
 #' @family launchers
 #' @description Create an `R6` object to launch and maintain
 #'   `callr` workers for a controller.
-#' @param idle_time Maximum number of seconds that a worker can idle
+#' @param seconds_startup Seconds of startup time to allow.
+#'   A worker is unconditionally assumed to be alive
+#'   from the moment of its launch until `seconds_startup` seconds later.
+#'   After `seconds_startup` seconds, the worker is only
+#'   considered alive if it is actively connected to its assign websocket.
+#' @param seconds_idle Maximum number of seconds that a worker can idle
 #'   since the completion of the last task. If exceeded, the worker exits.
-#' @param wall_time Soft wall time in seconds. See the `wall_time`
+#' @param seconds_wall Soft wall time in seconds. See the `walltime`
 #'   argument of `mirai::server()`.
-#' @param poll_high High polling interval in seconds for the `mirai`
+#' @param seconds_poll_high High polling interval in seconds for the `mirai`
 #'   active queue.
-#' @param poll_low Low polling interval in seconds for the `mirai`
+#' @param seconds_poll_low Low polling interval in seconds for the `mirai`
 #'   active queue.
 #' @param launch_timeout Number of seconds to time out
 #'   waiting for a new group of workers to launch.
@@ -34,20 +39,20 @@
 #' router$disconnect()
 #' }
 crew_launcher_callr <- function(
-  idle_time = Inf,
-  wall_time = Inf,
-  poll_high = 5,
-  poll_low = 50,
-  launch_timeout = 5,
-  launch_wait = 0.1,
-  max_tasks = Inf,
-  async_dial = TRUE
+    seconds_startup = 1,
+    seconds_idle = Inf,
+    seconds_wall = Inf,
+    seconds_poll_high = 0.005,
+    seconds_poll_low = 0.05,
+    max_tasks = Inf,
+    async_dial = TRUE
 ) {
   launcher <- crew_class_launcher_callr$new(
-    idle_time = idle_time,
-    wall_time = wall_time,
-    poll_high = poll_high,
-    poll_low = poll_low,
+    seconds_startup = seconds_startup,
+    seconds_idle = seconds_idle,
+    seconds_wall = seconds_wall,
+    seconds_poll_high = seconds_poll_high,
+    seconds_poll_low = seconds_poll_low,
     launch_timeout = launch_timeout,
     launch_wait = launch_wait,
     max_tasks = max_tasks,
@@ -80,45 +85,29 @@ crew_class_launcher_callr <- R6::R6Class(
   inherit = crew_class_launcher,
   cloneable = FALSE,
   public = list(
-    #' @field processes List of `callr` process handles.
-    processes = list(),
-    #' @description Validate the launcher.
-    #' @return `NULL` (invisibly).
-    validate = function() {
-      super$validate()
-      walk(self$processes, ~true(.x, inherits(., "r_process")))
-      invisible()
-    },
-    #' @description Launch one or more workers.
-    #' @details The actual number of newly launched workers
-    #'   is less than or equal to the number of sockets
-    #'   supplied to `$populate()` minus the number of workers
-    #'   already running.
-    #' @return `NULL` (invisibly).
-    #' @param sockets Sockets where the workers will dial in.
-    launch = function(sockets = character(0)) {
-      new_processes <- map(
-        x = sockets,
-        f = ~callr::r_bg(
-          func = \(...) do.call(what = mirai::server, args = list(...)),
-          args = list(
-            url = .x,
-            idletime = self$idle_time * 1000,
-            walltime = self$wall_time * 1000,
-            tasklimit = self$max_tasks,
-            pollfreqh = self$poll_high * 1000,
-            pollfreql = self$poll_low * 1000,
-            asyncdial = self$async_dial
-          )
+    #' @description Launch a `callr` worker to dial into a socket.
+    #' @return A `callr::r_bg()` handle.
+    #' @param socket Socket where the worker will dial in.
+    launch_worker = function(socket) {
+      callr::r_bg(
+        func = \(...) do.call(what = mirai::server, args = list(...)),
+        args = list(
+          url = socket,
+          idletime = self$seconds_idle * 1000,
+          walltime = self$seconds_wall * 1000,
+          tasklimit = self$max_tasks,
+          pollfreqh = self$seconds_poll_high * 1000,
+          pollfreql = self$seconds_poll_low * 1000,
+          asyncdial = self$async_dial
         )
       )
-      self$processes <- c(self$processes, new_processes)
-      invisible()
     },
-    #' @description Terminate all workers.
+    #' @description Terminate a `callr` worker.
     #' @return `NULL` (invisibly).
-    terminate = function() {
-      walk(self$processes, ~.x$kill())
+    #' @param handle A `callr` process handle previously
+    #'   returned by `launch_worker()`.
+    terminate_worker = function(handle) {
+      handle$kill()
     }
   )
 )

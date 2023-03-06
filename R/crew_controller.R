@@ -114,21 +114,27 @@ crew_class_controller <- R6::R6Class(
     #' @return `NULL` (invisibly).
     connect = function() {
       self$router$connect()
-      self$launcher$populate(sockets = self$router$sockets)
-      invisible()
     },
-    #' @description Launch one or more workers.
-    #' @details The actual number of newly launched workers
-    #'   is capped at the max set when the controller
-    #'   was created. Unless you are launching an array of
-    #'   persistent workers or have `auto_scale = "none"`,
-    #'   this method does not usually need to be called
-    #'   directly because `push(scale = TRUE)` already launches
-    #'   workers depending on `auto_scale`.
+    #' @description Launch one or more workers and wait for them to connect.
     #' @return `NULL` (invisibly).
-    #' @param n Maximum number of workers to launch.
+    #' @param n Maximum number of workers to launch. The actual number
+    #'   launched is capped at the number of unoccupied worker connections
+    #'   out of the originally stated number of workers.
     launch = function(n = 1L) {
-      self$launcher$launch(n = n)
+      sockets <- utils::head(self$router$unoccupied(), n = n)
+      self$launcher$launch(sockets = sockets)
+      envir <- new.env(parent = emptyenv())
+      envir$sockets <- sockets
+      crew_wait(
+        ~{
+          envir$sockets <- setdiff(envir$sockets, self$router$occupied())
+          length(envir$sockets) == 0L
+        },
+        timeout = self$launcher$launch_timeout,
+        wait = self$launcher$launch_wait,
+        message = "Not all workers connected."
+      )
+      invisible()
     },
     #' @description Check for done tasks and move the results to
     #'   the results list.
@@ -170,7 +176,8 @@ crew_class_controller <- R6::R6Class(
     #'   number of workers.
     #' @return `NULL` (invisibly).
     scale = function() {
-      demand <- max(0L, length(self$queue) - self$launcher$running())
+      connected <- length(self$router$occupied())
+      demand <- max(0L, length(self$queue) - connected)
       n <- switch(
         self$auto_scale,
         demand = demand,

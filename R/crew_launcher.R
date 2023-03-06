@@ -7,6 +7,15 @@ crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
   cloneable = FALSE,
   public = list(
+    #' @field worker Named list of workers, where the names are the
+    #'   sockets they connect to.
+    workers = list(),
+    #' @field seconds_startup Seconds of startup time to allow.
+    #'   A worker is unconditionally assumed to be alive
+    #'   from the moment of its launch until `seconds_startup` seconds later.
+    #'   After `seconds_startup` seconds, the worker is only
+    #'   considered alive if it is actively connected to its assign websocket.
+    seconds_startup = NULL,
     #' @field idle_time Maximum number of seconds that a worker can idle
     #'   since the completion of the last task. If exceeded, the worker exits.
     idle_time = NULL,
@@ -33,6 +42,11 @@ crew_class_launcher <- R6::R6Class(
     async_dial = NULL,
     #' @description `mirai` launcher constructor.
     #' @return An `R6` object with the launcher.
+    #' @param seconds_startup Seconds of startup time to allow.
+    #'   A worker is unconditionally assumed to be alive
+    #'   from the moment of its launch until `seconds_startup` seconds later.
+    #'   After `seconds_startup` seconds, the worker is only
+    #'   considered alive if it is actively connected to its assign websocket.
     #' @param idle_time Maximum number of seconds that a worker can idle
     #'   since the completion of the last task. If exceeded, the worker exits.
     #' @param wall_time Soft wall time in seconds. See the `wall_time`
@@ -50,6 +64,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param async_dial Logical, whether the `mirai` workers should dial in
     #'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
     initialize = function(
+      seconds_startup = NULL,
       idle_time = NULL,
       wall_time = NULL,
       poll_high = NULL,
@@ -59,6 +74,7 @@ crew_class_launcher <- R6::R6Class(
       max_tasks = NULL,
       async_dial = NULL
     ) {
+      self$seconds_startup <- seconds_startup
       self$idle_time <- idle_time
       self$wall_time <- wall_time
       self$poll_high <- poll_high
@@ -71,7 +87,9 @@ crew_class_launcher <- R6::R6Class(
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
     validate = function() {
+      true(is.list(self$workers))
       fields <- c(
+        "seconds_startup",
         "idle_time",
         "wall_time",
         "poll_high",
@@ -85,6 +103,29 @@ crew_class_launcher <- R6::R6Class(
       }
       true(self$async_dial, isTRUE(.) || isFALSE(.))
       invisible()
+    }
+    #' @description Launch one or more workers.
+    #' @details If a worker is already assigned to a socket,
+    #'   the previous worker is terminated before the next
+    #'   one is launched.
+    #' @return `NULL` (invisibly).
+    #' @param sockets Sockets where the workers will dial in.
+    launch = function(sockets = character(0)) {
+      for (socket in sockets) {
+        self$terminate_worker(self$workers[[socket]])
+        handle <- self$launch_worker(socket)
+        self$workers[[socket]] <- list(
+          handle = handle,
+          socket = socket,
+          start = bench::hires_time()
+        )
+      }
+      invisible()
+    },
+    #' @description Terminate all workers.
+    #' @return `NULL` (invisibly).
+    terminate = function() {
+      walk(self$workers, ~self$terminate_worker(.x$handle))
     }
   )
 )

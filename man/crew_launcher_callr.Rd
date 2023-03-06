@@ -5,40 +5,45 @@
 \title{Create a launcher with \code{callr} workers.}
 \usage{
 crew_launcher_callr(
-  idle_time = Inf,
-  wall_time = Inf,
-  poll_high = 5,
-  poll_low = 50,
-  launch_timeout = 5,
-  launch_wait = 0.1,
+  seconds_start = 1,
+  seconds_idle = Inf,
+  seconds_wall = Inf,
+  seconds_poll_high = 0.005,
+  seconds_poll_low = 0.05,
   max_tasks = Inf,
   async_dial = TRUE
 )
 }
 \arguments{
-\item{idle_time}{Maximum number of seconds that a worker can idle
+\item{seconds_start}{Seconds of startup time to allow.
+A worker is unconditionally assumed to be alive
+from the moment of its launch until \code{seconds_start} seconds later.
+After \code{seconds_start} seconds, the worker is only
+considered alive if it is actively connected to its assign websocket.}
+
+\item{seconds_idle}{Maximum number of seconds that a worker can idle
 since the completion of the last task. If exceeded, the worker exits.}
 
-\item{wall_time}{Soft wall time in seconds. See the \code{wall_time}
+\item{seconds_wall}{Soft wall time in seconds. See the \code{walltime}
 argument of \code{mirai::server()}.}
 
-\item{poll_high}{High polling interval in seconds for the \code{mirai}
+\item{seconds_poll_high}{High polling interval in seconds for the \code{mirai}
 active queue.}
 
-\item{poll_low}{Low polling interval in seconds for the \code{mirai}
+\item{seconds_poll_low}{Low polling interval in seconds for the \code{mirai}
 active queue.}
-
-\item{launch_timeout}{Number of seconds to time out
-waiting for a new group of workers to launch.}
-
-\item{launch_wait}{Number of seconds to wait between checks
-that newly launched workers are ready to receive tasks.}
 
 \item{max_tasks}{Maximum number of tasks that a worker will do before
 exiting.}
 
 \item{async_dial}{Logical, whether the \code{mirai} workers should dial in
 asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
+
+\item{launch_timeout}{Number of seconds to time out
+waiting for a new group of workers to launch.}
+
+\item{launch_wait}{Number of seconds to wait between checks
+that newly launched workers are ready to receive tasks.}
 }
 \description{
 Create an \code{R6} object to launch and maintain

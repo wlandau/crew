@@ -4,10 +4,10 @@
 #' @family launchers
 #' @description Create an `R6` object to launch and maintain
 #'   `callr` workers for a controller.
-#' @param seconds_startup Seconds of startup time to allow.
+#' @param seconds_start Seconds of startup time to allow.
 #'   A worker is unconditionally assumed to be alive
-#'   from the moment of its launch until `seconds_startup` seconds later.
-#'   After `seconds_startup` seconds, the worker is only
+#'   from the moment of its launch until `seconds_start` seconds later.
+#'   After `seconds_start` seconds, the worker is only
 #'   considered alive if it is actively connected to its assign websocket.
 #' @param seconds_idle Maximum number of seconds that a worker can idle
 #'   since the completion of the last task. If exceeded, the worker exits.
@@ -39,16 +39,16 @@
 #' router$disconnect()
 #' }
 crew_launcher_callr <- function(
-    seconds_startup = 1,
-    seconds_idle = Inf,
-    seconds_wall = Inf,
-    seconds_poll_high = 0.005,
-    seconds_poll_low = 0.05,
-    max_tasks = Inf,
-    async_dial = TRUE
+  seconds_start = 1,
+  seconds_idle = Inf,
+  seconds_wall = Inf,
+  seconds_poll_high = 0.005,
+  seconds_poll_low = 0.05,
+  max_tasks = Inf,
+  async_dial = TRUE
 ) {
   launcher <- crew_class_launcher_callr$new(
-    seconds_startup = seconds_startup,
+    seconds_start = seconds_start,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
     seconds_poll_high = seconds_poll_high,

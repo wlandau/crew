@@ -7,15 +7,15 @@ crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
   cloneable = FALSE,
   public = list(
-    #' @field worker Named list of workers, where the names are the
+    #' @field workers Named list of workers, where the names are the
     #'   sockets they connect to.
     workers = list(),
-    #' @field seconds_startup Seconds of startup time to allow.
+    #' @field seconds_start Seconds of startup time to allow.
     #'   A worker is unconditionally assumed to be alive
-    #'   from the moment of its launch until `seconds_startup` seconds later.
-    #'   After `seconds_startup` seconds, the worker is only
+    #'   from the moment of its launch until `seconds_start` seconds later.
+    #'   After `seconds_start` seconds, the worker is only
     #'   considered alive if it is actively connected to its assign websocket.
-    seconds_startup = NULL,
+    seconds_start = NULL,
     #' @field idle_time Maximum number of seconds that a worker can idle
     #'   since the completion of the last task. If exceeded, the worker exits.
     idle_time = NULL,
@@ -42,10 +42,10 @@ crew_class_launcher <- R6::R6Class(
     async_dial = NULL,
     #' @description `mirai` launcher constructor.
     #' @return An `R6` object with the launcher.
-    #' @param seconds_startup Seconds of startup time to allow.
+    #' @param seconds_start Seconds of startup time to allow.
     #'   A worker is unconditionally assumed to be alive
-    #'   from the moment of its launch until `seconds_startup` seconds later.
-    #'   After `seconds_startup` seconds, the worker is only
+    #'   from the moment of its launch until `seconds_start` seconds later.
+    #'   After `seconds_start` seconds, the worker is only
     #'   considered alive if it is actively connected to its assign websocket.
     #' @param idle_time Maximum number of seconds that a worker can idle
     #'   since the completion of the last task. If exceeded, the worker exits.
@@ -64,7 +64,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param async_dial Logical, whether the `mirai` workers should dial in
     #'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
     initialize = function(
-      seconds_startup = NULL,
+      seconds_start = NULL,
       idle_time = NULL,
       wall_time = NULL,
       poll_high = NULL,
@@ -74,7 +74,7 @@ crew_class_launcher <- R6::R6Class(
       max_tasks = NULL,
       async_dial = NULL
     ) {
-      self$seconds_startup <- seconds_startup
+      self$seconds_start <- seconds_start
       self$idle_time <- idle_time
       self$wall_time <- wall_time
       self$poll_high <- poll_high
@@ -89,7 +89,7 @@ crew_class_launcher <- R6::R6Class(
     validate = function() {
       true(is.list(self$workers))
       fields <- c(
-        "seconds_startup",
+        "seconds_start",
         "idle_time",
         "wall_time",
         "poll_high",
@@ -103,7 +103,14 @@ crew_class_launcher <- R6::R6Class(
       }
       true(self$async_dial, isTRUE(.) || isFALSE(.))
       invisible()
-    }
+    },
+    #' @description Get the workers that recently launched
+    #'   (within `seconds_start` seconds).
+    #' @return Character vector of worker websockets.
+    starting = function() {
+      threshold <- bench::hires_time() - self$seconds_start
+      names(fltr(self$workers, ~(.x$start > threshold)))
+    },
     #' @description Launch one or more workers.
     #' @details If a worker is already assigned to a socket,
     #'   the previous worker is terminated before the next

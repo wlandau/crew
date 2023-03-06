@@ -50,6 +50,8 @@ Other controllers:
 \item \href{#method-crew_class_controller-new}{\code{crew_class_controller$new()}}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
 \item \href{#method-crew_class_controller-connect}{\code{crew_class_controller$connect()}}
+\item \href{#method-crew_class_controller-occupied}{\code{crew_class_controller$occupied()}}
+\item \href{#method-crew_class_controller-unoccupied}{\code{crew_class_controller$unoccupied()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
@@ -123,10 +125,45 @@ with the launcher.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-occupied"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-occupied}{}}}
+\subsection{Method \code{occupied()}}{
+Get occupied workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$occupied()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Includes both actively connected and
+recently launched workers.
+}
+
+\subsection{Returns}{
+Character vector of websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-unoccupied"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-unoccupied}{}}}
+\subsection{Method \code{unoccupied()}}{
+Get unoccupied workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unoccupied()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Includes disconnected workers that did not recently launch.
+}
+
+\subsection{Returns}{
+Character vector of websockets.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-launch}{}}}
 \subsection{Method \code{launch()}}{
-Launch one or more workers.
+Launch one or more workers and wait for them to connect.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$launch(n = 1L)}\if{html}{\out{</div>}}
 }
@@ -134,20 +171,12 @@ Launch one or more workers.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{Maximum number of workers to launch.}
+\item{\code{n}}{Maximum number of workers to launch. The actual number
+launched is capped at the number of unoccupied worker connections
+out of the originally stated number of workers.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Details}{
-The actual number of newly launched workers
-is capped at the max set when the controller
-was created. Unless you are launching an array of
-persistent workers or have \code{auto_scale = "none"},
-this method does not usually need to be called
-directly because \code{push(scale = TRUE)} already launches
-workers depending on \code{auto_scale}.
-}
-
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

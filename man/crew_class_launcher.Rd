@@ -16,6 +16,15 @@ Other launchers:
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
+\item{\code{workers}}{Named list of workers, where the names are the
+sockets they connect to.}
+
+\item{\code{seconds_start}}{Seconds of startup time to allow.
+A worker is unconditionally assumed to be alive
+from the moment of its launch until \code{seconds_start} seconds later.
+After \code{seconds_start} seconds, the worker is only
+considered alive if it is actively connected to its assign websocket.}
+
 \item{\code{idle_time}}{Maximum number of seconds that a worker can idle
 since the completion of the last task. If exceeded, the worker exits.}
 
@@ -47,6 +56,9 @@ asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 \itemize{
 \item \href{#method-crew_class_launcher-new}{\code{crew_class_launcher$new()}}
 \item \href{#method-crew_class_launcher-validate}{\code{crew_class_launcher$validate()}}
+\item \href{#method-crew_class_launcher-starting}{\code{crew_class_launcher$starting()}}
+\item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
+\item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -56,6 +68,7 @@ asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 \code{mirai} launcher constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$new(
+  seconds_start = NULL,
   idle_time = NULL,
   wall_time = NULL,
   poll_high = NULL,
@@ -70,6 +83,12 @@ asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{seconds_start}}{Seconds of startup time to allow.
+A worker is unconditionally assumed to be alive
+from the moment of its launch until \code{seconds_start} seconds later.
+After \code{seconds_start} seconds, the worker is only
+considered alive if it is actively connected to its assign websocket.}
+
 \item{\code{idle_time}}{Maximum number of seconds that a worker can idle
 since the completion of the last task. If exceeded, the worker exits.}
 
@@ -107,6 +126,59 @@ An \code{R6} object with the launcher.
 Validate the launcher.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$validate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-starting"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-starting}{}}}
+\subsection{Method \code{starting()}}{
+Get the workers that recently launched
+(within \code{seconds_start} seconds).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$starting()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character vector of worker websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-launch"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-launch}{}}}
+\subsection{Method \code{launch()}}{
+Launch one or more workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(sockets = character(0))}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sockets}}{Sockets where the workers will dial in.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+If a worker is already assigned to a socket,
+the previous worker is terminated before the next
+one is launched.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-terminate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate}{}}}
+\subsection{Method \code{terminate()}}{
+Terminate all workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

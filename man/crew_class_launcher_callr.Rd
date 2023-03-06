@@ -32,77 +32,61 @@ Other launchers:
 \section{Super class}{
 \code{\link[crew:crew_class_launcher]{crew::crew_class_launcher}} -> \code{crew_class_launcher_callr}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{processes}}{List of \code{callr} process handles.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-crew_class_launcher_callr-validate}{\code{crew_class_launcher_callr$validate()}}
-\item \href{#method-crew_class_launcher_callr-launch}{\code{crew_class_launcher_callr$launch()}}
-\item \href{#method-crew_class_launcher_callr-terminate}{\code{crew_class_launcher_callr$terminate()}}
+\item \href{#method-crew_class_launcher_callr-launch_worker}{\code{crew_class_launcher_callr$launch_worker()}}
+\item \href{#method-crew_class_launcher_callr-terminate_worker}{\code{crew_class_launcher_callr$terminate_worker()}}
 }
 }
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="initialize"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-initialize'><code>crew::crew_class_launcher$initialize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch'><code>crew::crew_class_launcher$launch()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="starting"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-starting'><code>crew::crew_class_launcher$starting()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate'><code>crew::crew_class_launcher$terminate()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="validate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-validate'><code>crew::crew_class_launcher$validate()</code></a></span></li>
 </ul>
 </details>
 }}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher_callr-validate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher_callr-validate}{}}}
-\subsection{Method \code{validate()}}{
-Validate the launcher.
+\if{html}{\out{<a id="method-crew_class_launcher_callr-launch_worker"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher_callr-launch_worker}{}}}
+\subsection{Method \code{launch_worker()}}{
+Launch a \code{callr} worker to dial into a socket.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$validate()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher_callr-launch"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher_callr-launch}{}}}
-\subsection{Method \code{launch()}}{
-Launch one or more workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$launch(sockets = character(0))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$launch_worker(socket)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{sockets}}{Sockets where the workers will dial in.}
+\item{\code{socket}}{Socket where the worker will dial in.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Details}{
-The actual number of newly launched workers
-is less than or equal to the number of sockets
-supplied to \verb{$populate()} minus the number of workers
-already running.
-}
-
 \subsection{Returns}{
-\code{NULL} (invisibly).
+A \code{callr::r_bg()} handle.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher_callr-terminate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher_callr-terminate}{}}}
-\subsection{Method \code{terminate()}}{
-Terminate all workers.
+\if{html}{\out{<a id="method-crew_class_launcher_callr-terminate_worker"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher_callr-terminate_worker}{}}}
+\subsection{Method \code{terminate_worker()}}{
+Terminate a \code{callr} worker.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$terminate()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$terminate_worker(handle)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{handle}}{A \code{callr} process handle previously
+returned by \code{launch_worker()}.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

@@ -11,6 +11,7 @@ crew_controller_callr(
   port = NULL,
   router_timeout = 5,
   router_wait = 0.1,
+  seconds_start = 1,
   idle_time = Inf,
   wall_time = Inf,
   poll_high = 5,
@@ -42,17 +43,11 @@ client to (dis)connect.}
 \item{router_wait}{Number of seconds to wait between iterations checking
 if the \code{mirai} client is (dis)connected.}
 
-\item{idle_time}{Maximum number of seconds that a worker can idle
-since the completion of the last task. If exceeded, the worker exits.}
-
-\item{wall_time}{Soft wall time in seconds. See the \code{wall_time}
-argument of \code{mirai::server()}.}
-
-\item{poll_high}{High polling interval in seconds for the \code{mirai}
-active queue.}
-
-\item{poll_low}{Low polling interval in seconds for the \code{mirai}
-active queue.}
+\item{seconds_start}{Seconds of startup time to allow.
+A worker is unconditionally assumed to be alive
+from the moment of its launch until \code{seconds_start} seconds later.
+After \code{seconds_start} seconds, the worker is only
+considered alive if it is actively connected to its assign websocket.}
 
 \item{launch_timeout}{Number of seconds to time out
 waiting for a new group of workers to launch.}

@@ -115,25 +115,27 @@ crew_class_controller <- R6::R6Class(
     connect = function() {
       self$router$connect()
     },
+    #' @description Get occupied workers.
+    #' @details Includes both actively connected and
+    #'   recently launched workers.
+    #' @return Character vector of websockets.
+    occupied = function() {
+      union(self$router$occupied(), self$launcher$starting())
+    },
+    #' @description Get unoccupied workers.
+    #' @details Includes disconnected workers that did not recently launch.
+    #' @return Character vector of websockets.
+    unoccupied = function() {
+      setdiff(self$router$unoccupied(), self$launcher$starting())
+    },
     #' @description Launch one or more workers and wait for them to connect.
     #' @return `NULL` (invisibly).
     #' @param n Maximum number of workers to launch. The actual number
     #'   launched is capped at the number of unoccupied worker connections
     #'   out of the originally stated number of workers.
     launch = function(n = 1L) {
-      sockets <- utils::head(self$router$unoccupied(), n = n)
+      sockets <- utils::head(self$unoccupied(), n = n)
       self$launcher$launch(sockets = sockets)
-      envir <- new.env(parent = emptyenv())
-      envir$sockets <- sockets
-      crew_wait(
-        ~{
-          envir$sockets <- setdiff(envir$sockets, self$router$occupied())
-          length(envir$sockets) == 0L
-        },
-        timeout = self$launcher$launch_timeout,
-        wait = self$launcher$launch_wait,
-        message = "Not all workers connected."
-      )
       invisible()
     },
     #' @description Check for done tasks and move the results to
@@ -176,8 +178,7 @@ crew_class_controller <- R6::R6Class(
     #'   number of workers.
     #' @return `NULL` (invisibly).
     scale = function() {
-      connected <- length(self$router$occupied())
-      demand <- max(0L, length(self$queue) - connected)
+      demand <- max(0L, length(self$queue) - length(self$occupied()))
       n <- switch(
         self$auto_scale,
         demand = demand,

@@ -22,6 +22,7 @@ crew_controller_callr <- function(
   port = NULL,
   router_timeout = 5,
   router_wait = 0.1,
+  seconds_start = 1,
   idle_time = Inf,
   wall_time = Inf,
   poll_high = 5,
@@ -41,6 +42,7 @@ crew_controller_callr <- function(
     router_wait = router_wait
   )
   launcher <- crew_launcher_callr(
+    seconds_start = seconds_start,
     idle_time = idle_time,
     wall_time = wall_time,
     poll_high = poll_high,

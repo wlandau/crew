@@ -44,8 +44,6 @@ crew_launcher_callr <- function(
   async_dial = TRUE
 ) {
   launcher <- crew_class_launcher_callr$new(
-    sockets = character(0),
-    workers = list(),
     idle_time = idle_time,
     wall_time = wall_time,
     poll_high = poll_high,
@@ -78,107 +76,17 @@ crew_launcher_callr <- function(
 #' router$disconnect()
 #' }
 crew_class_launcher_callr <- R6::R6Class(
-  classname = c("crew_class_launcher_callr"),
+  classname = "crew_class_launcher_callr",
+  inherit = crew_class_launcher,
   cloneable = FALSE,
   public = list(
-    #' @field sockets Websockets for listening to the workers.
-    sockets = NULL,
-    #' @field workers List of `callr::r_bg()` handles for workers.
-    #'   The handle is `NA` if it is not yet called.
-    workers = NULL,
-    #' @field idle_time Argument to `crew_launcher_callr()`.
-    idle_time = NULL,
-    #' @field wall_time Argument to `crew_launcher_callr()`.
-    wall_time = NULL,
-    #' @field poll_high Argument to `crew_launcher_callr()`.
-    poll_high = NULL,
-    #' @field poll_low Argument to `crew_launcher_callr()`.
-    poll_low = NULL,
-    #' @field launch_timeout Argument to `crew_launcher_callr()`.
-    launch_timeout = NULL,
-    #' @field launch_wait Argument to `crew_launcher_callr()`.
-    launch_wait = NULL,
-    #' @field max_tasks Argument to `crew_launcher_callr()`.
-    max_tasks = NULL,
-    #' @field async_dial Argument to `crew_launcher_callr()`.
-    async_dial = NULL,
-    #' @description `mirai` launcher constructor.
-    #' @return An `R6` object with the launcher.
-    #' @param sockets Argument to `crew_launcher_callr()`.
-    #' @param workers Argument to `crew_launcher_callr()`.
-    #' @param idle_time Argument to `crew_launcher_callr()`.
-    #' @param wall_time Argument to `crew_launcher_callr()`.
-    #' @param poll_high Argument to `crew_launcher_callr()`.
-    #' @param poll_low Argument to `crew_launcher_callr()`.
-    #' @param launch_timeout Argument to `crew_launcher_callr()`.
-    #' @param launch_wait Argument to `crew_launcher_callr()`.
-    #' @param max_tasks Argument to `crew_launcher_callr()`.
-    #' @param async_dial Argument to `crew_launcher_callr()`.
-    #' @examples
-    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' router <- crew_router()
-    #' router$connect()
-    #' launcher <- crew_launcher_callr()
-    #' launcher$populate(sockets = router$sockets_listening())
-    #' launcher$running() # 0
-    #' launcher$launch()
-    #' launcher$running() # 1
-    #' launcher$terminate()
-    #' launcher$running() # 0
-    #' router$disconnect()
-    #' }
-    initialize = function(
-      sockets = NULL,
-      workers = NULL,
-      idle_time = NULL,
-      wall_time = NULL,
-      poll_high = NULL,
-      poll_low = NULL,
-      launch_timeout = NULL,
-      launch_wait = NULL,
-      max_tasks = NULL,
-      async_dial = NULL
-    ) {
-      self$sockets <- sockets
-      self$workers <- workers
-      self$idle_time <- idle_time
-      self$wall_time <- wall_time
-      self$poll_high <- poll_high
-      self$poll_low <- poll_low
-      self$launch_timeout <- launch_timeout
-      self$launch_wait <- launch_wait
-      self$max_tasks <- max_tasks
-      self$async_dial <- async_dial
-    },
+    #' @field processes List of `callr` process handles.
+    processes = list(),
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
     validate = function() {
-      true(self$sockets, is.character(.), nzchar(.), !anyNA(.))
-      true(self$workers, is.list(.), length(.) == length(self$sockets))
-      fields <- c(
-        "idle_time",
-        "wall_time",
-        "poll_high",
-        "poll_low",
-        "launch_timeout",
-        "launch_wait",
-        "max_tasks"
-      )
-      for (field in fields) {
-        true(self[[field]], is.numeric(.), . > 0, length(.) == 1L, !anyNA(.))
-      }
-      true(self$async_dial, isTRUE(.) || isFALSE(.))
-      invisible()
-    },
-    #' @description Populate workers.
-    #' @return `NULL` (invisibly).
-    #' @param sockets Character vector of local websockets that the workers
-    #'   will use to dial in to receive tasks.
-    populate = function(sockets = character(0)) {
-      true(sockets, length(.) > 0L, is.character(.), nzchar(.), !anyNA(.))
-      self$sockets <- sockets
-      self$workers <- as.list(rep(NA, length(sockets)))
-      self$validate()
+      super$validate()
+      walk(self$processes, ~true(.x, inherits(., "r_process")))
       invisible()
     },
     #' @description Launch one or more workers.
@@ -187,16 +95,14 @@ crew_class_launcher_callr <- R6::R6Class(
     #'   supplied to `$populate()` minus the number of workers
     #'   already running.
     #' @return `NULL` (invisibly).
-    #' @param n Maximum number of workers to launch.
-    launch = function(n = 1L) {
-      available <- map_lgl(x = self$workers, f = ~!process_running(.x))
-      index <- utils::head(which(available), n = n)
-      self$workers[index] <- map(
-        x = index,
+    #' @param sockets Sockets where the workers will dial in.
+    launch = function(sockets = character(0)) {
+      new_processes <- map(
+        x = sockets,
         f = ~callr::r_bg(
           func = \(...) do.call(what = mirai::server, args = list(...)),
           args = list(
-            url = self$sockets[.x],
+            url = .x,
             idletime = self$idle_time * 1000,
             walltime = self$wall_time * 1000,
             tasklimit = self$max_tasks,
@@ -206,13 +112,13 @@ crew_class_launcher_callr <- R6::R6Class(
           )
         )
       )
+      self$processes <- c(self$processes, new_processes)
       invisible()
     },
     #' @description Terminate all workers.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      lapply(self$workers, \(x) if (inherits(x, "r_process")) x$kill())
-      invisible()
+      walk(self$processes, ~.x$kill())
     }
   )
 )

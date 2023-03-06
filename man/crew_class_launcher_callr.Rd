@@ -22,133 +22,38 @@ launcher$terminate()
 launcher$running() # 0
 router$disconnect()
 }
-
-## ------------------------------------------------
-## Method `crew_class_launcher_callr$new`
-## ------------------------------------------------
-
-if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-router <- crew_router()
-router$connect()
-launcher <- crew_launcher_callr()
-launcher$populate(sockets = router$sockets_listening())
-launcher$running() # 0
-launcher$launch()
-launcher$running() # 1
-launcher$terminate()
-launcher$running() # 0
-router$disconnect()
-}
 }
 \seealso{
 Other launchers: 
+\code{\link{crew_class_launcher}},
 \code{\link{crew_launcher_callr}()}
 }
 \concept{launchers}
+\section{Super class}{
+\code{\link[crew:crew_class_launcher]{crew::crew_class_launcher}} -> \code{crew_class_launcher_callr}
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{sockets}}{Websockets for listening to the workers.}
-
-\item{\code{workers}}{List of \code{callr::r_bg()} handles for workers.
-The handle is \code{NA} if it is not yet called.}
-
-\item{\code{idle_time}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{wall_time}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{poll_high}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{poll_low}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{launch_timeout}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{launch_wait}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{max_tasks}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{async_dial}}{Argument to \code{crew_launcher_callr()}.}
+\item{\code{processes}}{List of \code{callr} process handles.}
 }
 \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-crew_class_launcher_callr-new}{\code{crew_class_launcher_callr$new()}}
 \item \href{#method-crew_class_launcher_callr-validate}{\code{crew_class_launcher_callr$validate()}}
-\item \href{#method-crew_class_launcher_callr-populate}{\code{crew_class_launcher_callr$populate()}}
 \item \href{#method-crew_class_launcher_callr-launch}{\code{crew_class_launcher_callr$launch()}}
 \item \href{#method-crew_class_launcher_callr-terminate}{\code{crew_class_launcher_callr$terminate()}}
 }
 }
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher_callr-new"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher_callr-new}{}}}
-\subsection{Method \code{new()}}{
-\code{mirai} launcher constructor.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$new(
-  sockets = NULL,
-  workers = NULL,
-  idle_time = NULL,
-  wall_time = NULL,
-  poll_high = NULL,
-  poll_low = NULL,
-  launch_timeout = NULL,
-  launch_wait = NULL,
-  max_tasks = NULL,
-  async_dial = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{sockets}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{workers}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{idle_time}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{wall_time}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{poll_high}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{poll_low}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{launch_timeout}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{launch_wait}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{max_tasks}}{Argument to \code{crew_launcher_callr()}.}
-
-\item{\code{async_dial}}{Argument to \code{crew_launcher_callr()}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-An \code{R6} object with the launcher.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-router <- crew_router()
-router$connect()
-launcher <- crew_launcher_callr()
-launcher$populate(sockets = router$sockets_listening())
-launcher$running() # 0
-launcher$launch()
-launcher$running() # 1
-launcher$terminate()
-launcher$running() # 0
-router$disconnect()
-}
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="initialize"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-initialize'><code>crew::crew_class_launcher$initialize()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher_callr-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher_callr-validate}{}}}
@@ -163,39 +68,18 @@ Validate the launcher.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher_callr-populate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher_callr-populate}{}}}
-\subsection{Method \code{populate()}}{
-Populate workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$populate(sockets = character(0))}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{sockets}}{Character vector of local websockets that the workers
-will use to dial in to receive tasks.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher_callr-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher_callr-launch}{}}}
 \subsection{Method \code{launch()}}{
 Launch one or more workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$launch(n = 1L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$launch(sockets = character(0))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{Maximum number of workers to launch.}
+\item{\code{sockets}}{Sockets where the workers will dial in.}
 }
 \if{html}{\out{</div>}}
 }

@@ -12,11 +12,11 @@ See \code{\link[=crew_router]{crew_router()}}.
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
-router$sockets_listening() # character(0)
+router$unoccupied() # character(0)
 router$connect()
-router$sockets_listening() # "ws://xx.xx.xx:xxxxx/x"
+router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
 router$disconnect()
-router$sockets_listening() # character(0)
+router$unoccupied() # character(0)
 }
 
 ## ------------------------------------------------
@@ -25,11 +25,11 @@ router$sockets_listening() # character(0)
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
-router$sockets_listening() # character(0)
+router$unoccupied() # character(0)
 router$connect()
-router$sockets_listening() # "ws://xx.xx.xx:xxxxx/x"
+router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
 router$disconnect()
-router$sockets_listening() # character(0)
+router$unoccupied() # character(0)
 }
 }
 \seealso{
@@ -90,11 +90,15 @@ client connection.}
 \describe{
 \item{\code{name}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
+\item{\code{workers}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{host}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{port}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+
 \item{\code{router_timeout}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{router_wait}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
-
-\item{\code{sockets}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -105,11 +109,11 @@ An \code{R6} object with the router.
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
-router$sockets_listening() # character(0)
+router$unoccupied() # character(0)
 router$connect()
-router$sockets_listening() # "ws://xx.xx.xx:xxxxx/x"
+router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
 router$disconnect()
-router$sockets_listening() # character(0)
+router$unoccupied() # character(0)
 }
 }
 \if{html}{\out{</div>}}

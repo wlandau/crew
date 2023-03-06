@@ -60,7 +60,8 @@ router$disconnect()
 }
 \seealso{
 Other launchers: 
-\code{\link{crew_class_launcher_callr}}
+\code{\link{crew_class_launcher_callr}},
+\code{\link{crew_class_launcher}}
 }
 \concept{launchers}
 \keyword{internal}

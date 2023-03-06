@@ -40,11 +40,11 @@ client.
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
-router$sockets_listening() # character(0)
+router$unoccupied() # character(0)
 router$connect()
-router$sockets_listening() # "ws://xx.xx.xx:xxxxx/x"
+router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
 router$disconnect()
-router$sockets_listening() # character(0)
+router$unoccupied() # character(0)
 }
 }
 \seealso{

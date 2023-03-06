@@ -104,7 +104,7 @@ crew_class_controller <- R6::R6Class(
       true(is.list(self$queue))
       true(is.list(self$results))
       true(inherits(self$router, "crew_class_router"))
-      true(is_launcher(self$launcher))
+      true(inherits(self$launcher, "crew_class_launcher"))
       self$router$validate()
       self$launcher$validate()
       invisible()

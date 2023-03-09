@@ -150,23 +150,28 @@ crew_class_router <- R6::R6Class(
     #' @return Character vector of websockets sockets that the
     #'   `mirai` client is currently listening to.
     sockets = function() {
-      router_sockets(self$nodes())
+      router_nodes_sockets(self$nodes())
     },
     #' @description Get the sockets of connected workers.
     #' @return Character vector of worker websockets.
     connected = function() {
-      router_connected(self$nodes())
+      router_nodes_connected(self$nodes())
+    },
+    #' @description Get the sockets of disconnected workers.
+    #' @return Character vector of worker websockets.
+    disconnected = function() {
+      router_nodes_disconnected(self$nodes())
     },
     #' @description Get the sockets of busy workers.
     #' @return Character vector of worker websockets.
     busy = function() {
-      router_busy(self$nodes())
+      router_nodes_busy(self$nodes())
     },
     #' @description Get the sockets of idle workers.
     #' @return Character vector of worker websockets.
     #' @param nodes A named integer matrix from `mirai::daemons()$nodes`.
     idle = function() {
-      router_idle(self$nodes())
+      router_nodes_idle(self$nodes())
     },
     #' @description Check if the `mirai` client is listening
     #'   to worker websockets.
@@ -220,24 +225,34 @@ crew_class_router <- R6::R6Class(
   )
 )
 
-router_sockets <- function(nodes) {
+router_nodes_sockets <- function(nodes) {
   if (anyNA(nodes)) {
     return(character(0))
   }
   rownames(nodes)
 }
 
-router_connected <- function(nodes) {
+router_nodes_connected <- function(nodes) {
   if (anyNA(nodes)) {
     return(character(0))
   }
   status_online <- nodes[, "status_online", drop = TRUE]
-  connected <- as.logical(status_online)
+  connected <- status_online > 0L
   worker_sockets <- rownames(nodes)
   worker_sockets[connected]
 }
 
-router_busy <- function(nodes) {
+router_nodes_disconnected <- function(nodes) {
+  if (anyNA(nodes)) {
+    return(character(0))
+  }
+  status_online <- nodes[, "status_online", drop = TRUE]
+  disconnected <- status_online < 1L
+  worker_sockets <- rownames(nodes)
+  worker_sockets[disconnected]
+}
+
+router_nodes_busy <- function(nodes) {
   if (anyNA(nodes)) {
     return(character(0))
   }
@@ -245,14 +260,14 @@ router_busy <- function(nodes) {
   status_busy <- nodes[, "status_busy", drop = TRUE]
   tasks_assigned <- nodes[, "tasks_assigned", drop = TRUE]
   tasks_complete <- nodes[, "tasks_complete", drop = TRUE]
-  connected <- as.logical(status_online)
-  busy <- as.logical(status_busy)
+  connected <- status_online > 0L
+  busy <- status_busy > 0L
   backlogged <- (tasks_assigned - tasks_complete) > 0L
   worker_sockets <- rownames(nodes)
   worker_sockets[connected & (busy | backlogged)]
 }
 
-router_idle <- function(nodes) {
+router_nodes_idle <- function(nodes) {
   if (anyNA(nodes)) {
     return(character(0))
   }
@@ -260,8 +275,8 @@ router_idle <- function(nodes) {
   status_busy <- nodes[, "status_busy", drop = TRUE]
   tasks_assigned <- nodes[, "tasks_assigned", drop = TRUE]
   tasks_complete <- nodes[, "tasks_complete", drop = TRUE]
-  connected <- as.logical(status_online)
-  busy <- as.logical(status_busy)
+  connected <- status_online > 0L
+  busy <- status_busy > 0L
   backlogged <- (tasks_assigned - tasks_complete) > 0L
   worker_sockets <- rownames(nodes)
   worker_sockets[connected & !busy & !backlogged]

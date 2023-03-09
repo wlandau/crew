@@ -168,10 +168,16 @@ crew_class_launcher <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Terminate all workers.
+    #' @description Terminate one or more workers.
     #' @return `NULL` (invisibly).
-    terminate = function() {
-      for (handle in self$workers$handle) {
+    #' @param sockets Character vector of sockets of the workers
+    #'   to terminate.
+    terminate = function(sockets = NULL) {
+      sockets <- sockets %|||% self$workers$socket
+      matches <- match(x = sockets, table = self$workers$socket)
+      true(!anyNA(matches), message = "bad websocket on terminate.")
+      for (index in matches) {
+        handle <- self$workers$handle[[index]]
         if (!is_crew_null(handle)) {
           self$terminate_worker(handle)
         }

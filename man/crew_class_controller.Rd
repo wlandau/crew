@@ -49,9 +49,7 @@ Other controllers:
 \itemize{
 \item \href{#method-crew_class_controller-new}{\code{crew_class_controller$new()}}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
-\item \href{#method-crew_class_controller-connect}{\code{crew_class_controller$connect()}}
-\item \href{#method-crew_class_controller-occupied}{\code{crew_class_controller$occupied()}}
-\item \href{#method-crew_class_controller-unoccupied}{\code{crew_class_controller$unoccupied()}}
+\item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
@@ -111,13 +109,13 @@ Validate the router.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-connect"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-connect}{}}}
-\subsection{Method \code{connect()}}{
-Connect the router and register the TCP sockets
+\if{html}{\out{<a id="method-crew_class_controller-start"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-start}{}}}
+\subsection{Method \code{start()}}{
+Start the mirai client and register the websockets
 with the launcher.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$connect()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$start()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -125,45 +123,10 @@ with the launcher.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-occupied"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-occupied}{}}}
-\subsection{Method \code{occupied()}}{
-Get occupied workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$occupied()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Includes both actively connected and
-recently launched workers.
-}
-
-\subsection{Returns}{
-Character vector of websockets.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-unoccupied"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-unoccupied}{}}}
-\subsection{Method \code{unoccupied()}}{
-Get unoccupied workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unoccupied()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Includes disconnected workers that did not recently launch.
-}
-
-\subsection{Returns}{
-Character vector of websockets.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-launch}{}}}
 \subsection{Method \code{launch()}}{
-Launch one or more workers and wait for them to connect.
+Launch one or more workers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$launch(n = 1L)}\if{html}{\out{</div>}}
 }
@@ -171,9 +134,16 @@ Launch one or more workers and wait for them to connect.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{Maximum number of workers to launch. The actual number
-launched is capped at the number of unoccupied worker connections
-out of the originally stated number of workers.}
+\item{\code{n}}{Number of workers to try to launch. The actual
+number launched is capped so that no more than "\code{workers}"
+workers running at a given time, where "\code{workers}"
+is an argument of \code{\link[=crew_controller]{crew_controller()}}. The
+actual cap is the "\code{workers}" argument minus the number of connected
+workers minus the number of starting workers. A "connected"
+worker has an active websocket connection to the \code{mirai} client,
+and "starting" means that the worker was launched at most
+\code{seconds_start} seconds ago, where \code{seconds_start} is
+also an argument of \code{\link[=crew_controller]{crew_controller()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -309,7 +279,7 @@ while checking for results.}
 \if{html}{\out{<a id="method-crew_class_controller-terminate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-terminate}{}}}
 \subsection{Method \code{terminate()}}{
-Terminate the workers and disconnect the router.
+Terminate the workers and the \code{mirai} client.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$terminate()}\if{html}{\out{</div>}}
 }

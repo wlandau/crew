@@ -64,6 +64,7 @@ client connection.}
 \item \href{#method-crew_class_router-nodes}{\code{crew_class_router$nodes()}}
 \item \href{#method-crew_class_router-sockets}{\code{crew_class_router$sockets()}}
 \item \href{#method-crew_class_router-connected}{\code{crew_class_router$connected()}}
+\item \href{#method-crew_class_router-disconnected}{\code{crew_class_router$disconnected()}}
 \item \href{#method-crew_class_router-busy}{\code{crew_class_router$busy()}}
 \item \href{#method-crew_class_router-idle}{\code{crew_class_router$idle()}}
 \item \href{#method-crew_class_router-listening}{\code{crew_class_router$listening()}}
@@ -170,6 +171,19 @@ Character vector of websockets sockets that the
 Get the sockets of connected workers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_router$connected()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character vector of worker websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-disconnected"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-disconnected}{}}}
+\subsection{Method \code{disconnected()}}{
+Get the sockets of disconnected workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$disconnected()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

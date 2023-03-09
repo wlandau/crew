@@ -33,7 +33,7 @@ crew_controller <- function(
   launcher,
   auto_scale = "demand"
 ) {
-  auto_scale <- auto_scale %|||% auto_scales_mirai
+  auto_scale <- auto_scale %|||% c("demand", "single", "none")
   controller <- crew_class_controller$new(
     router = router,
     launcher = launcher,
@@ -109,33 +109,79 @@ crew_class_controller <- R6::R6Class(
       self$launcher$validate()
       invisible()
     },
-    #' @description Connect the router and register the TCP sockets
+    #' @description Start the mirai client and register the websockets
     #'   with the launcher.
     #' @return `NULL` (invisibly).
-    connect = function() {
-      self$router$connect()
+    session = function() {
+      self$router$listen()
+      self$launcher$populate(sockets = self$router$sockets())
+      invisible()
     },
-    #' @description Get occupied workers.
-    #' @details Includes both actively connected and
-    #'   recently launched workers.
+    #' @description Get the websockets of active workers.
+    #' @details If a worker is connected to its websocket, then it is active.
+    #'   If a worker is disconnected from its websocket, then it is only
+    #'   considered "active" if it is "starting" (launched at most
+    #'   `seconds_start` seconds ago) and not yet "discovered"
+    #'   (shown as busy, assigned a task, or completed a task at some point).
     #' @return Character vector of websockets.
-    occupied = function() {
-      union(self$router$occupied(), self$launcher$starting())
+    active = function() {
+      controller_workers_active(router$nodes(), self$launcher$starting())
     },
-    #' @description Get unoccupied workers.
-    #' @details Includes disconnected workers that did not recently launch.
+    #' @description Get the websockets of inactive workers.
+    #' @details See the `active()` method.
     #' @return Character vector of websockets.
-    unoccupied = function() {
-      setdiff(self$router$unoccupied(), self$launcher$starting())
+    inactive = function() {
+      controller_workers_inactive(router$nodes(), self$launcher$starting())
     },
-    #' @description Launch one or more workers and wait for them to connect.
+    #' @description Force terminate workers whose startup time has elapsed
+    #'   and are not connected to the `mirai` client.
     #' @return `NULL` (invisibly).
-    #' @param n Maximum number of workers to launch. The actual number
-    #'   launched is capped at the number of unoccupied worker connections
-    #'   out of the originally stated number of workers.
+    clean = function() {
+      self$launcher$terminate(sockets = self$inactive())
+      invisible()
+    },
+    #' @description Launch one or more workers.
+    #' @return `NULL` (invisibly).
+    #' @param n Number of workers to try to launch. The actual
+    #'   number launched is capped so that no more than "`workers`"
+    #'   workers running at a given time, where "`workers`"
+    #'   is an argument of [crew_controller()]. The
+    #'   actual cap is the "`workers`" argument minus the number of connected
+    #'   workers minus the number of starting workers. A "connected"
+    #'   worker has an active websocket connection to the `mirai` client,
+    #'   and "starting" means that the worker was launched at most
+    #'   `seconds_start` seconds ago, where `seconds_start` is
+    #'   also an argument of [crew_controller()].
     launch = function(n = 1L) {
-      sockets <- utils::head(self$unoccupied(), n = n)
-      self$launcher$launch(sockets = sockets)
+      self$clean()
+      sockets <- utils::head(self$inactive(), n = n)
+      if (length(sockets) > 0L) {
+        self$launcher$launch(sockets = sockets)
+      }
+      invisible()
+    },
+    #' @description Run auto-scaling.
+    #' @details This method is called during `push()`, and the method for
+    #'   scaling up workers is governed by the `auto_scale`
+    #'   argument of [crew_controller()]. It is not meant to be called
+    #'   manually. If called manually, it is recommended to call `collect()`
+    #'   first so `scale()` can accurately assess the demand.
+    #'   For finer control of the number of workers launched,
+    #'   call `launch()` on the controller with the exact desired
+    #'   number of workers.
+    #' @return `NULL` (invisibly).
+    scale = function() {
+      self$clean()
+      demand <- max(0L, length(self$queue) - length(self$active()))
+      n <- switch(
+        self$auto_scale,
+        demand = demand,
+        single = min(1L, demand),
+        none = 0L
+      ) %|||% 0L
+      if (n > 0L) {
+        self$launcher$launch(n = n)
+      }
       invisible()
     },
     #' @description Check for done tasks and move the results to
@@ -165,27 +211,6 @@ crew_class_controller <- R6::R6Class(
         }
       }
       self$queue[done] <- NULL
-      invisible()
-    },
-    #' @description Run auto-scaling.
-    #' @details This method is called during `push()`, and the method for
-    #'   scaling up workers is governed by the `auto_scale`
-    #'   argument of [crew_controller()]. It is not meant to be called
-    #'   manually. If called manually, it is recommended to call `collect()`
-    #'   first so `scale()` can accurately assess the demand.
-    #'   For finer control of the number of workers launched,
-    #'   call `launch()` on the controller with the exact desired
-    #'   number of workers.
-    #' @return `NULL` (invisibly).
-    scale = function() {
-      demand <- max(0L, length(self$queue) - length(self$occupied()))
-      n <- switch(
-        self$auto_scale,
-        demand = demand,
-        single = min(1L, demand),
-        none = 0L
-      ) %|||% 0L
-      self$launcher$launch(n = n)
       invisible()
     },
     #' @description Push a task to the head of the task list.
@@ -265,20 +290,34 @@ crew_class_controller <- R6::R6Class(
       )
       invisible()
     },
-    #' @description Terminate the workers and disconnect the router.
+    #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).
     terminate = function() {
+      self$router$terminate()
       self$launcher$terminate()
-      self$router$disconnect()
       invisible()
     }
   )
 )
 
-auto_scales_mirai <- c("demand", "single", "none")
+controller_workers_active <- function(nodes, sockets_starting) {
+  active <- controller_workers_index_active(nodes, sockets_starting)
+  rownames(nodes)[active]
+}
 
-#' @export
-#' @keywords internal
-is_controller.crew_class_controller <- function(x) {
-  TRUE
+controller_workers_inactive <- function(nodes, sockets_starting) {
+  active <- controller_workers_index_active(nodes, sockets_starting)
+  rownames(nodes)[!active]
+}
+
+controller_workers_index_active <- function(nodes, sockets_starting) {
+  sockets <- rownames(nodes)
+  status_online <- nodes[, "status_online", drop = TRUE] > 0L
+  status_busy <- nodes[, "status_busy", drop = TRUE] > 0L
+  tasks_assigned <- nodes[, "tasks_assigned", drop = TRUE] > 0L
+  tasks_complete <- nodes[, "tasks_complete", drop = TRUE] > 0L
+  connected <- status_online
+  starting <- sockets %in% sockets_starting
+  not_discovered <- !(status_busy | tasks_assigned | tasks_complete)
+  connected | (starting & not_discovered)
 }

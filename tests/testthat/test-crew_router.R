@@ -68,10 +68,10 @@ crew_test("crew_router() polling methods", {
     "tasks_assigned",
     "tasks_complete"
   )
-  sockets <- router_sockets(nodes)
-  connected <- router_connected(nodes)
-  busy <- router_busy(nodes)
-  idle <- router_idle(nodes)
+  sockets <- router_nodes_sockets(nodes)
+  connected <- router_nodes_connected(nodes)
+  busy <- router_nodes_busy(nodes)
+  idle <- router_nodes_idle(nodes)
   expect_equal(sockets, rownames(nodes))
   expect_equal(connected, c("b", "d", "f", "h", "j", "l", "n"))
   expect_equal(busy, c("d", "f", "h", "l", "n"))

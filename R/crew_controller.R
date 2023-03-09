@@ -125,13 +125,13 @@ crew_class_controller <- R6::R6Class(
     #'   (shown as busy, assigned a task, or completed a task at some point).
     #' @return Character vector of websockets.
     active = function() {
-      controller_workers_active(router$nodes(), self$launcher$starting())
+      controller_workers_active(router$nodes(), self$launcher$launching())
     },
     #' @description Get the websockets of inactive workers.
     #' @details See the `active()` method.
     #' @return Character vector of websockets.
     inactive = function() {
-      controller_workers_inactive(router$nodes(), self$launcher$starting())
+      controller_workers_inactive(router$nodes(), self$launcher$launching())
     },
     #' @description Force terminate workers whose startup time has elapsed
     #'   and are not connected to the `mirai` client.
@@ -299,24 +299,24 @@ crew_class_controller <- R6::R6Class(
   )
 )
 
-controller_workers_active <- function(nodes, sockets_starting) {
-  active <- controller_workers_index_active(nodes, sockets_starting)
+controller_workers_active <- function(nodes, sockets_launching) {
+  active <- controller_workers_index_active(nodes, sockets_launching)
   rownames(nodes)[active]
 }
 
-controller_workers_inactive <- function(nodes, sockets_starting) {
-  active <- controller_workers_index_active(nodes, sockets_starting)
+controller_workers_inactive <- function(nodes, sockets_launching) {
+  active <- controller_workers_index_active(nodes, sockets_launching)
   rownames(nodes)[!active]
 }
 
-controller_workers_index_active <- function(nodes, sockets_starting) {
+controller_workers_index_active <- function(nodes, sockets_launching) {
   sockets <- rownames(nodes)
   status_online <- nodes[, "status_online", drop = TRUE] > 0L
   status_busy <- nodes[, "status_busy", drop = TRUE] > 0L
   tasks_assigned <- nodes[, "tasks_assigned", drop = TRUE] > 0L
   tasks_complete <- nodes[, "tasks_complete", drop = TRUE] > 0L
   connected <- status_online
-  starting <- sockets %in% sockets_starting
+  starting <- sockets %in% sockets_launching
   not_discovered <- !(status_busy | tasks_assigned | tasks_complete)
   connected | (starting & not_discovered)
 }

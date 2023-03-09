@@ -63,10 +63,6 @@ client connection.}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
 \item \href{#method-crew_class_router-nodes}{\code{crew_class_router$nodes()}}
 \item \href{#method-crew_class_router-sockets}{\code{crew_class_router$sockets()}}
-\item \href{#method-crew_class_router-connected}{\code{crew_class_router$connected()}}
-\item \href{#method-crew_class_router-disconnected}{\code{crew_class_router$disconnected()}}
-\item \href{#method-crew_class_router-busy}{\code{crew_class_router$busy()}}
-\item \href{#method-crew_class_router-idle}{\code{crew_class_router$idle()}}
 \item \href{#method-crew_class_router-listening}{\code{crew_class_router$listening()}}
 \item \href{#method-crew_class_router-listen}{\code{crew_class_router$listen()}}
 \item \href{#method-crew_class_router-terminate}{\code{crew_class_router$terminate()}}
@@ -162,65 +158,6 @@ Get all worker sockets.
 \subsection{Returns}{
 Character vector of websockets sockets that the
 \code{mirai} client is currently listening to.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-connected"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-connected}{}}}
-\subsection{Method \code{connected()}}{
-Get the sockets of connected workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$connected()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Character vector of worker websockets.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-disconnected"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-disconnected}{}}}
-\subsection{Method \code{disconnected()}}{
-Get the sockets of disconnected workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$disconnected()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Character vector of worker websockets.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-busy"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-busy}{}}}
-\subsection{Method \code{busy()}}{
-Get the sockets of busy workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$busy()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Character vector of worker websockets.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-idle"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-idle}{}}}
-\subsection{Method \code{idle()}}{
-Get the sockets of idle workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$idle()}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{nodes}}{A named integer matrix from \code{mirai::daemons()$nodes}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Character vector of worker websockets.
 }
 }
 \if{html}{\out{<hr>}}

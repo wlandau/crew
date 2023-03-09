@@ -49,10 +49,13 @@ Other controllers:
 \itemize{
 \item \href{#method-crew_class_controller-new}{\code{crew_class_controller$new()}}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
-\item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
+\item \href{#method-crew_class_controller-session}{\code{crew_class_controller$session()}}
+\item \href{#method-crew_class_controller-active}{\code{crew_class_controller$active()}}
+\item \href{#method-crew_class_controller-inactive}{\code{crew_class_controller$inactive()}}
+\item \href{#method-crew_class_controller-clean}{\code{crew_class_controller$clean()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
-\item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
+\item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
 \item \href{#method-crew_class_controller-wait}{\code{crew_class_controller$wait()}}
@@ -109,13 +112,65 @@ Validate the router.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-start"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-start}{}}}
-\subsection{Method \code{start()}}{
+\if{html}{\out{<a id="method-crew_class_controller-session"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-session}{}}}
+\subsection{Method \code{session()}}{
 Start the mirai client and register the websockets
 with the launcher.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$start()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$session()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-active"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-active}{}}}
+\subsection{Method \code{active()}}{
+Get the websockets of active workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$active()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+If a worker is connected to its websocket, then it is active.
+If a worker is disconnected from its websocket, then it is only
+considered "active" if it is "starting" (launched at most
+\code{seconds_start} seconds ago) and not yet "discovered"
+(shown as busy, assigned a task, or completed a task at some point).
+}
+
+\subsection{Returns}{
+Character vector of websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-inactive"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-inactive}{}}}
+\subsection{Method \code{inactive()}}{
+Get the websockets of inactive workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$inactive()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+See the \code{active()} method.
+}
+
+\subsection{Returns}{
+Character vector of websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-clean"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-clean}{}}}
+\subsection{Method \code{clean()}}{
+Force terminate workers whose startup time has elapsed
+and are not connected to the \code{mirai} client.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$clean()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -152,21 +207,6 @@ also an argument of \code{\link[=crew_controller]{crew_controller()}}.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-collect"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-collect}{}}}
-\subsection{Method \code{collect()}}{
-Check for done tasks and move the results to
-the results list.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly). Removes elements from the \code{queue}
-list as applicable and moves them to the \code{results} list.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-scale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-scale}{}}}
 \subsection{Method \code{scale()}}{
@@ -188,6 +228,21 @@ number of workers.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-collect"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-collect}{}}}
+\subsection{Method \code{collect()}}{
+Check for done tasks and move the results to
+the results list.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly). Removes elements from the \code{queue}
+list as applicable and moves them to the \code{results} list.
 }
 }
 \if{html}{\out{<hr>}}

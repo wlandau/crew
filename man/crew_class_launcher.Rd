@@ -46,7 +46,6 @@ Other launchers:
 \item \href{#method-crew_class_launcher-args}{\code{crew_class_launcher$args()}}
 \item \href{#method-crew_class_launcher-populate}{\code{crew_class_launcher$populate()}}
 \item \href{#method-crew_class_launcher-launching}{\code{crew_class_launcher$launching()}}
-\item \href{#method-crew_class_launcher-launched}{\code{crew_class_launcher$launched()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 }
@@ -187,20 +186,6 @@ Character vector of worker websockets.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-launched"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-launched}{}}}
-\subsection{Method \code{launched()}}{
-Get the workers that were supposed to have
-launched (within the \code{seconds_launch}-second window).
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launched()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Character vector of worker websockets.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-launch}{}}}
 \subsection{Method \code{launch()}}{
@@ -230,11 +215,19 @@ one is launched.
 \if{html}{\out{<a id="method-crew_class_launcher-terminate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate}{}}}
 \subsection{Method \code{terminate()}}{
-Terminate all workers.
+Terminate one or more workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate(sockets = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sockets}}{Character vector of sockets of the workers
+to terminate.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

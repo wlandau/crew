@@ -43,21 +43,6 @@ client to (dis)connect.}
 \item{router_wait}{Number of seconds to wait between iterations checking
 if the \code{mirai} client is (dis)connected.}
 
-\item{seconds_start}{Seconds of startup time to allow.
-A worker is unconditionally assumed to be alive
-from the moment of its launch until \code{seconds_start} seconds later.
-After \code{seconds_start} seconds, the worker is only
-considered alive if it is actively connected to its assign websocket.}
-
-\item{launch_timeout}{Number of seconds to time out
-waiting for a new group of workers to launch.}
-
-\item{launch_wait}{Number of seconds to wait between checks
-that newly launched workers are ready to receive tasks.}
-
-\item{max_tasks}{Maximum number of tasks that a worker will do before
-exiting.}
-
 \item{async_dial}{Logical, whether the \code{mirai} workers should dial in
 asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 

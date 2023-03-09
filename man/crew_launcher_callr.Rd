@@ -5,45 +5,56 @@
 \title{Create a launcher with \code{callr} workers.}
 \usage{
 crew_launcher_callr(
-  seconds_start = 1,
+  seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
+  seconds_exit = 0.1,
   seconds_poll_high = 0.005,
   seconds_poll_low = 0.05,
-  max_tasks = Inf,
+  tasks_max = Inf,
+  tasks_timers = 0L,
   async_dial = TRUE
 )
 }
 \arguments{
-\item{seconds_start}{Seconds of startup time to allow.
+\item{seconds_launch}{Seconds of launchup time to allow.
 A worker is unconditionally assumed to be alive
-from the moment of its launch until \code{seconds_start} seconds later.
-After \code{seconds_start} seconds, the worker is only
+from the moment of its launch until \code{seconds_launch} seconds later.
+After \code{seconds_launch} seconds, the worker is only
 considered alive if it is actively connected to its assign websocket.}
 
 \item{seconds_idle}{Maximum number of seconds that a worker can idle
-since the completion of the last task. If exceeded, the worker exits.}
+since the completion of the last task. If exceeded, the worker exits.
+But the timer does not launch until \code{tasks_timers} tasks
+have completed.
+See the \code{idletime} argument of \code{mirai::server()}.}
 
-\item{seconds_wall}{Soft wall time in seconds. See the \code{walltime}
-argument of \code{mirai::server()}.}
+\item{seconds_wall}{Soft wall time in seconds.
+The timer does not launch until \code{tasks_timers} tasks
+have completed.
+See the \code{walltime} argument of \code{mirai::server()}.}
 
-\item{seconds_poll_high}{High polling interval in seconds for the \code{mirai}
-active queue.}
+\item{seconds_exit}{Number of seconds to wait for NNG websockets
+to finish sending large data (in case an exit signal is received).
+See the \code{exitdelay} argument of \code{mirai::server()}.}
+
+\item{seconds_poll_high}{High polling interval in seconds for the
+\code{mirai} active queue. See the \code{pollfreqh} argument of
+\code{mirai::server()}.}
 
 \item{seconds_poll_low}{Low polling interval in seconds for the \code{mirai}
-active queue.}
+active queue. See the \code{pollfreql} argument of
+\code{mirai::server()}.}
 
-\item{max_tasks}{Maximum number of tasks that a worker will do before
-exiting.}
+\item{tasks_max}{Maximum number of tasks that a worker will do before
+exiting. See the \code{maxtasks} argument of \code{mirai::server()}.}
+
+\item{tasks_timers}{Number of tasks to do before activating
+the timers for \code{seconds_idle} and \code{seconds_wall}.
+See the \code{timerlaunch} argument of \code{mirai::server()}.}
 
 \item{async_dial}{Logical, whether the \code{mirai} workers should dial in
 asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
-
-\item{launch_timeout}{Number of seconds to time out
-waiting for a new group of workers to launch.}
-
-\item{launch_wait}{Number of seconds to wait between checks
-that newly launched workers are ready to receive tasks.}
 }
 \description{
 Create an \code{R6} object to launch and maintain

@@ -4,25 +4,34 @@
 #' @family launchers
 #' @description Create an `R6` object to launch and maintain
 #'   `callr` workers for a controller.
-#' @param seconds_start Seconds of startup time to allow.
+#' @param seconds_launch Seconds of launchup time to allow.
 #'   A worker is unconditionally assumed to be alive
-#'   from the moment of its launch until `seconds_start` seconds later.
-#'   After `seconds_start` seconds, the worker is only
+#'   from the moment of its launch until `seconds_launch` seconds later.
+#'   After `seconds_launch` seconds, the worker is only
 #'   considered alive if it is actively connected to its assign websocket.
 #' @param seconds_idle Maximum number of seconds that a worker can idle
 #'   since the completion of the last task. If exceeded, the worker exits.
-#' @param seconds_wall Soft wall time in seconds. See the `walltime`
-#'   argument of `mirai::server()`.
-#' @param seconds_poll_high High polling interval in seconds for the `mirai`
-#'   active queue.
+#'   But the timer does not launch until `tasks_timers` tasks
+#'   have completed.
+#'   See the `idletime` argument of `mirai::server()`.
+#' @param seconds_wall Soft wall time in seconds.
+#'   The timer does not launch until `tasks_timers` tasks
+#'   have completed.
+#'   See the `walltime` argument of `mirai::server()`.
+#' @param seconds_exit Number of seconds to wait for NNG websockets
+#'   to finish sending large data (in case an exit signal is received).
+#'   See the `exitdelay` argument of `mirai::server()`.
+#' @param seconds_poll_high High polling interval in seconds for the
+#'   `mirai` active queue. See the `pollfreqh` argument of
+#'   `mirai::server()`.
 #' @param seconds_poll_low Low polling interval in seconds for the `mirai`
-#'   active queue.
-#' @param launch_timeout Number of seconds to time out
-#'   waiting for a new group of workers to launch.
-#' @param launch_wait Number of seconds to wait between checks
-#'   that newly launched workers are ready to receive tasks.
-#' @param max_tasks Maximum number of tasks that a worker will do before
-#'   exiting.
+#'   active queue. See the `pollfreql` argument of
+#'   `mirai::server()`.
+#' @param tasks_max Maximum number of tasks that a worker will do before
+#'   exiting. See the `maxtasks` argument of `mirai::server()`.
+#' @param tasks_timers Number of tasks to do before activating
+#'   the timers for `seconds_idle` and `seconds_wall`.
+#'   See the `timerlaunch` argument of `mirai::server()`.
 #' @param async_dial Logical, whether the `mirai` workers should dial in
 #'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
 #' @examples
@@ -39,23 +48,25 @@
 #' router$disconnect()
 #' }
 crew_launcher_callr <- function(
-  seconds_start = 1,
+  seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
+  seconds_exit = 0.1,
   seconds_poll_high = 0.005,
   seconds_poll_low = 0.05,
-  max_tasks = Inf,
+  tasks_max = Inf,
+  tasks_timers = 0L,
   async_dial = TRUE
 ) {
   launcher <- crew_class_launcher_callr$new(
-    seconds_start = seconds_start,
+    seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
+    seconds_exit = seconds_exit,
     seconds_poll_high = seconds_poll_high,
     seconds_poll_low = seconds_poll_low,
-    launch_timeout = launch_timeout,
-    launch_wait = launch_wait,
-    max_tasks = max_tasks,
+    tasks_max = tasks_max,
+    tasks_timers = tasks_timers,
     async_dial = async_dial
   )
   launcher$validate()
@@ -91,15 +102,7 @@ crew_class_launcher_callr <- R6::R6Class(
     launch_worker = function(socket) {
       callr::r_bg(
         func = \(...) do.call(what = mirai::server, args = list(...)),
-        args = list(
-          url = socket,
-          idletime = self$seconds_idle * 1000,
-          walltime = self$seconds_wall * 1000,
-          tasklimit = self$max_tasks,
-          pollfreqh = self$seconds_poll_high * 1000,
-          pollfreql = self$seconds_poll_low * 1000,
-          asyncdial = self$async_dial
-        )
+        args = self$server_args(socket)
       )
     },
     #' @description Terminate a `callr` worker.

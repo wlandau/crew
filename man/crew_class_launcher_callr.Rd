@@ -40,11 +40,14 @@ Other launchers:
 }
 }
 \if{html}{\out{
-<details open><summary>Inherited methods</summary>
+<details><summary>Inherited methods</summary>
 <ul>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="args"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-args'><code>crew::crew_class_launcher$args()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="initialize"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-initialize'><code>crew::crew_class_launcher$initialize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch'><code>crew::crew_class_launcher$launch()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="starting"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-starting'><code>crew::crew_class_launcher$starting()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launched"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launched'><code>crew::crew_class_launcher$launched()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launching"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launching'><code>crew::crew_class_launcher$launching()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="populate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-populate'><code>crew::crew_class_launcher$populate()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate'><code>crew::crew_class_launcher$terminate()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="validate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-validate'><code>crew::crew_class_launcher$validate()</code></a></span></li>
 </ul>

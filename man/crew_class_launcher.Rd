@@ -16,38 +16,25 @@ Other launchers:
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{workers}}{Named list of workers, where the names are the
-sockets they connect to.}
+\item{\code{workers}}{Data frame of worker information.}
 
-\item{\code{seconds_start}}{Seconds of startup time to allow.
-A worker is unconditionally assumed to be alive
-from the moment of its launch until \code{seconds_start} seconds later.
-After \code{seconds_start} seconds, the worker is only
-considered alive if it is actively connected to its assign websocket.}
+\item{\code{seconds_launch}}{See the constructor for details.}
 
-\item{\code{idle_time}}{Maximum number of seconds that a worker can idle
-since the completion of the last task. If exceeded, the worker exits.}
+\item{\code{seconds_idle}}{See the constructor for details.}
 
-\item{\code{wall_time}}{Soft wall time in seconds. See the \code{wall_time}
-argument of \code{mirai::server()}.}
+\item{\code{seconds_wall}}{See the constructor for details.}
 
-\item{\code{poll_high}}{High polling interval in seconds for the \code{mirai}
-active queue.}
+\item{\code{seconds_exit}}{See the constructor for details.}
 
-\item{\code{poll_low}}{Low polling interval in seconds for the \code{mirai}
-active queue.}
+\item{\code{seconds_poll_high}}{See the constructor for details.}
 
-\item{\code{launch_timeout}}{Number of seconds to time out
-waiting for a new group of workers to launch.}
+\item{\code{seconds_poll_low}}{See the constructor for details.}
 
-\item{\code{launch_wait}}{Number of seconds to wait between checks
-that newly launched workers are ready to receive tasks.}
+\item{\code{tasks_max}}{See the constructor for details.}
 
-\item{\code{max_tasks}}{Maximum number of tasks that a worker will do before
-exiting.}
+\item{\code{tasks_timers}}{See the constructor for details.}
 
-\item{\code{async_dial}}{Logical, whether the \code{mirai} workers should dial in
-asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
+\item{\code{async_dial}}{See the constructor for details.}
 }
 \if{html}{\out{</div>}}
 }
@@ -56,7 +43,10 @@ asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 \itemize{
 \item \href{#method-crew_class_launcher-new}{\code{crew_class_launcher$new()}}
 \item \href{#method-crew_class_launcher-validate}{\code{crew_class_launcher$validate()}}
-\item \href{#method-crew_class_launcher-starting}{\code{crew_class_launcher$starting()}}
+\item \href{#method-crew_class_launcher-args}{\code{crew_class_launcher$args()}}
+\item \href{#method-crew_class_launcher-populate}{\code{crew_class_launcher$populate()}}
+\item \href{#method-crew_class_launcher-launching}{\code{crew_class_launcher$launching()}}
+\item \href{#method-crew_class_launcher-launched}{\code{crew_class_launcher$launched()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 }
@@ -65,17 +55,17 @@ asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 \if{html}{\out{<a id="method-crew_class_launcher-new"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-new}{}}}
 \subsection{Method \code{new()}}{
-\code{mirai} launcher constructor.
+Launcher constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$new(
-  seconds_start = NULL,
-  idle_time = NULL,
-  wall_time = NULL,
-  poll_high = NULL,
-  poll_low = NULL,
-  launch_timeout = NULL,
-  launch_wait = NULL,
-  max_tasks = NULL,
+  seconds_launch = NULL,
+  seconds_idle = NULL,
+  seconds_wall = NULL,
+  seconds_exit = NULL,
+  seconds_poll_high = NULL,
+  seconds_poll_low = NULL,
+  tasks_max = NULL,
+  tasks_timers = NULL,
   async_dial = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -83,32 +73,41 @@ asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{seconds_start}}{Seconds of startup time to allow.
+\item{\code{seconds_launch}}{Seconds of launchup time to allow.
 A worker is unconditionally assumed to be alive
-from the moment of its launch until \code{seconds_start} seconds later.
-After \code{seconds_start} seconds, the worker is only
+from the moment of its launch until \code{seconds_launch} seconds later.
+After \code{seconds_launch} seconds, the worker is only
 considered alive if it is actively connected to its assign websocket.}
 
-\item{\code{idle_time}}{Maximum number of seconds that a worker can idle
-since the completion of the last task. If exceeded, the worker exits.}
+\item{\code{seconds_idle}}{Maximum number of seconds that a worker can idle
+since the completion of the last task. If exceeded, the worker exits.
+But the timer does not launch until \code{tasks_timers} tasks
+have completed.
+See the \code{idletime} argument of \code{mirai::server()}.}
 
-\item{\code{wall_time}}{Soft wall time in seconds. See the \code{wall_time}
-argument of \code{mirai::server()}.}
+\item{\code{seconds_wall}}{Soft wall time in seconds.
+The timer does not launch until \code{tasks_timers} tasks
+have completed.
+See the \code{walltime} argument of \code{mirai::server()}.}
 
-\item{\code{poll_high}}{High polling interval in seconds for the \code{mirai}
-active queue.}
+\item{\code{seconds_exit}}{Number of seconds to wait for NNG websockets
+to finish sending large data (in case an exit signal is received).
+See the \code{exitdelay} argument of \code{mirai::server()}.}
 
-\item{\code{poll_low}}{Low polling interval in seconds for the \code{mirai}
-active queue.}
+\item{\code{seconds_poll_high}}{High polling interval in seconds for the
+\code{mirai} active queue. See the \code{pollfreqh} argument of
+\code{mirai::server()}.}
 
-\item{\code{launch_timeout}}{Number of seconds to time out
-waiting for a new group of workers to launch.}
+\item{\code{seconds_poll_low}}{Low polling interval in seconds for the \code{mirai}
+active queue. See the \code{pollfreql} argument of
+\code{mirai::server()}.}
 
-\item{\code{launch_wait}}{Number of seconds to wait between checks
-that newly launched workers are ready to receive tasks.}
+\item{\code{tasks_max}}{Maximum number of tasks that a worker will do before
+exiting. See the \code{maxtasks} argument of \code{mirai::server()}.}
 
-\item{\code{max_tasks}}{Maximum number of tasks that a worker will do before
-exiting.}
+\item{\code{tasks_timers}}{Number of tasks to do before activating
+the timers for \code{seconds_idle} and \code{seconds_wall}.
+See the \code{timerlaunch} argument of \code{mirai::server()}.}
 
 \item{\code{async_dial}}{Logical, whether the \code{mirai} workers should dial in
 asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
@@ -133,13 +132,68 @@ Validate the launcher.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-starting"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-starting}{}}}
-\subsection{Method \code{starting()}}{
-Get the workers that recently launched
-(within \code{seconds_start} seconds).
+\if{html}{\out{<a id="method-crew_class_launcher-args"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-args}{}}}
+\subsection{Method \code{args()}}{
+Argument list for \code{mirai::server()}
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$starting()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$args(socket)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{socket}}{Character of length 1, websocket address of the worker
+to launch.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+List of arguments for \code{mirai::server()}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-populate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-populate}{}}}
+\subsection{Method \code{populate()}}{
+Populate the workers data frame.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$populate(sockets)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sockets}}{Character vector of worker websockets.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-launching"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-launching}{}}}
+\subsection{Method \code{launching()}}{
+Get the workers that attempted a launch
+within \code{seconds_launch} seconds ago.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launching()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character vector of worker websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-launched"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-launched}{}}}
+\subsection{Method \code{launched()}}{
+Get the workers that were supposed to have
+launched (within the \code{seconds_launch}-second window).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launched()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

@@ -130,7 +130,7 @@ crew_class_launcher <- R6::R6Class(
       self$workers <- tibble::tibble(
         socket = sockets,
         start = rep(-Inf, length(sockets)),
-        handle = replicate(length(sockets), NA, simplify = FALSE)
+        handle = replicate(length(sockets), crew_null, simplify = FALSE)
       )
       invisible()
     },
@@ -158,9 +158,11 @@ crew_class_launcher <- R6::R6Class(
       matches <- match(x = sockets, table = self$workers$socket)
       true(!anyNA(matches), message = "bad websocket on launch.")
       for (index in matches) {
-        self$terminate_worker(self$workers$handle[[index]])
-        socket <- sockets[index]
-        self$workers$socket[index] <- socket
+        handle <- self$workers$handle[[index]]
+        if (!is_crew_null(handle)) {
+          self$terminate_worker(handle)
+        }
+        socket <- self$workers$socket[index]
         self$workers$start[index] <- bench::hires_time()
         self$workers$handle[[index]] <- self$launch_worker(socket)
       }
@@ -169,7 +171,12 @@ crew_class_launcher <- R6::R6Class(
     #' @description Terminate all workers.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      walk(self$workers, ~self$terminate_worker(.x$handle))
+      for (handle in self$workers$handle) {
+        if (!is_crew_null(handle)) {
+          self$terminate_worker(handle)
+        }
+      }
+      invisible()
     }
   )
 )

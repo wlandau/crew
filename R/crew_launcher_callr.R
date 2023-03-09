@@ -102,7 +102,7 @@ crew_class_launcher_callr <- R6::R6Class(
     launch_worker = function(socket) {
       callr::r_bg(
         func = \(...) do.call(what = mirai::server, args = list(...)),
-        args = self$server_args(socket)
+        args = self$args(socket)
       )
     },
     #' @description Terminate a `callr` worker.

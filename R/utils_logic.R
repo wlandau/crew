@@ -21,3 +21,9 @@ if_any <- function(condition, true, false) {
     false
   }
 }
+
+crew_null <- structure(list(emptyenv()), class = "crew_null")
+
+is_crew_null <- function(x) {
+  inherits(x, "crew_null")
+}

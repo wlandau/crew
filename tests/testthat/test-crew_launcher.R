@@ -41,7 +41,7 @@ crew_test("launcher populate()", {
   workers <- launcher$workers
   expect_equal(workers$socket, paste0("ws://127.0.0.1:5000/", seq_len(2)))
   expect_equal(workers$start, c(-Inf, -Inf))
-  expect_equal(workers$handle, list(NA, NA))
+  expect_equal(workers$handle, list(crew_null, crew_null))
 })
 
 crew_test("launcher launching() and launched()", {

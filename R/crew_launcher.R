@@ -138,14 +138,14 @@ crew_class_launcher <- R6::R6Class(
     #'   within `seconds_launch` seconds ago.
     #' @return Character vector of worker websockets.
     launching = function() {
-      elapsed <- bench::hires_time() - self$workers$launch
+      elapsed <- bench::hires_time() - self$workers$start
       as.character(self$workers$socket[elapsed < self$seconds_launch])
     },
     #' @description Get the workers that were supposed to have
     #'   launched (within the `seconds_launch`-second window).
     #' @return Character vector of worker websockets.
     launched = function() {
-      elapsed <- bench::hires_time() - self$workers$launch
+      elapsed <- bench::hires_time() - self$workers$start
       as.character(self$workers$socket[elapsed > self$seconds_launch])
     },
     #' @description Launch one or more workers.

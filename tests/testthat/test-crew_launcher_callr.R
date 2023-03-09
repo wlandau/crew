@@ -1,18 +1,19 @@
 crew_test("crew_launcher_callr() can run a task on a worker", {
   router <- crew_router(workers = 1L)
-  launcher <- crew_launcher_callr(idle_time = 360)
+  launcher <- crew_launcher_callr(seconds_idle = 360)
   on.exit({
     router$disconnect()
     launcher$terminate()
   })
   expect_silent(launcher$validate())
-  router$connect()
-  expect_equal(router$occupied(), character(0))
+  router$listen()
+  expect_equal(router$connected(), character(0))
+  launcher$populate(sockets = router$sockets())
   launcher$launch(sockets = router$unoccupied())
   expect_equal(length(launcher$processes), 1L)
   expect_silent(launcher$validate())
   crew::crew_wait(
-    ~identical(length(router$occupied()), 1L),
+    ~identical(length(router$connected()), 1L),
     timeout = 5,
     wait = 0.1
   )
@@ -21,7 +22,7 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
     timeout = 5,
     wait = 0.1
   )
-  expect_equal(length(router$occupied()), 1L)
+  expect_equal(length(router$connected()), 1L)
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
   crew::crew_wait(~!anyNA(m$data), timeout = 5, wait = 0.1)
   expect_equal(m$data, launcher$processes[[1]]$get_pid())
@@ -31,7 +32,7 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
     timeout = 5,
     wait = 0.1
   )
-  expect_equal(router$occupied(), character(0))
+  expect_equal(router$connected(), character(0))
 })
 
 crew_test("crew_launcher_callr() can run a task and time out a worker", {

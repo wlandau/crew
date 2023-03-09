@@ -61,6 +61,7 @@ client connection.}
 \itemize{
 \item \href{#method-crew_class_router-new}{\code{crew_class_router$new()}}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
+\item \href{#method-crew_class_router-nodes}{\code{crew_class_router$nodes()}}
 \item \href{#method-crew_class_router-sockets}{\code{crew_class_router$sockets()}}
 \item \href{#method-crew_class_router-connected}{\code{crew_class_router$connected()}}
 \item \href{#method-crew_class_router-busy}{\code{crew_class_router$busy()}}
@@ -136,21 +137,27 @@ Validate the router.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-nodes"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-nodes}{}}}
+\subsection{Method \code{nodes()}}{
+Get the full matrix of worker nodes.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$nodes()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Named integer matrix from \code{mirai::daemons()}
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_router-sockets"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_router-sockets}{}}}
 \subsection{Method \code{sockets()}}{
 Get all worker sockets.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$sockets(nodes = mirai::daemons(.compute = self$name)$nodes)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$sockets()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{nodes}}{A named integer matrix from \code{mirai::daemons()$nodes}.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 Character vector of websockets sockets that the
 \code{mirai} client is currently listening to.
@@ -162,16 +169,9 @@ Character vector of websockets sockets that the
 \subsection{Method \code{connected()}}{
 Get the sockets of connected workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$connected(nodes = mirai::daemons(.compute = self$name)$nodes)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$connected()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{nodes}}{A named integer matrix from \code{mirai::daemons()$nodes}.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 Character vector of worker websockets.
 }
@@ -182,16 +182,9 @@ Character vector of worker websockets.
 \subsection{Method \code{busy()}}{
 Get the sockets of busy workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$busy(nodes = mirai::daemons(.compute = self$name)$nodes)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$busy()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{nodes}}{A named integer matrix from \code{mirai::daemons()$nodes}.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 Character vector of worker websockets.
 }
@@ -202,7 +195,7 @@ Character vector of worker websockets.
 \subsection{Method \code{idle()}}{
 Get the sockets of idle workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$idle(nodes = mirai::daemons(.compute = self$name)$nodes)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$idle()}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

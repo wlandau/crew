@@ -155,14 +155,14 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param sockets Sockets where the workers will dial in.
     launch = function(sockets = character(0)) {
-      for (socket in sockets) {
-        self$terminate_worker(self$workers[[socket]])
-        handle <- self$launch_worker(socket)
-        self$workers[[socket]] <- list(
-          socket = socket,
-          launch = bench::hires_time(),
-          handle = handle
-        )
+      matches <- match(x = sockets, table = self$workers$socket)
+      true(!anyNA(matches), message = "bad websocket on launch.")
+      for (index in matches) {
+        self$terminate_worker(self$workers$handle[[index]])
+        socket <- sockets[index]
+        self$workers$socket[index] <- socket
+        self$workers$start[index] <- bench::hires_time()
+        self$workers$handle[[index]] <- self$launch_worker(socket)
       }
       invisible()
     },

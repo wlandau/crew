@@ -152,27 +152,6 @@ crew_class_router <- R6::R6Class(
     sockets = function() {
       router_nodes_sockets(self$nodes())
     },
-    #' @description Get the sockets of connected workers.
-    #' @return Character vector of worker websockets.
-    connected = function() {
-      router_nodes_connected(self$nodes())
-    },
-    #' @description Get the sockets of disconnected workers.
-    #' @return Character vector of worker websockets.
-    disconnected = function() {
-      router_nodes_disconnected(self$nodes())
-    },
-    #' @description Get the sockets of busy workers.
-    #' @return Character vector of worker websockets.
-    busy = function() {
-      router_nodes_busy(self$nodes())
-    },
-    #' @description Get the sockets of idle workers.
-    #' @return Character vector of worker websockets.
-    #' @param nodes A named integer matrix from `mirai::daemons()$nodes`.
-    idle = function() {
-      router_nodes_idle(self$nodes())
-    },
     #' @description Check if the `mirai` client is listening
     #'   to worker websockets.
     #' @details This method may stall and time out if there are

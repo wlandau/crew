@@ -43,37 +43,3 @@ crew_test("crew_router() works", {
   expect_false(router$listening())
   px$kill()
 })
-
-crew_test("crew_router() polling methods", {
-  nodes <- rbind(
-    c(0, 0, 0, 0), # a
-    c(1, 0, 0, 0), # b
-    c(0, 1, 0, 0), # c
-    c(1, 1, 0, 0), # d
-    c(0, 0, 1, 0), # e
-    c(1, 0, 1, 0), # f
-    c(0, 1, 1, 0), # g
-    c(1, 1, 1, 0), # h
-    c(0, 0, 1, 1), # i
-    c(1, 0, 1, 1), # j
-    c(0, 1, 1, 1), # k
-    c(1, 1, 1, 1), # l
-    c(0, 0, 2, 1), # m
-    c(1, 0, 2, 1)  # n
-  )
-  rownames(nodes) <- letters[seq_len(nrow(nodes))]
-  colnames(nodes) <- c(
-    "status_online",
-    "status_busy",
-    "tasks_assigned",
-    "tasks_complete"
-  )
-  sockets <- router_nodes_sockets(nodes)
-  connected <- router_nodes_connected(nodes)
-  busy <- router_nodes_busy(nodes)
-  idle <- router_nodes_idle(nodes)
-  expect_equal(sockets, rownames(nodes))
-  expect_equal(connected, c("b", "d", "f", "h", "j", "l", "n"))
-  expect_equal(busy, c("d", "f", "h", "l", "n"))
-  expect_equal(idle, c("b", "j"))
-})

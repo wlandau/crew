@@ -117,7 +117,7 @@ crew_class_launcher <- R6::R6Class(
         maxtasks = self$tasks_max,
         idletime = self$seconds_idle * 1000,
         walltime = self$seconds_wall * 1000,
-        timerlaunch = self$tasks_timers,
+        timerstart = self$tasks_timers,
         exitdelay = self$seconds_exit * 1000,
         pollfreqh = self$seconds_poll_high * 1000,
         pollfreql = self$seconds_poll_low * 1000

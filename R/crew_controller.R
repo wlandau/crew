@@ -171,7 +171,6 @@ crew_class_controller <- R6::R6Class(
     #'   number of workers.
     #' @return `NULL` (invisibly).
     scale = function() {
-      self$clean()
       demand <- max(0L, length(self$queue) - length(self$active()))
       n <- switch(
         self$auto_scale,

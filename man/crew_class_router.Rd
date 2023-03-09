@@ -13,9 +13,9 @@ See \code{\link[=crew_router]{crew_router()}}.
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$unoccupied() # character(0)
-router$connect()
+router$listen()
 router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
-router$disconnect()
+router$terminate()
 router$unoccupied() # character(0)
 }
 
@@ -26,9 +26,9 @@ router$unoccupied() # character(0)
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$unoccupied() # character(0)
-router$connect()
+router$listen()
 router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
-router$disconnect()
+router$terminate()
 router$unoccupied() # character(0)
 }
 }
@@ -62,11 +62,12 @@ client connection.}
 \item \href{#method-crew_class_router-new}{\code{crew_class_router$new()}}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
 \item \href{#method-crew_class_router-sockets}{\code{crew_class_router$sockets()}}
-\item \href{#method-crew_class_router-occupied}{\code{crew_class_router$occupied()}}
-\item \href{#method-crew_class_router-unoccupied}{\code{crew_class_router$unoccupied()}}
 \item \href{#method-crew_class_router-connected}{\code{crew_class_router$connected()}}
-\item \href{#method-crew_class_router-connect}{\code{crew_class_router$connect()}}
-\item \href{#method-crew_class_router-disconnect}{\code{crew_class_router$disconnect()}}
+\item \href{#method-crew_class_router-busy}{\code{crew_class_router$busy()}}
+\item \href{#method-crew_class_router-idle}{\code{crew_class_router$idle()}}
+\item \href{#method-crew_class_router-listening}{\code{crew_class_router$listening()}}
+\item \href{#method-crew_class_router-listen}{\code{crew_class_router$listen()}}
+\item \href{#method-crew_class_router-terminate}{\code{crew_class_router$terminate()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -110,9 +111,9 @@ An \code{R6} object with the router.
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$unoccupied() # character(0)
-router$connect()
+router$listen()
 router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
-router$disconnect()
+router$terminate()
 router$unoccupied() # character(0)
 }
 }
@@ -140,55 +141,95 @@ Validate the router.
 \subsection{Method \code{sockets()}}{
 Get all worker sockets.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$sockets()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$sockets(nodes = mirai::daemons(.compute = self$name)$nodes)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{nodes}}{A named integer matrix from \code{mirai::daemons()$nodes}.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 Character vector of websockets sockets that the
 \code{mirai} client is currently listening to.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-occupied"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-occupied}{}}}
-\subsection{Method \code{occupied()}}{
-Get occupied worker sockets.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$occupied()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Character vector of websockets sockets where workers
-are currently dialed in.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-unoccupied"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-unoccupied}{}}}
-\subsection{Method \code{unoccupied()}}{
-Get worker sockets that are unoccupied and
-available for workers to dial in.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$unoccupied()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Character string with available websockets.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_router-connected"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_router-connected}{}}}
 \subsection{Method \code{connected()}}{
-Check if the router is connected.
+Get the sockets of connected workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$connected()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$connected(nodes = mirai::daemons(.compute = self$name)$nodes)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{nodes}}{A named integer matrix from \code{mirai::daemons()$nodes}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Character vector of worker websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-busy"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-busy}{}}}
+\subsection{Method \code{busy()}}{
+Get the sockets of busy workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$busy(nodes = mirai::daemons(.compute = self$name)$nodes)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{nodes}}{A named integer matrix from \code{mirai::daemons()$nodes}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Character vector of worker websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-idle"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-idle}{}}}
+\subsection{Method \code{idle()}}{
+Get the sockets of idle workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$idle(nodes = mirai::daemons(.compute = self$name)$nodes)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{nodes}}{A named integer matrix from \code{mirai::daemons()$nodes}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Character vector of worker websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-listening"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-listening}{}}}
+\subsection{Method \code{listening()}}{
+Check if the \code{mirai} client is listening
+to worker websockets.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$listening()}\if{html}{\out{</div>}}
 }
 
 \subsection{Details}{
 This method may stall and time out if there are
-tasks in the queue. Methods \code{connect()} and \code{disconnect()}
-call \code{connected()} to manage the connection before
+tasks in the queue. Methods \code{listen()} and \code{terminate()}
+call \code{listening()} to manage the connection before
 and after the entire workload, respectively.
 }
 
@@ -198,12 +239,12 @@ and after the entire workload, respectively.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-connect"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-connect}{}}}
-\subsection{Method \code{connect()}}{
+\if{html}{\out{<a id="method-crew_class_router-listen"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-listen}{}}}
+\subsection{Method \code{listen()}}{
 Start listening for workers on the available sockets.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$connect()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$listen()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -211,12 +252,13 @@ Start listening for workers on the available sockets.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-disconnect"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-disconnect}{}}}
-\subsection{Method \code{disconnect()}}{
-Disconnect the router.
+\if{html}{\out{<a id="method-crew_class_router-terminate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-terminate}{}}}
+\subsection{Method \code{terminate()}}{
+Stop the mirai client and disconnect from the
+worker websockets.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$disconnect()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$terminate()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

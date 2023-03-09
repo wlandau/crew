@@ -21,9 +21,9 @@
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
 #' router$unoccupied() # character(0)
-#' router$connect()
+#' router$listen()
 #' router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
-#' router$disconnect()
+#' router$terminate()
 #' router$unoccupied() # character(0)
 #' }
 crew_router <- function(
@@ -68,9 +68,9 @@ crew_router <- function(
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
 #' router$unoccupied() # character(0)
-#' router$connect()
+#' router$listen()
 #' router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
-#' router$disconnect()
+#' router$terminate()
 #' router$unoccupied() # character(0)
 #' }
 crew_class_router <- R6::R6Class(
@@ -103,9 +103,9 @@ crew_class_router <- R6::R6Class(
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' router <- crew_router()
     #' router$unoccupied() # character(0)
-    #' router$connect()
+    #' router$listen()
     #' router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
-    #' router$disconnect()
+    #' router$terminate()
     #' router$unoccupied() # character(0)
     #' }
     initialize = function(
@@ -144,39 +144,75 @@ crew_class_router <- R6::R6Class(
     #' @description Get all worker sockets.
     #' @return Character vector of websockets sockets that the
     #'   `mirai` client is currently listening to.
-    sockets = function() {
-      nodes <- mirai::daemons(.compute = self$name)$nodes
-      as.character(names(nodes))
+    #' @param nodes A named integer matrix from `mirai::daemons()$nodes`.
+    sockets = function(nodes = mirai::daemons(.compute = self$name)$nodes) {
+      if (anyNA(nodes)) {
+        return(character(0))
+      }
+      rownames(nodes)
     },
-    #' @description Get occupied worker sockets.
-    #' @return Character vector of websockets sockets where workers
-    #'   are currently dialed in.
-    occupied = function() {
-      nodes <- mirai::daemons(.compute = self$name)$nodes
-      as.character(names(nodes)[nodes == 1L])
+    #' @description Get the sockets of connected workers.
+    #' @return Character vector of worker websockets.
+    #' @param nodes A named integer matrix from `mirai::daemons()$nodes`.
+    connected = function(nodes = mirai::daemons(.compute = self$name)$nodes) {
+      if (anyNA(nodes)) {
+        return(character(0))
+      }
+      status_online <- nodes[, "status_online", drop = TRUE]
+      connected <- as.logical(status_online)
+      worker_sockets <- rownames(nodes)
+      worker_sockets[connected]
     },
-    #' @description Get worker sockets that are unoccupied and
-    #'   available for workers to dial in.
-    #' @return Character string with available websockets.
-    unoccupied = function() {
-      nodes <- mirai::daemons(.compute = self$name)$nodes
-      as.character(names(nodes)[nodes == 0L])
+    #' @description Get the sockets of busy workers.
+    #' @return Character vector of worker websockets.
+    #' @param nodes A named integer matrix from `mirai::daemons()$nodes`.
+    busy = function(nodes = mirai::daemons(.compute = self$name)$nodes) {
+      if (anyNA(nodes)) {
+        return(character(0))
+      }
+      status_online <- nodes[, "status_online", drop = TRUE]
+      status_busy <- nodes[, "status_busy", drop = TRUE]
+      tasks_assigned <- nodes[, "tasks_assigned", drop = TRUE]
+      tasks_complete <- nodes[, "tasks_complete", drop = TRUE]
+      connected <- as.logical(status_online)
+      busy <- as.logical(status_busy)
+      backlogged <- (tasks_assigned - tasks_complete) > 0L
+      worker_sockets <- rownames(nodes)
+      worker_sockets[connected & (busy | backlogged)]
     },
-    #' @description Check if the router is connected.
+    #' @description Get the sockets of idle workers.
+    #' @return Character vector of worker websockets.
+    #' @param nodes A named integer matrix from `mirai::daemons()$nodes`.
+    idle = function(nodes = mirai::daemons(.compute = self$name)$nodes) {
+      if (anyNA(nodes)) {
+        return(character(0))
+      }
+      status_online <- nodes[, "status_online", drop = TRUE]
+      status_busy <- nodes[, "status_busy", drop = TRUE]
+      tasks_assigned <- nodes[, "tasks_assigned", drop = TRUE]
+      tasks_complete <- nodes[, "tasks_complete", drop = TRUE]
+      connected <- as.logical(status_online)
+      busy <- as.logical(status_busy)
+      backlogged <- (tasks_assigned - tasks_complete) > 0L
+      worker_sockets <- rownames(nodes)
+      worker_sockets[connected & !busy & !backlogged]
+    },
+    #' @description Check if the `mirai` client is listening
+    #'   to worker websockets.
     #' @details This method may stall and time out if there are
-    #'   tasks in the queue. Methods `connect()` and `disconnect()`
-    #'   call `connected()` to manage the connection before
+    #'   tasks in the queue. Methods `listen()` and `terminate()`
+    #'   call `listening()` to manage the connection before
     #'   and after the entire workload, respectively.
     #' @return `TRUE` if successfully listening for dialed-in workers,
     #'   `FALSE` otherwise.
-    connected = function() {
+    listening = function() {
       out <- mirai::daemons(.compute = self$name)$connections
       (length(out) == 1L) && !anyNA(out) && is.numeric(out) && out > 0L
     },
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
-    connect = function() {
-      if (isFALSE(self$connected())) {
+    listen = function() {
+      if (isFALSE(self$listening())) {
         args <- list(
           value = sprintf("ws://%s:%s", self$host, self$port),
           nodes = self$workers,
@@ -184,7 +220,7 @@ crew_class_router <- R6::R6Class(
         )
         do.call(what = mirai::daemons, args = args)
         crew_wait(
-          fun = ~isTRUE(self$connected()),
+          fun = ~isTRUE(self$listening()),
           timeout = self$router_timeout,
           wait = self$router_wait,
           message = "mirai client cannot connect."
@@ -192,17 +228,18 @@ crew_class_router <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Disconnect the router.
+    #' @description Stop the mirai client and disconnect from the
+    #'   worker websockets.
     #' @return `NULL` (invisibly).
-    disconnect = function() {
-      if (isTRUE(self$connected())) {
+    terminate = function() {
+      if (isTRUE(self$listening())) {
         try(mirai::daemons(value = 0L, .compute = self$name), silent = TRUE)
         try(
           crew_wait(
-            fun = ~isFALSE(self$connected()),
+            fun = ~isFALSE(self$listening()),
             timeout = self$router_timeout,
             wait = self$router_wait,
-            message = "mirai client cannot disconnect."
+            message = "mirai client could not terminate."
           ),
           silent = TRUE
         )

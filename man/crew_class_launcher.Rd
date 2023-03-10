@@ -242,7 +242,7 @@ Character vector of worker websockets.
 \subsection{Method \code{launch()}}{
 Launch one or more workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(sockets = character(0), data = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(sockets = character(0))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

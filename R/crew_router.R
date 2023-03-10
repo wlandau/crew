@@ -87,6 +87,9 @@ crew_class_router <- R6::R6Class(
     #' @field router_wait Polling interval in seconds for checking the
     #'   `mirai` client connection.
     router_wait = NULL,
+    #' @field connection_done NNG socket for workers to report
+    #'   when they are done.
+    connection_done = NULL,
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
     #' @param name Argument passed from [crew_router()].
@@ -133,6 +136,7 @@ crew_class_router <- R6::R6Class(
       )
       true(self$router_wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
       true(self$router_timeout >= self$router_wait)
+      true(self$connection_done, is.null(.) || inherits(., "nanoSocket"))
       invisible()
     },
     #' @description Get the full matrix of worker nodes.
@@ -144,7 +148,22 @@ crew_class_router <- R6::R6Class(
     #' @return Character vector of websockets sockets that the
     #'   `mirai` client is currently listening to.
     sockets = function() {
-      router_nodes_sockets(self$nodes())
+      nodes <- self$nodes()
+      if (anyNA(nodes)) {
+        return(character(0))
+      }
+      rownames(nodes)
+    },
+    #' @description Report the token of a finished worker
+    #'   if available from the NNG socket.
+    #' @return The character token of a finished worker if available,
+    #'   NULL if no token could be found over the NNG socket.
+    done = function() {
+      out <- nanonext::recv(con = self$connection_done)
+      if (nanonext::is_error_value(out)) {
+        out <- NULL
+      }
+      out
     },
     #' @description Check if the `mirai` client is listening
     #'   to worker websockets.
@@ -156,7 +175,12 @@ crew_class_router <- R6::R6Class(
     #'   `FALSE` otherwise.
     listening = function() {
       out <- mirai::daemons(.compute = self$name)$connections
-      (length(out) == 1L) && !anyNA(out) && is.numeric(out) && out > 0L
+      (length(out) == 1L) &&
+        !anyNA(out) &&
+        is.numeric(out) &&
+        out > 0L &&
+        !is.null(self$connection_done) &&
+        identical(self$connection_done$state, "closed")
     },
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
@@ -169,10 +193,20 @@ crew_class_router <- R6::R6Class(
         )
         do.call(what = mirai::daemons, args = args)
         crew_wait(
-          fun = ~isTRUE(self$listening()),
+          fun = ~mirai::daemons(.compute = self$name)$connections > 0L,
           timeout = self$router_timeout,
           wait = self$router_wait,
           message = "mirai client cannot connect."
+        )
+        self$connection_done <- nanonext::socket(
+          protocol = "rep",
+          listen = crew_worker_socket_done(self$sockets()[1])
+        )
+        crew_wait(
+          fun = ~identical(as.character(self$connection_done$state), "opened"),
+          timeout = self$router_timeout,
+          wait = self$router_wait,
+          message = "cannot open socket for done workers."
         )
       }
       invisible()
@@ -183,6 +217,9 @@ crew_class_router <- R6::R6Class(
     terminate = function() {
       if (isTRUE(self$listening())) {
         try(mirai::daemons(value = 0L, .compute = self$name), silent = TRUE)
+        if (!is.null(self$connection_done)) {
+          try(suppressWarnings(close(self$connection_done)))
+        }
         try(
           crew_wait(
             fun = ~isFALSE(self$listening()),
@@ -192,15 +229,17 @@ crew_class_router <- R6::R6Class(
           ),
           silent = TRUE
         )
+        try(
+          crew_wait(
+            fun = ~identical(self$connection_done$state, "closed"),
+            timeout = self$router_timeout,
+            wait = self$router_wait,
+            message = "cannot disconnect router$connection_done NNG socket."
+          ),
+          silent = TRUE
+        )
       }
       invisible()
     }
   )
 )
-
-router_nodes_sockets <- function(nodes) {
-  if (anyNA(nodes)) {
-    return(character(0))
-  }
-  rownames(nodes)
-}

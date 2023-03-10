@@ -49,6 +49,9 @@ client connection.}
 
 \item{\code{router_wait}}{Polling interval in seconds for checking the
 \code{mirai} client connection.}
+
+\item{\code{connection_done}}{NNG socket for workers to report
+when they are done.}
 }
 \if{html}{\out{</div>}}
 }
@@ -59,6 +62,7 @@ client connection.}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
 \item \href{#method-crew_class_router-nodes}{\code{crew_class_router$nodes()}}
 \item \href{#method-crew_class_router-sockets}{\code{crew_class_router$sockets()}}
+\item \href{#method-crew_class_router-done}{\code{crew_class_router$done()}}
 \item \href{#method-crew_class_router-listening}{\code{crew_class_router$listening()}}
 \item \href{#method-crew_class_router-listen}{\code{crew_class_router$listen()}}
 \item \href{#method-crew_class_router-terminate}{\code{crew_class_router$terminate()}}
@@ -152,6 +156,21 @@ Get all worker sockets.
 \subsection{Returns}{
 Character vector of websockets sockets that the
 \code{mirai} client is currently listening to.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-done"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-done}{}}}
+\subsection{Method \code{done()}}{
+Report the token of a finished worker
+if available from the NNG socket.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$done()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The character token of a finished worker if available,
+NULL if no token could be found over the NNG socket.
 }
 }
 \if{html}{\out{<hr>}}

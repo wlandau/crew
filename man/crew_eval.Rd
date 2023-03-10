@@ -22,7 +22,8 @@ crew_eval(quote(1 + 1))
 }
 \seealso{
 Other utilities: 
-\code{\link{crew_wait}()}
+\code{\link{crew_wait}()},
+\code{\link{crew_worker}()}
 }
 \concept{utilities}
 \keyword{internal}

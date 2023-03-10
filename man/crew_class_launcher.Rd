@@ -45,6 +45,8 @@ Other launchers:
 \describe{
 \item{\code{workers}}{Data frame of worker information.}
 
+\item{\code{data}}{See the constructor for details.}
+
 \item{\code{seconds_launch}}{See the constructor for details.}
 
 \item{\code{seconds_idle}}{See the constructor for details.}
@@ -70,7 +72,7 @@ Other launchers:
 \itemize{
 \item \href{#method-crew_class_launcher-new}{\code{crew_class_launcher$new()}}
 \item \href{#method-crew_class_launcher-validate}{\code{crew_class_launcher$validate()}}
-\item \href{#method-crew_class_launcher-args}{\code{crew_class_launcher$args()}}
+\item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
 \item \href{#method-crew_class_launcher-populate}{\code{crew_class_launcher$populate()}}
 \item \href{#method-crew_class_launcher-launching}{\code{crew_class_launcher$launching()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
@@ -84,6 +86,7 @@ Other launchers:
 Launcher constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$new(
+  data = NULL,
   seconds_launch = NULL,
   seconds_idle = NULL,
   seconds_wall = NULL,
@@ -99,6 +102,9 @@ Launcher constructor.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{data}}{Named list of R objects to send to the global environment
+of each launched worker. Can be overridden in the \code{launch()} method.}
+
 \item{\code{seconds_launch}}{Seconds of launchup time to allow.
 A worker is unconditionally assumed to be alive
 from the moment of its launch until \code{seconds_launch} seconds later.
@@ -176,12 +182,12 @@ Validate the launcher.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-args"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-args}{}}}
-\subsection{Method \code{args()}}{
-Argument list for \code{mirai::server()}
+\if{html}{\out{<a id="method-crew_class_launcher-settings"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-settings}{}}}
+\subsection{Method \code{settings()}}{
+List of arguments for \code{mirai::server()}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$args(socket)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$settings(socket)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -193,7 +199,7 @@ to launch.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-List of arguments for \code{mirai::server()}
+List of arguments for \code{mirai::server()}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -236,13 +242,16 @@ Character vector of worker websockets.
 \subsection{Method \code{launch()}}{
 Launch one or more workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(sockets = character(0))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(sockets = character(0), data = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{sockets}}{Sockets where the workers will dial in.}
+
+\item{\code{data}}{Named list of R objects that will be set to the
+global environment of the server.}
 }
 \if{html}{\out{</div>}}
 }

@@ -41,11 +41,11 @@ Other launchers:
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="args"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-args'><code>crew::crew_class_launcher$args()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="initialize"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-initialize'><code>crew::crew_class_launcher$initialize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch'><code>crew::crew_class_launcher$launch()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launching"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launching'><code>crew::crew_class_launcher$launching()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="populate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-populate'><code>crew::crew_class_launcher$populate()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="settings"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-settings'><code>crew::crew_class_launcher$settings()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate'><code>crew::crew_class_launcher$terminate()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="validate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-validate'><code>crew::crew_class_launcher$validate()</code></a></span></li>
 </ul>
@@ -57,13 +57,19 @@ Other launchers:
 \subsection{Method \code{launch_worker()}}{
 Launch a \code{callr} worker to dial into a socket.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$launch_worker(socket)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$launch_worker(socket, token, data)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{socket}}{Socket where the worker will dial in.}
+
+\item{\code{token}}{Character of length 1 to identify the instance
+of the \code{mirai} server process connected to the socket.}
+
+\item{\code{data}}{Named list of R objects to send to the
+global environment of the worker.}
 }
 \if{html}{\out{</div>}}
 }

@@ -33,7 +33,8 @@ crew_wait(fun = function() TRUE)
 }
 \seealso{
 Other utilities: 
-\code{\link{crew_eval}()}
+\code{\link{crew_eval}()},
+\code{\link{crew_worker}()}
 }
 \concept{utilities}
 \keyword{internal}

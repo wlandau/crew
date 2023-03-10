@@ -97,10 +97,24 @@ crew_class_launcher_callr <- R6::R6Class(
     #' @description Launch a `callr` worker to dial into a socket.
     #' @return A `callr::r_bg()` handle.
     #' @param socket Socket where the worker will dial in.
-    launch_worker = function(socket) {
+    #' @param token Character of length 1 to identify the instance
+    #'   of the `mirai` server process connected to the socket.
+    #' @param data Named list of R objects to send to the
+    #'   global environment of the worker.
+    launch_worker = function(socket, token, data) {
       callr::r_bg(
-        func = function (args) do.call(what = mirai::server, args = args),
-        args = list(args = self$args(socket))
+        func = function (settings, token, data) {
+          crew::crew_worker(
+            settings = settings,
+            token = token,
+            data = data
+          )
+        },
+        args = list(
+          settings = self$settings(socket),
+          token = token,
+          data = data
+        )
       )
     },
     #' @description Terminate a `callr` worker.

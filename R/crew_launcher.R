@@ -139,11 +139,11 @@ crew_class_launcher <- R6::R6Class(
       )
       invisible()
     },
-    #' @description Argument list for `mirai::server()`
-    #' @return List of arguments for `mirai::server()`
+    #' @description List of arguments for `mirai::server()`.
+    #' @return List of arguments for `mirai::server()`.
     #' @param socket Character of length 1, websocket address of the worker
     #'   to launch.
-    args = function(socket) {
+    settings = function(socket) {
       list(
         url = socket,
         nodes = NULL,
@@ -219,7 +219,8 @@ crew_class_launcher <- R6::R6Class(
         if (!is_crew_null(self$workers$handle[[index]])) {
           self$terminate_worker(self$workers$handle[[index]])
         }
-        self$workers$start[[index]] <- NA_real_
+        self$workers$start[index] <- NA_real_
+        self$workers$token[index] <- NA_character_
       }
       invisible()
     }

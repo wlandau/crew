@@ -185,8 +185,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param sockets Sockets where the workers will dial in.
     #' @param data Named list of R objects that will be set to the
     #'   global environment of the server.
-    launch = function(sockets = character(0), data = NULL) {
-      data <- data %|||% self$data
+    launch = function(sockets = character(0)) {
       matches <- match(x = sockets, table = self$workers$socket)
       true(!anyNA(matches), message = "bad websocket on launch.")
       for (index in matches) {
@@ -201,7 +200,7 @@ crew_class_launcher <- R6::R6Class(
         handle <- self$launch_worker(
           socket = socket,
           token = token,
-          data = data
+          data = self$data
         )
         self$workers$handle[[index]] <- handle
       }

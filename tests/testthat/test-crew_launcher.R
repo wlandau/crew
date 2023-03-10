@@ -40,7 +40,7 @@ crew_test("launcher populate()", {
   launcher$populate(sockets = paste0("ws://127.0.0.1:5000/", seq_len(2)))
   workers <- launcher$workers
   expect_equal(workers$socket, paste0("ws://127.0.0.1:5000/", seq_len(2)))
-  expect_equal(workers$start, c(-Inf, -Inf))
+  expect_equal(workers$start, c(NA_real_, NA_real_))
   expect_equal(workers$handle, list(crew_null, crew_null))
 })
 

@@ -21,8 +21,11 @@ crew_class_launcher <- R6::R6Class(
     workers = tibble::tibble(
       socket = character(0L),
       start = numeric(0L),
+      token = character(0L),
       handle = list()
     ),
+    #' @field data See the constructor for details.
+    data = NULL,
     #' @field seconds_launch See the constructor for details.
     seconds_launch = NULL,
     #' @field seconds_idle See the constructor for details.
@@ -43,6 +46,8 @@ crew_class_launcher <- R6::R6Class(
     async_dial = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
+    #' @param data Named list of R objects to send to the global environment
+    #'   of each launched worker. Can be overridden in the `launch()` method.
     #' @param seconds_launch Seconds of launchup time to allow.
     #'   A worker is unconditionally assumed to be alive
     #'   from the moment of its launch until `seconds_launch` seconds later.
@@ -86,6 +91,7 @@ crew_class_launcher <- R6::R6Class(
     #' router$terminate()
     #' }
     initialize = function(
+      data = NULL,
       seconds_launch = NULL,
       seconds_idle = NULL,
       seconds_wall = NULL,
@@ -96,6 +102,7 @@ crew_class_launcher <- R6::R6Class(
       tasks_timers = NULL,
       async_dial = NULL
     ) {
+      self$data <- data
       self$seconds_launch <- seconds_launch
       self$seconds_idle <- seconds_idle
       self$seconds_wall <- seconds_wall
@@ -125,6 +132,11 @@ crew_class_launcher <- R6::R6Class(
       }
       true(self$async_dial, isTRUE(.) || isFALSE(.))
       true(self$workers, is.null(.) || is.data.frame(.))
+      true(
+        self$data,
+        is.null(.) || (is.list(.) && is_named(list)),
+        message = "launcher data must have unique nonempty names."
+      )
       invisible()
     },
     #' @description Argument list for `mirai::server()`
@@ -152,6 +164,7 @@ crew_class_launcher <- R6::R6Class(
       self$workers <- tibble::tibble(
         socket = sockets,
         start = rep(NA_real_, length(sockets)),
+        token = rep(NA_character_, length(sockets)),
         handle = replicate(length(sockets), crew_null, simplify = FALSE)
       )
       invisible()
@@ -180,7 +193,14 @@ crew_class_launcher <- R6::R6Class(
         }
         socket <- self$workers$socket[index]
         self$workers$start[index] <- bench::hires_time()
-        self$workers$handle[[index]] <- self$launch_worker(socket)
+        token <- random_name()
+        self$workers$token[index] <- token
+        handle <- self$launch_worker(
+          socket = socket,
+          token = token,
+          data = self$data
+        )
+        self$workers$handle[[index]] <- handle
       }
       invisible()
     },

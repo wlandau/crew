@@ -24,6 +24,7 @@
 #' @importFrom rlang abort as_function
 #' @importFrom tibble tibble
 #' @importFrom utils globalVariables head
+#' @importFrom uuid UUIDgenerate
 #' @importFrom withr local_options
 NULL
 

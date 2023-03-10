@@ -39,6 +39,7 @@ Imports:
   rlang,
   tibble,
   utils,
+  uuid,
   withr
 Suggests:
   knitr (>= 1.30),

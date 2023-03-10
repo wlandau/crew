@@ -10,29 +10,24 @@ crew_test("crew_router() works", {
   on.exit(router$terminate())
   expect_false(router$listening())
   expect_equal(router$sockets(), character(0))
-  expect_equal(router$connected(), character(0))
-  expect_equal(router$busy(), character(0))
-  expect_equal(router$idle(), character(0))
   expect_silent(router$listen())
   expect_true(router$listening())
   socket <- router$sockets()
   expect_true(is.character(socket) && length(socket) > 0L)
   expect_true(nzchar(socket) && !anyNA(socket))
   expect_equal(length(socket), 1L)
-  expect_equal(router$connected(), character(0))
-  expect_equal(router$busy(), character(0))
-  expect_equal(router$idle(), character(0))
+  nodes <- router$nodes()
+  expect_equal(socket, rownames(nodes))
+  expect_true(all(nodes == 0L))
   px <- callr::r_bg(
     function(socket) mirai::server(socket),
     args = list(socket = socket)
   )
   crew::crew_wait(
-    ~identical(router$connected(), socket),
+    ~identical(unname(router$nodes()[, "status_online", drop = TRUE]), 1L),
     timeout = 5,
     wait = 0.1
   )
-  expect_equal(router$busy(), character(0))
-  expect_equal(router$idle(), socket)
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
   crew::crew_wait(~!anyNA(m$data), timeout = 5, wait = 0.1)
   expect_false(anyNA(m$data))

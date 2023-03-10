@@ -129,7 +129,7 @@ crew_class_launcher <- R6::R6Class(
     populate = function(sockets) {
       self$workers <- tibble::tibble(
         socket = sockets,
-        start = rep(-Inf, length(sockets)),
+        start = rep(NA_real_, length(sockets)),
         handle = replicate(length(sockets), crew_null, simplify = FALSE)
       )
       invisible()
@@ -138,8 +138,9 @@ crew_class_launcher <- R6::R6Class(
     #'   within `seconds_launch` seconds ago.
     #' @return Character vector of worker websockets.
     launching = function() {
-      elapsed <- bench::hires_time() - self$workers$start
-      as.character(self$workers$socket[elapsed < self$seconds_launch])
+      index <- !is.na(self$seconds_launch) &
+        ((bench::hires_time() - self$workers$start) < self$seconds_launch)
+      as.character(self$workers$socket[index])
     },
     #' @description Launch one or more workers.
     #' @details If a worker is already assigned to a socket,
@@ -170,10 +171,10 @@ crew_class_launcher <- R6::R6Class(
       matches <- match(x = sockets, table = self$workers$socket)
       true(!anyNA(matches), message = "bad websocket on terminate.")
       for (index in matches) {
-        handle <- self$workers$handle[[index]]
-        if (!is_crew_null(handle)) {
-          self$terminate_worker(handle)
+        if (!is_crew_null(self$workers$handle[[index]])) {
+          self$terminate_worker(self$workers$handle[[index]])
         }
+        self$workers$start[[index]] <- NA_real_
       }
       invisible()
     }

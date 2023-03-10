@@ -23,7 +23,7 @@ crew_port_set <- function(port = NULL) {
   crew_port_envir$port <- port
   crew_port_envir$socket <- nanonext::socket(
     protocol = "bus",
-    listen = sprintf("ws://%s:%s/", local_ip(), port)
+    listen = sprintf("ws://%s:%s/crew", local_ip(), port)
   )
   invisible()
 }

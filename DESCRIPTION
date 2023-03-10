@@ -37,6 +37,7 @@ Imports:
   getip,
   mirai (>= 0.7.2.9021),
   nanonext,
+  parallelly,
   R6,
   rlang,
   tibble,

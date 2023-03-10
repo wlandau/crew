@@ -152,11 +152,7 @@ crew_class_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     listen = function() {
       if (isFALSE(self$listening())) {
-        socket <- sprintf(
-          "ws://%s:%s",
-          getip::getip(type = "local"),
-          self$port
-        )
+        socket <- sprintf("ws://%s:%s", local_ip(), self$port)
         args <- list(
           value = socket,
           nodes = self$workers,

@@ -12,11 +12,9 @@ See \code{\link[=crew_router]{crew_router()}}.
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
-router$unoccupied() # character(0)
 router$listen()
-router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
+router$sockets() # "ws://xx.xx.xx:xxxxx/x"
 router$terminate()
-router$unoccupied() # character(0)
 }
 
 ## ------------------------------------------------
@@ -25,11 +23,9 @@ router$unoccupied() # character(0)
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
-router$unoccupied() # character(0)
 router$listen()
-router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
+router$sockets() # "ws://xx.xx.xx:xxxxx/x"
 router$terminate()
-router$unoccupied() # character(0)
 }
 }
 \seealso{
@@ -108,11 +104,9 @@ An \code{R6} object with the router.
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
-router$unoccupied() # character(0)
 router$listen()
-router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
+router$sockets() # "ws://xx.xx.xx:xxxxx/x"
 router$terminate()
-router$unoccupied() # character(0)
 }
 }
 \if{html}{\out{</div>}}

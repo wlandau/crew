@@ -20,11 +20,9 @@
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
-#' router$unoccupied() # character(0)
 #' router$listen()
-#' router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
+#' router$sockets() # "ws://xx.xx.xx:xxxxx/x"
 #' router$terminate()
-#' router$unoccupied() # character(0)
 #' }
 crew_router <- function(
   name = NULL,
@@ -67,11 +65,9 @@ crew_router <- function(
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
-#' router$unoccupied() # character(0)
 #' router$listen()
-#' router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
+#' router$sockets() # "ws://xx.xx.xx:xxxxx/x"
 #' router$terminate()
-#' router$unoccupied() # character(0)
 #' }
 crew_class_router <- R6::R6Class(
   classname = "crew_class_router",
@@ -102,11 +98,9 @@ crew_class_router <- R6::R6Class(
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' router <- crew_router()
-    #' router$unoccupied() # character(0)
     #' router$listen()
-    #' router$unoccupied() # "ws://xx.xx.xx:xxxxx/x"
+    #' router$sockets() # "ws://xx.xx.xx:xxxxx/x"
     #' router$terminate()
-    #' router$unoccupied() # character(0)
     #' }
     initialize = function(
       name = NULL,

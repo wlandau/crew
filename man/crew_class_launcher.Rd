@@ -7,6 +7,33 @@
 \code{R6} abstract class to build other subclasses
 which launch and manage workers.
 }
+\examples{
+router <- crew_router()
+router$listen()
+launcher <- crew_launcher_callr()
+launcher$populate(sockets = router$sockets())
+launcher$launch()
+m <- mirai::mirai("result")
+Sys.sleep(0.25)
+m$data
+router$terminate()
+
+## ------------------------------------------------
+## Method `crew_class_launcher$new`
+## ------------------------------------------------
+
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_router()
+router$listen()
+launcher <- crew_launcher_callr()
+launcher$populate(sockets = router$sockets())
+launcher$launch()
+m <- mirai::mirai("result")
+Sys.sleep(0.25)
+m$data
+router$terminate()
+}
+}
 \seealso{
 Other launchers: 
 \code{\link{crew_class_launcher_callr}},
@@ -116,6 +143,24 @@ asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 \subsection{Returns}{
 An \code{R6} object with the launcher.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+router <- crew_router()
+router$listen()
+launcher <- crew_launcher_callr()
+launcher$populate(sockets = router$sockets())
+launcher$launch()
+m <- mirai::mirai("result")
+Sys.sleep(0.25)
+m$data
+router$terminate()
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-validate"></a>}}

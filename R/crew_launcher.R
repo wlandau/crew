@@ -3,6 +3,16 @@
 #' @family launchers
 #' @description `R6` abstract class to build other subclasses
 #'   which launch and manage workers.
+#' @examples
+#' router <- crew_router()
+#' router$listen()
+#' launcher <- crew_launcher_callr()
+#' launcher$populate(sockets = router$sockets())
+#' launcher$launch()
+#' m <- mirai::mirai("result")
+#' Sys.sleep(0.25)
+#' m$data
+#' router$terminate()
 crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
   cloneable = FALSE,
@@ -63,6 +73,18 @@ crew_class_launcher <- R6::R6Class(
     #'   See the `timerlaunch` argument of `mirai::server()`.
     #' @param async_dial Logical, whether the `mirai` workers should dial in
     #'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' router <- crew_router()
+    #' router$listen()
+    #' launcher <- crew_launcher_callr()
+    #' launcher$populate(sockets = router$sockets())
+    #' launcher$launch()
+    #' m <- mirai::mirai("result")
+    #' Sys.sleep(0.25)
+    #' m$data
+    #' router$terminate()
+    #' }
     initialize = function(
       seconds_launch = NULL,
       seconds_idle = NULL,

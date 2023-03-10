@@ -7,7 +7,6 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
   })
   expect_silent(launcher$validate())
   router$listen()
-  expect_equal(router$connected(), character(0))
   launcher$populate(sockets = router$sockets())
   expect_equal(nrow(launcher$workers), 4L)
   expect_s3_class(launcher$workers$handle[[2]], "crew_null")
@@ -15,16 +14,18 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
   expect_s3_class(launcher$workers$handle[[2]], "r_process")
   expect_silent(launcher$validate())
   crew::crew_wait(
-    ~identical(length(router$connected()), 1L),
-    timeout = 5,
-    wait = 0.1
-  )
-  crew::crew_wait(
     ~launcher$workers$handle[[2]]$is_alive(),
     timeout = 5,
     wait = 0.1
   )
-  expect_equal(length(router$connected()), 1L)
+  crew::crew_wait(
+    ~identical(
+      unname(router$nodes()[, "status_online", drop = TRUE])[2L],
+      1L
+    ),
+    timeout = 5,
+    wait = 0.1
+  )
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
   crew::crew_wait(~!anyNA(m$data), timeout = 5, wait = 0.1)
   expect_equal(m$data, launcher$workers$handle[[2]]$get_pid())
@@ -34,7 +35,6 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
     timeout = 5,
     wait = 0.1
   )
-  expect_equal(router$connected(), character(0))
 })
 
 crew_test("crew_launcher_callr() can run a task and time out a worker", {
@@ -50,11 +50,6 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
   launcher$populate(sockets = router$sockets())
   launcher$launch(sockets = router$sockets())
   crew::crew_wait(
-    ~identical(length(router$connected()), 1L),
-    timeout = 5,
-    wait = 0.1
-  )
-  crew::crew_wait(
     ~launcher$workers$handle[[1]]$is_alive(),
     timeout = 5,
     wait = 0.1
@@ -68,11 +63,13 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
     wait = 0.1
   )
   crew::crew_wait(
-    ~identical(length(router$connected()), 0L),
+    ~identical(
+      unname(router$nodes()[, "status_online", drop = TRUE]),
+      0L
+    ),
     timeout = 5,
     wait = 0.1
   )
-  expect_equal(router$connected(), character(0))
   router$terminate()
 })
 
@@ -88,7 +85,10 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
   launcher$populate(sockets = router$sockets())
   launcher$launch(sockets = router$sockets())
   crew::crew_wait(
-    ~identical(length(router$connected()), 1L),
+    ~identical(
+      unname(router$nodes()[, "status_online", drop = TRUE]),
+      1L
+    ),
     timeout = 5,
     wait = 0.1
   )
@@ -99,7 +99,10 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
   )
   expect_silent(launcher$terminate())
   crew::crew_wait(
-    ~identical(length(router$connected()), 0L),
+    ~identical(
+      unname(router$nodes()[, "status_online", drop = TRUE]),
+      0L
+    ),
     timeout = 5,
     wait = 0.1
   )

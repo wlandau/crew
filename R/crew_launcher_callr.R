@@ -37,15 +37,14 @@
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
-#' router$connect()
+#' router$listen()
 #' launcher <- crew_launcher_callr()
-#' launcher$populate(sockets = router$sockets_listening())
-#' launcher$running() # 0
+#' launcher$populate(sockets = router$sockets())
 #' launcher$launch()
-#' launcher$running() # 1
-#' launcher$terminate()
-#' launcher$running() # 0
-#' router$disconnect()
+#' m <- mirai::mirai("result")
+#' Sys.sleep(0.25)
+#' m$data
+#' router$terminate()
 #' }
 crew_launcher_callr <- function(
   seconds_launch = 30,
@@ -81,15 +80,14 @@ crew_launcher_callr <- function(
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
-#' router$connect()
+#' router$listen()
 #' launcher <- crew_launcher_callr()
-#' launcher$populate(sockets = router$sockets_listening())
-#' launcher$running() # 0
+#' launcher$populate(sockets = router$sockets())
 #' launcher$launch()
-#' launcher$running() # 1
-#' launcher$terminate()
-#' launcher$running() # 0
-#' router$disconnect()
+#' m <- mirai::mirai("result")
+#' Sys.sleep(0.25)
+#' m$data
+#' router$terminate()
 #' }
 crew_class_launcher_callr <- R6::R6Class(
   classname = "crew_class_launcher_callr",

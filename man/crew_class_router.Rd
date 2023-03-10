@@ -40,8 +40,6 @@ Other routers:
 
 \item{\code{workers}}{Number of workers.}
 
-\item{\code{host}}{Local IP address.}
-
 \item{\code{port}}{Local TCP port.}
 
 \item{\code{router_timeout}}{Timeout in seconds for checking the \code{mirai}
@@ -73,7 +71,6 @@ client connection.}
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_router$new(
   name = NULL,
   workers = NULL,
-  host = NULL,
   port = NULL,
   router_timeout = NULL,
   router_wait = NULL
@@ -86,8 +83,6 @@ client connection.}
 \item{\code{name}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{workers}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
-
-\item{\code{host}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{port}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 

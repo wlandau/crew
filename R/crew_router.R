@@ -7,10 +7,6 @@
 #' @param name Name of the router object. If `NULL`, a name is automatically
 #'   generated.
 #' @param workers Integer, maximum number of parallel workers to run.
-#' @param host IP address of the client process that the workers can dial
-#'   into inside the local network.
-#'   If a character string, the router uses the specified IP address.
-#'   If `NULL`, the IP address defaults to `getip::getip(type = "local")`.
 #' @param port TCP port to listen for the workers. If `0`,
 #'   then NNG automatically chooses an available ephemeral port.
 #' @param router_timeout Number of seconds to time out waiting for the `mirai`
@@ -27,7 +23,6 @@
 crew_router <- function(
   name = NULL,
   workers = 1L,
-  host = getip::getip(type = "local"),
   port = 0L,
   router_timeout = 5,
   router_wait = 0.1
@@ -35,11 +30,9 @@ crew_router <- function(
   true(workers, is.numeric(.), length(.) == 1L, . > 0L, !anyNA(.))
   name <- as.character(name %|||% random_name())
   workers <- as.integer(workers)
-  host <- as.character(host)
   port <- as.integer(port)
   true(name, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
   true(workers, is.integer(.), length(.) == 1L, !anyNA(.), . > 0L)
-  true(host, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
   true(port, is.integer(.), length(.) == 1L, !anyNA(.))
   true(port, . >= 0L, . <= 65535L)
   true(router_timeout, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
@@ -48,7 +41,6 @@ crew_router <- function(
   router <- crew_class_router$new(
     name = name,
     workers = workers,
-    host = host,
     port = port,
     router_timeout = router_timeout,
     router_wait = router_wait
@@ -77,8 +69,6 @@ crew_class_router <- R6::R6Class(
     name = NULL,
     #' @field workers Number of workers.
     workers = NULL,
-    #' @field host Local IP address.
-    host = NULL,
     #' @field port Local TCP port.
     port = NULL,
     #' @field router_timeout Timeout in seconds for checking the `mirai`
@@ -91,7 +81,6 @@ crew_class_router <- R6::R6Class(
     #' @return An `R6` object with the router.
     #' @param name Argument passed from [crew_router()].
     #' @param workers Argument passed from [crew_router()].
-    #' @param host Argument passed from [crew_router()].
     #' @param port Argument passed from [crew_router()].
     #' @param router_timeout Argument passed from [crew_router()].
     #' @param router_wait Argument passed from [crew_router()].
@@ -105,14 +94,12 @@ crew_class_router <- R6::R6Class(
     initialize = function(
       name = NULL,
       workers = NULL,
-      host = NULL,
       port = NULL,
       router_timeout = NULL,
       router_wait = NULL
     ) {
       self$name <- name
       self$workers <- workers
-      self$host <- host
       self$port <- port
       self$router_timeout <- router_timeout
       self$router_wait <- router_wait
@@ -122,7 +109,6 @@ crew_class_router <- R6::R6Class(
     validate = function() {
       true(self$name, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
       true(self$workers, is.integer(.), length(.) == 1L, !anyNA(.), . > 0L)
-      true(self$host, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
       true(self$port, is.integer(.), length(.) == 1L, !anyNA(.))
       true(self$port, . >= 0L, . <= 65535L)
       true(
@@ -166,8 +152,13 @@ crew_class_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     listen = function() {
       if (isFALSE(self$listening())) {
+        socket <- sprintf(
+          "ws://%s:%s",
+          getip::getip(type = "local"),
+          self$port
+        )
         args <- list(
-          value = sprintf("ws://%s:%s", self$host, self$port),
+          value = socket,
           nodes = self$workers,
           .compute = self$name
         )

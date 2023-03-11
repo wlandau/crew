@@ -21,11 +21,7 @@ crew_port_set <- function(port = NULL) {
   port <- port %|||% free_port()
   true(port, is.integer(.), !anyNA(.), length(.) == 1L, . >= 0L, . <= 65535L)
   crew_port_envir$port <- port
-  crew_port_envir$socket <- connection_bus(
-    port = port,
-    suffix = "crew",
-    wait = TRUE
-  )
+  crew_port_envir$connection <- connection_listen(port = port, suffix = "crew")
   invisible()
 }
 

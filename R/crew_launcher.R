@@ -220,7 +220,7 @@ crew_class_launcher <- R6::R6Class(
         self$workers$start[index] <- bench::hires_time()
         token <- random_name()
         self$workers$token[index] <- token
-        listener <- connection_bus_listen(
+        listener <- connection_listen(
           port = crew_get_port(),
           suffix = token
         )

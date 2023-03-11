@@ -15,9 +15,9 @@
 #' }
 crew_port_unset <- function() {
   crew_port_envir$port <- NULL
-  if (!is.null(crew_port_envir$socket)) {
-    close(crew_port_envir$socket)
-    crew_port_envir$socket <- NULL
+  if (!is.null(crew_port_envir$connection)) {
+    close(crew_port_envir$connection)
+    crew_port_envir$connection <- NULL
   }
   invisible()
 }

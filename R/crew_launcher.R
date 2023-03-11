@@ -175,6 +175,9 @@ crew_class_launcher <- R6::R6Class(
     #'   within `seconds_launch` seconds ago.
     #' @return Character vector of worker websockets.
     launching = function() {
+      
+      stop("TO DO: implement using the worker bus connections!")
+      
       index <- !is.na(self$seconds_launch) &
         ((bench::hires_time() - self$workers$start) < self$seconds_launch)
       as.character(self$workers$socket[index])
@@ -232,7 +235,7 @@ crew_class_launcher <- R6::R6Class(
           self$terminate_worker(handle)
         }
         con <- self$workers$connection[[index]]
-        if (!is_crew_null(con) && launcher_connection_is_open(con)) {
+        if (!is_crew_null(con) && identical(con$state, "opened")) {
           close(con)
         }
         self$workers$start[index] <- NA_real_
@@ -244,8 +247,3 @@ crew_class_launcher <- R6::R6Class(
     }
   )
 )
-
-launcher_connection_get <- function(token) {
-  
-  
-}

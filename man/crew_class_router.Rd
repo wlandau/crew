@@ -55,7 +55,6 @@ client connection.}
 \itemize{
 \item \href{#method-crew_class_router-new}{\code{crew_class_router$new()}}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
-\item \href{#method-crew_class_router-nodes}{\code{crew_class_router$nodes()}}
 \item \href{#method-crew_class_router-sockets}{\code{crew_class_router$sockets()}}
 \item \href{#method-crew_class_router-listening}{\code{crew_class_router$listening()}}
 \item \href{#method-crew_class_router-listen}{\code{crew_class_router$listen()}}
@@ -120,19 +119,6 @@ Validate the router.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-nodes"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-nodes}{}}}
-\subsection{Method \code{nodes()}}{
-Get the full matrix of worker nodes.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$nodes()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Named integer matrix from \code{mirai::daemons()}
 }
 }
 \if{html}{\out{<hr>}}

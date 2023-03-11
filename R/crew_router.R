@@ -121,16 +121,11 @@ crew_class_router <- R6::R6Class(
       true(self$router_timeout >= self$router_wait)
       invisible()
     },
-    #' @description Get the full matrix of worker nodes.
-    #' @return Named integer matrix from `mirai::daemons()`
-    nodes = function() {
-      mirai::daemons(.compute = self$name)$nodes
-    },
     #' @description Get all worker sockets.
     #' @return Character vector of websockets sockets that the
     #'   `mirai` client is currently listening to.
     sockets = function() {
-      nodes <- self$nodes()
+      nodes <- mirai::daemons(.compute = self$name)$nodes
       if_any(anyNA(nodes), character(0), rownames(nodes))
     },
     #' @description Check if the `mirai` client is listening

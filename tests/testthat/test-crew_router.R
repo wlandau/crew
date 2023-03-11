@@ -16,7 +16,7 @@ crew_test("crew_router() works", {
   expect_true(is.character(socket) && length(socket) > 0L)
   expect_true(nzchar(socket) && !anyNA(socket))
   expect_equal(length(socket), 1L)
-  nodes <- router$nodes()
+  nodes <- mirai::daemons(.compute = router$name)$nodes
   expect_equal(socket, rownames(nodes))
   expect_true(all(nodes == 0L))
   px <- callr::r_bg(
@@ -24,7 +24,10 @@ crew_test("crew_router() works", {
     args = list(socket = socket)
   )
   crew::crew_wait(
-    ~identical(unname(router$nodes()[, "status_online", drop = TRUE]), 1L),
+    ~{
+      nodes <- mirai::daemons(.compute = router$name)$nodes
+      identical(unname(nodes[, "status_online", drop = TRUE]), 1L)
+    },
     timeout = 5,
     wait = 0.1
   )

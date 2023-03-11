@@ -11,7 +11,7 @@ which launch and manage workers.
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
-launcher$populate(sockets = router$sockets())
+launcher$populate(sockets = router$sockets)
 launcher$launch()
 m <- mirai::mirai("result")
 Sys.sleep(0.25)
@@ -26,7 +26,7 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
-launcher$populate(sockets = router$sockets())
+launcher$populate(sockets = router$sockets)
 launcher$launch()
 m <- mirai::mirai("result")
 Sys.sleep(0.25)
@@ -74,7 +74,7 @@ Other launchers:
 \item \href{#method-crew_class_launcher-validate}{\code{crew_class_launcher$validate()}}
 \item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
 \item \href{#method-crew_class_launcher-populate}{\code{crew_class_launcher$populate()}}
-\item \href{#method-crew_class_launcher-launching}{\code{crew_class_launcher$launching()}}
+\item \href{#method-crew_class_launcher-active}{\code{crew_class_launcher$active()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 }
@@ -155,7 +155,7 @@ An \code{R6} object with the launcher.
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
-launcher$populate(sockets = router$sockets())
+launcher$populate(sockets = router$sockets)
 launcher$launch()
 m <- mirai::mirai("result")
 Sys.sleep(0.25)
@@ -223,13 +223,22 @@ Populate the workers data frame.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-launching"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-launching}{}}}
-\subsection{Method \code{launching()}}{
-Get the workers that attempted a launch
-within \code{seconds_launch} seconds ago.
+\if{html}{\out{<a id="method-crew_class_launcher-active"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-active}{}}}
+\subsection{Method \code{active()}}{
+Get the active workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launching()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$active()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+An active worker is a worker that should be given the chance
+to run tasks. If a worker is currently connected to its websocket,
+then it is active. Otherwise, if a worker is not currently connected
+but has previously connected to its websocket in the past,
+then it is inactive. Otherwise, if a worker has never connected
+at all, then it is active if and only if the startup time window
+has not expired yet.
 }
 
 \subsection{Returns}{

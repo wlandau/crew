@@ -77,6 +77,9 @@ crew_class_router <- R6::R6Class(
     #' @field router_wait Polling interval in seconds for checking the
     #'   `mirai` client connection.
     router_wait = NULL,
+    #' @field sockets Character vector of sockets listening for
+    #'   completed tasks.
+    sockets = NULL,
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
     #' @param name Argument passed from [crew_router()].
@@ -121,13 +124,6 @@ crew_class_router <- R6::R6Class(
       true(self$router_timeout >= self$router_wait)
       invisible()
     },
-    #' @description Get all worker sockets.
-    #' @return Character vector of websockets sockets that the
-    #'   `mirai` client is currently listening to.
-    sockets = function() {
-      nodes <- mirai::daemons(.compute = self$name)$nodes
-      if_any(anyNA(nodes), character(0), rownames(nodes))
-    },
     #' @description Check if the `mirai` client is listening
     #'   to worker websockets.
     #' @details This method may stall and time out if there are
@@ -160,6 +156,8 @@ crew_class_router <- R6::R6Class(
           wait = self$router_wait,
           message = "mirai client cannot connect."
         )
+        nodes <- mirai::daemons(.compute = self$name)$nodes
+        self$sockets <- if_any(anyNA(nodes), character(0), rownames(nodes))
       }
       invisible()
     },
@@ -178,6 +176,7 @@ crew_class_router <- R6::R6Class(
           ),
           silent = TRUE
         )
+        self$sockets <- NULL
       }
       invisible()
     }

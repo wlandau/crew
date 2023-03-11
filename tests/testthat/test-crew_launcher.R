@@ -35,7 +35,7 @@ crew_test("launcher populate()", {
   expect_equal(dim(workers), c(0, 5))
   expect_equal(
     colnames(workers),
-    c("socket", "start", "token", "connection", "handle")
+    c("socket", "start", "token", "listener", "handle")
   )
   expect_equal(workers$socket, character(0))
   expect_equal(workers$start, numeric(0))
@@ -46,14 +46,46 @@ crew_test("launcher populate()", {
   expect_equal(workers$socket, paste0("ws://127.0.0.1:5000/", seq_len(2)))
   expect_equal(workers$start, c(NA_real_, NA_real_))
   expect_equal(workers$token, c(NA_character_, NA_character_))
-  expect_equal(workers$connection, list(crew_null, crew_null))
+  expect_equal(workers$listener, list(crew_null, crew_null))
   expect_equal(workers$handle, list(crew_null, crew_null))
 })
 
-crew_test("launcher launching()", {
+crew_test("launcher active()", {
   launcher <- crew_class_launcher$new(seconds_launch = 1)
-  launcher$populate(sockets = paste0("ws://127.0.0.1:5000/", seq_len(4)))
-  launcher$workers$start <- c(-Inf, -Inf, Inf, Inf)
-  launcher$workers$token <- replicate(4L, random_name(), simplify = TRUE)
-  expect_equal(launcher$launching(), "ws://127.0.0.1:5000/2")
+  port_mirai <- free_port()
+  sockets <- sprintf("ws://127.0.0.1:%s/%s", port_mirai, seq_len(9L))
+  launcher$populate(sockets = sockets)
+  launcher$workers$start <- rep(c(NA_real_, -Inf, Inf), times = 3L)
+  launcher$workers$token <- replicate(9L, random_name(), simplify = TRUE)
+  port_nanonext <- free_port()
+  dialers <- list()
+  for (index in seq_len(9L)) {
+    token <- launcher$workers$token[index]
+    listener <- connection_bus_listen(port = port_nanonext, suffix = token)
+    launcher$workers$listener[[index]] <- listener
+    if (index > 3L) {
+      dialer <- connection_bus_dial(port = port_nanonext, suffix = token)
+      dialers[[length(dialers) + 1L]] <- dialer
+      Sys.sleep(0.1)
+      crew_wait(~dialer_discovered(listener), timeout = 5, wait = 0.001)
+    }
+    if (index > 6L) {
+      close(dialer)
+      connection_wait_closed(dialer)
+    }
+  }
+  active <- launcher$active()
+  expect_equal(
+    sort(active),
+    sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(3L, 4L, 5L, 6L)))
+  )
+  for (dialer in dialers) {
+    if (connection_opened(dialer)) {
+      close(dialer)
+    }
+  }
+  listeners <- launcher$workers$listener
+  walk(listeners, connection_wait_opened)
+  launcher$terminate()
+  walk(listeners, connection_wait_closed)
 })

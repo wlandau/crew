@@ -1,3 +1,8 @@
+crew_test("bus connections on crew_null", {
+  expect_false(dialer_connected(crew_null))
+  expect_false(dialer_discovered(crew_null))
+})
+
 crew_test("bus connections", {
   port <- free_port()
   listen <- connection_bus_listen(port = port, suffix = "example")
@@ -10,6 +15,7 @@ crew_test("bus connections", {
   expect_false(dialer_discovered(listen))
   dial <- connection_bus_dial(port = port, suffix = "example")
   crew_wait(~dialer_connected(listen), timeout = 5, wait = 0.1)
+  crew_wait(~dialer_discovered(listen), timeout = 5, wait = 0.1)
   expect_true(dialer_discovered(listen))
   close(dial)
   connection_wait_closed(dial)

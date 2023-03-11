@@ -7,7 +7,7 @@
 #' router <- crew_router()
 #' router$listen()
 #' launcher <- crew_launcher_callr()
-#' launcher$populate(sockets = router$sockets())
+#' launcher$populate(sockets = router$sockets)
 #' launcher$launch()
 #' m <- mirai::mirai("result")
 #' Sys.sleep(0.25)
@@ -22,7 +22,7 @@ crew_class_launcher <- R6::R6Class(
       socket = character(0L),
       start = numeric(0L),
       token = character(0L),
-      connection = list(),
+      listener = list(),
       handle = list()
     ),
     #' @field data See the constructor for details.
@@ -84,7 +84,7 @@ crew_class_launcher <- R6::R6Class(
     #' router <- crew_router()
     #' router$listen()
     #' launcher <- crew_launcher_callr()
-    #' launcher$populate(sockets = router$sockets())
+    #' launcher$populate(sockets = router$sockets)
     #' launcher$launch()
     #' m <- mirai::mirai("result")
     #' Sys.sleep(0.25)
@@ -163,36 +163,38 @@ crew_class_launcher <- R6::R6Class(
     #' @param sockets Character vector of worker websockets.
     populate = function(sockets) {
       self$workers <- tibble::tibble(
-        socket = sockets,
+        socket = as.character(sockets),
         start = rep(NA_real_, length(sockets)),
         token = rep(NA_character_, length(sockets)),
-        connection = replicate(length(sockets), crew_null, simplify = FALSE),
+        listener = replicate(length(sockets), crew_null, simplify = FALSE),
         handle = replicate(length(sockets), crew_null, simplify = FALSE)
       )
       invisible()
     },
     #' @description Get the active workers.
     #' @details An active worker is a worker that should be given the chance
-    #'   to run tasks. If a worker is currently connected to its websocket,
-    #'   then it is active. Otherwise, if a worker is not currently connected
-    #'   but has previously connected to its websocket in the past,
-    #'   then it is inactive. Otherwise, if a worker has never connected
-    #'   at all, then it is active if and only if the startup time window
-    #'   has not expired yet.
+    #'   to run tasks. To determine if the worker is active,
+    #'   `crew` monitors seconds past launch time, and it listens
+    #'   to a special non-`mirai` NNG websocket that the worker
+    #'   is supposed to dial into on launch.
+    #'   If the worker is currently connected to the websocket,
+    #'   then it is active. Otherwise, if the worker is not connected
+    #'   and the startup window has expired, the worker is inactive.
+    #'   Otherwise, if the worker is not connected and the startup
+    #'   window has not yet expired, then the worker is active
+    #'   if it has not ever connected to a websocket.
     #' @return Character vector of worker websockets.
     active = function() {
-      # Check if the worker is connected.
-      x <- map_lgl(self$workers$connection, ~dialer_connected(.x))
-      # If it is not connected, is it discovered?
-      x[!x] <- map_lgl(self$workers$connection[!x], ~dialer_discovered(.x))
-      # Prepare to measure time since launch.
+      listeners <- self$workers$listener
       bound <- self$seconds_launch
       start <- self$workers$start
       now <- bench::hires_time()
-      # If the worker is not connected or discovered, is it launching?
-      x[!x] <- !is.na(start[!x]) & ((now - start[!x]) < bound)
-      # Return the sockets of the active workers.
-      self$workers$socket[x]
+      connected <- map_lgl(listeners, dialer_connected)
+      launching <- !is.na(start) & ((now - start) < bound)
+      discovered <- connected
+      index <- (!connected) & launching
+      discovered[index] <- map_lgl(listeners[index], dialer_discovered)
+      self$workers$socket[connected | (launching & (!discovered))]
     },
     #' @description Launch one or more workers.
     #' @details If a worker is already assigned to a socket,
@@ -218,7 +220,7 @@ crew_class_launcher <- R6::R6Class(
         self$workers$start[index] <- bench::hires_time()
         token <- random_name()
         self$workers$token[index] <- token
-        connection <- connection_bus_listen(
+        listener <- connection_bus_listen(
           port = crew_get_port(),
           suffix = token
         )
@@ -227,7 +229,7 @@ crew_class_launcher <- R6::R6Class(
           token = token,
           data = self$data
         )
-        self$workers$connection[[index]] <- connection
+        self$workers$listener[[index]] <- listener
         self$workers$handle[[index]] <- handle
       }
       invisible()
@@ -245,13 +247,13 @@ crew_class_launcher <- R6::R6Class(
         if (!is_crew_null(handle)) {
           self$terminate_worker(handle)
         }
-        con <- self$workers$connection[[index]]
-        if (!is_crew_null(con) && identical(con$state, "opened")) {
+        con <- self$workers$listener[[index]]
+        if (!is_crew_null(con) && connection_opened(con)) {
           close(con)
         }
         self$workers$start[index] <- NA_real_
         self$workers$token[index] <- NA_character_
-        self$workers$connection[[index]] <- crew_null
+        self$workers$listener[[index]] <- crew_null
         self$workers$handle[[index]] <- crew_null
       }
       invisible()

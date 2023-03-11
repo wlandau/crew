@@ -41,9 +41,9 @@ Other launchers:
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="active"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-active'><code>crew::crew_class_launcher$active()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="initialize"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-initialize'><code>crew::crew_class_launcher$initialize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch'><code>crew::crew_class_launcher$launch()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launching"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launching'><code>crew::crew_class_launcher$launching()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="populate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-populate'><code>crew::crew_class_launcher$populate()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="settings"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-settings'><code>crew::crew_class_launcher$settings()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate'><code>crew::crew_class_launcher$terminate()</code></a></span></li>

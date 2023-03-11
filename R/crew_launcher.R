@@ -181,15 +181,18 @@ crew_class_launcher <- R6::R6Class(
     #'   has not expired yet.
     #' @return Character vector of worker websockets.
     active = function() {
-      connected <- map_lgl(self$workers$connection, ~dialer_connected(.x))
-      discovered <- connected
-      discovered[!connected] <- map_lgl(
-        self$workers$connection[!connected],
-        ~dialer_discovered(.x)
-      )
-      launching <- !is.na(self$seconds_launch) &
-        ((bench::hires_time() - self$workers$start) < self$seconds_launch)
-      self$workers$socket[connected | ((!discovered) & launching)]
+      # Check if the worker is connected.
+      x <- map_lgl(self$workers$connection, ~dialer_connected(.x))
+      # If it is not connected, is it discovered?
+      x[!x] <- map_lgl(self$workers$connection[!x], ~dialer_discovered(.x))
+      # Prepare to measure time since launch.
+      bound <- self$seconds_launch
+      start <- self$workers$start
+      now <- bench::hires_time()
+      # If the worker is not connected or discovered, is it launching?
+      x[!x] <- !is.na(start[!x]) & ((now - start[!x]) < bound)
+      # Return the sockets of the active workers.
+      self$workers$socket[x]
     },
     #' @description Launch one or more workers.
     #' @details If a worker is already assigned to a socket,

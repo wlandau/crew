@@ -233,12 +233,16 @@ Get the active workers.
 
 \subsection{Details}{
 An active worker is a worker that should be given the chance
-to run tasks. If a worker is currently connected to its websocket,
-then it is active. Otherwise, if a worker is not currently connected
-but has previously connected to its websocket in the past,
-then it is inactive. Otherwise, if a worker has never connected
-at all, then it is active if and only if the startup time window
-has not expired yet.
+to run tasks. To determine if the worker is active,
+\code{crew} monitors seconds past launch time, and it listens
+to a special non-\code{mirai} NNG websocket that the worker
+is supposed to dial into on launch.
+If the worker is currently connected to the websocket,
+then it is active. Otherwise, if the worker is not connected
+and the startup window has expired, the worker is inactive.
+Otherwise, if the worker is not connected and the startup
+window has not yet expired, then the worker is active
+if it has not ever connected to a websocket.
 }
 
 \subsection{Returns}{

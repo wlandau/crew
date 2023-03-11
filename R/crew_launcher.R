@@ -22,6 +22,7 @@ crew_class_launcher <- R6::R6Class(
       socket = character(0L),
       start = numeric(0L),
       token = character(0L),
+      connection = list(),
       handle = list()
     ),
     #' @field data See the constructor for details.
@@ -165,6 +166,7 @@ crew_class_launcher <- R6::R6Class(
         socket = sockets,
         start = rep(NA_real_, length(sockets)),
         token = rep(NA_character_, length(sockets)),
+        connection = replicate(length(sockets), crew_null, simplify = FALSE),
         handle = replicate(length(sockets), crew_null, simplify = FALSE)
       )
       invisible()
@@ -186,6 +188,10 @@ crew_class_launcher <- R6::R6Class(
     #' @param data Named list of R objects that will be set to the
     #'   global environment of the server.
     launch = function(sockets = character(0)) {
+      true (
+        !is.null(crew_port_get()),
+        message = "must call crew_port_set() before launching workers."
+      )
       matches <- match(x = sockets, table = self$workers$socket)
       true(!anyNA(matches), message = "bad websocket on launch.")
       for (index in matches) {
@@ -202,6 +208,12 @@ crew_class_launcher <- R6::R6Class(
           token = token,
           data = self$data
         )
+        connection <- connection_bus(
+          port = crew_get_port(),
+          suffix = token,
+          wait = FALSE
+        )
+        self$workers$connection[[index]] <- connection
         self$workers$handle[[index]] <- handle
       }
       invisible()
@@ -215,13 +227,25 @@ crew_class_launcher <- R6::R6Class(
       matches <- match(x = sockets, table = self$workers$socket)
       true(!anyNA(matches), message = "bad websocket on terminate.")
       for (index in matches) {
-        if (!is_crew_null(self$workers$handle[[index]])) {
-          self$terminate_worker(self$workers$handle[[index]])
+        handle <- self$workers$handle[[index]]
+        if (!is_crew_null(handle)) {
+          self$terminate_worker(handle)
+        }
+        con <- self$workers$connection[[index]]
+        if (!is_crew_null(con) && launcher_connection_is_open(con)) {
+          close(con)
         }
         self$workers$start[index] <- NA_real_
         self$workers$token[index] <- NA_character_
+        self$workers$connection[[index]] <- crew_null
+        self$workers$handle[[index]] <- crew_null
       }
       invisible()
     }
   )
 )
+
+launcher_connection_get <- function(token) {
+  
+  
+}

@@ -21,14 +21,10 @@ crew_port_set <- function(port = NULL) {
   port <- port %|||% free_port()
   true(port, is.integer(.), !anyNA(.), length(.) == 1L, . >= 0L, . <= 65535L)
   crew_port_envir$port <- port
-  crew_port_envir$socket <- nanonext::socket(
-    protocol = "bus",
-    listen = sprintf("ws://%s:%s/crew", local_ip(), port)
-  )
-  crew_wait(
-    ~identical(crew_port_envir$socket$state, "opened"),
-    timeout = 5,
-    wait = 0.1
+  crew_port_envir$socket <- connection_bus(
+    port = port,
+    suffix = "crew",
+    wait = TRUE
   )
   invisible()
 }

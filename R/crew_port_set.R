@@ -25,6 +25,11 @@ crew_port_set <- function(port = NULL) {
     protocol = "bus",
     listen = sprintf("ws://%s:%s/crew", local_ip(), port)
   )
+  crew_wait(
+    ~identical(crew_port_envir$socket$state, "opened"),
+    timeout = 5,
+    wait = 0.1
+  )
   invisible()
 }
 

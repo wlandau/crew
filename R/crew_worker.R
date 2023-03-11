@@ -10,21 +10,21 @@
 #' @param data Named list of R objects to assign to the environment
 #'   of the worker process.
 crew_worker <- function(settings, token, data = NULL) {
-  on.exit(crew_worker_send_token(socket = settings$url, token = token))
+  con <- crew_worker_connection(socket = settings$url, token = token)
+  on.exit(close(con))
   list2env(x = as.list(data), envir = globalenv())
   do.call(what = mirai::server, args = settings)
 }
 
-crew_worker_send_token <- function(socket, token) {
-  socket <- crew_worker_socket_done(socket)
+crew_worker_connection <- function(socket, token) {
+  socket <- crew_worker_socket(socket = socket, token = token)
   connection <- nanonext::socket(protocol = "req", dial = socket)
-  on.exit(close(connection))
-  crew_wait(~connection$state == "opened", timeout = 5, wait = 0.1)
-  nanonext::send(con = connection, data = token)
+  connection_wait(connection)
+  connection
 }
 
-crew_worker_socket_done <- function(socket) {
+crew_worker_socket <- function(socket, token) {
   out <- gsub(pattern = "^ws://", replacement = "", x = socket)
   out <- gsub(pattern = "/.*$", replacement = "", x = out)
-  paste0("ws://", out, "/done")
+  paste0("ws://", out, "/", token)
 }

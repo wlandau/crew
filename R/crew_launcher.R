@@ -171,16 +171,25 @@ crew_class_launcher <- R6::R6Class(
       )
       invisible()
     },
-    #' @description Get the workers that attempted a launch
-    #'   within `seconds_launch` seconds ago.
+    #' @description Get the active workers.
+    #' @details An active worker is a worker that should be given the chance
+    #'   to run tasks. If a worker is currently connected to its websocket,
+    #'   then it is active. Otherwise, if a worker is not currently connected
+    #'   but has previously connected to its websocket in the past,
+    #'   then it is inactive. Otherwise, if a worker has never connected
+    #'   at all, then it is active if and only if the startup time window
+    #'   has not expired yet.
     #' @return Character vector of worker websockets.
-    launching = function() {
-      
-      stop("TO DO: implement using the worker bus connections!")
-      
-      index <- !is.na(self$seconds_launch) &
+    active = function() {
+      connected <- map_lgl(self$workers$connection, ~dialer_connected(.x))
+      discovered <- connected
+      discovered[!connected] <- map_lgl(
+        self$workers$connection[!connected],
+        ~dialer_discovered(.x)
+      )
+      launching <- !is.na(self$seconds_launch) &
         ((bench::hires_time() - self$workers$start) < self$seconds_launch)
-      as.character(self$workers$socket[index])
+      self$workers$socket[connected | ((!discovered) & launching)]
     },
     #' @description Launch one or more workers.
     #' @details If a worker is already assigned to a socket,
@@ -206,15 +215,14 @@ crew_class_launcher <- R6::R6Class(
         self$workers$start[index] <- bench::hires_time()
         token <- random_name()
         self$workers$token[index] <- token
+        connection <- connection_bus_listen(
+          port = crew_get_port(),
+          suffix = token
+        )
         handle <- self$launch_worker(
           socket = socket,
           token = token,
           data = self$data
-        )
-        connection <- connection_bus(
-          port = crew_get_port(),
-          suffix = token,
-          wait = FALSE
         )
         self$workers$connection[[index]] <- connection
         self$workers$handle[[index]] <- handle

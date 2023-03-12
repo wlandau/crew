@@ -14,6 +14,9 @@
 #'   At the end of the task, the seed is restored.
 #' @param garbage_collection Logical, whether to run garbage collection
 #'   with `gc()` before running the task.
+#' @param packages Character vector of packages to load for the task.
+#' @param library Library path to load the packages. See the `lib.loc`
+#'   argument of `require()`.
 #' @examples
 #' crew_eval(quote(1 + 1))
 crew_eval <- function(
@@ -21,7 +24,9 @@ crew_eval <- function(
   data = list(),
   globals = list(),
   seed = sample.int(n = 1e9L, size = 1L),
-  garbage_collection = FALSE
+  garbage_collection = FALSE,
+  packages = character(0),
+  library = NULL
 ) {
   true(is.language(command))
   true(data, is.list(.), is_named(.))
@@ -36,6 +41,7 @@ crew_eval <- function(
   if (garbage_collection) {
     gc()
   }
+  load_packages(packages = packages, library = library)
   capture_error <- function(condition) {
     state$error <- crew_eval_message(condition)
     state$error_class <- class(condition)

@@ -9,7 +9,9 @@ crew_eval(
   data = list(),
   globals = list(),
   seed = sample.int(n = 1000000000L, size = 1L),
-  garbage_collection = FALSE
+  garbage_collection = FALSE,
+  packages = character(0),
+  library = NULL
 )
 }
 \arguments{
@@ -27,6 +29,11 @@ At the end of the task, the seed is restored.}
 
 \item{garbage_collection}{Logical, whether to run garbage collection
 with \code{gc()} before running the task.}
+
+\item{packages}{Character vector of packages to load for the task.}
+
+\item{library}{Library path to load the packages. See the \code{lib.loc}
+argument of \code{require()}.}
 }
 \value{
 A monad object with results and metadata.

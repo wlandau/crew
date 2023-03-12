@@ -144,20 +144,24 @@ crew_class_router <- R6::R6Class(
     listen = function() {
       if (isFALSE(self$listening())) {
         socket <- sprintf("ws://%s:%s", local_ip(), self$port)
-        args <- list(
-          value = socket,
-          nodes = self$workers,
+        mirai::daemons(
+          url = socket,
+          n = self$workers,
+          active = TRUE,
           .compute = self$name
         )
-        do.call(what = mirai::daemons, args = args)
         crew_wait(
           fun = ~isTRUE(self$listening()),
           timeout = self$router_timeout,
           wait = self$router_wait,
           message = "mirai client cannot connect."
         )
-        nodes <- mirai::daemons(.compute = self$name)$nodes
-        self$sockets <- if_any(anyNA(nodes), character(0), rownames(nodes))
+        daemons <- mirai::daemons(.compute = self$name)$daemons
+        self$sockets <- if_any(
+          anyNA(daemons),
+          character(0),
+          rownames(daemons)
+        )
       }
       invisible()
     },
@@ -166,7 +170,7 @@ crew_class_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     terminate = function() {
       if (isTRUE(self$listening())) {
-        try(mirai::daemons(value = 0L, .compute = self$name), silent = TRUE)
+        try(mirai::daemons(n = 0L, .compute = self$name), silent = TRUE)
         try(
           crew_wait(
             fun = ~isFALSE(self$listening()),

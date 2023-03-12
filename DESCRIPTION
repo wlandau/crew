@@ -35,7 +35,7 @@ Imports:
   bench,
   callr,
   getip,
-  mirai (>= 0.7.2.9021),
+  mirai (>= 0.7.2.9038),
   nanonext,
   parallelly,
   R6,

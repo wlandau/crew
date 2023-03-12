@@ -44,3 +44,17 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
   crew_wait(~dialer_discovered(listener), timeout = 5, wait = 0.001)
   expect_true(dialer_discovered(listener))
 })
+
+crew_test("crew_worker() can run mirai tasks", {
+  port <- free_port()
+  socket <- sprintf("ws://%s:%s", local_ip(), port)
+  mirai::daemons(n = 1L, url = socket)
+  on.exit(mirai::daemons(n = 0L))
+  m <- mirai::mirai("done")
+  crew_wait(~mirai::daemons()$connections > 0L, timeout = 5, wait = 0.001)
+  url <- rownames(mirai::daemons()$daemons)[1]
+  settings <- list(url = url, maxtasks = 1L, cleanup = FALSE)
+  crew_worker(settings = settings, token = "this_token")
+  crew_wait(~identical(m$data, "done"), timeout = 5, wait = 0.001)
+  expect_equal(m$data, "done")
+})

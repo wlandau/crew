@@ -4,12 +4,29 @@
 \alias{crew_eval}
 \title{Evaluate an R command and return results as a monad.}
 \usage{
-crew_eval(command, envir = parent.frame())
+crew_eval(
+  command,
+  data = list(),
+  globals = list(),
+  seed = sample.int(n = 1000000000L, size = 1L),
+  garbage_collection = FALSE
+)
 }
 \arguments{
 \item{command}{Language object with R code to run.}
 
-\item{envir}{Environment to run \code{command}.}
+\item{data}{Named list of local data objects in the evaluation environment.}
+
+\item{globals}{Named list of objects to temporarily assign to the
+global environment for the task. At the end of the task,
+these values are reset to their previous values.}
+
+\item{seed}{Integer of length 1 with the pseudo-random number generator
+seed to temporarily set for the evaluation of the task.
+At the end of the task, the seed is restored.}
+
+\item{garbage_collection}{Logical, whether to run garbage collection
+with \code{gc()} before running the task.}
 }
 \value{
 A monad object with results and metadata.

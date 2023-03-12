@@ -5,13 +5,37 @@
 #' @description Not a user-side function. Do not call directly.
 #' @return A monad object with results and metadata.
 #' @param command Language object with R code to run.
-#' @param envir Environment to run `command`.
+#' @param data Named list of local data objects in the evaluation environment.
+#' @param globals Named list of objects to temporarily assign to the
+#'   global environment for the task. At the end of the task,
+#'   these values are reset to their previous values.
+#' @param seed Integer of length 1 with the pseudo-random number generator
+#'   seed to temporarily set for the evaluation of the task.
+#'   At the end of the task, the seed is restored.
+#' @param garbage_collection Logical, whether to run garbage collection
+#'   with `gc()` before running the task.
 #' @examples
 #' crew_eval(quote(1 + 1))
-crew_eval <- function(command, envir = parent.frame()) {
-  force(envir)
+crew_eval <- function(
+  command,
+  data = list(),
+  globals = list(),
+  seed = sample.int(n = 1e9L, size = 1L),
+  garbage_collection = FALSE
+) {
   true(is.language(command))
-  true(is.environment(envir))
+  true(data, is.list(.), is_named(.))
+  true(globals, is.list(.), is_named(.))
+  true(seed, is.numeric(.), length(.) == 1L, !anyNA(.))
+  true(garbage_collection, isTRUE(.) || isFALSE(.))
+  global_state <- envir_state(names(globals), envir = globalenv())
+  on.exit(envir_restore(state = global_state, envir = globalenv()), add = TRUE)
+  list2env(x = globals, envir = globalenv())
+  envir <- list2env(x = data, parent = globalenv())
+  withr::local_seed(seed)
+  if (garbage_collection) {
+    gc()
+  }
   capture_error <- function(condition) {
     state$error <- crew_eval_message(condition)
     state$error_class <- class(condition)
@@ -50,10 +74,27 @@ crew_eval <- function(command, envir = parent.frame()) {
     command = deparse_safe(command),
     result = result,
     seconds = seconds,
+    seed = seed,
     error = state$error %|||% NA_character_,
     traceback = state$traceback %|||% NA_character_,
     warnings = state$warnings %|||% NA_character_
   )
+}
+
+envir_state <- function(names, envir) {
+  names_revert <- intersect(names, names(envir))
+  revert <- map(names_revert, get, envir = envir)
+  names(revert) <- names_revert
+  list(
+    delete = setdiff(names, names(envir)),
+    revert = revert
+  )
+}
+
+envir_restore <- function(state, envir) {
+  rm(list = state$delete, envir = envir)
+  list2env(state$revert, envir = envir)
+  invisible()
 }
 
 crew_eval_message <- function(condition, prefix = character(0)) {

@@ -15,8 +15,8 @@ crew_worker <- function(settings, token) {
 
 crew_worker_connection <- function(socket, token) {
   socket <- crew_worker_socket(socket = socket, token = token)
-  connection <- nanonext::socket(protocol = "req", dial = socket)
-  connection_wait(connection)
+  connection <- nanonext::socket(protocol = "bus", dial = socket)
+  connection_wait_opened(connection)
   connection
 }
 

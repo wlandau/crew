@@ -4,16 +4,13 @@
 \alias{crew_worker}
 \title{Crew worker.}
 \usage{
-crew_worker(settings, token, data = NULL)
+crew_worker(settings, token)
 }
 \arguments{
 \item{settings}{Named list of arguments to \code{mirai::server()}.}
 
 \item{token}{Character of length 1 to identify the instance of the
 process connected to the socket.}
-
-\item{data}{Named list of R objects to assign to the environment
-of the worker process.}
 }
 \value{
 \code{NULL} (invisibly)

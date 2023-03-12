@@ -57,7 +57,7 @@ Other launchers:
 \subsection{Method \code{launch_worker()}}{
 Launch a \code{callr} worker to dial into a socket.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$launch_worker(socket, token, data)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$launch_worker(socket, token)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -67,9 +67,6 @@ Launch a \code{callr} worker to dial into a socket.
 
 \item{\code{token}}{Character of length 1 to identify the instance
 of the \code{mirai} server process connected to the socket.}
-
-\item{\code{data}}{Named list of R objects to send to the
-global environment of the worker.}
 }
 \if{html}{\out{</div>}}
 }

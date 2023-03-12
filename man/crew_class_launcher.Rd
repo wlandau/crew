@@ -45,8 +45,6 @@ Other launchers:
 \describe{
 \item{\code{workers}}{Data frame of worker information.}
 
-\item{\code{data}}{See the constructor for details.}
-
 \item{\code{seconds_launch}}{See the constructor for details.}
 
 \item{\code{seconds_idle}}{See the constructor for details.}
@@ -64,6 +62,8 @@ Other launchers:
 \item{\code{tasks_timers}}{See the constructor for details.}
 
 \item{\code{async_dial}}{See the constructor for details.}
+
+\item{\code{cleanup}}{See the constructor for details.}
 }
 \if{html}{\out{</div>}}
 }
@@ -86,7 +86,6 @@ Other launchers:
 Launcher constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$new(
-  data = NULL,
   seconds_launch = NULL,
   seconds_idle = NULL,
   seconds_wall = NULL,
@@ -95,16 +94,14 @@ Launcher constructor.
   seconds_poll_low = NULL,
   tasks_max = NULL,
   tasks_timers = NULL,
-  async_dial = NULL
+  async_dial = NULL,
+  cleanup = NULL
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{Named list of R objects to send to the global environment
-of each launched worker. Can be overridden in the \code{launch()} method.}
-
 \item{\code{seconds_launch}}{Seconds of launchup time to allow.
 A worker is unconditionally assumed to be alive
 from the moment of its launch until \code{seconds_launch} seconds later.
@@ -124,7 +121,7 @@ See the \code{walltime} argument of \code{mirai::server()}.}
 
 \item{\code{seconds_exit}}{Number of seconds to wait for NNG websockets
 to finish sending large data (in case an exit signal is received).
-See the \code{exitdelay} argument of \code{mirai::server()}.}
+See the \code{exitlinger} argument of \code{mirai::server()}.}
 
 \item{\code{seconds_poll_high}}{High polling interval in seconds for the
 \code{mirai} active queue. See the \code{pollfreqh} argument of
@@ -143,6 +140,10 @@ See the \code{timerlaunch} argument of \code{mirai::server()}.}
 
 \item{\code{async_dial}}{Logical, whether the \code{mirai} workers should dial in
 asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
+
+\item{\code{cleanup}}{Logical, whether to clean up global options and the
+global environment after every task.
+See the \code{cleanup} argument of \code{mirai::server()}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -262,9 +263,6 @@ Launch one or more workers.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{sockets}}{Sockets where the workers will dial in.}
-
-\item{\code{data}}{Named list of R objects that will be set to the
-global environment of the server.}
 }
 \if{html}{\out{</div>}}
 }

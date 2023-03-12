@@ -13,7 +13,8 @@ crew_launcher_callr(
   seconds_poll_low = 0.05,
   tasks_max = Inf,
   tasks_timers = 0L,
-  async_dial = TRUE
+  async_dial = TRUE,
+  cleanup = FALSE
 )
 }
 \arguments{
@@ -36,7 +37,7 @@ See the \code{walltime} argument of \code{mirai::server()}.}
 
 \item{seconds_exit}{Number of seconds to wait for NNG websockets
 to finish sending large data (in case an exit signal is received).
-See the \code{exitdelay} argument of \code{mirai::server()}.}
+See the \code{exitlinger} argument of \code{mirai::server()}.}
 
 \item{seconds_poll_high}{High polling interval in seconds for the
 \code{mirai} active queue. See the \code{pollfreqh} argument of
@@ -55,6 +56,10 @@ See the \code{timerlaunch} argument of \code{mirai::server()}.}
 
 \item{async_dial}{Logical, whether the \code{mirai} workers should dial in
 asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
+
+\item{cleanup}{Logical, whether to clean up global options and the
+global environment after every task.
+See the \code{cleanup} argument of \code{mirai::server()}.}
 }
 \description{
 Create an \code{R6} object to launch and maintain

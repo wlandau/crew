@@ -7,12 +7,9 @@
 #' @param settings Named list of arguments to `mirai::server()`.
 #' @param token Character of length 1 to identify the instance of the
 #'   process connected to the socket.
-#' @param data Named list of R objects to assign to the environment
-#'   of the worker process.
-crew_worker <- function(settings, token, data = NULL) {
+crew_worker <- function(settings, token) {
   con <- crew_worker_connection(socket = settings$url, token = token)
   on.exit(close(con))
-  list2env(x = as.list(data), envir = globalenv())
   do.call(what = mirai::server, args = settings)
 }
 

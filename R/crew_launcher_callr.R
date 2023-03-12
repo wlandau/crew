@@ -20,7 +20,7 @@
 #'   See the `walltime` argument of `mirai::server()`.
 #' @param seconds_exit Number of seconds to wait for NNG websockets
 #'   to finish sending large data (in case an exit signal is received).
-#'   See the `exitdelay` argument of `mirai::server()`.
+#'   See the `exitlinger` argument of `mirai::server()`.
 #' @param seconds_poll_high High polling interval in seconds for the
 #'   `mirai` active queue. See the `pollfreqh` argument of
 #'   `mirai::server()`.
@@ -34,6 +34,9 @@
 #'   See the `timerlaunch` argument of `mirai::server()`.
 #' @param async_dial Logical, whether the `mirai` workers should dial in
 #'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
+#' @param cleanup Logical, whether to clean up global options and the
+#'   global environment after every task.
+#'   See the `cleanup` argument of `mirai::server()`.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
@@ -55,7 +58,8 @@ crew_launcher_callr <- function(
   seconds_poll_low = 0.05,
   tasks_max = Inf,
   tasks_timers = 0L,
-  async_dial = TRUE
+  async_dial = TRUE,
+  cleanup = FALSE
 ) {
   launcher <- crew_class_launcher_callr$new(
     seconds_launch = seconds_launch,
@@ -66,7 +70,8 @@ crew_launcher_callr <- function(
     seconds_poll_low = seconds_poll_low,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
-    async_dial = async_dial
+    async_dial = async_dial,
+    cleanup = cleanup
   )
   launcher$validate()
   launcher
@@ -99,22 +104,12 @@ crew_class_launcher_callr <- R6::R6Class(
     #' @param socket Socket where the worker will dial in.
     #' @param token Character of length 1 to identify the instance
     #'   of the `mirai` server process connected to the socket.
-    #' @param data Named list of R objects to send to the
-    #'   global environment of the worker.
-    launch_worker = function(socket, token, data) {
+    launch_worker = function(socket, token) {
       callr::r_bg(
-        func = function (settings, token, data) {
-          crew::crew_worker(
-            settings = settings,
-            token = token,
-            data = data
-          )
+        func = function(settings, token) {
+          crew::crew_worker(settings = settings, token = token)
         },
-        args = list(
-          settings = self$settings(socket),
-          token = token,
-          data = data
-        )
+        args = list(settings = self$settings(socket), token = token)
       )
     },
     #' @description Terminate a `callr` worker.

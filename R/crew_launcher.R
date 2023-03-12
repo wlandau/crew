@@ -25,8 +25,6 @@ crew_class_launcher <- R6::R6Class(
       listener = list(),
       handle = list()
     ),
-    #' @field data See the constructor for details.
-    data = NULL,
     #' @field seconds_launch See the constructor for details.
     seconds_launch = NULL,
     #' @field seconds_idle See the constructor for details.
@@ -45,10 +43,10 @@ crew_class_launcher <- R6::R6Class(
     tasks_timers = NULL,
     #' @field async_dial See the constructor for details.
     async_dial = NULL,
+    #' @field cleanup See the constructor for details.
+    cleanup = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
-    #' @param data Named list of R objects to send to the global environment
-    #'   of each launched worker. Can be overridden in the `launch()` method.
     #' @param seconds_launch Seconds of launchup time to allow.
     #'   A worker is unconditionally assumed to be alive
     #'   from the moment of its launch until `seconds_launch` seconds later.
@@ -65,7 +63,7 @@ crew_class_launcher <- R6::R6Class(
     #'   See the `walltime` argument of `mirai::server()`.
     #' @param seconds_exit Number of seconds to wait for NNG websockets
     #'   to finish sending large data (in case an exit signal is received).
-    #'   See the `exitdelay` argument of `mirai::server()`.
+    #'   See the `exitlinger` argument of `mirai::server()`.
     #' @param seconds_poll_high High polling interval in seconds for the
     #'   `mirai` active queue. See the `pollfreqh` argument of
     #'   `mirai::server()`.
@@ -79,6 +77,9 @@ crew_class_launcher <- R6::R6Class(
     #'   See the `timerlaunch` argument of `mirai::server()`.
     #' @param async_dial Logical, whether the `mirai` workers should dial in
     #'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
+    #' @param cleanup Logical, whether to clean up global options and the
+    #'   global environment after every task.
+    #'   See the `cleanup` argument of `mirai::server()`.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' router <- crew_router()
@@ -92,7 +93,6 @@ crew_class_launcher <- R6::R6Class(
     #' router$terminate()
     #' }
     initialize = function(
-      data = NULL,
       seconds_launch = NULL,
       seconds_idle = NULL,
       seconds_wall = NULL,
@@ -101,9 +101,9 @@ crew_class_launcher <- R6::R6Class(
       seconds_poll_low = NULL,
       tasks_max = NULL,
       tasks_timers = NULL,
-      async_dial = NULL
+      async_dial = NULL,
+      cleanup = NULL
     ) {
-      self$data <- data
       self$seconds_launch <- seconds_launch
       self$seconds_idle <- seconds_idle
       self$seconds_wall <- seconds_wall
@@ -113,6 +113,7 @@ crew_class_launcher <- R6::R6Class(
       self$tasks_max <- tasks_max
       self$tasks_timers <- tasks_timers
       self$async_dial <- async_dial
+      self$cleanup <- cleanup
     },
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
@@ -131,13 +132,10 @@ crew_class_launcher <- R6::R6Class(
       for (field in fields) {
         true(self[[field]], is.numeric(.), . >= 0, length(.) == 1L, !anyNA(.))
       }
-      true(self$async_dial, isTRUE(.) || isFALSE(.))
-      true(self$workers, is.null(.) || is.data.frame(.))
-      true(
-        self$data,
-        is.null(.) || (is.list(.) && is_named(list)),
-        message = "launcher data must have unique nonempty names."
-      )
+      for (field in c("async_dial", "cleanup")) {
+        true(self[[field]], isTRUE(.) || isFALSE(.))
+      }
+      true(self$workers, is.data.frame(.))
       invisible()
     },
     #' @description List of arguments for `mirai::server()`.
@@ -202,12 +200,10 @@ crew_class_launcher <- R6::R6Class(
     #'   one is launched.
     #' @return `NULL` (invisibly).
     #' @param sockets Sockets where the workers will dial in.
-    #' @param data Named list of R objects that will be set to the
-    #'   global environment of the server.
     launch = function(sockets = character(0)) {
       true (
         !is.null(crew_port_get()),
-        message = "must call crew_port_set() before launching workers."
+        message = "must call crew_port_set() before launching any workers."
       )
       matches <- match(x = sockets, table = self$workers$socket)
       true(!anyNA(matches), message = "bad websocket on launch.")
@@ -220,15 +216,8 @@ crew_class_launcher <- R6::R6Class(
         self$workers$start[index] <- bench::hires_time()
         token <- random_name()
         self$workers$token[index] <- token
-        listener <- connection_listen(
-          port = crew_get_port(),
-          suffix = token
-        )
-        handle <- self$launch_worker(
-          socket = socket,
-          token = token,
-          data = self$data
-        )
+        listener <- connection_listen(port = crew_get_port(), suffix = token)
+        handle <- self$launch_worker(socket = socket, token = token)
         self$workers$listener[[index]] <- listener
         self$workers$handle[[index]] <- handle
       }

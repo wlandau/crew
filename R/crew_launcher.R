@@ -153,7 +153,8 @@ crew_class_launcher <- R6::R6Class(
         timerstart = self$tasks_timers,
         exitdelay = self$seconds_exit * 1000,
         pollfreqh = self$seconds_poll_high * 1000,
-        pollfreql = self$seconds_poll_low * 1000
+        pollfreql = self$seconds_poll_low * 1000,
+        cleanup = self$cleanup
       )
     },
     #' @description Populate the workers data frame.

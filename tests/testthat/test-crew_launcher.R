@@ -13,7 +13,8 @@ crew_test("launcher settings", {
     seconds_poll_low = 6,
     tasks_max = 7,
     tasks_timers = 8,
-    async_dial = FALSE
+    async_dial = FALSE,
+    cleanup = TRUE
   )
   socket <- "ws://127.0.0.1:5000"
   settings <- launcher$settings(socket = socket)
@@ -27,6 +28,7 @@ crew_test("launcher settings", {
   expect_equal(settings$exitdelay, 4000)
   expect_equal(settings$pollfreqh, 5000)
   expect_equal(settings$pollfreql, 6000)
+  expect_true(settings$cleanup)
 })
 
 crew_test("launcher populate()", {

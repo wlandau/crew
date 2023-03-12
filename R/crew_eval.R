@@ -3,6 +3,11 @@
 #' @family utilities
 #' @keywords internal
 #' @description Not a user-side function. Do not call directly.
+#' @details The `crew_eval()` function evaluates an R expression
+#'   in an encapsulated environment and returns a monad with the results,
+#'   including warnings and error messages if applicable.
+#'   The random number generator seed, `globals`, and global options
+#'   are restored to their original values on exit.
 #' @return A monad object with results and metadata.
 #' @param command Language object with R code to run.
 #' @param data Named list of local data objects in the evaluation environment.
@@ -33,11 +38,13 @@ crew_eval <- function(
   true(globals, is.list(.), is_named(.))
   true(seed, is.numeric(.), length(.) == 1L, !anyNA(.))
   true(garbage_collection, isTRUE(.) || isFALSE(.))
-  global_state <- envir_state(names(globals), envir = globalenv())
-  on.exit(envir_restore(state = global_state, envir = globalenv()), add = TRUE)
+  old_options <- options()
+  old_globals <- envir_state(names(globals), envir = globalenv())
+  withr::local_seed(seed)
+  on.exit(envir_restore(state = old_globals, envir = globalenv()), add = TRUE)
+  on.exit(options(old_options), add = TRUE)
   list2env(x = globals, envir = globalenv())
   envir <- list2env(x = data, parent = globalenv())
-  withr::local_seed(seed)
   if (garbage_collection) {
     gc()
   }

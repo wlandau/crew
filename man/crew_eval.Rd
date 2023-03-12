@@ -41,6 +41,13 @@ A monad object with results and metadata.
 \description{
 Not a user-side function. Do not call directly.
 }
+\details{
+The \code{crew_eval()} function evaluates an R expression
+in an encapsulated environment and returns a monad with the results,
+including warnings and error messages if applicable.
+The random number generator seed, \code{globals}, and global options
+are restored to their original values on exit.
+}
 \examples{
 crew_eval(quote(1 + 1))
 }

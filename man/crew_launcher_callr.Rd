@@ -18,7 +18,7 @@ crew_launcher_callr(
 )
 }
 \arguments{
-\item{seconds_launch}{Seconds of launchup time to allow.
+\item{seconds_launch}{Seconds of startup time to allow.
 A worker is unconditionally assumed to be alive
 from the moment of its launch until \code{seconds_launch} seconds later.
 After \code{seconds_launch} seconds, the worker is only

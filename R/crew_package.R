@@ -7,7 +7,7 @@
 #'   traditional clusters to cloud services.
 #'   The [NNG](https://nng.nanomsg.org)-powered
 #'   [`mirai`](https://github.com/shikokuchuo/mirai) R package
-#'   is a high-performant task scheduler that efficiently processes
+#'   is a powerful task scheduler that efficiently processes
 #'   these intense workloads. The role of the `crew` package
 #'   is merely to extend [`mirai`](https://github.com/shikokuchuo/mirai)
 #'   to computing platforms beyond local multicore processing.

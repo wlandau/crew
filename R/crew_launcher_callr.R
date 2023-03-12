@@ -4,7 +4,7 @@
 #' @family launchers
 #' @description Create an `R6` object to launch and maintain
 #'   `callr` workers for a controller.
-#' @param seconds_launch Seconds of launchup time to allow.
+#' @param seconds_launch Seconds of startup time to allow.
 #'   A worker is unconditionally assumed to be alive
 #'   from the moment of its launch until `seconds_launch` seconds later.
 #'   After `seconds_launch` seconds, the worker is only

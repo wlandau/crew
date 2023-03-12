@@ -5,7 +5,7 @@
 #' @details This function closes the NNG socket that reserved the port,
 #'   freeing it for other programs to use. If you previously set a port with
 #'   [crew_port_set()], always call `crew_port_unset()` when you
-#'   are done using `crew` for the current R session. 
+#'   are done using `crew` for the current R session.
 #' @return `NULL` (invisibly).
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {

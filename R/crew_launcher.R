@@ -202,7 +202,7 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param sockets Sockets where the workers will dial in.
     launch = function(sockets = character(0)) {
-      true (
+      true(
         !is.null(crew_port_get()),
         message = "must call crew_port_set() before launching any workers."
       )

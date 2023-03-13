@@ -21,12 +21,6 @@
 #' @param seconds_exit Number of seconds to wait for NNG websockets
 #'   to finish sending large data (in case an exit signal is received).
 #'   See the `exitlinger` argument of `mirai::server()`.
-#' @param seconds_poll_high High polling interval in seconds for the
-#'   `mirai` active queue. See the `pollfreqh` argument of
-#'   `mirai::server()`.
-#' @param seconds_poll_low Low polling interval in seconds for the `mirai`
-#'   active queue. See the `pollfreql` argument of
-#'   `mirai::server()`.
 #' @param tasks_max Maximum number of tasks that a worker will do before
 #'   exiting. See the `maxtasks` argument of `mirai::server()`.
 #' @param tasks_timers Number of tasks to do before activating
@@ -54,8 +48,6 @@ crew_launcher_callr <- function(
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 0.1,
-  seconds_poll_high = 0.005,
-  seconds_poll_low = 0.05,
   tasks_max = Inf,
   tasks_timers = 0L,
   async_dial = TRUE,
@@ -66,8 +58,6 @@ crew_launcher_callr <- function(
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
     seconds_exit = seconds_exit,
-    seconds_poll_high = seconds_poll_high,
-    seconds_poll_low = seconds_poll_low,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
     async_dial = async_dial,

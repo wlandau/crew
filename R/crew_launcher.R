@@ -33,10 +33,6 @@ crew_class_launcher <- R6::R6Class(
     seconds_wall = NULL,
     #' @field seconds_exit See the constructor for details.
     seconds_exit = NULL,
-    #' @field seconds_poll_high See the constructor for details.
-    seconds_poll_high = NULL,
-    #' @field seconds_poll_low See the constructor for details.
-    seconds_poll_low = NULL,
     #' @field tasks_max See the constructor for details.
     tasks_max = NULL,
     #' @field tasks_timers See the constructor for details.
@@ -64,12 +60,6 @@ crew_class_launcher <- R6::R6Class(
     #' @param seconds_exit Number of seconds to wait for NNG websockets
     #'   to finish sending large data (in case an exit signal is received).
     #'   See the `exitlinger` argument of `mirai::server()`.
-    #' @param seconds_poll_high High polling interval in seconds for the
-    #'   `mirai` active queue. See the `pollfreqh` argument of
-    #'   `mirai::server()`.
-    #' @param seconds_poll_low Low polling interval in seconds for the `mirai`
-    #'   active queue. See the `pollfreql` argument of
-    #'   `mirai::server()`.
     #' @param tasks_max Maximum number of tasks that a worker will do before
     #'   exiting. See the `maxtasks` argument of `mirai::server()`.
     #' @param tasks_timers Number of tasks to do before activating
@@ -97,8 +87,6 @@ crew_class_launcher <- R6::R6Class(
       seconds_idle = NULL,
       seconds_wall = NULL,
       seconds_exit = NULL,
-      seconds_poll_high = NULL,
-      seconds_poll_low = NULL,
       tasks_max = NULL,
       tasks_timers = NULL,
       async_dial = NULL,
@@ -108,8 +96,6 @@ crew_class_launcher <- R6::R6Class(
       self$seconds_idle <- seconds_idle
       self$seconds_wall <- seconds_wall
       self$seconds_exit <- seconds_exit
-      self$seconds_poll_high <- seconds_poll_high
-      self$seconds_poll_low <- seconds_poll_low
       self$tasks_max <- tasks_max
       self$tasks_timers <- tasks_timers
       self$async_dial <- async_dial
@@ -124,8 +110,6 @@ crew_class_launcher <- R6::R6Class(
         "seconds_idle",
         "seconds_wall",
         "seconds_exit",
-        "seconds_poll_high",
-        "seconds_poll_low",
         "tasks_max",
         "tasks_timers"
       )
@@ -152,8 +136,6 @@ crew_class_launcher <- R6::R6Class(
         walltime = self$seconds_wall * 1000,
         timerstart = self$tasks_timers,
         exitdelay = self$seconds_exit * 1000,
-        pollfreqh = self$seconds_poll_high * 1000,
-        pollfreql = self$seconds_poll_low * 1000,
         cleanup = self$cleanup
       )
     },

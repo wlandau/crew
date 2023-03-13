@@ -53,10 +53,6 @@ Other launchers:
 
 \item{\code{seconds_exit}}{See the constructor for details.}
 
-\item{\code{seconds_poll_high}}{See the constructor for details.}
-
-\item{\code{seconds_poll_low}}{See the constructor for details.}
-
 \item{\code{tasks_max}}{See the constructor for details.}
 
 \item{\code{tasks_timers}}{See the constructor for details.}
@@ -90,8 +86,6 @@ Launcher constructor.
   seconds_idle = NULL,
   seconds_wall = NULL,
   seconds_exit = NULL,
-  seconds_poll_high = NULL,
-  seconds_poll_low = NULL,
   tasks_max = NULL,
   tasks_timers = NULL,
   async_dial = NULL,
@@ -122,14 +116,6 @@ See the \code{walltime} argument of \code{mirai::server()}.}
 \item{\code{seconds_exit}}{Number of seconds to wait for NNG websockets
 to finish sending large data (in case an exit signal is received).
 See the \code{exitlinger} argument of \code{mirai::server()}.}
-
-\item{\code{seconds_poll_high}}{High polling interval in seconds for the
-\code{mirai} active queue. See the \code{pollfreqh} argument of
-\code{mirai::server()}.}
-
-\item{\code{seconds_poll_low}}{Low polling interval in seconds for the \code{mirai}
-active queue. See the \code{pollfreql} argument of
-\code{mirai::server()}.}
 
 \item{\code{tasks_max}}{Maximum number of tasks that a worker will do before
 exiting. See the \code{maxtasks} argument of \code{mirai::server()}.}

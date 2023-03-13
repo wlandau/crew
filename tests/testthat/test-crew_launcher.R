@@ -9,8 +9,6 @@ crew_test("launcher settings", {
     seconds_idle = 2,
     seconds_wall = 3,
     seconds_exit = 4,
-    seconds_poll_high = 5,
-    seconds_poll_low = 6,
     tasks_max = 7,
     tasks_timers = 8,
     async_dial = FALSE,
@@ -26,8 +24,6 @@ crew_test("launcher settings", {
   expect_equal(settings$walltime, 3000)
   expect_equal(settings$timerstart, 8)
   expect_equal(settings$exitdelay, 4000)
-  expect_equal(settings$pollfreqh, 5000)
-  expect_equal(settings$pollfreql, 6000)
   expect_true(settings$cleanup)
 })
 

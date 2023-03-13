@@ -9,8 +9,6 @@ crew_launcher_callr(
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 0.1,
-  seconds_poll_high = 0.005,
-  seconds_poll_low = 0.05,
   tasks_max = Inf,
   tasks_timers = 0L,
   async_dial = TRUE,
@@ -38,14 +36,6 @@ See the \code{walltime} argument of \code{mirai::server()}.}
 \item{seconds_exit}{Number of seconds to wait for NNG websockets
 to finish sending large data (in case an exit signal is received).
 See the \code{exitlinger} argument of \code{mirai::server()}.}
-
-\item{seconds_poll_high}{High polling interval in seconds for the
-\code{mirai} active queue. See the \code{pollfreqh} argument of
-\code{mirai::server()}.}
-
-\item{seconds_poll_low}{Low polling interval in seconds for the \code{mirai}
-active queue. See the \code{pollfreql} argument of
-\code{mirai::server()}.}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
 exiting. See the \code{maxtasks} argument of \code{mirai::server()}.}

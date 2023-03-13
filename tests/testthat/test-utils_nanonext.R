@@ -5,7 +5,11 @@ crew_test("connections on crew_null", {
 
 crew_test("connections", {
   port <- free_port()
-  listen <- connection_listen(port = port, suffix = "example")
+  listen <- connection_listen(
+    host = local_ip(),
+    port = port,
+    token = "example"
+  )
   expect_equal(listen$state, "opened")
   expect_equal(
     listen$listener[[1]]$url,
@@ -13,7 +17,11 @@ crew_test("connections", {
   )
   expect_false(dialer_connected(listen))
   expect_false(dialer_discovered(listen))
-  dial <- connection_dial(port = port, suffix = "example")
+  dial <- connection_dial(
+    host = local_ip(),
+    port = port,
+    token = "example"
+  )
   crew_wait(~dialer_connected(listen), timeout = 5, wait = 0.001)
   crew_wait(~dialer_discovered(listen), timeout = 5, wait = 0.001)
   expect_true(dialer_discovered(listen))

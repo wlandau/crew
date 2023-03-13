@@ -29,6 +29,9 @@ generated.}
 
 \item{workers}{Integer, maximum number of parallel workers to run.}
 
+\item{host}{IP address of the \code{mirai} client to send and receive tasks.
+If \code{NULL}, the host defaults to the local IP address.}
+
 \item{port}{TCP port to listen for the workers. If \code{0},
 then NNG automatically chooses an available ephemeral port.}
 

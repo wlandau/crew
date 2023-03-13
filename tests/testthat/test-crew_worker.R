@@ -1,9 +1,13 @@
 crew_test("crew_worker() connects back to custom NNG bus socket", {
-  crew_port_set()
-  on.exit(crew_port_unset())
+  crew_session_open()
+  on.exit(crew_session_close())
   port <- free_port()
   token <- "this_token"
-  listener <- connection_listen(port = crew_port_get(), suffix = token)
+  listener <- connection_listen(
+    host = local_ip(),
+    port = crew_session_port(),
+    token = token
+  )
   on.exit(close(listener), add = TRUE)
   socket <- sprintf("ws://%s:%s/%s", local_ip(), port, token)
   settings <- list(url = socket, timerstart = 0L, idletime = 5)
@@ -12,7 +16,7 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
   crew_worker(
     settings = settings,
     host = local_ip(),
-    port = crew_port_get(),
+    port = crew_session_port(),
     token = token
   )
   crew_wait(~dialer_discovered(listener), timeout = 5, wait = 0.001)
@@ -20,8 +24,8 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
 })
 
 crew_test("crew_worker() can run mirai tasks", {
-  crew_port_set()
-  on.exit(crew_port_unset())
+  crew_session_open()
+  on.exit(crew_session_close())
   port <- free_port()
   socket <- sprintf("ws://%s:%s", local_ip(), port)
   mirai::daemons(n = 1L, url = socket)
@@ -33,7 +37,7 @@ crew_test("crew_worker() can run mirai tasks", {
   crew_worker(
     settings = settings,
     host = local_ip(),
-    port = crew_port_get(),
+    port = crew_session_port(),
     token = "this_token"
   )
   crew_wait(~identical(m$data, "done"), timeout = 5, wait = 0.001)

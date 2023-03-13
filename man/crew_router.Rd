@@ -7,6 +7,7 @@
 crew_router(
   name = NULL,
   workers = 1L,
+  host = NULL,
   port = 0L,
   router_timeout = 5,
   router_wait = 0.1,
@@ -21,6 +22,9 @@ crew_router(
 generated.}
 
 \item{workers}{Integer, maximum number of parallel workers to run.}
+
+\item{host}{IP address of the \code{mirai} client to send and receive tasks.
+If \code{NULL}, the host defaults to the local IP address.}
 
 \item{port}{TCP port to listen for the workers. If \code{0},
 then NNG automatically chooses an available ephemeral port.}

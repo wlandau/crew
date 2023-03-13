@@ -40,6 +40,8 @@ Other routers:
 
 \item{\code{workers}}{See \code{\link[=crew_router]{crew_router()}}.}
 
+\item{\code{host}}{See \code{\link[=crew_router]{crew_router()}}.}
+
 \item{\code{port}}{See \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{router_timeout}}{See \code{\link[=crew_router]{crew_router()}}.}
@@ -78,6 +80,7 @@ completed tasks.}
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_router$new(
   name = NULL,
   workers = NULL,
+  host = NULL,
   port = NULL,
   router_timeout = NULL,
   router_wait = NULL,
@@ -94,6 +97,8 @@ completed tasks.}
 \item{\code{name}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{workers}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{host}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{port}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 

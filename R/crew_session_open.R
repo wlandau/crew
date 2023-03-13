@@ -1,0 +1,53 @@
+#' @title Open a new crew session.
+#' @export
+#' @keywords session
+#' @description Open a crew session if a session does not already exist.
+#' @details A `crew` session reserves a TCP port with a new NNG socket.
+#'   `crew` uses this port to monitor the connection statuses of
+#'   all workers launched from the current R session across all
+#'   controllers and multi-controllers.
+#'   [crew_session_close()] closes the NNG socket and frees the port.
+#'   Be sure to call [crew_session_close()] when you are finished using
+#'   `crew` in your R session.
+#' @return `NULL` (invisibly).
+#' @param host IP address of the machine hosting the session.
+#'   Defaults to the local IP address of the session.
+#' @param port Positive integer with the port number. Ephemeral
+#'   ports between 49152 and 65535 are recommended.
+#'   If `port` is `NULL`, a port will be chosen from
+#'   `parallelly::freePort()`.
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' crew_port_set()
+#' crew_port_get()
+#' crew_port_unset()
+#' }
+crew_session_open <- function(
+  host = NULL,
+  port = NULL
+) {
+  true(
+    is.null(crew_session_envir$host),
+    message = paste(
+      "a crew session is already open.",
+      "Close the current session before opening another."
+    )
+  )
+  host <- host %|||% local_ip()
+  port <- port %|||% free_port()
+  true(port, is.integer(.), !anyNA(.), length(.) == 1L, . >= 0L, . <= 65535L)
+  crew_session_envir$host <- host
+  crew_session_envir$port <- port
+  crew_session_envir$connection <- connection_listen(
+    host = host,
+    port = port,
+    token = "session"
+  )
+  invisible()
+}
+
+crew_session_port <- function() {
+  crew_session_envir$port
+}
+
+crew_session_envir <- new.env(parent = emptyenv())

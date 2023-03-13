@@ -10,7 +10,7 @@
 #' @param token Character of length 1 to identify the instance of the
 #'   process connected to the socket.
 crew_worker <- function(settings, host, port, token) {
-  connection <- connection_dial(port = port, suffix = token, host = host)
+  connection <- connection_dial(host = host, port = port, token = token)
   on.exit(close(connection))
   do.call(what = mirai::server, args = settings)
 }

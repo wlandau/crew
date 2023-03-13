@@ -17,7 +17,6 @@ crew_test("launcher settings", {
   socket <- "ws://127.0.0.1:5000"
   settings <- launcher$settings(socket = socket)
   expect_equal(settings$url, socket)
-  expect_null(settings$nodes)
   expect_equal(settings$asyncdial, FALSE)
   expect_equal(settings$maxtasks, 7)
   expect_equal(settings$idletime, 2000)

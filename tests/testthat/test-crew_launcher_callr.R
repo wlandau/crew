@@ -1,4 +1,5 @@
 crew_test("crew_launcher_callr() can run a task on a worker", {
+  skip_on_cran()
   router <- crew_router(workers = 4L)
   launcher <- crew_launcher_callr(seconds_idle = 360)
   crew_session_open()

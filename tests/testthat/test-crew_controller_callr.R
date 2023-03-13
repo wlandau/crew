@@ -1,4 +1,5 @@
 crew_test("crew_controller_callr()", {
+  skip_on_cran()
   x <- crew_controller_callr(idle_time = 360)
   on.exit(x$terminate())
   expect_silent(x$validate())

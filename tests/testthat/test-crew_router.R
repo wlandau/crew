@@ -6,6 +6,7 @@ crew_test("crew_router() validate", {
 })
 
 crew_test("crew_router() works", {
+  skip_on_cran()
   router <- crew_router()
   on.exit(router$terminate())
   expect_false(router$listening())

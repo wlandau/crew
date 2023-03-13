@@ -24,6 +24,7 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
 })
 
 crew_test("crew_worker() can run mirai tasks", {
+  skip_on_cran()
   crew_session_open()
   on.exit(crew_session_close())
   port <- free_port()

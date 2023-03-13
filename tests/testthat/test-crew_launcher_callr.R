@@ -13,7 +13,11 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
   expect_equal(nrow(launcher$workers), 4L)
   expect_s3_class(launcher$workers$listener[[2]], "crew_null")
   expect_s3_class(launcher$workers$handle[[2]], "crew_null")
-  launcher$launch(sockets = launcher$workers$socket[2])
+  socket <- launcher$workers$socket[2]
+  expect_equal(launcher$active(), character(0))
+  expect_false(dialer_connected(launcher$workers$listener[[2]]))
+  expect_false(dialer_discovered(launcher$workers$listener[[2]]))
+  launcher$launch(sockets = socket)
   expect_s3_class(launcher$workers$handle[[2]], "r_process")
   expect_silent(launcher$validate())
   crew::crew_wait(
@@ -30,6 +34,9 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
     timeout = 5,
     wait = 0.1
   )
+  expect_equal(launcher$active(), socket)
+  expect_true(dialer_connected(launcher$workers$listener[[2]]))
+  expect_true(dialer_discovered(launcher$workers$listener[[2]]))
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
   crew::crew_wait(~!anyNA(m$data), timeout = 5, wait = 0.1)
   expect_equal(m$data, launcher$workers$handle[[2]]$get_pid())
@@ -42,6 +49,17 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
     timeout = 5,
     wait = 0.1
   )
+  crew::crew_wait(
+    ~{
+      listener <- launcher$workers$listener[[2]]
+      !dialer_connected(listener)
+    },
+    timeout = 5,
+    wait = 0.1
+  )
+  expect_false(dialer_connected(launcher$workers$listener[[2]]))
+  expect_true(dialer_discovered(launcher$workers$listener[[2]]))
+  expect_equal(launcher$active(), character(0))
 })
 
 crew_test("crew_launcher_callr() can run a task and time out a worker", {

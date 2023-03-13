@@ -91,15 +91,28 @@ crew_class_launcher_callr <- R6::R6Class(
   public = list(
     #' @description Launch a `callr` worker to dial into a socket.
     #' @return A `callr::r_bg()` handle.
-    #' @param socket Socket where the worker will dial in.
+    #' @param socket Socket where the worker will receive tasks.
+    #' @param host IP address of the host to connect to.
+    #' @param port TCP port to register a successful connection
+    #'   to the host. Different from that of `socket`.
     #' @param token Character of length 1 to identify the instance
     #'   of the `mirai` server process connected to the socket.
-    launch_worker = function(socket, token) {
+    launch_worker = function(socket, host, port, token) {
       callr::r_bg(
-        func = function(settings, token) {
-          crew::crew_worker(settings = settings, token = token)
+        func = function(settings, host, port, token) {
+          crew::crew_worker(
+            settings = settings,
+            host = host,
+            port = port,
+            token = token
+          )
         },
-        args = list(settings = self$settings(socket), token = token)
+        args = list(
+          settings = self$settings(socket),
+          host = host,
+          port = port,
+          token = token
+        )
       )
     },
     #' @description Terminate a `callr` worker.

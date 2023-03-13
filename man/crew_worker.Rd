@@ -4,10 +4,14 @@
 \alias{crew_worker}
 \title{Crew worker.}
 \usage{
-crew_worker(settings, token)
+crew_worker(settings, host, port, token)
 }
 \arguments{
 \item{settings}{Named list of arguments to \code{mirai::server()}.}
+
+\item{host}{IP address of the host to connect to.}
+
+\item{port}{TCP port to register a successful connection to the host.}
 
 \item{token}{Character of length 1 to identify the instance of the
 process connected to the socket.}

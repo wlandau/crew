@@ -1,12 +1,12 @@
-connection_dial <- function(port, suffix, ip = local_ip()) {
-  socket <- sprintf("ws://%s:%s/%s", ip, port, suffix)
+connection_dial <- function(port, suffix, host = local_ip()) {
+  socket <- sprintf("ws://%s:%s/%s", host, port, suffix)
   connection <- nanonext::socket(protocol = "bus", dial = socket)
   connection_wait_opened(connection)
   connection
 }
 
-connection_listen <- function(port, suffix, ip = local_ip()) {
-  socket <- sprintf("ws://%s:%s/%s", ip, port, suffix)
+connection_listen <- function(port, suffix, host = local_ip()) {
+  socket <- sprintf("ws://%s:%s/%s", host, port, suffix)
   connection <- nanonext::socket(protocol = "bus", listen = socket)
   connection_wait_opened(connection)
   connection

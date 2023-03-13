@@ -199,7 +199,12 @@ crew_class_launcher <- R6::R6Class(
         token <- random_name()
         self$workers$token[index] <- token
         listener <- connection_listen(port = crew_port_get(), suffix = token)
-        handle <- self$launch_worker(socket = socket, token = token)
+        handle <- self$launch_worker(
+          socket = socket,
+          host = local_ip(),
+          port = crew_port_get(),
+          token = token
+        )
         self$workers$listener[[index]] <- listener
         self$workers$handle[[index]] <- handle
       }

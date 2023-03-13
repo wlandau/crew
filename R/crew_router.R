@@ -13,6 +13,16 @@
 #'   client to (dis)connect.
 #' @param router_wait Number of seconds to wait between iterations checking
 #'   if the `mirai` client is (dis)connected.
+#' @param seconds_exit Number of seconds to wait for NNG websockets
+#'   to finish sending large data (in case an exit signal is received).
+#' @param seconds_poll_high High polling interval in seconds for the
+#'   `mirai` active queue. See the `pollfreqh` argument of
+#'   `mirai::dispatcher()`.
+#' @param seconds_poll_low Low polling interval in seconds for the `mirai`
+#'   active queue. See the `pollfreql` argument of
+#'   `mirai::dispatcher()`.
+#' @param async_dial Logical, whether the `mirai` workers should dial in
+#'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
@@ -25,25 +35,26 @@ crew_router <- function(
   workers = 1L,
   port = 0L,
   router_timeout = 5,
-  router_wait = 0.1
+  router_wait = 0.1,
+  seconds_exit = 0.1,
+  seconds_poll_high = 0.01,
+  seconds_poll_low = 0.1,
+  async_dial = TRUE
 ) {
   true(workers, is.numeric(.), length(.) == 1L, . > 0L, !anyNA(.))
   name <- as.character(name %|||% random_name())
   workers <- as.integer(workers)
   port <- as.integer(port)
-  true(name, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
-  true(workers, is.integer(.), length(.) == 1L, !anyNA(.), . > 0L)
-  true(port, is.integer(.), length(.) == 1L, !anyNA(.))
-  true(port, . >= 0L, . <= 65535L)
-  true(router_timeout, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
-  true(router_wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
-  true(router_timeout >= router_wait)
   router <- crew_class_router$new(
     name = name,
     workers = workers,
     port = port,
     router_timeout = router_timeout,
-    router_wait = router_wait
+    router_wait = router_wait,
+    seconds_exit = seconds_exit,
+    seconds_poll_high = seconds_poll_high,
+    seconds_poll_low = seconds_poll_low,
+    async_dial = async_dial
   )
   router$validate()
   router
@@ -65,18 +76,24 @@ crew_class_router <- R6::R6Class(
   classname = "crew_class_router",
   cloneable = FALSE,
   public = list(
-    #' @field name Name of the router.
+    #' @field name See [crew_router()].
     name = NULL,
-    #' @field workers Number of workers.
+    #' @field workers See [crew_router()].
     workers = NULL,
-    #' @field port Local TCP port.
+    #' @field port See [crew_router()].
     port = NULL,
-    #' @field router_timeout Timeout in seconds for checking the `mirai`
-    #'   client connection.
+    #' @field router_timeout See [crew_router()].
     router_timeout = NULL,
-    #' @field router_wait Polling interval in seconds for checking the
-    #'   `mirai` client connection.
+    #' @field router_wait See [crew_router()].
     router_wait = NULL,
+    #' @field seconds_exit See [crew_router()].
+    seconds_exit = NULL,
+    #' @field seconds_poll_high See [crew_router()].
+    seconds_poll_high = NULL,
+    #' @field seconds_poll_low See [crew_router()].
+    seconds_poll_low = NULL,
+    #' @field async_dial See [crew_router()].
+    async_dial = NULL,
     #' @field sockets Character vector of sockets listening for
     #'   completed tasks.
     sockets = NULL,
@@ -87,6 +104,10 @@ crew_class_router <- R6::R6Class(
     #' @param port Argument passed from [crew_router()].
     #' @param router_timeout Argument passed from [crew_router()].
     #' @param router_wait Argument passed from [crew_router()].
+    #' @param seconds_exit Argument passed from [crew_router()].
+    #' @param seconds_poll_high Argument passed from [crew_router()].
+    #' @param seconds_poll_low Argument passed from [crew_router()].
+    #' @param async_dial Argument passed from [crew_router()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' router <- crew_router()
@@ -99,13 +120,21 @@ crew_class_router <- R6::R6Class(
       workers = NULL,
       port = NULL,
       router_timeout = NULL,
-      router_wait = NULL
+      router_wait = NULL,
+      seconds_exit = NULL,
+      seconds_poll_high = NULL,
+      seconds_poll_low = NULL,
+      async_dial = NULL
     ) {
       self$name <- name
       self$workers <- workers
       self$port <- port
       self$router_timeout <- router_timeout
       self$router_wait <- router_wait
+      self$seconds_exit <- seconds_exit
+      self$seconds_poll_high <- seconds_poll_high
+      self$seconds_poll_low <- seconds_poll_low
+      self$async_dial <- async_dial
     },
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
@@ -114,14 +143,24 @@ crew_class_router <- R6::R6Class(
       true(self$workers, is.integer(.), length(.) == 1L, !anyNA(.), . > 0L)
       true(self$port, is.integer(.), length(.) == 1L, !anyNA(.))
       true(self$port, . >= 0L, . <= 65535L)
-      true(
-        self$router_timeout,
-        is.numeric(.),
-        length(.) == 1L,
-        !is.na(.), . >= 0
+      fields <- c(
+        "router_timeout",
+        "router_wait",
+        "seconds_exit",
+        "seconds_poll_high",
+        "seconds_poll_low"
       )
-      true(self$router_wait, is.numeric(.), length(.) == 1L, !is.na(.), . >= 0)
+      for (field in fields) {
+        true(
+          self[[field]],
+          is.numeric(.),
+          length(.) == 1L,
+          !is.na(.),
+          . >= 0
+        )
+      }
       true(self$router_timeout >= self$router_wait)
+      true(self$async_dial, isTRUE(.) || isFALSE(.))
       invisible()
     },
     #' @description Check if the `mirai` client is listening
@@ -144,12 +183,17 @@ crew_class_router <- R6::R6Class(
     listen = function() {
       if (isFALSE(self$listening())) {
         socket <- sprintf("ws://%s:%s", local_ip(), self$port)
-        mirai::daemons(
+        args <- list(
           url = socket,
           n = self$workers,
           active = TRUE,
+          asyncdial = self$async_dial,
+          exitlinger = self$seconds_exit * 1000,
+          pollfreqh = self$seconds_poll_high * 1000,
+          pollfreql = self$seconds_poll_low * 1000,
           .compute = self$name
         )
+        do.call(what = mirai::daemons, args = args)
         crew_wait(
           fun = ~isTRUE(self$listening()),
           timeout = self$router_timeout,

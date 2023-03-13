@@ -9,7 +9,11 @@ crew_router(
   workers = 1L,
   port = 0L,
   router_timeout = 5,
-  router_wait = 0.1
+  router_wait = 0.1,
+  seconds_exit = 0.1,
+  seconds_poll_high = 0.01,
+  seconds_poll_low = 0.1,
+  async_dial = TRUE
 )
 }
 \arguments{
@@ -26,6 +30,20 @@ client to (dis)connect.}
 
 \item{router_wait}{Number of seconds to wait between iterations checking
 if the \code{mirai} client is (dis)connected.}
+
+\item{seconds_exit}{Number of seconds to wait for NNG websockets
+to finish sending large data (in case an exit signal is received).}
+
+\item{seconds_poll_high}{High polling interval in seconds for the
+\code{mirai} active queue. See the \code{pollfreqh} argument of
+\code{mirai::dispatcher()}.}
+
+\item{seconds_poll_low}{Low polling interval in seconds for the \code{mirai}
+active queue. See the \code{pollfreql} argument of
+\code{mirai::dispatcher()}.}
+
+\item{async_dial}{Logical, whether the \code{mirai} workers should dial in
+asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 }
 \description{
 Create an \code{R6} object to manage the \code{mirai} task scheduler

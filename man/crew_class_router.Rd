@@ -36,17 +36,23 @@ Other routers:
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{name}}{Name of the router.}
+\item{\code{name}}{See \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{workers}}{Number of workers.}
+\item{\code{workers}}{See \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{port}}{Local TCP port.}
+\item{\code{port}}{See \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{router_timeout}}{Timeout in seconds for checking the \code{mirai}
-client connection.}
+\item{\code{router_timeout}}{See \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{router_wait}}{Polling interval in seconds for checking the
-\code{mirai} client connection.}
+\item{\code{router_wait}}{See \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{seconds_exit}}{See \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{seconds_poll_high}}{See \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{seconds_poll_low}}{See \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{async_dial}}{See \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{sockets}}{Character vector of sockets listening for
 completed tasks.}
@@ -74,7 +80,11 @@ completed tasks.}
   workers = NULL,
   port = NULL,
   router_timeout = NULL,
-  router_wait = NULL
+  router_wait = NULL,
+  seconds_exit = NULL,
+  seconds_poll_high = NULL,
+  seconds_poll_low = NULL,
+  async_dial = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -90,6 +100,14 @@ completed tasks.}
 \item{\code{router_timeout}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{router_wait}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{seconds_exit}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{seconds_poll_high}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{seconds_poll_low}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{async_dial}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 }
 \if{html}{\out{</div>}}
 }

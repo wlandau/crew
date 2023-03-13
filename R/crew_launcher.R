@@ -135,7 +135,7 @@ crew_class_launcher <- R6::R6Class(
         idletime = self$seconds_idle * 1000,
         walltime = self$seconds_wall * 1000,
         timerstart = self$tasks_timers,
-        exitdelay = self$seconds_exit * 1000,
+        exitlinger = self$seconds_exit * 1000,
         cleanup = self$cleanup
       )
     },

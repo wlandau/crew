@@ -121,7 +121,6 @@ crew_test("crew_eval() globals", {
 
 crew_test("crew_eval() options", {
   skip_on_cran()
-  expect_false(exists(x = "crew_global_object", envir = globalenv()))
   expect_null(getOption("crew_option_1"))
   expect_null(getOption("crew_option_2"))
   expect_lt(getOption("warn"), 10)

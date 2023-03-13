@@ -38,6 +38,7 @@ crew_eval <- function(
   true(globals, is.list(.), is_named(.))
   true(seed, is.numeric(.), length(.) == 1L, !anyNA(.))
   true(garbage_collection, isTRUE(.) || isFALSE(.))
+  load_packages(packages = packages, library = library)
   old_options <- options()
   old_globals <- envir_state(names(globals), envir = globalenv())
   withr::local_seed(seed)
@@ -48,7 +49,6 @@ crew_eval <- function(
   if (garbage_collection) {
     gc()
   }
-  load_packages(packages = packages, library = library)
   capture_error <- function(condition) {
     state$error <- crew_eval_message(condition)
     state$error_class <- class(condition)

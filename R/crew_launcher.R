@@ -185,7 +185,7 @@ crew_class_launcher <- R6::R6Class(
     launch = function(sockets = character(0)) {
       true(
         !is.null(crew_port_get()),
-        message = "must call crew_port_set() before launching any workers."
+        message = "call crew_port_set() before launching workers."
       )
       matches <- match(x = sockets, table = self$workers$socket)
       true(!anyNA(matches), message = "bad websocket on launch.")
@@ -198,7 +198,7 @@ crew_class_launcher <- R6::R6Class(
         self$workers$start[index] <- bench::hires_time()
         token <- random_name()
         self$workers$token[index] <- token
-        listener <- connection_listen(port = crew_get_port(), suffix = token)
+        listener <- connection_listen(port = crew_port_get(), suffix = token)
         handle <- self$launch_worker(socket = socket, token = token)
         self$workers$listener[[index]] <- listener
         self$workers$handle[[index]] <- handle

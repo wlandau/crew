@@ -33,8 +33,9 @@ crew_session_open <- function(
       "Close the current session before opening another."
     )
   )
-  host <- host %|||% local_ip()
-  port <- port %|||% free_port()
+  host <- as.character(host %|||% local_ip())
+  port <- as.integer(port %|||% free_port())
+  true(host, is.character(.), !anyNA(.), length(.) == 1L, nzchar(.))
   true(port, is.integer(.), !anyNA(.), length(.) == 1L, . >= 0L, . <= 65535L)
   crew_session_envir$host <- host
   crew_session_envir$port <- port
@@ -44,6 +45,10 @@ crew_session_open <- function(
     token = "session"
   )
   invisible()
+}
+
+crew_session_host <- function() {
+  crew_session_envir$host
 }
 
 crew_session_port <- function() {

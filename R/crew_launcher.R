@@ -184,7 +184,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param sockets Sockets where the workers will dial in.
     launch = function(sockets = character(0)) {
       true(
-        !is.null(crew_port_get()),
+        !is.null(crew_session_port()),
         message = "call crew_port_set() before launching workers."
       )
       matches <- match(x = sockets, table = self$workers$socket)
@@ -198,11 +198,15 @@ crew_class_launcher <- R6::R6Class(
         self$workers$start[index] <- bench::hires_time()
         token <- random_name()
         self$workers$token[index] <- token
-        listener <- connection_listen(port = crew_port_get(), suffix = token)
+        listener <- connection_listen(
+          host = crew_session_host(),
+          port = crew_session_port(),
+          token = token
+        )
         handle <- self$launch_worker(
           socket = socket,
-          host = local_ip(),
-          port = crew_port_get(),
+          host = crew_session_host(),
+          port = crew_session_port(),
           token = token
         )
         self$workers$listener[[index]] <- listener

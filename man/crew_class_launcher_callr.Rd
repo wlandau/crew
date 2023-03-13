@@ -65,7 +65,7 @@ Launch a \code{callr} worker to dial into a socket.
 \describe{
 \item{\code{socket}}{Socket where the worker will receive tasks.}
 
-\item{\code{host}}{IP address of the host to connect to.}
+\item{\code{host}}{IP address of the \code{mirai} client that sends tasks.}
 
 \item{\code{port}}{TCP port to register a successful connection
 to the host. Different from that of \code{socket}.}

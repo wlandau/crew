@@ -58,10 +58,18 @@ crew_test("launcher active()", {
   dialers <- list()
   for (index in seq_len(9L)) {
     token <- launcher$workers$token[index]
-    listener <- connection_listen(port = port_nanonext, token = token)
+    listener <- connection_listen(
+      host = local_ip(),
+      port = port_nanonext,
+      token = token
+    )
     launcher$workers$listener[[index]] <- listener
     if (index > 3L) {
-      dialer <- connection_dial(port = port_nanonext, token = token)
+      dialer <- connection_dial(
+        host = local_ip(),
+        port = port_nanonext,
+        token = token
+      )
       dialers[[length(dialers) + 1L]] <- dialer
       Sys.sleep(0.1)
       crew_wait(~dialer_discovered(listener), timeout = 5, wait = 0.001)

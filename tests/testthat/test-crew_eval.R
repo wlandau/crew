@@ -118,3 +118,32 @@ crew_test("crew_eval() globals", {
   expect_equal(out$result[[1L]], 3L)
   expect_false(exists(x = "crew_global_object", envir = globalenv()))
 })
+
+crew_test("crew_eval() options", {
+  skip_on_cran()
+  expect_false(exists(x = "crew_global_object", envir = globalenv()))
+  expect_null(getOption("crew_option_1"))
+  expect_null(getOption("crew_option_2"))
+  expect_lt(getOption("warn"), 10)
+  out <- crew_eval(
+    quote({
+      options(crew_option_1 = 1L, crew_option_2 = 2L, warn = 10)
+      list(
+        crew_option_1 = getOption("crew_option_1"),
+        crew_option_2 = getOption("crew_option_2"),
+        warn = getOption("warn")
+      )
+    })
+  )
+  expect_null(getOption("crew_option_1"))
+  expect_null(getOption("crew_option_2"))
+  expect_lt(getOption("warn"), 10)
+  expect_equal(
+    out$result[[1]],
+    list(
+      crew_option_1 = 1L,
+      crew_option_2 = 2L,
+      warn = 10L
+    )
+  )
+})

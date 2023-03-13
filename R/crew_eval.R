@@ -42,7 +42,7 @@ crew_eval <- function(
   old_globals <- envir_state(names(globals), envir = globalenv())
   withr::local_seed(seed)
   on.exit(envir_restore(state = old_globals, envir = globalenv()), add = TRUE)
-  on.exit(options(old_options), add = TRUE)
+  on.exit(options_restore(old_options), add = TRUE)
   list2env(x = globals, envir = globalenv())
   envir <- list2env(x = data, parent = globalenv())
   if (garbage_collection) {
@@ -107,6 +107,15 @@ envir_state <- function(names, envir) {
 envir_restore <- function(state, envir) {
   rm(list = state$delete, envir = envir)
   list2env(state$revert, envir = envir)
+  invisible()
+}
+
+options_restore <- function(x) {
+  names <- setdiff(names(options()), names(x))
+  drop <- replicate(length(names), NULL, simplify = FALSE)
+  names(drop) <- names
+  do.call(what = options, args = drop)
+  options(x)
   invisible()
 }
 

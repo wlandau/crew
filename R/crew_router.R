@@ -186,7 +186,7 @@ crew_class_router <- R6::R6Class(
         args <- list(
           url = socket,
           n = self$workers,
-          active = TRUE,
+          dispatcher = TRUE,
           asyncdial = self$async_dial,
           exitlinger = self$seconds_exit * 1000,
           pollfreqh = self$seconds_poll_high * 1000,

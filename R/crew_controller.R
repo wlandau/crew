@@ -14,6 +14,14 @@
 #'     workers, `t` is the number of queued tasks, and `w` is the current
 #'     number of workers already running. In other words, scale up the
 #'     number of workers to meet the current demand.
+#'     If you trust tasks not to crash workers, this is a good choice.
+#'     But if you think a task may always crash a worker
+#'     (e.g. segmentation fault or maxed out memory) then
+#'     this could be somewhat risky because `mirai` resubmits
+#'     failed tasks behind the scenes and `crew` responds by
+#'     relauching workers. If you are worried about this scenario,
+#'     chosse `auto_scale = "single"` instead, which will only launch
+#'     up to one worker whenever a task is pushed.
 #'   * `"single"`: just after pushing a new task in `push()`, launch
 #'     a single worker if demand `min(n, max(0, t - w))` is greater than 0.
 #'   * `"none"`: do not auto-scale at all.
@@ -109,29 +117,14 @@ crew_class_controller <- R6::R6Class(
       self$launcher$validate()
       invisible()
     },
-    #' @description Start the mirai client and register the websockets
+    #' @description Start the controller.
+    #' @details Register the mirai client and register worker websockets
     #'   with the launcher.
     #' @return `NULL` (invisibly).
-    session = function() {
+    start = function() {
       self$router$listen()
-      self$launcher$populate(sockets = self$router$sockets())
+      self$launcher$populate(sockets = self$router$sockets)
       invisible()
-    },
-    #' @description Get the websockets of active workers.
-    #' @details If a worker is connected to its websocket, then it is active.
-    #'   If a worker is disconnected from its websocket, then it is only
-    #'   considered "active" if it is "starting" (launched at most
-    #'   `seconds_start` seconds ago) and not yet "discovered"
-    #'   (shown as busy, assigned a task, or completed a task at some point).
-    #' @return Character vector of websockets.
-    active = function() {
-      controller_workers_active(router$nodes(), self$launcher$launching())
-    },
-    #' @description Get the websockets of inactive workers.
-    #' @details See the `active()` method.
-    #' @return Character vector of websockets.
-    inactive = function() {
-      controller_workers_inactive(router$nodes(), self$launcher$launching())
     },
     #' @description Force terminate workers whose startup time has elapsed
     #'   and are not connected to the `mirai` client.

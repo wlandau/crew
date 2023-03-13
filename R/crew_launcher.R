@@ -169,12 +169,14 @@ crew_class_launcher <- R6::R6Class(
       bound <- self$seconds_launch
       start <- self$workers$start
       now <- bench::hires_time()
+      listening <- map_lgl(listeners, connection_opened)
       connected <- map_lgl(listeners, dialer_connected)
       launching <- !is.na(start) & ((now - start) < bound)
       discovered <- connected
-      index <- (!connected) & launching
+      index <- listening & (!connected) & launching
       discovered[index] <- map_lgl(listeners[index], dialer_discovered)
-      self$workers$socket[connected | (launching & (!discovered))]
+      active <- listening & (connected | (launching & (!discovered)))
+      self$workers$socket[active]
     },
     #' @description Launch one or more workers.
     #' @details If a worker is already assigned to a socket,

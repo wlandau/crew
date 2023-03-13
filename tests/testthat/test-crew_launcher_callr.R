@@ -34,7 +34,11 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
     timeout = 5,
     wait = 0.1
   )
-  expect_equal(launcher$active(), socket)
+  crew_wait(
+    ~identical(launcher$active(), socket),
+    timeout = 5,
+    wait = 0.1
+  )
   expect_true(dialer_connected(launcher$workers$listener[[2]]))
   expect_true(dialer_discovered(launcher$workers$listener[[2]]))
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
@@ -57,9 +61,13 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
     timeout = 5,
     wait = 0.1
   )
+  crew_wait(
+    ~identical(launcher$active(), character(0)),
+    timeout = 5,
+    wait = 0.1
+  )
   expect_false(dialer_connected(launcher$workers$listener[[2]]))
   expect_true(dialer_discovered(launcher$workers$listener[[2]]))
-  expect_equal(launcher$active(), character(0))
 })
 
 crew_test("crew_launcher_callr() can run a task and time out a worker", {
@@ -74,13 +82,20 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
   })
   router$listen()
   expect_silent(launcher$validate())
+  socket <- router$sockets
   launcher$populate(sockets = router$sockets)
+  expect_equal(launcher$active(), character(0))
   launcher$launch(sockets = router$sockets)
   crew::crew_wait(
     ~{
       handle <- launcher$workers$handle[[1]]
       !is_crew_null(handle) && handle$is_alive()
     },
+    timeout = 5,
+    wait = 0.1
+  )
+  crew_wait(
+    ~identical(launcher$active(), socket),
     timeout = 5,
     wait = 0.1
   )
@@ -104,6 +119,11 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
     timeout = 5,
     wait = 0.1
   )
+  crew_wait(
+    ~identical(launcher$active(), character()),
+    timeout = 5,
+    wait = 0.1
+  )
   router$terminate()
 })
 
@@ -118,7 +138,9 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
     launcher$terminate()
   })
   router$listen()
+  socket <- router$sockets
   launcher$populate(sockets = router$sockets)
+  expect_equal(launcher$active(), character(0))
   launcher$launch(sockets = router$sockets)
   crew::crew_wait(
     ~{
@@ -134,6 +156,11 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
       handle <- launcher$workers$handle[[1]]
       !is_crew_null(handle) && handle$is_alive()
     },
+    timeout = 5,
+    wait = 0.1
+  )
+  crew_wait(
+    ~identical(launcher$active(), socket),
     timeout = 5,
     wait = 0.1
   )
@@ -155,5 +182,46 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
     timeout = 5,
     wait = 0.1
   )
+  crew_wait(
+    ~identical(launcher$active(), character(0)),
+    timeout = 5,
+    wait = 0.1
+  )
   router$terminate()
+})
+
+crew_test("worker that immediately times out is still discovered", {
+  skip_on_cran()
+  router <- crew_router(workers = 1L)
+  launcher <- crew_launcher_callr(
+    tasks_timers = 0L,
+    seconds_launch = 360,
+    seconds_idle = 0.1
+  )
+  crew_port_set()
+  on.exit({
+    crew_port_unset()
+    router$terminate()
+    launcher$terminate()
+  })
+  router$listen()
+  socket <- router$sockets
+  launcher$populate(sockets = router$sockets)
+  expect_equal(launcher$active(), character(0))
+  launcher$launch(sockets = router$sockets)
+  crew::crew_wait(
+    ~{
+      handle <- launcher$workers$handle[[1]]
+      !is_crew_null(handle) && !handle$is_alive()
+    },
+    timeout = 5,
+    wait = 0.1
+  )
+  crew_wait(
+    ~identical(launcher$active(), character(0)),
+    timeout = 5,
+    wait = 0.1
+  )
+  expect_false(dialer_connected(launcher$workers$listener[[1]]))
+  expect_true(dialer_discovered(launcher$workers$listener[[1]]))
 })

@@ -130,7 +130,8 @@ crew_class_controller <- R6::R6Class(
     #'   and are not connected to the `mirai` client.
     #' @return `NULL` (invisibly).
     clean = function() {
-      self$launcher$terminate(sockets = self$inactive())
+      inactive <- setdiff(self$router$sockets, self$launcher$active())
+      self$launcher$terminate(sockets = inactive)
       invisible()
     },
     #' @description Launch one or more workers.
@@ -146,8 +147,8 @@ crew_class_controller <- R6::R6Class(
     #'   `seconds_start` seconds ago, where `seconds_start` is
     #'   also an argument of [crew_controller()].
     launch = function(n = 1L) {
-      self$clean()
-      sockets <- utils::head(self$inactive(), n = n)
+      inactive <- setdiff(self$router$sockets, self$launcher$active())
+      sockets <- utils::head(inactive, n = n)
       if (length(sockets) > 0L) {
         self$launcher$launch(sockets = sockets)
       }
@@ -164,15 +165,16 @@ crew_class_controller <- R6::R6Class(
     #'   number of workers.
     #' @return `NULL` (invisibly).
     scale = function() {
-      demand <- max(0L, length(self$queue) - length(self$active()))
-      n <- switch(
-        self$auto_scale,
+      demand <- controller_demand(
+        tasks = length(self$queue),
+        workers = length(self$launcher$active())
+      )
+      n_new_workers <- controller_n_new_workers(
         demand = demand,
-        single = min(1L, demand),
-        none = 0L
-      ) %|||% 0L
-      if (n > 0L) {
-        self$launcher$launch(n = n)
+        auto_scale = self$auto_scale
+      )
+      if (new_workers > 0L) {
+        self$launcher$launch(n = n_new_workers)
       }
       invisible()
     },
@@ -213,8 +215,9 @@ crew_class_controller <- R6::R6Class(
     #' @param name Optional name of the task. Replaced with a random name
     #'   if `NULL` or in conflict with an existing name in the task list.
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand. If `TRUE`, then `collect()` runs first so demand can be
-    #'   properly assessed before scaling.
+    #'   demand. If `TRUE`, then `clean()` and `collect()` run first
+    #'   so demand can be properly assessed before scaling and the number
+    #'   of workers is not too high.
     push = function(
       command,
       args = list(),
@@ -242,6 +245,7 @@ crew_class_controller <- R6::R6Class(
       )
       self$queue[[length(self$queue) + 1L]] <- task
       if (scale) {
+        self$clean()
         self$collect()
         self$scale()
       }
@@ -292,24 +296,15 @@ crew_class_controller <- R6::R6Class(
   )
 )
 
-controller_workers_active <- function(nodes, sockets_launching) {
-  active <- controller_workers_index_active(nodes, sockets_launching)
-  rownames(nodes)[active]
+controller_demand <- function(tasks, workers) {
+  max(0L, tasks - workers)
 }
 
-controller_workers_inactive <- function(nodes, sockets_launching) {
-  active <- controller_workers_index_active(nodes, sockets_launching)
-  rownames(nodes)[!active]
-}
-
-controller_workers_index_active <- function(nodes, sockets_launching) {
-  sockets <- rownames(nodes)
-  status_online <- nodes[, "status_online", drop = TRUE] > 0L
-  status_busy <- nodes[, "status_busy", drop = TRUE] > 0L
-  tasks_assigned <- nodes[, "tasks_assigned", drop = TRUE] > 0L
-  tasks_complete <- nodes[, "tasks_complete", drop = TRUE] > 0L
-  connected <- status_online
-  starting <- sockets %in% sockets_launching
-  not_discovered <- !(status_busy | tasks_assigned | tasks_complete)
-  connected | (starting & not_discovered)
+controller_n_new_workers <- function(demand, auto_scale) {
+  switch(
+    auto_scale,
+    demand = demand,
+    single = min(1L, demand),
+    none = 0L
+  ) %|||% 0L
 }

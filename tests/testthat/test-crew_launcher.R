@@ -23,7 +23,7 @@ crew_test("launcher settings", {
   expect_equal(settings$idletime, 2000)
   expect_equal(settings$walltime, 3000)
   expect_equal(settings$timerstart, 8)
-  expect_equal(settings$exitdelay, 4000)
+  expect_equal(settings$exitlinger, 4000)
   expect_true(settings$cleanup)
 })
 

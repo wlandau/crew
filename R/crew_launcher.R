@@ -129,7 +129,6 @@ crew_class_launcher <- R6::R6Class(
     settings = function(socket) {
       list(
         url = socket,
-        nodes = NULL,
         asyncdial = self$async_dial,
         maxtasks = self$tasks_max,
         idletime = self$seconds_idle * 1000,

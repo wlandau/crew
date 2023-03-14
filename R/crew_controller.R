@@ -194,7 +194,7 @@ crew_class_controller <- R6::R6Class(
       collected <- 0L
       for (index in seq_along(self$queue)) {
         if (collected >= n) {
-          break;
+          break
         }
         task <- self$queue[[index]]
         if (!mirai::unresolved(task$handle[[1L]])) {

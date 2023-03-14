@@ -1,7 +1,9 @@
 library(testthat)
 library(crew)
 
-test_check("crew")
-if (identical(tolower(Sys.info()[["sysname"]]), "windows")) {
-  Sys.sleep(5)
+windows_ci <- isTRUE(as.logical(Sys.getenv("CI"))) &&
+  identical(tolower(Sys.info()[["sysname"]]), "windows")
+
+if (!windows_ci) {
+  test_check("crew")
 }

@@ -1,7 +1,6 @@
 crew_test("crew_controller_callr()", {
-  skip_on_cran()
   crew_session_start()
-  x <- crew_controller_callr(seconds_idle = 360)
+  x <- crew_controller_callr(workers = 1L, seconds_idle = 360)
   on.exit({
     x$terminate()
     crew_session_terminate()

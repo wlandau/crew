@@ -5,7 +5,7 @@ crew_test <- function(label, code) {
   )
   suppressMessages(eval(expr, envir = parent.frame()))
   if (identical(tolower(Sys.info()[["sysname"]]), "windows")) {
-    Sys.sleep(5)
+    Sys.sleep(3L)
   }
 }
 

@@ -45,7 +45,8 @@ crew_wait(
   wait = 0.1
 )
 
-# Collect the results
+# Only the first 8 tasks should have run so far. Keep calling pop()
+# until the rest of the tasks complete.
 results <- list()
 time <- system.time({
   while (length(results) < 2 * n) {

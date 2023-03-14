@@ -173,8 +173,8 @@ crew_class_controller <- R6::R6Class(
         demand = demand,
         auto_scale = self$auto_scale
       )
-      if (new_workers > 0L) {
-        self$launcher$launch(n = n_new_workers)
+      if (n_new_workers > 0L) {
+        self$launch(n = n_new_workers)
       }
       invisible()
     },

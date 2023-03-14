@@ -49,9 +49,7 @@ Other controllers:
 \itemize{
 \item \href{#method-crew_class_controller-new}{\code{crew_class_controller$new()}}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
-\item \href{#method-crew_class_controller-session}{\code{crew_class_controller$session()}}
-\item \href{#method-crew_class_controller-active}{\code{crew_class_controller$active()}}
-\item \href{#method-crew_class_controller-inactive}{\code{crew_class_controller$inactive()}}
+\item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
 \item \href{#method-crew_class_controller-clean}{\code{crew_class_controller$clean()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
@@ -112,55 +110,21 @@ Validate the router.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-session"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-session}{}}}
-\subsection{Method \code{session()}}{
-Start the mirai client and register the websockets
-with the launcher.
+\if{html}{\out{<a id="method-crew_class_controller-start"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-start}{}}}
+\subsection{Method \code{start()}}{
+Start the controller.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$session()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$start()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Register the mirai client and register worker websockets
+with the launcher.
 }
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-active"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-active}{}}}
-\subsection{Method \code{active()}}{
-Get the websockets of active workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$active()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-If a worker is connected to its websocket, then it is active.
-If a worker is disconnected from its websocket, then it is only
-considered "active" if it is "starting" (launched at most
-\code{seconds_start} seconds ago) and not yet "discovered"
-(shown as busy, assigned a task, or completed a task at some point).
-}
-
-\subsection{Returns}{
-Character vector of websockets.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-inactive"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-inactive}{}}}
-\subsection{Method \code{inactive()}}{
-Get the websockets of inactive workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$inactive()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-See the \code{active()} method.
-}
-
-\subsection{Returns}{
-Character vector of websockets.
 }
 }
 \if{html}{\out{<hr>}}
@@ -273,8 +237,9 @@ Push a task to the head of the task list.
 if \code{NULL} or in conflict with an existing name in the task list.}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand. If \code{TRUE}, then \code{collect()} runs first so demand can be
-properly assessed before scaling.}
+demand. If \code{TRUE}, then \code{clean()} and \code{collect()} run first
+so demand can be properly assessed before scaling and the number
+of workers is not too high.}
 }
 \if{html}{\out{</div>}}
 }

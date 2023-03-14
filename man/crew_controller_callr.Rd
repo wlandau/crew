@@ -8,18 +8,19 @@ crew_controller_callr(
   name = NULL,
   workers = 1L,
   host = NULL,
-  port = NULL,
+  port = 0L,
   router_timeout = 5,
   router_wait = 0.1,
-  seconds_start = 1,
-  idle_time = Inf,
-  wall_time = Inf,
-  poll_high = 5,
-  poll_low = 50,
-  launch_timeout = 5,
-  launch_wait = 0.1,
-  max_tasks = Inf,
+  seconds_exit = 0.1,
+  seconds_poll_high = 0.01,
+  seconds_poll_low = 0.1,
   async_dial = TRUE,
+  seconds_launch = 30,
+  seconds_idle = Inf,
+  seconds_wall = Inf,
+  tasks_max = Inf,
+  tasks_timers = 0L,
+  cleanup = FALSE,
   auto_scale = "demand"
 )
 }
@@ -41,8 +42,47 @@ client to (dis)connect.}
 \item{router_wait}{Number of seconds to wait between iterations checking
 if the \code{mirai} client is (dis)connected.}
 
+\item{seconds_exit}{Number of seconds to wait for NNG websockets
+to finish sending large data (in case an exit signal is received).}
+
+\item{seconds_poll_high}{High polling interval in seconds for the
+\code{mirai} active queue. See the \code{pollfreqh} argument of
+\code{mirai::dispatcher()}.}
+
+\item{seconds_poll_low}{Low polling interval in seconds for the \code{mirai}
+active queue. See the \code{pollfreql} argument of
+\code{mirai::dispatcher()}.}
+
 \item{async_dial}{Logical, whether the \code{mirai} workers should dial in
 asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
+
+\item{seconds_launch}{Seconds of startup time to allow.
+A worker is unconditionally assumed to be alive
+from the moment of its launch until \code{seconds_launch} seconds later.
+After \code{seconds_launch} seconds, the worker is only
+considered alive if it is actively connected to its assign websocket.}
+
+\item{seconds_idle}{Maximum number of seconds that a worker can idle
+since the completion of the last task. If exceeded, the worker exits.
+But the timer does not launch until \code{tasks_timers} tasks
+have completed.
+See the \code{idletime} argument of \code{mirai::server()}.}
+
+\item{seconds_wall}{Soft wall time in seconds.
+The timer does not launch until \code{tasks_timers} tasks
+have completed.
+See the \code{walltime} argument of \code{mirai::server()}.}
+
+\item{tasks_max}{Maximum number of tasks that a worker will do before
+exiting. See the \code{maxtasks} argument of \code{mirai::server()}.}
+
+\item{tasks_timers}{Number of tasks to do before activating
+the timers for \code{seconds_idle} and \code{seconds_wall}.
+See the \code{timerlaunch} argument of \code{mirai::server()}.}
+
+\item{cleanup}{Logical, whether to clean up global options and the
+global environment after every task.
+See the \code{cleanup} argument of \code{mirai::server()}.}
 
 \item{auto_scale}{Character of length 1, name of the method for
 automatically scaling workers to meet demand. \code{NULL} to default to
@@ -53,6 +93,14 @@ automatically scaling workers to meet demand. \code{NULL} to default to
 workers, \code{t} is the number of queued tasks, and \code{w} is the current
 number of workers already running. In other words, scale up the
 number of workers to meet the current demand.
+If you trust tasks not to crash workers, this is a good choice.
+But if you think a task may always crash a worker
+(e.g. segmentation fault or maxed out memory) then
+this could be somewhat risky because \code{mirai} resubmits
+failed tasks behind the scenes and \code{crew} responds by
+relauching workers. If you are worried about this scenario,
+chosse \code{auto_scale = "single"} instead, which will only launch
+up to one worker whenever a task is pushed.
 \item \code{"single"}: just after pushing a new task in \code{push()}, launch
 a single worker if demand \code{min(n, max(0, t - w))} is greater than 0.
 \item \code{"none"}: do not auto-scale at all.

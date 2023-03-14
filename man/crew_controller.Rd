@@ -21,6 +21,14 @@ automatically scaling workers to meet demand. \code{NULL} to default to
 workers, \code{t} is the number of queued tasks, and \code{w} is the current
 number of workers already running. In other words, scale up the
 number of workers to meet the current demand.
+If you trust tasks not to crash workers, this is a good choice.
+But if you think a task may always crash a worker
+(e.g. segmentation fault or maxed out memory) then
+this could be somewhat risky because \code{mirai} resubmits
+failed tasks behind the scenes and \code{crew} responds by
+relauching workers. If you are worried about this scenario,
+chosse \code{auto_scale = "single"} instead, which will only launch
+up to one worker whenever a task is pushed.
 \item \code{"single"}: just after pushing a new task in \code{push()}, launch
 a single worker if demand \code{min(n, max(0, t - w))} is greater than 0.
 \item \code{"none"}: do not auto-scale at all.

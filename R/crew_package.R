@@ -6,16 +6,16 @@
 #'   long-running tasks to distributed systems, ranging from
 #'   traditional clusters to cloud services.
 #'   The [NNG](https://nng.nanomsg.org)-powered
-#'   [`mirai`](https://github.com/shikokuchuo/mirai) R package
-#'   is a powerful task scheduler that efficiently processes
-#'   these intense workloads. The role of the `crew` package
-#'   is merely to extend [`mirai`](https://github.com/shikokuchuo/mirai)
-#'   to computing platforms beyond local multicore processing.
-#'   With its unifying interface to multiple backends,
-#'   `crew` resembles packages
+#'   [`mirai`](https://github.com/shikokuchuo/mirai)
+#'   R package is a powerful task scheduler that efficiently
+#'   processes these intense workloads. The `crew` package
+#'   extends [`mirai`](https://github.com/shikokuchuo/mirai)
+#'   beyond local multicore processing with a unifying interface
+#'   for third-party worker launchers. Inspiration comes from packages
+#'   [`future`](https://future.futureverse.org/),
+#'   [`rrq`](https://mrc-ide.github.io/rrq/),
 #'   [`clustermq`](https://mschubert.github.io/clustermq/),
-#'   [`future`](https://future.futureverse.org/), and
-#'   [`batchtools`](https://mllg.github.io/batchtools/).
+#'   and [`batchtools`](https://mllg.github.io/batchtools/).
 #' @family help
 #' @importFrom bench hires_time
 #' @importFrom callr r_bg

@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
 [![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
 
-In computationally demanding analysis workflows, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services. The [NNG](https://nng.nanomsg.org)-powered [`mirai`](https://github.com/shikokuchuo/mirai) R package is a powerful task scheduler that efficiently processes these intense workloads. The role of the `crew` package is merely to extend [`mirai`](https://github.com/shikokuchuo/mirai) to computing platforms beyond local multicore processing. With its unifying interface to multiple backends, `crew` resembles packages [`clustermq`](https://mschubert.github.io/clustermq/), [`future`](https://future.futureverse.org/), and [`batchtools`](https://mllg.github.io/batchtools/).
+In computationally demanding analysis workflows, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services. The [NNG](https://nng.nanomsg.org)-powered [`mirai`](https://github.com/shikokuchuo/mirai) R package is a powerful task scheduler that efficiently processes these intense workloads. The `crew` package extends [`mirai`](https://github.com/shikokuchuo/mirai) beyond local multicore processing with a unifying interface for third-party worker launchers. Inspiration comes from packages [`future`](https://future.futureverse.org/), [`rrq`](https://mrc-ide.github.io/rrq/), [`clustermq`](https://mschubert.github.io/clustermq/), and [`batchtools`](https://mllg.github.io/batchtools/).
 
 ## Installation
 
@@ -40,6 +40,10 @@ remotes::install_github("wlandau/crew")
 ## Documentation
 
 Please see <https://wlandau.github.io/crew/> for documentation, including a full function reference and usage tutorial vignettes.
+
+## Backends
+
+
 
 ## Usage
 

@@ -10,9 +10,9 @@ In computationally demanding analysis workflows, statisticians and data
 scientists asynchronously deploy long-running tasks to distributed
 systems, ranging from traditional clusters to cloud services. The
 [NNG](https://nng.nanomsg.org)-powered
-[`mirai`](https://github.com/shikokuchuo/mirai) R package is a
-powerful task scheduler that efficiently processes these intense
-workloads. The role of the `crew` package is merely to extend
+[`mirai`](https://github.com/shikokuchuo/mirai) R package is a powerful
+task scheduler that efficiently processes these intense workloads. The
+role of the `crew` package is merely to extend
 [`mirai`](https://github.com/shikokuchuo/mirai) to computing platforms
 beyond local multicore processing. With its unifying interface to
 multiple backends, `crew` resembles packages
@@ -38,30 +38,39 @@ including a full function reference and usage tutorial vignettes.
 
 ## Usage
 
-First, create a a controller object. Thanks to the powerful features in
-[`mirai`](https://github.com/shikokuchuo/mirai),
-`crew_controller_callr()` allows several ways to customize the way
-workers are launched and the conditions under which they time out. For
-example, arguments `max_tasks` and `idle_time` allow for a smooth
-continuum between fully persistent workers and fully transient workers.
+First, start a `crew` session. The session reserves a TCP port to
+monitor the presence and absence of parallel workers. Call
+`crew_session_start()` to start the session. Later on, when you are done
+using `crew`, call `crew_session_terminate()` to release the port.
 
 ``` r
 library(crew)
+crew_session_start()
+```
+
+First, create a controller object. Thanks to the powerful features in
+[`mirai`](https://github.com/shikokuchuo/mirai),
+`crew_controller_callr()` allows several ways to customize the way
+workers are launched and the conditions under which they time out. For
+example, arguments `tasks_max` and `seconds_idle` allow for a smooth
+continuum between fully persistent workers and fully transient workers.
+
+``` r
 controller <- crew_controller_callr(
   workers = 2,
-  max_task = 3,
+  tasks_max = 3,
   auto_scale = "demand"
 )
 ```
 
-The `connect()` method starts a local
-[`mirai`](https://github.com/shikokuchuo/mirai) client and a local
-active queue to listen to workers that dial in.
+The `start()` method starts a local
+[`mirai`](https://github.com/shikokuchuo/mirai) client and dispatcher to
+listen to workers that dial in.
 
 ``` r
-controller$connect()
-controller$router$sockets_listening()
-#> [1] "tcp://10.0.0.9:55899" "tcp://10.0.0.9:55900"
+controller$start()
+controller$router$sockets
+#> [1] "ws://196.168.0.2:55899" "ws://196.168.0.2:55900"
 ```
 
 Use the `push()` method to submit a task. When you do, `crew`
@@ -114,7 +123,7 @@ our case, it is the process ID of the parallel worker that ran it, as
 reported by `ps::ps_pid()`.
 
 ``` r
-out$result[[1]]
+out$result[[1]] # process ID of the parallel worker reported by the task
 #> [1] 69631
 ```
 
@@ -122,16 +131,17 @@ Since it ran on a parallel worker, it is different from the process ID
 of the local R session.
 
 ``` r
-ps::ps_pid()
+ps::ps_pid() # local R session process ID
 #> [1] 69523
 ```
 
 Continue the above process of asynchronously submitting and collecting
 tasks until your workflow is complete. When you are done, terminate the
-controller to clean up the resources.
+controller and the `crew` session to clean up the resources.
 
 ``` r
 controller$terminate()
+crew_session_terminate()
 ```
 
 ## Similar work

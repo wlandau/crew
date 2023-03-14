@@ -1,5 +1,8 @@
 crew_test("crew_router() validate", {
-  router <- crew_router()
+  router <- crew_router(
+    seconds_poll_high = 0.01,
+    seconds_poll_low = 0.1
+  )
   expect_silent(router$validate())
   router$name <- NULL
   expect_crew_error(router$validate())
@@ -7,7 +10,10 @@ crew_test("crew_router() validate", {
 
 crew_test("crew_router() works", {
   skip_on_cran()
-  router <- crew_router()
+  router <- crew_router(
+    seconds_poll_high = 0.01,
+    seconds_poll_low = 0.1
+  )
   on.exit(router$terminate())
   expect_false(router$listening())
   expect_null(router$sockets)

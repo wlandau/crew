@@ -1,6 +1,10 @@
 crew_test("crew_launcher_callr() can run a task on a worker", {
   skip_on_cran()
-  router <- crew_router(workers = 4L)
+  router <- crew_router(
+    workers = 4L,
+    seconds_poll_high = 0.01,
+    seconds_poll_low = 0.1
+  )
   launcher <- crew_launcher_callr(seconds_idle = 360)
   crew_session_start()
   on.exit({
@@ -73,7 +77,11 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
 
 crew_test("crew_launcher_callr() can run a task and time out a worker", {
   skip_on_cran()
-  router <- crew_router(workers = 1L)
+  router <- crew_router(
+    workers = 1L,
+    seconds_poll_high = 0.01,
+    seconds_poll_low = 0.1
+  )
   launcher <- crew_launcher_callr(tasks_max = 1L, seconds_idle = 360)
   crew_session_start()
   on.exit({
@@ -130,7 +138,11 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
 
 crew_test("crew_launcher_callr() can run a task and end a worker", {
   skip_on_cran()
-  router <- crew_router(workers = 1L)
+  router <- crew_router(
+    workers = 1L,
+    seconds_poll_high = 0.01,
+    seconds_poll_low = 0.1
+  )
   launcher <- crew_launcher_callr(tasks_max = 1L, seconds_idle = 360)
   crew_session_start()
   on.exit({
@@ -193,7 +205,11 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
 
 crew_test("worker that immediately times out is still discovered", {
   skip_on_cran()
-  router <- crew_router(workers = 1L)
+  router <- crew_router(
+    workers = 1L,
+    seconds_poll_high = 0.01,
+    seconds_poll_low = 0.1
+  )
   launcher <- crew_launcher_callr(
     tasks_timers = 0L,
     seconds_launch = 360,

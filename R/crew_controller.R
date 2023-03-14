@@ -303,8 +303,18 @@ crew_class_controller <- R6::R6Class(
     #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      self$router$terminate()
-      self$launcher$terminate()
+      # https://github.com/r-lib/covr/issues/315 # nolint
+      terminate_launcher_first <- identical(Sys.getenv("R_COVR"), "true") ||
+        identical(tolower(Sys.info()[["sysname"]]), "windows")
+      # nocov start
+      if (terminate_launcher_first) {
+        self$launcher$terminate()
+        self$router$terminate()
+      } else {
+        self$router$terminate()
+        self$launcher$terminate()
+      }
+      # nocov end
       invisible()
     }
   )

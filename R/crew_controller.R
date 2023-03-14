@@ -188,13 +188,19 @@ crew_class_controller <- R6::R6Class(
     #'   the results list.
     #' @return `NULL` (invisibly). Removes elements from the `queue`
     #'   list as applicable and moves them to the `results` list.
-    collect = function() {
+    #' @param n Maximum number of completed tasks to collect.
+    collect = function(n = 1L) {
       done <- integer(0L)
+      collected <- 0L
       for (index in seq_along(self$queue)) {
+        if (collected >= n) {
+          break;
+        }
         task <- self$queue[[index]]
-        if (!mirai::unresolved(task$handle[[1]])) {
+        if (!mirai::unresolved(task$handle[[1L]])) {
           self$results[[length(self$results) + 1L]] <- task
           done <- c(done, index)
+          collected <- collected + 1L
         }
       }
       self$queue[done] <- NULL
@@ -239,7 +245,7 @@ crew_class_controller <- R6::R6Class(
       self$queue[[length(self$queue) + 1L]] <- task
       if (scale && (length(self$launcher$active()) < self$router$workers)) {
         self$clean()
-        self$collect()
+        self$collect(n = Inf)
         self$scale()
       }
       invisible()
@@ -249,16 +255,14 @@ crew_class_controller <- R6::R6Class(
     #'   value is a one-row data frame with the results, warnings, and errors.
     #'   Otherwise, if there are no results available to collect,
     #'   the return value is `NULL`.
-    #' @param collect Whether to run the `collect()` method to collect all
-    #'   available results before calling `pop()`.
-    pop = function(collect = TRUE) {
-      if (isTRUE(collect)) {
-        self$collect()
+    pop = function() {
+      if (length(self$results) < 1L) {
+        self$collect(n = 1L)
       }
       out <- NULL
       if (length(self$results) > 0L) {
-        task <- self$results[[1]]
-        out <- task$handle[[1]]$data
+        task <- self$results[[1L]]
+        out <- task$handle[[1L]]$data
         # The contents of the if() statement below happen
         # if mirai cannot evaluate the command.
         # I cannot cover this in automated tests, but
@@ -266,7 +270,7 @@ crew_class_controller <- R6::R6Class(
         # nocov start
         if (!inherits(out, "crew_monad")) {
           out <- monad_init(
-            command = out$command,
+            command = task$command,
             error = paste(
               utils::capture.output(print(out), type = "output"),
               collapse = "\n"

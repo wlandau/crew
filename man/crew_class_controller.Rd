@@ -228,9 +228,16 @@ number of workers.
 Check for done tasks and move the results to
 the results list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(n = 1L)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Maximum number of completed tasks to collect.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} (invisibly). Removes elements from the \code{queue}
 list as applicable and moves them to the \code{results} list.
@@ -280,17 +287,9 @@ of workers is not too high.}
 \subsection{Method \code{pop()}}{
 Pop a completed task from the results data frame.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop(collect = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{collect}}{Whether to run the \code{collect()} method to collect all
-available results before calling \code{pop()}.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 If there is a completed task available to collect, the return
 value is a one-row data frame with the results, warnings, and errors.

@@ -277,6 +277,7 @@ crew_class_controller <- R6::R6Class(
             )
           )
         }
+        # nocov end
         out$name <- task$name
         self$results[[1]] <- NULL
       }

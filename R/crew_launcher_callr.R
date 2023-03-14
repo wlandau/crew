@@ -103,6 +103,8 @@ crew_class_launcher_callr <- R6::R6Class(
     #'   of the `mirai` server process connected to the socket.
     launch_worker = function(socket, host, port, token) {
       callr::r_bg(
+        # This part is covered by tests but unreachable by covr:
+        # nocov start
         func = function(settings, host, port, token) {
           crew::crew_worker(
             settings = settings,
@@ -111,6 +113,7 @@ crew_class_launcher_callr <- R6::R6Class(
             token = token
           )
         },
+        # nocov end
         args = list(
           settings = self$settings(socket),
           host = host,

@@ -242,3 +242,31 @@ crew_test("worker that immediately times out is still discovered", {
   expect_false(dialer_connected(launcher$workers$listener[[1]]))
   expect_true(dialer_discovered(launcher$workers$listener[[1]]))
 })
+
+crew_test("launcher cleans up old worker", {
+  skip_on_cran()
+  router <- crew_router(
+    workers = 1L,
+    seconds_poll_high = 0.01,
+    seconds_poll_low = 0.1
+  )
+  launcher <- crew_launcher_callr(
+    tasks_timers = 0L,
+    seconds_launch = 360,
+    seconds_idle = 360
+  )
+  crew_session_start()
+  on.exit({
+    crew_session_terminate()
+    launcher$terminate()
+    router$terminate()
+  })
+  router$listen()
+  socket <- router$sockets
+  launcher$populate(sockets = router$sockets)
+  launcher$launch(sockets = socket)
+  handle <- launcher$workers$handle[[1]]
+  crew_wait(~handle$is_alive(), wait = 0.01, timeout = 5)
+  launcher$launch(sockets = socket)
+  crew_wait(~!handle$is_alive(), wait = 0.01, timeout = 5)
+})

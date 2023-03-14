@@ -1,17 +1,21 @@
-crew_test("crew_multi_controller()", {
+crew_test("crew_controller_group()", {
   skip_on_cran()
-  a <- crew_controller_callr(name = "a", idle_time = 360)
+  crew_session_start()
+  a <- crew_controller_callr(name = "a", seconds_idle = 360)
   b <- crew_controller_callr(
     name = "b",
-    max_tasks = 1L,
-    idle_time = 360
+    tasks_max = 1L,
+    seconds_idle = 360
   )
-  x <- crew_multi_controller(a, b)
-  on.exit(x$terminate())
+  x <- crew_controller_group(a, b)
+  on.exit({
+    x$terminate()
+    crew_session_terminate()
+  })
   expect_silent(x$validate())
-  expect_false(x$controllers[[1]]$router$is_connected())
-  expect_false(x$controllers[[2]]$router$is_connected())
-  x$connect()
+  expect_false(x$controllers[[1]]$router$listening())
+  expect_false(x$controllers[[2]]$router$listening())
+  x$start()
   expect_null(x$pop())
   x$push(command = ps::ps_pid(), name = "task_pid", controller = "b")
   x$wait(timeout = 5)
@@ -20,7 +24,7 @@ crew_test("crew_multi_controller()", {
   expect_equal(out$command, "ps::ps_pid()")
   expect_equal(
     out$result[[1]],
-    x$controllers[[2]]$launcher$workers[[1]]$get_pid()
+    x$controllers[[2]]$launcher$workers$handle[[1]]$get_pid()
   )
   expect_true(is.numeric(out$seconds))
   expect_false(anyNA(out$seconds))
@@ -30,29 +34,37 @@ crew_test("crew_multi_controller()", {
   expect_true(anyNA(out$warnings))
   x$terminate()
   for (index in seq_len(2)) {
-    expect_false(x$controllers[[index]]$router$is_connected())
     crew_wait(
-      ~(x$controllers[[index]]$launcher$running() == 0L),
+      ~!x$controllers[[index]]$router$listening(),
+      timeout = 5,
+      wait = 0.1
+    )
+    crew_wait(
+      ~(length(x$controllers[[index]]$launcher$active()) == 0L),
       timeout = 5,
       wait = 0.1
     )
   }
 })
 
-crew_test("crew_multi_controller() collect", {
+crew_test("crew_controller_group() collect", {
   skip_on_cran()
+  crew_session_start()
   a <- crew_controller_callr(name = "a")
   b <- crew_controller_callr(
     name = "b",
-    max_tasks = 1L,
-    idle_time = 360
+    tasks_max = 1L,
+    seconds_idle = 360
   )
-  x <- crew_multi_controller(a, b)
-  on.exit(x$terminate())
+  x <- crew_controller_group(a, b)
+  on.exit({
+    x$terminate()
+    crew_session_terminate()
+  })
   expect_silent(x$validate())
-  expect_false(x$controllers[[1]]$router$is_connected())
-  expect_false(x$controllers[[2]]$router$is_connected())
-  x$connect()
+  expect_false(x$controllers[[1]]$router$listening())
+  expect_false(x$controllers[[2]]$router$listening())
+  x$start()
   expect_null(x$pop())
   x$push(command = ps::ps_pid(), name = "task_pid")
   crew_wait(
@@ -64,25 +76,29 @@ crew_test("crew_multi_controller() collect", {
   out <- x$pop(collect = FALSE, controllers = "a")
   expect_equal(
     out$result[[1]],
-    x$controllers[[1]]$launcher$workers[[1]]$get_pid()
+    x$controllers[[1]]$launcher$workers$handle[[1]]$get_pid()
   )
   expect_false(is.null(out))
 })
 
-crew_test("crew_multi_controller() launch method", {
+crew_test("crew_controller_group() launch method", {
   skip_on_cran()
-  a <- crew_controller_callr(name = "a", idle_time = 360)
+  crew_session_start()
+  a <- crew_controller_callr(name = "a", seconds_idle = 360)
   b <- crew_controller_callr(
     name = "b",
-    max_tasks = 1L,
-    idle_time = 360
+    tasks_max = 1L,
+    seconds_idle = 360
   )
-  x <- crew_multi_controller(a, b)
-  on.exit(x$terminate())
-  x$connect()
+  x <- crew_controller_group(a, b)
+  on.exit({
+    x$terminate()
+    crew_session_terminate()
+  })
+  x$start()
   for (index in seq_len(2)) {
     crew_wait(
-      ~(x$controllers[[index]]$launcher$running() == 0L),
+      ~(length(x$controllers[[index]]$launcher$active()) == 0L),
       timeout = 5,
       wait = 0.1
     )
@@ -90,7 +106,7 @@ crew_test("crew_multi_controller() launch method", {
   expect_silent(x$launch(n = 1L))
   for (index in seq_len(2)) {
     crew_wait(
-      ~(x$controllers[[index]]$launcher$running() == 1L),
+      ~(length(x$controllers[[index]]$launcher$active()) == 1L),
       timeout = 5,
       wait = 0.1
     )
@@ -98,34 +114,38 @@ crew_test("crew_multi_controller() launch method", {
   x$terminate()
   for (index in seq_len(2)) {
     crew_wait(
-      ~(x$controllers[[index]]$launcher$running() == 0L),
+      ~(length(x$controllers[[index]]$launcher$active()) == 0L),
       timeout = 5,
       wait = 0.1
     )
   }
 })
 
-crew_test("crew_multi_controller() scale method", {
+crew_test("crew_controller_group() scale method", {
   skip_on_cran()
+  crew_session_start()
   a <- crew_controller_callr(
     name = "a",
     auto_scale = "single",
-    idle_time = 360
+    seconds_idle = 360
   )
-  x <- crew_multi_controller(a)
-  on.exit(x$terminate())
-  x$connect()
-  expect_equal(a$launcher$running(), 0L)
+  x <- crew_controller_group(a)
+  on.exit({
+    x$terminate()
+    crew_session_terminate()
+  })
+  x$start()
+  expect_equal(a$launcher$active(), character(0L))
   a$queue <- list("task")
   expect_silent(x$scale())
   crew_wait(
-    fun = ~identical(a$launcher$running(), 1L),
+    fun = ~identical(length(a$launcher$active()), 1L),
     timeout = 5,
     wait = 0.1
   )
   x$terminate()
   crew_wait(
-    fun = ~identical(a$launcher$running(), 0L),
+    fun = ~identical(length(a$launcher$active()), 0L),
     timeout = 5,
     wait = 0.1
   )

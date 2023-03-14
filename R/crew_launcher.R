@@ -5,7 +5,7 @@
 #'   which launch and manage workers.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_session_open()
+#' crew_session_start()
 #' router <- crew_router()
 #' router$listen()
 #' launcher <- crew_launcher_callr()
@@ -15,7 +15,7 @@
 #' Sys.sleep(0.25)
 #' m$data
 #' router$terminate()
-#' crew_session_close()
+#' crew_session_terminate()
 #' }
 crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
@@ -47,7 +47,7 @@ crew_class_launcher <- R6::R6Class(
     cleanup = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
-    #' @param seconds_launch Seconds of launchup time to allow.
+    #' @param seconds_launch Seconds of startup time to allow.
     #'   A worker is unconditionally assumed to be alive
     #'   from the moment of its launch until `seconds_launch` seconds later.
     #'   After `seconds_launch` seconds, the worker is only
@@ -76,7 +76,7 @@ crew_class_launcher <- R6::R6Class(
     #'   See the `cleanup` argument of `mirai::server()`.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' crew_session_open()
+    #' crew_session_start()
     #' router <- crew_router()
     #' router$listen()
     #' launcher <- crew_launcher_callr()
@@ -86,7 +86,7 @@ crew_class_launcher <- R6::R6Class(
     #' Sys.sleep(0.25)
     #' m$data
     #' router$terminate()
-    #' crew_session_close()
+    #' crew_session_terminate()
     #' }
     initialize = function(
       seconds_launch = NULL,

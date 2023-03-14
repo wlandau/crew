@@ -1,10 +1,10 @@
 crew_test("crew_controller_callr()", {
   skip_on_cran()
-  crew_session_open()
+  crew_session_start()
   x <- crew_controller_callr(seconds_idle = 360)
   on.exit({
     x$terminate()
-    crew_session_close()
+    crew_session_terminate()
   })
   expect_silent(x$validate())
   expect_false(x$router$listening())
@@ -29,11 +29,11 @@ crew_test("crew_controller_callr()", {
 
 crew_test("crew_controller_callr() warnings and errors", {
   skip_on_cran()
-  crew_session_open()
+  crew_session_start()
   x <- crew_controller_callr(seconds_idle = 360)
   on.exit({
     x$terminate()
-    crew_session_close()
+    crew_session_terminate()
   })
   expect_silent(x$validate())
   expect_false(x$router$listening())
@@ -57,11 +57,11 @@ crew_test("crew_controller_callr() warnings and errors", {
 
 crew_test("crew_controller_callr() launch method", {
   skip_on_cran()
-  crew_session_open()
+  crew_session_start()
   x <- crew_controller_callr(seconds_idle = 360)
   on.exit({
     x$terminate()
-    crew_session_close()
+    crew_session_terminate()
   })
   x$start()
   expect_equal(length(x$launcher$active()), 0L)

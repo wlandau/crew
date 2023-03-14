@@ -19,15 +19,15 @@
 #'     (e.g. segmentation fault or maxed out memory) then
 #'     this could be somewhat risky because `mirai` resubmits
 #'     failed tasks behind the scenes and `crew` responds by
-#'     relauching workers. If you are worried about this scenario,
-#'     chosse `auto_scale = "single"` instead, which will only launch
+#'     re-launching workers. If you are worried about this scenario,
+#'     choose `auto_scale = "single"` instead, which will only launch
 #'     up to one worker whenever a task is pushed.
 #'   * `"single"`: just after pushing a new task in `push()`, launch
 #'     a single worker if demand `min(n, max(0, t - w))` is greater than 0.
 #'   * `"none"`: do not auto-scale at all.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_session_open()
+#' crew_session_start()
 #' router <- crew_router()
 #' launcher <- crew_launcher_callr()
 #' controller <- crew_controller(router = router, launcher = launcher)
@@ -36,7 +36,7 @@
 #' controller$wait()
 #' controller$pop()
 #' controller$terminate()
-#' crew_session_close()
+#' crew_session_terminate()
 #' }
 crew_controller <- function(
   router,
@@ -60,7 +60,7 @@ crew_controller <- function(
 #' @details See [crew_controller()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_session_open()
+#' crew_session_start()
 #' router <- crew_router()
 #' launcher <- crew_launcher_callr()
 #' controller <- crew_controller(router = router, launcher = launcher)
@@ -69,7 +69,7 @@ crew_controller <- function(
 #' controller$wait()
 #' controller$pop()
 #' controller$terminate()
-#' crew_session_close()
+#' crew_session_terminate()
 #' }
 crew_class_controller <- R6::R6Class(
   classname = "crew_class_controller",
@@ -91,7 +91,7 @@ crew_class_controller <- R6::R6Class(
     #' @param auto_scale Scaling method. See [crew_controller()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' crew_session_open()
+    #' crew_session_start()
     #' router <- crew_router()
     #' launcher <- crew_launcher_callr()
     #' controller <- crew_controller(router = router, launcher = launcher)
@@ -100,7 +100,7 @@ crew_class_controller <- R6::R6Class(
     #' controller$wait()
     #' controller$pop()
     #' controller$terminate()
-    #' crew_session_close()
+    #' crew_session_terminate()
     #' }
     initialize = function(
       router = NULL,

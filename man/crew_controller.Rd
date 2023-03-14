@@ -26,8 +26,8 @@ But if you think a task may always crash a worker
 (e.g. segmentation fault or maxed out memory) then
 this could be somewhat risky because \code{mirai} resubmits
 failed tasks behind the scenes and \code{crew} responds by
-relauching workers. If you are worried about this scenario,
-chosse \code{auto_scale = "single"} instead, which will only launch
+re-launching workers. If you are worried about this scenario,
+choose \code{auto_scale = "single"} instead, which will only launch
 up to one worker whenever a task is pushed.
 \item \code{"single"}: just after pushing a new task in \code{push()}, launch
 a single worker if demand \code{min(n, max(0, t - w))} is greater than 0.
@@ -39,7 +39,7 @@ Create an \code{R6} object to submit tasks and launch workers.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 router <- crew_router()
 launcher <- crew_launcher_callr()
 controller <- crew_controller(router = router, launcher = launcher)
@@ -48,7 +48,7 @@ controller$push(name = "task", command = sqrt(4))
 controller$wait()
 controller$pop()
 controller$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 }
 \seealso{

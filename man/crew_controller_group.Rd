@@ -17,7 +17,7 @@ through multiple \code{crew} controllers.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 persistent <- crew_controller_callr(name = "persistent")
 transient <- crew_controller_callr(
   name = "transient",
@@ -31,7 +31,7 @@ group$pop()
 group$controllers[["persistent"]]$launcher$running() # 0
 group$controllers[["transient"]]$launcher$running() # 0
 group$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 }
 \seealso{

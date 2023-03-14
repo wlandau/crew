@@ -9,8 +9,8 @@ reference:
   - '`crew_mirai_controller_callr`'
 - title: Session
   contents:
-  - '`crew_session_open`'
-  - '`crew_session_close`'
+  - '`crew_session_start`'
+  - '`crew_session_terminate`'
 - title: General classes
   contents:
   - '`crew_class_multi_controller`'

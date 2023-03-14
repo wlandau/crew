@@ -11,7 +11,7 @@ See \code{\link[=crew_controller]{crew_controller()}}.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 router <- crew_router()
 launcher <- crew_launcher_callr()
 controller <- crew_controller(router = router, launcher = launcher)
@@ -20,7 +20,7 @@ controller$push(name = "task", command = sqrt(4))
 controller$wait()
 controller$pop()
 controller$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 
 ## ------------------------------------------------
@@ -28,7 +28,7 @@ crew_session_close()
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 router <- crew_router()
 launcher <- crew_launcher_callr()
 controller <- crew_controller(router = router, launcher = launcher)
@@ -37,7 +37,7 @@ controller$push(name = "task", command = sqrt(4))
 controller$wait()
 controller$pop()
 controller$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 }
 \seealso{
@@ -106,7 +106,7 @@ An \code{R6} object with the controller object.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 router <- crew_router()
 launcher <- crew_launcher_callr()
 controller <- crew_controller(router = router, launcher = launcher)
@@ -115,7 +115,7 @@ controller$push(name = "task", command = sqrt(4))
 controller$wait()
 controller$pop()
 controller$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 }
 \if{html}{\out{</div>}}

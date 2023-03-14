@@ -1,6 +1,6 @@
 crew_test("crew_worker() connects back to custom NNG bus socket", {
-  crew_session_open()
-  on.exit(crew_session_close())
+  crew_session_start()
+  on.exit(crew_session_terminate())
   port <- free_port()
   token <- "this_token"
   listener <- connection_listen(
@@ -25,8 +25,8 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
 
 crew_test("crew_worker() can run mirai tasks", {
   skip_on_cran()
-  crew_session_open()
-  on.exit(crew_session_close())
+  crew_session_start()
+  on.exit(crew_session_terminate())
   port <- free_port()
   socket <- sprintf("ws://%s:%s", local_ip(), port)
   mirai::daemons(n = 1L, url = socket)

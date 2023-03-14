@@ -33,7 +33,7 @@
 #'   See the `cleanup` argument of `mirai::server()`.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_session_open()
+#' crew_session_start()
 #' router <- crew_router()
 #' router$listen()
 #' launcher <- crew_launcher_callr()
@@ -43,7 +43,7 @@
 #' Sys.sleep(0.25)
 #' m$data
 #' router$terminate()
-#' crew_session_close()
+#' crew_session_terminate()
 #' }
 crew_launcher_callr <- function(
   seconds_launch = 30,
@@ -76,7 +76,7 @@ crew_launcher_callr <- function(
 #' @details See [crew_launcher_callr()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_session_open()
+#' crew_session_start()
 #' router <- crew_router()
 #' router$listen()
 #' launcher <- crew_launcher_callr()
@@ -86,7 +86,7 @@ crew_launcher_callr <- function(
 #' Sys.sleep(0.25)
 #' m$data
 #' router$terminate()
-#' crew_session_close()
+#' crew_session_terminate()
 #' }
 crew_class_launcher_callr <- R6::R6Class(
   classname = "crew_class_launcher_callr",

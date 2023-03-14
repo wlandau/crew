@@ -11,7 +11,7 @@ See \code{\link[=crew_controller_group]{crew_controller_group()}}.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 persistent <- crew_controller_callr(name = "persistent")
 transient <- crew_controller_callr(
   name = "transient",
@@ -25,7 +25,7 @@ group$pop()
 group$controllers[["persistent"]]$launcher$running() # 0
 group$controllers[["transient"]]$launcher$running() # 0
 group$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 
 ## ------------------------------------------------
@@ -33,7 +33,7 @@ crew_session_close()
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 persistent <- crew_controller_callr(name = "persistent")
 transient <- crew_controller_callr(
   name = "transient",
@@ -47,7 +47,7 @@ group$pop()
 group$controllers[["persistent"]]$launcher$running() # 0
 group$controllers[["transient"]]$launcher$running() # 0
 group$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 }
 \seealso{
@@ -103,7 +103,7 @@ An \code{R6} object with the multi-controller object.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 persistent <- crew_controller_callr(name = "persistent")
 transient <- crew_controller_callr(
   name = "transient",
@@ -117,7 +117,7 @@ group$pop()
 group$controllers[["persistent"]]$launcher$running() # 0
 group$controllers[["transient"]]$launcher$running() # 0
 group$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 }
 \if{html}{\out{</div>}}

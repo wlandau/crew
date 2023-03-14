@@ -9,7 +9,7 @@
 #'   or another list.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_session_open()
+#' crew_session_start()
 #' persistent <- crew_controller_callr(name = "persistent")
 #' transient <- crew_controller_callr(
 #'   name = "transient",
@@ -23,7 +23,7 @@
 #' group$controllers[["persistent"]]$launcher$running() # 0
 #' group$controllers[["transient"]]$launcher$running() # 0
 #' group$terminate()
-#' crew_session_close()
+#' crew_session_terminate()
 #' }
 crew_controller_group <- function(...) {
   controllers <- unlist(list(...), recursive = TRUE)
@@ -40,7 +40,7 @@ crew_controller_group <- function(...) {
 #' @details See [crew_controller_group()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_session_open()
+#' crew_session_start()
 #' persistent <- crew_controller_callr(name = "persistent")
 #' transient <- crew_controller_callr(
 #'   name = "transient",
@@ -54,7 +54,7 @@ crew_controller_group <- function(...) {
 #' group$controllers[["persistent"]]$launcher$running() # 0
 #' group$controllers[["transient"]]$launcher$running() # 0
 #' group$terminate()
-#' crew_session_close()
+#' crew_session_terminate()
 #' }
 crew_class_multi_controller <- R6::R6Class(
   classname = "crew_class_controller_group",
@@ -82,7 +82,7 @@ crew_class_multi_controller <- R6::R6Class(
     #' @param controllers List of `R6` controller objects.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' crew_session_open()
+    #' crew_session_start()
     #' persistent <- crew_controller_callr(name = "persistent")
     #' transient <- crew_controller_callr(
     #'   name = "transient",
@@ -96,7 +96,7 @@ crew_class_multi_controller <- R6::R6Class(
     #' group$controllers[["persistent"]]$launcher$running() # 0
     #' group$controllers[["transient"]]$launcher$running() # 0
     #' group$terminate()
-    #' crew_session_close()
+    #' crew_session_terminate()
     #' }
     initialize = function(
       controllers = NULL

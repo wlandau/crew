@@ -9,7 +9,7 @@ which launch and manage workers.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
@@ -19,7 +19,7 @@ m <- mirai::mirai("result")
 Sys.sleep(0.25)
 m$data
 router$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 
 ## ------------------------------------------------
@@ -27,7 +27,7 @@ crew_session_close()
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
@@ -37,7 +37,7 @@ m <- mirai::mirai("result")
 Sys.sleep(0.25)
 m$data
 router$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 }
 \seealso{
@@ -102,7 +102,7 @@ Launcher constructor.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{seconds_launch}}{Seconds of launchup time to allow.
+\item{\code{seconds_launch}}{Seconds of startup time to allow.
 A worker is unconditionally assumed to be alive
 from the moment of its launch until \code{seconds_launch} seconds later.
 After \code{seconds_launch} seconds, the worker is only
@@ -145,7 +145,7 @@ An \code{R6} object with the launcher.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
@@ -155,7 +155,7 @@ m <- mirai::mirai("result")
 Sys.sleep(0.25)
 m$data
 router$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 }
 \if{html}{\out{</div>}}

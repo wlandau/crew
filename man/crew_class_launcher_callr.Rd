@@ -11,7 +11,7 @@ See \code{\link[=crew_launcher_callr]{crew_launcher_callr()}}.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_open()
+crew_session_start()
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
@@ -21,7 +21,7 @@ m <- mirai::mirai("result")
 Sys.sleep(0.25)
 m$data
 router$terminate()
-crew_session_close()
+crew_session_terminate()
 }
 }
 \seealso{

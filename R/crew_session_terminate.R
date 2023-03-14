@@ -1,7 +1,7 @@
-#' @title Terminate the crew session.
+#' @title Close the crew session.
 #' @export
 #' @keywords session
-#' @description Terminate the crew session.
+#' @description Close the crew session.
 #' @return `NULL` (invisibly).
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {

@@ -192,23 +192,8 @@ crew_class_controller <- R6::R6Class(
       done <- integer(0L)
       for (index in seq_along(self$queue)) {
         task <- self$queue[[index]]
-        handle <- task$handle[[1]]
-        if (!mirai::unresolved(handle)) {
-          result <- handle$data
-          # The contents of the if() statement below happen
-          # if mirai cannot evaluate the command.
-          # I cannot cover this in automated tests, but
-          # I did test it by hand.
-          # nocov start
-          if (!inherits(result, "crew_monad")) {
-            result <- monad_init(
-              command = task$command,
-              error = utils::capture.output(print(result), type = "output")
-            )
-          }
-          # nocov end
-          result$name <- task$name
-          self$results[[length(self$results) + 1L]] <- result
+        if (!mirai::unresolved(task$handle[[1]])) {
+          self$results[[length(self$results) + 1L]] <- task
           done <- c(done, index)
         }
       }
@@ -252,7 +237,7 @@ crew_class_controller <- R6::R6Class(
         handle = list(handle)
       )
       self$queue[[length(self$queue) + 1L]] <- task
-      if (scale) {
+      if (scale && (length(self$launcher$active()) < self$router$workers)) {
         self$clean()
         self$collect()
         self$scale()
@@ -272,7 +257,23 @@ crew_class_controller <- R6::R6Class(
       }
       out <- NULL
       if (length(self$results) > 0L) {
-        out <- self$results[[1]]
+        task <- self$results[[1]]
+        out <- task$handle[[1]]$data
+        # The contents of the if() statement below happen
+        # if mirai cannot evaluate the command.
+        # I cannot cover this in automated tests, but
+        # I did test it by hand.
+        # nocov start
+        if (!inherits(out, "crew_monad")) {
+          out <- monad_init(
+            command = out$command,
+            error = paste(
+              utils::capture.output(print(out), type = "output"),
+              collapse = "\n"
+            )
+          )
+        }
+        out$name <- task$name
         self$results[[1]] <- NULL
       }
       out

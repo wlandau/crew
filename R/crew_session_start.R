@@ -18,7 +18,7 @@
 #'   `parallelly::freePort()`.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_port_set()
+#' crew_session_start()
 #' crew_port_get()
 #' crew_port_unset()
 #' }

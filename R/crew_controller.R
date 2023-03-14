@@ -192,9 +192,11 @@ crew_class_controller <- R6::R6Class(
       done <- integer(0L)
       for (index in seq_along(self$queue)) {
         task <- self$queue[[index]]
-        result <- task$handle[[1]]$data
-        if (!mirai::unresolved(result)) {
-          # Happens if mirai cannot evaluate the command.
+        handle <- task$handle[[1]]
+        if (!mirai::unresolved(handle)) {
+          result <- handle$data
+          # The contents of the if() statement below happen
+          # if mirai cannot evaluate the command.
           # I cannot cover this in automated tests, but
           # I did test it by hand.
           # nocov start

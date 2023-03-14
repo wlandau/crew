@@ -193,7 +193,7 @@ crew_class_launcher <- R6::R6Class(
     launch = function(sockets = character(0)) {
       true(
         !is.null(crew_session_port()),
-        message = "call crew_port_set() before launching workers."
+        message = "call crew_session_start() before launching workers."
       )
       matches <- match(x = sockets, table = self$workers$socket)
       true(!anyNA(matches), message = "bad websocket on launch.")

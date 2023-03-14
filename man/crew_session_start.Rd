@@ -32,7 +32,7 @@ Be sure to call \code{\link[=crew_session_terminate]{crew_session_terminate()}} 
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_port_set()
+crew_session_start()
 crew_port_get()
 crew_port_unset()
 }

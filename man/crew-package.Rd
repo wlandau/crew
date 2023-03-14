@@ -10,15 +10,15 @@ statisticians and data scientists asynchronously deploy
 long-running tasks to distributed systems, ranging from
 traditional clusters to cloud services.
 The \href{https://nng.nanomsg.org}{NNG}-powered
-\href{https://github.com/shikokuchuo/mirai}{\code{mirai}} R package
-is a powerful task scheduler that efficiently processes
-these intense workloads. The role of the \code{crew} package
-is merely to extend \href{https://github.com/shikokuchuo/mirai}{\code{mirai}}
-to computing platforms beyond local multicore processing.
-With its unifying interface to multiple backends,
-\code{crew} resembles packages
+\href{https://github.com/shikokuchuo/mirai}{\code{mirai}}
+R package is a powerful task scheduler that efficiently
+processes these intense workloads. The \code{crew} package
+extends \href{https://github.com/shikokuchuo/mirai}{\code{mirai}}
+beyond local multicore processing with a unifying interface
+for third-party worker launchers. Inspiration comes from packages
+\href{https://future.futureverse.org/}{\code{future}},
+\href{https://mrc-ide.github.io/rrq/}{\code{rrq}},
 \href{https://mschubert.github.io/clustermq/}{\code{clustermq}},
-\href{https://future.futureverse.org/}{\code{future}}, and
-\href{https://mllg.github.io/batchtools/}{\code{batchtools}}.
+and \href{https://mllg.github.io/batchtools/}{\code{batchtools}}.
 }
 \concept{help}

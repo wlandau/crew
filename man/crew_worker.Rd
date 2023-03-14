@@ -28,4 +28,3 @@ Other utilities:
 \code{\link{crew_wait}()}
 }
 \concept{utilities}
-\keyword{internal}

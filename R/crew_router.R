@@ -38,7 +38,7 @@ crew_router <- function(
   host = NULL,
   port = 0L,
   router_timeout = 5,
-  router_wait = 0.1,
+  router_wait = 0.01,
   seconds_exit = 0.1,
   seconds_poll_high = 0.001,
   seconds_poll_low = 0.01,
@@ -215,7 +215,7 @@ crew_class_router <- R6::R6Class(
         self$sockets <- if_any(
           anyNA(daemons),
           character(0),
-          rownames(daemons)
+          as.character(rownames(daemons))
         )
       }
       invisible()
@@ -225,15 +225,23 @@ crew_class_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     terminate = function() {
       if (isTRUE(self$listening())) {
-        try(mirai::daemons(n = 0L, .compute = self$name), silent = TRUE)
-        try(
+        daemons <- mirai::daemons(.compute = self$name)$daemons
+        dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
+        handle <- ps::ps_handle(pid = dispatcher)
+        mirai::daemons(n = 0L, .compute = self$name)
+        crew_wait(
+          fun = ~isFALSE(self$listening()),
+          timeout = self$router_timeout,
+          wait = self$router_wait,
+          message = "mirai client could not terminate."
+        )
+        tryCatch(
           crew_wait(
-            fun = ~isFALSE(self$listening()),
+            fun = ~!ps::ps_is_running(handle),
             timeout = self$router_timeout,
-            wait = self$router_wait,
-            message = "mirai client could not terminate."
+            wait = self$router_wait
           ),
-          silent = TRUE
+          crew_error = \(error) ps::ps_kill(handle)
         )
         self$sockets <- NULL
       }

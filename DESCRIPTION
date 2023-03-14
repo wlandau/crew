@@ -13,7 +13,7 @@ Description: In computationally demanding analysis workflows,
   'clustermq' (2019, <doi:10.1093/bioinformatics/btz284>),
   'future' (2021, <doi:10.32614/RJ-2021-048>),
   and 'batchtools' (2017, <doi:10.21105/joss.00135>).
-Version: 0.0.0.9002
+Version: 0.0.0.9003
 License: MIT + file LICENSE
 URL: https://wlandau.github.io/crew/, https://github.com/wlandau/crew
 BugReports: https://github.com/wlandau/crew/issues
@@ -35,7 +35,7 @@ Imports:
   bench,
   callr,
   getip,
-  mirai (>= 0.7.2.9038),
+  mirai (>= 0.7.2.9043),
   nanonext,
   parallelly,
   R6,

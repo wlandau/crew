@@ -18,7 +18,7 @@ crew_test("crew_router() works", {
   expect_true(nzchar(socket) && !anyNA(socket))
   expect_equal(length(socket), 1L)
   daemons <- mirai::daemons(.compute = router$name)$daemons
-  expect_equal(socket, rownames(daemons))
+  expect_equal(socket, as.character(rownames(daemons)))
   expect_true(all(daemons == 0L))
   px <- callr::r_bg(
     function(socket) mirai::server(socket),

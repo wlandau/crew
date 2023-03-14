@@ -23,6 +23,7 @@
 #' @importFrom mirai daemons is_error_value mirai server unresolved
 #' @importFrom nanonext socket stat
 #' @importFrom parallelly freePort
+#' @importFrom ps ps_handle ps_is_running ps_kill
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function
 #' @importFrom tibble tibble

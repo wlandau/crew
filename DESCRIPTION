@@ -38,6 +38,7 @@ Imports:
   mirai (>= 0.7.2.9043),
   nanonext,
   parallelly,
+  ps,
   R6,
   rlang,
   tibble,
@@ -47,7 +48,6 @@ Imports:
 Suggests:
   knitr (>= 1.30),
   markdown (>= 1.1),
-  ps,
   rmarkdown (>= 2.4),
   testthat (>= 3.0.0)
 Remotes:

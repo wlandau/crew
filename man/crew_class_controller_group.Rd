@@ -279,14 +279,18 @@ first controller in the list.}
 \subsection{Method \code{pop()}}{
 Pop a completed task from the results data frame.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop(collect = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop(scale = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{collect}}{Whether to run the \code{collect()} method to collect all
-available results before calling \code{pop()}.}
+\item{\code{scale}}{Logical, whether to automatically scale workers to meet
+demand. If \code{TRUE}, then \code{clean()} and \code{collect()} run first
+so demand can be properly assessed before scaling and the number
+of workers is not too high. Scaling up on \code{pop()} may be important
+for transient or nearly transient workers that tend to drop off
+quickly after doing little work.}
 
 \item{\code{controllers}}{Names of the controllers (in order) to look for
 completed tasks.}

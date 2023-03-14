@@ -267,6 +267,8 @@ crew_test("launcher cleans up old worker", {
   launcher$launch(sockets = socket)
   handle <- launcher$workers$handle[[1]]
   crew_wait(~handle$is_alive(), wait = 0.01, timeout = 5)
+  expect_true(handle$is_alive())
   launcher$launch(sockets = socket)
   crew_wait(~!handle$is_alive(), wait = 0.01, timeout = 5)
+  expect_false(handle$is_alive())
 })

@@ -30,5 +30,5 @@ message(time["elapsed"])
 x$terminate()
 results <- tibble::as_tibble(do.call(rbind, results))
 results$result <- as.integer(results$result)
-table(results$result)
+table(results$result) # Task should be about evenly distributed.
 crew_session_terminate()

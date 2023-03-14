@@ -26,7 +26,7 @@ crew_test("crew_controller_group()", {
   expect_null(x$pop())
   x$push(command = ps::ps_pid(), name = "task_pid", controller = "b")
   x$wait(timeout = 5)
-  out <- x$pop()
+  out <- x$pop(scale = FALSE)
   expect_equal(out$name, "task_pid")
   expect_equal(out$command, "ps::ps_pid()")
   expect_equal(
@@ -86,7 +86,7 @@ crew_test("crew_controller_group() collect", {
       length(x$controllers[[1]]$results) > 0L
     }
   )
-  out <- x$pop(collect = FALSE, controllers = "a")
+  out <- x$pop(scale = FALSE, controllers = "a")
   expect_equal(
     out$result[[1]],
     x$controllers[[1]]$launcher$workers$handle[[1]]$get_pid()

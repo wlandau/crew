@@ -255,8 +255,18 @@ crew_class_controller <- R6::R6Class(
     #'   value is a one-row data frame with the results, warnings, and errors.
     #'   Otherwise, if there are no results available to collect,
     #'   the return value is `NULL`.
-    pop = function() {
-      if (length(self$results) < 1L) {
+    #' @param scale Logical, whether to automatically scale workers to meet
+    #'   demand. If `TRUE`, then `clean()` and `collect()` run first
+    #'   so demand can be properly assessed before scaling and the number
+    #'   of workers is not too high. Scaling up on `pop()` may be important
+    #'   for transient or nearly transient workers that tend to drop off
+    #'   quickly after doing little work.
+    pop = function(scale = TRUE) {
+      if (scale && (length(self$launcher$active()) < self$router$workers)) {
+        self$clean()
+        self$collect(n = Inf)
+        self$scale()
+      } else if (length(self$results) < 1L) {
         self$collect(n = 1L)
       }
       out <- NULL

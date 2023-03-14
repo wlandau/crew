@@ -190,17 +190,18 @@ crew_class_controller_group <- R6::R6Class(
     #'   value is a one-row data frame with the results, warnings, and errors.
     #'   Otherwise, if there are no results available to collect,
     #'   the return value is `NULL`.
-    #' @param collect Whether to run the `collect()` method to collect all
-    #'   available results before calling `pop()`.
+    #' @param scale Logical, whether to automatically scale workers to meet
+    #'   demand. If `TRUE`, then `clean()` and `collect()` run first
+    #'   so demand can be properly assessed before scaling and the number
+    #'   of workers is not too high. Scaling up on `pop()` may be important
+    #'   for transient or nearly transient workers that tend to drop off
+    #'   quickly after doing little work.
     #' @param controllers Names of the controllers (in order) to look for
     #'   completed tasks.
-    pop = function(collect = TRUE, controllers = NULL) {
+    pop = function(scale = TRUE, controllers = NULL) {
       control <- self$controllers[private$controller_names(controllers)]
       for (controller in control) {
-        if (collect) {
-          controller$collect()
-        }
-        out <- controller$pop()
+        out <- controller$pop(scale = scale)
         if (!is.null(out)) {
           return(out)
         }

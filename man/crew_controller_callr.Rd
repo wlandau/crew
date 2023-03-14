@@ -122,8 +122,8 @@ controller$terminate()
 }
 \seealso{
 Other controllers: 
+\code{\link{crew_class_controller_group}},
 \code{\link{crew_class_controller}},
-\code{\link{crew_class_multi_controller}},
 \code{\link{crew_controller_group}()},
 \code{\link{crew_controller}()}
 }

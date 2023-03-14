@@ -5,7 +5,7 @@
 #' @details A `crew` session reserves a TCP port with a new NNG socket.
 #'   `crew` uses this port to monitor the connection statuses of
 #'   all workers launched from the current R session across all
-#'   controllers and multi-controllers.
+#'   controllers and controller groups.
 #'   [crew_session_terminate()] closes the NNG socket and frees the port.
 #'   Be sure to call [crew_session_terminate()] when you are finished using
 #'   `crew` in your R session.

@@ -28,7 +28,7 @@
 crew_controller_group <- function(...) {
   controllers <- unlist(list(...), recursive = TRUE)
   names(controllers) <- map_chr(controllers, ~.x$router$name)
-  out <- crew_class_multi_controller$new(controllers = controllers)
+  out <- crew_class_controller_group$new(controllers = controllers)
   out$validate()
   out
 }
@@ -56,7 +56,7 @@ crew_controller_group <- function(...) {
 #' group$terminate()
 #' crew_session_terminate()
 #' }
-crew_class_multi_controller <- R6::R6Class(
+crew_class_controller_group <- R6::R6Class(
   classname = "crew_class_controller_group",
   private = list(
     controller_names = function(names = NULL) {
@@ -78,7 +78,7 @@ crew_class_multi_controller <- R6::R6Class(
     #' @field controllers List of `R6` controller objects.
     controllers = NULL,
     #' @description Multi-controller constructor.
-    #' @return An `R6` object with the multi-controller object.
+    #' @return An `R6` object with the controller group object.
     #' @param controllers List of `R6` controller objects.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -109,7 +109,7 @@ crew_class_multi_controller <- R6::R6Class(
     validate = function() {
       true(
         map_lgl(self$controllers, ~inherits(.x, "crew_class_controller")),
-        message = "All objects in a multi-controller must be controllers."
+        message = "All objects in a controller group must be controllers."
       )
       out <- unname(map_chr(self$controllers, ~.x$router$name))
       exp <- names(self$controllers)

@@ -25,7 +25,7 @@ Start a crew session if a session does not already exist.
 A \code{crew} session reserves a TCP port with a new NNG socket.
 \code{crew} uses this port to monitor the connection statuses of
 all workers launched from the current R session across all
-controllers and multi-controllers.
+controllers and controller groups.
 \code{\link[=crew_session_terminate]{crew_session_terminate()}} closes the NNG socket and frees the port.
 Be sure to call \code{\link[=crew_session_terminate]{crew_session_terminate()}} when you are finished using
 \code{crew} in your R session.

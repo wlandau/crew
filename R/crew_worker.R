@@ -1,6 +1,5 @@
 #' @title Crew worker.
 #' @export
-#' @keywords internal
 #' @family utilities
 #' @description Launch a `crew` worker which runs a `mirai` server.
 #' @return `NULL` (invisibly)

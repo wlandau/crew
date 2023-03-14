@@ -11,15 +11,17 @@ See \code{\link[=crew_launcher_callr]{crew_launcher_callr()}}.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+crew_session_open()
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
-launcher$populate(sockets = router$sockets())
+launcher$populate(sockets = router$sockets)
 launcher$launch()
 m <- mirai::mirai("result")
 Sys.sleep(0.25)
 m$data
 router$terminate()
+crew_session_close()
 }
 }
 \seealso{

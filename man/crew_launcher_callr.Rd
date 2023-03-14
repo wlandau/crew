@@ -57,15 +57,17 @@ Create an \code{R6} object to launch and maintain
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+crew_session_open()
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
-launcher$populate(sockets = router$sockets())
+launcher$populate(sockets = router$sockets)
 launcher$launch()
 m <- mirai::mirai("result")
 Sys.sleep(0.25)
 m$data
 router$terminate()
+crew_session_close()
 }
 }
 \seealso{

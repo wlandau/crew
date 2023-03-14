@@ -39,14 +39,16 @@ Create an \code{R6} object to submit tasks and launch workers.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+crew_session_open()
 router <- crew_router()
 launcher <- crew_launcher_callr()
 controller <- crew_controller(router = router, launcher = launcher)
-controller$connect()
+controller$start()
 controller$push(name = "task", command = sqrt(4))
 controller$wait()
 controller$pop()
 controller$terminate()
+crew_session_close()
 }
 }
 \seealso{
@@ -54,7 +56,7 @@ Other controllers:
 \code{\link{crew_class_controller}},
 \code{\link{crew_class_multi_controller}},
 \code{\link{crew_controller_callr}()},
-\code{\link{crew_multi_controller}()}
+\code{\link{crew_controller_group}()}
 }
 \concept{controllers}
 \keyword{internal}

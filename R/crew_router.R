@@ -29,7 +29,7 @@
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
 #' router$listen()
-#' router$sockets() # "ws://xx.xx.xx:xxxxx/x"
+#' router$sockets # "ws://xx.xx.xx:xxxxx/x"
 #' router$terminate()
 #' }
 crew_router <- function(
@@ -74,7 +74,7 @@ crew_router <- function(
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
 #' router$listen()
-#' router$sockets() # "ws://xx.xx.xx:xxxxx/x"
+#' router$sockets # "ws://xx.xx.xx:xxxxx/x"
 #' router$terminate()
 #' }
 crew_class_router <- R6::R6Class(
@@ -120,7 +120,7 @@ crew_class_router <- R6::R6Class(
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' router <- crew_router()
     #' router$listen()
-    #' router$sockets() # "ws://xx.xx.xx:xxxxx/x"
+    #' router$sockets # "ws://xx.xx.xx:xxxxx/x"
     #' router$terminate()
     #' }
     initialize = function(

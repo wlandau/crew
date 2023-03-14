@@ -27,14 +27,16 @@
 #'   * `"none"`: do not auto-scale at all.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' crew_session_open()
 #' router <- crew_router()
 #' launcher <- crew_launcher_callr()
 #' controller <- crew_controller(router = router, launcher = launcher)
-#' controller$connect()
+#' controller$start()
 #' controller$push(name = "task", command = sqrt(4))
 #' controller$wait()
 #' controller$pop()
 #' controller$terminate()
+#' crew_session_close()
 #' }
 crew_controller <- function(
   router,
@@ -58,14 +60,16 @@ crew_controller <- function(
 #' @details See [crew_controller()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' crew_session_open()
 #' router <- crew_router()
 #' launcher <- crew_launcher_callr()
 #' controller <- crew_controller(router = router, launcher = launcher)
-#' controller$connect()
+#' controller$start()
 #' controller$push(name = "task", command = sqrt(4))
 #' controller$wait()
 #' controller$pop()
 #' controller$terminate()
+#' crew_session_close()
 #' }
 crew_class_controller <- R6::R6Class(
   classname = "crew_class_controller",
@@ -85,16 +89,18 @@ crew_class_controller <- R6::R6Class(
     #' @param router Router object. See [crew_controller()].
     #' @param launcher Launcher object. See [crew_controller()].
     #' @param auto_scale Scaling method. See [crew_controller()].
-    #' #' @examples
+    #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' router <- crew_router() # Use instead of the constructor.
+    #' crew_session_open()
+    #' router <- crew_router()
     #' launcher <- crew_launcher_callr()
     #' controller <- crew_controller(router = router, launcher = launcher)
-    #' controller$connect()
+    #' controller$start()
     #' controller$push(name = "task", command = sqrt(4))
     #' controller$wait()
     #' controller$pop()
     #' controller$terminate()
+    #' crew_session_close()
     #' }
     initialize = function(
       router = NULL,

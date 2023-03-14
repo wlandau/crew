@@ -11,22 +11,41 @@ See \code{\link[=crew_controller]{crew_controller()}}.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+crew_session_open()
 router <- crew_router()
 launcher <- crew_launcher_callr()
 controller <- crew_controller(router = router, launcher = launcher)
-controller$connect()
+controller$start()
 controller$push(name = "task", command = sqrt(4))
 controller$wait()
 controller$pop()
 controller$terminate()
+crew_session_close()
+}
+
+## ------------------------------------------------
+## Method `crew_class_controller$new`
+## ------------------------------------------------
+
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+crew_session_open()
+router <- crew_router()
+launcher <- crew_launcher_callr()
+controller <- crew_controller(router = router, launcher = launcher)
+controller$start()
+controller$push(name = "task", command = sqrt(4))
+controller$wait()
+controller$pop()
+controller$terminate()
+crew_session_close()
 }
 }
 \seealso{
 Other controllers: 
 \code{\link{crew_class_multi_controller}},
 \code{\link{crew_controller_callr}()},
-\code{\link{crew_controller}()},
-\code{\link{crew_multi_controller}()}
+\code{\link{crew_controller_group}()},
+\code{\link{crew_controller}()}
 }
 \concept{controllers}
 \section{Public fields}{
@@ -77,24 +96,32 @@ Other controllers:
 
 \item{\code{launcher}}{Launcher object. See \code{\link[=crew_controller]{crew_controller()}}.}
 
-\item{\code{auto_scale}}{Scaling method. See \code{\link[=crew_controller]{crew_controller()}}.
-#' @examples
-if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-router <- crew_router() # Use instead of the constructor.
-launcher <- crew_launcher_callr()
-controller <- crew_controller(router = router, launcher = launcher)
-controller$connect()
-controller$push(name = "task", command = sqrt(4))
-controller$wait()
-controller$pop()
-controller$terminate()
-}}
+\item{\code{auto_scale}}{Scaling method. See \code{\link[=crew_controller]{crew_controller()}}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 An \code{R6} object with the controller object.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+crew_session_open()
+router <- crew_router()
+launcher <- crew_launcher_callr()
+controller <- crew_controller(router = router, launcher = launcher)
+controller$start()
+controller$push(name = "task", command = sqrt(4))
+controller$wait()
+controller$pop()
+controller$terminate()
+crew_session_close()
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-validate"></a>}}

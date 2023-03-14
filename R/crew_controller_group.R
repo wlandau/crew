@@ -1,4 +1,4 @@
-#' @title Create a multi-controller.
+#' @title Create a controller group.
 #' @export
 #' @keywords internal
 #' @family controllers
@@ -9,21 +9,23 @@
 #'   or another list.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' crew_session_open()
 #' persistent <- crew_controller_callr(name = "persistent")
 #' transient <- crew_controller_callr(
 #'   name = "transient",
 #'   max_tasks = 1L
 #' )
-#' multi <- crew_multi_controller(persistent, transient)
-#' multi$connect()
-#' multi$push(name = "task", command = sqrt(4), controller = "transient")
-#' multi$wait()
-#' multi$pop()
-#' multi$controllers[["persistent"]]$launcher$running() # 0
-#' multi$controllers[["transient"]]$launcher$running() # 0
-#' multi$terminate()
+#' group <- crew_controller_group(persistent, transient)
+#' group$connect()
+#' group$push(name = "task", command = sqrt(4), controller = "transient")
+#' group$wait()
+#' group$pop()
+#' group$controllers[["persistent"]]$launcher$running() # 0
+#' group$controllers[["transient"]]$launcher$running() # 0
+#' group$terminate()
+#' crew_session_close()
 #' }
-crew_multi_controller <- function(...) {
+crew_controller_group <- function(...) {
   controllers <- unlist(list(...), recursive = TRUE)
   names(controllers) <- map_chr(controllers, ~.x$router$name)
   out <- crew_class_multi_controller$new(controllers = controllers)
@@ -31,29 +33,31 @@ crew_multi_controller <- function(...) {
   out
 }
 
-#' @title Multi-controller class
+#' @title Controller group class
 #' @export
 #' @family controllers
-#' @description `R6` class for multi-controllers.
-#' @details See [crew_controller()].
+#' @description `R6` class for controller groups.
+#' @details See [crew_controller_group()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' crew_session_open()
 #' persistent <- crew_controller_callr(name = "persistent")
 #' transient <- crew_controller_callr(
 #'   name = "transient",
 #'   max_tasks = 1L
 #' )
-#' multi <- crew_multi_controller(persistent, transient)
-#' multi$connect()
-#' multi$push(name = "task", command = sqrt(4), controller = "transient")
-#' multi$wait()
-#' multi$pop()
-#' multi$controllers[["persistent"]]$launcher$running() # 0
-#' multi$controllers[["transient"]]$launcher$running() # 0
-#' multi$terminate()
+#' group <- crew_controller_group(persistent, transient)
+#' group$connect()
+#' group$push(name = "task", command = sqrt(4), controller = "transient")
+#' group$wait()
+#' group$pop()
+#' group$controllers[["persistent"]]$launcher$running() # 0
+#' group$controllers[["transient"]]$launcher$running() # 0
+#' group$terminate()
+#' crew_session_close()
 #' }
 crew_class_multi_controller <- R6::R6Class(
-  classname = "crew_class_multi_controller",
+  classname = "crew_class_controller_group",
   private = list(
     controller_names = function(names = NULL) {
       names <- as.character(names %|||% names(self$controllers))
@@ -78,19 +82,21 @@ crew_class_multi_controller <- R6::R6Class(
     #' @param controllers List of `R6` controller objects.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' crew_session_open()
     #' persistent <- crew_controller_callr(name = "persistent")
     #' transient <- crew_controller_callr(
     #'   name = "transient",
     #'   max_tasks = 1L
     #' )
-    #' multi <- crew_multi_controller(persistent, transient)
-    #' multi$connect()
-    #' multi$push(name = "task", command = sqrt(4), controller = "transient")
-    #' multi$wait()
-    #' multi$pop()
-    #' multi$controllers[["persistent"]]$launcher$running() # 0
-    #' multi$controllers[["transient"]]$launcher$running() # 0
-    #' multi$terminate()
+    #' group <- crew_controller_group(persistent, transient)
+    #' group$connect()
+    #' group$push(name = "task", command = sqrt(4), controller = "transient")
+    #' group$wait()
+    #' group$pop()
+    #' group$controllers[["persistent"]]$launcher$running() # 0
+    #' group$controllers[["transient"]]$launcher$running() # 0
+    #' group$terminate()
+    #' crew_session_close()
     #' }
     initialize = function(
       controllers = NULL
@@ -110,13 +116,13 @@ crew_class_multi_controller <- R6::R6Class(
       true(identical(out, exp), message = "bad controller names")
       invisible()
     },
-    #' @description Connect one or more controllers.
+    #' @description Start one or more controllers.
     #' @return `NULL` (invisibly).
     #' @param controllers Character vector of controller names.
     #'   If `NULL`, it defaults to all controllers in the list.
-    connect = function(controllers = NULL) {
+    start = function(controllers = NULL) {
       control <- self$controllers[private$controller_names(controllers)]
-      walk(control, ~.x$connect())
+      walk(control, ~.x$start())
     },
     #' @description Launch one or more workers on one or more controllers.
     #' @return `NULL` (invisibly).

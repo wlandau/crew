@@ -8,6 +8,8 @@
 which launch and manage workers.
 }
 \examples{
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+crew_session_open()
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
@@ -17,12 +19,15 @@ m <- mirai::mirai("result")
 Sys.sleep(0.25)
 m$data
 router$terminate()
+crew_session_close()
+}
 
 ## ------------------------------------------------
 ## Method `crew_class_launcher$new`
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+crew_session_open()
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
@@ -32,6 +37,7 @@ m <- mirai::mirai("result")
 Sys.sleep(0.25)
 m$data
 router$terminate()
+crew_session_close()
 }
 }
 \seealso{
@@ -139,6 +145,7 @@ An \code{R6} object with the launcher.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+crew_session_open()
 router <- crew_router()
 router$listen()
 launcher <- crew_launcher_callr()
@@ -148,6 +155,7 @@ m <- mirai::mirai("result")
 Sys.sleep(0.25)
 m$data
 router$terminate()
+crew_session_close()
 }
 }
 \if{html}{\out{</div>}}

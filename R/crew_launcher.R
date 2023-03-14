@@ -4,6 +4,8 @@
 #' @description `R6` abstract class to build other subclasses
 #'   which launch and manage workers.
 #' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' crew_session_open()
 #' router <- crew_router()
 #' router$listen()
 #' launcher <- crew_launcher_callr()
@@ -13,6 +15,8 @@
 #' Sys.sleep(0.25)
 #' m$data
 #' router$terminate()
+#' crew_session_close()
+#' }
 crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
   cloneable = FALSE,
@@ -72,6 +76,7 @@ crew_class_launcher <- R6::R6Class(
     #'   See the `cleanup` argument of `mirai::server()`.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' crew_session_open()
     #' router <- crew_router()
     #' router$listen()
     #' launcher <- crew_launcher_callr()
@@ -81,6 +86,7 @@ crew_class_launcher <- R6::R6Class(
     #' Sys.sleep(0.25)
     #' m$data
     #' router$terminate()
+    #' crew_session_close()
     #' }
     initialize = function(
       seconds_launch = NULL,

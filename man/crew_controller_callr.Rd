@@ -124,7 +124,7 @@ controller$terminate()
 Other controllers: 
 \code{\link{crew_class_controller}},
 \code{\link{crew_class_multi_controller}},
-\code{\link{crew_controller}()},
-\code{\link{crew_multi_controller}()}
+\code{\link{crew_controller_group}()},
+\code{\link{crew_controller}()}
 }
 \concept{controllers}

@@ -13,7 +13,7 @@ See \code{\link[=crew_router]{crew_router()}}.
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$listen()
-router$sockets() # "ws://xx.xx.xx:xxxxx/x"
+router$sockets # "ws://xx.xx.xx:xxxxx/x"
 router$terminate()
 }
 
@@ -24,7 +24,7 @@ router$terminate()
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$listen()
-router$sockets() # "ws://xx.xx.xx:xxxxx/x"
+router$sockets # "ws://xx.xx.xx:xxxxx/x"
 router$terminate()
 }
 }
@@ -124,7 +124,7 @@ An \code{R6} object with the router.
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$listen()
-router$sockets() # "ws://xx.xx.xx:xxxxx/x"
+router$sockets # "ws://xx.xx.xx:xxxxx/x"
 router$terminate()
 }
 }

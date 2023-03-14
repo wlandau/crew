@@ -40,8 +40,8 @@ crew_router <- function(
   router_timeout = 5,
   router_wait = 0.1,
   seconds_exit = 0.1,
-  seconds_poll_high = 0.01,
-  seconds_poll_low = 0.1,
+  seconds_poll_high = 0.001,
+  seconds_poll_low = 0.01,
   async_dial = TRUE
 ) {
   true(workers, is.numeric(.), length(.) == 1L, . > 0L, !anyNA(.))

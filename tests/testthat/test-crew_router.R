@@ -63,5 +63,6 @@ crew_test("crew_router() works", {
   expect_true(router$listening())
   expect_silent(router$terminate())
   expect_false(router$listening())
+  expect_silent(router$poll())
   px$kill()
 })

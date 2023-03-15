@@ -77,6 +77,7 @@ Other controllers:
 \item \href{#method-crew_class_controller_group-push}{\code{crew_class_controller_group$push()}}
 \item \href{#method-crew_class_controller_group-pop}{\code{crew_class_controller_group$pop()}}
 \item \href{#method-crew_class_controller_group-wait}{\code{crew_class_controller_group$wait()}}
+\item \href{#method-crew_class_controller_group-summary}{\code{crew_class_controller_group$summary()}}
 \item \href{#method-crew_class_controller_group-terminate}{\code{crew_class_controller_group$terminate()}}
 \item \href{#method-crew_class_controller_group-clone}{\code{crew_class_controller_group$clone()}}
 }
@@ -328,6 +329,26 @@ while checking for results.}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly). Call \code{pop()} to get the result.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-summary"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-summary}{}}}
+\subsection{Method \code{summary()}}{
+Summarize the workers of one or more controllers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$summary(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Names of the controllers to summarize.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A data frame of summary statistics on the workers and tasks.
 }
 }
 \if{html}{\out{<hr>}}

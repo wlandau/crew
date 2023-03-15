@@ -315,9 +315,9 @@ crew_class_controller <- R6::R6Class(
           self$log$popped_seconds[index] <- self$log$popped_seconds[index] +
             out$seconds
           self$log$popped_errors[index] <- self$log$popped_errors[index] +
-            anyNA(out$error)
+            !anyNA(out$error)
           self$log$popped_warnings[index] <-
-            self$log$popped_warnings[index] + anyNA(out$error)
+            self$log$popped_warnings[index] + !anyNA(out$error)
         }
         self$results[[1]] <- NULL
       }
@@ -343,7 +343,27 @@ crew_class_controller <- R6::R6Class(
     #' @description Summarize the workers and tasks of the controller.
     #' @return A data frame of summary statistics on the workers and tasks.
     summary = function() {
-      
+      self$router$poll()
+      daemons <- self$router$daemons
+      workers <- self$launcher$workers
+      log <- self$log
+      if (is.null(daemons) || is.null(workers) || is.null(log)) {
+        return(NULL)
+      }
+      tibble::tibble(
+        controller = self$router$name,
+        worker_socket = daemons$worker_socket,
+        worker_connected = daemons$worker_connected,
+        worker_busy = daemons$worker_busy,
+        worker_launches = workers$launches,
+        worker_instances = daemons$worker_instances,
+        tasks_assigned = daemons$tasks_assigned,
+        tasks_complete = daemons$tasks_complete,
+        popped_tasks = log$popped_tasks,
+        popped_seconds = log$popped_seconds,
+        popped_errors = log$popped_errors,
+        popped_warnings = log$popped_warnings
+      )
     },
     #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).

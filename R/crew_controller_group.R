@@ -232,6 +232,14 @@ crew_class_controller_group <- R6::R6Class(
       )
       invisible()
     },
+    #' @description Summarize the workers of one or more controllers.
+    #' @return A data frame of summary statistics on the workers and tasks.
+    #' @param controllers Names of the controllers to summarize.
+    summary = function(controllers = NULL) {
+      control <- self$controllers[private$controller_names(controllers)]
+      out <- map(control, ~.x$summary())
+      tibble::as_tibble(do.call(what = rbind, args = out))
+    },
     #' @description Terminate the workers and disconnect the router
     #'   for one or more controllers.
     #' @return `NULL` (invisibly).

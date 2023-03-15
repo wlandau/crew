@@ -12,11 +12,38 @@ crew_test("crew_controller_callr()", {
   })
   expect_silent(x$validate())
   expect_false(x$router$listening())
+  expect_null(x$summary())
   x$start()
+  s <- x$summary()
+  expect_true(is.data.frame(s))
+  expect_equal(nrow(s), 1L)
+  expect_equal(
+    sort(colnames(s)),
+    sort(
+      c(
+        "controller",
+        "worker_socket",
+        "worker_connected",
+        "worker_busy",
+        "worker_launches",
+        "worker_instances",
+        "tasks_assigned",
+        "tasks_complete",
+        "popped_tasks",
+        "popped_seconds",
+        "popped_errors",
+        "popped_warnings"
+      )
+    )
+  )
+  expect_equal(s$popped_tasks, 0L)
   crew_wait(~x$router$listening(), timeout = 5, wait = 0.1)
   x$push(command = ps::ps_pid(), name = "task_pid")
   x$wait(timeout = 5)
   out <- x$pop(scale = TRUE)
+  expect_equal(x$summary()$popped_tasks, 1L)
+  expect_equal(x$summary()$popped_errors, 0L)
+  expect_equal(x$summary()$popped_warnings, 0L)
   expect_equal(out$name, "task_pid")
   expect_equal(out$command, "ps::ps_pid()")
   expect_equal(out$result[[1]], x$launcher$workers$handle[[1]]$get_pid())
@@ -46,18 +73,25 @@ crew_test("crew_controller_callr() warnings and errors", {
   expect_silent(x$validate())
   expect_false(x$router$listening())
   x$start()
-  x$push(command = ps::ps_pid(), name = "task_pid")
+  expect_equal(x$summary()$popped_tasks, 0L)
+  expect_equal(x$summary()$popped_errors, 0L)
+  expect_equal(x$summary()$popped_warnings, 0L)
+  x$push(command = {
+    warning("this is a warning")
+    stop("this is an error")
+  }, name = "warnings_and_errors")
   x$wait(timeout = 5)
   out <- x$pop(scale = FALSE)
-  expect_equal(out$name, "task_pid")
-  expect_equal(out$command, "ps::ps_pid()")
-  expect_equal(out$result[[1]], x$launcher$workers$handle[[1]]$get_pid())
+  expect_equal(x$summary()$popped_tasks, 1L)
+  expect_equal(x$summary()$popped_errors, 1L)
+  expect_equal(x$summary()$popped_warnings, 1L)
+  expect_equal(out$name, "warnings_and_errors")
   expect_true(is.numeric(out$seconds))
   expect_false(anyNA(out$seconds))
   expect_true(out$seconds >= 0)
-  expect_true(anyNA(out$error))
-  expect_true(anyNA(out$traceback))
-  expect_true(anyNA(out$warnings))
+  expect_equal(out$error, "this is an error")
+  expect_equal(out$warnings, "this is a warning")
+  expect_false(anyNA(out$traceback))
   x$terminate()
   expect_false(x$router$listening())
   expect_equal(x$launcher$active(), character(0L))

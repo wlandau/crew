@@ -163,7 +163,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. If `TRUE`, then `collect()` runs first so demand can be
     #'   properly assessed before scaling.
-    #' @param controller Name of the controller to submit the task.
+    #' @param controller Characte of length 1,
+    #'   name of the controller to submit the task.
     #'   If `NULL`, the controller defaults to the
     #'   first controller in the list.
     push = function(

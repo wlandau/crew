@@ -264,7 +264,8 @@ if \code{NULL} or in conflict with an existing name in the task list.}
 demand. If \code{TRUE}, then \code{collect()} runs first so demand can be
 properly assessed before scaling.}
 
-\item{\code{controller}}{Name of the controller to submit the task.
+\item{\code{controller}}{Characte of length 1,
+name of the controller to submit the task.
 If \code{NULL}, the controller defaults to the
 first controller in the list.}
 }

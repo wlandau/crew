@@ -17,7 +17,7 @@ is_named <- function(x) {
 
 eval_tidyselect <- function(expr, choices) {
   if (is.null(rlang::quo_squash(expr)) || !length(choices)) {
-    return(character(0))
+    return(character(0L))
   }
   choices <- unique(choices)
   names(choices) <- choices

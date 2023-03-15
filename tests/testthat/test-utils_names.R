@@ -20,5 +20,7 @@ crew_test("eval_tidyselect()", {
   out <- eval_tidyselect(expr = expr, choices = letters[seq_len(4L)])
   expect_equal(out, c("b", "c"))
   out <- eval_tidyselect(expr = expr, choices = character(0))
-  expect_equal(out, character(0))
+  expect_equal(out, character(0L))
+  out <- eval_tidyselect(expr = new_quosure(NULL), choices = "x")
+  expect_equal(out, character(0L))
 })

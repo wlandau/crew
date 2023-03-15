@@ -158,11 +158,21 @@ crew_class_router <- R6::R6Class(
     poll = function() {
       daemons <- mirai::daemons(.compute = self$name)$daemons
       if (is.null(dim(daemons))) {
+        if (!is.null(dim(self$daemons))) {
+          self$daemons$worker_connected <- rep(NA, nrow(self$daemons))
+          self$daemons$worker_busy <- rep(NA, nrow(self$daemons))
+        }
         return(invisible())
       }
       self$dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
       self$daemons <- tibble::tibble(
         worker_socket = as.character(rownames(daemons)),
+        worker_connected = as.logical(
+          daemons[, "status_online", drop = TRUE] > 0L
+        ),
+        worker_busy = as.logical(
+          daemons[, "status_busy", drop = TRUE] > 0L
+        ),
         worker_instances = as.integer(daemons[, "instance #", drop = TRUE]),
         tasks_assigned = as.integer(daemons[, "tasks_assigned", drop = TRUE]),
         tasks_complete = as.integer(daemons[, "tasks_complete", drop = TRUE])
@@ -271,6 +281,7 @@ crew_class_router <- R6::R6Class(
           ),
           silent = TRUE
         )
+        self$poll()
       }
       invisible()
     }

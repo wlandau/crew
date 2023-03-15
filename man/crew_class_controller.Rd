@@ -78,6 +78,7 @@ Other controllers:
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
 \item \href{#method-crew_class_controller-wait}{\code{crew_class_controller$wait()}}
+\item \href{#method-crew_class_controller-summary}{\code{crew_class_controller$summary()}}
 \item \href{#method-crew_class_controller-terminate}{\code{crew_class_controller$terminate()}}
 \item \href{#method-crew_class_controller-clone}{\code{crew_class_controller$clone()}}
 }
@@ -333,6 +334,19 @@ while checking for results.}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly). Call \code{pop()} to get the result.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-summary"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-summary}{}}}
+\subsection{Method \code{summary()}}{
+Summarize the workers and tasks of the controller.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$summary()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A data frame of summary statistics on the workers and tasks.
 }
 }
 \if{html}{\out{<hr>}}

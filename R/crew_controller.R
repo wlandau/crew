@@ -340,6 +340,11 @@ crew_class_controller <- R6::R6Class(
       )
       invisible()
     },
+    #' @description Summarize the workers and tasks of the controller.
+    #' @return A data frame of summary statistics on the workers and tasks.
+    summary = function() {
+      
+    },
     #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).
     terminate = function() {

@@ -26,6 +26,8 @@ crew_test("crew_router() works", {
     sort(
       c(
         "worker_socket",
+        "worker_connected",
+        "worker_busy",
         "worker_instances",
         "tasks_assigned",
         "tasks_complete"
@@ -39,6 +41,8 @@ crew_test("crew_router() works", {
   expect_true(is.character(socket) && length(socket) > 0L)
   expect_true(nzchar(socket) && !anyNA(socket))
   expect_equal(length(socket), 1L)
+  expect_false(router$daemons$worker_connected)
+  expect_false(router$daemons$worker_busy)
   daemons <- mirai::daemons(.compute = router$name)$daemons
   expect_equal(socket, as.character(rownames(daemons)))
   expect_true(all(daemons == 0L))
@@ -60,9 +64,14 @@ crew_test("crew_router() works", {
   expect_true(is.numeric(m$data))
   expect_true(abs(m$data - ps::ps_pid()) > 0.5)
   expect_true(router$listening())
+  router$poll()
+  expect_true(router$daemons$worker_connected)
+  expect_false(router$daemons$worker_busy)
   expect_silent(router$terminate())
   expect_false(router$listening())
   px$kill()
   expect_silent(router$poll())
   true(all(dim(router$daemons) > 0L))
+  expect_true(is.na(router$daemons$worker_connected))
+  expect_true(is.na(router$daemons$worker_busy))
 })

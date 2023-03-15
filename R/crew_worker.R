@@ -9,6 +9,9 @@
 #' @param token Character of length 1 to identify the instance of the
 #'   process connected to the socket.
 crew_worker <- function(settings, host, port, token) {
+  socket <- connection_socket(host = host, port = port, token = token)
+  envir <- c(CREW_SOCKET_MIRAI = settings$url, CREW_SOCKET_SESSION = socket)
+  withr::local_envvar(.new = envir)
   connection <- connection_dial(host = host, port = port, token = token)
   on.exit(close(connection))
   do.call(what = mirai::server, args = settings)

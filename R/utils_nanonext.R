@@ -1,15 +1,19 @@
 connection_dial <- function(host, port, token) {
-  socket <- sprintf("ws://%s:%s/%s", host, port, token)
+  socket <- connection_socket(host = host, port = port, token = token)
   connection <- nanonext::socket(protocol = "bus", dial = socket)
   connection_wait_opened(connection)
   connection
 }
 
 connection_listen <- function(host, port, token) {
-  socket <- sprintf("ws://%s:%s/%s", host, port, token)
+  socket <- connection_socket(host = host, port = port, token = token)
   connection <- nanonext::socket(protocol = "bus", listen = socket)
   connection_wait_opened(connection)
   connection
+}
+
+connection_socket <- function(host = host, port = port, token = token) {
+  sprintf("ws://%s:%s/%s", host, port, token)
 }
 
 connection_closed <- function(connection) {

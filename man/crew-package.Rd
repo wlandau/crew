@@ -14,7 +14,7 @@ The \href{https://nng.nanomsg.org}{NNG}-powered
 R package is a powerful task scheduler that efficiently
 processes these intense workloads. The \code{crew} package
 extends \href{https://github.com/shikokuchuo/mirai}{\code{mirai}}
-beyond local multicore processing with a unifying interface
+beyond local R processes with a unifying interface
 for third-party worker launchers. Inspiration comes from packages
 \href{https://future.futureverse.org/}{\code{future}},
 \href{https://mrc-ide.github.io/rrq/}{\code{rrq}},

@@ -13,8 +13,8 @@ systems, ranging from traditional clusters to cloud services. The
 [`mirai`](https://github.com/shikokuchuo/mirai) R package is a powerful
 task scheduler that efficiently processes these intense workloads. The
 `crew` package extends [`mirai`](https://github.com/shikokuchuo/mirai)
-beyond local multicore processing with a unifying interface for
-third-party worker launchers. Inspiration comes from packages
+beyond local R processes with a unifying interface for third-party
+worker launchers. Inspiration comes from packages
 [`future`](https://future.futureverse.org/),
 [`rrq`](https://mrc-ide.github.io/rrq/),
 [`clustermq`](https://mschubert.github.io/clustermq/), and

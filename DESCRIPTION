@@ -6,8 +6,8 @@ Description: In computationally demanding analysis workflows,
   ranging from traditional clusters to cloud services
   The 'NNG'-powered 'mirai' R package is a powerful task
   scheduler that efficiently processes these intense workloads.
-  The 'crew' package extends 'mirai' beyond local multicore
-  processing with a unifying interface for third-party worker launchers.
+  The 'crew' package extends 'mirai' beyond local R processes
+  with a unifying interface for third-party worker launchers.
   Inspiration comes from packages
   'future' (2021, <doi:10.32614/RJ-2021-048>), 'rrq',
   'clustermq' (2019, <doi:10.1093/bioinformatics/btz284>),

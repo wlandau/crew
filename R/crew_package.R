@@ -29,7 +29,7 @@
 #' @importFrom tibble tibble
 #' @importFrom utils globalVariables head
 #' @importFrom uuid UUIDgenerate
-#' @importFrom withr local_envvar local_options
+#' @importFrom withr local_options
 NULL
 
 utils::globalVariables(".")

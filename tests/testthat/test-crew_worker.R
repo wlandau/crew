@@ -25,8 +25,8 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
 
 crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   skip_on_cran()
-  previous <- Sys.getenv(c("CREW_SOCKET_MIRAI", "CREW_SOCKET_SESSION"))
-  Sys.unsetenv(c("CREW_SOCKET_MIRAI", "CREW_SOCKET_SESSION"))
+  previous <- Sys.getenv(c("CREW_SOCKET_DATA", "CREW_SOCKET_SESSION"))
+  Sys.unsetenv(c("CREW_SOCKET_DATA", "CREW_SOCKET_SESSION"))
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
   crew_session_start()
   on.exit(crew_session_terminate(), add = TRUE)
@@ -36,7 +36,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   on.exit(mirai::daemons(n = 0L), add = TRUE)
   m <- mirai::mirai(
     list(
-      mirai = Sys.getenv("CREW_SOCKET_MIRAI"),
+      mirai = Sys.getenv("CREW_SOCKET_DATA"),
       session = Sys.getenv("CREW_SOCKET_SESSION")
     )
   )
@@ -58,6 +58,6 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   exp <- list(mirai = socket, session = session)
   crew_wait(~identical(m$data, exp), timeout = 5, wait = 0.001)
   expect_equal(m$data, exp)
-  expect_equal(Sys.getenv("CREW_SOCKET_MIRAI", unset = ""), "")
+  expect_equal(Sys.getenv("CREW_SOCKET_DATA", unset = ""), "")
   expect_equal(Sys.getenv("CREW_SOCKET_SESSION", unset = ""), "")
 })

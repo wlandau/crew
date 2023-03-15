@@ -119,6 +119,20 @@ crew_test("crew_eval() globals", {
   expect_false(exists(x = "crew_global_object", envir = globalenv()))
 })
 
+crew_test("crew_eval() environment variables", {
+  skip_on_cran()
+  previous <- Sys.getenv(c("CREW_SOCKET_DATA", "CREW_SOCKET_SESSION"))
+  Sys.unsetenv(c("CREW_SOCKET_DATA", "CREW_SOCKET_SESSION"))
+  on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
+  out <- crew_eval(quote(L))
+  expect_equal(out$socket_data, NA_character_)
+  expect_equal(out$socket_session, NA_character_)
+  Sys.setenv(CREW_SOCKET_DATA = "this1", CREW_SOCKET_SESSION = "this2")
+  out <- crew_eval(quote(L))
+  expect_equal(out$socket_data, "this1")
+  expect_equal(out$socket_session, "this2")
+})
+
 crew_test("crew_eval() options", {
   skip_on_cran()
   expect_null(getOption("crew_option_1"))

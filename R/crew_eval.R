@@ -90,7 +90,9 @@ crew_eval <- function(
     seed = seed,
     error = state$error %|||% NA_character_,
     traceback = state$traceback %|||% NA_character_,
-    warnings = state$warnings %|||% NA_character_
+    warnings = state$warnings %|||% NA_character_,
+    socket_data = Sys.getenv("CREW_SOCKET_DATA", unset = NA_character_),
+    socket_session = Sys.getenv("CREW_SOCKET_SESSION", unset = NA_character_)
   )
 }
 

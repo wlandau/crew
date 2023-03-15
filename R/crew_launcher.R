@@ -31,6 +31,8 @@ crew_class_launcher <- R6::R6Class(
       listener = list(),
       handle = list()
     ),
+    #' @field name Name of the launcher.
+    name = NULL,
     #' @field seconds_launch See the constructor for details.
     seconds_launch = NULL,
     #' @field seconds_idle See the constructor for details.
@@ -91,6 +93,7 @@ crew_class_launcher <- R6::R6Class(
     #' crew_session_terminate()
     #' }
     initialize = function(
+      name = NULL,
       seconds_launch = NULL,
       seconds_idle = NULL,
       seconds_wall = NULL,
@@ -100,6 +103,7 @@ crew_class_launcher <- R6::R6Class(
       async_dial = NULL,
       cleanup = NULL
     ) {
+      self$name <- name
       self$seconds_launch <- seconds_launch
       self$seconds_idle <- seconds_idle
       self$seconds_wall <- seconds_wall
@@ -112,7 +116,7 @@ crew_class_launcher <- R6::R6Class(
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
     validate = function() {
-      true(is.list(self$workers))
+      true(self$name, is.character(.), length(.) == 1L, !anyNA(.), nzchar(.))
       fields <- c(
         "seconds_launch",
         "seconds_idle",
@@ -218,7 +222,8 @@ crew_class_launcher <- R6::R6Class(
           socket = socket,
           host = crew_session_host(),
           port = crew_session_port(),
-          token = token
+          token = token,
+          name = name
         )
         self$workers$listener[[index]] <- listener
         self$workers$handle[[index]] <- handle

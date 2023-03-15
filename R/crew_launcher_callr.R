@@ -4,6 +4,7 @@
 #' @family launchers
 #' @description Create an `R6` object to launch and maintain
 #'   `callr` workers for a controller.
+#' @param name Name of the launcher.
 #' @param seconds_launch Seconds of startup time to allow.
 #'   A worker is unconditionally assumed to be alive
 #'   from the moment of its launch until `seconds_launch` seconds later.
@@ -46,6 +47,7 @@
 #' crew_session_terminate()
 #' }
 crew_launcher_callr <- function(
+  name = NULL,
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
@@ -55,7 +57,9 @@ crew_launcher_callr <- function(
   async_dial = TRUE,
   cleanup = FALSE
 ) {
+  name <- as.character(name %|||% random_name())
   launcher <- crew_class_launcher_callr$new(
+    name = name,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
@@ -101,7 +105,9 @@ crew_class_launcher_callr <- R6::R6Class(
     #'   to the host. Different from that of `socket`.
     #' @param token Character of length 1 to identify the instance
     #'   of the `mirai` server process connected to the socket.
-    launch_worker = function(socket, host, port, token) {
+    #' @param name User-supplied name of the launcher, useful for
+    #'   constructing informative job labels.
+    launch_worker = function(socket, host, port, token, name) {
       callr::r_bg(
         # This part is covered by tests but unreachable by covr:
         # nocov start

@@ -5,6 +5,7 @@ crew_test("abstract launcher class", {
 
 crew_test("launcher settings", {
   launcher <- crew_class_launcher$new(
+    name = "my_launcher_name",
     seconds_launch = 1,
     seconds_idle = 2,
     seconds_wall = 3,
@@ -14,6 +15,7 @@ crew_test("launcher settings", {
     async_dial = FALSE,
     cleanup = TRUE
   )
+  expect_equal(launcher$name, "my_launcher_name")
   socket <- "ws://127.0.0.1:5000"
   settings <- launcher$settings(socket = socket)
   expect_equal(settings$url, socket)

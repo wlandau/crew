@@ -147,38 +147,6 @@ crew_class_router <- R6::R6Class(
       self$seconds_poll_low <- seconds_poll_low
       self$async_dial <- async_dial
     },
-    #' @description Update the `daemons` field with
-    #'   information on the `mirai` daemons.
-    #' @details Call `mirai::daemons()` to get information about the workers.
-    #'   If the workers cannot be reached or the router has not started,
-    #'   then do not modify the `daemons` field. Otherwise, if the workers
-    #'   are reachable, populate the `daemons` field with a data frame
-    #'   of high-level worker-specific statistics.
-    #' @return `NULL` (invisibly).
-    poll = function() {
-      daemons <- mirai::daemons(.compute = self$name)$daemons
-      if (is.null(dim(daemons))) {
-        if (!is.null(dim(self$daemons))) {
-          self$daemons$worker_connected <- rep(NA, nrow(self$daemons))
-          self$daemons$worker_busy <- rep(NA, nrow(self$daemons))
-        }
-        return(invisible())
-      }
-      self$dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
-      self$daemons <- tibble::tibble(
-        worker_socket = as.character(rownames(daemons)),
-        worker_connected = as.logical(
-          daemons[, "status_online", drop = TRUE] > 0L
-        ),
-        worker_busy = as.logical(
-          daemons[, "status_busy", drop = TRUE] > 0L
-        ),
-        worker_instances = as.integer(daemons[, "instance #", drop = TRUE]),
-        tasks_assigned = as.integer(daemons[, "tasks_assigned", drop = TRUE]),
-        tasks_complete = as.integer(daemons[, "tasks_complete", drop = TRUE])
-      )
-      invisible()
-    },
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
     validate = function() {
@@ -254,6 +222,38 @@ crew_class_router <- R6::R6Class(
         )
         self$poll()
       }
+      invisible()
+    },
+    #' @description Update the `daemons` field with
+    #'   information on the `mirai` daemons.
+    #' @details Call `mirai::daemons()` to get information about the workers.
+    #'   If the workers cannot be reached or the router has not started,
+    #'   then do not modify the `daemons` field. Otherwise, if the workers
+    #'   are reachable, populate the `daemons` field with a data frame
+    #'   of high-level worker-specific statistics.
+    #' @return `NULL` (invisibly).
+    poll = function() {
+      daemons <- mirai::daemons(.compute = self$name)$daemons
+      if (is.null(dim(daemons))) {
+        if (!is.null(dim(self$daemons))) {
+          self$daemons$worker_connected <- rep(NA, nrow(self$daemons))
+          self$daemons$worker_busy <- rep(NA, nrow(self$daemons))
+        }
+        return(invisible())
+      }
+      self$dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
+      self$daemons <- tibble::tibble(
+        worker_socket = as.character(rownames(daemons)),
+        worker_connected = as.logical(
+          daemons[, "status_online", drop = TRUE] > 0L
+        ),
+        worker_busy = as.logical(
+          daemons[, "status_busy", drop = TRUE] > 0L
+        ),
+        worker_instances = as.integer(daemons[, "instance #", drop = TRUE]),
+        tasks_assigned = as.integer(daemons[, "tasks_assigned", drop = TRUE]),
+        tasks_complete = as.integer(daemons[, "tasks_complete", drop = TRUE])
+      )
       invisible()
     },
     #' @description Stop the mirai client and disconnect from the

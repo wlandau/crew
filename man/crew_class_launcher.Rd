@@ -51,6 +51,8 @@ Other launchers:
 \describe{
 \item{\code{workers}}{Data frame of worker information.}
 
+\item{\code{name}}{Name of the launcher.}
+
 \item{\code{seconds_launch}}{See the constructor for details.}
 
 \item{\code{seconds_idle}}{See the constructor for details.}
@@ -88,6 +90,7 @@ Other launchers:
 Launcher constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$new(
+  name = NULL,
   seconds_launch = NULL,
   seconds_idle = NULL,
   seconds_wall = NULL,

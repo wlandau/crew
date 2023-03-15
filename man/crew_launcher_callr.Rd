@@ -5,6 +5,7 @@
 \title{Create a launcher with \code{callr} workers.}
 \usage{
 crew_launcher_callr(
+  name = NULL,
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
@@ -16,6 +17,8 @@ crew_launcher_callr(
 )
 }
 \arguments{
+\item{name}{Name of the launcher.}
+
 \item{seconds_launch}{Seconds of startup time to allow.
 A worker is unconditionally assumed to be alive
 from the moment of its launch until \code{seconds_launch} seconds later.

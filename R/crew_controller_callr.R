@@ -47,6 +47,7 @@ crew_controller_callr <- function(
     async_dial = async_dial
   )
   launcher <- crew_launcher_callr(
+    name = name,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,

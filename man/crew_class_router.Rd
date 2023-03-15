@@ -66,10 +66,10 @@ Other routers:
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-crew_class_router-new}{\code{crew_class_router$new()}}
-\item \href{#method-crew_class_router-poll}{\code{crew_class_router$poll()}}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
 \item \href{#method-crew_class_router-listening}{\code{crew_class_router$listening()}}
 \item \href{#method-crew_class_router-listen}{\code{crew_class_router$listen()}}
+\item \href{#method-crew_class_router-poll}{\code{crew_class_router$poll()}}
 \item \href{#method-crew_class_router-terminate}{\code{crew_class_router$terminate()}}
 }
 }
@@ -136,28 +136,6 @@ router$terminate()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-poll"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-poll}{}}}
-\subsection{Method \code{poll()}}{
-Update the \code{daemons} field with
-information on the \code{mirai} daemons.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$poll()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Call \code{mirai::daemons()} to get information about the workers.
-If the workers cannot be reached or the router has not started,
-then do not modify the \code{daemons} field. Otherwise, if the workers
-are reachable, populate the \code{daemons} field with a data frame
-of high-level worker-specific statistics.
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_router-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_router-validate}{}}}
 \subsection{Method \code{validate()}}{
@@ -199,6 +177,28 @@ and after the entire workload, respectively.
 Start listening for workers on the available sockets.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_router$listen()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-poll"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-poll}{}}}
+\subsection{Method \code{poll()}}{
+Update the \code{daemons} field with
+information on the \code{mirai} daemons.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$poll()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Call \code{mirai::daemons()} to get information about the workers.
+If the workers cannot be reached or the router has not started,
+then do not modify the \code{daemons} field. Otherwise, if the workers
+are reachable, populate the \code{daemons} field with a data frame
+of high-level worker-specific statistics.
 }
 
 \subsection{Returns}{

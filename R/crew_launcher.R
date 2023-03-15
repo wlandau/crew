@@ -20,6 +20,7 @@
 crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
   cloneable = FALSE,
+  portable = TRUE,
   public = list(
     #' @field workers Data frame of worker information.
     workers = tibble::tibble(

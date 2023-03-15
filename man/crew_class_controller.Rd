@@ -342,9 +342,18 @@ while checking for results.}
 \subsection{Method \code{summary()}}{
 Summarize the workers and tasks of the controller.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$summary()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$summary(columns = everything())}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{columns}}{Tidyselect expression to select a subset of columns.
+Examples include \code{columns = contains("worker")} and
+\code{columns = starts_with("tasks")}.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 A data frame of summary statistics on the workers and tasks.
 }

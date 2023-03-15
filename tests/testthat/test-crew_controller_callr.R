@@ -36,6 +36,18 @@ crew_test("crew_controller_callr()", {
       )
     )
   )
+  s2 <- x$summary(columns = tidyselect::starts_with("popped"))
+  expect_equal(
+    sort(colnames(s2)),
+    sort(
+      c(
+        "popped_tasks",
+        "popped_seconds",
+        "popped_errors",
+        "popped_warnings"
+      )
+    )
+  )
   expect_equal(s$popped_tasks, 0L)
   crew_wait(~x$router$listening(), timeout = 5, wait = 0.1)
   x$push(command = ps::ps_pid(), name = "task_pid")

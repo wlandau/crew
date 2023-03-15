@@ -234,11 +234,24 @@ crew_class_controller_group <- R6::R6Class(
     },
     #' @description Summarize the workers of one or more controllers.
     #' @return A data frame of summary statistics on the workers and tasks.
+    #' @param columns Tidyselect expression to select a subset of columns.
+    #'   Examples include `columns = contains("worker")` and
+    #'   `columns = starts_with("tasks")`.
     #' @param controllers Names of the controllers to summarize.
-    summary = function(controllers = NULL) {
+    summary = function(
+      columns = tidyselect::everything(),
+      controllers = NULL
+    ) {
       control <- self$controllers[private$controller_names(controllers)]
-      out <- map(control, ~.x$summary())
-      tibble::as_tibble(do.call(what = rbind, args = out))
+      columns <- rlang::enquo(columns)
+      out <- map(
+        control,
+        ~do.call(what = .x$summary, args = list(columns = columns))
+      )
+      if (all(map_lgl(out, is.null))) {
+        return(NULL)
+      }
+      out <- tibble::as_tibble(do.call(what = rbind, args = out))
     },
     #' @description Terminate the workers and disconnect the router
     #'   for one or more controllers.

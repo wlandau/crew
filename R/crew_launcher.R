@@ -51,6 +51,7 @@ crew_class_launcher <- R6::R6Class(
     cleanup = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
+    #' @param name Name of the launcher.
     #' @param seconds_launch Seconds of startup time to allow.
     #'   A worker is unconditionally assumed to be alive
     #'   from the moment of its launch until `seconds_launch` seconds later.

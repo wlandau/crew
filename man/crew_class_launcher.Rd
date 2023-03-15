@@ -105,6 +105,8 @@ Launcher constructor.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{name}}{Name of the launcher.}
+
 \item{\code{seconds_launch}}{Seconds of startup time to allow.
 A worker is unconditionally assumed to be alive
 from the moment of its launch until \code{seconds_launch} seconds later.

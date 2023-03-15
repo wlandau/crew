@@ -337,12 +337,19 @@ while checking for results.}
 \subsection{Method \code{summary()}}{
 Summarize the workers of one or more controllers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$summary(controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$summary(
+  columns = tidyselect::everything(),
+  controllers = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{columns}}{Tidyselect expression to select a subset of columns.
+Examples include \code{columns = contains("worker")} and
+\code{columns = starts_with("tasks")}.}
+
 \item{\code{controllers}}{Names of the controllers to summarize.}
 }
 \if{html}{\out{</div>}}

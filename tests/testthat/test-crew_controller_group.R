@@ -15,6 +15,7 @@ crew_test("crew_controller_group()", {
     seconds_poll_low = 0.1
   )
   x <- crew_controller_group(a, b)
+  expect_null(x$summary())
   on.exit({
     x$terminate()
     crew_session_terminate()
@@ -26,7 +27,37 @@ crew_test("crew_controller_group()", {
   s <- x$summary()
   expect_equal(nrow(s), 2L)
   expect_equal(s$controller, c("a", "b"))
-  expect_true("worker_socket" %in% colnames(s))
+  expect_equal(
+    sort(colnames(s)),
+    sort(
+      c(
+        "controller",
+        "worker_socket",
+        "worker_connected",
+        "worker_busy",
+        "worker_launches",
+        "worker_instances",
+        "tasks_assigned",
+        "tasks_complete",
+        "popped_tasks",
+        "popped_seconds",
+        "popped_errors",
+        "popped_warnings"
+      )
+    )
+  )
+  s2 <- x$summary(columns = tidyselect::starts_with("popped"))
+  expect_equal(
+    sort(colnames(s2)),
+    sort(
+      c(
+        "popped_tasks",
+        "popped_seconds",
+        "popped_errors",
+        "popped_warnings"
+      )
+    )
+  )
   expect_null(x$pop())
   x$push(command = ps::ps_pid(), name = "task_pid", controller = "b")
   x$wait(timeout = 5)

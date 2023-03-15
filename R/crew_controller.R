@@ -342,7 +342,10 @@ crew_class_controller <- R6::R6Class(
     },
     #' @description Summarize the workers and tasks of the controller.
     #' @return A data frame of summary statistics on the workers and tasks.
-    summary = function() {
+    #' @param columns Tidyselect expression to select a subset of columns.
+    #'   Examples include `columns = contains("worker")` and
+    #'   `columns = starts_with("tasks")`.
+    summary = function(columns = everything()) {
       self$router$poll()
       daemons <- self$router$daemons
       workers <- self$launcher$workers
@@ -350,7 +353,7 @@ crew_class_controller <- R6::R6Class(
       if (is.null(daemons) || is.null(workers) || is.null(log)) {
         return(NULL)
       }
-      tibble::tibble(
+      out <- tibble::tibble(
         controller = self$router$name,
         worker_socket = daemons$worker_socket,
         worker_connected = daemons$worker_connected,
@@ -364,6 +367,9 @@ crew_class_controller <- R6::R6Class(
         popped_errors = log$popped_errors,
         popped_warnings = log$popped_warnings
       )
+      expr <- rlang::enquo(columns)
+      select <- eval_tidyselect(expr = expr, choices = colnames(out))
+      out[, select, drop = FALSE]
     },
     #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).

@@ -129,14 +129,17 @@ crew_class_controller <- R6::R6Class(
     #' @return `NULL` (invisibly).
     start = function() {
       self$router$listen()
-      self$launcher$populate(sockets = self$router$sockets)
+      self$launcher$populate(sockets = self$router$daemons$worker_socket)
       invisible()
     },
     #' @description Force terminate workers whose startup time has elapsed
     #'   and are not connected to the `mirai` client.
     #' @return `NULL` (invisibly).
     clean = function() {
-      inactive <- setdiff(self$router$sockets, self$launcher$active())
+      inactive <- setdiff(
+        self$router$daemons$worker_socket,
+        self$launcher$active()
+      )
       self$launcher$terminate(sockets = inactive)
       invisible()
     },
@@ -153,7 +156,10 @@ crew_class_controller <- R6::R6Class(
     #'   `seconds_start` seconds ago, where `seconds_start` is
     #'   also an argument of [crew_controller()].
     launch = function(n = 1L) {
-      inactive <- setdiff(self$router$sockets, self$launcher$active())
+      inactive <- setdiff(
+        self$router$daemons$worker_socket,
+        self$launcher$active()
+      )
       sockets <- utils::head(inactive, n = n)
       if (length(sockets) > 0L) {
         self$launcher$launch(sockets = sockets)

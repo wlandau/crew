@@ -16,10 +16,27 @@ crew_test("crew_router() works", {
   )
   on.exit(router$terminate())
   expect_false(router$listening())
-  expect_null(router$sockets)
+  expect_null(router$dispatcher)
+  expect_null(router$daemons)
   expect_silent(router$listen())
   expect_true(router$listening())
-  socket <- router$sockets
+  true(all(dim(router$daemons) > 0L))
+  expect_equal(
+    sort(colnames(router$daemons)),
+    sort(
+      c(
+        "worker_socket",
+        "worker_instances",
+        "tasks_assigned",
+        "tasks_complete",
+        "router_name"
+      )
+    )
+  )
+  expect_true(is.integer(router$dispatcher))
+  expect_equal(length(router$dispatcher), 1L)
+  expect_false(anyNA(router$dispatcher))
+  socket <- router$daemons$worker_socket
   expect_true(is.character(socket) && length(socket) > 0L)
   expect_true(nzchar(socket) && !anyNA(socket))
   expect_equal(length(socket), 1L)
@@ -46,6 +63,5 @@ crew_test("crew_router() works", {
   expect_true(router$listening())
   expect_silent(router$terminate())
   expect_false(router$listening())
-  expect_null(router$sockets)
   px$kill()
 })

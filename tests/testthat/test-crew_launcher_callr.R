@@ -14,7 +14,7 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
   })
   expect_silent(launcher$validate())
   router$listen()
-  launcher$populate(sockets = router$sockets)
+  launcher$populate(sockets = router$daemons$worker_socket)
   expect_equal(nrow(launcher$workers), 4L)
   expect_s3_class(launcher$workers$listener[[2]], "crew_null")
   expect_s3_class(launcher$workers$handle[[2]], "crew_null")
@@ -91,10 +91,10 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
   })
   router$listen()
   expect_silent(launcher$validate())
-  socket <- router$sockets
-  launcher$populate(sockets = router$sockets)
+  socket <- router$daemons$worker_socket
+  launcher$populate(sockets = router$daemons$worker_socket)
   expect_equal(launcher$active(), character(0))
-  launcher$launch(sockets = router$sockets)
+  launcher$launch(sockets = router$daemons$worker_socket)
   crew::crew_wait(
     ~{
       handle <- launcher$workers$handle[[1]]
@@ -151,10 +151,10 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
     launcher$terminate()
   })
   router$listen()
-  socket <- router$sockets
-  launcher$populate(sockets = router$sockets)
+  socket <- router$daemons$worker_socket
+  launcher$populate(sockets = router$daemons$worker_socket)
   expect_equal(launcher$active(), character(0))
-  launcher$launch(sockets = router$sockets)
+  launcher$launch(sockets = router$daemons$worker_socket)
   crew::crew_wait(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons
@@ -222,10 +222,10 @@ crew_test("worker that immediately times out is still discovered", {
     launcher$terminate()
   })
   router$listen()
-  socket <- router$sockets
-  launcher$populate(sockets = router$sockets)
+  socket <- router$daemons$worker_socket
+  launcher$populate(sockets = router$daemons$worker_socket)
   expect_equal(launcher$active(), character(0))
-  launcher$launch(sockets = router$sockets)
+  launcher$launch(sockets = router$daemons$worker_socket)
   crew::crew_wait(
     ~{
       handle <- launcher$workers$handle[[1]]
@@ -262,8 +262,8 @@ crew_test("launcher cleans up old worker", {
     router$terminate()
   })
   router$listen()
-  socket <- router$sockets
-  launcher$populate(sockets = router$sockets)
+  socket <- router$daemons$worker_socket
+  launcher$populate(sockets = router$daemons$worker_socket)
   launcher$launch(sockets = socket)
   handle <- launcher$workers$handle[[1]]
   crew_wait(~handle$is_alive(), wait = 0.01, timeout = 5)

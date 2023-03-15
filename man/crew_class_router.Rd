@@ -13,7 +13,7 @@ See \code{\link[=crew_router]{crew_router()}}.
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$listen()
-router$sockets # "ws://xx.xx.xx:xxxxx/x"
+router$daemons
 router$terminate()
 }
 
@@ -24,7 +24,7 @@ router$terminate()
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$listen()
-router$sockets # "ws://xx.xx.xx:xxxxx/x"
+router$daemons
 router$terminate()
 }
 }
@@ -56,8 +56,9 @@ Other routers:
 
 \item{\code{async_dial}}{See \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{sockets}}{Character vector of sockets listening for
-completed tasks.}
+\item{\code{dispatcher}}{Process ID of the \code{mirai} dispatcher}
+
+\item{\code{daemons}}{Data frame of information from \code{mirai::daemons()}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -65,6 +66,7 @@ completed tasks.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-crew_class_router-new}{\code{crew_class_router$new()}}
+\item \href{#method-crew_class_router-poll}{\code{crew_class_router$poll()}}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
 \item \href{#method-crew_class_router-listening}{\code{crew_class_router$listening()}}
 \item \href{#method-crew_class_router-listen}{\code{crew_class_router$listen()}}
@@ -124,7 +126,7 @@ An \code{R6} object with the router.
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$listen()
-router$sockets # "ws://xx.xx.xx:xxxxx/x"
+router$daemons
 router$terminate()
 }
 }
@@ -132,6 +134,28 @@ router$terminate()
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-poll"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-poll}{}}}
+\subsection{Method \code{poll()}}{
+Update the \code{daemons} field with
+information on the \code{mirai} daemons.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$poll()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Call \code{mirai::daemons()} to get information about the workers.
+If the workers cannot be reached or the router has not started,
+then do not modify the \code{daemons} field. Otherwise, if the workers
+are reachable, populate the \code{daemons} field with a data frame
+of high-level worker-specific statistics.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_router-validate"></a>}}

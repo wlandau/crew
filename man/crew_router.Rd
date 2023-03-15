@@ -57,7 +57,7 @@ client.
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
 router$listen()
-router$sockets # "ws://xx.xx.xx:xxxxx/x"
+router$daemons
 router$terminate()
 }
 }

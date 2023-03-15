@@ -29,7 +29,7 @@
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
 #' router$listen()
-#' router$sockets # "ws://xx.xx.xx:xxxxx/x"
+#' router$daemons
 #' router$terminate()
 #' }
 crew_router <- function(
@@ -74,7 +74,7 @@ crew_router <- function(
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
 #' router$listen()
-#' router$sockets # "ws://xx.xx.xx:xxxxx/x"
+#' router$daemons
 #' router$terminate()
 #' }
 crew_class_router <- R6::R6Class(
@@ -101,9 +101,8 @@ crew_class_router <- R6::R6Class(
     seconds_poll_low = NULL,
     #' @field async_dial See [crew_router()].
     async_dial = NULL,
-    #' @field sockets Character vector of sockets listening for
-    #'   completed tasks.
-    sockets = NULL,
+    #' @field dispatcher Process ID of the `mirai` dispatcher
+    dispatcher = NULL,
     #' @field daemons Data frame of information from `mirai::daemons()`.
     daemons = NULL,
     #' @description `mirai` router constructor.
@@ -122,7 +121,7 @@ crew_class_router <- R6::R6Class(
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' router <- crew_router()
     #' router$listen()
-    #' router$sockets # "ws://xx.xx.xx:xxxxx/x"
+    #' router$daemons
     #' router$terminate()
     #' }
     initialize = function(
@@ -150,9 +149,26 @@ crew_class_router <- R6::R6Class(
     },
     #' @description Update the `daemons` field with
     #'   information on the `mirai` daemons.
+    #' @details Call `mirai::daemons()` to get information about the workers.
+    #'   If the workers cannot be reached or the router has not started,
+    #'   then do not modify the `daemons` field. Otherwise, if the workers
+    #'   are reachable, populate the `daemons` field with a data frame
+    #'   of high-level worker-specific statistics.
     #' @return `NULL` (invisibly).
     poll = function() {
-      
+      daemons <- mirai::daemons(.compute = self$name)$daemons
+      if (is.null(dim(daemons))) {
+        return(invisible())
+      }
+      self$dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
+      self$daemons <- tibble::tibble(
+        worker_socket = as.character(rownames(daemons)),
+        worker_instances = as.integer(daemons[, "instance #", drop = TRUE]),
+        tasks_assigned = as.integer(daemons[, "tasks_assigned", drop = TRUE]),
+        tasks_complete = as.integer(daemons[, "tasks_complete", drop = TRUE]),
+        router_name = self$name
+      )
+      invisible()
     },
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
@@ -178,8 +194,16 @@ crew_class_router <- R6::R6Class(
           . >= 0
         )
       }
+      true(
+        self$dispatcher %|||% 0L,
+        is.numeric(.),
+        length(.) == 1L,
+        !is.na(.),
+        . >= 0
+      )
       true(self$router_timeout >= self$router_wait)
       true(self$async_dial, isTRUE(.) || isFALSE(.))
+      true(self$daemons, is.null(.) || is.data.frame(.))
       invisible()
     },
     #' @description Check if the `mirai` client is listening
@@ -219,12 +243,7 @@ crew_class_router <- R6::R6Class(
           wait = self$router_wait,
           message = "mirai client cannot connect."
         )
-        daemons <- mirai::daemons(.compute = self$name)$daemons
-        self$sockets <- if_any(
-          anyNA(daemons),
-          character(0),
-          as.character(rownames(daemons))
-        )
+        self$poll()
       }
       invisible()
     },
@@ -233,7 +252,7 @@ crew_class_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     terminate = function() {
       if (isTRUE(self$listening())) {
-        self$sockets <- NULL
+        self$poll()
         daemons <- mirai::daemons(.compute = self$name)$daemons
         dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
         handle <- ps::ps_handle(pid = dispatcher)

@@ -106,8 +106,9 @@ out <- controller$pop()
 `crew` offers a smooth continuum between persistent workers that always
 stay running and transient workers that exit after doing little
 work.[^1] So if you submitted more tasks than workers and some of your
-workers timed out or exited, then you may need to call `pop()`
-iteratively so workers automatically scale back up to meet demand.[^2]
+workers timed out or exited, then you may need to call `pop()` at
+frequent intervals so workers automatically scale back up to meet
+demand.[^2]
 
 ``` r
 while (is.null(out)) {

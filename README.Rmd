@@ -89,7 +89,7 @@ When the result is available, you can retrieve it with `pop()`.
 out <- controller$pop()
 ```
 
-`crew` offers a smooth continuum between persistent workers that always stay running and transient workers that exit after doing little work.^[See the `seconds_idle` and `tasks_max` arguments of [`crew_controller_callr()`](https://wlandau.github.io/crew/reference/crew_controller_callr.html).] So if you submitted more tasks than workers and some of your workers timed out or exited, then you may need to call `pop()` iteratively so workers automatically scale back up to meet demand.^[See the `scale` argument of the [`pop()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-pop) method.]
+`crew` offers a smooth continuum between persistent workers that always stay running and transient workers that exit after doing little work.^[See the `seconds_idle` and `tasks_max` arguments of [`crew_controller_callr()`](https://wlandau.github.io/crew/reference/crew_controller_callr.html).] So if you submitted more tasks than workers and some of your workers timed out or exited, then you may need to call `pop()` at frequent intervals so workers automatically scale back up to meet demand.^[See the `scale` argument of the [`pop()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-pop) method.]
 
 ```{r}
 while (is.null(out)) {

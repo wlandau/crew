@@ -28,8 +28,7 @@ crew_test("crew_router() works", {
         "worker_socket",
         "worker_instances",
         "tasks_assigned",
-        "tasks_complete",
-        "router_name"
+        "tasks_complete"
       )
     )
   )

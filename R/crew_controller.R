@@ -39,9 +39,9 @@
 #' crew_session_terminate()
 #' }
 crew_controller <- function(
-  router,
-  launcher,
-  auto_scale = "demand"
+    router,
+    launcher,
+    auto_scale = "demand"
 ) {
   auto_scale <- auto_scale %|||% c("demand", "single", "none")
   controller <- crew_class_controller$new(
@@ -84,6 +84,8 @@ crew_class_controller <- R6::R6Class(
     queue = list(),
     #' @field results List of finished tasks
     results = list(),
+    #' @field log Data frame task log of the workers.
+    log = NULL,
     #' @description `mirai` controller constructor.
     #' @return An `R6` object with the controller object.
     #' @param router Router object. See [crew_controller()].
@@ -103,9 +105,9 @@ crew_class_controller <- R6::R6Class(
     #' crew_session_terminate()
     #' }
     initialize = function(
-      router = NULL,
-      launcher = NULL,
-      auto_scale = NULL
+    router = NULL,
+    launcher = NULL,
+    auto_scale = NULL
     ) {
       self$router <- router
       self$launcher <- launcher
@@ -117,19 +119,31 @@ crew_class_controller <- R6::R6Class(
     validate = function() {
       true(is.list(self$queue))
       true(is.list(self$results))
+      true(self$log, is.null(.) %|||% is.data.frame(.))
       true(inherits(self$router, "crew_class_router"))
       true(inherits(self$launcher, "crew_class_launcher"))
       self$router$validate()
       self$launcher$validate()
       invisible()
     },
-    #' @description Start the controller.
+    #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
     #'   with the launcher.
     #' @return `NULL` (invisibly).
     start = function() {
-      self$router$listen()
-      self$launcher$populate(sockets = self$router$daemons$worker_socket)
+      if (!self$router$listening()) {
+        self$router$listen()
+        sockets <- self$router$daemons$worker_socket
+        self$launcher$populate(sockets = sockets)
+        self$log <- tibble::tibble(
+          worker_socket = sockets,
+          popped_tasks = rep(0L, length(sockets)),
+          popped_seconds = rep(0, length(sockets)),
+          popped_errors = rep(0L, length(sockets)),
+          popped_warnings = rep(0L, length(sockets)),
+          controller = rep(self$router$name, length(sockets))
+        )
+      }
       invisible()
     },
     #' @description Force terminate workers whose startup time has elapsed
@@ -295,6 +309,16 @@ crew_class_controller <- R6::R6Class(
         }
         # nocov end
         out$name <- task$name
+        if (!is.na(out$socket_data)) {
+          index <- which(out$socket_data == self$log$worker_socket)
+          self$log$popped_tasks[index] <- self$log$popped_tasks[index] + 1L
+          self$log$popped_seconds[index] <- self$log$popped_seconds[index] +
+            out$seconds
+          self$log$popped_errors[index] <- self$log$popped_errors[index] +
+            anyNA(out$error)
+          self$log$popped_warnings[index] <-
+            self$log$popped_warnings[index] + anyNA(out$error)
+        }
         self$results[[1]] <- NULL
       }
       out

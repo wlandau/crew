@@ -165,8 +165,7 @@ crew_class_router <- R6::R6Class(
         worker_socket = as.character(rownames(daemons)),
         worker_instances = as.integer(daemons[, "instance #", drop = TRUE]),
         tasks_assigned = as.integer(daemons[, "tasks_assigned", drop = TRUE]),
-        tasks_complete = as.integer(daemons[, "tasks_complete", drop = TRUE]),
-        router_name = self$name
+        tasks_complete = as.integer(daemons[, "tasks_complete", drop = TRUE])
       )
       invisible()
     },

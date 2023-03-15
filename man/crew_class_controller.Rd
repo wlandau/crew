@@ -60,6 +60,8 @@ Other controllers:
 \item{\code{queue}}{List of tasks in the queue.}
 
 \item{\code{results}}{List of finished tasks}
+
+\item{\code{log}}{Data frame task log of the workers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -140,7 +142,7 @@ Validate the router.
 \if{html}{\out{<a id="method-crew_class_controller-start"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-start}{}}}
 \subsection{Method \code{start()}}{
-Start the controller.
+Start the controller if it is not already started.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$start()}\if{html}{\out{</div>}}
 }

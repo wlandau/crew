@@ -25,6 +25,7 @@ crew_class_launcher <- R6::R6Class(
     #' @field workers Data frame of worker information.
     workers = tibble::tibble(
       socket = character(0L),
+      launches = integer(0L),
       start = numeric(0L),
       token = character(0L),
       listener = list(),
@@ -151,6 +152,7 @@ crew_class_launcher <- R6::R6Class(
     populate = function(sockets) {
       self$workers <- tibble::tibble(
         socket = as.character(sockets),
+        launches = rep(0L, length(sockets)),
         start = rep(NA_real_, length(sockets)),
         token = rep(NA_character_, length(sockets)),
         listener = replicate(length(sockets), crew_null, simplify = FALSE),
@@ -220,6 +222,7 @@ crew_class_launcher <- R6::R6Class(
         )
         self$workers$listener[[index]] <- listener
         self$workers$handle[[index]] <- handle
+        self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
       }
       invisible()
     },

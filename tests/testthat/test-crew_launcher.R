@@ -29,14 +29,15 @@ crew_test("launcher settings", {
 crew_test("launcher populate()", {
   launcher <- crew_class_launcher$new()
   workers <- launcher$workers
-  expect_equal(dim(workers), c(0, 5))
+  expect_equal(dim(workers), c(0, 6))
   expect_equal(
     colnames(workers),
-    c("socket", "start", "token", "listener", "handle")
+    c("socket", "launches", "start", "token", "listener", "handle")
   )
-  expect_equal(workers$socket, character(0))
-  expect_equal(workers$start, numeric(0))
-  expect_equal(workers$token, character(0))
+  expect_equal(workers$socket, character(0L))
+  expect_equal(workers$launches, integer(0L))
+  expect_equal(workers$start, numeric(0L))
+  expect_equal(workers$token, character(0L))
   expect_equal(workers$handle, list())
   launcher$populate(sockets = paste0("ws://127.0.0.1:5000/", seq_len(2)))
   workers <- launcher$workers

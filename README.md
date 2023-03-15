@@ -26,8 +26,6 @@ worker launchers. Inspiration comes from packages
 version of [`mirai`](https://github.com/shikokuchuo/mirai).
 
 ``` r
-install.packages("nanonext")
-install.packages("mirai", repos = "https://shikokuchuo.r-universe.dev")
 remotes::install_github("wlandau/crew")
 ```
 
@@ -36,7 +34,54 @@ remotes::install_github("wlandau/crew")
 Please see <https://wlandau.github.io/crew/> for documentation,
 including a full function reference and usage tutorial vignettes.
 
-## Interface
+## Disclaimer
+
+To the best of its ability, `crew` tries to only launch workers when
+needed, and it tries to manually monitor and clean up each worker it
+launches. However, the package is not perfect. Whether from a bug in the
+code or an egregious crash, it is still possible that too many workers
+will run concurrently, and it is still possible that either the workers
+or the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher will
+run too long or hang. In large-scale workflows, these accidents can have
+egregious consequences. Depending on the launcher type, these
+consequences can range from overburdening your local machine or cluster,
+to incurring unexpectedly high costs on [Amazon Web
+Services](https://aws.amazon.com/).
+
+Please learn how to use the interface of the computing platform of your
+`crew` launcher, and please actively monitor the workers and
+[`mirai`](https://github.com/shikokuchuo/mirai) dispatcher outside
+`crew` using that interface.[^1] For the [`callr` launcher and
+controller](https://wlandau.github.io/crew/reference/crew_controller_callr.html),
+use
+[`ps::ps()`](https://ps.r-lib.org/reference/ps.html)/[`ps::ps_kill()`](https://ps.r-lib.org/reference/ps_kill.html)
+or [`htop`](https://htop.dev/) to inspect and manage the local R worker
+processes and [`mirai`](https://github.com/shikokuchuo/mirai)
+dispatcher. For a [SLURM](https://slurm.schedmd.com/overview.html)
+launcher,
+[`ps::ps()`](https://ps.r-lib.org/reference/ps.html)/[`ps::ps_kill()`](https://ps.r-lib.org/reference/ps_kill.html)
+and [`htop`](https://htop.dev/) can still manage the local R processes
+like the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher, but
+you will need to call
+[`scancel`](https://slurm.schedmd.com/scancel.html) to manually
+terminate workers as appropriate. For an [Amazon Web
+Services](https://aws.amazon.com/) launcher, please use the [AWS web
+console](https://aws.amazon.com/console/) or
+[CloudWatch](https://aws.amazon.com/cloudwatch/) to monitor, manage, and
+terminate workers.
+
+Finally, please note the final clause of the [software
+license](https://wlandau.github.io/crew/LICENSE.html):
+
+> THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+> EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+> MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+> IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+> CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+> TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+> SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## Usage
 
 First, start a `crew` session. The session reserves a TCP port to
 monitor the presence and absence of parallel workers. Call
@@ -105,10 +150,10 @@ out <- controller$pop()
 
 `crew` offers a smooth continuum between persistent workers that always
 stay running and transient workers that exit after doing little
-work.[^1] So if you submitted more tasks than workers and some of your
+work.[^2] So if you submitted more tasks than workers and some of your
 workers timed out or exited, then you may need to call `pop()` at
 frequent intervals so workers automatically scale back up to meet
-demand.[^2]
+demand.[^3]
 
 ``` r
 while (is.null(out)) {
@@ -298,9 +343,19 @@ By contributing to this project, you agree to abide by its terms.
 citation("crew")
 ```
 
-[^1]: See the `seconds_idle` and `tasks_max` arguments of
+[^1]: The [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher is
+    a local R process that runs `mirai::dispatcher()`. You can find it
+    with [`ps::ps()`](https://ps.r-lib.org/reference/ps.html)
+    [`htop`](https://htop.dev/). Leave it running for as long as you use
+    the `crew` controller. It should exit on its own when you terminate
+    the controller, but if it keeps running indefinitely, then you will
+    need to terminate it manually using
+    [`ps::ps_kill()`](https://ps.r-lib.org/reference/ps_kill.html) or
+    [`htop`](https://htop.dev/).
+
+[^2]: See the `seconds_idle` and `tasks_max` arguments of
     [`crew_controller_callr()`](https://wlandau.github.io/crew/reference/crew_controller_callr.html).
 
-[^2]: See the `scale` argument of the
+[^3]: See the `scale` argument of the
     [`pop()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-pop)
     method.

@@ -32,8 +32,6 @@ In computationally demanding analysis workflows, statisticians and data scientis
 `crew` is not yet available on CRAN, and it requires the development version of [`mirai`](https://github.com/shikokuchuo/mirai).
 
 ```{r, eval = FALSE}
-install.packages("nanonext")
-install.packages("mirai", repos = "https://shikokuchuo.r-universe.dev")
 remotes::install_github("wlandau/crew")
 ```
 
@@ -41,7 +39,17 @@ remotes::install_github("wlandau/crew")
 
 Please see <https://wlandau.github.io/crew/> for documentation, including a full function reference and usage tutorial vignettes.
 
-## Interface
+## Disclaimer
+
+To the best of its ability, `crew` tries to only launch workers when needed, and it tries to manually monitor and clean up each worker it launches. However, the package is not perfect. Whether from a bug in the code or an egregious crash, it is still possible that too many workers will run concurrently, and it is still possible that either the workers or the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher will run too long or hang. In large-scale workflows, these accidents can have egregious consequences. Depending on the launcher type, these consequences can range from overburdening your local machine or cluster, to incurring unexpectedly high costs on [Amazon Web Services](https://aws.amazon.com/).
+
+Please learn how to use the interface of the computing platform of your `crew` launcher, and please actively monitor the workers and [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher outside `crew` using that interface.^[The [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher is a local R process that runs `mirai::dispatcher()`. You can find it with [`ps::ps()`](https://ps.r-lib.org/reference/ps.html) [`htop`](https://htop.dev/). Leave it running for as long as you use the `crew` controller. It should exit on its own when you terminate the controller, but if it keeps running indefinitely, then you will need to terminate it manually using [`ps::ps_kill()`](https://ps.r-lib.org/reference/ps_kill.html) or [`htop`](https://htop.dev/).] For the [`callr` launcher and controller](https://wlandau.github.io/crew/reference/crew_controller_callr.html), use [`ps::ps()`](https://ps.r-lib.org/reference/ps.html)/[`ps::ps_kill()`](https://ps.r-lib.org/reference/ps_kill.html) or  [`htop`](https://htop.dev/) to inspect and manage the local R worker processes and [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher. For a [SLURM](https://slurm.schedmd.com/overview.html) launcher, [`ps::ps()`](https://ps.r-lib.org/reference/ps.html)/[`ps::ps_kill()`](https://ps.r-lib.org/reference/ps_kill.html) and [`htop`](https://htop.dev/) can still manage the local R processes like the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher, but you will need to call [`scancel`](https://slurm.schedmd.com/scancel.html) to manually terminate workers as appropriate. For an [Amazon Web Services](https://aws.amazon.com/) launcher, please use the [AWS web console](https://aws.amazon.com/console/) or [CloudWatch](https://aws.amazon.com/cloudwatch/) to monitor, manage, and terminate workers.
+
+Finally, please note the final clause of the [software license](https://wlandau.github.io/crew/LICENSE.html):
+
+> THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## Usage
 
 First, start a `crew` session. The session reserves a TCP port to monitor the presence and absence of parallel workers. Call `crew_session_start()` to start the session. Later on, when you are done using `crew`, call `crew_session_terminate()` to release the port.
 

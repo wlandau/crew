@@ -104,6 +104,8 @@ crew_class_router <- R6::R6Class(
     #' @field sockets Character vector of sockets listening for
     #'   completed tasks.
     sockets = NULL,
+    #' @field daemons Data frame of information from `mirai::daemons()`.
+    daemons = NULL,
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
     #' @param name Argument passed from [crew_router()].
@@ -145,6 +147,12 @@ crew_class_router <- R6::R6Class(
       self$seconds_poll_high <- seconds_poll_high
       self$seconds_poll_low <- seconds_poll_low
       self$async_dial <- async_dial
+    },
+    #' @description Update the `daemons` field with
+    #'   information on the `mirai` daemons.
+    #' @return `NULL` (invisibly).
+    poll = function() {
+      
     },
     #' @description Validate the router.
     #' @return `NULL` (invisibly).

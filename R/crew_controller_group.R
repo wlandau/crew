@@ -142,16 +142,6 @@ crew_class_controller_group <- R6::R6Class(
       control <- private$select_controllers(controllers)
       walk(control, ~.x$launch(n = n))
     },
-    #' @description Check for done tasks and move the results to
-    #'   the results list.
-    #' @return `NULL` (invisibly). Removes elements from the `queue`
-    #'   list as applicable and moves them to the `results` list.
-    #' @param controllers Character vector of controller names.
-    #'   Set to `NULL` to select all controllers.
-    collect = function(controllers = NULL) {
-      control <- private$select_controllers(controllers)
-      walk(control, ~.x$collect())
-    },
     #' @description Automatically scale up the number of workers if needed
     #'   in one or more controller objects.
     #' @details See the `scale()` method in individual controller classes.
@@ -161,6 +151,17 @@ crew_class_controller_group <- R6::R6Class(
     scale = function(controllers = NULL) {
       control <- private$select_controllers(controllers)
       walk(control, ~.x$scale())
+    },
+    #' @description Check for done tasks and move the results to
+    #'   the results list.
+    #' @return `NULL` (invisibly). Removes elements from the `queue`
+    #'   list as applicable and moves them to the `results` list.
+    #' @param n Maximum number of completed tasks to collect.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    collect = function(n = Inf, controllers = NULL) {
+      control <- private$select_controllers(controllers)
+      walk(control, ~.x$collect(n = n))
     },
     #' @description Push a task to the head of the task list.
     #' @return `NULL` (invisibly).

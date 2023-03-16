@@ -145,9 +145,17 @@ Validate the router.
 \subsection{Method \code{start()}}{
 Start the controller if it is not already started.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$start()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$start(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Details}{
 Register the mirai client and register worker websockets
 with the launcher.
@@ -177,7 +185,7 @@ and are not connected to the \code{mirai} client.
 \subsection{Method \code{launch()}}{
 Launch one or more workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$launch(n = 1L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$launch(n = 1L, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -193,6 +201,9 @@ worker has an active websocket connection to the \code{mirai} client,
 and "starting" means that the worker was launched at most
 \code{seconds_start} seconds ago, where \code{seconds_start} is
 also an argument of \code{\link[=crew_controller]{crew_controller()}}.}
+
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }
@@ -206,9 +217,17 @@ also an argument of \code{\link[=crew_controller]{crew_controller()}}.}
 \subsection{Method \code{scale()}}{
 Run auto-scaling.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Details}{
 This method is called during \code{push()}, and the method for
 scaling up workers is governed by the \code{auto_scale}
@@ -231,13 +250,16 @@ number of workers.
 Check for done tasks and move the results to
 the results list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(n = 1L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(n = Inf, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{n}}{Maximum number of completed tasks to collect.}
+
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }
@@ -257,7 +279,8 @@ Push a task to the head of the task list.
   args = list(),
   timeout = NULL,
   name = NULL,
-  scale = TRUE
+  scale = TRUE,
+  controller = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -277,6 +300,9 @@ if \code{NULL} or in conflict with an existing name in the task list.}
 demand. If \code{TRUE}, then \code{clean()} and \code{collect()} run first
 so demand can be properly assessed before scaling and the number
 of workers is not too high.}
+
+\item{\code{controller}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }
@@ -290,7 +316,7 @@ of workers is not too high.}
 \subsection{Method \code{pop()}}{
 Pop a completed task from the results data frame.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop(scale = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop(scale = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -302,6 +328,9 @@ so demand can be properly assessed before scaling and the number
 of workers is not too high. Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off
 quickly after doing little work.}
+
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }
@@ -324,7 +353,12 @@ the return value is \code{NULL}.
 \subsection{Method \code{wait()}}{
 Wait for tasks.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$wait(mode = "all", timeout = Inf, wait = 0.001)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$wait(
+  mode = "all",
+  timeout = Inf,
+  wait = 0.001,
+  controllers = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -338,6 +372,9 @@ then the method waits for all tasks to complete. If \code{mode} is
 
 \item{\code{wait}}{Number of seconds to wait between polling intervals
 waiting for tasks.}
+
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }
@@ -359,7 +396,10 @@ its stopping condition based on the \code{mode} argument.
 \subsection{Method \code{summary()}}{
 Summarize the workers and tasks of the controller.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$summary(columns = everything())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$summary(
+  columns = tidyselect::everything(),
+  controllers = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -368,6 +408,9 @@ Summarize the workers and tasks of the controller.
 \item{\code{columns}}{Tidyselect expression to select a subset of columns.
 Examples include \code{columns = contains("worker")} and
 \code{columns = starts_with("tasks")}.}
+
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }
@@ -440,9 +483,17 @@ is actually the number of \emph{tasks}, not the number of warnings.
 \subsection{Method \code{terminate()}}{
 Terminate the workers and the \code{mirai} client.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$terminate()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$terminate(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

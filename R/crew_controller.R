@@ -130,7 +130,9 @@ crew_class_controller <- R6::R6Class(
     #' @details Register the mirai client and register worker websockets
     #'   with the launcher.
     #' @return `NULL` (invisibly).
-    start = function() {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    start = function(controllers = NULL) {
       if (!self$router$listening()) {
         self$router$listen()
         sockets <- self$router$daemons$worker_socket
@@ -169,7 +171,9 @@ crew_class_controller <- R6::R6Class(
     #'   and "starting" means that the worker was launched at most
     #'   `seconds_start` seconds ago, where `seconds_start` is
     #'   also an argument of [crew_controller()].
-    launch = function(n = 1L) {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    launch = function(n = 1L, controllers = NULL) {
       inactive <- setdiff(
         self$router$daemons$worker_socket,
         self$launcher$active()
@@ -190,7 +194,9 @@ crew_class_controller <- R6::R6Class(
     #'   call `launch()` on the controller with the exact desired
     #'   number of workers.
     #' @return `NULL` (invisibly).
-    scale = function() {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    scale = function(controllers = NULL) {
       demand <- controller_demand(
         tasks = length(self$queue),
         workers = length(self$launcher$active())
@@ -209,7 +215,9 @@ crew_class_controller <- R6::R6Class(
     #' @return `NULL` (invisibly). Removes elements from the `queue`
     #'   list as applicable and moves them to the `results` list.
     #' @param n Maximum number of completed tasks to collect.
-    collect = function(n = 1L) {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    collect = function(n = Inf, controllers = NULL) {
       done <- integer(0L)
       collected <- 0L
       for (index in seq_along(self$queue)) {
@@ -237,12 +245,15 @@ crew_class_controller <- R6::R6Class(
     #'   demand. If `TRUE`, then `clean()` and `collect()` run first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high.
+    #' @param controller Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
     push = function(
       command,
       args = list(),
       timeout = NULL,
       name = NULL,
-      scale = TRUE
+      scale = TRUE,
+      controller = NULL
     ) {
       true(scale, isTRUE(.) || isFALSE(.))
       while (is.null(name) || name %in% self$queue$name) name <- random_name()
@@ -284,7 +295,9 @@ crew_class_controller <- R6::R6Class(
     #'   of workers is not too high. Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
     #'   quickly after doing little work.
-    pop = function(scale = TRUE) {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    pop = function(scale = TRUE, controllers = NULL) {
       if (scale && (length(self$launcher$active()) < self$router$workers)) {
         self$clean()
         self$collect(n = Inf)
@@ -339,7 +352,14 @@ crew_class_controller <- R6::R6Class(
     #' @param timeout Timeout length in seconds waiting for tasks.
     #' @param wait Number of seconds to wait between polling intervals
     #'   waiting for tasks.
-    wait = function(mode = "all", timeout = Inf, wait = 0.001) {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    wait = function(
+      mode = "all",
+      timeout = Inf,
+      wait = 0.001,
+      controllers = NULL
+    ) {
       mode <- as.character(mode)
       true(mode, identical(., "all") || identical(., "one"))
       tryCatch(
@@ -423,7 +443,12 @@ crew_class_controller <- R6::R6Class(
     #' @param columns Tidyselect expression to select a subset of columns.
     #'   Examples include `columns = contains("worker")` and
     #'   `columns = starts_with("tasks")`.
-    summary = function(columns = everything()) {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    summary = function(
+      columns = tidyselect::everything(),
+      controllers = NULL
+    ) {
       self$router$poll()
       daemons <- self$router$daemons
       workers <- self$launcher$workers
@@ -451,7 +476,9 @@ crew_class_controller <- R6::R6Class(
     },
     #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).
-    terminate = function() {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    terminate = function(controllers = NULL) {
       # https://github.com/r-lib/covr/issues/315 # nolint
       terminate_launcher_first <- identical(Sys.getenv("R_COVR"), "true") ||
         identical(tolower(Sys.info()[["sysname"]]), "windows")

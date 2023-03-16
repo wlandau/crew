@@ -1,6 +1,6 @@
 crew_test("abstract launcher class", {
-  expect_silent(crew_class_launcher$new()$validate)
-  expect_crew_error(crew_class_launcher$new(async_dial = -1)$validate())
+  expect_silent(crew_launcher()$validate)
+  expect_crew_error(crew_launcher(async_dial = -1)$validate())
 })
 
 crew_test("launcher settings", {

@@ -1,3 +1,23 @@
+crew_test("crew_controller_group() method signature compatibility", {
+  x <- crew_controller_callr()
+  y <- crew_controller_group(x = x)
+  methods <- c(
+    "validate",
+    "start",
+    "launch",
+    "scale",
+    "collect",
+    "push",
+    "pop",
+    "wait",
+    "summary",
+    "terminate"
+  )
+  for (method in methods) {
+    expect_equal(names(formals(x[[method]])), names(formals(y[[method]])))
+  }
+})
+
 crew_test("crew_controller_group()", {
   skip_on_cran()
   crew_session_start()

@@ -231,7 +231,21 @@ The general requirements for a launcher are:
     to create a controller object with a launcher using default
     arguments.
 
-## Disclaimer
+## Risks
+
+The `crew` package has unavoidable risk. It is your responsibility as
+the user to safely use `crew`. Please read the final clause of the
+[software license](https://wlandau.github.io/crew/LICENSE.html).
+
+#### Security
+
+`crew` uses TCP connections for transactions with workers inside a
+trusted local network. In a compromised network, an attacker can
+potentially access and exploit sensitive resources. It is your
+responsibility to assess the sensitivity and vulnerabilities of your
+computing environment and make sure your network is secure.
+
+#### Resources
 
 The `crew` package launches external R processes:
 
@@ -251,18 +265,6 @@ accidents can have egregious consequences. Depending on the launcher
 type, these consequences can range from overburdening your local machine
 or cluster, to incurring unexpectedly high costs on [Amazon Web
 Services](https://aws.amazon.com/).
-
-It is your responsibility as the user to safely use `crew`. Please note
-the final clause of the [software
-license](https://wlandau.github.io/crew/LICENSE.html):
-
-> THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
-> EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-> MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-> IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-> CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-> TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-> SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #### Dispatcher
 

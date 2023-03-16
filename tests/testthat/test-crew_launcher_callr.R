@@ -11,6 +11,7 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
     crew_session_terminate()
     router$terminate()
     launcher$terminate()
+    crew_test_sleep()
   })
   expect_silent(launcher$validate())
   router$listen()
@@ -90,6 +91,7 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
     crew_session_terminate()
     router$terminate()
     launcher$terminate()
+    crew_test_sleep()
   })
   router$listen()
   expect_silent(launcher$validate())
@@ -151,6 +153,7 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
     crew_session_terminate()
     router$terminate()
     launcher$terminate()
+    crew_test_sleep()
   })
   router$listen()
   socket <- router$daemons$worker_socket
@@ -222,6 +225,7 @@ crew_test("worker that immediately times out is still discovered", {
     crew_session_terminate()
     router$terminate()
     launcher$terminate()
+    crew_test_sleep()
   })
   router$listen()
   socket <- router$daemons$worker_socket
@@ -262,6 +266,7 @@ crew_test("launcher cleans up old worker", {
     crew_session_terminate()
     launcher$terminate()
     router$terminate()
+    crew_test_sleep()
   })
   router$listen()
   socket <- router$daemons$worker_socket

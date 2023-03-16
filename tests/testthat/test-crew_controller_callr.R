@@ -10,6 +10,7 @@ crew_test("crew_controller_callr()", {
   on.exit({
     x$terminate()
     crew_session_terminate()
+    crew_test_sleep()
   })
   expect_silent(x$validate())
   expect_false(x$router$listening())
@@ -82,6 +83,7 @@ crew_test("crew_controller_callr() warnings and errors", {
   on.exit({
     x$terminate()
     crew_session_terminate()
+    crew_test_sleep()
   })
   expect_silent(x$validate())
   expect_false(x$router$listening())
@@ -121,6 +123,7 @@ crew_test("crew_controller_callr() launch method", {
   on.exit({
     x$terminate()
     crew_session_terminate()
+    crew_test_sleep()
   })
   x$start()
   expect_equal(length(x$launcher$active()), 0L)
@@ -142,6 +145,7 @@ crew_test("crew_controller_callr() collect method", {
   on.exit({
     x$terminate()
     crew_session_terminate()
+    crew_test_sleep()
   })
   expect_silent(x$validate())
   expect_false(x$router$listening())

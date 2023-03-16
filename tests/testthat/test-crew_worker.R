@@ -10,6 +10,7 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
     token = token
   )
   on.exit(close(listener), add = TRUE)
+  on.exit(crew_test_sleep(), add = TRUE)
   socket <- sprintf("ws://%s:%s/%s", local_ip(), port, token)
   settings <- list(url = socket, timerstart = 0L, idletime = 5)
   expect_false(dialer_connected(listener))
@@ -35,6 +36,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   socket <- sprintf("ws://%s:%s", local_ip(), port)
   mirai::daemons(n = 1L, url = socket)
   on.exit(mirai::daemons(n = 0L), add = TRUE)
+  on.exit(crew_test_sleep(), add = TRUE)
   m <- mirai::mirai(
     list(
       mirai = Sys.getenv("CREW_SOCKET_DATA"),

@@ -39,6 +39,7 @@ crew_test("crew_controller_group()", {
   on.exit({
     x$terminate()
     crew_session_terminate()
+    crew_test_sleep()
   })
   expect_silent(x$validate())
   expect_false(x$controllers[[1]]$router$listening())
@@ -129,6 +130,7 @@ crew_test("crew_controller_group() select", {
   on.exit({
     x$terminate()
     crew_session_terminate()
+    crew_test_sleep()
   })
   expect_false(a$router$listening())
   expect_false(b$router$listening())
@@ -160,6 +162,7 @@ crew_test("crew_controller_group() collect", {
   on.exit({
     x$terminate()
     crew_session_terminate()
+    crew_test_sleep()
   })
   expect_silent(x$validate())
   expect_false(x$controllers[[1]]$router$listening())
@@ -201,6 +204,7 @@ crew_test("crew_controller_group() launch method", {
   on.exit({
     x$terminate()
     crew_session_terminate()
+    crew_test_sleep()
   })
   x$start()
   for (index in seq_len(2)) {
@@ -242,6 +246,7 @@ crew_test("crew_controller_group() scale method", {
   on.exit({
     x$terminate()
     crew_session_terminate()
+    crew_test_sleep()
   })
   x$start()
   expect_equal(a$launcher$active(), character(0L))

@@ -13,7 +13,10 @@ crew_test("crew_router() works", {
     seconds_poll_high = 0.01,
     seconds_poll_low = 0.1
   )
-  on.exit(router$terminate())
+  on.exit({
+    router$terminate()
+    crew_test_sleep()
+  })
   expect_false(router$listening())
   expect_null(router$dispatcher)
   expect_null(router$daemons)

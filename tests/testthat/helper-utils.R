@@ -4,6 +4,9 @@ crew_test <- function(label, code) {
     env = list(label = label, code = substitute(code))
   )
   suppressMessages(eval(expr, envir = parent.frame()))
+}
+
+crew_test_sleep <- function() {
   Sys.sleep(2.25)
 }
 

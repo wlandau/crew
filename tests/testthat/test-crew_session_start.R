@@ -1,4 +1,5 @@
 crew_test("crew session", {
+  skip_on_cran()
   port <- free_port()
   for (index in seq_len(3L)) {
     expect_equal(parallelly::freePort(port, default = NA_integer_), port)

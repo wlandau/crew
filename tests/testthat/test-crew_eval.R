@@ -46,6 +46,7 @@ crew_test("warning with no message, warning recorded", {
 })
 
 crew_test("warning character limit", {
+  skip_on_cran()
   monad <- crew_eval(
     quote(
       lapply(
@@ -58,6 +59,7 @@ crew_test("warning character limit", {
 })
 
 crew_test("encoding issue error handling", {
+  skip_on_cran()
   monad <- crew_eval(
     quote(warning("<<\"pT\xbf\xbfD\x80QY\x94C\xd1"))
   )

@@ -1,4 +1,5 @@
 crew_test("crew_worker() connects back to custom NNG bus socket", {
+  skip_on_cran()
   crew_session_start()
   on.exit(crew_session_terminate())
   port <- free_port()

@@ -29,6 +29,7 @@ crew_test("launcher settings", {
 })
 
 crew_test("launcher populate()", {
+  skip_on_cran()
   launcher <- crew_class_launcher$new()
   workers <- launcher$workers
   expect_equal(dim(workers), c(0, 6))
@@ -51,6 +52,7 @@ crew_test("launcher populate()", {
 })
 
 crew_test("launcher active()", {
+  skip_on_cran()
   launcher <- crew_class_launcher$new(seconds_launch = 1)
   port_mirai <- free_port()
   sockets <- sprintf("ws://127.0.0.1:%s/%s", port_mirai, seq_len(9L))

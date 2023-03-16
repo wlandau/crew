@@ -1,4 +1,5 @@
 crew_test("crew_controller_callr()", {
+  skip_on_cran()
   crew_session_start()
   x <- crew_controller_callr(
     workers = 1L,

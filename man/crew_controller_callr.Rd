@@ -66,7 +66,10 @@ considered alive if it is actively connected to its assign websocket.}
 since the completion of the last task. If exceeded, the worker exits.
 But the timer does not launch until \code{tasks_timers} tasks
 have completed.
-See the \code{idletime} argument of \code{mirai::server()}.}
+See the \code{idletime} argument of \code{mirai::server()}. \code{crew} does not
+excel with perfectly transient workers because it does not micromanage
+the assignment of tasks to workers, so please allow enough idle
+time for a new worker to be delegated a new task.}
 
 \item{seconds_wall}{Soft wall time in seconds.
 The timer does not launch until \code{tasks_timers} tasks
@@ -74,7 +77,11 @@ have completed.
 See the \code{walltime} argument of \code{mirai::server()}.}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
-exiting. See the \code{maxtasks} argument of \code{mirai::server()}.}
+exiting. See the \code{maxtasks} argument of \code{mirai::server()}.
+\code{crew} does not
+excel with perfectly transient workers because it does not micromanage
+the assignment of tasks to workers, it is recommended to set
+\code{tasks_max} to a value greater than 1.}
 
 \item{tasks_timers}{Number of tasks to do before activating
 the timers for \code{seconds_idle} and \code{seconds_wall}.

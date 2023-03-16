@@ -145,15 +145,14 @@ Validate the router.
 \subsection{Method \code{start()}}{
 Start one or more controllers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$start(controllers = tidyselect::everything())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$start(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{controllers}}{Tidyselect expression to select a subset of
-controllers. Examples include \code{columns = contains("con1")} and
-\code{columns = starts_with("con2")}.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -167,10 +166,7 @@ controllers. Examples include \code{columns = contains("con1")} and
 \subsection{Method \code{launch()}}{
 Launch one or more workers on one or more controllers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$launch(
-  n = 1L,
-  controllers = tidyselect::everything()
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$launch(n = 1L, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -178,9 +174,8 @@ Launch one or more workers on one or more controllers.
 \describe{
 \item{\code{n}}{Number of workers to launch in each controller selected.}
 
-\item{\code{controllers}}{Tidyselect expression to select a subset of
-controllers. Examples include \code{columns = contains("con1")} and
-\code{columns = starts_with("con2")}.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -195,15 +190,14 @@ controllers. Examples include \code{columns = contains("con1")} and
 Check for done tasks and move the results to
 the results list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(controllers = tidyselect::everything())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{controllers}}{Tidyselect expression to select a subset of
-controllers. Examples include \code{columns = contains("con1")} and
-\code{columns = starts_with("con2")}.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -219,15 +213,14 @@ list as applicable and moves them to the \code{results} list.
 Automatically scale up the number of workers if needed
 in one or more controller objects.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale(controllers = tidyselect::everything())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{controllers}}{Tidyselect expression to select a subset of
-controllers. Examples include \code{columns = contains("con1")} and
-\code{columns = starts_with("con2")}.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -288,10 +281,7 @@ first controller in the list.}
 \subsection{Method \code{pop()}}{
 Pop a completed task from the results data frame.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop(
-  scale = TRUE,
-  controllers = tidyselect::everything()
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop(scale = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -304,9 +294,8 @@ of workers is not too high. Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off
 quickly after doing little work.}
 
-\item{\code{controllers}}{Tidyselect expression to select a subset of
-controllers. Examples include \code{columns = contains("con1")} and
-\code{columns = starts_with("con2")}.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -327,7 +316,7 @@ Wait for tasks.
   mode = "all",
   timeout = Inf,
   wait = 0.001,
-  controllers = tidyselect::everything()
+  controllers = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -344,9 +333,8 @@ results to become available.}
 \item{\code{wait}}{Number of seconds to wait between polling intervals
 while checking for results.}
 
-\item{\code{controllers}}{Tidyselect expression to select a subset of
-controllers. Examples include \code{columns = contains("con1")} and
-\code{columns = starts_with("con2")}.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -371,7 +359,7 @@ Summarize the workers of one or more controllers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$summary(
   columns = tidyselect::everything(),
-  controllers = tidyselect::everything()
+  controllers = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -382,9 +370,8 @@ Summarize the workers of one or more controllers.
 Examples include \code{columns = contains("worker")} and
 \code{columns = starts_with("tasks")}.}
 
-\item{\code{controllers}}{Tidyselect expression to select a subset of
-controllers. Examples include \code{columns = contains("con1")} and
-\code{columns = starts_with("con2")}.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -403,15 +390,14 @@ class for specific information about the columns in the output.
 Terminate the workers and disconnect the router
 for one or more controllers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$terminate(controllers = tidyselect::everything())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$terminate(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{controllers}}{Tidyselect expression to select a subset of
-controllers. Examples include \code{columns = contains("con1")} and
-\code{columns = starts_with("con2")}.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }

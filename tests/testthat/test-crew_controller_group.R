@@ -90,7 +90,7 @@ crew_test("crew_controller_group()", {
   }
 })
 
-crew_test("crew_controller_group() tidyselect", {
+crew_test("crew_controller_group() select", {
   skip_on_cran()
   crew_session_start()
   a <- crew_controller_callr(
@@ -112,14 +112,14 @@ crew_test("crew_controller_group() tidyselect", {
   })
   expect_false(a$router$listening())
   expect_false(b$router$listening())
-  x$start(controllers = tidyselect::contains("b"))
+  name <- "b"
+  x$start(controllers = name)
   expect_false(a$router$listening())
   expect_true(b$router$listening())
-  x$terminate(controllers = tidyselect::contains("b"))
+  x$terminate(controllers = name)
   expect_false(a$router$listening())
   expect_false(b$router$listening())
 })
-
 
 crew_test("crew_controller_group() collect", {
   skip_on_cran()

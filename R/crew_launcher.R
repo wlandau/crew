@@ -1,3 +1,87 @@
+#' @title Create an abstract launcher.
+#' @export
+#' @keywords internal
+#' @family launchers
+#' @description This function is useful for inheriting argument documentation
+#'   in functions that create custom third-party launchers. See
+#'   `@inheritParams crew::crew_launcher` in the source code file of
+#'   [crew_launcher_callr()].
+#' @param name Name of the launcher.
+#' @param seconds_launch Seconds of startup time to allow.
+#'   A worker is unconditionally assumed to be alive
+#'   from the moment of its launch until `seconds_launch` seconds later.
+#'   After `seconds_launch` seconds, the worker is only
+#'   considered alive if it is actively connected to its assign websocket.
+#' @param seconds_idle Maximum number of seconds that a worker can idle
+#'   since the completion of the last task. If exceeded, the worker exits.
+#'   But the timer does not launch until `tasks_timers` tasks
+#'   have completed.
+#'   See the `idletime` argument of `mirai::server()`. `crew` does not
+#'   excel with perfectly transient workers because it does not micromanage
+#'   the assignment of tasks to workers, so please allow enough idle
+#'   time for a new worker to be delegated a new task.
+#' @param seconds_wall Soft wall time in seconds.
+#'   The timer does not launch until `tasks_timers` tasks
+#'   have completed.
+#'   See the `walltime` argument of `mirai::server()`.
+#' @param seconds_exit Number of seconds to wait for NNG websockets
+#'   to finish sending large data (in case an exit signal is received).
+#'   See the `exitlinger` argument of `mirai::server()`.
+#' @param tasks_max Maximum number of tasks that a worker will do before
+#'   exiting. See the `maxtasks` argument of `mirai::server()`.
+#'   `crew` does not
+#'   excel with perfectly transient workers because it does not micromanage
+#'   the assignment of tasks to workers, it is recommended to set
+#'   `tasks_max` to a value greater than 1.
+#' @param tasks_timers Number of tasks to do before activating
+#'   the timers for `seconds_idle` and `seconds_wall`.
+#'   See the `timerlaunch` argument of `mirai::server()`.
+#' @param async_dial Logical, whether the `mirai` workers should dial in
+#'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
+#' @param cleanup Logical, whether to clean up global options and the
+#'   global environment after every task.
+#'   See the `cleanup` argument of `mirai::server()`.
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' crew_session_start()
+#' router <- crew_router()
+#' router$listen()
+#' launcher <- crew_launcher_callr()
+#' launcher$populate(sockets = router$sockets)
+#' launcher$launch()
+#' m <- mirai::mirai("result")
+#' Sys.sleep(0.25)
+#' m$data
+#' router$terminate()
+#' crew_session_terminate()
+#' }
+crew_launcher <- function(
+  name = NULL,
+  seconds_launch = 30,
+  seconds_idle = Inf,
+  seconds_wall = Inf,
+  seconds_exit = 0.1,
+  tasks_max = Inf,
+  tasks_timers = 0L,
+  async_dial = TRUE,
+  cleanup = FALSE
+) {
+  name <- as.character(name %|||% random_name())
+  launcher <- crew_class_launcher_callr$new(
+    name = name,
+    seconds_launch = seconds_launch,
+    seconds_idle = seconds_idle,
+    seconds_wall = seconds_wall,
+    seconds_exit = seconds_exit,
+    tasks_max = tasks_max,
+    tasks_timers = tasks_timers,
+    async_dial = async_dial,
+    cleanup = cleanup
+  )
+  launcher$validate()
+  launcher
+}
+
 #' @title Launcher abstract class
 #' @export
 #' @family launchers

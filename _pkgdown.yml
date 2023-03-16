@@ -3,14 +3,18 @@ reference:
 - title: Help
   contents:
   - '`crew-package`'
-- title: Controllers
-  contents:
-  - '`crew_controller_callr`'
-  - '`crew_controller_group`'
 - title: Session
   contents:
   - '`crew_session_start`'
   - '`crew_session_terminate`'
+- title: Controllers
+  contents:
+  - '`crew_controller_callr`'
+  - '`crew_controller_group`'
+- title: Launchers
+  contents:
+  - '`crew_launcher`'
+  - '`crew_launcher_callr`'
 - title: Classes
   contents:
   - '`crew_class_controller`'

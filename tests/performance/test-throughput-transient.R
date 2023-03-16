@@ -45,6 +45,12 @@ crew_wait(
   wait = 0.1
 )
 
+# Call wait() on the controller to cycle throught the rest of the tasks.
+# Watch htop to see it complete.
+x$wait(mode = "all")
+length(x$queue) # 0
+length(x$results) # 200
+
 # Only the first 8 tasks should have run so far. Keep calling pop()
 # until the rest of the tasks complete.
 results <- list()

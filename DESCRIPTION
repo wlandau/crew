@@ -13,7 +13,7 @@ Description: In computationally demanding analysis projects,
   'future' (2021, <doi:10.32614/RJ-2021-048>), 'rrq',
   'clustermq' (2019, <doi:10.1093/bioinformatics/btz284>),
   and 'batchtools' (2017, <doi:10.21105/joss.00135>).
-Version: 0.0.2
+Version: 0.0.3
 License: MIT + file LICENSE
 URL: https://wlandau.github.io/crew/, https://github.com/wlandau/crew
 BugReports: https://github.com/wlandau/crew/issues

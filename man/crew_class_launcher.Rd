@@ -43,7 +43,8 @@ crew_session_terminate()
 \seealso{
 Other launchers: 
 \code{\link{crew_class_launcher_callr}},
-\code{\link{crew_launcher_callr}()}
+\code{\link{crew_launcher_callr}()},
+\code{\link{crew_launcher}()}
 }
 \concept{launchers}
 \section{Public fields}{

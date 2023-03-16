@@ -18,13 +18,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-Each controller object only supports only one type of worker configuration which you set in advance. However, different controllers may have different types of workers, and `crew` supports controller groups to coordinate among these different worker types. In future development, this mechanism will allow you to e.g. send some tasks to GPU-capable or high-memory workers while other tasks go to low-spec workers. But even now, this feature can come in handy.
+Each controller object only supports only one type of worker configuration which you set in advance. However, different controllers may have different types of workers, and `crew` supports controller groups to coordinate among these different worker types. With third-party launcher subclasses from other packages, this mechanism will allow you to e.g. send some tasks to GPU-capable or high-memory workers while other tasks go to low-spec workers.
 
-We demonstrate with a controller of fully persistent workers which always stay running and a controller of fully transient workers which terminate as soon as their first task is complete. We create controller objects with names.
+We demonstrate with a controller of fully persistent workers which always stay running and a controller of semi-transient workers which terminate after completing  four tasks. We create controller objects with names.
 
 ```{r}
 persistent <- crew_controller_callr(name = "persistent")
-transient <- crew_controller_callr(name = "transient", tasks_max = 1L)
+transient <- crew_controller_callr(name = "semi-transient", tasks_max = 4L)
 ```
 
 We put these controller objects into a new controller group object.
@@ -42,13 +42,13 @@ group$start()
 You can choose which worker pool to receive tasks.
 
 ```{r}
-group$push(name = "my task", command = sqrt(4), controller = "transient")
+group$push(name = "my task", command = sqrt(4), controller = "semi-transient")
 ```
 
 The controller group also supports global methods for `wait()`, `pop()`, and `terminate()`. These methods operate on all controllers at once by default, but the `controllers` argument allows you to select a subset of controllers to act on.
 
 ```{r}
-group$wait(controllers = "transient")
+group$wait(controllers = "semi-transient")
 group$pop()
 #> # A tibble: 1 × 7
 #>   name    command result    seconds error traceback warnings
@@ -61,10 +61,10 @@ The controller group has a `summary()` method which aggregates all the informati
 ```{r}
 group$summary(columns = starts_with(c("controller", "tasks")))
 #> # A tibble: 2 × 3
-#>   controller tasks_assigned tasks_complete
-#>   <chr>               <int>          <int>
-#> 1 persistent              0              0
-#> 2 transient               1              1
+#>   controller     tasks_assigned tasks_complete
+#>   <chr>                   <int>          <int>
+#> 1 persistent                  0              0
+#> 2 semi-transient              1              1
 ```
 
 When you are finished, please call `terminate()` with no arguments to terminate all controllers in the controller group.

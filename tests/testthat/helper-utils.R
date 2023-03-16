@@ -4,9 +4,7 @@ crew_test <- function(label, code) {
     env = list(label = label, code = substitute(code))
   )
   suppressMessages(eval(expr, envir = parent.frame()))
-  if (identical(tolower(Sys.info()[["sysname"]]), "windows")) {
-    Sys.sleep(3L)
-  }
+  Sys.sleep(2.25)
 }
 
 expect_crew_error <- function(object) {

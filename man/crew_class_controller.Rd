@@ -374,7 +374,7 @@ client is not running.
 \item \code{worker_launches}: number of attempts to launch a worker
 at the websocket since the controller started. If
 the number of launch attempts gets much higher than
-the number of tasks or worker instances, then this is a
+the number of popped tasks or worker instances, then this is a
 sign that something is wrong with the workers or platform,
 and it is recommended to quit the pipeline and troubleshoot.
 \item \code{worker_instances}: number of different worker processes
@@ -388,9 +388,17 @@ task workload surges again, different workers may be launch
 and connect to the available websockets, so \code{worker_instances}
 could be greater than 1.
 \item \code{tasks_assigned}: number of pushed tasks assigned to the
-websocket since the controller started.
-\item \code{tasks_complete}: number of tasks completed by a worker
-at the websocket since the controller started.
+current worker process at the websocket. The counter resets
+every time a new worker replaces the previous worker at the
+websocket. So in the case of transient
+workers, this number may be much smaller than the number of
+popped tasks.
+\item \code{tasks_complete}: number of pushed tasks completed by the
+current worker process at the websocket. The counter resets
+every time a new worker replaces the previous worker at the
+websocket. So in the case of transient
+workers, this number may be much smaller than the number of
+popped tasks.
 \item \code{popped_tasks}: number of tasks which were completed by
 a worker at the websocket and then returned by calling
 \code{pop()} on the controller object.

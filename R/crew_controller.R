@@ -359,7 +359,7 @@ crew_class_controller <- R6::R6Class(
     #'   * `worker_launches`: number of attempts to launch a worker
     #'     at the websocket since the controller started. If
     #'     the number of launch attempts gets much higher than
-    #'     the number of tasks or worker instances, then this is a
+    #'     the number of popped tasks or worker instances, then this is a
     #'     sign that something is wrong with the workers or platform,
     #'     and it is recommended to quit the pipeline and troubleshoot.
     #'   * `worker_instances`: number of different worker processes
@@ -373,9 +373,17 @@ crew_class_controller <- R6::R6Class(
     #'     and connect to the available websockets, so `worker_instances`
     #'     could be greater than 1.
     #'   * `tasks_assigned`: number of pushed tasks assigned to the
-    #'     websocket since the controller started.
-    #'   * `tasks_complete`: number of tasks completed by a worker
-    #'     at the websocket since the controller started.
+    #'      current worker process at the websocket. The counter resets
+    #'      every time a new worker replaces the previous worker at the
+    #'      websocket. So in the case of transient
+    #'      workers, this number may be much smaller than the number of
+    #'      popped tasks.
+    #'   * `tasks_complete`: number of pushed tasks completed by the
+    #'      current worker process at the websocket. The counter resets
+    #'      every time a new worker replaces the previous worker at the
+    #'      websocket. So in the case of transient
+    #'      workers, this number may be much smaller than the number of
+    #'      popped tasks.
     #'   * `popped_tasks`: number of tasks which were completed by
     #'     a worker at the websocket and then returned by calling
     #'     `pop()` on the controller object.

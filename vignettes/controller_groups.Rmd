@@ -36,7 +36,7 @@ group <- crew_controller_group(persistent, transient)
 This controller group has a global `connect()` method to initialize both controllers.
 
 ```{r}
-group$connect()
+group$start()
 ```
 
 You can choose which worker pool to receive tasks.
@@ -54,6 +54,20 @@ group$pop()
 #>   name    command result    seconds error traceback warnings
 #>   <chr>   <chr>   <list>      <dbl> <chr> <chr>     <chr>
 #> 1 my task sqrt(4) <dbl [1]>       0 NA    NA        NA
+```
+
+The controller group has a `summary()` method which aggregates all the information from the selected controllers.
+
+```{r}
+group$summary(
+  columns = starts_with(c("controller", "tasks")),
+  controllers = everything()
+)
+#> # A tibble: 2 × 3
+#>   controller tasks_assigned tasks_complete
+#>   <chr>               <int>          <int>
+#> 1 persistent              0              0
+#> 2 transient               1              1
 ```
 
 When you are finished, please call `terminate()` with no arguments to terminate all controllers in the controller group.

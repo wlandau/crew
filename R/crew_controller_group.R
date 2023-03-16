@@ -264,7 +264,7 @@ crew_class_controller_group <- R6::R6Class(
       if (all(map_lgl(out, is.null))) {
         return(NULL)
       }
-      out <- tibble::as_tibble(do.call(what = rbind, args = out))
+      tibble::as_tibble(do.call(what = rbind, args = out))
     },
     #' @description Terminate the workers and disconnect the router
     #'   for one or more controllers.

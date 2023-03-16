@@ -62,6 +62,7 @@ crew_test("crew_controller_group()", {
   x$push(command = ps::ps_pid(), name = "task_pid", controller = "b")
   x$wait(timeout = 5)
   out <- x$pop(scale = FALSE)
+  expect_false(is.null(out))
   expect_equal(out$name, "task_pid")
   expect_equal(out$command, "ps::ps_pid()")
   expect_equal(
@@ -212,7 +213,7 @@ crew_test("crew_controller_group() scale method", {
   crew_session_start()
   a <- crew_controller_callr(
     name = "a",
-    auto_scale = "single",
+    auto_scale = "one",
     seconds_idle = 360,
     seconds_poll_high = 0.01,
     seconds_poll_low = 0.1

@@ -30,6 +30,7 @@
 ^_targets\.Rmd$
 ^_targets\.yaml$
 ^skeleton\.html$
+^README\.html$
 ^docs$
 ^dump\.rdb$
 ^CODE_OF_CONDUCT.md$

@@ -20,10 +20,10 @@
 #'     this could be somewhat risky because `mirai` resubmits
 #'     failed tasks behind the scenes and `crew` responds by
 #'     re-launching workers. If you are worried about this scenario,
-#'     choose `auto_scale = "single"` instead, which will only launch
+#'     choose `auto_scale = "one"` instead, which will only launch
 #'     up to one worker whenever a task is pushed.
-#'   * `"single"`: just after pushing a new task in `push()`, launch
-#'     a single worker if demand `min(n, max(0, t - w))` is greater than 0.
+#'   * `"one"`: just after pushing a new task in `push()`, launch
+#'     a one worker if demand `min(n, max(0, t - w))` is greater than 0.
 #'   * `"none"`: do not auto-scale at all.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -39,11 +39,11 @@
 #' crew_session_terminate()
 #' }
 crew_controller <- function(
-    router,
-    launcher,
-    auto_scale = "demand"
+  router,
+  launcher,
+  auto_scale = "demand"
 ) {
-  auto_scale <- auto_scale %|||% c("demand", "single", "none")
+  auto_scale <- auto_scale %|||% c("demand", "one", "none")
   controller <- crew_class_controller$new(
     router = router,
     launcher = launcher,
@@ -271,6 +271,9 @@ crew_class_controller <- R6::R6Class(
       invisible()
     },
     #' @description Pop a completed task from the results data frame.
+    #' @details If not task is currently completed and collected, `pop()`
+    #'   will attempt to auto-scale workers as needed and collect
+    #'   any newly completed results.
     #' @return If there is a completed task available to collect, the return
     #'   value is a one-row data frame with the results, warnings, and errors.
     #'   Otherwise, if there are no results available to collect,
@@ -323,20 +326,38 @@ crew_class_controller <- R6::R6Class(
       }
       out
     },
-    #' @description Wait for a result to be ready.
+    #' @description Wait for tasks.
+    #' @details The `wait()` method blocks the calling R session,
+    #'   repeatedly auto-scales workers for tasks
+    #'   that need them, and repeatedly collects results.
+    #'   The function runs until it either times out or reaches
+    #'   its stopping condition based on the `mode` argument.
     #' @return `NULL` (invisibly). Call `pop()` to get the result.
-    #' @param timeout Timeout length in seconds waiting for
-    #'   results to become available.
+    #' @param mode If `mode` is `"all"`,
+    #'   then the method waits for all tasks to complete. If `mode` is
+    #'   `"one"`, then it waits until a one task is complete.
+    #' @param timeout Timeout length in seconds waiting for tasks.
     #' @param wait Number of seconds to wait between polling intervals
-    #'   while checking for results.
-    wait = function(timeout = Inf, wait = 0.1) {
-      crew_wait(
-        fun = ~{
-          self$collect()
-          length(self$results) > 0L
-        },
-        timeout = timeout,
-        wait = wait
+    #'   waiting for tasks.
+    wait = function(mode = "all", timeout = Inf, wait = 0.001) {
+      mode <- as.character(mode)
+      true(mode, identical(., "all") || identical(., "one"))
+      tryCatch(
+        crew_wait(
+          fun = ~{
+            self$clean()
+            self$collect(n = Inf)
+            self$scale()
+            done <- length(self$results) > 0L
+            if (identical(mode, "all")) {
+              done <- done && (length(self$queue) < 1L)
+            }
+            done
+          },
+          timeout = timeout,
+          wait = wait
+        ),
+        crew_expire = function(condition) NULL
       )
       invisible()
     },
@@ -456,7 +477,7 @@ controller_n_new_workers <- function(demand, auto_scale) {
   switch(
     auto_scale,
     demand = demand,
-    single = min(1L, demand),
+    one = min(1L, demand),
     none = 0L
   ) %|||% 0L
 }

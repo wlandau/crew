@@ -321,11 +321,12 @@ the return value is \code{NULL}.
 \if{html}{\out{<a id="method-crew_class_controller_group-wait"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-wait}{}}}
 \subsection{Method \code{wait()}}{
-Wait for a result to be ready.
+Wait for tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$wait(
+  mode = "all",
   timeout = Inf,
-  wait = 0.1,
+  wait = 0.001,
   controllers = tidyselect::everything()
 )}\if{html}{\out{</div>}}
 }
@@ -333,6 +334,10 @@ Wait for a result to be ready.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{mode}}{If \code{mode} is \code{"all"},
+then the method waits for all tasks to complete. If \code{mode} is
+\code{"one"}, then it waits until a one task is complete.}
+
 \item{\code{timeout}}{Timeout length in seconds waiting for
 results to become available.}
 
@@ -345,6 +350,15 @@ controllers. Examples include \code{columns = contains("con1")} and
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+The \code{wait()} method blocks the calling R session,
+repeatedly auto-scales workers for tasks
+that need them, and repeatedly collects results.
+The function runs until it either times out or one of the
+controllers reaches the stopping condition
+based on the \code{mode} argument.
+}
+
 \subsection{Returns}{
 \code{NULL} (invisibly). Call \code{pop()} to get the result.
 }

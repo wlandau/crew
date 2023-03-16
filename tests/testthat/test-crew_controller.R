@@ -18,7 +18,7 @@ crew_test("controller_n_new_workers()", {
     0L
   )
   expect_equal(
-    controller_n_new_workers(demand = 3L, auto_scale = "single"),
+    controller_n_new_workers(demand = 3L, auto_scale = "one"),
     1L
   )
   expect_equal(

@@ -10,7 +10,7 @@ crew_router(
   host = NULL,
   port = 0L,
   router_timeout = 5,
-  router_wait = 0.01,
+  router_wait = 0.001,
   seconds_exit = 0.1,
   seconds_poll_high = 0.001,
   seconds_poll_low = 0.01,

@@ -5,7 +5,7 @@
 \alias{crew-package}
 \title{crew: a distributed worker launcher}
 \description{
-In computationally demanding analysis workflows,
+In computationally demanding analysis projects,
 statisticians and data scientists asynchronously deploy
 long-running tasks to distributed systems, ranging from
 traditional clusters to cloud services.

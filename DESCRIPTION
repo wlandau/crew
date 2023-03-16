@@ -1,6 +1,6 @@
 Package: crew
 Title: A Distributed Worker Launcher
-Description: In computationally demanding analysis workflows,
+Description: In computationally demanding analysis projects,
   statisticians and data scientists asynchronously
   deploy long-running tasks to distributed systems,
   ranging from traditional clusters to cloud services

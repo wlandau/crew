@@ -305,6 +305,12 @@ quickly after doing little work.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+If not task is currently completed and collected, \code{pop()}
+will attempt to auto-scale workers as needed and collect
+any newly completed results.
+}
+
 \subsection{Returns}{
 If there is a completed task available to collect, the return
 value is a one-row data frame with the results, warnings, and errors.
@@ -316,22 +322,33 @@ the return value is \code{NULL}.
 \if{html}{\out{<a id="method-crew_class_controller-wait"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-wait}{}}}
 \subsection{Method \code{wait()}}{
-Wait for a result to be ready.
+Wait for tasks.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$wait(timeout = Inf, wait = 0.1)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$wait(mode = "all", timeout = Inf, wait = 0.001)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{timeout}}{Timeout length in seconds waiting for
-results to become available.}
+\item{\code{mode}}{If \code{mode} is \code{"all"},
+then the method waits for all tasks to complete. If \code{mode} is
+\code{"one"}, then it waits until a one task is complete.}
+
+\item{\code{timeout}}{Timeout length in seconds waiting for tasks.}
 
 \item{\code{wait}}{Number of seconds to wait between polling intervals
-while checking for results.}
+waiting for tasks.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+The \code{wait()} method blocks the calling R session,
+repeatedly auto-scales workers for tasks
+that need them, and repeatedly collects results.
+The function runs until it either times out or reaches
+its stopping condition based on the \code{mode} argument.
+}
+
 \subsection{Returns}{
 \code{NULL} (invisibly). Call \code{pop()} to get the result.
 }

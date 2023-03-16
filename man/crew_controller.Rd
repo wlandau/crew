@@ -27,10 +27,10 @@ But if you think a task may always crash a worker
 this could be somewhat risky because \code{mirai} resubmits
 failed tasks behind the scenes and \code{crew} responds by
 re-launching workers. If you are worried about this scenario,
-choose \code{auto_scale = "single"} instead, which will only launch
+choose \code{auto_scale = "one"} instead, which will only launch
 up to one worker whenever a task is pushed.
-\item \code{"single"}: just after pushing a new task in \code{push()}, launch
-a single worker if demand \code{min(n, max(0, t - w))} is greater than 0.
+\item \code{"one"}: just after pushing a new task in \code{push()}, launch
+a one worker if demand \code{min(n, max(0, t - w))} is greater than 0.
 \item \code{"none"}: do not auto-scale at all.
 }}
 }

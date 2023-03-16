@@ -59,10 +59,7 @@ group$pop()
 The controller group has a `summary()` method which aggregates all the information from the selected controllers.
 
 ```{r}
-group$summary(
-  columns = starts_with(c("controller", "tasks")),
-  controllers = everything()
-)
+group$summary(columns = starts_with(c("controller", "tasks")))
 #> # A tibble: 2 × 3
 #>   controller tasks_assigned tasks_complete
 #>   <chr>               <int>          <int>

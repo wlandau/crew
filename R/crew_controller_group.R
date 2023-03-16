@@ -213,8 +213,17 @@ crew_class_controller_group <- R6::R6Class(
       }
       NULL
     },
-    #' @description Wait for a result to be ready.
+    #' @description Wait for tasks.
+    #' @details The `wait()` method blocks the calling R session,
+    #'   repeatedly auto-scales workers for tasks
+    #'   that need them, and repeatedly collects results.
+    #'   The function runs until it either times out or one of the
+    #'   controllers reaches the stopping condition
+    #'   based on the `mode` argument.
     #' @return `NULL` (invisibly). Call `pop()` to get the result.
+    #' @param mode If `mode` is `"all"`,
+    #'   then the method waits for all tasks to complete. If `mode` is
+    #'   `"one"`, then it waits until a one task is complete.
     #' @param timeout Timeout length in seconds waiting for
     #'   results to become available.
     #' @param wait Number of seconds to wait between polling intervals
@@ -223,23 +232,35 @@ crew_class_controller_group <- R6::R6Class(
     #'   controllers. Examples include `columns = contains("con1")` and
     #'   `columns = starts_with("con2")`.
     wait = function(
+      mode = "all",
       timeout = Inf,
-      wait = 0.1,
+      wait = 0.001,
       controllers = tidyselect::everything()
     ) {
+      mode <- as.character(mode)
+      true(mode, identical(., "all") || identical(., "one"))
       control <- private$select_controllers(enquo(controllers))
-      crew_wait(
-        fun = ~{
-          for (controller in control) {
-            controller$collect()
-            if (length(controller$results) > 0L) {
-              return(TRUE)
+      tryCatch(
+        crew_wait(
+          fun = ~{
+            for (controller in control) {
+              controller$clean()
+              controller$collect(n = Inf)
+              controller$scale()
+              done <- length(controller$results) > 0L
+              if (identical(mode, "all")) {
+                done <- done && (length(controller$queue) < 1L)
+              }
+              if (done) {
+                return(TRUE)
+              }
             }
-          }
-          FALSE
-        },
-        timeout = timeout,
-        wait = wait
+            FALSE
+          },
+          timeout = timeout,
+          wait = wait
+        ),
+        crew_expire = function(condition) NULL
       )
       invisible()
     },

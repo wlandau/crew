@@ -4,11 +4,12 @@ Description: In computationally demanding analysis workflows,
   statisticians and data scientists asynchronously
   deploy long-running tasks to distributed systems,
   ranging from traditional clusters to cloud services
-  The 'NNG'-powered 'mirai' R package is a powerful task
-  scheduler that efficiently processes these intense workloads.
-  The 'crew' package extends 'mirai' beyond local R processes
-  with a unifying interface for third-party worker launchers.
-  Inspiration comes from packages
+  The 'NNG'-powered 'mirai' R package is a sleek
+  and sophisticated scheduler that
+  efficiently processes these intense workloads.
+  The 'crew' package extends 'mirai' with a unifying
+  interface for third-party worker launchers.
+  Inspiration also comes from packages
   'future' (2021, <doi:10.32614/RJ-2021-048>), 'rrq',
   'clustermq' (2019, <doi:10.1093/bioinformatics/btz284>),
   and 'batchtools' (2017, <doi:10.21105/joss.00135>).

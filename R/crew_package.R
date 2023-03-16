@@ -7,11 +7,13 @@
 #'   traditional clusters to cloud services.
 #'   The [NNG](https://nng.nanomsg.org)-powered
 #'   [`mirai`](https://github.com/shikokuchuo/mirai)
-#'   R package is a powerful task scheduler that efficiently
-#'   processes these intense workloads. The `crew` package
-#'   extends [`mirai`](https://github.com/shikokuchuo/mirai)
-#'   beyond local R processes with a unifying interface
-#'   for third-party worker launchers. Inspiration comes from packages
+#'   R package is a sleek and sophisticated scheduler
+#'   that efficiently processes these intense workloads.
+#'   The `crew` package extends
+#'   [`mirai`](https://github.com/shikokuchuo/mirai)
+#'   with a unifying interface
+#'   for third-party worker launchers.
+#'   Inspiration also comes from packages
 #'   [`future`](https://future.futureverse.org/),
 #'   [`rrq`](https://mrc-ide.github.io/rrq/),
 #'   [`clustermq`](https://mschubert.github.io/clustermq/),

@@ -1,3 +1,3 @@
-# crew 0.0.1
+# crew 0.0.2
 
 * First version.

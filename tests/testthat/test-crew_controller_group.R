@@ -89,6 +89,37 @@ crew_test("crew_controller_group()", {
   }
 })
 
+crew_test("crew_controller_group() tidyselect", {
+  skip_on_cran()
+  crew_session_start()
+  a <- crew_controller_callr(
+    name = "a",
+    seconds_poll_high = 0.01,
+    seconds_poll_low = 0.1
+  )
+  b <- crew_controller_callr(
+    name = "b",
+    tasks_max = 1L,
+    seconds_idle = 360,
+    seconds_poll_high = 0.01,
+    seconds_poll_low = 0.1
+  )
+  x <- crew_controller_group(a, b)
+  on.exit({
+    x$terminate()
+    crew_session_terminate()
+  })
+  expect_false(a$router$listening())
+  expect_false(b$router$listening())
+  x$start(controllers = tidyselect::contains("b"))
+  expect_false(a$router$listening())
+  expect_true(b$router$listening())
+  x$terminate(controllers = tidyselect::contains("b"))
+  expect_false(a$router$listening())
+  expect_false(b$router$listening())
+})
+
+
 crew_test("crew_controller_group() collect", {
   skip_on_cran()
   crew_session_start()

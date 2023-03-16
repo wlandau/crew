@@ -224,7 +224,7 @@ crew_class_launcher <- R6::R6Class(
           host = crew_session_host(),
           port = crew_session_port(),
           token = token,
-          name = name
+          name = self$name
         )
         self$workers$listener[[index]] <- listener
         self$workers$handle[[index]] <- handle

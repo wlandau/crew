@@ -59,19 +59,10 @@ crew_controller_group <- function(...) {
 crew_class_controller_group <- R6::R6Class(
   classname = "crew_class_controller_group",
   private = list(
-    controller_names = function(names = NULL) {
-      names <- as.character(names %|||% names(self$controllers))
-      true(
-        names,
-        is.character(.), !anyNA(.), nzchar(.),
-        message = "invalid controller names."
-      )
-      true(
-        all(names %in% names(self$controllers)),
-        message = "bad controller names."
-      )
+    select_controllers = function(expr) {
+      names <- eval_tidyselect(expr = expr, choices = names(self$controllers))
       true(length(names) > 0L, message = "no controllers selected.")
-      names
+      self$controllers[names]
     }
   ),
   public = list(
@@ -118,39 +109,43 @@ crew_class_controller_group <- R6::R6Class(
     },
     #' @description Start one or more controllers.
     #' @return `NULL` (invisibly).
-    #' @param controllers Character vector of controller names.
-    #'   If `NULL`, it defaults to all controllers in the list.
-    start = function(controllers = NULL) {
-      control <- self$controllers[private$controller_names(controllers)]
+    #' @param controllers Tidyselect expression to select a subset of
+    #'   controllers. Examples include `columns = contains("con1")` and
+    #'   `columns = starts_with("con2")`.
+    start = function(controllers = tidyselect::everything()) {
+      control <- private$select_controllers(enquo(controllers))
       walk(control, ~.x$start())
     },
     #' @description Launch one or more workers on one or more controllers.
     #' @return `NULL` (invisibly).
     #' @param n Number of workers to launch in each controller selected.
-    #' @param controllers Character vector of controller names.
-    #'   If `NULL`, it defaults to all controllers in the list.
-    launch = function(n = 1L, controllers = NULL) {
-      control <- self$controllers[private$controller_names(controllers)]
+    #' @param controllers Tidyselect expression to select a subset of
+    #'   controllers. Examples include `columns = contains("con1")` and
+    #'   `columns = starts_with("con2")`.
+    launch = function(n = 1L, controllers = tidyselect::everything()) {
+      control <- private$select_controllers(enquo(controllers))
       walk(control, ~.x$launch(n = n))
     },
     #' @description Check for done tasks and move the results to
     #'   the results list.
     #' @return `NULL` (invisibly). Removes elements from the `queue`
     #'   list as applicable and moves them to the `results` list.
-    #' @param controllers Character vector of controller names.
-    #'   If `NULL`, it defaults to all controllers in the list.
-    collect = function(controllers = NULL) {
-      control <- self$controllers[private$controller_names(controllers)]
+    #' @param controllers Tidyselect expression to select a subset of
+    #'   controllers. Examples include `columns = contains("con1")` and
+    #'   `columns = starts_with("con2")`.
+    collect = function(controllers = tidyselect::everything()) {
+      control <- private$select_controllers(enquo(controllers))
       walk(control, ~.x$collect())
     },
     #' @description Automatically scale up the number of workers if needed
     #'   in one or more controller objects.
     #' @details See the `scale()` method in individual controller classes.
     #' @return `NULL` (invisibly).
-    #' @param controllers Character vector of controller names.
-    #'   If `NULL`, it defaults to all controllers in the list.
-    scale = function(controllers = NULL) {
-      control <- self$controllers[private$controller_names(controllers)]
+    #' @param controllers Tidyselect expression to select a subset of
+    #'   controllers. Examples include `columns = contains("con1")` and
+    #'   `columns = starts_with("con2")`.
+    scale = function(controllers = tidyselect::everything()) {
+      control <- private$select_controllers(enquo(controllers))
       walk(control, ~.x$scale())
     },
     #' @description Push a task to the head of the task list.
@@ -175,8 +170,16 @@ crew_class_controller_group <- R6::R6Class(
       scale = TRUE,
       controller = NULL
     ) {
-      controller <- utils::head(private$controller_names(controller), n = 1L)
-      true(length(controller) == 1L)
+      controller <- controller %|||%
+        utils::head(names(self$controllers), n = 1L)
+      true(
+        length(controller) == 1L,
+        message = "controller argument of push() must have length 1."
+      )
+      true(
+        controller %in% names(self$controllers),
+        message = sprintf("controller \"%s\" not found", controller)
+      )
       args <- list(
         command = substitute(command),
         args = args,
@@ -197,10 +200,11 @@ crew_class_controller_group <- R6::R6Class(
     #'   of workers is not too high. Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
     #'   quickly after doing little work.
-    #' @param controllers Names of the controllers (in order) to look for
-    #'   completed tasks.
-    pop = function(scale = TRUE, controllers = NULL) {
-      control <- self$controllers[private$controller_names(controllers)]
+    #' @param controllers Tidyselect expression to select a subset of
+    #'   controllers. Examples include `columns = contains("con1")` and
+    #'   `columns = starts_with("con2")`.
+    pop = function(scale = TRUE, controllers = tidyselect::everything()) {
+      control <- private$select_controllers(enquo(controllers))
       for (controller in control) {
         out <- controller$pop(scale = scale)
         if (!is.null(out)) {
@@ -215,9 +219,15 @@ crew_class_controller_group <- R6::R6Class(
     #'   results to become available.
     #' @param wait Number of seconds to wait between polling intervals
     #'   while checking for results.
-    #' @param controllers Names of the controllers to wait for.
-    wait = function(timeout = Inf, wait = 0.1, controllers = NULL) {
-      control <- self$controllers[private$controller_names(controllers)]
+    #' @param controllers Tidyselect expression to select a subset of
+    #'   controllers. Examples include `columns = contains("con1")` and
+    #'   `columns = starts_with("con2")`.
+    wait = function(
+      timeout = Inf,
+      wait = 0.1,
+      controllers = tidyselect::everything()
+    ) {
+      control <- private$select_controllers(enquo(controllers))
       crew_wait(
         fun = ~{
           for (controller in control) {
@@ -238,12 +248,14 @@ crew_class_controller_group <- R6::R6Class(
     #' @param columns Tidyselect expression to select a subset of columns.
     #'   Examples include `columns = contains("worker")` and
     #'   `columns = starts_with("tasks")`.
-    #' @param controllers Names of the controllers to summarize.
+    #' @param controllers Tidyselect expression to select a subset of
+    #'   controllers. Examples include `columns = contains("con1")` and
+    #'   `columns = starts_with("con2")`.
     summary = function(
       columns = tidyselect::everything(),
-      controllers = NULL
+      controllers = tidyselect::everything()
     ) {
-      control <- self$controllers[private$controller_names(controllers)]
+      control <- private$select_controllers(enquo(controllers))
       columns <- rlang::enquo(columns)
       out <- map(
         control,
@@ -257,10 +269,13 @@ crew_class_controller_group <- R6::R6Class(
     #' @description Terminate the workers and disconnect the router
     #'   for one or more controllers.
     #' @return `NULL` (invisibly).
-    #' @param controllers Names of the controllers to terminate.
-    terminate = function(controllers = NULL) {
-      control <- self$controllers[private$controller_names(controllers)]
-      walk(control, ~.x$terminate())
+    #' @param controllers Tidyselect expression to select a subset of
+    #'   controllers. Examples include `columns = contains("con1")` and
+    #'   `columns = starts_with("con2")`.
+    terminate = function(controllers = tidyselect::everything()) {
+      walk(private$select_controllers(enquo(controllers)), ~.x$terminate())
     }
   )
 )
+
+

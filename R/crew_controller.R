@@ -342,6 +342,55 @@ crew_class_controller <- R6::R6Class(
     },
     #' @description Summarize the workers and tasks of the controller.
     #' @return A data frame of summary statistics on the workers and tasks.
+    #'   It has one row per worker websocket and the following columns:
+    #'   * `controller`: name of the controller.
+    #'   * `worker_socket` full websocket address of the worker, including
+    #'     the protocol, IP address, TCP port, and path.
+    #'     To identify specific pieces of the websocket address,
+    #'     call `nanonext::parse_url()`.
+    #'   * `worker_connected`: `TRUE` if a worker is currently connected
+    #'     to the websocket, `FALSE` if not connected, or `NA`
+    #'     if the status cannot be determined because the `mirai`
+    #'     client is not running.
+    #'   * `worker_busy`: `TRUE` if a worker is currently busy running a
+    #'     task, `FALSE` if not busy, or `NA`
+    #'     if the status cannot be determined because the `mirai`
+    #'     client is not running.
+    #'   * `worker_launches`: number of attempts to launch a worker
+    #'     at the websocket since the controller started. If
+    #'     the number of launch attempts gets much higher than
+    #'     the number of tasks or worker instances, then this is a
+    #'     sign that something is wrong with the workers or platform,
+    #'     and it is recommended to quit the pipeline and troubleshoot.
+    #'   * `worker_instances`: number of different worker processes
+    #'     that have connected to the websocket since the `start()`
+    #'     of the controller object. For persistent workers that
+    #'     always stay running, `worker_instances` will be no more than 1.
+    #'     However, in the case of transient workers, e.g. `tasks_max = 1`
+    #'     or a small value of `seconds_idle`, worker processes may
+    #'     time out or exit when the task workload subsides. Then when the
+    #'     task workload surges again, different workers may be launch
+    #'     and connect to the available websockets, so `worker_instances`
+    #'     could be greater than 1.
+    #'   * `tasks_assigned`: number of pushed tasks assigned to the
+    #'     websocket since the controller started.
+    #'   * `tasks_complete`: number of tasks completed by a worker
+    #'     at the websocket since the controller started.
+    #'   * `popped_tasks`: number of tasks which were completed by
+    #'     a worker at the websocket and then returned by calling
+    #'     `pop()` on the controller object.
+    #'   * `popped_seconds`: total number of runtime and seconds of
+    #'     all the tasks that ran on a worker connected to this websocket
+    #'     and then were retrieved by calling `pop()` on the controller
+    #'     object.
+    #'   * `popped_errors`: total number of tasks which ran on a worker
+    #'     at the website, encountered an error in R, and then retrieved
+    #'     with `pop()`.
+    #'   * `popped_warnings`: total number of tasks which ran on a worker
+    #'     at the website, encountered one or more warnings in R,
+    #'     and then retrieved with `pop()`. Note: `popped_warnings`
+    #'     is actually the number of *tasks*, not the number of warnings.
+    #'     (A task could throw more than one warning.)
     #' @param columns Tidyselect expression to select a subset of columns.
     #'   Examples include `columns = contains("worker")` and
     #'   `columns = starts_with("tasks")`.

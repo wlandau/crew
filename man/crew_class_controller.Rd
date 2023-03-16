@@ -356,6 +356,57 @@ Examples include \code{columns = contains("worker")} and
 }
 \subsection{Returns}{
 A data frame of summary statistics on the workers and tasks.
+It has one row per worker websocket and the following columns:
+\itemize{
+\item \code{controller}: name of the controller.
+\item \code{worker_socket} full websocket address of the worker, including
+the protocol, IP address, TCP port, and path.
+To identify specific pieces of the websocket address,
+call \code{nanonext::parse_url()}.
+\item \code{worker_connected}: \code{TRUE} if a worker is currently connected
+to the websocket, \code{FALSE} if not connected, or \code{NA}
+if the status cannot be determined because the \code{mirai}
+client is not running.
+\item \code{worker_busy}: \code{TRUE} if a worker is currently busy running a
+task, \code{FALSE} if not busy, or \code{NA}
+if the status cannot be determined because the \code{mirai}
+client is not running.
+\item \code{worker_launches}: number of attempts to launch a worker
+at the websocket since the controller started. If
+the number of launch attempts gets much higher than
+the number of tasks or worker instances, then this is a
+sign that something is wrong with the workers or platform,
+and it is recommended to quit the pipeline and troubleshoot.
+\item \code{worker_instances}: number of different worker processes
+that have connected to the websocket since the \code{start()}
+of the controller object. For persistent workers that
+always stay running, \code{worker_instances} will be no more than 1.
+However, in the case of transient workers, e.g. \code{tasks_max = 1}
+or a small value of \code{seconds_idle}, worker processes may
+time out or exit when the task workload subsides. Then when the
+task workload surges again, different workers may be launch
+and connect to the available websockets, so \code{worker_instances}
+could be greater than 1.
+\item \code{tasks_assigned}: number of pushed tasks assigned to the
+websocket since the controller started.
+\item \code{tasks_complete}: number of tasks completed by a worker
+at the websocket since the controller started.
+\item \code{popped_tasks}: number of tasks which were completed by
+a worker at the websocket and then returned by calling
+\code{pop()} on the controller object.
+\item \code{popped_seconds}: total number of runtime and seconds of
+all the tasks that ran on a worker connected to this websocket
+and then were retrieved by calling \code{pop()} on the controller
+object.
+\item \code{popped_errors}: total number of tasks which ran on a worker
+at the website, encountered an error in R, and then retrieved
+with \code{pop()}.
+\item \code{popped_warnings}: total number of tasks which ran on a worker
+at the website, encountered one or more warnings in R,
+and then retrieved with \code{pop()}. Note: \code{popped_warnings}
+is actually the number of \emph{tasks}, not the number of warnings.
+(A task could throw more than one warning.)
+}
 }
 }
 \if{html}{\out{<hr>}}

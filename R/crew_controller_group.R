@@ -158,7 +158,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. If `TRUE`, then `collect()` runs first so demand can be
     #'   properly assessed before scaling.
-    #' @param controller Characte of length 1,
+    #' @param controller Character of length 1,
     #'   name of the controller to submit the task.
     #'   If `NULL`, the controller defaults to the
     #'   first controller in the list.
@@ -244,7 +244,11 @@ crew_class_controller_group <- R6::R6Class(
       invisible()
     },
     #' @description Summarize the workers of one or more controllers.
-    #' @return A data frame of summary statistics on the workers and tasks.
+    #' @return A data frame of aggregated worker summary statistics
+    #'   of all the selected controllers. It has one row per worker
+    #'   websocket, and the rows are grouped by controller.
+    #'   See the documentation of the `summary()` method of the controller
+    #'   class for specific information about the columns in the output.
     #' @param columns Tidyselect expression to select a subset of columns.
     #'   Examples include `columns = contains("worker")` and
     #'   `columns = starts_with("tasks")`.
@@ -277,5 +281,3 @@ crew_class_controller_group <- R6::R6Class(
     }
   )
 )
-
-

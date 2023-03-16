@@ -271,7 +271,7 @@ if \code{NULL} or in conflict with an existing name in the task list.}
 demand. If \code{TRUE}, then \code{collect()} runs first so demand can be
 properly assessed before scaling.}
 
-\item{\code{controller}}{Characte of length 1,
+\item{\code{controller}}{Character of length 1,
 name of the controller to submit the task.
 If \code{NULL}, the controller defaults to the
 first controller in the list.}
@@ -375,7 +375,11 @@ controllers. Examples include \code{columns = contains("con1")} and
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A data frame of summary statistics on the workers and tasks.
+A data frame of aggregated worker summary statistics
+of all the selected controllers. It has one row per worker
+websocket, and the rows are grouped by controller.
+See the documentation of the \code{summary()} method of the controller
+class for specific information about the columns in the output.
 }
 }
 \if{html}{\out{<hr>}}

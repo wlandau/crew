@@ -23,7 +23,7 @@
 #' @importFrom callr r_bg
 #' @importFrom getip getip
 #' @importFrom mirai daemons mirai server unresolved
-#' @importFrom nanonext socket stat
+#' @importFrom nanonext random sha224 socket stat
 #' @importFrom parallelly freePort
 #' @importFrom ps ps_handle ps_is_running ps_kill
 #' @importFrom R6 R6Class
@@ -32,7 +32,6 @@
 #' @importFrom tidyselect all_of any_of contains ends_with eval_select
 #'   everything last_col matches num_range one_of starts_with
 #' @importFrom utils globalVariables head
-#' @importFrom uuid UUIDgenerate
 #' @importFrom withr local_options
 NULL
 

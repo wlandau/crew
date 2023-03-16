@@ -1,10 +1,5 @@
 random_name <- function() {
-  gsub(
-    pattern = "-",
-    replacement = "",
-    x = uuid::UUIDgenerate(),
-    fixed = TRUE
-  )
+  nanonext::sha224(nanonext::random(n = 100))
 }
 
 is_named <- function(x) {

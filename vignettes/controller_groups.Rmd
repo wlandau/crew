@@ -27,6 +27,8 @@ persistent <- crew_controller_callr(name = "persistent")
 transient <- crew_controller_callr(name = "semi-transient", tasks_max = 4L)
 ```
 
+`crew` uses a different TCP port for each controller you run, so please do not create hundreds of controllers. Please see the subsection on ports in the [README](https://wlandau.github.io/crew/index.html).
+
 We put these controller objects into a new controller group object.
 
 ```{r}

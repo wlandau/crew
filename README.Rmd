@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-[![status](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#WIP)
+[![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#Active)
 [![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
 [![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
@@ -177,6 +177,10 @@ The `crew` package has unavoidable risk. It is your responsibility as the user t
 ### Security
 
 `crew` uses TCP connections for transactions with workers inside a trusted local network. In a compromised network, an attacker can potentially access and exploit sensitive resources. It is your responsibility to assess the sensitivity and vulnerabilities of your computing environment and make sure your network is secure.
+
+### Ports
+
+`crew` may use more than one TCP port at a time. The number of ports used is the number of running controllers, plus one extra port that `crew_session_start()` reserves for checking the status of workers. TCP ports range from 0 to 65535, and only around 16000 of these ports are considered ephemeral or dynamic, so please be careful not to run too many controllers if you are running R on a machine you share with other people (such as the login node of a computing cluster). If you are running a [controller group](https://wlandau.github.io/crew/articles/controller_groups.html) please add only a small number of controllers to the group. The `terminate()` method of the controller and `crew_session_terminate()` should free these ports again for other processes to use.
 
 ### Resources
 

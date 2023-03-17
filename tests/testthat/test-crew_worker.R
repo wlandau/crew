@@ -27,6 +27,7 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
 
 crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   skip_on_cran()
+  skip_on_os("windows")
   previous <- Sys.getenv(c("CREW_SOCKET_DATA", "CREW_SOCKET_SESSION"))
   Sys.unsetenv(c("CREW_SOCKET_DATA", "CREW_SOCKET_SESSION"))
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)))

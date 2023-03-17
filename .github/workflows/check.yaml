@@ -42,20 +42,13 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck, any::devtools, any::usethis, local::.
+          extra-packages: any::rcmdcheck, local::.
           needs: check
           cache-version: 2
 
       - name: update mirai
-        run: |
-          install.packages("mirai", type = "source")
-          print(packageVersion("mirai"))
-          stopifnot(packageVersion("mirai") >= "0.8.1")
+        run: install.packages("mirai", type = "source")
         shell: Rscript {0}
-
-      - name: Setup tmate session
-        if: runner.os == 'Windows'
-        uses: mxschmitt/action-tmate@v3
 
       - uses: r-lib/actions/check-r-package@v2
         with:

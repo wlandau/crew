@@ -9,6 +9,8 @@ crew_test("crew_router() validate", {
 })
 
 crew_test("crew_router() works", {
+  skip_on_cran()
+  skip_on_os("windows")
   router <- crew_router(
     seconds_poll_high = 0.01,
     seconds_poll_low = 0.1

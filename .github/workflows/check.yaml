@@ -53,6 +53,10 @@ jobs:
           stopifnot(packageVersion("mirai") >= "0.8.1")
         shell: Rscript {0}
 
+      - name: Setup tmate session
+        if: runner.os == 'Windows'
+        uses: mxschmitt/action-tmate@v3
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true

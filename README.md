@@ -1,10 +1,9 @@
+# crew: a distributed worker launcher <img src='man/figures/logo-readme.png' align="right" height="139"/>
+
 [![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#Active)
 [![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
 [![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
-<img src='man/figures/logo-readme.png' align="right" height="139"/>
-
-# crew: a distributed worker launcher
 
 In computationally demanding analysis projects, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services. The [NNG](https://nng.nanomsg.org)-powered [`mirai`](https://github.com/shikokuchuo/mirai) R package is a sleek and sophisticated scheduler that efficiently processes these intense workloads. The `crew` package extends [`mirai`](https://github.com/shikokuchuo/mirai) with a unifying interface for third-party worker launchers. Inspiration also comes from packages [`future`](https://future.futureverse.org/), [`rrq`](https://mrc-ide.github.io/rrq/), [`clustermq`](https://mschubert.github.io/clustermq/), and [`batchtools`](https://mllg.github.io/batchtools/).
 

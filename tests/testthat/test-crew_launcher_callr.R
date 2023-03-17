@@ -53,13 +53,18 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
   crew::crew_wait(~!anyNA(m$data), timeout = 5, wait = 0.1)
   expect_equal(m$data, launcher$workers$handle[[2L]]$get_pid())
   router$terminate()
-  crew::crew_wait(
-    ~{
-      handle <- launcher$workers$handle[[2L]]
-      is_crew_null(handle) || !handle$is_alive()
-    },
-    timeout = 5,
-    wait = 0.1
+  tryCatch(
+    crew::crew_wait(
+      ~{
+        handle <- launcher$workers$handle[[2L]]
+        is_crew_null(handle) || !handle$is_alive()
+      },
+      timeout = 5,
+      wait = 0.1
+    ),
+    crew_expire = function(condition) {
+      launcher$workers$handle[[2L]]$kill()
+    }
   )
   crew::crew_wait(
     ~{

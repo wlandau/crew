@@ -20,6 +20,7 @@ crew_test("crew_controller_group() method signature compatibility", {
 
 crew_test("crew_controller_group()", {
   skip_on_cran()
+  skip_on_os("windows")
   crew_session_start()
   a <- crew_controller_callr(
     name = "a",
@@ -113,6 +114,7 @@ crew_test("crew_controller_group()", {
 
 crew_test("crew_controller_group() select", {
   skip_on_cran()
+  skip_on_os("windows")
   crew_session_start()
   a <- crew_controller_callr(
     name = "a",
@@ -145,6 +147,7 @@ crew_test("crew_controller_group() select", {
 
 crew_test("crew_controller_group() collect", {
   skip_on_cran()
+  skip_on_os("windows")
   crew_session_start()
   a <- crew_controller_callr(
     name = "a",
@@ -186,6 +189,7 @@ crew_test("crew_controller_group() collect", {
 
 crew_test("crew_controller_group() launch method", {
   skip_on_cran()
+  skip_on_os("windows")
   crew_session_start()
   a <- crew_controller_callr(
     name = "a",
@@ -234,6 +238,7 @@ crew_test("crew_controller_group() launch method", {
 
 crew_test("crew_controller_group() scale method", {
   skip_on_cran()
+  skip_on_os("windows")
   crew_session_start()
   a <- crew_controller_callr(
     name = "a",

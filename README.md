@@ -9,7 +9,14 @@ In computationally demanding analysis projects, statisticians and data scientist
 
 # Installation
 
-`crew` is not yet available on CRAN, and it requires the development version of [`mirai`](https://github.com/shikokuchuo/mirai).
+Install the latest release:
+
+
+```r
+install.packages("crew")
+```
+
+Install the development version:
 
 
 ```r

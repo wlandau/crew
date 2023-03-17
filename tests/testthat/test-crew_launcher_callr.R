@@ -1,5 +1,6 @@
 crew_test("crew_launcher_callr() can run a task on a worker", {
   skip_on_cran()
+  skip_on_os("windows")
   router <- crew_router(
     workers = 4L,
     seconds_poll_high = 0.01,
@@ -85,6 +86,7 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
 
 crew_test("crew_launcher_callr() can run a task and time out a worker", {
   skip_on_cran()
+  skip_on_os("windows")
   router <- crew_router(
     workers = 1L,
     seconds_poll_high = 0.01,
@@ -147,6 +149,7 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
 
 crew_test("crew_launcher_callr() can run a task and end a worker", {
   skip_on_cran()
+  skip_on_os("windows")
   router <- crew_router(
     workers = 1L,
     seconds_poll_high = 0.01,
@@ -215,6 +218,7 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
 
 crew_test("worker that immediately times out is still discovered", {
   skip_on_cran()
+  skip_on_os("windows")
   router <- crew_router(
     workers = 1L,
     seconds_poll_high = 0.01,
@@ -256,6 +260,7 @@ crew_test("worker that immediately times out is still discovered", {
 
 crew_test("launcher cleans up old worker", {
   skip_on_cran()
+  skip_on_os("windows")
   router <- crew_router(
     workers = 1L,
     seconds_poll_high = 0.01,

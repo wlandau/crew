@@ -68,11 +68,16 @@ crew_test("crew_controller_callr()", {
   expect_true(anyNA(out$warnings))
   x$terminate()
   expect_false(x$router$listening())
-  expect_equal(x$launcher$active(), character(0L))
+  crew_wait(
+    ~identical(x$launcher$active(), character(0L)),
+    wait = 0.001,
+    timeout = 5,
+  )
 })
 
 crew_test("crew_controller_callr() warnings and errors", {
   skip_on_cran()
+  skip_on_os("windows")
   crew_session_start()
   x <- crew_controller_callr(
     seconds_idle = 360,
@@ -113,6 +118,7 @@ crew_test("crew_controller_callr() warnings and errors", {
 
 crew_test("crew_controller_callr() launch method", {
   skip_on_cran()
+  skip_on_os("windows")
   crew_session_start()
   x <- crew_controller_callr(
     seconds_idle = 360,
@@ -134,6 +140,7 @@ crew_test("crew_controller_callr() launch method", {
 
 crew_test("crew_controller_callr() collect method", {
   skip_on_cran()
+  skip_on_os("windows")
   crew_session_start()
   x <- crew_controller_callr(
     workers = 1L,

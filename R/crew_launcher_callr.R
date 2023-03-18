@@ -106,6 +106,8 @@ crew_class_launcher_callr <- R6::R6Class(
     #'   returned by `launch_worker()`.
     terminate_worker = function(handle) {
       handle$kill()
+      crew_wait(~!handle$is_alive(), timeout = 15, wait = 0.001)
+      invisible()
     }
   )
 )

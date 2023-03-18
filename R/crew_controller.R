@@ -214,21 +214,15 @@ crew_class_controller <- R6::R6Class(
     #'   the results list.
     #' @return `NULL` (invisibly). Removes elements from the `queue`
     #'   list as applicable and moves them to the `results` list.
-    #' @param n Maximum number of completed tasks to collect.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    collect = function(n = Inf, controllers = NULL) {
+    collect = function(controllers = NULL) {
       done <- integer(0L)
-      collected <- 0L
       for (index in seq_along(self$queue)) {
-        if (collected >= n) {
-          break
-        }
         task <- self$queue[[index]]
         if (!nanonext_unresolved(task$handle[[1L]])) {
           self$results[[length(self$results) + 1L]] <- task
-          done <- c(done, index)
-          collected <- collected + 1L
+          done[length(done) + 1L] <- index
         }
       }
       self$queue[done] <- NULL
@@ -274,9 +268,9 @@ crew_class_controller <- R6::R6Class(
         handle = list(handle)
       )
       self$queue[[length(self$queue) + 1L]] <- task
+      self$collect()
       if (scale && (length(self$launcher$active()) < self$router$workers)) {
         self$clean()
-        self$collect(n = Inf)
         self$scale()
       }
       invisible()
@@ -298,12 +292,10 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop = function(scale = TRUE, controllers = NULL) {
+      self$collect()
       if (scale && (length(self$launcher$active()) < self$router$workers)) {
         self$clean()
-        self$collect(n = Inf)
         self$scale()
-      } else if (length(self$results) < 1L) {
-        self$collect(n = 1L)
       }
       out <- NULL
       if (length(self$results) > 0L) {
@@ -365,8 +357,8 @@ crew_class_controller <- R6::R6Class(
       tryCatch(
         crew_wait(
           fun = ~{
+            self$collect()
             self$clean()
-            self$collect(n = Inf)
             self$scale()
             done <- length(self$results) > 0L
             if (identical(mode, "all")) {

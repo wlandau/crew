@@ -336,6 +336,7 @@ crew_class_launcher <- R6::R6Class(
         self$workers$start[index] <- NA_real_
         self$workers$token[index] <- NA_character_
         self$workers$listener[[index]] <- crew_null
+        self$workers$handle[[index]] <- crew_null
       }
       invisible()
     }

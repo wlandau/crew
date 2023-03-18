@@ -156,12 +156,11 @@ crew_class_controller_group <- R6::R6Class(
     #'   the results list.
     #' @return `NULL` (invisibly). Removes elements from the `queue`
     #'   list as applicable and moves them to the `results` list.
-    #' @param n Maximum number of completed tasks to collect.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    collect = function(n = Inf, controllers = NULL) {
+    collect = function(controllers = NULL) {
       control <- private$select_controllers(controllers)
-      walk(control, ~.x$collect(n = n))
+      walk(control, ~.x$collect())
     },
     #' @description Push a task to the head of the task list.
     #' @return `NULL` (invisibly).
@@ -257,8 +256,8 @@ crew_class_controller_group <- R6::R6Class(
         crew_wait(
           fun = ~{
             for (controller in control) {
+              controller$collect()
               controller$clean()
-              controller$collect(n = Inf)
               controller$scale()
               done <- length(controller$results) > 0L
               if (identical(mode, "all")) {

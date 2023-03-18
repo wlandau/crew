@@ -216,14 +216,12 @@ See the \code{scale()} method in individual controller classes.
 Check for done tasks and move the results to
 the results list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(n = Inf, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{Maximum number of completed tasks to collect.}
-
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
 }

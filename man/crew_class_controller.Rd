@@ -250,14 +250,12 @@ number of workers.
 Check for done tasks and move the results to
 the results list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(n = Inf, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{Maximum number of completed tasks to collect.}
-
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
 }

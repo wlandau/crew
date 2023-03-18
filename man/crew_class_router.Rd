@@ -44,9 +44,9 @@ Other routers:
 
 \item{\code{port}}{See \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{router_timeout}}{See \code{\link[=crew_router]{crew_router()}}.}
+\item{\code{seconds_router_timeout}}{See \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{router_wait}}{See \code{\link[=crew_router]{crew_router()}}.}
+\item{\code{seconds_router_wait}}{See \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{seconds_exit}}{See \code{\link[=crew_router]{crew_router()}}.}
 
@@ -84,8 +84,8 @@ Other routers:
   workers = NULL,
   host = NULL,
   port = NULL,
-  router_timeout = NULL,
-  router_wait = NULL,
+  seconds_router_timeout = NULL,
+  seconds_router_wait = NULL,
   seconds_exit = NULL,
   seconds_poll_high = NULL,
   seconds_poll_low = NULL,
@@ -104,9 +104,9 @@ Other routers:
 
 \item{\code{port}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{router_timeout}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+\item{\code{seconds_router_timeout}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{router_wait}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+\item{\code{seconds_router_wait}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{seconds_exit}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 

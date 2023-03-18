@@ -9,8 +9,8 @@ crew_controller_callr(
   workers = 1L,
   host = NULL,
   port = 0L,
-  router_timeout = 5,
-  router_wait = 0.1,
+  seconds_router_timeout = 5,
+  seconds_router_wait = 0.1,
   seconds_exit = 0.1,
   seconds_poll_high = 0.001,
   seconds_poll_low = 0.01,
@@ -36,11 +36,11 @@ If \code{NULL}, the host defaults to the local IP address.}
 \item{port}{TCP port to listen for the workers. If \code{0},
 then NNG automatically chooses an available ephemeral port.}
 
-\item{router_timeout}{Number of seconds to time out waiting for the \code{mirai}
-client to (dis)connect.}
+\item{seconds_router_timeout}{Number of seconds to time out waiting
+for the \code{mirai} client to (dis)connect.}
 
-\item{router_wait}{Number of seconds to wait between iterations checking
-if the \code{mirai} client is (dis)connected.}
+\item{seconds_router_wait}{Number of seconds to wait between
+iterations checking if the \code{mirai} client is (dis)connected.}
 
 \item{seconds_exit}{Number of seconds to wait for NNG websockets
 to finish sending large data (in case an exit signal is received).}

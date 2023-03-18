@@ -11,10 +11,10 @@
 #'   If `NULL`, the host defaults to the local IP address.
 #' @param port TCP port to listen for the workers. If `0`,
 #'   then NNG automatically chooses an available ephemeral port.
-#' @param router_timeout Number of seconds to time out waiting for the `mirai`
-#'   client to (dis)connect.
-#' @param router_wait Number of seconds to wait between iterations checking
-#'   if the `mirai` client is (dis)connected.
+#' @param seconds_router_timeout Number of seconds to time out waiting
+#'   for the `mirai` client to (dis)connect.
+#' @param seconds_router_wait Number of seconds to wait between
+#'   iterations checking if the `mirai` client is (dis)connected.
 #' @param seconds_exit Number of seconds to wait for NNG websockets
 #'   to finish sending large data (in case an exit signal is received).
 #' @param seconds_poll_high High polling interval in seconds for the
@@ -37,8 +37,8 @@ crew_router <- function(
   workers = 1L,
   host = NULL,
   port = 0L,
-  router_timeout = 5,
-  router_wait = 0.001,
+  seconds_router_timeout = 5,
+  seconds_router_wait = 0.001,
   seconds_exit = 0.1,
   seconds_poll_high = 0.001,
   seconds_poll_low = 0.01,
@@ -54,8 +54,8 @@ crew_router <- function(
     workers = workers,
     host = host,
     port = port,
-    router_timeout = router_timeout,
-    router_wait = router_wait,
+    seconds_router_timeout = seconds_router_timeout,
+    seconds_router_wait = seconds_router_wait,
     seconds_exit = seconds_exit,
     seconds_poll_high = seconds_poll_high,
     seconds_poll_low = seconds_poll_low,
@@ -89,10 +89,10 @@ crew_class_router <- R6::R6Class(
     host = NULL,
     #' @field port See [crew_router()].
     port = NULL,
-    #' @field router_timeout See [crew_router()].
-    router_timeout = NULL,
-    #' @field router_wait See [crew_router()].
-    router_wait = NULL,
+    #' @field seconds_router_timeout See [crew_router()].
+    seconds_router_timeout = NULL,
+    #' @field seconds_router_wait See [crew_router()].
+    seconds_router_wait = NULL,
     #' @field seconds_exit See [crew_router()].
     seconds_exit = NULL,
     #' @field seconds_poll_high See [crew_router()].
@@ -111,8 +111,8 @@ crew_class_router <- R6::R6Class(
     #' @param workers Argument passed from [crew_router()].
     #' @param host Argument passed from [crew_router()].
     #' @param port Argument passed from [crew_router()].
-    #' @param router_timeout Argument passed from [crew_router()].
-    #' @param router_wait Argument passed from [crew_router()].
+    #' @param seconds_router_timeout Argument passed from [crew_router()].
+    #' @param seconds_router_wait Argument passed from [crew_router()].
     #' @param seconds_exit Argument passed from [crew_router()].
     #' @param seconds_poll_high Argument passed from [crew_router()].
     #' @param seconds_poll_low Argument passed from [crew_router()].
@@ -129,8 +129,8 @@ crew_class_router <- R6::R6Class(
       workers = NULL,
       host = NULL,
       port = NULL,
-      router_timeout = NULL,
-      router_wait = NULL,
+      seconds_router_timeout = NULL,
+      seconds_router_wait = NULL,
       seconds_exit = NULL,
       seconds_poll_high = NULL,
       seconds_poll_low = NULL,
@@ -140,8 +140,8 @@ crew_class_router <- R6::R6Class(
       self$workers <- workers
       self$host <- host
       self$port <- port
-      self$router_timeout <- router_timeout
-      self$router_wait <- router_wait
+      self$seconds_router_timeout <- seconds_router_timeout
+      self$seconds_router_wait <- seconds_router_wait
       self$seconds_exit <- seconds_exit
       self$seconds_poll_high <- seconds_poll_high
       self$seconds_poll_low <- seconds_poll_low
@@ -156,8 +156,8 @@ crew_class_router <- R6::R6Class(
       true(self$port, is.integer(.), length(.) == 1L, !anyNA(.))
       true(self$port, . >= 0L, . <= 65535L)
       fields <- c(
-        "router_timeout",
-        "router_wait",
+        "seconds_router_timeout",
+        "seconds_router_wait",
         "seconds_exit",
         "seconds_poll_high",
         "seconds_poll_low"
@@ -178,7 +178,7 @@ crew_class_router <- R6::R6Class(
         !is.na(.),
         . >= 0
       )
-      true(self$router_timeout >= self$router_wait)
+      true(self$seconds_router_timeout >= self$seconds_router_wait)
       true(self$async_dial, isTRUE(.) || isFALSE(.))
       true(self$daemons, is.null(.) || is.data.frame(.))
       invisible()
@@ -216,8 +216,8 @@ crew_class_router <- R6::R6Class(
         do.call(what = mirai::daemons, args = args)
         crew_wait(
           fun = ~isTRUE(self$listening()),
-          timeout = self$router_timeout,
-          wait = self$router_wait,
+          timeout = self$seconds_router_timeout,
+          wait = self$seconds_router_wait,
           message = "mirai client cannot connect."
         )
         self$poll()
@@ -268,15 +268,15 @@ crew_class_router <- R6::R6Class(
         mirai::daemons(n = 0L, .compute = self$name)
         crew_wait(
           fun = ~isFALSE(self$listening()),
-          timeout = self$router_timeout,
-          wait = self$router_wait,
+          timeout = self$seconds_router_timeout,
+          wait = self$seconds_router_wait,
           message = "mirai client could not terminate."
         )
         tryCatch(
           crew_wait(
             fun = ~!ps::ps_is_running(handle),
-            timeout = self$router_timeout,
-            wait = self$router_wait
+            timeout = self$seconds_router_timeout,
+            wait = self$seconds_router_wait
           ),
           crew_expire = function(condition) NULL
         )
@@ -288,8 +288,8 @@ crew_class_router <- R6::R6Class(
         tryCatch(
           crew_wait(
             fun = ~!ps::ps_is_running(handle),
-            timeout = self$router_timeout,
-            wait = self$router_wait
+            timeout = self$seconds_router_timeout,
+            wait = self$seconds_router_wait
           ),
           crew_expire = function(condition) NULL
         )

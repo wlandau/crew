@@ -50,7 +50,11 @@ crew_test("crew_controller_callr()", {
     )
   )
   expect_equal(s$popped_tasks, 0L)
-  crew_wait(~x$router$listening(), timeout = 5, wait = 0.1)
+  crew_wait(
+    ~x$router$listening(),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   x$push(command = ps::ps_pid(), name = "task_pid")
   x$wait(timeout = 5)
   out <- x$pop(scale = TRUE)
@@ -70,8 +74,8 @@ crew_test("crew_controller_callr()", {
   expect_false(x$router$listening())
   crew_wait(
     ~identical(x$launcher$active(), character(0L)),
-    wait = 0.001,
-    timeout = 5,
+    seconds_interval = 0.001,
+    seconds_timeout = 5,
   )
 })
 
@@ -133,7 +137,15 @@ crew_test("crew_controller_callr() launch method", {
   x$start()
   expect_equal(length(x$launcher$active()), 0L)
   x$launch(n = 1L)
-  crew_wait(~length(x$launcher$active()) > 0L, wait = 0.1, timeout = 5)
+  crew_wait(
+    ~length(x$launcher$active()) > 0L,
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   x$terminate()
-  crew_wait(~length(x$launcher$active()) == 0L, wait = 0.1, timeout = 5)
+  crew_wait(
+    ~length(x$launcher$active()) == 0L,
+    seconds_interval = 0.1, 
+    seconds_timeout = 5
+  )
 })

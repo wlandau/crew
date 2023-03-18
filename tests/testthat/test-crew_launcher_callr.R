@@ -30,8 +30,8 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
   expect_silent(launcher$validate())
   crew::crew_wait(
     ~launcher$workers$handle[[2L]]$is_alive(),
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew::crew_wait(
     ~{
@@ -39,19 +39,23 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
       status <- unname(daemons[, "status_online", drop = TRUE])[2L]
       length(status) == 1L && status > 0L
     },
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew_wait(
     ~identical(launcher$active(), socket),
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   expect_true(dialer_connected(launcher$workers$listener[[2L]]))
   expect_true(dialer_discovered(launcher$workers$listener[[2L]]))
   expect_equal(launcher$workers$launches, c(0L, 1L, 0L, 0L))
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
-  crew::crew_wait(~!anyNA(m$data), timeout = 5, wait = 0.1)
+  crew_wait(
+    ~!anyNA(m$data),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   expect_equal(m$data, launcher$workers$handle[[2L]]$get_pid())
   router$terminate()
   tryCatch(
@@ -60,8 +64,8 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
         handle <- launcher$workers$handle[[2L]]
         is_crew_null(handle) || !handle$is_alive()
       },
-      timeout = 5,
-      wait = 0.1
+      seconds_interval = 0.001,
+      seconds_timeout = 5
     ),
     crew_expire = function(condition) {
       launcher$workers$handle[[2L]]$kill()
@@ -72,13 +76,13 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
       listener <- launcher$workers$listener[[2L]]
       !dialer_connected(listener)
     },
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew_wait(
     ~identical(launcher$active(), character(0)),
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   expect_false(dialer_connected(launcher$workers$listener[[2L]]))
   expect_true(dialer_discovered(launcher$workers$listener[[2L]]))
@@ -111,24 +115,28 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
       handle <- launcher$workers$handle[[1]]
       !is_crew_null(handle) && handle$is_alive()
     },
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew_wait(
     ~identical(launcher$active(), socket),
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
-  crew::crew_wait(~!anyNA(m$data), timeout = 5, wait = 0.1)
+  crew::crew_wait(
+    ~!anyNA(m$data),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   expect_equal(m$data, launcher$workers$handle[[1]]$get_pid())
   crew::crew_wait(
     ~{
       handle <- launcher$workers$handle[[1]]
       is_crew_null(handle) || !handle$is_alive()
     },
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew::crew_wait(
     ~{
@@ -136,13 +144,13 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
       status <- unname(daemons[, "status_online", drop = TRUE])
       length(status) != 1L || status < 1L
     },
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew_wait(
     ~identical(launcher$active(), character()),
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   router$terminate()
 })
@@ -174,21 +182,21 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
       status <- unname(daemons[, "status_online", drop = TRUE])
       length(status) == 1L && status > 0L
     },
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew::crew_wait(
     ~{
       handle <- launcher$workers$handle[[1]]
       !is_crew_null(handle) && handle$is_alive()
     },
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew_wait(
     ~identical(launcher$active(), socket),
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   expect_silent(launcher$terminate())
   crew::crew_wait(
@@ -197,21 +205,21 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
       status <- unname(daemons[, "status_online", drop = TRUE])
       length(status) != 1L || status < 1L
     },
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew::crew_wait(
     ~{
       handle <- launcher$workers$handle[[1]]
       is_crew_null(handle) || !handle$is_alive()
     },
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew_wait(
     ~identical(launcher$active(), character(0)),
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   router$terminate()
 })
@@ -246,13 +254,13 @@ crew_test("worker that immediately times out is still discovered", {
       handle <- launcher$workers$handle[[1]]
       !is_crew_null(handle) && !handle$is_alive()
     },
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew_wait(
     ~identical(launcher$active(), character(0)),
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   expect_false(dialer_connected(launcher$workers$listener[[1]]))
   expect_true(dialer_discovered(launcher$workers$listener[[1]]))
@@ -283,9 +291,17 @@ crew_test("launcher cleans up old worker", {
   launcher$populate(sockets = router$daemons$worker_socket)
   launcher$launch(sockets = socket)
   handle <- launcher$workers$handle[[1]]
-  crew_wait(~handle$is_alive(), wait = 0.01, timeout = 5)
+  crew_wait(
+    ~handle$is_alive(),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   expect_true(handle$is_alive())
   launcher$launch(sockets = socket)
-  crew_wait(~!handle$is_alive(), wait = 0.01, timeout = 5)
+  crew_wait(
+    ~!handle$is_alive(),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   expect_false(handle$is_alive())
 })

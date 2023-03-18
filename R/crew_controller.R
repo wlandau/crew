@@ -225,7 +225,7 @@ crew_class_controller <- R6::R6Class(
           break
         }
         task <- self$queue[[index]]
-        if (!mirai::unresolved(task$handle[[1L]])) {
+        if (!nanonext_unresolved(task$handle[[1L]])) {
           self$results[[length(self$results) + 1L]] <- task
           done <- c(done, index)
           collected <- collected + 1L

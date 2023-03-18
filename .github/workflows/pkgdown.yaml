@@ -36,6 +36,10 @@ jobs:
           needs: website
           cache-version: 2
 
+      - name: update mirai
+        run: install.packages("mirai", type = "source")
+        shell: Rscript {0}
+
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}

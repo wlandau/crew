@@ -46,6 +46,10 @@ jobs:
           needs: check
           cache-version: 2
 
+      - name: update mirai
+        run: install.packages("mirai", type = "source")
+        shell: Rscript {0}
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true

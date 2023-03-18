@@ -21,6 +21,9 @@ or \code{TRUE} to stop waiting.}
 \item{seconds_interval}{Nonnegative numeric of length 1,
 number of seconds to wait between calls to \code{fun}.}
 
+\item{seconds_timeout}{Nonnegative numeric of length 1,
+number of seconds to loop before timing out.}
+
 \item{message}{Character of length 1, optional error message
 if the wait times out.}
 }

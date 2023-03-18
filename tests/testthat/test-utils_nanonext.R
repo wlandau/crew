@@ -23,17 +23,33 @@ crew_test("connections", {
     port = port,
     token = "example"
   )
-  crew_wait(~dialer_connected(listen), timeout = 5, wait = 0.001)
-  crew_wait(~dialer_discovered(listen), timeout = 5, wait = 0.001)
+  crew_wait(
+    ~dialer_connected(listen),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
+  crew_wait(
+    ~dialer_discovered(listen),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   expect_true(dialer_discovered(listen))
   close(dial)
   connection_wait_closed(dial)
-  crew_wait(~!dialer_connected(listen), timeout = 5, wait = 0.001)
+  crew_wait(
+    ~!dialer_connected(listen),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   expect_true(dialer_discovered(listen))
   close(listen)
   connection_wait_closed(listen)
   expect_false(dialer_connected(listen))
   expect_false(dialer_discovered(listen))
-  crew_wait(~identical(listen$state, "closed"), timeout = 5, wait = 0.1)
+  crew_wait(
+    ~identical(listen$state, "closed"),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   expect_equal(listen$state, "closed")
 })

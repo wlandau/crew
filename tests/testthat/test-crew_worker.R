@@ -21,7 +21,11 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
     port = crew_session_port(),
     token = token
   )
-  crew_wait(~dialer_discovered(listener), timeout = 5, wait = 0.001)
+  crew_wait(
+    ~dialer_discovered(listener),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   expect_true(dialer_discovered(listener))
 })
 
@@ -44,7 +48,11 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
       session = Sys.getenv("CREW_SOCKET_SESSION")
     )
   )
-  crew_wait(~mirai::daemons()$connections > 0L, timeout = 5, wait = 0.001)
+  crew_wait(
+    ~mirai::daemons()$connections > 0L,
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   url <- rownames(mirai::daemons()$daemons)[1]
   settings <- list(url = url, maxtasks = 1L, cleanup = FALSE)
   token <- "this_token"
@@ -60,7 +68,11 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     token = token
   )
   exp <- list(mirai = socket, session = session)
-  crew_wait(~identical(m$data, exp), timeout = 5, wait = 0.001)
+  crew_wait(
+    ~identical(m$data, exp),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   expect_equal(m$data, exp)
   expect_equal(Sys.getenv("CREW_SOCKET_DATA", unset = ""), "")
   expect_equal(Sys.getenv("CREW_SOCKET_SESSION", unset = ""), "")

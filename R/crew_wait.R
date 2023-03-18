@@ -10,7 +10,7 @@
 #' @param seconds_interval Nonnegative numeric of length 1,
 #'   number of seconds to wait between calls to `fun`.
 #' @param seconds_timeout Nonnegative numeric of length 1,
-#'   number of seconds to loop before timing out.\
+#'   number of seconds to loop before timing out.
 #' @param message Character of length 1, optional error message
 #'   if the wait times out.
 #' @examples

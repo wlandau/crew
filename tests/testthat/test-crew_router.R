@@ -54,16 +54,20 @@ crew_test("crew_router() works", {
     function(socket) mirai::server(socket),
     args = list(socket = socket)
   )
-  crew::crew_wait(
+  crew_wait(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons
       identical(unname(daemons[, "status_online", drop = TRUE]), 1L)
     },
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
-  crew::crew_wait(~!anyNA(m$data), timeout = 5, wait = 0.1)
+  crew_wait(
+    ~!anyNA(m$data),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   expect_false(anyNA(m$data))
   expect_true(is.numeric(m$data))
   expect_true(abs(m$data - ps::ps_pid()) > 0.5)

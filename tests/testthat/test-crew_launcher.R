@@ -77,7 +77,11 @@ crew_test("launcher active()", {
       )
       dialers[[length(dialers) + 1L]] <- dialer
       Sys.sleep(0.1)
-      crew_wait(~dialer_discovered(listener), timeout = 5, wait = 0.001)
+      crew_wait(
+        ~dialer_discovered(listener),
+        seconds_interval = 0.001,
+        seconds_timeout = 5
+      )
     }
     if (index > 6L) {
       close(dialer)

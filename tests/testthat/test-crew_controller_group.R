@@ -82,7 +82,7 @@ crew_test("crew_controller_group()", {
   )
   expect_null(x$pop())
   x$push(command = ps::ps_pid(), name = "task_pid", controller = "b")
-  x$wait(timeout = 5)
+  x$wait(seconds_timeout = 5)
   out <- x$pop(scale = FALSE)
   expect_false(is.null(out))
   expect_equal(out$name, "task_pid")
@@ -101,13 +101,13 @@ crew_test("crew_controller_group()", {
   for (index in seq_len(2)) {
     crew_wait(
       ~!x$controllers[[index]]$router$listening(),
-      timeout = 5,
-      wait = 0.1
+      seconds_interval = 0.001,
+      seconds_timeout = 5
     )
     crew_wait(
       ~(length(x$controllers[[index]]$launcher$active()) == 0L),
-      timeout = 5,
-      wait = 0.1
+      seconds_interval = 0.001,
+      seconds_timeout = 5
     )
   }
 })
@@ -177,7 +177,9 @@ crew_test("crew_controller_group() collect", {
     fun = ~{
       x$collect()
       length(x$controllers[[1]]$results) > 0L
-    }
+    },
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   out <- x$pop(scale = FALSE, controllers = "a")
   expect_equal(
@@ -214,24 +216,24 @@ crew_test("crew_controller_group() launch method", {
   for (index in seq_len(2)) {
     crew_wait(
       ~(length(x$controllers[[index]]$launcher$active()) == 0L),
-      timeout = 5,
-      wait = 0.1
+      seconds_interval = 0.001,
+      seconds_timeout = 5
     )
   }
   expect_silent(x$launch(n = 1L))
   for (index in seq_len(2)) {
     crew_wait(
       ~(length(x$controllers[[index]]$launcher$active()) == 1L),
-      timeout = 5,
-      wait = 0.1
+      seconds_interval = 0.001,
+      seconds_timeout = 5
     )
   }
   x$terminate()
   for (index in seq_len(2)) {
     crew_wait(
       ~(length(x$controllers[[index]]$launcher$active()) == 0L),
-      timeout = 5,
-      wait = 0.1
+      seconds_interval = 0.001,
+      seconds_timeout = 5
     )
   }
 })
@@ -259,13 +261,13 @@ crew_test("crew_controller_group() scale method", {
   expect_silent(x$scale())
   crew_wait(
     fun = ~identical(length(a$launcher$active()), 1L),
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   x$terminate()
   crew_wait(
     fun = ~identical(length(a$launcher$active()), 0L),
-    timeout = 5,
-    wait = 0.1
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
 })

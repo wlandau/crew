@@ -7,6 +7,8 @@
 crew_launcher_callr(
   name = NULL,
   seconds_launch = 30,
+  seconds_launcher_timeout = 10,
+  seconds_launcher_wait = 0.001,
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 0.1,
@@ -24,6 +26,14 @@ A worker is unconditionally assumed to be alive
 from the moment of its launch until \code{seconds_launch} seconds later.
 After \code{seconds_launch} seconds, the worker is only
 considered alive if it is actively connected to its assign websocket.}
+
+\item{seconds_launcher_timeout}{Number of seconds to wait until timing
+out for synchronous launcher operations such as waiting for
+a worker to exit if applicable.}
+
+\item{seconds_launcher_wait}{Number of seconds between
+polling intervals waiting for synchronous launcher operations
+such as waiting for a worker to exit if applicable.}
 
 \item{seconds_idle}{Maximum number of seconds that a worker can idle
 since the completion of the last task. If exceeded, the worker exits.

@@ -10,12 +10,14 @@ crew_controller_callr(
   host = NULL,
   port = 0L,
   seconds_router_timeout = 5,
-  seconds_router_wait = 0.1,
+  seconds_router_wait = 0.001,
+  seconds_launch = 30,
+  seconds_launcher_timeout = 5,
+  seconds_launcher_wait = 0.001,
   seconds_exit = 0.1,
   seconds_poll_high = 0.001,
   seconds_poll_low = 0.01,
   async_dial = TRUE,
-  seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
   tasks_max = Inf,
@@ -42,6 +44,20 @@ for the \code{mirai} client to (dis)connect.}
 \item{seconds_router_wait}{Number of seconds to wait between
 iterations checking if the \code{mirai} client is (dis)connected.}
 
+\item{seconds_launch}{Seconds of startup time to allow.
+A worker is unconditionally assumed to be alive
+from the moment of its launch until \code{seconds_launch} seconds later.
+After \code{seconds_launch} seconds, the worker is only
+considered alive if it is actively connected to its assign websocket.}
+
+\item{seconds_launcher_timeout}{Number of seconds to wait until timing
+out for synchronous launcher operations such as waiting for
+a worker to exit if applicable.}
+
+\item{seconds_launcher_wait}{Number of seconds between
+polling intervals waiting for synchronous launcher operations
+such as waiting for a worker to exit if applicable.}
+
 \item{seconds_exit}{Number of seconds to wait for NNG websockets
 to finish sending large data (in case an exit signal is received).}
 
@@ -55,12 +71,6 @@ active queue. See the \code{pollfreql} argument of
 
 \item{async_dial}{Logical, whether the \code{mirai} workers should dial in
 asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
-
-\item{seconds_launch}{Seconds of startup time to allow.
-A worker is unconditionally assumed to be alive
-from the moment of its launch until \code{seconds_launch} seconds later.
-After \code{seconds_launch} seconds, the worker is only
-considered alive if it is actively connected to its assign websocket.}
 
 \item{seconds_idle}{Maximum number of seconds that a worker can idle
 since the completion of the last task. If exceeded, the worker exits.

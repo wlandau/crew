@@ -12,6 +12,12 @@
 #'   from the moment of its launch until `seconds_launch` seconds later.
 #'   After `seconds_launch` seconds, the worker is only
 #'   considered alive if it is actively connected to its assign websocket.
+#' @param seconds_launcher_timeout Number of seconds to wait until timing
+#'   out for synchronous launcher operations such as waiting for
+#'   a worker to exit if applicable.
+#' @param seconds_launcher_wait Number of seconds between
+#'   polling intervals waiting for synchronous launcher operations
+#'   such as waiting for a worker to exit if applicable.
 #' @param seconds_idle Maximum number of seconds that a worker can idle
 #'   since the completion of the last task. If exceeded, the worker exits.
 #'   But the timer does not launch until `tasks_timers` tasks
@@ -58,6 +64,8 @@
 crew_launcher <- function(
   name = NULL,
   seconds_launch = 30,
+  seconds_launcher_timeout = 10,
+  seconds_launcher_wait = 0.001,
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 0.1,
@@ -70,6 +78,8 @@ crew_launcher <- function(
   launcher <- crew_class_launcher_callr$new(
     name = name,
     seconds_launch = seconds_launch,
+    seconds_launcher_timeout = seconds_launcher_timeout,
+    seconds_launcher_wait = seconds_launcher_wait,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
     seconds_exit = seconds_exit,
@@ -117,52 +127,40 @@ crew_class_launcher <- R6::R6Class(
     ),
     #' @field name Name of the launcher.
     name = NULL,
-    #' @field seconds_launch See the constructor for details.
+    #' @field seconds_launch See [crew_launcher()].
     seconds_launch = NULL,
-    #' @field seconds_idle See the constructor for details.
+    #' @field seconds_launcher_timeout See [crew_launcher()].
+    seconds_launcher_timeout = NULL,
+    #' @field seconds_launcher_wait See [crew_launcher()].
+    seconds_launcher_wait = NULL,
+    #' @field seconds_idle See [crew_launcher()].
     seconds_idle = NULL,
-    #' @field seconds_wall See the constructor for details.
+    #' @field seconds_wall See [crew_launcher()].
     seconds_wall = NULL,
-    #' @field seconds_exit See the constructor for details.
+    #' @field seconds_exit See [crew_launcher()].
     seconds_exit = NULL,
-    #' @field tasks_max See the constructor for details.
+    #' @field tasks_max See [crew_launcher()].
     tasks_max = NULL,
-    #' @field tasks_timers See the constructor for details.
+    #' @field tasks_timers See [crew_launcher()].
     tasks_timers = NULL,
-    #' @field async_dial See the constructor for details.
+    #' @field async_dial See [crew_launcher()].
     async_dial = NULL,
-    #' @field cleanup See the constructor for details.
+    #' @field cleanup See [crew_launcher()].
     cleanup = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
-    #' @param name Name of the launcher.
-    #' @param seconds_launch Seconds of startup time to allow.
-    #'   A worker is unconditionally assumed to be alive
-    #'   from the moment of its launch until `seconds_launch` seconds later.
-    #'   After `seconds_launch` seconds, the worker is only
-    #'   considered alive if it is actively connected to its assign websocket.
-    #' @param seconds_idle Maximum number of seconds that a worker can idle
-    #'   since the completion of the last task. If exceeded, the worker exits.
-    #'   But the timer does not launch until `tasks_timers` tasks
-    #'   have completed.
+    #' @param name See [crew_launcher()].
+    #' @param seconds_launch See [crew_launcher()].
+    #' @param seconds_launcher_timeout See [crew_launcher()].
+    #' @param seconds_launcher_wait See [crew_launcher()].
+    #' @param seconds_idle See [crew_launcher()].
     #'   See the `idletime` argument of `mirai::server()`.
-    #' @param seconds_wall Soft wall time in seconds.
-    #'   The timer does not launch until `tasks_timers` tasks
-    #'   have completed.
-    #'   See the `walltime` argument of `mirai::server()`.
-    #' @param seconds_exit Number of seconds to wait for NNG websockets
-    #'   to finish sending large data (in case an exit signal is received).
-    #'   See the `exitlinger` argument of `mirai::server()`.
-    #' @param tasks_max Maximum number of tasks that a worker will do before
-    #'   exiting. See the `maxtasks` argument of `mirai::server()`.
-    #' @param tasks_timers Number of tasks to do before activating
-    #'   the timers for `seconds_idle` and `seconds_wall`.
-    #'   See the `timerlaunch` argument of `mirai::server()`.
-    #' @param async_dial Logical, whether the `mirai` workers should dial in
-    #'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
-    #' @param cleanup Logical, whether to clean up global options and the
-    #'   global environment after every task.
-    #'   See the `cleanup` argument of `mirai::server()`.
+    #' @param seconds_wall See [crew_launcher()].
+    #' @param seconds_exit See [crew_launcher()].
+    #' @param tasks_max See [crew_launcher()].
+    #' @param tasks_timers See [crew_launcher()].
+    #' @param async_dial See [crew_launcher()].
+    #' @param cleanup See [crew_launcher()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' crew_session_start()
@@ -180,6 +178,8 @@ crew_class_launcher <- R6::R6Class(
     initialize = function(
       name = NULL,
       seconds_launch = NULL,
+      seconds_launcher_timeout = NULL,
+      seconds_launcher_wait = NULL,
       seconds_idle = NULL,
       seconds_wall = NULL,
       seconds_exit = NULL,
@@ -190,6 +190,8 @@ crew_class_launcher <- R6::R6Class(
     ) {
       self$name <- name
       self$seconds_launch <- seconds_launch
+      self$seconds_launcher_timeout <- seconds_launcher_timeout
+      self$seconds_launcher_wait <- seconds_launcher_wait
       self$seconds_idle <- seconds_idle
       self$seconds_wall <- seconds_wall
       self$seconds_exit <- seconds_exit
@@ -204,6 +206,8 @@ crew_class_launcher <- R6::R6Class(
       true(self$name, is.character(.), length(.) == 1L, !anyNA(.), nzchar(.))
       fields <- c(
         "seconds_launch",
+        "seconds_launcher_timeout",
+        "seconds_launcher_wait",
         "seconds_idle",
         "seconds_wall",
         "seconds_exit",

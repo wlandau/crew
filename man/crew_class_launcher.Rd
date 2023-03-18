@@ -54,21 +54,25 @@ Other launchers:
 
 \item{\code{name}}{Name of the launcher.}
 
-\item{\code{seconds_launch}}{See the constructor for details.}
+\item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_idle}}{See the constructor for details.}
+\item{\code{seconds_launcher_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_wall}}{See the constructor for details.}
+\item{\code{seconds_launcher_wait}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_exit}}{See the constructor for details.}
+\item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tasks_max}}{See the constructor for details.}
+\item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tasks_timers}}{See the constructor for details.}
+\item{\code{seconds_exit}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{async_dial}}{See the constructor for details.}
+\item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{cleanup}}{See the constructor for details.}
+\item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{async_dial}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{cleanup}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -93,6 +97,8 @@ Launcher constructor.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$new(
   name = NULL,
   seconds_launch = NULL,
+  seconds_launcher_timeout = NULL,
+  seconds_launcher_wait = NULL,
   seconds_idle = NULL,
   seconds_wall = NULL,
   seconds_exit = NULL,
@@ -106,42 +112,28 @@ Launcher constructor.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Name of the launcher.}
+\item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_launch}}{Seconds of startup time to allow.
-A worker is unconditionally assumed to be alive
-from the moment of its launch until \code{seconds_launch} seconds later.
-After \code{seconds_launch} seconds, the worker is only
-considered alive if it is actively connected to its assign websocket.}
+\item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_idle}}{Maximum number of seconds that a worker can idle
-since the completion of the last task. If exceeded, the worker exits.
-But the timer does not launch until \code{tasks_timers} tasks
-have completed.
+\item{\code{seconds_launcher_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_launcher_wait}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.
 See the \code{idletime} argument of \code{mirai::server()}.}
 
-\item{\code{seconds_wall}}{Soft wall time in seconds.
-The timer does not launch until \code{tasks_timers} tasks
-have completed.
-See the \code{walltime} argument of \code{mirai::server()}.}
+\item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_exit}}{Number of seconds to wait for NNG websockets
-to finish sending large data (in case an exit signal is received).
-See the \code{exitlinger} argument of \code{mirai::server()}.}
+\item{\code{seconds_exit}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tasks_max}}{Maximum number of tasks that a worker will do before
-exiting. See the \code{maxtasks} argument of \code{mirai::server()}.}
+\item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tasks_timers}}{Number of tasks to do before activating
-the timers for \code{seconds_idle} and \code{seconds_wall}.
-See the \code{timerlaunch} argument of \code{mirai::server()}.}
+\item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{async_dial}}{Logical, whether the \code{mirai} workers should dial in
-asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
+\item{\code{async_dial}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{cleanup}}{Logical, whether to clean up global options and the
-global environment after every task.
-See the \code{cleanup} argument of \code{mirai::server()}.}
+\item{\code{cleanup}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 }
 \if{html}{\out{</div>}}
 }

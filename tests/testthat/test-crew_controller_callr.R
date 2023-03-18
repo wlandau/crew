@@ -145,7 +145,7 @@ crew_test("crew_controller_callr() launch method", {
   x$terminate()
   crew_wait(
     ~length(x$launcher$active()) == 0L,
-    seconds_interval = 0.1, 
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
 })

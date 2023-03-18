@@ -237,16 +237,16 @@ crew_class_controller_group <- R6::R6Class(
     #' @param mode If `mode` is `"all"`,
     #'   then the method waits for all tasks to complete. If `mode` is
     #'   `"one"`, then it waits until a one task is complete.
-    #' @param timeout Timeout length in seconds waiting for
+    #' @param seconds_interval Number of seconds to wait between
+    #'   polling intervals while checking for results.
+    #' @param seconds_timeout Timeout length in seconds waiting for
     #'   results to become available.
-    #' @param wait Number of seconds to wait between polling intervals
-    #'   while checking for results.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     wait = function(
       mode = "all",
-      timeout = Inf,
-      wait = 0.001,
+      seconds_interval = 0.001,
+      seconds_timeout = Inf,
       controllers = NULL
     ) {
       mode <- as.character(mode)
@@ -269,8 +269,8 @@ crew_class_controller_group <- R6::R6Class(
             }
             FALSE
           },
-          timeout = timeout,
-          wait = wait
+          seconds_interval = seconds_interval,
+          seconds_timeout = seconds_timeout
         ),
         crew_expire = function(condition) NULL
       )

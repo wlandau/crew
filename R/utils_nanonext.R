@@ -24,21 +24,30 @@ connection_opened <- function(connection) {
   identical(as.character(connection$state), "opened")
 }
 
-connection_wait_closed <- function(connection) {
+connection_wait_closed <- function(
+  connection,
+  seconds_interval = 0.001,
+  seconds_timeout = 5
+) {
   crew_wait(
     ~connection_closed(connection),
-    timeout = 5,
-    wait = 0.001
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout
   )
 }
 
-connection_wait_opened <- function(connection) {
+connection_wait_opened <- function(
+  connection,
+  seconds_interval = 0.001,
+  seconds_timeout = 5
+) {
   crew_wait(
     ~connection_opened(connection),
-    timeout = 5,
-    wait = 0.001
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout
   )
 }
+
 
 dialer_connected <- function(listener) {
   connection_opened(listener) &&

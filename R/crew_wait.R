@@ -7,10 +7,10 @@
 #' @param fun Function that returns `FALSE` to keep waiting
 #'   or `TRUE` to stop waiting.
 #' @param args A named list of arguments to `fun`.
-#' @param timeout Nonnegative numeric of length 1,
-#'   number of seconds to loop before timing out.
-#' @param wait Nonnegative numeric of length 1,
+#' @param seconds_interval Nonnegative numeric of length 1,
 #'   number of seconds to wait between calls to `fun`.
+#' @param seconds_timeout Nonnegative numeric of length 1,
+#'   number of seconds to loop before timing out.\
 #' @param message Character of length 1, optional error message
 #'   if the wait times out.
 #' @examples
@@ -18,8 +18,8 @@
 crew_wait <- function(
   fun,
   args = list(),
-  timeout = 60,
-  wait = 1,
+  seconds_interval = 1,
+  seconds_timeout = 60,
   message = character(0)
 ) {
   fun <- rlang::as_function(fun)
@@ -29,15 +29,20 @@ crew_wait <- function(
     true(names(args), !is.null(.), nzchar(.))
     true(identical(length(unique(names(args))), length(args)))
   }
-  true(timeout, is.numeric(.), length(.) == 1L, !anyNA(.), . >= 0)
-  true(wait, is.numeric(.), length(.) == 1L, !anyNA(.), . >= 0)
+  true(seconds_interval, is.numeric(.), length(.) == 1L, !anyNA(.), . >= 0)
+  true(seconds_timeout, is.numeric(.), length(.) == 1L, !anyNA(.), . >= 0)
   start <- as.numeric(proc.time()["elapsed"])
   while (!all(do.call(what = fun, args = args))) {
-    if (as.numeric(proc.time()["elapsed"]) - start > timeout) {
-      message <- paste("timed out after waiting", timeout, "seconds.", message)
+    if (as.numeric(proc.time()["elapsed"]) - start > seconds_timeout) {
+      message <- paste(
+        "timed out after waiting",
+        seconds_timeout,
+        "seconds.",
+        message
+      )
       crew_expire(message)
     }
-    Sys.sleep(wait)
+    Sys.sleep(seconds_interval)
   }
   invisible()
 }

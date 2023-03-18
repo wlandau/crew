@@ -112,8 +112,8 @@ crew_class_launcher_callr <- R6::R6Class(
       handle$kill()
       crew_wait(
         ~!handle$is_alive(),
-        timeout = self$seconds_launcher_timeout,
-        wait = self$seconds_launcher_wait
+        seconds_interval = self$seconds_launcher_wait,
+        seconds_timeout = self$seconds_launcher_timeout
       )
       invisible()
     }

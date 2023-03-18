@@ -24,8 +24,8 @@ message(time["elapsed"])
 # Check that the worker pool can scale back down. Workers should exit.
 crew_wait(
   fun = ~identical(x$launcher$active(), character(0L)),
-  timeout = 10,
-  wait = 0.1
+  seconds_interval = 0.001,
+  seconds_timeout = 10
 )
 
 # Launch many more tasks.
@@ -41,8 +41,8 @@ message(time["elapsed"])
 # Again, wait for worker pool can scale back down. Workers should exit.
 crew_wait(
   fun = ~identical(x$launcher$active(), character(0L)),
-  timeout = 10,
-  wait = 0.1
+  seconds_interval = 0.001,
+  seconds_timeout = 10
 )
 
 # Call wait() on the controller to cycle throught the rest of the tasks.

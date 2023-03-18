@@ -353,8 +353,8 @@ Wait for tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$wait(
   mode = "all",
-  timeout = Inf,
-  wait = 0.001,
+  seconds_interval = 0.001,
+  seconds_timeout = Inf,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -366,10 +366,10 @@ Wait for tasks.
 then the method waits for all tasks to complete. If \code{mode} is
 \code{"one"}, then it waits until a one task is complete.}
 
-\item{\code{timeout}}{Timeout length in seconds waiting for tasks.}
+\item{\code{seconds_interval}}{Number of seconds to wait between polling
+intervals waiting for tasks.}
 
-\item{\code{wait}}{Number of seconds to wait between polling intervals
-waiting for tasks.}
+\item{\code{seconds_timeout}}{Timeout length in seconds waiting for tasks.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

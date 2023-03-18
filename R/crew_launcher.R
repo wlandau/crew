@@ -12,12 +12,11 @@
 #'   from the moment of its launch until `seconds_launch` seconds later.
 #'   After `seconds_launch` seconds, the worker is only
 #'   considered alive if it is actively connected to its assign websocket.
-#' @param seconds_launcher_timeout Number of seconds to wait until timing
-#'   out for synchronous launcher operations such as waiting for
-#'   a worker to exit if applicable.
-#' @param seconds_launcher_wait Number of seconds between
-#'   polling intervals waiting for synchronous launcher operations
-#'   such as waiting for a worker to exit if applicable.
+#' @param seconds_interval Number of seconds between
+#'   polling intervals waiting for certain internal
+#'   synchronous operations to complete.
+#' @param seconds_timeout Number of seconds until timing
+#'   out while waiting for certain synchronous operations to complete.
 #' @param seconds_idle Maximum number of seconds that a worker can idle
 #'   since the completion of the last task. If exceeded, the worker exits.
 #'   But the timer does not launch until `tasks_timers` tasks
@@ -64,8 +63,8 @@
 crew_launcher <- function(
   name = NULL,
   seconds_launch = 30,
-  seconds_launcher_timeout = 10,
-  seconds_launcher_wait = 0.001,
+  seconds_interval = 0.001,
+  seconds_timeout = 10,
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 0.1,
@@ -78,8 +77,8 @@ crew_launcher <- function(
   launcher <- crew_class_launcher_callr$new(
     name = name,
     seconds_launch = seconds_launch,
-    seconds_launcher_timeout = seconds_launcher_timeout,
-    seconds_launcher_wait = seconds_launcher_wait,
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
     seconds_exit = seconds_exit,
@@ -129,10 +128,10 @@ crew_class_launcher <- R6::R6Class(
     name = NULL,
     #' @field seconds_launch See [crew_launcher()].
     seconds_launch = NULL,
-    #' @field seconds_launcher_timeout See [crew_launcher()].
-    seconds_launcher_timeout = NULL,
-    #' @field seconds_launcher_wait See [crew_launcher()].
-    seconds_launcher_wait = NULL,
+    #' @field seconds_interval See [crew_launcher()].
+    seconds_interval = NULL,
+    #' @field seconds_timeout See [crew_launcher()].
+    seconds_timeout = NULL,
     #' @field seconds_idle See [crew_launcher()].
     seconds_idle = NULL,
     #' @field seconds_wall See [crew_launcher()].
@@ -151,8 +150,8 @@ crew_class_launcher <- R6::R6Class(
     #' @return An `R6` object with the launcher.
     #' @param name See [crew_launcher()].
     #' @param seconds_launch See [crew_launcher()].
-    #' @param seconds_launcher_timeout See [crew_launcher()].
-    #' @param seconds_launcher_wait See [crew_launcher()].
+    #' @param seconds_interval See [crew_launcher()].
+    #' @param seconds_timeout See [crew_launcher()].
     #' @param seconds_idle See [crew_launcher()].
     #'   See the `idletime` argument of `mirai::server()`.
     #' @param seconds_wall See [crew_launcher()].
@@ -178,8 +177,8 @@ crew_class_launcher <- R6::R6Class(
     initialize = function(
       name = NULL,
       seconds_launch = NULL,
-      seconds_launcher_timeout = NULL,
-      seconds_launcher_wait = NULL,
+      seconds_interval = NULL,
+      seconds_timeout = NULL,
       seconds_idle = NULL,
       seconds_wall = NULL,
       seconds_exit = NULL,
@@ -190,8 +189,8 @@ crew_class_launcher <- R6::R6Class(
     ) {
       self$name <- name
       self$seconds_launch <- seconds_launch
-      self$seconds_launcher_timeout <- seconds_launcher_timeout
-      self$seconds_launcher_wait <- seconds_launcher_wait
+      self$seconds_interval <- seconds_interval
+      self$seconds_timeout <- seconds_timeout
       self$seconds_idle <- seconds_idle
       self$seconds_wall <- seconds_wall
       self$seconds_exit <- seconds_exit
@@ -206,8 +205,8 @@ crew_class_launcher <- R6::R6Class(
       true(self$name, is.character(.), length(.) == 1L, !anyNA(.), nzchar(.))
       fields <- c(
         "seconds_launch",
-        "seconds_launcher_timeout",
-        "seconds_launcher_wait",
+        "seconds_interval",
+        "seconds_timeout",
         "seconds_idle",
         "seconds_wall",
         "seconds_exit",

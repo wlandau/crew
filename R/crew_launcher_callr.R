@@ -21,8 +21,8 @@
 crew_launcher_callr <- function(
   name = NULL,
   seconds_launch = 30,
-  seconds_launcher_timeout = 10,
-  seconds_launcher_wait = 0.001,
+  seconds_interval = 0.001,
+  seconds_timeout = 10,
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 0.1,
@@ -35,8 +35,8 @@ crew_launcher_callr <- function(
   launcher <- crew_class_launcher_callr$new(
     name = name,
     seconds_launch = seconds_launch,
-    seconds_launcher_timeout = seconds_launcher_timeout,
-    seconds_launcher_wait = seconds_launcher_wait,
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
     seconds_exit = seconds_exit,
@@ -112,8 +112,8 @@ crew_class_launcher_callr <- R6::R6Class(
       handle$kill()
       crew_wait(
         ~!handle$is_alive(),
-        seconds_interval = self$seconds_launcher_wait,
-        seconds_timeout = self$seconds_launcher_timeout
+        seconds_interval = self$seconds_interval,
+        seconds_timeout = self$seconds_timeout
       )
       invisible()
     }

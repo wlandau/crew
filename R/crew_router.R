@@ -11,10 +11,11 @@
 #'   If `NULL`, the host defaults to the local IP address.
 #' @param port TCP port to listen for the workers. If `0`,
 #'   then NNG automatically chooses an available ephemeral port.
-#' @param seconds_interval Number of seconds to wait between
-#'   iterations checking if the `mirai` client is (dis)connected.
-#' @param seconds_timeout Number of seconds to time out waiting
-#'   for the `mirai` client to (dis)connect.
+#' @param seconds_interval Number of seconds between
+#'   polling intervals waiting for certain internal
+#'   synchronous operations to complete.
+#' @param seconds_timeout Number of seconds until timing
+#'   out while waiting for certain synchronous operations to complete.
 #' @param seconds_exit Number of seconds to wait for NNG websockets
 #'   to finish sending large data (in case an exit signal is received).
 #' @param seconds_poll_high High polling interval in seconds for the

@@ -4,7 +4,13 @@
 \alias{crew_wait}
 \title{Wait for an event.}
 \usage{
-crew_wait(fun, args = list(), timeout = 60, wait = 1, message = character(0))
+crew_wait(
+  fun,
+  args = list(),
+  seconds_interval = 1,
+  seconds_timeout = 60,
+  message = character(0)
+)
 }
 \arguments{
 \item{fun}{Function that returns \code{FALSE} to keep waiting
@@ -12,10 +18,7 @@ or \code{TRUE} to stop waiting.}
 
 \item{args}{A named list of arguments to \code{fun}.}
 
-\item{timeout}{Nonnegative numeric of length 1,
-number of seconds to loop before timing out.}
-
-\item{wait}{Nonnegative numeric of length 1,
+\item{seconds_interval}{Nonnegative numeric of length 1,
 number of seconds to wait between calls to \code{fun}.}
 
 \item{message}{Character of length 1, optional error message

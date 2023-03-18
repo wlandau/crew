@@ -56,7 +56,7 @@ crew_test("crew_controller_callr()", {
     seconds_timeout = 5
   )
   x$push(command = ps::ps_pid(), name = "task_pid")
-  x$wait(timeout = 5)
+  x$wait(seconds_timeout = 5)
   out <- x$pop(scale = TRUE)
   expect_equal(x$summary()$popped_tasks, 1L)
   expect_equal(x$summary()$popped_errors, 0L)
@@ -103,7 +103,7 @@ crew_test("crew_controller_callr() warnings and errors", {
     warning("this is a warning")
     stop("this is an error")
   }, name = "warnings_and_errors")
-  x$wait(timeout = 5)
+  x$wait(seconds_timeout = 5)
   out <- x$pop(scale = FALSE)
   expect_equal(x$summary()$popped_tasks, 1L)
   expect_equal(x$summary()$popped_errors, 1L)

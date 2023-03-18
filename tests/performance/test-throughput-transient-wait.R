@@ -19,6 +19,7 @@ time <- system.time({
     message(paste("push", name))
   }
 })
+print(time["elapsed"])
 
 # Check the queue and results lists.
 length(x$queue) # 100
@@ -28,11 +29,11 @@ length(x$results) # 0
 x$wait(mode = "one")
 
 # Pop just one of the tasks
-length(x$queue) # 99
-length(x$results) # 1
+length(x$queue) # 96
+length(x$results) # 4
 x$pop(scale = FALSE) # monad data frame
-length(x$queue) # 99
-length(x$results) # 0
+length(x$queue) # 96
+length(x$results) # 3
 
 # Clean up.
 View(x$summary())

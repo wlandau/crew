@@ -272,14 +272,26 @@ crew_class_router <- R6::R6Class(
           wait = self$router_wait,
           message = "mirai client could not terminate."
         )
-        on.exit(if (ps::ps_is_running(handle)) ps::ps_kill(handle))
-        try(
+        tryCatch(
           crew_wait(
             fun = ~!ps::ps_is_running(handle),
             timeout = self$router_timeout,
             wait = self$router_wait
           ),
-          silent = TRUE
+          crew_expire = function(condition) NULL
+        )
+        if_any(
+          ps::ps_is_running(handle),
+          ps::ps_kill(handle),
+          NULL
+        )
+        tryCatch(
+          crew_wait(
+            fun = ~!ps::ps_is_running(handle),
+            timeout = self$router_timeout,
+            wait = self$router_wait
+          ),
+          crew_expire = function(condition) NULL
         )
         self$poll()
       }

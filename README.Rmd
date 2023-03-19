@@ -1,5 +1,5 @@
 ---
-output_format: github_document
+output: github_document
 ---
 
 ```{r, include = FALSE}
@@ -213,7 +213,7 @@ Workers may run on different computing platforms, depending on the type of launc
 
 ### Scheduling
 
-
+`crew` is designed to launch persistent workers that run one or more tasks. Depending on user settings, persistent workers may run for the entire length of the analysis pipeline, or they may exit if they idle too long or complete a certain number of tasks. `crew` re-launches persistent workers if there are more unfinished tasks in the queue than [active workers](https://wlandau.github.io/crew/reference/crew_class_launcher.html#details) to run them at a given snapshot in time. This kind of auto-scaling does not dedicate any specific worker to any specific task, and it does not perform well when workers exit too quickly. If `seconds_idle` is too low, or if `tasks_max` is 1 and there is a large backlog of quick tasks, then workers may exit before doing any work.^[See <https://github.com/wlandau/crew/discussions/50> for an example.] Please configure arguments like `seconds_idle` and `tasks_max` so that your workers are likely to do a nontrivial amount of work before exiting.
 
 # Similar work
 

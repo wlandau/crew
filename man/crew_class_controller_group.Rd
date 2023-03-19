@@ -240,8 +240,13 @@ Push a task to the head of the task list.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$push(
   command,
-  args = list(),
-  timeout = NULL,
+  data = list(),
+  globals = list(),
+  seed = sample.int(n = 1000000000L, size = 1L),
+  garbage_collection = FALSE,
+  packages = character(0),
+  library = NULL,
+  seconds_timeout = NULL,
   name = NULL,
   scale = TRUE,
   controller = NULL
@@ -251,18 +256,37 @@ Push a task to the head of the task list.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{command}}{R code with the task to run.}
+\item{\code{command}}{Language object with R code to run.}
 
-\item{\code{args}}{A list of objects referenced in \code{expr}.}
+\item{\code{data}}{Named list of local data objects in the
+evaluation environment.}
 
-\item{\code{timeout}}{Time in milliseconds for the task.}
+\item{\code{globals}}{Named list of objects to temporarily assign to the
+global environment for the task. At the end of the task,
+these values are reset to their previous values.}
+
+\item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
+seed to temporarily set for the evaluation of the task.
+At the end of the task, the seed is restored.}
+
+\item{\code{garbage_collection}}{Logical, whether to run garbage collection
+with \code{gc()} before running the task.}
+
+\item{\code{packages}}{Character vector of packages to load for the task.}
+
+\item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
+argument of \code{require()}.}
+
+\item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
+argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
 \item{\code{name}}{Optional name of the task. Replaced with a random name
 if \code{NULL} or in conflict with an existing name in the task list.}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand. If \code{TRUE}, then \code{collect()} runs first so demand can be
-properly assessed before scaling.}
+demand. If \code{TRUE}, then \code{clean()} and \code{collect()} run first
+so demand can be properly assessed before scaling and the number
+of workers is not too high.}
 
 \item{\code{controller}}{Character of length 1,
 name of the controller to submit the task.

@@ -57,6 +57,7 @@ crew_test("crew_controller_callr()", {
   )
   x$push(command = ps::ps_pid(), name = "task_pid")
   x$wait(seconds_timeout = 5)
+  # pid task
   out <- x$pop(scale = TRUE)
   expect_equal(x$summary()$popped_tasks, 1L)
   expect_equal(x$summary()$popped_errors, 0L)
@@ -70,6 +71,34 @@ crew_test("crew_controller_callr()", {
   expect_true(anyNA(out$error))
   expect_true(anyNA(out$traceback))
   expect_true(anyNA(out$warnings))
+  windows_or_cran <- identical(tolower(Sys.info()[["sysname"]]), "windows") ||
+    !identical(Sys.getenv("NOT_CRAN"), "true")
+  if (!windows_or_cran) {
+    # data task
+    expect_false(exists(x = ".crew_y", envir = globalenv()))
+    x$push(
+      command = paste0("a", x, .crew_y, sample.int(n = 1e9L, size = 1L)),
+      data = list(x = "b"),
+      globals = list(.crew_y = "c"),
+      seed = 0L
+    )
+    x$wait(seconds_timeout = 5)
+    out <- x$pop()
+    exp <- withr::with_seed(0L, paste0("abc", sample.int(n = 1e9L, size = 1L)))
+    expect_equal(out$result[[1]], exp)
+    expect_equal(out$error, NA_character_)
+    expect_false(exists(x = ".crew_y", envir = globalenv()))
+    # package task
+    x$push(
+      command = base64enc(arg),
+      data = list(arg = "x"),
+      packages = "nanonext"
+    )
+    x$wait(seconds_timeout = 5)
+    out <- x$pop()
+    expect_equal(out$result[[1]], nanonext::base64enc("x"))
+  }
+  # terminate
   x$terminate()
   expect_false(x$router$listening())
   crew_wait(

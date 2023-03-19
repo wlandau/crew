@@ -164,22 +164,41 @@ crew_class_controller_group <- R6::R6Class(
     },
     #' @description Push a task to the head of the task list.
     #' @return `NULL` (invisibly).
-    #' @param command R code with the task to run.
-    #' @param args A list of objects referenced in `expr`.
-    #' @param timeout Time in milliseconds for the task.
+    #' @param command Language object with R code to run.
+    #' @param data Named list of local data objects in the
+    #'   evaluation environment.
+    #' @param globals Named list of objects to temporarily assign to the
+    #'   global environment for the task. At the end of the task,
+    #'   these values are reset to their previous values.
+    #' @param seed Integer of length 1 with the pseudo-random number generator
+    #'   seed to temporarily set for the evaluation of the task.
+    #'   At the end of the task, the seed is restored.
+    #' @param garbage_collection Logical, whether to run garbage collection
+    #'   with `gc()` before running the task.
+    #' @param packages Character vector of packages to load for the task.
+    #' @param library Library path to load the packages. See the `lib.loc`
+    #'   argument of `require()`.
     #' @param name Optional name of the task. Replaced with a random name
     #'   if `NULL` or in conflict with an existing name in the task list.
+    #' @param seconds_timeout Optional task timeout passed to the `.timeout`
+    #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand. If `TRUE`, then `collect()` runs first so demand can be
-    #'   properly assessed before scaling.
+    #'   demand. If `TRUE`, then `clean()` and `collect()` run first
+    #'   so demand can be properly assessed before scaling and the number
+    #'   of workers is not too high.
     #' @param controller Character of length 1,
     #'   name of the controller to submit the task.
     #'   If `NULL`, the controller defaults to the
     #'   first controller in the list.
     push = function(
       command,
-      args = list(),
-      timeout = NULL,
+      data = list(),
+      globals = list(),
+      seed = sample.int(n = 1e9L, size = 1L),
+      garbage_collection = FALSE,
+      packages = character(0),
+      library = NULL,
+      seconds_timeout = NULL,
       name = NULL,
       scale = TRUE,
       controller = NULL
@@ -196,8 +215,13 @@ crew_class_controller_group <- R6::R6Class(
       )
       args <- list(
         command = substitute(command),
-        args = args,
-        timeout = timeout,
+        data = data,
+        globals = globals,
+        seed = seed,
+        garbage_collection = garbage_collection,
+        packages = packages,
+        library = library,
+        seconds_timeout = seconds_timeout,
         name = name,
         scale = scale
       )

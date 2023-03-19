@@ -193,7 +193,10 @@ crew_class_router <- R6::R6Class(
     #'   `FALSE` otherwise.
     listening = function() {
       out <- mirai::daemons(.compute = self$name)$connections
-      (length(out) == 1L) &&
+      dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
+      handle <- ps::ps_handle(pid = dispatcher)
+      ps::ps_is_running(p = handle) &&
+        (length(out) == 1L) &&
         !anyNA(out) &&
         is.numeric(out) &&
         out > 0L
@@ -274,20 +277,20 @@ crew_class_router <- R6::R6Class(
         )
         tryCatch(
           crew_wait(
-            fun = ~!ps::ps_is_running(handle),
+            fun = ~!ps::ps_is_running(p = handle),
             seconds_interval = self$seconds_interval,
             seconds_timeout = self$seconds_timeout
           ),
           crew_expire = function(condition) NULL
         )
         if_any(
-          ps::ps_is_running(handle),
-          ps::ps_kill(handle),
+          ps::ps_is_running(p = handle),
+          ps::ps_kill(p = handle),
           NULL
         )
         tryCatch(
           crew_wait(
-            fun = ~!ps::ps_is_running(handle),
+            fun = ~!ps::ps_is_running(p = handle),
             seconds_interval = self$seconds_interval,
             seconds_timeout = self$seconds_timeout
           ),

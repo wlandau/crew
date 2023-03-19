@@ -56,6 +56,7 @@ crew_test("launcher active()", {
   launcher <- crew_class_launcher$new(seconds_launch = 1)
   port_mirai <- free_port()
   sockets <- sprintf("ws://127.0.0.1:%s/%s", port_mirai, seq_len(9L))
+  expect_equal(length(sockets), 9L)
   launcher$populate(sockets = sockets)
   launcher$workers$start <- rep(c(NA_real_, -Inf, Inf), times = 3L)
   launcher$workers$token <- replicate(9L, random_name(), simplify = TRUE)
@@ -89,9 +90,13 @@ crew_test("launcher active()", {
     }
   }
   active <- launcher$active()
-  expect_equal(
-    sort(active),
-    sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(3L, 4L, 5L, 6L)))
+  crew_wait(
+    ~identical(
+      sort(as.character(active)),
+      sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(3L, 4L, 5L, 6L)))
+    ),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   for (dialer in dialers) {
     if (connection_opened(dialer)) {

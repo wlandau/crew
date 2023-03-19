@@ -188,7 +188,7 @@ The `crew` package has unavoidable risk. It is your responsibility as the user t
 
 `crew` may use more than one TCP port at a time. The number of ports used is the number of running controllers, plus one extra port that `crew_session_start()` reserves for checking the status of workers. TCP ports range from 0 to 65535, and only around 16000 of these ports are considered ephemeral or dynamic, so please be careful not to run too many controllers if you are running R on a machine you share with other people (such as the login node of a computing cluster). If you are running a [controller group](https://wlandau.github.io/crew/articles/controller_groups.html) please add only a small number of controllers to the group. The `terminate()` method of the controller and `crew_session_terminate()` should free these ports again for other processes to use.
 
-### Resources
+### Zombies
 
 The `crew` package launches external R processes:
 
@@ -210,6 +210,10 @@ ps::ps_kill(86028)
 ### Workers
 
 Workers may run on different computing platforms, depending on the type of launcher you choose. Each type of launcher connects to a different computing platform. Please learn the interface of that computing platform, particularly how to find and terminate jobs manually without using `crew`. For example, the [`callr` launcher and controller](https://wlandau.github.io/crew/reference/crew_controller_callr.html) create R processes on your local machine, which you can find and terminate with [`ps::ps()`](https://ps.r-lib.org/reference/ps.html)/[`ps::ps_kill()`](https://ps.r-lib.org/reference/ps_kill.html) or [`htop`](https://htop.dev/). For a SLURM launcher, you need [`squeue`](https://slurm.schedmd.com/squeue.html) to find workers and [`scancel`](https://slurm.schedmd.com/scancel.html) to terminate them. For an [Amazon Web Services](https://aws.amazon.com/) launcher, please use the [AWS web console](https://aws.amazon.com/console/) or [CloudWatch](https://aws.amazon.com/cloudwatch/).
+
+### Scheduling
+
+
 
 # Similar work
 

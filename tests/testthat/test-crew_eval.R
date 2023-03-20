@@ -137,6 +137,8 @@ crew_test("crew_eval() environment variables", {
 
 crew_test("crew_eval() options", {
   skip_on_cran()
+  old_options <- options()
+  on.exit(options(old_options)) # Reset to old options on exit.
   expect_null(getOption("crew_option_1"))
   expect_null(getOption("crew_option_2"))
   expect_lt(getOption("warn"), 10)
@@ -161,4 +163,5 @@ crew_test("crew_eval() options", {
       warn = 10L
     )
   )
+  options(old_options) # Reset to old options.
 })

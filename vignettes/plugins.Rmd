@@ -1,0 +1,77 @@
+---
+title: "Launcher plugins"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Launcher plugins}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+library(crew)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+`crew` lets you write custom [launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html) for different types of workers that connect over the local network. This flexibility can extend `crew` to platforms like [SLURM](https://slurm.schedmd.com/), [AWS Batch](https://aws.amazon.com/batch/), and [Kubernetes](https://kubernetes.io/). This vignette demonstrates how.
+
+## Prerequisites
+
+1. [`R6` classes](https://r6.r-lib.org/articles/Introduction.html).
+2. How to launch and terminate a job or process on the computing platform of your plugin.
+
+## How it works
+
+To create your own launcher plugin, write an [`R6`](https://r6.r-lib.org/articles/Introduction.html) subclass of [`crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.html) with methods `launch_worker()` and `terminate_worker()` analogous to those of the [`callr` launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html). `launch_worker()` must accept all the arguments of the parent class, and it must return a handle object that will allow the worker to be terminated later. `terminate_worker()` must accept the handle object and terminate the worker with the given handle.
+
+## Tips
+
+* The [source code of the built-in `callr` launcher](https://github.com/wlandau/crew/blob/main/R/crew_launcher_callr.R) is a helpful reference.
+* The handle from `launch_worker()` can be any kind of object: for example, a process ID, job name, or `callr::r_bg()` handle.
+* For efficiency, both launch and termination can happen asynchronously. Except in rare cases, there is no need to wait for the process to start or stop.
+
+## Example
+
+We create a custom launcher class whose workers are local R processes on a Unix-like system.
+
+```{r}
+crew_class_launcher_callr <- R6::R6Class(
+  classname = "crew_class_launcher_callr",
+  inherit = crew_class_launcher,
+  cloneable = FALSE,
+  public = list(
+    launch_worker = function(socket, host, port, token, name) {
+      settings <- self$settings(socket)
+      
+      
+      callr::r_bg(
+        func = function(settings, host, port, token) {
+          crew::crew_worker(
+            settings = settings,
+            host = host,
+            port = port,
+            token = token
+          )
+        },
+        args = list(
+          settings = self$settings(socket),
+          host = host,
+          port = port,
+          token = token
+        )
+      )
+    },
+    terminate_worker = function(handle) {
+      handle$kill()
+      crew_wait(
+        ~!handle$is_alive(),
+        seconds_interval = self$seconds_interval,
+        seconds_timeout = self$seconds_timeout
+      )
+      invisible()
+    }
+  )
+)
+```

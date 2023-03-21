@@ -39,6 +39,19 @@ m$data
 router$terminate()
 crew_session_terminate()
 }
+
+## ------------------------------------------------
+## Method `crew_class_launcher$call`
+## ------------------------------------------------
+
+launcher <- crew_launcher_callr()
+launcher$call(
+  socket = "ws://127.0.0.1:5000",
+  host = "127.0.0.1",
+  port = "5711",
+  token = "my_token",
+  name = "my_name"
+)
 }
 \seealso{
 Other launchers: 
@@ -82,6 +95,7 @@ Other launchers:
 \item \href{#method-crew_class_launcher-new}{\code{crew_class_launcher$new()}}
 \item \href{#method-crew_class_launcher-validate}{\code{crew_class_launcher$validate()}}
 \item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
+\item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-populate}{\code{crew_class_launcher$populate()}}
 \item \href{#method-crew_class_launcher-active}{\code{crew_class_launcher$active()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
@@ -194,6 +208,53 @@ to launch.}
 \subsection{Returns}{
 List of arguments for \code{mirai::server()}.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-call"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-call}{}}}
+\subsection{Method \code{call()}}{
+Create a call to \code{\link[=crew_worker]{crew_worker()}} to
+help create custom launchers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call(socket, host, port, token, name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{socket}}{Socket where the worker will receive tasks.}
+
+\item{\code{host}}{IP address of the \code{mirai} client that sends tasks.}
+
+\item{\code{port}}{TCP port to register a successful connection
+to the host. Different from that of \code{socket}.}
+
+\item{\code{token}}{Character of length 1 to identify the instance
+of the \code{mirai} server process connected to the socket.}
+
+\item{\code{name}}{User-supplied name of the launcher, useful for
+constructing informative job labels.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Character of length 1 with a call to \code{\link[=crew_worker]{crew_worker()}}.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{launcher <- crew_launcher_callr()
+launcher$call(
+  socket = "ws://127.0.0.1:5000",
+  host = "127.0.0.1",
+  port = "5711",
+  token = "my_token",
+  name = "my_name"
+)
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-populate"></a>}}

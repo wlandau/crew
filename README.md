@@ -39,6 +39,18 @@ remotes::install_github("wlandau/crew")
 Please see <https://wlandau.github.io/crew/> for documentation,
 including a full function reference and usage tutorial vignettes.
 
+# Plugins
+
+`crew` lets you write custom
+[launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html)
+for different types of workers that connect over the local network. This
+flexibility can extend `crew` to platforms like
+[SLURM](https://slurm.schedmd.com/), [AWS
+Batch](https://aws.amazon.com/batch/), and
+[Kubernetes](https://kubernetes.io/). See the [plugin
+vignette](https://wlandau.github.io/crew/articles/plugins.html) for
+details.
+
 # Usage
 
 First, start a `crew` session. The session reserves a TCP port to
@@ -189,49 +201,6 @@ clean up the resources.
 controller$terminate()
 crew_session_terminate()
 ```
-
-# Launchers
-
-You can extend `crew` to distributed systems with workers that connect
-over the local network. To do this yourself, write an
-[`R6`](https://r6.r-lib.org) subclass that inherits from
-[`crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.html).
-An example is
-[`crew_class_launcher_callr`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html),
-the local multi-process launcher, which is the one and only launcher
-inside the `crew` package itself. Using the [`callr` launcher source
-code](https://github.com/wlandau/crew/blob/HEAD/R/crew_launcher_callr.R)
-as a reference, you can develop more ambitious launchers.
-
-The general requirements for a third-party launcher are:
-
-1.  Inherit from
-    [`crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.html).
-2.  A public method
-    [`launch_worker()`](https://github.com/wlandau/crew/blob/3066eaf3f7edc1a48c1dcd51419e299f955da8ab/R/crew_launcher_callr.R#L104-L124).
-    The method must:
-    1.  Accepts the arguments of
-        [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html).
-    2.  Launch a worker on the local network which calls
-        [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html)
-        on the arguments.
-    3.  Return a “handle”, an R object which allows the launcher to
-        manually terminate the the worker later on. In the case of
-        [`crew_class_launcher_callr`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html),
-        the handle is the [`callr`](https://callr.r-lib.org) handle to
-        control a local R process. In other cases, such as SLURM or AWS
-        Batch, the handle could be a job ID.
-3.  A public method
-    [`terminate_worker()`](https://github.com/wlandau/crew/blob/3066eaf3f7edc1a48c1dcd51419e299f955da8ab/R/crew_launcher_callr.R#L129-L131)
-    which manually terminates the worker using the handle returned by
-    [`launch_worker()`](https://github.com/wlandau/crew/blob/3066eaf3f7edc1a48c1dcd51419e299f955da8ab/R/crew_launcher_callr.R#L104-L124).
-4.  Optional: a [launcher
-    helper](https://github.com/wlandau/crew/blob/3066eaf3f7edc1a48c1dcd51419e299f955da8ab/R/crew_launcher_callr.R#L48-L70)
-    to create a launcher object using reasonable default arguments.
-5.  Optional: a [controller
-    helper](https://github.com/wlandau/crew/blob/main/R/crew_controller_callr.R)
-    to create a controller object with a launcher using default
-    arguments.
 
 # Risks
 

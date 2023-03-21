@@ -28,6 +28,36 @@ crew_test("launcher settings", {
   expect_true(settings$cleanup)
 })
 
+crew_test("launcher call", {
+  skip_on_cran()
+  skip_on_os("windows")
+  launcher <- crew_class_launcher$new(
+    name = "my_launcher_name",
+    seconds_launch = 1,
+    seconds_idle = 0.001,
+    seconds_wall = 3,
+    seconds_exit = 4,
+    tasks_max = 7,
+    tasks_timers = 8,
+    async_dial = FALSE,
+    cleanup = TRUE
+  )
+  out <- launcher$call(
+    socket = "ws://127.0.0.1:90000000",
+    host = "127.0.0.1",
+    port = "90000000",
+    token = "my_token",
+    name = "my_name"
+  )
+  expect_true(is.character(out))
+  expect_true(!anyNA(out))
+  expect_equal(length(out), 1L)
+  expect_true(all(nzchar(out)))
+  expect_true(grepl(pattern = "^crew::crew_worker\\(", x = out))
+  message <- tryCatch(eval(parse(text = out)), error = conditionMessage)
+  expect_equal(message, "15 | Address invalid")
+})
+
 crew_test("launcher populate()", {
   skip_on_cran()
   launcher <- crew_class_launcher$new()

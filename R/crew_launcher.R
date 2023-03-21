@@ -238,6 +238,47 @@ crew_class_launcher <- R6::R6Class(
         cleanup = self$cleanup
       )
     },
+    #' @description Create a call to [crew_worker()] to
+    #'   help create custom launchers.
+    #' @return Character of length 1 with a call to [crew_worker()].
+    #' @param socket Socket where the worker will receive tasks.
+    #' @param host IP address of the `mirai` client that sends tasks.
+    #' @param port TCP port to register a successful connection
+    #'   to the host. Different from that of `socket`.
+    #' @param token Character of length 1 to identify the instance
+    #'   of the `mirai` server process connected to the socket.
+    #' @param name User-supplied name of the launcher, useful for
+    #'   constructing informative job labels.
+    #' @examples
+    #' launcher <- crew_launcher_callr()
+    #' launcher$call(
+    #'   socket = "ws://127.0.0.1:5000",
+    #'   host = "127.0.0.1",
+    #'   port = "5711",
+    #'   token = "my_token",
+    #'   name = "my_name"
+    #' )
+    call = function(socket, host, port, token, name) {
+      args <- self$settings(socket)
+      args$.fn <- "list"
+      call_settings <- do.call(what = rlang::call2, args = args)
+      call <- substitute(
+        crew::crew_worker(
+          token = token,
+          host = host,
+          port = port,
+          settings = settings
+        ),
+        env = list(
+          settings = call_settings,
+          host = host,
+          port = port,
+          token = token
+        )
+      )
+      out <- deparse_safe(expr = call, collapse = " ")
+      gsub(pattern = "   *", replacement = " ", x = out)
+    },
     #' @description Populate the workers data frame.
     #' @return `NULL` (invisibly).
     #' @param sockets Character vector of worker websockets.

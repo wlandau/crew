@@ -11,7 +11,8 @@ vignette: >
 library(crew)
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
@@ -39,7 +40,7 @@ If you implement [`terminate_worker()`](https://wlandau.github.io/crew/reference
 * If you implement a [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-terminate-worker-) method, each worker termination may also happen asynchonously. In rare cases when you do not trust the platform to terminate the worker on the first request, you can use [`crew_wait()`](https://wlandau.github.io/crew/reference/crew_wait.html) to wait for the job to exit, but this may reduce efficiency.
 * The [source code of the built-in `callr` launcher](https://github.com/wlandau/crew/blob/main/R/crew_launcher_callr.R) is a helpful reference.
 
-## Example: `processx`
+## Example
 
 The following is a custom custom launcher class whose workers are local R processes.
 
@@ -93,7 +94,77 @@ terminate_worker = function(handle) {
 }
 ```
 
+## Helper
 
+It is useful to have a helper function that creates controllers with your custom launcher. It should:
+
+1. Accept all the same arguments as [`crew_controller_callr()`](https://wlandau.github.io/crew/reference/crew_controller_callr.html).
+2. Create a router object using [`crew_router()`](https://wlandau.github.io/crew/reference/crew_router.html).
+3. Create a launcher object with the [`new()` method](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-crew_class_launcher-new) of your custom launcher class.
+4. Create a new controller using [`crew_controller()`](https://wlandau.github.io/crew/reference/crew_controller.html).
+5. Scan the controller for obvious errors using the [`validate()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-validate) method of the controller.
+
+Feel free to borrow from the [`crew_controller_callr()` source code](https://github.com/wlandau/crew/blob/main/R/crew_controller_callr.R). For packages, you can use the `@inheritParams` [`roxygen2`](https://roxygen2.r-lib.org/) tag to inherit the documentation of all the arguments instead of writing it by hand. You may want to adjust the default arguments based on the specifics of your platform, especially `seconds_launch` if workers take a long time to launch.
+
+```{r}
+#' @title Create a controller with the custom launcher.
+#' @export
+#' @description Create an `R6` object to submit tasks and
+#'   launch workers.
+#' @inheritParams crew::crew_controller_callr
+crew_controller_custom <- function(
+  name = NULL,
+  workers = 1L,
+  host = NULL,
+  port = 0L,
+  seconds_launch = 30,
+  seconds_interval = 0.001,
+  seconds_timeout = 5,
+  seconds_exit = 0.1,
+  seconds_poll_high = 0.001,
+  seconds_poll_low = 0.01,
+  async_dial = TRUE,
+  seconds_idle = Inf,
+  seconds_wall = Inf,
+  tasks_max = Inf,
+  tasks_timers = 0L,
+  cleanup = FALSE,
+  auto_scale = "demand"
+) {
+  router <- crew::crew_router(
+    name = name,
+    workers = workers,
+    host = host,
+    port = port,
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout,
+    seconds_exit = seconds_exit,
+    seconds_poll_high = seconds_poll_high,
+    seconds_poll_low = seconds_poll_low,
+    async_dial = async_dial
+  )
+  launcher <- custom_launcher_class$new(
+    name = name,
+    seconds_launch = seconds_launch,
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout,
+    seconds_idle = seconds_idle,
+    seconds_wall = seconds_wall,
+    seconds_exit = seconds_exit,
+    tasks_max = tasks_max,
+    tasks_timers = tasks_timers,
+    async_dial = async_dial,
+    cleanup = cleanup
+  )
+  controller <- crew::crew_controller(
+    router = router,
+    launcher = launcher,
+    auto_scale = auto_scale
+  )
+  controller$validate()
+  controller
+}
+```
 
 ## Usage
 

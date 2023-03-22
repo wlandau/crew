@@ -16,12 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-`crew` lets you write custom [launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html) for different types of workers that connect over the local network. This flexibility can extend `crew` to platforms like [SLURM](https://slurm.schedmd.com/), [AWS Batch](https://aws.amazon.com/batch/), and [Kubernetes](https://kubernetes.io/). This vignette demonstrates how.
-
-## Prerequisites
-
-1. [`R6` classes](https://r6.r-lib.org/articles/Introduction.html).
-2. How to launch and terminate a job or process on the computing platform of your plugin.
+`crew` lets you write custom [launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html) for different types of workers that connect over the local network. This flexibility can extend `crew` to platforms like [SLURM](https://slurm.schedmd.com/), [AWS Batch](https://aws.amazon.com/batch/), and [Kubernetes](https://kubernetes.io/). This vignette demonstrates how. It assumes prior familiarity with [`R6` classes](https://r6.r-lib.org/articles/Introduction.html) and the computing platform of your plugin.
 
 ## How it works
 
@@ -42,7 +37,7 @@ If you implement [`terminate_worker()`](https://wlandau.github.io/crew/reference
 
 ## Example
 
-The following is a custom custom launcher class whose workers are local R processes.
+The following is a custom custom launcher class whose workers are local R processes.^[See ]
 
 ```{r}
 custom_launcher_class <- R6::R6Class(

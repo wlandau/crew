@@ -37,7 +37,7 @@ If you implement [`terminate_worker()`](https://wlandau.github.io/crew/reference
 
 ## Example
 
-The following is a custom custom launcher class whose workers are local R processes.^[See ]
+The following is a custom custom launcher class whose workers are local R processes.^[See [`tests/launchers/test-launcher-system2.R`](https://github.com/wlandau/crew/blob/main/tests/launchers/test-launcher-system2.R) for an example launcher without a `termiante_worker()` method.]
 
 ```{r}
 custom_launcher_class <- R6::R6Class(

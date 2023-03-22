@@ -37,7 +37,7 @@ If you implement [`terminate_worker()`](https://wlandau.github.io/crew/reference
 
 * The `token` and `name` arguments of the [`launch_worker()` method](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-launch-worker-) can help construct informative job names. `token` is a long text string that uniquely identifies the instance of the new worker, and `name` is the name of the current launcher object.
 * For efficiency, every launch can happen asynchronously. There is no need to wait for the worker to start. When it starts, it will connect back to the `mirai` dispatcher  over the local network and start accepting tasks.
-* If you implement a [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-terminate-worker-) method, each worker termination may also happen asynchonously. In rare cases when you do not trust the platform to terminate the worker on the first request, you can use [`crew_wait()`](https://wlandau.github.io/crew/reference/crew_wait.html) to wait for the job to exit, but this may reduce efficiency.
+* If you implement a [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-terminate-worker-) method, each worker termination may also happen asynchronously. In rare cases when you do not trust the platform to terminate the worker on the first request, you can use [`crew_wait()`](https://wlandau.github.io/crew/reference/crew_wait.html) to wait for the job to exit, but this may reduce efficiency.
 * The [source code of the built-in `callr` launcher](https://github.com/wlandau/crew/blob/main/R/crew_launcher_callr.R) is a helpful reference.
 
 ## Example

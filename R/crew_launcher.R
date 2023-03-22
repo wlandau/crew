@@ -383,6 +383,16 @@ crew_class_launcher <- R6::R6Class(
         self$workers$handle[[index]] <- crew_null
       }
       invisible()
+    },
+    #' @description Abstract method.
+    #' @details Does not actually terminate a worker. This method is a
+    #'   placeholder, and its presence allows manual worker termination
+    #'   to be optional.
+    #' @return `NULL` (invisibly).
+    #' @param handle A `callr` process handle previously
+    #'   returned by `launch_worker()`.
+    terminate_worker = function(handle) {
+      invisible()
     }
   )
 )

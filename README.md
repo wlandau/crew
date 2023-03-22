@@ -275,7 +275,9 @@ after its startup time from `seconds_start` elapses. To make sure
 workers do not run indefinitely if something goes wrong, it is always
 prudent to set arguments like `seconds_idle` in functions like
 `crew_controller_callr()`. In addition, please learn how to find and
-terminate workers on the specific computing platform where they run.
+terminate workers on the specific computing platform where they run. And
+if you are writing a custom launcher plugin, it is recommended (although
+not strictly required) to write a custom `terminate_worker()` method.
 
 Workers may run on different computing platforms, depending on the type
 of launcher you choose. Each type of launcher connects to a different

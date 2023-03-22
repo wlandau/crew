@@ -24,17 +24,24 @@ knitr::opts_chunk$set(
 
 ## How it works
 
-To create your own launcher plugin, write an [`R6`](https://r6.r-lib.org/articles/Introduction.html) subclass of [`crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.html) with a [`launch_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-launch-worker-) method analogous the one in the [`callr` launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html). `launch_worker()` must accept a particular set of arguments, generate a call to [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html), and then submit a new job or process to run that call.
+To create your own launcher plugin, write an [`R6`](https://r6.r-lib.org/articles/Introduction.html) subclass of [`crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.html) with a [`launch_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-launch-worker-) method analogous the one in the [`callr` launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html). `launch_worker()` must accept the same arguments as the [`callr` `launch_worker()` method](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-launch-worker-), generate a call to [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html), and then submit a new job or process to run that call.
+
+## Safeguards
+
+We recommend you implement an optional [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-terminate-worker-) method. Although `mirai` has its own way of terminating workers, it only works if the worker already connected, and it cannot reach workers that fail to connect and hang in a crashed state. An optional [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-terminate-worker-) method in your `crew` launcher plugin is extra assurance that these workers will exit.
+
+If you implement [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-terminate-worker-), it must accept a handle that identifies the worker, and this handle must be the return value of the previous call to [`launch_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-launch-worker-). A handle can be any kind of R object: a `callr::r_bg()` handle, a process ID, a job name, etc.
 
 ## Tips
 
-* The [source code of the built-in `callr` launcher](https://github.com/wlandau/crew/blob/main/R/crew_launcher_callr.R) is a helpful reference.
+* The `token` and `name` arguments of the [`launch_worker()` method](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-launch-worker-) can help construct informative job names. `token` is a long text string that uniquely identifies the instance of the new worker, and `name` is the name of the current launcher object.
 * For efficiency, every launch can happen asynchronously. There is no need to wait for the worker to start. When it starts, it will connect back to the `mirai` dispatcher  over the local network and start accepting tasks.
-* There is no need to manually terminate the worker. Either it idles out on its own when the workload subsides, depending on user settings, or it exits when the dispatcher exits.
+* If you implement a [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-terminate-worker-) method, each worker termination may also happen asynchonously. In rare cases when you do not trust the platform to terminate the worker on the first request, you can use [`crew_wait()`](https://wlandau.github.io/crew/reference/crew_wait.html) to wait for the job to exit, but this may reduce efficiency.
+* The [source code of the built-in `callr` launcher](https://github.com/wlandau/crew/blob/main/R/crew_launcher_callr.R) is a helpful reference.
 
-## Example
+## Example: `processx`
 
-We create a custom launcher class whose workers are local R processes.
+The following is a custom custom launcher class whose workers are local R processes.
 
 ```{r}
 custom_launcher_class <- R6::R6Class(
@@ -51,6 +58,42 @@ custom_launcher_class <- R6::R6Class(
   )
 )
 ```
+
+Above `launch_worker()` begins by creating a call to [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html). Later on, this call will run inside the worker process, connect back to `crew` and `mirai` over the local network, and accept the tasks you push to the controller.
+
+```{r}
+call <- self$call(socket, host, port, token, name)
+```
+
+The `call` object above a text string with R code. To see what it looks like, you can try the method in a `callr` launcher object.
+
+```{r}
+launcher <- crew_launcher_callr()
+launcher$call(
+  socket = "ws://127.0.0.1:5000",
+  host = "127.0.0.1",
+  port = "5711",
+  token = "my_token",
+  name = "my_name"
+)
+#> [1] "crew::crew_worker(token = \"my_token\", host = \"127.0.0.1\", port = \"5711\", settings = list(url = \"ws://127.0.0.1:5000\", asyncdial = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, exitlinger = 100, cleanup = FALSE))"
+```
+
+To create an external process that runs a worker, our custom launcher creates a new [`processx`](https://processx.r-lib.org) process to start R and run the [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html) call.
+
+```{r}
+processx::process$new(command = "R", args = c("-e", call))
+```
+
+The return value is a handle that `terminate_worker()` will use to terminate the process later on.
+
+```{r}
+terminate_worker = function(handle) {
+  handle$kill()
+}
+```
+
+
 
 ## Usage
 

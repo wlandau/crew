@@ -3,6 +3,21 @@ crew_test("abstract launcher class", {
   expect_crew_error(crew_launcher(async_dial = -1)$validate())
 })
 
+crew_test("default terminate_launcher() method", {
+  launcher <- crew_class_launcher$new(
+    name = "my_launcher_name",
+    seconds_launch = 1,
+    seconds_idle = 2,
+    seconds_wall = 3,
+    seconds_exit = 4,
+    tasks_max = 7,
+    tasks_timers = 8,
+    async_dial = FALSE,
+    cleanup = TRUE
+  )
+  expect_null(launcher$terminate_worker())
+})
+
 crew_test("launcher settings", {
   launcher <- crew_class_launcher$new(
     name = "my_launcher_name",

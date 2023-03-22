@@ -69,7 +69,7 @@ call <- self$call(socket, host, port, token, name)
 The `call` object above a text string with R code. To see what it looks like, you can try the method in a `callr` launcher object.
 
 ```{r}
-launcher <- crew_launcher_callr()
+launcher <- crew::crew_launcher_callr()
 launcher$call(
   socket = "ws://127.0.0.1:5000",
   host = "127.0.0.1",
@@ -113,7 +113,7 @@ Feel free to borrow from the [`crew_controller_callr()` source code](https://git
 #'   launch workers.
 #' @inheritParams crew::crew_controller_callr
 crew_controller_custom <- function(
-  name = NULL,
+  name = "custom controller name",
   workers = 1L,
   host = NULL,
   port = 0L,
@@ -166,5 +166,126 @@ crew_controller_custom <- function(
 }
 ```
 
-## Usage
+## Informal testing
 
+Before you begin testing, please begin monitoring local processes and remote jobs on your platform. In the case of the above `crew` launcher which only creates local processes, it is sufficient to start [`htop`](https://htop.dev/) and filter for R processes, or launch a new R session to monitor the process table from [`ps::ps()`](https://ps.r-lib.org/reference/ps.html). However, for more ambitious launchers that submit workers to e.g. [AWS Batch](https://aws.amazon.com/batch/), you may need to open the [CloudWatch](https://aws.amazon.com/cloudwatch/) dashboard, then view the AWS billing dashboard after testing.
+
+When you are ready to begin testing, try out the example in the [README](https://wlandau.github.io/crew/index.html#usage), but use your your custom controller helper instead of [`crew_controller_callr()`](https://wlandau.github.io/crew/reference/crew_controller_callr.html). 
+
+Next, start a new `crew` session.
+
+```{r}
+library(crew)
+crew_session_start()
+```
+
+Then, create and start a controller. You may wish to monitor local processes on your computer to make sure the `mirai` dispatcher starts.
+
+```{r}
+controller <- crew_controller_custom(workers = 2)
+controller$start()
+```
+
+Try pushing a task that gets the local IP address and process ID of the worker instance.
+
+```{r}
+controller$push(
+  name = "get worker IP address and process ID",
+  command = paste(getip::getip(type = "local"), ps::ps_pid())
+)
+```
+
+Wait for the task to complete and look at the result.
+
+```{r}
+controller$wait()
+out <- controller$pop()
+out$result[[1]]
+#> [1] "192.168.0.2 27336"
+```
+
+Please use the result to verify that the task really ran on a worker as intended. The process ID above should agree with the one from the handle. In addition, if the worker is running on a different computer, the worker IP address should be different than the local IP address. Since our custom launcher creates local processes, the IP addresses are the same in this case, but they should be different for a [SLURM](https://slurm.schedmd.com/) or [AWS Batch](https://aws.amazon.com/batch/) launcher. 
+
+```{r}
+getip::getip(type = "local")
+#> "192.168.0.2"
+controller$launcher$workers$handle[[1]]$get_pid()
+#> [1] 27336
+```
+
+If you did not set any timeouts or task limits, the worker that ran the task should still be running and connected. The other worker had no tasks, so it did not need to start an instance.
+
+```{r}
+controller$summary(columns = starts_with("worker"))
+#> # A tibble: 2 × 5
+#>   worker_socket         worker_connected worker_busy worker_launches worker_instances
+#>   <chr>                 <lgl>            <lgl>                 <int>            <int>
+#> 1 ws://10.0.0.9:58805/1 TRUE             FALSE                     1                1
+#> 2 ws://10.0.0.9:58805/2 FALSE            FALSE                     0                0
+```
+
+When you are done, terminate the controller. This terminates the `mirai` dispatcher process and the `crew` workers.
+
+```{r}
+controller$terminate()
+```
+
+Finally, use the process monitoring interface of your computing platform or operating system to verify that all `mirai` dispatchers and `crew` workers are terminated.
+
+## Load testing
+
+If the informal testing succeeded, we recommend you scale up testing to more ambitious scenarios. As one example, you can test that your workers can auto-scale and quickly churn through a large number of tasks.
+
+```{r}
+library(crew)
+crew_session_start()
+controller <- crew_controller_custom(
+  seconds_idle = 2L,
+  workers = 2L
+)
+controller$start()
+# Push 100 tasks
+for (index in seq_len(100L)) {
+  name <- paste0("task_", index)
+  controller$push(name = name, command = index, data = list(index = index))
+  message(paste("push", name))
+}
+# Wait for the tasks to complete.
+controller$wait()
+# Wait for the workers to idle out and exit on their own.
+crew_wait(
+  ~all(controller$summary()$worker_connected == FALSE),
+  seconds_interval = 1,
+  seconds_timeout = 60
+)
+# Do the same for 100 more tasks.
+for (index in (seq_len(100L) + 100L)) {
+  name <- paste0("task_", index)
+  controller$push(name = name, command = index, data = list(index = index))
+  message(paste("push", name))
+}
+controller$wait()
+crew_wait(
+  ~all(controller$summary()$worker_connected == FALSE),
+  seconds_interval = 1,
+  seconds_timeout = 60
+)
+# Collect the results.
+results <- NULL
+while (!is.null(out <- controller$pop(scale = FALSE))) {
+  if (!is.null(out)) {
+    results <- dplyr::bind_rows(results, out)
+  }
+}
+# Check the results
+all(sort(unlist(results$result)) == seq_len(200L))
+#> [1] TRUE
+length(unique(results$socket_session))
+#> [1] 4
+# View worker and task summaries.
+View(controller$summary())
+# Terminate the controller.
+controller$terminate()
+# Now outside crew, verify that the mirai dispatcher
+# and crew workers successfully terminated.
+```

@@ -1,34 +1,51 @@
 library(crew)
 crew_session_start()
-x <- crew_controller_callr(
+controller <- crew_controller_callr(
   seconds_idle = 2L,
   workers = 2L
 )
-x$start()
+controller$start()
+# Push 100 tasks
 for (index in seq_len(100L)) {
   name <- paste0("task_", index)
-  x$push(name = name, command = index, data = list(index = index))
+  controller$push(name = name, command = index, data = list(index = index))
   message(paste("push", name))
 }
-x$wait()
-Sys.sleep(3)
+# Wait for the tasks to complete.
+controller$wait()
+# Wait for the workers to idle out and exit on their own.
+crew_wait(
+  ~all(controller$summary()$worker_connected == FALSE),
+  seconds_interval = 1,
+  seconds_timeout = 60
+)
+# Do the same for 100 more tasks.
 for (index in (seq_len(100L) + 100L)) {
   name <- paste0("task_", index)
-  x$push(name = name, command = index, data = list(index = index))
+  controller$push(name = name, command = index, data = list(index = index))
   message(paste("push", name))
 }
-x$wait()
+controller$wait()
+crew_wait(
+  ~all(controller$summary()$worker_connected == FALSE),
+  seconds_interval = 1,
+  seconds_timeout = 60
+)
+# Collect the results.
 results <- NULL
-while (!is.null(out <- x$pop(scale = FALSE))) {
+while (!is.null(out <- controller$pop(scale = FALSE))) {
   if (!is.null(out)) {
     results <- dplyr::bind_rows(results, out)
   }
 }
+# Check the results
 all(sort(unlist(results$result)) == seq_len(200L))
 #> [1] TRUE
 length(unique(results$socket_session))
 #> [1] 4
-x$summary()$worker_launches
-#> [1] 2 2
-View(x$summary(-contains(c("controller", "seconds"))))
-x$terminate()
+# View worker and task summaries.
+View(controller$summary())
+# Terminate the controller.
+controller$terminate()
+# Now outside crew, verify that the mirai dispatcher
+# and crew workers successfully terminated.

@@ -100,6 +100,7 @@ Other launchers:
 \item \href{#method-crew_class_launcher-active}{\code{crew_class_launcher$active()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
+\item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -346,6 +347,33 @@ to terminate.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-terminate_worker"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate_worker}{}}}
+\subsection{Method \code{terminate_worker()}}{
+Abstract method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate_worker(handle)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{handle}}{A \code{callr} process handle previously
+returned by \code{launch_worker()}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Does not actually terminate a worker. This method is a
+placeholder, and its presence allows manual worker termination
+to be optional.
+}
+
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

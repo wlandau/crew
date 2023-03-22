@@ -241,11 +241,10 @@ The `crew` package launches external R processes:
     process to schedule the tasks.
 
 To the best of its ability, `crew` tries to only launch the processes it
-needs, and it tries to manually monitor and clean up these processes
-when the work is done. However, the package is not perfect. Whether from
-a bug in the code or an egregious crash, it is still possible that too
-many workers may run concurrently, and it is still possible that either
-the workers or the [`mirai`](https://github.com/shikokuchuo/mirai)
+needs, and it relies on `mirai` to clean up these processes when the
+work is done. However, sometimes it is still possible that too many
+workers may run concurrently, and it is still possible that either the
+workers or the [`mirai`](https://github.com/shikokuchuo/mirai)
 dispatcher may run too long or hang. In large-scale workflows, these
 accidents can have egregious consequences. Depending on the launcher
 type, these consequences can range from overburdening your local machine
@@ -270,13 +269,20 @@ ps::ps_kill(86028)
 
 ### Workers
 
+`mirai` usually terminates workers when they are no longer needed, but
+sometimes it cannot reach a worker, e.g. when a worker comes online
+after its startup time from `seconds_start` elapses. To make sure
+workers do not run indefinitely if something goes wrong, it is always
+prudent to set arguments like `seconds_idle` in functions like
+`crew_controller_callr()`. In addition, please learn how to find and
+terminate workers on the specific computing platform where they run.
+
 Workers may run on different computing platforms, depending on the type
 of launcher you choose. Each type of launcher connects to a different
-computing platform. Please learn the interface of that computing
-platform, particularly how to find and terminate jobs manually without
-using `crew`. For example, the [`callr` launcher and
-controller](https://wlandau.github.io/crew/reference/crew_controller_callr.html)
-create R processes on your local machine, which you can find and
+computing platform, and each platform has a different way of terminating
+workers. For example, the [`callr`
+launcher](https://wlandau.github.io/crew/reference/crew_launcher_callr.html)
+creates R processes on your local machine, which you can find and
 terminate with
 [`ps::ps()`](https://ps.r-lib.org/reference/ps.html)/[`ps::ps_kill()`](https://ps.r-lib.org/reference/ps_kill.html)
 or [`htop`](https://htop.dev/). For a SLURM launcher, you need

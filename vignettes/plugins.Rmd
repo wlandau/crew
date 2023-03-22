@@ -24,54 +24,33 @@ knitr::opts_chunk$set(
 
 ## How it works
 
-To create your own launcher plugin, write an [`R6`](https://r6.r-lib.org/articles/Introduction.html) subclass of [`crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.html) with methods `launch_worker()` and `terminate_worker()` analogous to those of the [`callr` launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html). `launch_worker()` must accept all the arguments of the parent class, and it must return a handle object that will allow the worker to be terminated later. `terminate_worker()` must accept the handle object and terminate the worker with the given handle.
+To create your own launcher plugin, write an [`R6`](https://r6.r-lib.org/articles/Introduction.html) subclass of [`crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.html) with a [`launch_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html#method-launch-worker-) method analogous the one in the [`callr` launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_callr.html). `launch_worker()` must accept a particular set of arguments, generate a call to [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html), and then submit a new job or process to run that call.
 
 ## Tips
 
 * The [source code of the built-in `callr` launcher](https://github.com/wlandau/crew/blob/main/R/crew_launcher_callr.R) is a helpful reference.
-* The handle from `launch_worker()` can be any kind of object: for example, a process ID, job name, or `callr::r_bg()` handle.
-* For efficiency, both launch and termination can happen asynchronously. Except in rare cases, there is no need to wait for the process to start or stop.
+* For efficiency, every launch can happen asynchronously. There is no need to wait for the worker to start. When it starts, it will connect back to the `mirai` dispatcher  over the local network and start accepting tasks.
+* There is no need to manually terminate the worker. Either it idles out on its own when the workload subsides, depending on user settings, or it exits when the dispatcher exits.
 
 ## Example
 
-We create a custom launcher class whose workers are local R processes on a Unix-like system.
+We create a custom launcher class whose workers are local R processes.
 
 ```{r}
-crew_class_launcher_callr <- R6::R6Class(
-  classname = "crew_class_launcher_callr",
-  inherit = crew_class_launcher,
-  cloneable = FALSE,
+custom_launcher_class <- R6::R6Class(
+  classname = "custom_launcher_class",
+  inherit = crew::crew_class_launcher,
   public = list(
     launch_worker = function(socket, host, port, token, name) {
-      settings <- self$settings(socket)
-      
-      
-      callr::r_bg(
-        func = function(settings, host, port, token) {
-          crew::crew_worker(
-            settings = settings,
-            host = host,
-            port = port,
-            token = token
-          )
-        },
-        args = list(
-          settings = self$settings(socket),
-          host = host,
-          port = port,
-          token = token
-        )
-      )
+      call <- self$call(socket, host, port, token, name)
+      processx::process$new(command = "R", args = c("-e", call))
     },
     terminate_worker = function(handle) {
       handle$kill()
-      crew_wait(
-        ~!handle$is_alive(),
-        seconds_interval = self$seconds_interval,
-        seconds_timeout = self$seconds_timeout
-      )
-      invisible()
     }
   )
 )
 ```
+
+## Usage
+

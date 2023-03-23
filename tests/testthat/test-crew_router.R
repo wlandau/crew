@@ -1,8 +1,5 @@
 crew_test("crew_router() validate", {
-  router <- crew_router(
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
-  )
+  router <- crew_router()
   expect_silent(router$validate())
   router$name <- NULL
   expect_crew_error(router$validate())
@@ -11,10 +8,7 @@ crew_test("crew_router() validate", {
 crew_test("crew_router() works", {
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router(
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
-  )
+  router <- crew_router()
   on.exit({
     router$terminate()
     crew_test_sleep()
@@ -57,7 +51,10 @@ crew_test("crew_router() works", {
   crew_wait(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons
-      identical(unname(daemons[, "status_online", drop = TRUE]), 1L)
+      identical(
+        as.integer(unname(daemons[, "status_online", drop = TRUE])),
+        1L
+      )
     },
     seconds_interval = 0.001,
     seconds_timeout = 5

@@ -219,6 +219,7 @@ crew_class_launcher <- R6::R6Class(
       for (field in c("async_dial", "cleanup")) {
         true(self[[field]], isTRUE(.) || isFALSE(.))
       }
+      true(self$async_dial, isTRUE(.) || isFALSE(.))
       true(self$workers, is.data.frame(.))
       invisible()
     },

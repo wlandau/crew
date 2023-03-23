@@ -2,8 +2,6 @@ library(crew)
 crew_session_start()
 x <- crew_controller_callr(
   name = "test",
-  seconds_poll_high = 0.001,
-  seconds_poll_low = 0.01,
   tasks_max = 1L,
   workers = 4L
 )
@@ -29,8 +27,8 @@ length(x$results) # 0
 x$wait(mode = "one")
 
 # Pop just one of the tasks
-length(x$queue) # 96
-length(x$results) # 4
+length(x$queue) # 99
+length(x$results) # 1
 x$pop(scale = FALSE) # monad data frame
 length(x$queue) # 96
 length(x$results) # 3

@@ -48,14 +48,6 @@ Other routers:
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{seconds_exit}}{See \code{\link[=crew_router]{crew_router()}}.}
-
-\item{\code{seconds_poll_high}}{See \code{\link[=crew_router]{crew_router()}}.}
-
-\item{\code{seconds_poll_low}}{See \code{\link[=crew_router]{crew_router()}}.}
-
-\item{\code{async_dial}}{See \code{\link[=crew_router]{crew_router()}}.}
-
 \item{\code{dispatcher}}{Process ID of the \code{mirai} dispatcher}
 
 \item{\code{daemons}}{Data frame of information from \code{mirai::daemons()}.}
@@ -85,11 +77,7 @@ Other routers:
   host = NULL,
   port = NULL,
   seconds_interval = NULL,
-  seconds_timeout = NULL,
-  seconds_exit = NULL,
-  seconds_poll_high = NULL,
-  seconds_poll_low = NULL,
-  async_dial = NULL
+  seconds_timeout = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -107,14 +95,6 @@ Other routers:
 \item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{seconds_timeout}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
-
-\item{\code{seconds_exit}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
-
-\item{\code{seconds_poll_high}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
-
-\item{\code{seconds_poll_low}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
-
-\item{\code{async_dial}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 }
 \if{html}{\out{</div>}}
 }

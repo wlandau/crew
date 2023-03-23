@@ -8,18 +8,16 @@ crew_controller_callr(
   name = NULL,
   workers = 1L,
   host = NULL,
-  port = 0L,
+  port = NULL,
   seconds_launch = 30,
   seconds_interval = 0.001,
   seconds_timeout = 5,
-  seconds_exit = 0.1,
-  seconds_poll_high = 0.001,
-  seconds_poll_low = 0.01,
-  async_dial = TRUE,
   seconds_idle = Inf,
   seconds_wall = Inf,
+  seconds_exit = 0.1,
   tasks_max = Inf,
   tasks_timers = 0L,
+  async_dial = TRUE,
   cleanup = FALSE,
   auto_scale = "demand"
 )
@@ -33,8 +31,10 @@ generated.}
 \item{host}{IP address of the \code{mirai} client to send and receive tasks.
 If \code{NULL}, the host defaults to the local IP address.}
 
-\item{port}{TCP port to listen for the workers. If \code{0},
-then NNG automatically chooses an available ephemeral port.}
+\item{port}{TCP port to listen for the workers. If \code{NULL},
+then \code{parallelly::freePort()}
+automatically chooses an available ephemeral port between
+49152 and 65535.}
 
 \item{seconds_launch}{Seconds of startup time to allow.
 A worker is unconditionally assumed to be alive
@@ -48,20 +48,6 @@ synchronous operations to complete.}
 
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete.}
-
-\item{seconds_exit}{Number of seconds to wait for NNG websockets
-to finish sending large data (in case an exit signal is received).}
-
-\item{seconds_poll_high}{High polling interval in seconds for the
-\code{mirai} active queue. See the \code{pollfreqh} argument of
-\code{mirai::dispatcher()}.}
-
-\item{seconds_poll_low}{Low polling interval in seconds for the \code{mirai}
-active queue. See the \code{pollfreql} argument of
-\code{mirai::dispatcher()}.}
-
-\item{async_dial}{Logical, whether the \code{mirai} workers should dial in
-asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 
 \item{seconds_idle}{Maximum number of seconds that a worker can idle
 since the completion of the last task. If exceeded, the worker exits.
@@ -77,6 +63,10 @@ The timer does not launch until \code{tasks_timers} tasks
 have completed.
 See the \code{walltime} argument of \code{mirai::server()}.}
 
+\item{seconds_exit}{Number of seconds to wait for NNG websockets
+to finish sending large data (in case an exit signal is received).
+See the \code{exitlinger} argument of \code{mirai::server()}.}
+
 \item{tasks_max}{Maximum number of tasks that a worker will do before
 exiting. See the \code{maxtasks} argument of \code{mirai::server()}.
 \code{crew} does not
@@ -87,6 +77,9 @@ the assignment of tasks to workers, it is recommended to set
 \item{tasks_timers}{Number of tasks to do before activating
 the timers for \code{seconds_idle} and \code{seconds_wall}.
 See the \code{timerlaunch} argument of \code{mirai::server()}.}
+
+\item{async_dial}{Logical, whether the \code{mirai} workers should dial in
+asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 
 \item{cleanup}{Logical, whether to clean up global options and the
 global environment after every task.

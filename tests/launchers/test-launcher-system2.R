@@ -20,18 +20,16 @@ crew_controller_system2 <- function(
     name = "system2",
     workers = 1L,
     host = NULL,
-    port = 0L,
+    port = NULL,
     seconds_launch = 30,
     seconds_interval = 0.001,
     seconds_timeout = 5,
-    seconds_exit = 0.1,
-    seconds_poll_high = 0.001,
-    seconds_poll_low = 0.01,
-    async_dial = TRUE,
     seconds_idle = Inf,
     seconds_wall = Inf,
+    seconds_exit = 0.1,
     tasks_max = Inf,
     tasks_timers = 0L,
+    async_dial = TRUE,
     cleanup = FALSE,
     auto_scale = "demand"
 ) {
@@ -41,11 +39,7 @@ crew_controller_system2 <- function(
     host = host,
     port = port,
     seconds_interval = seconds_interval,
-    seconds_timeout = seconds_timeout,
-    seconds_exit = seconds_exit,
-    seconds_poll_high = seconds_poll_high,
-    seconds_poll_low = seconds_poll_low,
-    async_dial = async_dial
+    seconds_timeout = seconds_timeout
   )
   launcher <- system2_launcher_class$new(
     name = name,

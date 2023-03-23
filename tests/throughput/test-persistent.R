@@ -2,8 +2,6 @@ library(crew)
 crew_session_start()
 x <- crew_controller_callr(
   name = "test",
-  seconds_poll_high = 0.001,
-  seconds_poll_low = 0.01,
   workers = 2L
 )
 x$start()

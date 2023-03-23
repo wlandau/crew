@@ -2,8 +2,6 @@ library(crew)
 crew_session_start()
 x <- crew_controller_callr(
   name = "test",
-  seconds_poll_high = 0.001,
-  seconds_poll_low = 0.01,
   tasks_max = 1L,
   workers = 4L
 )
@@ -45,14 +43,13 @@ crew_wait(
   seconds_timeout = 10
 )
 
-# Call wait() on the controller to cycle throught the rest of the tasks.
+# Call wait() on the controller to cycle through the rest of the tasks.
 # Watch htop to see it complete.
 x$wait(mode = "all")
 length(x$queue) # 0
 length(x$results) # 200
 
-# Only the first 8 tasks should have run so far. Keep calling pop()
-# until the rest of the tasks complete.
+# All results should now be available.
 results <- list()
 time <- system.time({
   while (length(results) < 2 * n) {

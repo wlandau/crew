@@ -24,16 +24,12 @@ crew_test("crew_controller_group()", {
   crew_session_start()
   a <- crew_controller_callr(
     name = "a",
-    seconds_idle = 360,
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    seconds_idle = 360
   )
   b <- crew_controller_callr(
     name = "b",
     tasks_max = 1L,
-    seconds_idle = 360,
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    seconds_idle = 360
   )
   x <- crew_controller_group(a, b)
   expect_null(x$summary())
@@ -117,16 +113,12 @@ crew_test("crew_controller_group() select", {
   skip_on_os("windows")
   crew_session_start()
   a <- crew_controller_callr(
-    name = "a",
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    name = "a"
   )
   b <- crew_controller_callr(
     name = "b",
     tasks_max = 1L,
-    seconds_idle = 360,
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    seconds_idle = 360
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -150,16 +142,12 @@ crew_test("crew_controller_group() collect", {
   skip_on_os("windows")
   crew_session_start()
   a <- crew_controller_callr(
-    name = "a",
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    name = "a"
   )
   b <- crew_controller_callr(
     name = "b",
     tasks_max = 1L,
-    seconds_idle = 360,
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    seconds_idle = 360
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -195,16 +183,12 @@ crew_test("crew_controller_group() launch method", {
   crew_session_start()
   a <- crew_controller_callr(
     name = "a",
-    seconds_idle = 360,
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    seconds_idle = 360
   )
   b <- crew_controller_callr(
     name = "b",
     tasks_max = 1L,
-    seconds_idle = 360,
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    seconds_idle = 360
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -245,9 +229,7 @@ crew_test("crew_controller_group() scale method", {
   a <- crew_controller_callr(
     name = "a",
     auto_scale = "one",
-    seconds_idle = 360,
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    seconds_idle = 360
   )
   x <- crew_controller_group(a)
   on.exit({

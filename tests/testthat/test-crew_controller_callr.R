@@ -2,9 +2,7 @@ crew_test("crew_controller_callr()", {
   crew_session_start()
   x <- crew_controller_callr(
     workers = 1L,
-    seconds_idle = 360,
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    seconds_idle = 360
   )
   on.exit({
     x$terminate()
@@ -113,9 +111,7 @@ crew_test("crew_controller_callr() warnings and errors", {
   skip_on_os("windows")
   crew_session_start()
   x <- crew_controller_callr(
-    seconds_idle = 360,
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    seconds_idle = 360
   )
   on.exit({
     x$terminate()
@@ -154,9 +150,7 @@ crew_test("crew_controller_callr() launch method", {
   skip_on_os("windows")
   crew_session_start()
   x <- crew_controller_callr(
-    seconds_idle = 360,
-    seconds_poll_high = 0.01,
-    seconds_poll_low = 0.1
+    seconds_idle = 360
   )
   on.exit({
     x$terminate()

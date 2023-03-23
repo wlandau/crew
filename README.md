@@ -251,22 +251,6 @@ type, these consequences can range from overburdening your local machine
 or cluster, to incurring unexpectedly high costs on [Amazon Web
 Services](https://aws.amazon.com/).
 
-### Dispatcher
-
-The [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher should
-gracefully exit when you call `terminate()` on the controller object. In
-most cases, it is best to let this exit process happen naturally because
-it gracefully shuts down the workers. However, in case of an ill-timed
-crash, you may need to shut down the dispatcher manually. You can find
-the process ID of the current dispatcher using the controller object,
-then use `ps::ps_kill()` to terminate the process.
-
-``` r
-controller$router$dispatcher
-#> [1] 86028
-ps::ps_kill(86028)
-```
-
 ### Workers
 
 `mirai` usually terminates workers when they are no longer needed, but
@@ -310,6 +294,26 @@ low, or if `tasks_max` is 1 and there is a large backlog of quick tasks,
 then workers may exit before doing any work.[^1] Please configure
 arguments like `seconds_idle` and `tasks_max` so that your workers are
 likely to do a nontrivial amount of work before exiting.
+
+### Dispatcher
+
+The [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher is
+designed to gracefully exit when you call `terminate()` on the
+controller object or when you restart your R session. However, if you
+ever need to shut down the dispatcher manually, you can find the process
+ID using the controller object, then use `ps::ps_kill()` to terminate
+the process.
+
+``` r
+controller$router$dispatcher
+#> [1] 86028
+handle <- ps::ps_handle(pid = 86028L)
+ps::ps_is_running(handle)
+#> [1] TRUE
+ps::ps_kill(handle)
+ps::ps_is_running(handle)
+#> [1] FALSE
+```
 
 # Similar work
 

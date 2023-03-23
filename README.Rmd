@@ -186,16 +186,6 @@ The `crew` package launches external R processes:
 
 To the best of its ability, `crew` tries to only launch the processes it needs, and it relies on `mirai` to clean up these processes when the work is done. However, sometimes it is still possible that too many workers may run concurrently, and it is still possible that either the workers or the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher may run too long or hang. In large-scale workflows, these accidents can have egregious consequences. Depending on the launcher type, these consequences can range from overburdening your local machine or cluster, to incurring unexpectedly high costs on [Amazon Web Services](https://aws.amazon.com/).
 
-### Dispatcher
-
-The [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher should gracefully exit when you call `terminate()` on the controller object. In most cases, it is best to let this exit process happen naturally because it gracefully shuts down the workers. However, in case of an ill-timed crash, you may need to shut down the dispatcher manually. You can find the process ID of the current dispatcher using the controller object, then use `ps::ps_kill()` to terminate the process.
-
-```{r}
-controller$router$dispatcher
-#> [1] 86028
-ps::ps_kill(86028)
-```
-
 ### Workers
 
 `mirai` usually terminates workers when they are no longer needed, but sometimes it cannot reach a worker, e.g. when a worker comes online after its startup time from `seconds_start` elapses. To make sure workers do not run indefinitely if something goes wrong, it is always prudent to set arguments like `seconds_idle` in functions like `crew_controller_callr()`. In addition, please learn how to find and terminate workers on the specific computing platform where they run. And if you are writing a custom launcher plugin, it is recommended (although not strictly required) to write a custom `terminate_worker()` method.
@@ -205,6 +195,21 @@ Workers may run on different computing platforms, depending on the type of launc
 ### Scheduling
 
 `crew` is designed to launch persistent workers that run one or more tasks. Depending on user settings, persistent workers may run for the entire length of the analysis pipeline, or they may exit if they idle too long or complete a certain number of tasks. `crew` re-launches persistent workers if there are more unfinished tasks in the queue than [active workers](https://wlandau.github.io/crew/reference/crew_class_launcher.html#details) to run them at a given snapshot in time. This kind of auto-scaling does not dedicate any specific worker to any specific task, and it does not perform well when workers exit too quickly. If `seconds_idle` is too low, or if `tasks_max` is 1 and there is a large backlog of quick tasks, then workers may exit before doing any work.^[See <https://github.com/wlandau/crew/discussions/50> for an example.] Please configure arguments like `seconds_idle` and `tasks_max` so that your workers are likely to do a nontrivial amount of work before exiting.
+
+### Dispatcher
+
+The [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher is designed to gracefully exit when you call `terminate()` on the controller object or when you restart your R session. However, if you ever need to shut down the dispatcher manually, you can find the process ID using the controller object, then use `ps::ps_kill()` to terminate the process.
+
+```{r}
+controller$router$dispatcher
+#> [1] 86028
+handle <- ps::ps_handle(pid = 86028L)
+ps::ps_is_running(handle)
+#> [1] TRUE
+ps::ps_kill(handle)
+ps::ps_is_running(handle)
+#> [1] FALSE
+```
 
 # Similar work
 

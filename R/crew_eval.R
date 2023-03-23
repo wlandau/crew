@@ -107,7 +107,7 @@ envir_state <- function(names, envir) {
 }
 
 envir_restore <- function(state, envir) {
-  rm(list = state$delete, envir = envir)
+  rm(list = as.character(state$delete), envir = envir)
   list2env(state$revert, envir = envir)
   invisible()
 }

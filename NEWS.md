@@ -1,6 +1,6 @@
 # crew 0.0.4.9000
 
-
+* Use `as.character()` to make sure the `list` argument supplied to `rm()` is safe.
 
 # crew 0.0.4
 

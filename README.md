@@ -22,13 +22,27 @@ packages [`future`](https://future.futureverse.org/),
 
 # Installation
 
-Install the latest release:
+For the best performance and reliability, we recommend you install
+[`mirai`](https://github.com/shikokuchuo/mirai) version 0.8.1.9003 or
+above and [`nanonext`](https://github.com/shikokuchuo/nanonext) version
+0.8.0.9001 or above. In case the CRAN releases are older, you can
+install the most recent versions from
+[r-universe](https://r-universe.dev/):
+
+``` r
+install.packages(
+  c("mirai", "nanonext"),
+  repos = "https://shikokuchuo.r-universe.dev"
+)
+```
+
+To install the latest CRAN release of `crew`:
 
 ``` r
 install.packages("crew")
 ```
 
-Install the development version:
+To install the latest development version of `crew`:
 
 ``` r
 remotes::install_github("wlandau/crew")

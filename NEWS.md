@@ -1,3 +1,7 @@
+# crew 0.0.5.9000
+
+* Remove `asyncdial` from call to `mirai::daemons()`.
+
 # crew 0.0.5
 
 * Write a `call()` method to make it easier to write custom launcher plugins.

@@ -26,12 +26,12 @@
 #' router$terminate()
 #' }
 crew_router <- function(
-    name = NULL,
-    workers = 1L,
-    host = NULL,
-    port = NULL,
-    seconds_interval = 0.001,
-    seconds_timeout = 5
+  name = NULL,
+  workers = 1L,
+  host = NULL,
+  port = NULL,
+  seconds_interval = 0.001,
+  seconds_timeout = 5
 ) {
   name <- as.character(name %|||% random_name())
   workers <- as.integer(workers)
@@ -169,7 +169,6 @@ crew_class_router <- R6::R6Class(
           url = sprintf("ws://%s:%s", self$host, self$port),
           n = self$workers,
           dispatcher = TRUE,
-          asyncdial = TRUE,
           .compute = self$name
         )
         crew_wait(

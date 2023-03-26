@@ -71,7 +71,6 @@ Other controllers:
 \item \href{#method-crew_class_controller-new}{\code{crew_class_controller$new()}}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
-\item \href{#method-crew_class_controller-clean}{\code{crew_class_controller$clean()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
 \item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
@@ -159,20 +158,6 @@ compatible with the analogous method of controller groups.}
 \subsection{Details}{
 Register the mirai client and register worker websockets
 with the launcher.
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-clean"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-clean}{}}}
-\subsection{Method \code{clean()}}{
-Force terminate workers whose startup time has elapsed
-and are not connected to the \code{mirai} client.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$clean()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -318,7 +303,7 @@ argument of \code{mirai::mirai()} (after converting to milliseconds).}
 if \code{NULL} or in conflict with an existing name in the task list.}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand. If \code{TRUE}, then \code{clean()} and \code{collect()} run first
+demand. If \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high.}
 
@@ -344,7 +329,7 @@ Pop a completed task from the results data frame.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand. If \code{TRUE}, then \code{clean()} and \code{collect()} run first
+demand. If \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high. Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off

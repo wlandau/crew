@@ -183,7 +183,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand. If `TRUE`, then `clean()` and `collect()` run first
+    #'   demand. If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high.
     #' @param controller Character of length 1,
@@ -233,7 +233,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Otherwise, if there are no results available to collect,
     #'   the return value is `NULL`.
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand. If `TRUE`, then `clean()` and `collect()` run first
+    #'   demand. If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high. Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
@@ -281,7 +281,6 @@ crew_class_controller_group <- R6::R6Class(
           fun = ~{
             for (controller in control) {
               controller$collect()
-              controller$clean()
               controller$scale()
               done <- length(controller$results) > 0L
               if (identical(mode, "all")) {

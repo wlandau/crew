@@ -284,7 +284,7 @@ argument of \code{mirai::mirai()} (after converting to milliseconds).}
 if \code{NULL} or in conflict with an existing name in the task list.}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand. If \code{TRUE}, then \code{clean()} and \code{collect()} run first
+demand. If \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high.}
 
@@ -312,7 +312,7 @@ Pop a completed task from the results data frame.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand. If \code{TRUE}, then \code{clean()} and \code{collect()} run first
+demand. If \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high. Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off

@@ -148,17 +148,6 @@ crew_class_controller <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Force terminate workers whose startup time has elapsed
-    #'   and are not connected to the `mirai` client.
-    #' @return `NULL` (invisibly).
-    clean = function() {
-      inactive <- setdiff(
-        self$router$daemons$worker_socket,
-        self$launcher$active()
-      )
-      self$launcher$terminate(sockets = inactive)
-      invisible()
-    },
     #' @description Launch one or more workers.
     #' @return `NULL` (invisibly).
     #' @param n Number of workers to try to launch. The actual
@@ -197,16 +186,20 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
+      active <- self$launcher$active()
+      inactive <- setdiff(self$router$daemons$worker_socket, active)
       demand <- controller_demand(
         tasks = length(self$queue),
-        workers = length(self$launcher$active())
+        workers = length(active)
       )
       n_new_workers <- controller_n_new_workers(
         demand = demand,
-        auto_scale = self$auto_scale
+        auto_scale = self$auto_scale,
+        max = self$router$workers
       )
-      if (n_new_workers > 0L) {
-        self$launch(n = n_new_workers)
+      sockets <- utils::head(inactive, n = n_new_workers)
+      if (length(sockets) > 0L) {
+        self$launcher$launch(sockets = sockets)
       }
       invisible()
     },
@@ -249,7 +242,7 @@ crew_class_controller <- R6::R6Class(
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand. If `TRUE`, then `clean()` and `collect()` run first
+    #'   demand. If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high.
     #' @param controller Not used. Included to ensure the signature is
@@ -306,10 +299,7 @@ crew_class_controller <- R6::R6Class(
       )
       self$queue[[length(self$queue) + 1L]] <- task
       self$collect()
-      if (scale && (length(self$launcher$active()) < self$router$workers)) {
-        self$clean()
-        self$scale()
-      }
+      if (scale) self$scale()
       invisible()
     },
     #' @description Pop a completed task from the results data frame.
@@ -321,7 +311,7 @@ crew_class_controller <- R6::R6Class(
     #'   Otherwise, if there are no results available to collect,
     #'   the return value is `NULL`.
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand. If `TRUE`, then `clean()` and `collect()` run first
+    #'   demand. If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high. Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
@@ -330,10 +320,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     pop = function(scale = TRUE, controllers = NULL) {
       self$collect()
-      if (scale && (length(self$launcher$active()) < self$router$workers)) {
-        self$clean()
-        self$scale()
-      }
+      if (scale) self$scale()
       out <- NULL
       if (length(self$results) > 0L) {
         task <- self$results[[1L]]
@@ -395,7 +382,6 @@ crew_class_controller <- R6::R6Class(
         crew_wait(
           fun = ~{
             self$collect()
-            self$clean()
             self$scale()
             done <- length(self$results) > 0L
             if (identical(mode, "all")) {
@@ -529,11 +515,12 @@ controller_demand <- function(tasks, workers) {
   max(0L, tasks - workers)
 }
 
-controller_n_new_workers <- function(demand, auto_scale) {
-  switch(
+controller_n_new_workers <- function(demand, auto_scale, max) {
+  out <- switch(
     auto_scale,
     demand = demand,
     one = min(1L, demand),
     none = 0L
   ) %|||% 0L
+  min(out, max)
 }

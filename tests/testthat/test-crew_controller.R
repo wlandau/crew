@@ -10,27 +10,31 @@ crew_test("controller_demand()", {
 
 crew_test("controller_n_new_workers()", {
   expect_equal(
-    controller_n_new_workers(demand = 3L, auto_scale = "demand"),
+    controller_n_new_workers(demand = 3L, auto_scale = "demand", max = Inf),
     3L
   )
   expect_equal(
-    controller_n_new_workers(demand = 0L, auto_scale = "demand"),
-    0L
-  )
-  expect_equal(
-    controller_n_new_workers(demand = 3L, auto_scale = "one"),
+    controller_n_new_workers(demand = 3L, auto_scale = "demand", max = 1L),
     1L
   )
   expect_equal(
-    controller_n_new_workers(demand = 0L, auto_scale = "demand"),
+    controller_n_new_workers(demand = 0L, auto_scale = "demand", max = Inf),
     0L
   )
   expect_equal(
-    controller_n_new_workers(demand = 3L, auto_scale = "none"),
+    controller_n_new_workers(demand = 3L, auto_scale = "one", max = Inf),
+    1L
+  )
+  expect_equal(
+    controller_n_new_workers(demand = 0L, auto_scale = "demand", max = Inf),
     0L
   )
   expect_equal(
-    controller_n_new_workers(demand = 0L, auto_scale = "none"),
+    controller_n_new_workers(demand = 3L, auto_scale = "none", max = Inf),
+    0L
+  )
+  expect_equal(
+    controller_n_new_workers(demand = 0L, auto_scale = "none", max = Inf),
     0L
   )
 })

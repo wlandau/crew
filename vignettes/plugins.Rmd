@@ -16,7 +16,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-`crew` lets you write custom [launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html) for different types of workers that connect over the local network. This flexibility can extend `crew` to platforms like [SLURM](https://slurm.schedmd.com/), [AWS Batch](https://aws.amazon.com/batch/), and [Kubernetes](https://kubernetes.io/). This vignette demonstrates how. It assumes prior familiarity with [`R6` classes](https://r6.r-lib.org/articles/Introduction.html) and the computing platform of your plugin.
+## About
+
+`crew` lets you write custom [launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html) for different types of workers that connect over the local network. This flexibility can extend `crew` to platforms like [SLURM](https://slurm.schedmd.com/), [AWS Batch](https://aws.amazon.com/batch/), and [Kubernetes](https://kubernetes.io/).
+
+## Vision
+
+These [launcher](https://wlandau.github.io/crew/reference/crew_class_launcher.html) plugins need not become part of the `crew` package itself. You can write your plugin in a simple R script, or you write it in a custom R package that [depends on](https://r-pkgs.org/dependencies-in-practice.html) `crew`. Published packages with [launcher](https://wlandau.github.io/crew/reference/crew_class_launcher.html) plugins are powerful extensions that enhance `crew` for the entire open-source community. See [R Packages](https://r-pkgs.org/) by [Hadley Wickham](https://hadley.nz/) and [Jenny Bryan](https://jennybryan.org/) for how to write an R package.
+
+## Scope
+
+This vignette demonstrates how to write a `crew` launcher plugin. It assumes prior familiarity with [`R6` classes](https://r6.r-lib.org/articles/Introduction.html) and the computing platform of your plugin.
 
 ## How it works
 
@@ -55,13 +65,7 @@ custom_launcher_class <- R6::R6Class(
 )
 ```
 
-Above `launch_worker()` begins by creating a call to [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html). Later on, this call will run inside the worker process, connect back to `crew` and `mirai` over the local network, and accept the tasks you push to the controller.
-
-```{r}
-call <- self$call(socket, host, port, token, name)
-```
-
-The `call` object above a text string with R code. To see what it looks like, you can try the method in a `callr` launcher object.
+In the `launch_worker()` method above, the `call <- self$call(socket, host, port, token, name)` command creates a call to [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html). The `call` object is a simple text string with R code. To see what it looks like, you can try the method in a `callr` launcher object.
 
 ```{r}
 launcher <- crew::crew_launcher_callr()
@@ -75,19 +79,7 @@ launcher$call(
 #> [1] "crew::crew_worker(token = \"my_token\", host = \"127.0.0.1\", port = \"5711\", settings = list(url = \"ws://127.0.0.1:5000\", asyncdial = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, exitlinger = 100, cleanup = FALSE))"
 ```
 
-To create an external process that runs a worker, our custom launcher creates a new [`processx`](https://processx.r-lib.org) process to start R and run the [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html) call.
-
-```{r}
-processx::process$new(command = "R", args = c("-e", call))
-```
-
-The return value is a handle that `terminate_worker()` will use to terminate the process later on.
-
-```{r}
-terminate_worker = function(handle) {
-  handle$kill()
-}
-```
+The `processx::process$new(command = "R", args = c("-e", call))` line runs the [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html) call as an external R process. This process runs in the background, connects back to `crew` and `mirai` over the local network, and accept the tasks you push to the controller. `processx::process$new()` also returns a handle which the `terminate_worker()` method can use to force-terminate the process if appropriate. `mirai` has its own way to terminate workers, so a `terminate_worker()` method is not strictly required, but it is a useful safeguard in case of awkwardly timed crashes.
 
 ## Helper
 

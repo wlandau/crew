@@ -163,10 +163,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      inactive <- setdiff(
-        self$router$daemons$worker_socket,
-        self$launcher$active()
-      )
+      inactive <- self$launcher$inactive()
       sockets <- utils::head(inactive, n = n)
       if (length(sockets) > 0L) {
         self$launcher$launch(sockets = sockets)
@@ -186,11 +183,10 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
-      active <- self$launcher$active()
-      inactive <- setdiff(self$router$daemons$worker_socket, active)
+      inactive <- self$launcher$inactive()
       demand <- controller_demand(
         tasks = length(self$queue),
-        workers = length(active)
+        workers = nrow(self$router$daemons) - length(inactive)
       )
       n_new_workers <- controller_n_new_workers(
         demand = demand,

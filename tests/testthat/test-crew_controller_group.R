@@ -101,7 +101,7 @@ crew_test("crew_controller_group()", {
       seconds_timeout = 5
     )
     crew_wait(
-      ~(length(x$controllers[[index]]$launcher$active()) == 0L),
+      ~(length(x$controllers[[index]]$launcher$inactive()) == 1L),
       seconds_interval = 0.001,
       seconds_timeout = 5
     )
@@ -199,7 +199,7 @@ crew_test("crew_controller_group() launch method", {
   x$start()
   for (index in seq_len(2)) {
     crew_wait(
-      ~(length(x$controllers[[index]]$launcher$active()) == 0L),
+      ~(length(x$controllers[[index]]$launcher$inactive()) == 1L),
       seconds_interval = 0.001,
       seconds_timeout = 5
     )
@@ -207,7 +207,7 @@ crew_test("crew_controller_group() launch method", {
   expect_silent(x$launch(n = 1L))
   for (index in seq_len(2)) {
     crew_wait(
-      ~(length(x$controllers[[index]]$launcher$active()) == 1L),
+      ~(length(x$controllers[[index]]$launcher$inactive()) == 0L),
       seconds_interval = 0.001,
       seconds_timeout = 5
     )
@@ -215,7 +215,7 @@ crew_test("crew_controller_group() launch method", {
   x$terminate()
   for (index in seq_len(2)) {
     crew_wait(
-      ~(length(x$controllers[[index]]$launcher$active()) == 0L),
+      ~(length(x$controllers[[index]]$launcher$inactive()) == 1L),
       seconds_interval = 0.001,
       seconds_timeout = 5
     )
@@ -238,17 +238,17 @@ crew_test("crew_controller_group() scale method", {
     crew_test_sleep()
   })
   x$start()
-  expect_equal(a$launcher$active(), character(0L))
+  expect_equal(length(a$launcher$inactive()), 1L)
   a$queue <- list("task")
   expect_silent(x$scale())
   crew_wait(
-    fun = ~identical(length(a$launcher$active()), 1L),
+    fun = ~identical(length(a$launcher$inactive()), 0L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
   x$terminate()
   crew_wait(
-    fun = ~identical(length(a$launcher$active()), 0L),
+    fun = ~identical(length(a$launcher$inactive()), 1L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )

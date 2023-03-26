@@ -100,7 +100,7 @@ crew_test("crew_controller_callr()", {
   x$terminate()
   expect_false(x$router$listening())
   crew_wait(
-    ~identical(x$launcher$active(), character(0L)),
+    ~identical(length(x$launcher$inactive()), 1L),
     seconds_interval = 0.001,
     seconds_timeout = 5,
   )
@@ -142,7 +142,7 @@ crew_test("crew_controller_callr() warnings and errors", {
   expect_false(anyNA(out$traceback))
   x$terminate()
   expect_false(x$router$listening())
-  expect_equal(x$launcher$active(), character(0L))
+  expect_equal(length(x$launcher$inactive()), 1L)
 })
 
 crew_test("crew_controller_callr() launch method", {
@@ -158,16 +158,16 @@ crew_test("crew_controller_callr() launch method", {
     crew_test_sleep()
   })
   x$start()
-  expect_equal(length(x$launcher$active()), 0L)
+  expect_equal(length(x$launcher$inactive()), 1L)
   x$launch(n = 1L)
   crew_wait(
-    ~length(x$launcher$active()) > 0L,
+    ~length(x$launcher$inactive()) == 0L,
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
   x$terminate()
   crew_wait(
-    ~length(x$launcher$active()) == 0L,
+    ~length(x$launcher$inactive()) > 0L,
     seconds_interval = 0.1,
     seconds_timeout = 5
   )

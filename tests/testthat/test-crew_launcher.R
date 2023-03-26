@@ -96,7 +96,7 @@ crew_test("launcher populate()", {
   expect_equal(workers$handle, list(crew_null, crew_null))
 })
 
-crew_test("launcher active()", {
+crew_test("launcher inactive()", {
   skip_on_cran()
   launcher <- crew_class_launcher$new(seconds_launch = 1)
   port_mirai <- free_port()
@@ -135,10 +135,19 @@ crew_test("launcher active()", {
     }
   }
   active <- launcher$active()
+  inactive <- launcher$inactive()
   crew_wait(
     ~identical(
       sort(as.character(active)),
       sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(3L, 4L, 5L, 6L)))
+    ),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
+  crew_wait(
+    ~identical(
+      sort(as.character(inactive)),
+      sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(1L, 2L, 7L, 8L, 9L)))
     ),
     seconds_interval = 0.001,
     seconds_timeout = 5

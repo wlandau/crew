@@ -2,6 +2,9 @@
 
 * Remove `asyncdial` from call to `mirai::daemons()`.
 * Explain vision in the launcher plugin vignette.
+* Remove the superfluous `clean()` controller method.
+* Clean up logic for `scale()` and `launch()` controller methods.
+* Add a new `inactive()` launcher method to help with the above.
 
 # crew 0.0.5
 

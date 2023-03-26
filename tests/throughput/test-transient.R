@@ -21,7 +21,7 @@ message(time["elapsed"])
 
 # Check that the worker pool can scale back down. Workers should exit.
 crew_wait(
-  fun = ~identical(x$launcher$active(), character(0L)),
+  fun = ~identical(length(x$launcher$inactive()), 4L),
   seconds_interval = 0.001,
   seconds_timeout = 10
 )
@@ -38,7 +38,7 @@ message(time["elapsed"])
 
 # Again, wait for worker pool can scale back down. Workers should exit.
 crew_wait(
-  fun = ~identical(x$launcher$active(), character(0L)),
+  fun = ~identical(length(x$launcher$inactive()), 4L),
   seconds_interval = 0.001,
   seconds_timeout = 10
 )

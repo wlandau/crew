@@ -19,7 +19,7 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
   expect_s3_class(launcher$workers$listener[[2L]], "crew_null")
   expect_s3_class(launcher$workers$handle[[2L]], "crew_null")
   socket <- launcher$workers$socket[2L]
-  expect_equal(launcher$active(), character(0L))
+  expect_equal(length(launcher$inactive()), 4L)
   expect_equal(launcher$workers$launches, rep(0L, 4L))
   expect_false(dialer_connected(launcher$workers$listener[[2]]))
   expect_false(dialer_discovered(launcher$workers$listener[[2]]))
@@ -41,7 +41,7 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
     seconds_timeout = 5
   )
   crew_wait(
-    ~identical(launcher$active(), socket),
+    ~identical(length(launcher$inactive()), 3L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
@@ -78,7 +78,7 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
     seconds_timeout = 5
   )
   crew_wait(
-    ~identical(launcher$active(), character(0)),
+    ~identical(length(launcher$inactive()), 4L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
@@ -104,7 +104,7 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
   expect_silent(launcher$validate())
   socket <- router$daemons$worker_socket
   launcher$populate(sockets = router$daemons$worker_socket)
-  expect_equal(launcher$active(), character(0))
+  expect_equal(length(launcher$inactive()), 1L)
   launcher$launch(sockets = router$daemons$worker_socket)
   crew::crew_wait(
     ~{
@@ -115,7 +115,7 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
     seconds_timeout = 5
   )
   crew_wait(
-    ~identical(launcher$active(), socket),
+    ~identical(length(launcher$inactive()), 0L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
@@ -144,7 +144,7 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
     seconds_timeout = 5
   )
   crew_wait(
-    ~identical(launcher$active(), character()),
+    ~identical(length(launcher$inactive()), 1L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
@@ -154,9 +154,7 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
 crew_test("crew_launcher_callr() can run a task and end a worker", {
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router(
-    workers = 1L
-  )
+  router <- crew_router(workers = 1L)
   launcher <- crew_launcher_callr(tasks_max = 1L, seconds_idle = 360)
   crew_session_start()
   on.exit({
@@ -168,7 +166,7 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
   router$listen()
   socket <- router$daemons$worker_socket
   launcher$populate(sockets = router$daemons$worker_socket)
-  expect_equal(launcher$active(), character(0))
+  expect_equal(length(launcher$inactive()), 1L)
   launcher$launch(sockets = router$daemons$worker_socket)
   crew::crew_wait(
     ~{
@@ -188,7 +186,7 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
     seconds_timeout = 5
   )
   crew_wait(
-    ~identical(launcher$active(), socket),
+    ~identical(length(launcher$inactive()), 0L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
@@ -211,7 +209,7 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
     seconds_timeout = 5
   )
   crew_wait(
-    ~identical(launcher$active(), character(0)),
+    ~identical(length(launcher$inactive()), 1L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
@@ -221,9 +219,7 @@ crew_test("crew_launcher_callr() can run a task and end a worker", {
 crew_test("worker that immediately times out is still discovered", {
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router(
-    workers = 1L
-  )
+  router <- crew_router(workers = 1L)
   launcher <- crew_launcher_callr(
     tasks_timers = 0L,
     seconds_launch = 360,
@@ -239,7 +235,7 @@ crew_test("worker that immediately times out is still discovered", {
   router$listen()
   socket <- router$daemons$worker_socket
   launcher$populate(sockets = router$daemons$worker_socket)
-  expect_equal(launcher$active(), character(0))
+  expect_equal(length(launcher$inactive()), 1L)
   launcher$launch(sockets = router$daemons$worker_socket)
   crew::crew_wait(
     ~{
@@ -250,7 +246,7 @@ crew_test("worker that immediately times out is still discovered", {
     seconds_timeout = 5
   )
   crew_wait(
-    ~identical(launcher$active(), character(0)),
+    ~identical(length(launcher$inactive()), 1L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )

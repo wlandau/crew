@@ -98,6 +98,7 @@ Other launchers:
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-populate}{\code{crew_class_launcher$populate()}}
 \item \href{#method-crew_class_launcher-active}{\code{crew_class_launcher$active()}}
+\item \href{#method-crew_class_launcher-inactive}{\code{crew_class_launcher$inactive()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
@@ -298,6 +299,23 @@ and the startup window has expired, the worker is inactive.
 Otherwise, if the worker is not connected and the startup
 window has not yet expired, then the worker is active
 if it has not ever connected to a websocket.
+}
+
+\subsection{Returns}{
+Character vector of worker websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-inactive"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-inactive}{}}}
+\subsection{Method \code{inactive()}}{
+Get the inactive workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$inactive()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+See the \code{active()} method for details.
 }
 
 \subsection{Returns}{

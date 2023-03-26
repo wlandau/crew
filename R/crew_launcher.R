@@ -114,6 +114,21 @@ crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
   cloneable = FALSE,
   portable = TRUE,
+  private = list(
+    which_active = function() {
+      listeners <- self$workers$listener
+      bound <- self$seconds_launch
+      start <- self$workers$start
+      now <- bench::hires_time()
+      listening <- map_lgl(listeners, connection_opened)
+      connected <- map_lgl(listeners, dialer_connected)
+      launching <- !is.na(start) & ((now - start) < bound)
+      discovered <- connected
+      index <- listening & (!connected) & launching
+      discovered[index] <- map_lgl(listeners[index], dialer_discovered)
+      listening & (connected | (launching & (!discovered)))
+    }
+  ),
   public = list(
     #' @field workers Data frame of worker information.
     workers = tibble::tibble(
@@ -308,18 +323,13 @@ crew_class_launcher <- R6::R6Class(
     #'   if it has not ever connected to a websocket.
     #' @return Character vector of worker websockets.
     active = function() {
-      listeners <- self$workers$listener
-      bound <- self$seconds_launch
-      start <- self$workers$start
-      now <- bench::hires_time()
-      listening <- map_lgl(listeners, connection_opened)
-      connected <- map_lgl(listeners, dialer_connected)
-      launching <- !is.na(start) & ((now - start) < bound)
-      discovered <- connected
-      index <- listening & (!connected) & launching
-      discovered[index] <- map_lgl(listeners[index], dialer_discovered)
-      active <- listening & (connected | (launching & (!discovered)))
-      self$workers$socket[active]
+      self$workers$socket[private$which_active()]
+    },
+    #' @description Get the inactive workers.
+    #' @details See the `active()` method for details.
+    #' @return Character vector of worker websockets.
+    inactive = function() {
+      self$workers$socket[!private$which_active()]
     },
     #' @description Launch one or more workers.
     #' @details If a worker is already assigned to a socket,

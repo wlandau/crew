@@ -5,7 +5,7 @@ system2_launcher_class <- R6::R6Class(
     launch_worker = function(socket, host, port, token, name) {
       call <- self$call(socket, host, port, token, name)
       system2(
-        command = "R",
+        command = file.path(R.home("bin"), "R"),
         args = c("-e", shQuote(call)),
         wait = FALSE,
         stdout = FALSE,

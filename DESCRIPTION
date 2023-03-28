@@ -35,7 +35,6 @@ Authors@R: c(
 Depends:
   R (>= 3.5.0)
 Imports:
-  bench,
   callr,
   getip,
   mirai (>= 0.8.0),

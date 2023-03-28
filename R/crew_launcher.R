@@ -119,7 +119,7 @@ crew_class_launcher <- R6::R6Class(
       listeners <- self$workers$listener
       bound <- self$seconds_launch
       start <- self$workers$start
-      now <- bench::hires_time()
+      now <- nanonext::mclock() / 1000
       listening <- map_lgl(listeners, connection_opened)
       connected <- map_lgl(listeners, dialer_connected)
       launching <- !is.na(start) & ((now - start) < bound)
@@ -350,7 +350,7 @@ crew_class_launcher <- R6::R6Class(
           self$terminate_worker(handle)
         }
         socket <- self$workers$socket[index]
-        self$workers$start[index] <- bench::hires_time()
+        self$workers$start[index] <- nanonext::mclock() / 1000
         token <- random_name()
         self$workers$token[index] <- token
         listener <- connection_listen(

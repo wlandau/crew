@@ -32,9 +32,7 @@ generated.}
 If \code{NULL}, the host defaults to the local IP address.}
 
 \item{port}{TCP port to listen for the workers. If \code{NULL},
-then \code{parallelly::freePort()}
-automatically chooses an available ephemeral port between
-49152 and 65535.}
+then an ephemeral port is automatically chosen.}
 
 \item{seconds_launch}{Seconds of startup time to allow.
 A worker is unconditionally assumed to be alive

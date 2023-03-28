@@ -19,7 +19,6 @@
 #'   [`clustermq`](https://mschubert.github.io/clustermq/),
 #'   and [`batchtools`](https://mllg.github.io/batchtools/).
 #' @family help
-#' @importFrom bench hires_time
 #' @importFrom callr r_bg
 #' @importFrom getip getip
 #' @importFrom mirai daemons mirai server

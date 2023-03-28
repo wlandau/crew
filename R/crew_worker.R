@@ -11,7 +11,7 @@
 #' @param seconds_interval Nonnegative numeric of length 1,
 #'   number of seconds to wait between checks that the worker can connect
 #'   to the client over the local network.
-#' @param seconds_interval Nonnegative numeric of length 1,
+#' @param seconds_timeout Nonnegative numeric of length 1,
 #'   number of seconds to loop before giving up trying to connect to the
 #'   client over the local network.
 crew_worker <- function(

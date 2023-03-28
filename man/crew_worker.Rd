@@ -17,6 +17,10 @@ crew_worker(settings, host, port, token, seconds_interval, seconds_timeout)
 process connected to the socket.}
 
 \item{seconds_interval}{Nonnegative numeric of length 1,
+number of seconds to wait between checks that the worker can connect
+to the client over the local network.}
+
+\item{seconds_timeout}{Nonnegative numeric of length 1,
 number of seconds to loop before giving up trying to connect to the
 client over the local network.}
 }

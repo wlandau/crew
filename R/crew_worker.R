@@ -28,9 +28,13 @@ crew_worker <- function(
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
   connection <- connection_dial(host = host, port = port, token = token)
   crew_wait(
-    ~listener_connected(connection),
+    fun = ~listener_connected(connection),
     seconds_interval = seconds_interval,
-    seconds_timeout = seconds_timeout
+    seconds_timeout = seconds_timeout,
+    message = sprintf(
+      "Worker with token \"%s\" could not connect to the client.",
+      token
+    )
   )
   on.exit(close(connection), add = TRUE)
   do.call(what = mirai::server, args = settings)

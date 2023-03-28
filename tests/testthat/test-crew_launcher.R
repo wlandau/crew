@@ -55,7 +55,9 @@ crew_test("launcher call", {
     tasks_max = 7,
     tasks_timers = 8,
     async_dial = FALSE,
-    cleanup = TRUE
+    cleanup = TRUE,
+    seconds_interval = 0.1,
+    seconds_timeout = 0.25
   )
   out <- launcher$call(
     socket = "ws://127.0.0.1:90000000",
@@ -70,7 +72,7 @@ crew_test("launcher call", {
   expect_true(all(nzchar(out)))
   expect_true(grepl(pattern = "^crew::crew_worker\\(", x = out))
   message <- tryCatch(eval(parse(text = out)), error = conditionMessage)
-  expect_equal(message, "15 | Address invalid")
+  expect_match(message, regexp = "could not connect")
 })
 
 crew_test("launcher populate()", {

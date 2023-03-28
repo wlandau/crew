@@ -19,7 +19,9 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
     settings = settings,
     host = local_ip(),
     port = crew_session_port(),
-    token = token
+    token = token,
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   crew_wait(
     ~dialer_discovered(listener),
@@ -56,16 +58,24 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   url <- rownames(mirai::daemons()$daemons)[1]
   settings <- list(url = url, maxtasks = 1L, cleanup = FALSE)
   token <- "this_token"
-  crew_worker(
-    settings = settings,
-    host = local_ip(),
-    port = crew_session_port(),
-    token = token
-  )
   session <- connection_socket(
     host = local_ip(),
     port = crew_session_port(),
     token = token
+  )
+  listener <- connection_listen(
+    host = local_ip(),
+    port = crew_session_port(),
+    token = token
+  )
+  on.exit(close(listener), add = TRUE)
+  crew_worker(
+    settings = settings,
+    host = local_ip(),
+    port = crew_session_port(),
+    token = token,
+    seconds_interval = 0.001,
+    seconds_timeout = 5
   )
   exp <- list(mirai = socket, session = session)
   crew_wait(

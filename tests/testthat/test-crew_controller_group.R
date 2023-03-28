@@ -21,7 +21,6 @@ crew_test("crew_controller_group() method signature compatibility", {
 crew_test("crew_controller_group()", {
   skip_on_cran()
   skip_on_os("windows")
-  Sys.sleep(2.2)
   crew_session_start()
   a <- crew_controller_callr(
     name = "a",
@@ -92,16 +91,15 @@ crew_test("crew_controller_group()", {
   expect_false(is.null(out))
   expect_equal(out$name, "task_pid")
   expect_equal(out$command, "ps::ps_pid()")
-  expect_equal(
-    out$result[[1]],
-    x$controllers[[2]]$launcher$workers$handle[[1]]$get_pid()
-  )
   expect_true(is.numeric(out$seconds))
   expect_false(anyNA(out$seconds))
   expect_true(out$seconds >= 0)
   expect_true(anyNA(out$error))
   expect_true(anyNA(out$traceback))
   expect_true(anyNA(out$warnings))
+  pid_out <- out$result[[1]]
+  pid_exp <- x$controllers[[2]]$launcher$workers$handle[[1]]$get_pid()
+  expect_equal(pid_out, pid_exp)
   x$terminate()
   for (index in seq_len(2)) {
     crew_wait(

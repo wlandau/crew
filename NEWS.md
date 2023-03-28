@@ -5,6 +5,8 @@
 * Remove the superfluous `clean()` controller method.
 * Clean up logic for `scale()` and `launch()` controller methods.
 * Add a new `inactive()` launcher method to help with the above.
+* Reduce superfluous worker launches (#51).
+* Simplify the launcher plugin interface (#54).
 
 # crew 0.0.5
 

@@ -38,12 +38,16 @@ crew_expire <- function(message = NULL) {
 }
 
 crew_stop <- function(message, class) {
-  withr::local_options(list(rlang_backtrace_on_error = "none"))
+  old <- getOption("rlang_backtrace_on_error")
+  on.exit(options(rlang_backtrace_on_error = old))
+  options(rlang_backtrace_on_error = "none")
   rlang::abort(message = message, class = class, call = emptyenv())
 }
 
 crew_message <- function(message) {
-  withr::local_options(list(rlang_backtrace_on_error = "none"))
+  old <- getOption("rlang_backtrace_on_error")
+  on.exit(options(rlang_backtrace_on_error = old))
+  options(rlang_backtrace_on_error = "none")
   rlang::inform(message = message, class = c("crew_message", "crew"))
 }
 

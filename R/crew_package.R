@@ -31,7 +31,7 @@
 #' @importFrom tidyselect all_of any_of contains ends_with eval_select
 #'   everything last_col matches num_range one_of starts_with
 #' @importFrom utils globalVariables head
-#' @importFrom withr local_options
+#' @importFrom withr local_seed
 NULL
 
 utils::globalVariables(".")

@@ -4,7 +4,7 @@
 \alias{crew_worker}
 \title{Crew worker.}
 \usage{
-crew_worker(settings, host, port, token)
+crew_worker(settings, host, port, token, seconds_interval, seconds_timeout)
 }
 \arguments{
 \item{settings}{Named list of arguments to \code{mirai::server()}.}
@@ -15,6 +15,10 @@ crew_worker(settings, host, port, token)
 
 \item{token}{Character of length 1 to identify the instance of the
 process connected to the socket.}
+
+\item{seconds_interval}{Nonnegative numeric of length 1,
+number of seconds to loop before giving up trying to connect to the
+client over the local network.}
 }
 \value{
 \code{NULL} (invisibly)

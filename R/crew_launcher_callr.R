@@ -75,33 +75,15 @@ crew_class_launcher_callr <- R6::R6Class(
   public = list(
     #' @description Launch a `callr` worker to dial into a socket.
     #' @return A `callr::r_bg()` handle.
-    #' @param socket Socket where the worker will receive tasks.
-    #' @param host IP address of the `mirai` client that sends tasks.
-    #' @param port TCP port to register a successful connection
-    #'   to the host. Different from that of `socket`.
-    #' @param token Character of length 1 to identify the instance
-    #'   of the `mirai` server process connected to the socket.
-    #' @param name User-supplied name of the launcher, useful for
-    #'   constructing informative job labels.
-    launch_worker = function(socket, host, port, token, name) {
+    #' @param call Text string with a namespaced call to [crew_worker()]
+    #'   which will run in the worker and accept tasks.
+    #' @param name Text string with the name of the launcher.
+    #' @param token Text string to uniquely identify the new instance
+    #'   of the worker process.
+    launch_worker = function(call, name, token) {
       callr::r_bg(
-        # This part is covered by tests but unreachable by covr:
-        # nocov start
-        func = function(settings, host, port, token) {
-          crew::crew_worker(
-            settings = settings,
-            host = host,
-            port = port,
-            token = token
-          )
-        },
-        # nocov end
-        args = list(
-          settings = self$settings(socket),
-          host = host,
-          port = port,
-          token = token
-        )
+        func = function(call) eval(parse(text = call)),
+        args = list(call = call)
       )
     },
     #' @description Terminate a `callr` worker.

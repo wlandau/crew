@@ -64,24 +64,19 @@ Other launchers:
 \subsection{Method \code{launch_worker()}}{
 Launch a \code{callr} worker to dial into a socket.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$launch_worker(socket, host, port, token, name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_callr$launch_worker(call, name, token)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{socket}}{Socket where the worker will receive tasks.}
+\item{\code{call}}{Text string with a namespaced call to \code{\link[=crew_worker]{crew_worker()}}
+which will run in the worker and accept tasks.}
 
-\item{\code{host}}{IP address of the \code{mirai} client that sends tasks.}
+\item{\code{name}}{Text string with the name of the launcher.}
 
-\item{\code{port}}{TCP port to register a successful connection
-to the host. Different from that of \code{socket}.}
-
-\item{\code{token}}{Character of length 1 to identify the instance
-of the \code{mirai} server process connected to the socket.}
-
-\item{\code{name}}{User-supplied name of the launcher, useful for
-constructing informative job labels.}
+\item{\code{token}}{Text string to uniquely identify the new instance
+of the worker process.}
 }
 \if{html}{\out{</div>}}
 }

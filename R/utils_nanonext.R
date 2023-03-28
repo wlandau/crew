@@ -63,6 +63,11 @@ dialer_not_discovered <- function(listener) {
     nanonext::stat(listener$listener[[1]], "accept") < 1L
 }
 
+listener_connected <- function(dialer) {
+  connection_opened(dialer) &&
+    nanonext::stat(dialer$dialer[[1]], "pipes") > 0L
+}
+
 # TODO: just use .unresolved() when nanonext > 0.8.0.9000 reaches CRAN.
 nanonext_unresolved <- if_any(
   exists(x = ".unresolved", envir = getNamespace(name = "nanonext")),

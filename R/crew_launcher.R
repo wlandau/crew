@@ -293,13 +293,17 @@ crew_class_launcher <- R6::R6Class(
           token = token,
           host = host,
           port = port,
-          settings = settings
+          settings = settings,
+          seconds_interval = seconds_interval,
+          seconds_timeout = seconds_timeout
         ),
         env = list(
           settings = call_settings,
           host = host,
           port = port,
-          token = token
+          token = token,
+          seconds_interval = self$seconds_interval,
+          seconds_timeout = self$seconds_timeout
         )
       )
       out <- deparse_safe(expr = call, collapse = " ")
@@ -376,12 +380,17 @@ crew_class_launcher <- R6::R6Class(
           token = token
         )
         self$workers$start[index] <- nanonext::mclock() / 1000
-        handle <- self$launch_worker(
+        call <- self$call(
           socket = self$workers$socket[index],
           host = crew_session_host(),
           port = crew_session_port(),
           token = token,
           name = self$name
+        )
+        handle <- self$launch_worker(
+          call = call,
+          name = self$name,
+          token = token
         )
         self$workers$listener[[index]] <- listener
         self$workers$handle[[index]] <- handle

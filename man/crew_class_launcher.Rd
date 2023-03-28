@@ -361,7 +361,7 @@ Terminate one or more workers.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{sockets}}{Character vector of sockets of the workers
-to terminate.}
+to terminate. If \code{NULL}, all current workers are terminated.}
 }
 \if{html}{\out{</div>}}
 }

@@ -17,11 +17,11 @@ connection_socket <- function(host = host, port = port, token = token) {
 }
 
 connection_closed <- function(connection) {
-  identical(as.character(connection$state), "closed")
+  as.character(connection$state %||% "") == "closed"
 }
 
 connection_opened <- function(connection) {
-  identical(as.character(connection$state), "opened")
+  as.character(connection$state %||% "") == "opened"
 }
 
 connection_wait_closed <- function(

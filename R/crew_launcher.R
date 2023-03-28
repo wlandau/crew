@@ -374,7 +374,7 @@ crew_class_launcher <- R6::R6Class(
     #' @description Terminate one or more workers.
     #' @return `NULL` (invisibly).
     #' @param sockets Character vector of sockets of the workers
-    #'   to terminate.
+    #'   to terminate. If `NULL`, all current workers are terminated.
     terminate = function(sockets = NULL) {
       sockets <- sockets %|||% self$workers$socket
       matches <- match(x = sockets, table = self$workers$socket)

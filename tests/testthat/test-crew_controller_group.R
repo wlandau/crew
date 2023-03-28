@@ -245,7 +245,7 @@ crew_test("crew_controller_group() scale method", {
   })
   x$start()
   expect_equal(length(a$launcher$inactive()), 1L)
-  a$queue <- list("task")
+  a$push(command = "x", scale = FALSE)
   expect_silent(x$scale())
   crew_wait(
     fun = ~identical(length(a$launcher$inactive()), 0L),

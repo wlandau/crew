@@ -184,6 +184,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
       self$launcher$clean()
+      self$collect()
       inactive <- self$launcher$inactive()
       demand <- controller_demand(
         tasks = length(self$queue),
@@ -295,7 +296,6 @@ crew_class_controller <- R6::R6Class(
         handle = list(handle)
       )
       self$queue[[length(self$queue) + 1L]] <- task
-      self$collect()
       if (scale) self$scale()
       invisible()
     },
@@ -316,8 +316,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop = function(scale = TRUE, controllers = NULL) {
-      self$collect()
-      if (scale) self$scale()
+      if_any(scale, self$scale(), self$collect())
       out <- NULL
       if (length(self$results) > 0L) {
         task <- self$results[[1L]]
@@ -378,7 +377,6 @@ crew_class_controller <- R6::R6Class(
       tryCatch(
         crew_wait(
           fun = ~{
-            self$collect()
             self$scale()
             done <- length(self$results) > 0L
             if (identical(mode, "all")) {

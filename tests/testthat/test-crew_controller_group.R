@@ -28,7 +28,6 @@ crew_test("crew_controller_group()", {
   )
   b <- crew_controller_callr(
     name = "b",
-    tasks_max = 1L,
     seconds_idle = 360
   )
   x <- crew_controller_group(a, b)

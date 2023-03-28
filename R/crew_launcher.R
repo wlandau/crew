@@ -54,7 +54,7 @@
 #' launcher <- crew_launcher_callr()
 #' launcher$populate(sockets = router$sockets)
 #' launcher$launch()
-#' m <- mirai::mirai("result")
+#' m <- mirai::mirai("result", .compute = router$name)
 #' Sys.sleep(0.25)
 #' m$data
 #' router$terminate()
@@ -104,7 +104,7 @@ crew_launcher <- function(
 #' launcher <- crew_launcher_callr()
 #' launcher$populate(sockets = router$sockets)
 #' launcher$launch()
-#' m <- mirai::mirai("result")
+#' m <- mirai::mirai("result", .compute = router$name)
 #' Sys.sleep(0.25)
 #' m$data
 #' router$terminate()
@@ -193,7 +193,7 @@ crew_class_launcher <- R6::R6Class(
     #' launcher <- crew_launcher_callr()
     #' launcher$populate(sockets = router$sockets)
     #' launcher$launch()
-    #' m <- mirai::mirai("result")
+    #' m <- mirai::mirai("result", .compute = router$name)
     #' Sys.sleep(0.25)
     #' m$data
     #' router$terminate()

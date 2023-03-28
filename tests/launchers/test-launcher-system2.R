@@ -2,8 +2,7 @@ system2_launcher_class <- R6::R6Class(
   classname = "system2_launcher_class",
   inherit = crew::crew_class_launcher,
   public = list(
-    launch_worker = function(socket, host, port, token, name) {
-      call <- self$call(socket, host, port, token, name)
+    launch_worker = function(call, name, token) {
       system2(
         command = file.path(R.home("bin"), "R"),
         args = c("-e", shQuote(call)),

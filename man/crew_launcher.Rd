@@ -84,7 +84,7 @@ router$listen()
 launcher <- crew_launcher_callr()
 launcher$populate(sockets = router$sockets)
 launcher$launch()
-m <- mirai::mirai("result")
+m <- mirai::mirai("result", .compute = router$name)
 Sys.sleep(0.25)
 m$data
 router$terminate()

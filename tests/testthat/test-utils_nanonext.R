@@ -1,4 +1,6 @@
 crew_test("connections on crew_null", {
+  expect_false(connection_opened(crew_null))
+  expect_true(connection_closed(crew_null))
   expect_false(dialer_connected(crew_null))
   expect_false(dialer_discovered(crew_null))
 })
@@ -18,6 +20,7 @@ crew_test("connections", {
   )
   expect_false(dialer_connected(listen))
   expect_false(dialer_discovered(listen))
+  expect_true(dialer_not_discovered(listen))
   dial <- connection_dial(
     host = local_ip(),
     port = port,
@@ -34,6 +37,7 @@ crew_test("connections", {
     seconds_timeout = 5
   )
   expect_true(dialer_discovered(listen))
+  expect_false(dialer_not_discovered(listen))
   close(dial)
   connection_wait_closed(dial)
   crew_wait(
@@ -42,10 +46,12 @@ crew_test("connections", {
     seconds_timeout = 5
   )
   expect_true(dialer_discovered(listen))
+  expect_false(dialer_not_discovered(listen))
   close(listen)
   connection_wait_closed(listen)
   expect_false(dialer_connected(listen))
   expect_false(dialer_discovered(listen))
+  expect_true(dialer_not_discovered(listen))
   crew_wait(
     ~identical(listen$state, "closed"),
     seconds_interval = 0.001,

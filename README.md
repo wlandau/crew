@@ -166,7 +166,7 @@ out
 #>   name                  command      result seconds error traceback warni…¹
 #>   <chr>                 <chr>        <list>   <dbl> <chr> <chr>     <chr>
 #> 1 get worker process ID ps::ps_pid() <int>        0 NA    NA        NA
-#> # … with abbreviated variable name ¹​warnings
+#> # … with abbreviated variable name ¹ warnings
 ```
 
 The return value of the command is available in the `result` column. In
@@ -294,20 +294,18 @@ use the [AWS web console](https://aws.amazon.com/console/) or
 
 ### Scheduling
 
-`crew` is designed to launch persistent workers that run one or more
-tasks. Depending on user settings, persistent workers may run for the
-entire length of the analysis pipeline, or they may exit if they idle
-too long or complete a certain number of tasks. `crew` re-launches
-persistent workers if there are more unfinished tasks in the queue than
-[active
+Depending on user settings, `crew` workers may run for the entire length
+of the analysis pipeline, or they may exit if they idle too long or
+complete a certain number of tasks. `crew` re-launches workers if there
+are more unfinished tasks in the queue than [active
 workers](https://wlandau.github.io/crew/reference/crew_class_launcher.html#details)
 to run them at a given snapshot in time. This kind of auto-scaling does
 not dedicate any specific worker to any specific task, and it does not
-perform well when workers exit too quickly. If `seconds_idle` is too
-low, or if `tasks_max` is 1 and there is a large backlog of quick tasks,
-then workers may exit before doing any work.[^1] Please configure
-arguments like `seconds_idle` and `tasks_max` so that your workers are
-likely to do a nontrivial amount of work before exiting.
+perform well when workers exit too quickly due to a small value of
+`seconds_idle`. Please set `seconds_idle` to a generous enough value for
+workers to accept work, and please use `tasks_max` to specify
+short-lived workers such as single-task transient workers
+(`tasks_max = 1`).
 
 ### Dispatcher
 
@@ -425,6 +423,3 @@ By contributing to this project, you agree to abide by its terms.
 ``` r
 citation("crew")
 ```
-
-[^1]: See <https://github.com/wlandau/crew/discussions/50> for an
-    example.

@@ -21,6 +21,7 @@ crew_test("crew_controller_group() method signature compatibility", {
 crew_test("crew_controller_group()", {
   skip_on_cran()
   skip_on_os("windows")
+  Sys.sleep(2.2)
   crew_session_start()
   a <- crew_controller_callr(
     name = "a",
@@ -39,9 +40,17 @@ crew_test("crew_controller_group()", {
     crew_test_sleep()
   })
   expect_silent(x$validate())
-  expect_false(x$controllers[[1]]$router$listening())
-  expect_false(x$controllers[[2]]$router$listening())
+  for (index in seq_len(2)) {
+    expect_false(x$controllers[[index]]$router$listening())
+  }
   x$start()
+  for (index in seq_len(2)) {
+    crew_wait(
+      ~x$controllers[[index]]$router$listening(),
+      seconds_interval = 0.001,
+      seconds_timeout = 5
+    )
+  }
   s <- x$summary()
   expect_equal(nrow(s), 2L)
   expect_equal(s$controller, c("a", "b"))

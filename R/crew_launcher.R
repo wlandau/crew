@@ -116,17 +116,27 @@ crew_class_launcher <- R6::R6Class(
   portable = TRUE,
   private = list(
     which_active = function() {
-      listeners <- self$workers$listener
       bound <- self$seconds_launch
       start <- self$workers$start
       now <- nanonext::mclock() / 1000
+      launching <- !is.na(start) & ((now - start) < bound)
+      listeners <- self$workers$listener
       listening <- map_lgl(listeners, connection_opened)
       connected <- map_lgl(listeners, dialer_connected)
-      launching <- !is.na(start) & ((now - start) < bound)
-      discovered <- connected
-      index <- listening & (!connected) & launching
-      discovered[index] <- map_lgl(listeners[index], dialer_discovered)
-      listening & (connected | (launching & (!discovered)))
+      not_discovered <- !connected
+      i <- listening & not_discovered & launching
+      not_discovered[i] <- map_lgl(listeners[i], dialer_not_discovered)
+      listening & (connected | (launching & not_discovered))
+    },
+    which_unreachable = function() {
+      bound <- self$seconds_launch
+      start <- self$workers$start
+      now <- nanonext::mclock() / 1000
+      not_launching <- is.na(start) | ((now - start) > bound)
+      listeners <- self$workers$listener
+      listening <- map_lgl(listeners, connection_opened)
+      not_discovered <- map_lgl(listeners, dialer_not_discovered)
+      listening & not_launching & not_discovered
     }
   ),
   public = list(
@@ -323,13 +333,26 @@ crew_class_launcher <- R6::R6Class(
     #'   if it has not ever connected to a websocket.
     #' @return Character vector of worker websockets.
     active = function() {
-      self$workers$socket[private$which_active()]
+      as.character(self$workers$socket[private$which_active()])
     },
     #' @description Get the inactive workers.
     #' @details See the `active()` method for details.
     #' @return Character vector of worker websockets.
     inactive = function() {
-      self$workers$socket[!private$which_active()]
+      as.character(self$workers$socket[!private$which_active()])
+    },
+    #' @description Get the unreachable workers.
+    #' @details A worker is unreachable if it was supposed to launch,
+    #'   but it never connected to the client,
+    #'   and its startup window elapsed.
+    #' @return Character vector of worker websockets.
+    unreachable = function() {
+      as.character(self$workers$socket[private$which_unreachable()])
+    },
+    #' @description Terminate unreachable workers.
+    #' @return `NULL` (invisibly)
+    clean = function() {
+      self$terminate(sockets = self$unreachable())
     },
     #' @description Launch one or more workers.
     #' @details If a worker is already assigned to a socket,
@@ -345,12 +368,6 @@ crew_class_launcher <- R6::R6Class(
       matches <- match(x = sockets, table = self$workers$socket)
       true(!anyNA(matches), message = "bad websocket on launch.")
       for (index in matches) {
-        handle <- self$workers$handle[[index]]
-        if (!is_crew_null(handle)) {
-          self$terminate_worker(handle)
-        }
-        socket <- self$workers$socket[index]
-        self$workers$start[index] <- nanonext::mclock() / 1000
         token <- random_name()
         self$workers$token[index] <- token
         listener <- connection_listen(
@@ -358,8 +375,9 @@ crew_class_launcher <- R6::R6Class(
           port = crew_session_port(),
           token = token
         )
+        self$workers$start[index] <- nanonext::mclock() / 1000
         handle <- self$launch_worker(
-          socket = socket,
+          socket = self$workers$socket[index],
           host = crew_session_host(),
           port = crew_session_port(),
           token = token,
@@ -377,6 +395,7 @@ crew_class_launcher <- R6::R6Class(
     #'   to terminate. If `NULL`, all current workers are terminated.
     terminate = function(sockets = NULL) {
       sockets <- sockets %|||% self$workers$socket
+      if (!length(sockets)) return(invisible())
       matches <- match(x = sockets, table = self$workers$socket)
       true(!anyNA(matches), message = "bad websocket on terminate.")
       for (index in matches) {

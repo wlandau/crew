@@ -99,6 +99,8 @@ Other launchers:
 \item \href{#method-crew_class_launcher-populate}{\code{crew_class_launcher$populate()}}
 \item \href{#method-crew_class_launcher-active}{\code{crew_class_launcher$active()}}
 \item \href{#method-crew_class_launcher-inactive}{\code{crew_class_launcher$inactive()}}
+\item \href{#method-crew_class_launcher-unreachable}{\code{crew_class_launcher$unreachable()}}
+\item \href{#method-crew_class_launcher-clean}{\code{crew_class_launcher$clean()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
@@ -320,6 +322,38 @@ See the \code{active()} method for details.
 
 \subsection{Returns}{
 Character vector of worker websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-unreachable"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-unreachable}{}}}
+\subsection{Method \code{unreachable()}}{
+Get the unreachable workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$unreachable()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+A worker is unreachable if it was supposed to launch,
+but it never connected to the client,
+and its startup window elapsed.
+}
+
+\subsection{Returns}{
+Character vector of worker websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-clean"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-clean}{}}}
+\subsection{Method \code{clean()}}{
+Terminate unreachable workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$clean()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly)
 }
 }
 \if{html}{\out{<hr>}}

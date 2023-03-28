@@ -254,12 +254,10 @@ crew_test("worker that immediately times out is still discovered", {
   expect_true(dialer_discovered(launcher$workers$listener[[1]]))
 })
 
-crew_test("launcher cleans up old worker", {
+crew_test("launcher clean()", {
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router(
-    workers = 1L
-  )
+  router <- crew_router(workers = 1L)
   launcher <- crew_launcher_callr(
     tasks_timers = 0L,
     seconds_launch = 360,
@@ -283,7 +281,10 @@ crew_test("launcher cleans up old worker", {
     seconds_timeout = 5
   )
   expect_true(handle$is_alive())
-  launcher$launch(sockets = socket)
+  launcher$clean()
+  expect_true(handle$is_alive())
+  launcher$workers$start[1L] <- launcher$workers$start[1L] - 540
+  launcher$clean()
   crew_wait(
     ~!handle$is_alive(),
     seconds_interval = 0.001,

@@ -96,7 +96,7 @@ crew_test("launcher populate()", {
   expect_equal(workers$handle, list(crew_null, crew_null))
 })
 
-crew_test("launcher inactive()", {
+crew_test("launcher active(), inactive(), and unreachable()", {
   skip_on_cran()
   launcher <- crew_class_launcher$new(seconds_launch = 1)
   port_mirai <- free_port()
@@ -107,6 +107,9 @@ crew_test("launcher inactive()", {
   launcher$workers$token <- replicate(9L, random_name(), simplify = TRUE)
   port_nanonext <- free_port()
   dialers <- list()
+  expect_equal(launcher$active(), character(0L))
+  expect_equal(launcher$inactive(), launcher$workers$socket)
+  expect_equal(launcher$unreachable(), character(0L))
   for (index in seq_len(9L)) {
     token <- launcher$workers$token[index]
     listener <- connection_listen(
@@ -134,11 +137,9 @@ crew_test("launcher inactive()", {
       connection_wait_closed(dialer)
     }
   }
-  active <- launcher$active()
-  inactive <- launcher$inactive()
   crew_wait(
     ~identical(
-      sort(as.character(active)),
+      sort(as.character(launcher$active())),
       sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(3L, 4L, 5L, 6L)))
     ),
     seconds_interval = 0.001,
@@ -146,8 +147,16 @@ crew_test("launcher inactive()", {
   )
   crew_wait(
     ~identical(
-      sort(as.character(inactive)),
+      sort(as.character(launcher$inactive())),
       sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(1L, 2L, 7L, 8L, 9L)))
+    ),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
+  crew_wait(
+    ~identical(
+      sort(as.character(launcher$unreachable())),
+      sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(1L, 2L)))
     ),
     seconds_interval = 0.001,
     seconds_timeout = 5

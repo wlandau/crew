@@ -17,11 +17,11 @@ connection_socket <- function(host = host, port = port, token = token) {
 }
 
 connection_closed <- function(connection) {
-  as.character(connection$state %||% "") == "closed"
+  as.character(connection$state %||% "closed") == "closed"
 }
 
 connection_opened <- function(connection) {
-  as.character(connection$state %||% "") == "opened"
+  as.character(connection$state %||% "closed") == "opened"
 }
 
 connection_wait_closed <- function(
@@ -48,7 +48,6 @@ connection_wait_opened <- function(
   )
 }
 
-
 dialer_connected <- function(listener) {
   connection_opened(listener) &&
     nanonext::stat(listener$listener[[1]], "pipes") > 0L
@@ -57,6 +56,11 @@ dialer_connected <- function(listener) {
 dialer_discovered <- function(listener) {
   connection_opened(listener) &&
     nanonext::stat(listener$listener[[1]], "accept") > 0L
+}
+
+dialer_not_discovered <- function(listener) {
+  connection_closed(listener) ||
+    nanonext::stat(listener$listener[[1]], "accept") < 1L
 }
 
 # TODO: just use .unresolved() when nanonext > 0.8.0.9000 reaches CRAN.

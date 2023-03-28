@@ -59,7 +59,7 @@ custom_launcher_class <- R6::R6Class(
 )
 ```
 
-Inside `launch_worker()`, the `processx::process$new(command = bin, args = c("-e", call))` line runs the [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html) call in an external R process. This process runs in the background, connects back to `crew` and `mirai` over the local network, and accept the tasks you push to the controller. `processx::process$new()` also returns a handle which the `terminate_worker()` method can use to force-terminate the process if appropriate. `mirai` has its own way to terminate workers, so a `terminate_worker()` method is not strictly required, but it is a useful safeguard in case of awkwardly timed crashes.
+Inside `launch_worker()`, the `processx::process$new(command = bin, args = c("-e", call))` line runs the [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html) call in an external R process. This process runs in the background, connects back to `crew` and `mirai` over the local network, and accepts the tasks you push to the controller. `processx::process$new()` also returns a handle which the `terminate_worker()` method can use to force-terminate the process if appropriate. `mirai` has its own way to terminate workers, so a `terminate_worker()` method is not strictly required, but it is a useful safeguard in case of awkwardly timed crashes.
 
 The `launch_worker()` method must accept the following arguments.
 

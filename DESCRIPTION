@@ -38,7 +38,7 @@ Imports:
   callr,
   getip,
   mirai (>= 0.8.0),
-  nanonext (>= 0.8.0),
+  nanonext (>= 0.8.1),
   parallelly,
   ps,
   R6,

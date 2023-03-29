@@ -211,7 +211,7 @@ crew_class_controller <- R6::R6Class(
       done <- integer(0L)
       for (index in seq_along(self$queue)) {
         task <- self$queue[[index]]
-        if (!nanonext_unresolved(task$handle[[1L]])) {
+        if (!nanonext::.unresolved(task$handle[[1L]])) {
           self$results[[length(self$results) + 1L]] <- task
           done[length(done) + 1L] <- index
         }

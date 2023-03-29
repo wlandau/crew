@@ -387,14 +387,16 @@ crew_class_launcher <- R6::R6Class(
           token = token,
           name = self$name
         )
-        handle <- self$launch_worker(
-          call = call,
-          name = self$name,
-          token = token
-        )
-        self$workers$listener[[index]] <- listener
-        self$workers$handle[[index]] <- handle
-        self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
+        if (!dialer_connected(self$workers$listener[[index]])) {
+          handle <- self$launch_worker(
+            call = call,
+            name = self$name,
+            token = token
+          )
+          self$workers$listener[[index]] <- listener
+          self$workers$handle[[index]] <- handle
+          self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
+        }
       }
       invisible()
     },

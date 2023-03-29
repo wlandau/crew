@@ -1,6 +1,7 @@
 
 # crew: a distributed worker launcher <img src='man/figures/logo-readme.png' align="right" height="139"/>
 
+[![CRAN](https://www.r-pkg.org/badges/version/crew)](https://CRAN.R-project.org/package=crew)
 [![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#Active)
 [![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
@@ -24,16 +25,11 @@ packages [`future`](https://future.futureverse.org/),
 
 For the best performance and reliability, we recommend you install
 [`mirai`](https://github.com/shikokuchuo/mirai) version 0.8.1.9003 or
-above and [`nanonext`](https://github.com/shikokuchuo/nanonext) version
-0.8.0.9001 or above. In case the CRAN releases are older, you can
-install the most recent versions from
-[r-universe](https://r-universe.dev/):
+above. In case the CRAN release is older, you can install the most
+recent version from [r-universe](https://r-universe.dev/):
 
 ``` r
-install.packages(
-  c("mirai", "nanonext"),
-  repos = "https://shikokuchuo.r-universe.dev"
-)
+install.packages("mirai", repos = "https://shikokuchuo.r-universe.dev")
 ```
 
 To install the latest CRAN release of `crew`:
@@ -79,13 +75,13 @@ crew_session_start()
 
 First, create a controller object. Thanks to the powerful features in
 [`mirai`](https://github.com/shikokuchuo/mirai),
-`crew_controller_callr()` allows several ways to customize the way
+`crew_controller_local()` allows several ways to customize the way
 workers are launched and the conditions under which they time out. For
 example, arguments `tasks_max` and `seconds_idle` allow for a smooth
 continuum between fully persistent workers and fully transient workers.
 
 ``` r
-controller <- crew_controller_callr(
+controller <- crew_controller_local(
   workers = 2,
   tasks_max = 3,
   auto_scale = "demand"
@@ -116,7 +112,7 @@ controller$summary(columns = starts_with("worker_"))
 Use the `push()` method to submit a task. When you do, `crew`
 automatically scales up the number of workers to meet demand, within the
 constraints of the `auto_scale` and `workers` arguments of
-`crew_controller_callr()`.
+`crew_controller_local()`.
 
 ``` r
 controller$push(
@@ -137,7 +133,7 @@ controller$pop()
 If you expect a result but see `NULL`, then `mirai` may not have
 assigned the task to a worker yet. This can happen if all workers
 self-terminate early according to the `tasks_max` and `seconds_idle`
-arguments of `crew_controller_callr()`. Unless you configured the
+arguments of `crew_controller_local()`. Unless you configured the
 workers to run indefinitely, the controller will need ongoing attention
 to work through the backlog of tasks. To promptly re-scale workers to
 meet demand, you can manually loop over calls to `pop()`, or you can
@@ -272,7 +268,7 @@ sometimes it cannot reach a worker, e.g. when a worker comes online
 after its startup time from `seconds_start` elapses. To make sure
 workers do not run indefinitely if something goes wrong, it is always
 prudent to set arguments like `seconds_idle` in functions like
-`crew_controller_callr()`. In addition, please learn how to find and
+`crew_controller_local()`. In addition, please learn how to find and
 terminate workers on the specific computing platform where they run. And
 if you are writing a custom launcher plugin, it is recommended (although
 not strictly required) to write a custom `terminate_worker()` method.
@@ -280,8 +276,8 @@ not strictly required) to write a custom `terminate_worker()` method.
 Workers may run on different computing platforms, depending on the type
 of launcher you choose. Each type of launcher connects to a different
 computing platform, and each platform has a different way of terminating
-workers. For example, the [`callr`
-launcher](https://wlandau.github.io/crew/reference/crew_launcher_callr.html)
+workers. For example, the [local process
+launcher](https://wlandau.github.io/crew/reference/crew_launcher_local.html)
 creates R processes on your local machine, which you can find and
 terminate with
 [`ps::ps()`](https://ps.r-lib.org/reference/ps.html)/[`ps::ps_kill()`](https://ps.r-lib.org/reference/ps_kill.html)

@@ -13,7 +13,7 @@ See \code{\link[=crew_controller]{crew_controller()}}.
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
 router <- crew_router()
-launcher <- crew_launcher_callr()
+launcher <- crew_launcher_local()
 controller <- crew_controller(router = router, launcher = launcher)
 controller$start()
 controller$push(name = "task", command = sqrt(4))
@@ -30,7 +30,7 @@ crew_session_terminate()
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
 router <- crew_router()
-launcher <- crew_launcher_callr()
+launcher <- crew_launcher_local()
 controller <- crew_controller(router = router, launcher = launcher)
 controller$start()
 controller$push(name = "task", command = sqrt(4))
@@ -43,8 +43,8 @@ crew_session_terminate()
 \seealso{
 Other controllers: 
 \code{\link{crew_class_controller_group}},
-\code{\link{crew_controller_callr}()},
 \code{\link{crew_controller_group}()},
+\code{\link{crew_controller_local}()},
 \code{\link{crew_controller}()}
 }
 \concept{controllers}
@@ -110,7 +110,7 @@ An \code{R6} object with the controller object.
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
 router <- crew_router()
-launcher <- crew_launcher_callr()
+launcher <- crew_launcher_local()
 controller <- crew_controller(router = router, launcher = launcher)
 controller$start()
 controller$push(name = "task", command = sqrt(4))

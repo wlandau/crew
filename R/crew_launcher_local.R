@@ -1,15 +1,15 @@
-#' @title Create a launcher with `callr` workers.
+#' @title Create a launcher with local process workers.
 #' @export
 #' @family launchers
 #' @description Create an `R6` object to launch and maintain
-#'   `callr` workers for a controller.
+#'   local process workers for a controller.
 #' @inheritParams crew_launcher
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' crew_session_start()
 #' router <- crew_router()
 #' router$listen()
-#' launcher <- crew_launcher_callr()
+#' launcher <- crew_launcher_local()
 #' launcher$populate(sockets = router$sockets)
 #' launcher$launch()
 #' m <- mirai::mirai("result", .compute = router$name)
@@ -18,7 +18,7 @@
 #' router$terminate()
 #' crew_session_terminate()
 #' }
-crew_launcher_callr <- function(
+crew_launcher_local <- function(
   name = NULL,
   seconds_launch = 30,
   seconds_interval = 0.001,
@@ -31,7 +31,7 @@ crew_launcher_callr <- function(
   cleanup = FALSE
 ) {
   name <- as.character(name %|||% random_name())
-  launcher <- crew_class_launcher_callr$new(
+  launcher <- crew_class_launcher_local$new(
     name = name,
     seconds_launch = seconds_launch,
     seconds_interval = seconds_interval,
@@ -51,13 +51,13 @@ crew_launcher_callr <- function(
 #' @export
 #' @family launchers
 #' @description `R6` class to launch and manage `mirai` workers.
-#' @details See [crew_launcher_callr()].
+#' @details See [crew_launcher_local()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' crew_session_start()
 #' router <- crew_router()
 #' router$listen()
-#' launcher <- crew_launcher_callr()
+#' launcher <- crew_launcher_local()
 #' launcher$populate(sockets = router$sockets)
 #' launcher$launch()
 #' m <- mirai::mirai("result", .compute = router$name)
@@ -66,13 +66,15 @@ crew_launcher_callr <- function(
 #' router$terminate()
 #' crew_session_terminate()
 #' }
-crew_class_launcher_callr <- R6::R6Class(
-  classname = "crew_class_launcher_callr",
+crew_class_launcher_local <- R6::R6Class(
+  classname = "crew_class_launcher_local",
   inherit = crew_class_launcher,
   cloneable = FALSE,
   public = list(
-    #' @description Launch a `callr` worker to dial into a socket.
-    #' @return A `callr::r_bg()` handle.
+    #' @description Launch a local process worker which will
+    #'   dial into a socket.
+    #' @return A handle object to allow the termination of the worker
+    #'   later on..
     #' @param call Text string with a namespaced call to [crew_worker()]
     #'   which will run in the worker and accept tasks.
     #' @param name Text string with the name of the launcher.
@@ -84,9 +86,9 @@ crew_class_launcher_callr <- R6::R6Class(
         args = list(call = call)
       )
     },
-    #' @description Terminate a `callr` worker.
+    #' @description Terminate a local process worker.
     #' @return `NULL` (invisibly).
-    #' @param handle A `callr` process handle previously
+    #' @param handle A process handle object previously
     #'   returned by `launch_worker()`.
     terminate_worker = function(handle) {
       handle$kill()

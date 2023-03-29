@@ -1,6 +1,6 @@
 library(crew)
 crew_session_start()
-x <- crew_controller_callr(
+x <- crew_controller_local(
   name = "test",
   tasks_max = 1L,
   workers = 4L

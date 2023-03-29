@@ -1,10 +1,10 @@
-crew_test("crew_launcher_callr() can run a task on a worker", {
+crew_test("crew_launcher_local() can run a task on a worker", {
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(
     workers = 4L
   )
-  launcher <- crew_launcher_callr(seconds_idle = 360)
+  launcher <- crew_launcher_local(seconds_idle = 360)
   crew_session_start()
   on.exit({
     crew_session_terminate()
@@ -86,13 +86,13 @@ crew_test("crew_launcher_callr() can run a task on a worker", {
   expect_true(dialer_discovered(launcher$workers$listener[[2L]]))
 })
 
-crew_test("crew_launcher_callr() can run a task and time out a worker", {
+crew_test("crew_launcher_local() can run a task and time out a worker", {
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(
     workers = 1L
   )
-  launcher <- crew_launcher_callr(tasks_max = 1L, seconds_idle = 360)
+  launcher <- crew_launcher_local(tasks_max = 1L, seconds_idle = 360)
   crew_session_start()
   on.exit({
     crew_session_terminate()
@@ -151,11 +151,11 @@ crew_test("crew_launcher_callr() can run a task and time out a worker", {
   router$terminate()
 })
 
-crew_test("crew_launcher_callr() can run a task and end a worker", {
+crew_test("crew_launcher_local() can run a task and end a worker", {
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(workers = 1L)
-  launcher <- crew_launcher_callr(tasks_max = 1L, seconds_idle = 360)
+  launcher <- crew_launcher_local(tasks_max = 1L, seconds_idle = 360)
   crew_session_start()
   on.exit({
     crew_session_terminate()
@@ -220,7 +220,7 @@ crew_test("worker that immediately times out is still discovered", {
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(workers = 1L)
-  launcher <- crew_launcher_callr(
+  launcher <- crew_launcher_local(
     tasks_timers = 0L,
     seconds_launch = 360,
     seconds_idle = 0.1
@@ -258,7 +258,7 @@ crew_test("launcher clean()", {
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(workers = 1L)
-  launcher <- crew_launcher_callr(
+  launcher <- crew_launcher_local(
     tasks_timers = 0L,
     seconds_launch = 360,
     seconds_idle = 360

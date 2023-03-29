@@ -10,7 +10,7 @@ crew_controller(router, launcher, auto_scale = "demand")
 \item{router}{An \code{R6} router object created by \code{\link[=crew_router]{crew_router()}}.}
 
 \item{launcher}{An \code{R6} launcher object created by one of the
-\verb{crew_launcher_*()} functions such as \code{\link[=crew_launcher_callr]{crew_launcher_callr()}}.}
+\verb{crew_launcher_*()} functions such as \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
 
 \item{auto_scale}{Character of length 1, name of the method for
 automatically scaling workers to meet demand. \code{NULL} to default to
@@ -41,7 +41,7 @@ Create an \code{R6} object to submit tasks and launch workers.
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
 router <- crew_router()
-launcher <- crew_launcher_callr()
+launcher <- crew_launcher_local()
 controller <- crew_controller(router = router, launcher = launcher)
 controller$start()
 controller$push(name = "task", command = sqrt(4))
@@ -55,8 +55,8 @@ crew_session_terminate()
 Other controllers: 
 \code{\link{crew_class_controller_group}},
 \code{\link{crew_class_controller}},
-\code{\link{crew_controller_callr}()},
-\code{\link{crew_controller_group}()}
+\code{\link{crew_controller_group}()},
+\code{\link{crew_controller_local}()}
 }
 \concept{controllers}
 \keyword{internal}

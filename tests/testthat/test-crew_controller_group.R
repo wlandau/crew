@@ -1,5 +1,5 @@
 crew_test("crew_controller_group() method signature compatibility", {
-  x <- crew_controller_callr()
+  x <- crew_controller_local()
   y <- crew_controller_group(x = x)
   methods <- c(
     "validate",
@@ -22,11 +22,11 @@ crew_test("crew_controller_group()", {
   skip_on_cran()
   skip_on_os("windows")
   crew_session_start()
-  a <- crew_controller_callr(
+  a <- crew_controller_local(
     name = "a",
     seconds_idle = 360
   )
-  b <- crew_controller_callr(
+  b <- crew_controller_local(
     name = "b",
     seconds_idle = 360
   )
@@ -118,10 +118,10 @@ crew_test("crew_controller_group() select", {
   skip_on_cran()
   skip_on_os("windows")
   crew_session_start()
-  a <- crew_controller_callr(
+  a <- crew_controller_local(
     name = "a"
   )
-  b <- crew_controller_callr(
+  b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
     seconds_idle = 360
@@ -147,10 +147,10 @@ crew_test("crew_controller_group() collect", {
   skip_on_cran()
   skip_on_os("windows")
   crew_session_start()
-  a <- crew_controller_callr(
+  a <- crew_controller_local(
     name = "a"
   )
-  b <- crew_controller_callr(
+  b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
     seconds_idle = 360
@@ -187,11 +187,11 @@ crew_test("crew_controller_group() launch method", {
   skip_on_cran()
   skip_on_os("windows")
   crew_session_start()
-  a <- crew_controller_callr(
+  a <- crew_controller_local(
     name = "a",
     seconds_idle = 360
   )
-  b <- crew_controller_callr(
+  b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
     seconds_idle = 360
@@ -232,7 +232,7 @@ crew_test("crew_controller_group() scale method", {
   skip_on_cran()
   skip_on_os("windows")
   crew_session_start()
-  a <- crew_controller_callr(
+  a <- crew_controller_local(
     name = "a",
     auto_scale = "one",
     seconds_idle = 360

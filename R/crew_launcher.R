@@ -5,7 +5,7 @@
 #' @description This function is useful for inheriting argument documentation
 #'   in functions that create custom third-party launchers. See
 #'   `@inheritParams crew::crew_launcher` in the source code file of
-#'   [crew_launcher_callr()].
+#'   [crew_launcher_local()].
 #' @param name Name of the launcher.
 #' @param seconds_launch Seconds of startup time to allow.
 #'   A worker is unconditionally assumed to be alive
@@ -49,7 +49,7 @@
 #' crew_session_start()
 #' router <- crew_router()
 #' router$listen()
-#' launcher <- crew_launcher_callr()
+#' launcher <- crew_launcher_local()
 #' launcher$populate(sockets = router$sockets)
 #' launcher$launch()
 #' m <- mirai::mirai("result", .compute = router$name)
@@ -71,7 +71,7 @@ crew_launcher <- function(
     cleanup = FALSE
 ) {
   name <- as.character(name %|||% random_name())
-  launcher <- crew_class_launcher_callr$new(
+  launcher <- crew_class_launcher_local$new(
     name = name,
     seconds_launch = seconds_launch,
     seconds_interval = seconds_interval,
@@ -97,7 +97,7 @@ crew_launcher <- function(
 #' crew_session_start()
 #' router <- crew_router()
 #' router$listen()
-#' launcher <- crew_launcher_callr()
+#' launcher <- crew_launcher_local()
 #' launcher$populate(sockets = router$sockets)
 #' launcher$launch()
 #' m <- mirai::mirai("result", .compute = router$name)
@@ -179,7 +179,7 @@ crew_class_launcher <- R6::R6Class(
     #' crew_session_start()
     #' router <- crew_router()
     #' router$listen()
-    #' launcher <- crew_launcher_callr()
+    #' launcher <- crew_launcher_local()
     #' launcher$populate(sockets = router$sockets)
     #' launcher$launch()
     #' m <- mirai::mirai("result", .compute = router$name)
@@ -260,7 +260,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param name User-supplied name of the launcher, useful for
     #'   constructing informative job labels.
     #' @examples
-    #' launcher <- crew_launcher_callr()
+    #' launcher <- crew_launcher_local()
     #' launcher$call(
     #'   socket = "ws://127.0.0.1:5000",
     #'   host = "127.0.0.1",
@@ -412,8 +412,9 @@ crew_class_launcher <- R6::R6Class(
     #'   placeholder, and its presence allows manual worker termination
     #'   to be optional.
     #' @return `NULL` (invisibly).
-    #' @param handle A `callr` process handle previously
-    #'   returned by `launch_worker()`.
+    #' @param handle A handle object previously
+    #'   returned by `launch_worker()` which allows the termination
+    #'   of the worker.
     terminate_worker = function(handle) {
       invisible()
     }

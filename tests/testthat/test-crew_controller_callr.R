@@ -1,6 +1,6 @@
-crew_test("crew_controller_callr()", {
+crew_test("crew_controller_local()", {
   crew_session_start()
-  x <- crew_controller_callr(
+  x <- crew_controller_local(
     workers = 1L,
     seconds_idle = 360
   )
@@ -106,11 +106,11 @@ crew_test("crew_controller_callr()", {
   )
 })
 
-crew_test("crew_controller_callr() warnings and errors", {
+crew_test("crew_controller_local() warnings and errors", {
   skip_on_cran()
   skip_on_os("windows")
   crew_session_start()
-  x <- crew_controller_callr(
+  x <- crew_controller_local(
     seconds_idle = 360
   )
   on.exit({
@@ -145,11 +145,11 @@ crew_test("crew_controller_callr() warnings and errors", {
   expect_equal(length(x$launcher$inactive()), 1L)
 })
 
-crew_test("crew_controller_callr() launch method", {
+crew_test("crew_controller_local() launch method", {
   skip_on_cran()
   skip_on_os("windows")
   crew_session_start()
-  x <- crew_controller_callr(
+  x <- crew_controller_local(
     seconds_idle = 360
   )
   on.exit({

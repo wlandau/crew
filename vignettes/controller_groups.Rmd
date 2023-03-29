@@ -23,8 +23,8 @@ Each controller object only supports only one type of worker configuration which
 We demonstrate with a controller of fully persistent workers which always stay running and a controller of semi-persistent workers which terminate after completing four tasks. We create controller objects with names.
 
 ```{r}
-persistent <- crew_controller_callr(name = "persistent")
-transient <- crew_controller_callr(name = "semi-persistent", tasks_max = 4L)
+persistent <- crew_controller_local(name = "persistent")
+transient <- crew_controller_local(name = "semi-persistent", tasks_max = 4L)
 ```
 
 `crew` uses a different TCP port for each controller you run, so please do not create hundreds of controllers. Please see the subsection on ports in the [README](https://wlandau.github.io/crew/index.html).

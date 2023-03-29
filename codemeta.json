@@ -2,19 +2,25 @@
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
   "identifier": "crew",
-  "description": "In computationally demanding analysis projects, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services The 'NNG'-powered 'mirai' R package is a sleek and sophisticated scheduler that efficiently processes these intense workloads. The 'crew' package extends 'mirai' with a unifying interface for third-party worker launchers. Inspiration also comes from packages 'future' (2021, <doi:10.32614/RJ-2021-048>), 'rrq', 'clustermq' (2019, <doi:10.1093/bioinformatics/btz284>), and 'batchtools' (2017, <doi:10.21105/joss.00135>).",
+  "description": "In computationally demanding analysis projects, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services The 'NNG'-powered 'mirai' R package by Gao (2023) <https://CRAN.R-project.org/package=mirai> is a sleek and sophisticated scheduler that efficiently processes these intense workloads. The 'crew' package extends 'mirai' with a unifying interface for third-party worker launchers. Inspiration also comes from packages 'future' by Bengtsson (2021) <doi:10.32614/RJ-2021-048>, 'rrq' by FitzJohn and Ashton (2023) <https://github.com/mrc-ide/rrq>, 'clustermq' by Schubert (2019) <doi:10.1093/bioinformatics/btz284>), and 'batchtools' by Lang, Bischel, and Surmann (2017) <doi:10.21105/joss.00135>.",
   "name": "crew: A Distributed Worker Launcher",
-  "relatedLink": "https://wlandau.github.io/crew/",
+  "relatedLink": ["https://wlandau.github.io/crew/", "https://CRAN.R-project.org/package=crew"],
   "codeRepository": "https://github.com/wlandau/crew",
   "issueTracker": "https://github.com/wlandau/crew/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.0.2",
+  "version": "0.0.5.9000",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
   "runtimePlatform": "R version 4.2.2 (2022-10-31)",
+  "provider": {
+    "@id": "https://cran.r-project.org",
+    "@type": "Organization",
+    "name": "Comprehensive R Archive Network (CRAN)",
+    "url": "https://cran.r-project.org"
+  },
   "author": [
     {
       "@type": "Person",
@@ -68,6 +74,18 @@
     },
     {
       "@type": "SoftwareApplication",
+      "identifier": "processx",
+      "name": "processx",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=processx"
+    },
+    {
+      "@type": "SoftwareApplication",
       "identifier": "rmarkdown",
       "name": "rmarkdown",
       "version": ">= 2.4",
@@ -102,18 +120,6 @@
     },
     "2": {
       "@type": "SoftwareApplication",
-      "identifier": "bench",
-      "name": "bench",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=bench"
-    },
-    "3": {
-      "@type": "SoftwareApplication",
       "identifier": "callr",
       "name": "callr",
       "provider": {
@@ -124,7 +130,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=callr"
     },
-    "4": {
+    "3": {
       "@type": "SoftwareApplication",
       "identifier": "getip",
       "name": "getip",
@@ -136,11 +142,11 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=getip"
     },
-    "5": {
+    "4": {
       "@type": "SoftwareApplication",
       "identifier": "mirai",
       "name": "mirai",
-      "version": ">= 0.8.0",
+      "version": ">= 0.8.1",
       "provider": {
         "@id": "https://cran.r-project.org",
         "@type": "Organization",
@@ -149,11 +155,11 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=mirai"
     },
-    "6": {
+    "5": {
       "@type": "SoftwareApplication",
       "identifier": "nanonext",
       "name": "nanonext",
-      "version": ">= 0.8.0",
+      "version": ">= 0.8.1",
       "provider": {
         "@id": "https://cran.r-project.org",
         "@type": "Organization",
@@ -162,7 +168,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=nanonext"
     },
-    "7": {
+    "6": {
       "@type": "SoftwareApplication",
       "identifier": "parallelly",
       "name": "parallelly",
@@ -174,7 +180,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=parallelly"
     },
-    "8": {
+    "7": {
       "@type": "SoftwareApplication",
       "identifier": "ps",
       "name": "ps",
@@ -186,7 +192,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=ps"
     },
-    "9": {
+    "8": {
       "@type": "SoftwareApplication",
       "identifier": "R6",
       "name": "R6",
@@ -198,7 +204,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=R6"
     },
-    "10": {
+    "9": {
       "@type": "SoftwareApplication",
       "identifier": "rlang",
       "name": "rlang",
@@ -210,7 +216,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=rlang"
     },
-    "11": {
+    "10": {
       "@type": "SoftwareApplication",
       "identifier": "tibble",
       "name": "tibble",
@@ -222,7 +228,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=tibble"
     },
-    "12": {
+    "11": {
       "@type": "SoftwareApplication",
       "identifier": "tidyselect",
       "name": "tidyselect",
@@ -234,24 +240,12 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=tidyselect"
     },
-    "13": {
+    "12": {
       "@type": "SoftwareApplication",
       "identifier": "utils",
       "name": "utils"
     },
-    "14": {
-      "@type": "SoftwareApplication",
-      "identifier": "uuid",
-      "name": "uuid",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=uuid"
-    },
-    "15": {
+    "13": {
       "@type": "SoftwareApplication",
       "identifier": "withr",
       "name": "withr",
@@ -265,10 +259,10 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "503.91KB",
+  "fileSize": "548.372KB",
   "releaseNotes": "https://github.com/wlandau/crew/blob/master/NEWS.md",
   "readme": "https://github.com/wlandau/crew/blob/main/README.md",
   "contIntegration": ["https://github.com/wlandau/crew/actions?query=workflow%3Acheck", "https://app.codecov.io/gh/wlandau/crew", "https://github.com/wlandau/crew/actions?query=workflow%3Alint"],
-  "developmentStatus": "https://www.repostatus.org/#WIP",
+  "developmentStatus": "https://www.repostatus.org/#Active",
   "keywords": ["r-package", "r", "rstats", "workflow", "high-performance-computing"]
 }

@@ -12,8 +12,8 @@ See \code{\link[=crew_controller_group]{crew_controller_group()}}.
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
-persistent <- crew_controller_callr(name = "persistent")
-transient <- crew_controller_callr(
+persistent <- crew_controller_local(name = "persistent")
+transient <- crew_controller_local(
   name = "transient",
   max_tasks = 1L
 )
@@ -34,8 +34,8 @@ crew_session_terminate()
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
-persistent <- crew_controller_callr(name = "persistent")
-transient <- crew_controller_callr(
+persistent <- crew_controller_local(name = "persistent")
+transient <- crew_controller_local(
   name = "transient",
   max_tasks = 1L
 )
@@ -53,8 +53,8 @@ crew_session_terminate()
 \seealso{
 Other controllers: 
 \code{\link{crew_class_controller}},
-\code{\link{crew_controller_callr}()},
 \code{\link{crew_controller_group}()},
+\code{\link{crew_controller_local}()},
 \code{\link{crew_controller}()}
 }
 \concept{controllers}
@@ -105,8 +105,8 @@ An \code{R6} object with the controller group object.
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
-persistent <- crew_controller_callr(name = "persistent")
-transient <- crew_controller_callr(
+persistent <- crew_controller_local(name = "persistent")
+transient <- crew_controller_local(
   name = "transient",
   max_tasks = 1L
 )

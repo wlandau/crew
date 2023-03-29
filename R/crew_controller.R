@@ -5,7 +5,7 @@
 #' @description Create an `R6` object to submit tasks and launch workers.
 #' @param router An `R6` router object created by [crew_router()].
 #' @param launcher An `R6` launcher object created by one of the
-#'   `crew_launcher_*()` functions such as [crew_launcher_callr()].
+#'   `crew_launcher_*()` functions such as [crew_launcher_local()].
 #' @param auto_scale Character of length 1, name of the method for
 #'   automatically scaling workers to meet demand. `NULL` to default to
 #'   `"demand"`. Possible values include the following:
@@ -29,7 +29,7 @@
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' crew_session_start()
 #' router <- crew_router()
-#' launcher <- crew_launcher_callr()
+#' launcher <- crew_launcher_local()
 #' controller <- crew_controller(router = router, launcher = launcher)
 #' controller$start()
 #' controller$push(name = "task", command = sqrt(4))
@@ -62,7 +62,7 @@ crew_controller <- function(
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' crew_session_start()
 #' router <- crew_router()
-#' launcher <- crew_launcher_callr()
+#' launcher <- crew_launcher_local()
 #' controller <- crew_controller(router = router, launcher = launcher)
 #' controller$start()
 #' controller$push(name = "task", command = sqrt(4))
@@ -95,7 +95,7 @@ crew_class_controller <- R6::R6Class(
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' crew_session_start()
     #' router <- crew_router()
-    #' launcher <- crew_launcher_callr()
+    #' launcher <- crew_launcher_local()
     #' controller <- crew_controller(router = router, launcher = launcher)
     #' controller$start()
     #' controller$push(name = "task", command = sqrt(4))

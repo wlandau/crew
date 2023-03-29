@@ -7,7 +7,8 @@
 * Add a new `inactive()` launcher method to help with the above.
 * Eliminate superfluous worker launches: clean up the controller logic, and check worker discoveries before worker connections (#51).
 * Simplify the launcher plugin interface (#54).
-* Commit to using the fast `nanonext::.unresolved()`.
+* Commit to using the fast `nanonext::.unresolved()` (#49).
+* Rename the `callr` launcher to the local process launcher (#56).
 
 # crew 0.0.5
 

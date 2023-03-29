@@ -9,18 +9,18 @@ reference:
   - '`crew_session_terminate`'
 - title: Controllers
   contents:
-  - '`crew_controller_callr`'
+  - '`crew_controller_local`'
   - '`crew_controller_group`'
 - title: Launchers
   contents:
   - '`crew_launcher`'
-  - '`crew_launcher_callr`'
+  - '`crew_launcher_local`'
 - title: Classes
   contents:
   - '`crew_class_controller`'
   - '`crew_class_controller_group`'
   - '`crew_class_launcher`'
-  - '`crew_class_launcher_callr`'
+  - '`crew_class_launcher_local`'
   - '`crew_class_router`'
 - title: Utilities
   contents:

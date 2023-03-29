@@ -10,8 +10,8 @@
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' crew_session_start()
-#' persistent <- crew_controller_callr(name = "persistent")
-#' transient <- crew_controller_callr(
+#' persistent <- crew_controller_local(name = "persistent")
+#' transient <- crew_controller_local(
 #'   name = "transient",
 #'   max_tasks = 1L
 #' )
@@ -41,8 +41,8 @@ crew_controller_group <- function(...) {
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' crew_session_start()
-#' persistent <- crew_controller_callr(name = "persistent")
-#' transient <- crew_controller_callr(
+#' persistent <- crew_controller_local(name = "persistent")
+#' transient <- crew_controller_local(
 #'   name = "transient",
 #'   max_tasks = 1L
 #' )
@@ -92,8 +92,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' crew_session_start()
-    #' persistent <- crew_controller_callr(name = "persistent")
-    #' transient <- crew_controller_callr(
+    #' persistent <- crew_controller_local(name = "persistent")
+    #' transient <- crew_controller_local(
     #'   name = "transient",
     #'   max_tasks = 1L
     #' )

@@ -12,7 +12,7 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
 router <- crew_router()
 router$listen()
-launcher <- crew_launcher_callr()
+launcher <- crew_launcher_local()
 launcher$populate(sockets = router$sockets)
 launcher$launch()
 m <- mirai::mirai("result", .compute = router$name)
@@ -30,7 +30,7 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
 router <- crew_router()
 router$listen()
-launcher <- crew_launcher_callr()
+launcher <- crew_launcher_local()
 launcher$populate(sockets = router$sockets)
 launcher$launch()
 m <- mirai::mirai("result", .compute = router$name)
@@ -44,7 +44,7 @@ crew_session_terminate()
 ## Method `crew_class_launcher$call`
 ## ------------------------------------------------
 
-launcher <- crew_launcher_callr()
+launcher <- crew_launcher_local()
 launcher$call(
   socket = "ws://127.0.0.1:5000",
   host = "127.0.0.1",
@@ -55,8 +55,8 @@ launcher$call(
 }
 \seealso{
 Other launchers: 
-\code{\link{crew_class_launcher_callr}},
-\code{\link{crew_launcher_callr}()},
+\code{\link{crew_class_launcher_local}},
+\code{\link{crew_launcher_local}()},
 \code{\link{crew_launcher}()}
 }
 \concept{launchers}
@@ -159,7 +159,7 @@ An \code{R6} object with the launcher.
 crew_session_start()
 router <- crew_router()
 router$listen()
-launcher <- crew_launcher_callr()
+launcher <- crew_launcher_local()
 launcher$populate(sockets = router$sockets)
 launcher$launch()
 m <- mirai::mirai("result", .compute = router$name)
@@ -241,7 +241,7 @@ Character of length 1 with a call to \code{\link[=crew_worker]{crew_worker()}}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{launcher <- crew_launcher_callr()
+\preformatted{launcher <- crew_launcher_local()
 launcher$call(
   socket = "ws://127.0.0.1:5000",
   host = "127.0.0.1",
@@ -410,8 +410,9 @@ Abstract method.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{handle}}{A \code{callr} process handle previously
-returned by \code{launch_worker()}.}
+\item{\code{handle}}{A handle object previously
+returned by \code{launch_worker()} which allows the termination
+of the worker.}
 }
 \if{html}{\out{</div>}}
 }

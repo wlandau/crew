@@ -1,21 +1,21 @@
-#' @title Create a controller with a callr launcher.
+#' @title Create a controller with a local process launcher.
 #' @export
 #' @family controllers
 #' @description Create an `R6` object to submit tasks and
-#'   launch `callr` workers.
+#'   launch workers on local processes.
 #' @inheritParams crew_router
-#' @inheritParams crew_launcher_callr
+#' @inheritParams crew_launcher_local
 #' @inheritParams crew_controller
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' controller <- crew_controller_callr()
+#' controller <- crew_controller_local()
 #' controller$connect()
 #' controller$push(name = "task", command = sqrt(4))
 #' controller$wait()
 #' controller$pop()
 #' controller$terminate()
 #' }
-crew_controller_callr <- function(
+crew_controller_local <- function(
   name = NULL,
   workers = 1L,
   host = NULL,
@@ -39,7 +39,7 @@ crew_controller_callr <- function(
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout
   )
-  launcher <- crew_launcher_callr(
+  launcher <- crew_launcher_local(
     name = name,
     seconds_launch = seconds_launch,
     seconds_interval = seconds_interval,

@@ -70,14 +70,14 @@ See the \code{cleanup} argument of \code{mirai::server()}.}
 This function is useful for inheriting argument documentation
 in functions that create custom third-party launchers. See
 \verb{@inheritParams crew::crew_launcher} in the source code file of
-\code{\link[=crew_launcher_callr]{crew_launcher_callr()}}.
+\code{\link[=crew_launcher_local]{crew_launcher_local()}}.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
 router <- crew_router()
 router$listen()
-launcher <- crew_launcher_callr()
+launcher <- crew_launcher_local()
 launcher$populate(sockets = router$sockets)
 launcher$launch()
 m <- mirai::mirai("result", .compute = router$name)
@@ -89,9 +89,9 @@ crew_session_terminate()
 }
 \seealso{
 Other launchers: 
-\code{\link{crew_class_launcher_callr}},
+\code{\link{crew_class_launcher_local}},
 \code{\link{crew_class_launcher}},
-\code{\link{crew_launcher_callr}()}
+\code{\link{crew_launcher_local}()}
 }
 \concept{launchers}
 \keyword{internal}

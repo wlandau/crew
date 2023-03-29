@@ -61,17 +61,17 @@
 #' crew_session_terminate()
 #' }
 crew_launcher <- function(
-  name = NULL,
-  seconds_launch = 30,
-  seconds_interval = 0.001,
-  seconds_timeout = 10,
-  seconds_idle = Inf,
-  seconds_wall = Inf,
-  seconds_exit = 0.1,
-  tasks_max = Inf,
-  tasks_timers = 0L,
-  async_dial = TRUE,
-  cleanup = FALSE
+    name = NULL,
+    seconds_launch = 30,
+    seconds_interval = 0.001,
+    seconds_timeout = 10,
+    seconds_idle = Inf,
+    seconds_wall = Inf,
+    seconds_exit = 0.1,
+    tasks_max = Inf,
+    tasks_timers = 0L,
+    async_dial = TRUE,
+    cleanup = FALSE
 ) {
   name <- as.character(name %|||% random_name())
   launcher <- crew_class_launcher_callr$new(
@@ -115,28 +115,24 @@ crew_class_launcher <- R6::R6Class(
   cloneable = FALSE,
   portable = TRUE,
   private = list(
-    which_active = function() {
+    which_launching = function() {
       bound <- self$seconds_launch
       start <- self$workers$start
       now <- nanonext::mclock() / 1000
-      launching <- !is.na(start) & ((now - start) < bound)
-      listeners <- self$workers$listener
-      listening <- map_lgl(listeners, connection_opened)
-      connected <- map_lgl(listeners, dialer_connected)
-      not_discovered <- !connected
-      i <- listening & not_discovered & launching
-      not_discovered[i] <- map_lgl(listeners[i], dialer_not_discovered)
-      listening & (connected | (launching & not_discovered))
+      !is.na(start) & ((now - start) < bound)
     },
-    which_unreachable = function() {
-      bound <- self$seconds_launch
-      start <- self$workers$start
-      now <- nanonext::mclock() / 1000
-      not_launching <- is.na(start) | ((now - start) > bound)
+    which_active = function() {
       listeners <- self$workers$listener
-      listening <- map_lgl(listeners, connection_opened)
-      not_discovered <- map_lgl(listeners, dialer_not_discovered)
-      listening & not_launching & not_discovered
+      launching <- private$which_launching()
+      map_lgl(
+        seq_along(listeners),
+        ~is_active(listeners[[.x]], launching[.x])
+      )
+    },
+    which_lost = function() {
+      listeners <- self$workers$listener
+      launching <- private$which_launching()
+      map_lgl(seq_along(listeners), ~is_lost(listeners[[.x]], launching[.x]))
     }
   ),
   public = list(
@@ -200,17 +196,17 @@ crew_class_launcher <- R6::R6Class(
     #' crew_session_terminate()
     #' }
     initialize = function(
-      name = NULL,
-      seconds_launch = NULL,
-      seconds_interval = NULL,
-      seconds_timeout = NULL,
-      seconds_idle = NULL,
-      seconds_wall = NULL,
-      seconds_exit = NULL,
-      tasks_max = NULL,
-      tasks_timers = NULL,
-      async_dial = NULL,
-      cleanup = NULL
+    name = NULL,
+    seconds_launch = NULL,
+    seconds_interval = NULL,
+    seconds_timeout = NULL,
+    seconds_idle = NULL,
+    seconds_wall = NULL,
+    seconds_exit = NULL,
+    tasks_max = NULL,
+    tasks_timers = NULL,
+    async_dial = NULL,
+    cleanup = NULL
     ) {
       self$name <- name
       self$seconds_launch <- seconds_launch
@@ -345,18 +341,18 @@ crew_class_launcher <- R6::R6Class(
     inactive = function() {
       as.character(self$workers$socket[!private$which_active()])
     },
-    #' @description Get the unreachable workers.
-    #' @details A worker is unreachable if it was supposed to launch,
+    #' @description Get the lost workers.
+    #' @details A worker is lost if it was supposed to launch,
     #'   but it never connected to the client,
     #'   and its startup window elapsed.
     #' @return Character vector of worker websockets.
-    unreachable = function() {
-      as.character(self$workers$socket[private$which_unreachable()])
+    lost = function() {
+      as.character(self$workers$socket[private$which_lost()])
     },
-    #' @description Terminate unreachable workers.
+    #' @description Terminate lost workers.
     #' @return `NULL` (invisibly)
     clean = function() {
-      self$terminate(sockets = self$unreachable())
+      self$terminate(sockets = self$lost())
     },
     #' @description Launch one or more workers.
     #' @details If a worker is already assigned to a socket,
@@ -387,16 +383,14 @@ crew_class_launcher <- R6::R6Class(
           token = token,
           name = self$name
         )
-        if (!dialer_connected(self$workers$listener[[index]])) {
-          handle <- self$launch_worker(
-            call = call,
-            name = self$name,
-            token = token
-          )
-          self$workers$listener[[index]] <- listener
-          self$workers$handle[[index]] <- handle
-          self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
-        }
+        handle <- self$launch_worker(
+          call = call,
+          name = self$name,
+          token = token
+        )
+        self$workers$listener[[index]] <- listener
+        self$workers$handle[[index]] <- handle
+        self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
       }
       invisible()
     },
@@ -437,3 +431,17 @@ crew_class_launcher <- R6::R6Class(
     }
   )
 )
+
+is_active <- function(listener, launching) {
+  connection_opened(listener) && if_any(
+    dialer_discovered(listener),
+    dialer_connected(listener),
+    launching
+  )
+}
+
+is_lost <- function(listener, launching) {
+  connection_opened(listener) &&
+    (!launching) &&
+    dialer_not_discovered(listener)
+}

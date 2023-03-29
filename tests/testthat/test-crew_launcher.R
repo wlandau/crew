@@ -98,7 +98,7 @@ crew_test("launcher populate()", {
   expect_equal(workers$handle, list(crew_null, crew_null))
 })
 
-crew_test("launcher active(), inactive(), and unreachable()", {
+crew_test("launcher active(), inactive(), and lost()", {
   skip_on_cran()
   launcher <- crew_class_launcher$new(seconds_launch = 1)
   port_mirai <- free_port()
@@ -111,7 +111,7 @@ crew_test("launcher active(), inactive(), and unreachable()", {
   dialers <- list()
   expect_equal(launcher$active(), character(0L))
   expect_equal(launcher$inactive(), launcher$workers$socket)
-  expect_equal(launcher$unreachable(), character(0L))
+  expect_equal(launcher$lost(), character(0L))
   for (index in seq_len(9L)) {
     token <- launcher$workers$token[index]
     listener <- connection_listen(
@@ -157,7 +157,7 @@ crew_test("launcher active(), inactive(), and unreachable()", {
   )
   crew_wait(
     ~identical(
-      sort(as.character(launcher$unreachable())),
+      sort(as.character(launcher$lost())),
       sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(1L, 2L)))
     ),
     seconds_interval = 0.001,

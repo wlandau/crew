@@ -5,8 +5,7 @@
 * Remove the superfluous `clean()` controller method.
 * Clean up logic for `scale()` and `launch()` controller methods.
 * Add a new `inactive()` launcher method to help with the above.
-* Reduce superfluous worker launches using cleaner controller logic (#51).
-* Eliminate the remaining superfluous worker launches with a last-minute check for an existing connection in the launcher (#51).
+* Eliminate superfluous worker launches: clean up the controller logic, and check worker discoveries before worker connections (#51).
 * Simplify the launcher plugin interface (#54).
 
 # crew 0.0.5

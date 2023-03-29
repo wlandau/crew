@@ -41,8 +41,6 @@
 #' @param tasks_timers Number of tasks to do before activating
 #'   the timers for `seconds_idle` and `seconds_wall`.
 #'   See the `timerlaunch` argument of `mirai::server()`.
-#' @param async_dial Logical, whether the `mirai` workers should dial in
-#'   asynchronously. See the `asyncdial` argument of `mirai::server()`.
 #' @param cleanup Logical, whether to clean up global options and the
 #'   global environment after every task.
 #'   See the `cleanup` argument of `mirai::server()`.
@@ -70,7 +68,6 @@ crew_launcher <- function(
     seconds_exit = 0.1,
     tasks_max = Inf,
     tasks_timers = 0L,
-    async_dial = TRUE,
     cleanup = FALSE
 ) {
   name <- as.character(name %|||% random_name())
@@ -84,7 +81,6 @@ crew_launcher <- function(
     seconds_exit = seconds_exit,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
-    async_dial = async_dial,
     cleanup = cleanup
   )
   launcher$validate()
@@ -163,8 +159,6 @@ crew_class_launcher <- R6::R6Class(
     tasks_max = NULL,
     #' @field tasks_timers See [crew_launcher()].
     tasks_timers = NULL,
-    #' @field async_dial See [crew_launcher()].
-    async_dial = NULL,
     #' @field cleanup See [crew_launcher()].
     cleanup = NULL,
     #' @description Launcher constructor.
@@ -179,7 +173,6 @@ crew_class_launcher <- R6::R6Class(
     #' @param seconds_exit See [crew_launcher()].
     #' @param tasks_max See [crew_launcher()].
     #' @param tasks_timers See [crew_launcher()].
-    #' @param async_dial See [crew_launcher()].
     #' @param cleanup See [crew_launcher()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -205,7 +198,6 @@ crew_class_launcher <- R6::R6Class(
     seconds_exit = NULL,
     tasks_max = NULL,
     tasks_timers = NULL,
-    async_dial = NULL,
     cleanup = NULL
     ) {
       self$name <- name
@@ -217,7 +209,6 @@ crew_class_launcher <- R6::R6Class(
       self$seconds_exit <- seconds_exit
       self$tasks_max <- tasks_max
       self$tasks_timers <- tasks_timers
-      self$async_dial <- async_dial
       self$cleanup <- cleanup
     },
     #' @description Validate the launcher.
@@ -237,10 +228,7 @@ crew_class_launcher <- R6::R6Class(
       for (field in fields) {
         true(self[[field]], is.numeric(.), . >= 0, length(.) == 1L, !anyNA(.))
       }
-      for (field in c("async_dial", "cleanup")) {
-        true(self[[field]], isTRUE(.) || isFALSE(.))
-      }
-      true(self$async_dial, isTRUE(.) || isFALSE(.))
+      true(self$cleanup, isTRUE(.) || isFALSE(.))
       true(self$workers, is.data.frame(.))
       invisible()
     },
@@ -251,13 +239,13 @@ crew_class_launcher <- R6::R6Class(
     settings = function(socket) {
       list(
         url = socket,
-        asyncdial = self$async_dial,
         maxtasks = self$tasks_max,
         idletime = self$seconds_idle * 1000,
         walltime = self$seconds_wall * 1000,
         timerstart = self$tasks_timers,
         exitlinger = self$seconds_exit * 1000,
-        cleanup = self$cleanup
+        cleanup = self$cleanup,
+        asyncdial = FALSE
       )
     },
     #' @description Create a call to [crew_worker()] to

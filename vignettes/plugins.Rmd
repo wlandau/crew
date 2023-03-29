@@ -78,7 +78,7 @@ launcher$call(
   token = "my_token",
   name = "my_name"
 )
-#> [1] "crew::crew_worker(token = \"my_token\", host = \"127.0.0.1\", port = \"5711\", settings = list(url = \"ws://127.0.0.1:5000\", asyncdial = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, exitlinger = 100, cleanup = FALSE))"
+#> [1] "crew::crew_worker(token = \"my_token\", host = \"127.0.0.1\", port = \"5711\", settings = list(url = \"ws://127.0.0.1:5000\", maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, exitlinger = 1000, cleanup = FALSE, asyncdial = FALSE), seconds_interval = 0.001, seconds_timeout = 10)"
 ```
 
 ## Helper
@@ -112,7 +112,6 @@ crew_controller_custom <- function(
   seconds_exit = 1,
   tasks_max = Inf,
   tasks_timers = 0L,
-  async_dial = TRUE,
   cleanup = FALSE,
   auto_scale = "demand"
 ) {
@@ -134,7 +133,6 @@ crew_controller_custom <- function(
     seconds_exit = seconds_exit,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
-    async_dial = async_dial,
     cleanup = cleanup
   )
   controller <- crew::crew_controller(

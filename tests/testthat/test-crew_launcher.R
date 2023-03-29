@@ -1,6 +1,6 @@
 crew_test("abstract launcher class", {
   expect_silent(crew_launcher()$validate)
-  expect_crew_error(crew_launcher(async_dial = -1)$validate())
+  expect_crew_error(crew_launcher(cleanup = -1)$validate())
 })
 
 crew_test("default terminate_launcher() method", {
@@ -12,7 +12,6 @@ crew_test("default terminate_launcher() method", {
     seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
-    async_dial = FALSE,
     cleanup = TRUE
   )
   expect_null(launcher$terminate_worker())
@@ -27,7 +26,6 @@ crew_test("launcher settings", {
     seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
-    async_dial = FALSE,
     cleanup = TRUE
   )
   expect_equal(launcher$name, "my_launcher_name")
@@ -54,7 +52,6 @@ crew_test("launcher call", {
     seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
-    async_dial = FALSE,
     cleanup = TRUE,
     seconds_interval = 0.1,
     seconds_timeout = 0.25

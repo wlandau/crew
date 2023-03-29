@@ -83,8 +83,6 @@ Other launchers:
 
 \item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{async_dial}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
 \item{\code{cleanup}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 }
 \if{html}{\out{</div>}}
@@ -122,7 +120,6 @@ Launcher constructor.
   seconds_exit = NULL,
   tasks_max = NULL,
   tasks_timers = NULL,
-  async_dial = NULL,
   cleanup = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -148,8 +145,6 @@ See the \code{idletime} argument of \code{mirai::server()}.}
 \item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{async_dial}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{cleanup}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 }

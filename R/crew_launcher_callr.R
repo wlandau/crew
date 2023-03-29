@@ -28,7 +28,6 @@ crew_launcher_callr <- function(
   seconds_exit = 1,
   tasks_max = Inf,
   tasks_timers = 0L,
-  async_dial = TRUE,
   cleanup = FALSE
 ) {
   name <- as.character(name %|||% random_name())
@@ -42,7 +41,6 @@ crew_launcher_callr <- function(
     seconds_exit = seconds_exit,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
-    async_dial = async_dial,
     cleanup = cleanup
   )
   launcher$validate()

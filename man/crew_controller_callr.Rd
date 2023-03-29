@@ -17,7 +17,6 @@ crew_controller_callr(
   seconds_exit = 0.1,
   tasks_max = Inf,
   tasks_timers = 0L,
-  async_dial = TRUE,
   cleanup = FALSE,
   auto_scale = "demand"
 )
@@ -75,9 +74,6 @@ the assignment of tasks to workers, it is recommended to set
 \item{tasks_timers}{Number of tasks to do before activating
 the timers for \code{seconds_idle} and \code{seconds_wall}.
 See the \code{timerlaunch} argument of \code{mirai::server()}.}
-
-\item{async_dial}{Logical, whether the \code{mirai} workers should dial in
-asynchronously. See the \code{asyncdial} argument of \code{mirai::server()}.}
 
 \item{cleanup}{Logical, whether to clean up global options and the
 global environment after every task.

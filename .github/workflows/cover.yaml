@@ -27,10 +27,6 @@ jobs:
           needs: coverage
           cache-version: 2
 
-      - name: update mirai
-        run: install.packages("mirai", type = "source")
-        shell: Rscript {0}
-
       - name: Test coverage
         run: |
           covr::codecov(

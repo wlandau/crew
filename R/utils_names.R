@@ -1,5 +1,5 @@
 random_name <- function() {
-  nanonext::sha224(nanonext::random(n = 100))
+  nanonext::sha1(nanonext::random(n = 100L))
 }
 
 is_named <- function(x) {

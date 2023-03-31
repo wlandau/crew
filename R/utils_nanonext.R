@@ -1,3 +1,9 @@
+condition_variable <- function(listener) {
+  out <- nanonext::cv()
+  nanonext::pipe_notify(socket = listener, cv = out, flag = FALSE)
+  out
+}
+
 connection_dial <- function(host, port, token) {
   socket <- connection_socket(host = host, port = port, token = token)
   nanonext::socket(protocol = "bus", dial = socket)
@@ -44,28 +50,7 @@ connection_wait_opened <- function(
   )
 }
 
-dialer_connected <- function(listener) {
-  connection_opened(listener) &&
-    nanonext::stat(listener$listener[[1]], "pipes") > 0L
-}
-
-dialer_discovered <- function(listener) {
-  connection_opened(listener) &&
-    nanonext::stat(listener$listener[[1]], "accept") > 0L
-}
-
-dialer_not_discovered <- function(listener) {
-  connection_closed(listener) ||
-    nanonext::stat(listener$listener[[1]], "accept") < 1L
-}
-
 listener_connected <- function(dialer) {
   connection_opened(dialer) &&
     nanonext::stat(dialer$dialer[[1]], "pipes") > 0L
-}
-
-condition_variable <- function(listener) {
-  out <- nanonext::cv()
-  nanonext::pipe_notify(socket = listener, cv = out, flag = FALSE)
-  out
 }

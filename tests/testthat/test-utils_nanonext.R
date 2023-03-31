@@ -1,8 +1,7 @@
 crew_test("connections on crew_null", {
   expect_false(connection_opened(crew_null))
   expect_true(connection_closed(crew_null))
-  expect_false(dialer_connected(crew_null))
-  expect_false(dialer_discovered(crew_null))
+  expect_false(listener_connected(crew_null))
 })
 
 crew_test("condition variables", {

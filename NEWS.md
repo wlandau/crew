@@ -11,6 +11,7 @@
 * Rename the `callr` launcher to the local process launcher (#56).
 * Switch from SHA224 to SHA1 as the hash for random tokens and names (#59, @shikokuchuo).
 * Open and confirm bus socket listeners asynchronously in the launcher abstract class (#58).
+* Use condition variables to test the connection status of worker instances (#57, @shikokuchuo).
 
 # crew 0.0.5
 

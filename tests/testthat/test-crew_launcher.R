@@ -137,7 +137,7 @@ crew_test("launcher active(), inactive(), and lost()", {
       dialers[[length(dialers) + 1L]] <- dialer
       Sys.sleep(0.1)
       crew_wait(
-        ~dialer_discovered(listener),
+        ~(nanonext::stat(listener$listener[[1]], "accept") > 0L),
         seconds_interval = 0.001,
         seconds_timeout = 5
       )

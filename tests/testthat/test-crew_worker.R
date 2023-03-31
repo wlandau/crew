@@ -13,8 +13,8 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
   on.exit(crew_test_sleep(), add = TRUE)
   socket <- sprintf("ws://%s:%s/%s", local_ip(), port, token)
   settings <- list(url = socket, timerstart = 0L, idletime = 5)
-  expect_false(dialer_connected(listener))
-  expect_false(dialer_discovered(listener))
+  expect_equal(nanonext::stat(listener$listener[[1]], "accept"), 0L)
+  expect_equal(nanonext::stat(listener$listener[[1]], "pipes"), 0L)
   crew_worker(
     settings = settings,
     host = local_ip(),
@@ -24,11 +24,11 @@ crew_test("crew_worker() connects back to custom NNG bus socket", {
     seconds_timeout = 5
   )
   crew_wait(
-    ~dialer_discovered(listener),
+    ~(nanonext::stat(listener$listener[[1]], "accept") > 0L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  expect_true(dialer_discovered(listener))
+  expect_gt(nanonext::stat(listener$listener[[1]], "accept"), 0L)
 })
 
 crew_test("crew_worker() can run mirai tasks and assigns env vars", {

@@ -21,8 +21,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   socket <- launcher$workers$socket[2L]
   expect_equal(length(launcher$inactive()), 4L)
   expect_equal(launcher$workers$launches, rep(0L, 4L))
-  expect_false(dialer_connected(launcher$workers$listener[[2]]))
-  expect_false(dialer_discovered(launcher$workers$listener[[2]]))
+  expect_true(is_crew_null(launcher$workers$listener[[2]]))
   launcher$launch(sockets = socket)
   expect_s3_class(launcher$workers$handle[[2L]], "r_process")
   expect_silent(launcher$validate())
@@ -45,8 +44,9 @@ crew_test("crew_launcher_local() can run a task on a worker", {
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  expect_true(dialer_connected(launcher$workers$listener[[2L]]))
-  expect_true(dialer_discovered(launcher$workers$listener[[2L]]))
+  listener <- launcher$workers$listener[[2]]
+  expect_equal(nanonext::stat(listener$listener[[1]], "pipes"), 1L)
+  expect_equal(nanonext::stat(listener$listener[[1]], "accept"), 1L)
   expect_equal(launcher$workers$launches, c(0L, 1L, 0L, 0L))
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
   crew_wait(
@@ -72,7 +72,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   crew::crew_wait(
     ~{
       listener <- launcher$workers$listener[[2L]]
-      !dialer_connected(listener)
+      nanonext::stat(listener$listener[[1]], "pipes") == 0L
     },
     seconds_interval = 0.001,
     seconds_timeout = 5
@@ -82,8 +82,9 @@ crew_test("crew_launcher_local() can run a task on a worker", {
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  expect_false(dialer_connected(launcher$workers$listener[[2L]]))
-  expect_true(dialer_discovered(launcher$workers$listener[[2L]]))
+  listener <- launcher$workers$listener[[2]]
+  expect_equal(nanonext::stat(listener$listener[[1]], "pipes"), 0L)
+  expect_equal(nanonext::stat(listener$listener[[1]], "accept"), 1L)
 })
 
 crew_test("crew_launcher_local() can run a task on a worker", {
@@ -259,8 +260,9 @@ crew_test("worker that immediately times out is still discovered", {
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  expect_false(dialer_connected(launcher$workers$listener[[1]]))
-  expect_true(dialer_discovered(launcher$workers$listener[[1]]))
+  listener <- launcher$workers$listener[[1]]
+  expect_equal(nanonext::stat(listener$listener[[1]], "pipes"), 0L)
+  expect_gt(nanonext::stat(listener$listener[[1]], "accept"), 0L)
 })
 
 crew_test("launcher clean()", {

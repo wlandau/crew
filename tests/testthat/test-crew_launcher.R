@@ -60,8 +60,7 @@ crew_test("launcher call", {
     socket = "ws://127.0.0.1:90000000",
     host = "127.0.0.1",
     port = "90000000",
-    token = "my_token",
-    name = "my_name"
+    token = "my_token"
   )
   expect_true(is.character(out))
   expect_true(!anyNA(out))

@@ -172,7 +172,7 @@ The `crew` package has unavoidable risk. It is your responsibility as the user t
 
 ### Security
 
-`crew` uses TCP connections for transactions with workers inside a trusted local network. In a compromised network, an attacker can potentially access and exploit sensitive resources. It is your responsibility to assess the sensitivity and vulnerabilities of your computing environment and make sure your network is secure.
+`crew` currently uses unencrypted TCP connections for transactions with workers inside a trusted local network. In a compromised network, an attacker can potentially access and exploit sensitive resources. It is your responsibility to assess the sensitivity and vulnerabilities of your computing environment and make sure your network is secure.
 
 ### Ports
 

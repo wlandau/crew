@@ -64,8 +64,8 @@ Inside `launch_worker()`, the `processx::process$new(command = bin, args = c("-e
 The `launch_worker()` method must accept the following arguments.
 
 * `call`: a text string with a call to  [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html).
-* `name`: the name of the launcher.
-* `token`: a unique text string identifying the newly launched worker instance. Arguments `name` and `token` are useful for creating informative job names.
+* `name`: the name of the launcher. Each worker instance launched with the launcher will receive the same `name` argument in `launch_worker()`.
+* `token`: a text string that uniquely identifies every newly launched worker instance. Arguments `name` and `token` are useful for creating informative worker names.
 
 To see what the `call` object looks like, create a new launcher and run the `call()` method.
 
@@ -75,8 +75,7 @@ launcher$call(
   socket = "ws://127.0.0.1:5000",
   host = "127.0.0.1",
   port = "5711",
-  token = "my_token",
-  name = "my_name"
+  token = "my_token"
 )
 #> [1] "crew::crew_worker(token = \"my_token\", host = \"127.0.0.1\", port = \"5711\", settings = list(url = \"ws://127.0.0.1:5000\", maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, exitlinger = 1000, cleanup = FALSE, asyncdial = FALSE), seconds_interval = 0.001, seconds_timeout = 10)"
 ```

@@ -77,9 +77,13 @@ crew_class_launcher_local <- R6::R6Class(
     #'   later on..
     #' @param call Text string with a namespaced call to [crew_worker()]
     #'   which will run in the worker and accept tasks.
-    #' @param name Text string with the name of the launcher.
-    #' @param token Text string to uniquely identify the new instance
-    #'   of the worker process.
+    #' @param name User-supplied name of the launcher.
+    #'   Each worker launched from a given launcher will have the same
+    #'   `name` argument. Together with `token`, `name` is useful
+    #'   for constructing informative worker labels.
+    #' @param token Character of length 1 that uniquely identifies the
+    #'   instance of the worker process. Useful for constructing
+    #'   informative worker labels.
     launch_worker = function(call, name, token) {
       callr::r_bg(
         func = function(call) eval(parse(text = call)),

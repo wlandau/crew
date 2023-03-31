@@ -271,20 +271,22 @@ crew_class_launcher <- R6::R6Class(
     #' @param host IP address of the `mirai` client that sends tasks.
     #' @param port TCP port to register a successful connection
     #'   to the host. Different from that of `socket`.
-    #' @param token Character of length 1 to identify the instance
-    #'   of the `mirai` server process connected to the socket.
-    #' @param name User-supplied name of the launcher, useful for
-    #'   constructing informative job labels.
+    #' @param name User-supplied name of the launcher.
+    #'   Each worker launched from a given launcher will have the same
+    #'   `name` argument. Together with `token`, `name` is useful
+    #'   for constructing informative worker labels.
+    #' @param token Character of length 1 that uniquely identifies the
+    #'   instance of the worker process. Useful for constructing
+    #'   informative worker labels.
     #' @examples
     #' launcher <- crew_launcher_local()
     #' launcher$call(
     #'   socket = "ws://127.0.0.1:5000",
     #'   host = "127.0.0.1",
     #'   port = "5711",
-    #'   token = "my_token",
-    #'   name = "my_name"
+    #'   token = "my_token"
     #' )
-    call = function(socket, host, port, token, name) {
+    call = function(socket, host, port, token) {
       args <- self$settings(socket)
       args$.fn <- "list"
       call_settings <- do.call(what = rlang::call2, args = args)
@@ -400,8 +402,7 @@ crew_class_launcher <- R6::R6Class(
           socket = self$workers$socket[index],
           host = crew_session_host(),
           port = crew_session_port(),
-          token = self$workers$token[index],
-          name = self$name
+          token = self$workers$token[index]
         )
         self$workers$start[index] <- nanonext::mclock() / 1000
         self$workers$handle[[index]] <- self$launch_worker(

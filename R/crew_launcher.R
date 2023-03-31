@@ -363,6 +363,11 @@ crew_class_launcher <- R6::R6Class(
           port = crew_session_port(),
           token = token
         )
+        connection_wait_opened(
+          connection = listener,
+          seconds_interval = self$seconds_interval,
+          seconds_timeout = self$seconds_timeout
+        )
         self$workers$start[index] <- nanonext::mclock() / 1000
         call <- self$call(
           socket = self$workers$socket[index],

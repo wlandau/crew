@@ -16,6 +16,11 @@
 #'   ports between 49152 and 65535 are recommended.
 #'   If `port` is `NULL`, a port will be chosen from
 #'   `parallelly::freePort()`.
+#' @param seconds_interval Nonnegative numeric of length 1,
+#'   number of seconds to wait for the session connection to open.
+#' @param seconds_timeout Nonnegative numeric of length 1,
+#'   number of seconds to loop before timing out waiting for the
+#'   session connection to open.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' crew_session_start()
@@ -24,7 +29,9 @@
 #' }
 crew_session_start <- function(
   host = NULL,
-  port = NULL
+  port = NULL,
+  seconds_interval = 0.001,
+  seconds_timeout = 5
 ) {
   true(
     is.null(crew_session_envir$host),
@@ -43,6 +50,11 @@ crew_session_start <- function(
     host = host,
     port = port,
     token = "session"
+  )
+  connection_wait_opened(
+    connection = crew_session_envir$connection,
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout
   )
   invisible()
 }

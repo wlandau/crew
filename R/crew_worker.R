@@ -27,6 +27,11 @@ crew_worker <- function(
   Sys.setenv(CREW_SOCKET_DATA = settings$url, CREW_SOCKET_SESSION = socket)
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
   connection <- connection_dial(host = host, port = port, token = token)
+  connection_wait_opened(
+    connection = connection,
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout
+  )
   crew_wait(
     fun = ~listener_connected(connection),
     seconds_interval = seconds_interval,

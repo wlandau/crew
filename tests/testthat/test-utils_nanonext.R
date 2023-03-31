@@ -13,6 +13,7 @@ crew_test("listener-oriented connection functions", {
     port = port,
     token = "example"
   )
+  connection_wait_opened(listen)
   expect_equal(listen$state, "opened")
   expect_equal(
     listen$listener[[1]]$url,
@@ -26,6 +27,7 @@ crew_test("listener-oriented connection functions", {
     port = port,
     token = "example"
   )
+  connection_wait_opened(dial)
   crew_wait(
     ~dialer_connected(listen),
     seconds_interval = 0.001,
@@ -68,6 +70,7 @@ crew_test("dialer-oriented connection functions", {
     port = port,
     token = "example"
   )
+  connection_wait_opened(dial)
   expect_equal(dial$state, "opened")
   expect_equal(
     dial$dialer[[1]]$url,
@@ -79,6 +82,7 @@ crew_test("dialer-oriented connection functions", {
     port = port,
     token = "example"
   )
+  connection_wait_opened(listen)
   crew_wait(
     ~listener_connected(dial),
     seconds_interval = 0.001,

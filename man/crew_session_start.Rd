@@ -4,7 +4,12 @@
 \alias{crew_session_start}
 \title{Start a new crew session.}
 \usage{
-crew_session_start(host = NULL, port = NULL)
+crew_session_start(
+  host = NULL,
+  port = NULL,
+  seconds_interval = 0.001,
+  seconds_timeout = 5
+)
 }
 \arguments{
 \item{host}{IP address of the machine hosting the session.
@@ -14,6 +19,13 @@ Defaults to the local IP address of the session.}
 ports between 49152 and 65535 are recommended.
 If \code{port} is \code{NULL}, a port will be chosen from
 \code{parallelly::freePort()}.}
+
+\item{seconds_interval}{Nonnegative numeric of length 1,
+number of seconds to wait for the session connection to open.}
+
+\item{seconds_timeout}{Nonnegative numeric of length 1,
+number of seconds to loop before timing out waiting for the
+session connection to open.}
 }
 \value{
 \code{NULL} (invisibly).

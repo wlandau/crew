@@ -45,7 +45,8 @@ length(unique(results$socket_session))
 #> [1] 4
 # View worker and task summaries.
 View(controller$summary())
-# Terminate the controller.
+# Terminate the controller and session.
 controller$terminate()
+crew_session_terminate()
 # Now outside crew, verify that the mirai dispatcher
 # and crew workers successfully terminated.

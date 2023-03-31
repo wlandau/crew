@@ -124,13 +124,16 @@ crew_test("launcher active(), inactive(), and lost()", {
       port = port_nanonext,
       token = token
     )
+    connection_wait_opened(listener)
     launcher$workers$listener[[index]] <- listener
+    launcher$workers$condition[[index]] <- condition_variable(listener)
     if (index > 3L) {
       dialer <- connection_dial(
         host = local_ip(),
         port = port_nanonext,
         token = token
       )
+      connection_wait_opened(dialer)
       dialers[[length(dialers) + 1L]] <- dialer
       Sys.sleep(0.1)
       crew_wait(

@@ -119,16 +119,21 @@ crew_class_launcher <- R6::R6Class(
     },
     which_active = function() {
       listeners <- self$workers$listener
+      conditions <- self$workers$condition
       launching <- private$which_launching()
       map_lgl(
         seq_along(listeners),
-        ~is_active(listeners[[.x]], launching[.x])
+        ~is_active(listeners[[.x]], conditions[[.x]], launching[.x])
       )
     },
     which_lost = function() {
       listeners <- self$workers$listener
+      conditions <- self$workers$condition
       launching <- private$which_launching()
-      map_lgl(seq_along(listeners), ~is_lost(listeners[[.x]], launching[.x]))
+      map_lgl(
+        seq_along(listeners),
+        ~is_lost(listeners[[.x]], conditions[[.x]], launching[.x])
+      )
     }
   ),
   public = list(
@@ -448,16 +453,15 @@ crew_class_launcher <- R6::R6Class(
   )
 )
 
-is_active <- function(listener, launching) {
-  connection_opened(listener) && if_any(
-    dialer_discovered(listener),
-    dialer_connected(listener),
-    launching
-  )
+is_active <- function(listener, condition, launching) {
+  connection_opened(listener) && {
+    value <- nanonext::cv_value(condition)
+    if_any(value == 0L, launching, value == 1L)
+  }
 }
 
-is_lost <- function(listener, launching) {
-  connection_opened(listener) &&
-    (!launching) &&
-    dialer_not_discovered(listener)
+is_lost <- function(listener, condition, launching) {
+  (!launching) &&
+    connection_opened(listener) &&
+    (nanonext::cv_value(condition) == 0L)
 }

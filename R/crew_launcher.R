@@ -139,6 +139,7 @@ crew_class_launcher <- R6::R6Class(
       start = numeric(0L),
       token = character(0L),
       listener = list(),
+      condition = list(),
       handle = list()
     ),
     #' @field name Name of the launcher.
@@ -189,16 +190,16 @@ crew_class_launcher <- R6::R6Class(
     #' crew_session_terminate()
     #' }
     initialize = function(
-    name = NULL,
-    seconds_launch = NULL,
-    seconds_interval = NULL,
-    seconds_timeout = NULL,
-    seconds_idle = NULL,
-    seconds_wall = NULL,
-    seconds_exit = NULL,
-    tasks_max = NULL,
-    tasks_timers = NULL,
-    cleanup = NULL
+      name = NULL,
+      seconds_launch = NULL,
+      seconds_interval = NULL,
+      seconds_timeout = NULL,
+      seconds_idle = NULL,
+      seconds_wall = NULL,
+      seconds_exit = NULL,
+      tasks_max = NULL,
+      tasks_timers = NULL,
+      cleanup = NULL
     ) {
       self$name <- name
       self$seconds_launch <- seconds_launch
@@ -230,6 +231,16 @@ crew_class_launcher <- R6::R6Class(
       }
       true(self$cleanup, isTRUE(.) || isFALSE(.))
       true(self$workers, is.data.frame(.))
+      cols <- c(
+        "socket",
+        "launches",
+        "start",
+        "token", 
+        "listener",
+        "condition",
+        "handle"
+      )
+      true(identical(colnames(self$workers), cols))
       invisible()
     },
     #' @description List of arguments for `mirai::server()`.
@@ -297,13 +308,15 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param sockets Character vector of worker websockets.
     populate = function(sockets) {
+      n <- length(sockets)
       self$workers <- tibble::tibble(
         socket = as.character(sockets),
-        launches = rep(0L, length(sockets)),
-        start = rep(NA_real_, length(sockets)),
-        token = rep(NA_character_, length(sockets)),
-        listener = replicate(length(sockets), crew_null, simplify = FALSE),
-        handle = replicate(length(sockets), crew_null, simplify = FALSE)
+        launches = rep(0L, n),
+        start = rep(NA_real_, n),
+        token = rep(NA_character_, n),
+        listener = replicate(n, crew_null, simplify = FALSE),
+        condition = replicate(n, condition_null, simplify = FALSE),
+        handle = replicate(n, crew_null, simplify = FALSE)
       )
       invisible()
     },
@@ -373,6 +386,11 @@ crew_class_launcher <- R6::R6Class(
         seconds_timeout = self$seconds_timeout * (1 + log(nrow(self$workers)))
       )
       for (index in matches) {
+        self$workers$condition[[index]] <- condition_variable(
+          self$workers$listener[[index]]
+        )
+      }
+      for (index in matches) {
         call <- self$call(
           socket = self$workers$socket[index],
           host = crew_session_host(),
@@ -411,6 +429,7 @@ crew_class_launcher <- R6::R6Class(
         self$workers$start[index] <- NA_real_
         self$workers$token[index] <- NA_character_
         self$workers$listener[[index]] <- crew_null
+        self$workers$condition[[index]] <- condition_null
         self$workers$handle[[index]] <- crew_null
       }
       invisible()

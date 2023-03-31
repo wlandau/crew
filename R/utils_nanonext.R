@@ -64,4 +64,10 @@ listener_connected <- function(dialer) {
     nanonext::stat(dialer$dialer[[1]], "pipes") > 0L
 }
 
+condition_variable <- function(listener) {
+  out <- nanonext::cv()
+  nanonext::pipe_notify(socket = listener, cv = out, flag = FALSE)
+  out
+}
+
 condition_null <- nanonext::cv()

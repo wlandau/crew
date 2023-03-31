@@ -76,19 +76,27 @@ crew_test("launcher populate()", {
   skip_on_cran()
   launcher <- crew_class_launcher$new()
   workers <- launcher$workers
-  expect_equal(dim(workers), c(0, 6))
+  expect_equal(dim(workers), c(0L, 7L))
   expect_equal(
     colnames(workers),
-    c("socket", "launches", "start", "token", "listener", "handle")
+    c(
+      "socket",
+      "launches",
+      "start",
+      "token",
+      "listener",
+      "condition",
+      "handle"
+    )
   )
   expect_equal(workers$socket, character(0L))
   expect_equal(workers$launches, integer(0L))
   expect_equal(workers$start, numeric(0L))
   expect_equal(workers$token, character(0L))
   expect_equal(workers$handle, list())
-  launcher$populate(sockets = paste0("ws://127.0.0.1:5000/", seq_len(2)))
+  launcher$populate(sockets = paste0("ws://127.0.0.1:5000/", seq_len(2L)))
   workers <- launcher$workers
-  expect_equal(workers$socket, paste0("ws://127.0.0.1:5000/", seq_len(2)))
+  expect_equal(workers$socket, paste0("ws://127.0.0.1:5000/", seq_len(2L)))
   expect_equal(workers$start, c(NA_real_, NA_real_))
   expect_equal(workers$token, c(NA_character_, NA_character_))
   expect_equal(workers$listener, list(crew_null, crew_null))

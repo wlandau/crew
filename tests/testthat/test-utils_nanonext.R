@@ -5,6 +5,44 @@ crew_test("connections on crew_null", {
   expect_false(dialer_discovered(crew_null))
 })
 
+crew_test("condition_null", {
+  expect_true(inherits(condition_null, "conditionVariable"))
+  expect_equal(cv_value(condition_null), 0L)
+})
+
+crew_test("condition variables", {
+  port <- free_port()
+  listen <- connection_listen(
+    host = local_ip(),
+    port = port,
+    token = "example"
+  )
+  on.exit(close(listen))
+  connection_wait_opened(listen)
+  cv <- condition_variable(listen)
+  expect_equal(cv_value(cv), 0L)
+  dial <- connection_dial(
+    host = local_ip(),
+    port = port,
+    token = "example"
+  )
+  connection_wait_opened(dial)
+  crew_wait(
+    ~all(cv_value(cv) == 1L),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
+  expect_equal(cv_value(cv), 1L)
+  close(dial)
+  connection_wait_closed(dial)
+  crew_wait(
+    ~all(cv_value(cv) == 2L),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
+  expect_equal(cv_value(cv), 2L)
+})
+
 crew_test("listener-oriented connection functions", {
   skip_on_cran()
   port <- free_port()

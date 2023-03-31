@@ -315,7 +315,7 @@ crew_class_launcher <- R6::R6Class(
         start = rep(NA_real_, n),
         token = rep(NA_character_, n),
         listener = replicate(n, crew_null, simplify = FALSE),
-        condition = replicate(n, condition_null, simplify = FALSE),
+        condition = replicate(n, crew_null, simplify = FALSE),
         handle = replicate(n, crew_null, simplify = FALSE)
       )
       invisible()
@@ -429,7 +429,7 @@ crew_class_launcher <- R6::R6Class(
         self$workers$start[index] <- NA_real_
         self$workers$token[index] <- NA_character_
         self$workers$listener[[index]] <- crew_null
-        self$workers$condition[[index]] <- condition_null
+        self$workers$condition[[index]] <- crew_null
         self$workers$handle[[index]] <- crew_null
       }
       invisible()

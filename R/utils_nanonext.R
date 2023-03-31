@@ -69,5 +69,3 @@ condition_variable <- function(listener) {
   nanonext::pipe_notify(socket = listener, cv = out, flag = FALSE)
   out
 }
-
-condition_null <- nanonext::cv()

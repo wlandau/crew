@@ -25,5 +25,5 @@ if_any <- function(condition, true, false) {
 crew_null <- structure(list(emptyenv()), class = "crew_null")
 
 is_crew_null <- function(x) {
-  inherits(x, "crew_null")
+  class(x)[1L] == "crew_null" # For performance, we avoid inherits(). # nolint
 }

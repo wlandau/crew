@@ -355,34 +355,37 @@ crew_class_launcher <- R6::R6Class(
       )
       matches <- match(x = sockets, table = self$workers$socket)
       true(!anyNA(matches), message = "bad websocket on launch.")
+      if (length(matches) < 1L) {
+        return(invisible())
+      }
       for (index in matches) {
         token <- random_name()
         self$workers$token[index] <- token
-        listener <- connection_listen(
+        self$workers$listener[[index]] <- connection_listen(
           host = crew_session_host(),
           port = crew_session_port(),
           token = token
         )
-        connection_wait_opened(
-          connection = listener,
-          seconds_interval = self$seconds_interval,
-          seconds_timeout = self$seconds_timeout
-        )
-        self$workers$start[index] <- nanonext::mclock() / 1000
+      }
+      crew_wait(
+        fun = ~all(map_lgl(self$workers$listener[matches], connection_opened)),
+        seconds_interval = self$seconds_interval,
+        seconds_timeout = self$seconds_timeout * (1 + log(nrow(self$workers)))
+      )
+      for (index in matches) {
         call <- self$call(
           socket = self$workers$socket[index],
           host = crew_session_host(),
           port = crew_session_port(),
-          token = token,
+          token = self$workers$token[index],
           name = self$name
         )
-        handle <- self$launch_worker(
+        self$workers$start[index] <- nanonext::mclock() / 1000
+        self$workers$handle[[index]] <- self$launch_worker(
           call = call,
           name = self$name,
-          token = token
+          token = self$workers$token[index]
         )
-        self$workers$listener[[index]] <- listener
-        self$workers$handle[[index]] <- handle
         self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
       }
       invisible()

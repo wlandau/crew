@@ -86,6 +86,15 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   expect_true(dialer_discovered(launcher$workers$listener[[2L]]))
 })
 
+crew_test("crew_launcher_local() can run a task on a worker", {
+  skip_on_cran()
+  skip_on_os("windows")
+  launcher <- crew_launcher_local(seconds_idle = 360)
+  crew_session_start()
+  on.exit(crew_session_terminate())
+  expect_silent(launcher$launch(sockets = character(0)))
+})
+
 crew_test("crew_launcher_local() can run a task and time out a worker", {
   skip_on_cran()
   skip_on_os("windows")

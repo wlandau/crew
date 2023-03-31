@@ -12,6 +12,7 @@
 * Switch from SHA224 to SHA1 as the hash for random tokens and names (#59, @shikokuchuo).
 * Open and confirm bus socket listeners asynchronously in the launcher abstract class (#58).
 * Use condition variables to test the connection status of worker instances (#57, @shikokuchuo).
+* Allow the dispatcher process to not exist so that the router will keep working if `mirai` implements the dispatcher another way (#60).
 
 # crew 0.0.5
 

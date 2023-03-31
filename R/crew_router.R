@@ -150,10 +150,19 @@ crew_class_router <- R6::R6Class(
     #' @return `TRUE` if successfully listening for dialed-in workers,
     #'   `FALSE` otherwise.
     listening = function() {
+      info <- mirai::daemons(.compute = self$name)
       out <- mirai::daemons(.compute = self$name)$connections
-      dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
-      handle <- ps::ps_handle(pid = dispatcher)
-      ps::ps_is_running(p = handle) &&
+      # TODO: when the dispatcher process becomes a C thread,
+      # delete these superfluous checks on the dispatcher.
+      # Begin dispatcher checks.
+      dispatcher <- attr(dimnames(info$daemons)[[1]], "dispatcher_pid")
+      dispatcher_running <- TRUE
+      if (!is.null(dispatcher)) {
+        handle <- ps::ps_handle(pid = dispatcher)
+        dispatcher_running <- ps::ps_is_running(p = handle)
+      }
+      dispatcher_running &&
+      # End dispatcher checks.
         (length(out) == 1L) &&
         !anyNA(out) &&
         is.numeric(out) &&
@@ -218,8 +227,14 @@ crew_class_router <- R6::R6Class(
       if (isTRUE(self$listening())) {
         self$poll()
         daemons <- mirai::daemons(.compute = self$name)$daemons
+        # TODO: when the dispatcher process becomes a C thread,
+        # delete these superfluous checks on the dispatcher.
+        # Begin dispatcher checks block 1/2.
         dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
-        handle <- ps::ps_handle(pid = dispatcher)
+        if (!is.null(dispatcher)) {
+          handle <- ps::ps_handle(pid = dispatcher)
+        }
+        # End dispatcher checks block 1/2.
         mirai::daemons(n = 0L, .compute = self$name)
         crew_wait(
           fun = ~isFALSE(self$listening()),
@@ -227,27 +242,31 @@ crew_class_router <- R6::R6Class(
           seconds_timeout = self$seconds_timeout,
           message = "mirai client could not terminate."
         )
-        tryCatch(
-          crew_wait(
-            fun = ~!ps::ps_is_running(p = handle),
-            seconds_interval = self$seconds_interval,
-            seconds_timeout = self$seconds_timeout
-          ),
-          crew_expire = function(condition) NULL
-        )
-        if_any(
-          ps::ps_is_running(p = handle),
-          ps::ps_kill(p = handle),
-          NULL
-        )
-        tryCatch(
-          crew_wait(
-            fun = ~!ps::ps_is_running(p = handle),
-            seconds_interval = self$seconds_interval,
-            seconds_timeout = self$seconds_timeout
-          ),
-          crew_expire = function(condition) NULL
-        )
+        # Begin dispatcher checks block 2/2.
+        if (!is.null(dispatcher)) {
+          tryCatch(
+            crew_wait(
+              fun = ~!ps::ps_is_running(p = handle),
+              seconds_interval = self$seconds_interval,
+              seconds_timeout = self$seconds_timeout
+            ),
+            crew_expire = function(condition) NULL
+          )
+          if_any(
+            ps::ps_is_running(p = handle),
+            ps::ps_kill(p = handle),
+            NULL
+          )
+          tryCatch(
+            crew_wait(
+              fun = ~!ps::ps_is_running(p = handle),
+              seconds_interval = self$seconds_interval,
+              seconds_timeout = self$seconds_timeout
+            ),
+            crew_expire = function(condition) NULL
+          )
+        }
+        # End dispatcher checks block 2/2.
         self$poll()
       }
       invisible()

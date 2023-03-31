@@ -63,3 +63,5 @@ listener_connected <- function(dialer) {
   connection_opened(dialer) &&
     nanonext::stat(dialer$dialer[[1]], "pipes") > 0L
 }
+
+condition_null <- nanonext::cv()

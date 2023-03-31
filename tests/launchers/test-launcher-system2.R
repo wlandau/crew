@@ -16,20 +16,20 @@ system2_launcher_class <- R6::R6Class(
 )
 
 crew_controller_system2 <- function(
-    name = "system2",
-    workers = 1L,
-    host = NULL,
-    port = NULL,
-    seconds_launch = 30,
-    seconds_interval = 0.001,
-    seconds_timeout = 5,
-    seconds_idle = Inf,
-    seconds_wall = Inf,
-    seconds_exit = 0.1,
-    tasks_max = Inf,
-    tasks_timers = 0L,
-    cleanup = FALSE,
-    auto_scale = "demand"
+  name = "system2",
+  workers = 1L,
+  host = NULL,
+  port = NULL,
+  seconds_launch = 30,
+  seconds_interval = 0.001,
+  seconds_timeout = 5,
+  seconds_idle = Inf,
+  seconds_wall = Inf,
+  seconds_exit = 0.1,
+  tasks_max = Inf,
+  tasks_timers = 0L,
+  cleanup = FALSE,
+  auto_scale = "demand"
 ) {
   router <- crew::crew_router(
     name = name,

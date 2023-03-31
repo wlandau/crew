@@ -9,6 +9,7 @@
 * Simplify the launcher plugin interface (#54).
 * Commit to using the fast `nanonext::.unresolved()` (#49).
 * Rename the `callr` launcher to the local process launcher (#56).
+* Switch from SHA224 to SHA1 as the hash for random tokens and names (#59, @shikokuchuo).
 
 # crew 0.0.5
 

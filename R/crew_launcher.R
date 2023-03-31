@@ -240,7 +240,7 @@ crew_class_launcher <- R6::R6Class(
         "socket",
         "launches",
         "start",
-        "token", 
+        "token",
         "listener",
         "condition",
         "handle"

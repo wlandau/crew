@@ -49,8 +49,7 @@ launcher$call(
   socket = "ws://127.0.0.1:5000",
   host = "127.0.0.1",
   port = "5711",
-  token = "my_token",
-  name = "my_name"
+  token = "my_token"
 )
 }
 \seealso{
@@ -215,7 +214,7 @@ List of arguments for \code{mirai::server()}.
 Create a call to \code{\link[=crew_worker]{crew_worker()}} to
 help create custom launchers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call(socket, host, port, token, name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call(socket, host, port, token)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -228,11 +227,14 @@ help create custom launchers.
 \item{\code{port}}{TCP port to register a successful connection
 to the host. Different from that of \code{socket}.}
 
-\item{\code{token}}{Character of length 1 to identify the instance
-of the \code{mirai} server process connected to the socket.}
+\item{\code{token}}{Character of length 1 that uniquely identifies the
+instance of the worker process. Useful for constructing
+informative worker labels.}
 
-\item{\code{name}}{User-supplied name of the launcher, useful for
-constructing informative job labels.}
+\item{\code{name}}{User-supplied name of the launcher.
+Each worker launched from a given launcher will have the same
+\code{name} argument. Together with \code{token}, \code{name} is useful
+for constructing informative worker labels.}
 }
 \if{html}{\out{</div>}}
 }
@@ -246,8 +248,7 @@ launcher$call(
   socket = "ws://127.0.0.1:5000",
   host = "127.0.0.1",
   port = "5711",
-  token = "my_token",
-  name = "my_name"
+  token = "my_token"
 )
 }
 \if{html}{\out{</div>}}

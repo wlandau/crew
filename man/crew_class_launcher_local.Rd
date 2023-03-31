@@ -74,10 +74,14 @@ dial into a socket.
 \item{\code{call}}{Text string with a namespaced call to \code{\link[=crew_worker]{crew_worker()}}
 which will run in the worker and accept tasks.}
 
-\item{\code{name}}{Text string with the name of the launcher.}
+\item{\code{name}}{User-supplied name of the launcher.
+Each worker launched from a given launcher will have the same
+\code{name} argument. Together with \code{token}, \code{name} is useful
+for constructing informative worker labels.}
 
-\item{\code{token}}{Text string to uniquely identify the new instance
-of the worker process.}
+\item{\code{token}}{Character of length 1 that uniquely identifies the
+instance of the worker process. Useful for constructing
+informative worker labels.}
 }
 \if{html}{\out{</div>}}
 }

@@ -24,23 +24,11 @@ In computationally demanding analysis projects, statisticians and data scientist
 
 # Installation
 
-For the best performance and reliability, we recommend you install [`mirai`](https://github.com/shikokuchuo/mirai) version 0.8.1.9003 or above. In case the CRAN release is older, you can install the most recent version from [r-universe](https://r-universe.dev/):
-
-```{r}
-install.packages("mirai", repos = "https://shikokuchuo.r-universe.dev")
-```
-
-To install the latest CRAN release of `crew`:
-
-```{r}
-install.packages("crew")
-```
-
-To install the latest development version of `crew`:
-
-```{r}
-remotes::install_github("wlandau/crew")
-```
+Type | Source | Command
+---|---|---
+Release | CRAN | `install.packages("crew")`
+Development | GitHub | `remotes::install_github("wlandau/crew")`
+Development | R-universe | `install.packages("crew", repos = "https://wlandau.r-universe.dev")`
 
 # Documentation
 

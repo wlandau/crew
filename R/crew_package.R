@@ -21,9 +21,8 @@
 #' @family help
 #' @importFrom callr r_bg
 #' @importFrom getip getip
-#' @importFrom mirai daemons mirai server
-#' @importFrom nanonext cv cv_value cv_reset random sha1 socket stat
-#'   .unresolved
+#' @importFrom mirai daemons mirai saisei server
+#' @importFrom nanonext random sha1 .unresolved
 #' @importFrom ps ps_handle ps_is_running ps_kill
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function enquo quo_squash

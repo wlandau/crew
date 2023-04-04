@@ -93,8 +93,7 @@ Other launchers:
 \item \href{#method-crew_class_launcher-validate}{\code{crew_class_launcher$validate()}}
 \item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
-\item \href{#method-crew_class_launcher-populate}{\code{crew_class_launcher$populate()}}
-\item \href{#method-crew_class_launcher-rotate}{\code{crew_class_launcher$rotate()}}
+\item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-launching}{\code{crew_class_launcher$launching()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
@@ -250,48 +249,28 @@ launcher$call(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-populate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-populate}{}}}
-\subsection{Method \code{populate()}}{
-Populate the workers data frame.
+\if{html}{\out{<a id="method-crew_class_launcher-start"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-start}{}}}
+\subsection{Method \code{start()}}{
+Start the launcher.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$populate(sockets)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$start(workers = 1L)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{sockets}}{Character vector of worker websockets.}
+\item{\code{workers}}{Positive integer of length 1,
+number of workers to allow.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
+Creates the workers data frame.
 Meant to be called once at the beginning of the launcher
 life cycle.
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-rotate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-rotate}{}}}
-\subsection{Method \code{rotate()}}{
-Change the websocket of a worker.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$rotate(index, socket)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{index}}{Integer of length 1 with the index of the worker.}
-
-\item{\code{socket}}{Character of length 1 with the new websocket.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }
@@ -302,13 +281,14 @@ Change the websocket of a worker.
 \subsection{Method \code{launch()}}{
 Launch one or more workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(indexes = integer(0L))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(sockets = character(0L))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{indexes}}{Integer vector of indexes of the workers to launch.}
+\item{\code{sockets}}{Character vector of sockets for the workers
+to launch.}
 }
 \if{html}{\out{</div>}}
 }

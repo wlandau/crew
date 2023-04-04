@@ -263,28 +263,20 @@ crew_class_launcher <- R6::R6Class(
       out <- deparse_safe(expr = call, collapse = " ")
       gsub(pattern = "   *", replacement = " ", x = out)
     },
-    #' @description Populate the workers data frame.
-    #' @details Meant to be called once at the beginning of the launcher
+    #' @description Start the launcher.
+    #' @details Creates the workers data frame.
+    #'   Meant to be called once at the beginning of the launcher
     #'   life cycle.
     #' @return `NULL` (invisibly).
-    #' @param sockets Character vector of worker websockets.
-    populate = function(sockets) {
-      n <- length(sockets)
+    #' @param workers Positive integer of length 1,
+    #'   number of workers to allow.
+    start = function(workers = 1L) {
       self$workers <- tibble::tibble(
-        socket = as.character(sockets),
-        launches = rep(0L, n),
-        start = rep(NA_real_, n),
-        handle = replicate(n, crew_null, simplify = FALSE)
+        handle = replicate(workers, crew_null, simplify = FALSE),
+        socket = rep(NA_character_, workers),
+        start = rep(NA_real_, workers),
+        launches = rep(0L, workers)
       )
-      invisible()
-    },
-    #' @description Change the websocket of a worker.
-    #' @return `NULL` (invisibly).
-    #' @param index Integer of length 1 with the index of the worker.
-    #' @param socket Character of length 1 with the new websocket.
-    rotate = function(index, socket) {
-      on.exit(self$workers$socket[index] <- socket)
-      self$terminate(index = index)
       invisible()
     },
     #' @description Launch one or more workers.
@@ -292,22 +284,29 @@ crew_class_launcher <- R6::R6Class(
     #'   the previous worker is terminated before the next
     #'   one is launched.
     #' @return `NULL` (invisibly).
-    #' @param indexes Integer vector of indexes of the workers to launch.
-    launch = function(indexes = integer(0L)) {
+    #' @param sockets Character vector of sockets for the workers
+    #'   to launch.
+    launch = function(sockets = character(0L)) {
+      paths <- map(sockets, ~parse_socket(.x))
+      indexes <- map_int(paths, ~.x$index)
+      true(indexes, . > 0L, . <= nrow(self$workers))
       for (index in indexes) {
-        socket <- self$workers$socket[index]
-        path <- parse_socket(socket)
-        self$workers$handle[[index]] <- self$launch_worker(
-          call = self$call(
-            socket = socket,
-            launcher = self$name,
-            worker = path$index,
-            instance = path$instance
-          ),
+        socket <- sockets[index]
+        instance <- paths[[index]]$instance
+        call <- self$call(
+          socket = socket,
           launcher = self$name,
-          worker = path$index,
-          instance = path$instance
+          worker = index,
+          instance = instance
         )
+        handle <- self$launch_worker(
+          call = call,
+          launcher = self$name,
+          worker = index,
+          instance = instance
+        )
+        self$workers$handle[[index]] <- handle
+        self$workers$socket[index] <- socket
         self$workers$start[index] <- nanonext::mclock() / 1000
         self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
       }
@@ -334,8 +333,9 @@ crew_class_launcher <- R6::R6Class(
         if (!is_crew_null(handle)) {
           self$terminate_worker(handle)
         }
-        self$workers$start[index] <- NA_real_
         self$workers$handle[[index]] <- crew_null
+        self$workers$socket[index] <- NA_character_
+        self$workers$start[index] <- NA_real_
       }
       invisible()
     },

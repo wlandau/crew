@@ -32,14 +32,6 @@ crew_test("crew_launcher_local() can run a task on a worker", {
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  crew_wait(
-    ~identical(length(launcher$inactive()), 3L),
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  listener <- launcher$workers$listener[[2]]
-  expect_equal(nanonext::stat(listener$listener[[1]], "pipes"), 1L)
-  expect_equal(nanonext::stat(listener$listener[[1]], "accept"), 1L)
   expect_equal(launcher$workers$launches, c(0L, 1L, 0L, 0L))
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
   crew_wait(
@@ -62,37 +54,19 @@ crew_test("crew_launcher_local() can run a task on a worker", {
       launcher$workers$handle[[2L]]$kill()
     }
   )
-  crew::crew_wait(
-    ~{
-      listener <- launcher$workers$listener[[2L]]
-      nanonext::stat(listener$listener[[1]], "pipes") == 0L
-    },
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  crew_wait(
-    ~identical(length(launcher$inactive()), 4L),
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  listener <- launcher$workers$listener[[2]]
-  expect_equal(nanonext::stat(listener$listener[[1]], "pipes"), 0L)
-  expect_equal(nanonext::stat(listener$listener[[1]], "accept"), 1L)
 })
 
-crew_test("crew_launcher_local() can run a task on a worker", {
+crew_test("crew_launcher_local() empty indexes throw no error", {
   skip_on_cran()
   skip_on_os("windows")
   launcher <- crew_launcher_local(seconds_idle = 360)
-  expect_silent(launcher$launch(sockets = character(0)))
+  expect_silent(launcher$launch(indexes = integer(0)))
 })
 
 crew_test("crew_launcher_local() can run a task and time out a worker", {
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router(
-    workers = 1L
-  )
+  router <- crew_router(workers = 1L)
   launcher <- crew_launcher_local(tasks_max = 1L, seconds_idle = 360)
   on.exit({
     router$terminate()
@@ -101,20 +75,14 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   })
   router$listen()
   expect_silent(launcher$validate())
-  socket <- router$daemons$worker_socket
-  launcher$populate(sockets = router$daemons$worker_socket)
-  expect_equal(length(launcher$inactive()), 1L)
-  launcher$launch(sockets = router$daemons$worker_socket)
+  socket <- router$sockets()
+  launcher$populate(sockets = socket)
+  launcher$launch(index = 1L)
   crew::crew_wait(
     ~{
       handle <- launcher$workers$handle[[1]]
       !is_crew_null(handle) && handle$is_alive()
     },
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  crew_wait(
-    ~identical(length(launcher$inactive()), 0L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
@@ -142,11 +110,6 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  crew_wait(
-    ~identical(length(launcher$inactive()), 1L),
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
   router$terminate()
 })
 
@@ -161,10 +124,9 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
     crew_test_sleep()
   })
   router$listen()
-  socket <- router$daemons$worker_socket
-  launcher$populate(sockets = router$daemons$worker_socket)
-  expect_equal(length(launcher$inactive()), 1L)
-  launcher$launch(sockets = router$daemons$worker_socket)
+  socket <- router$sockets()
+  launcher$populate(sockets = socket)
+  launcher$launch(index = 1L)
   crew::crew_wait(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons
@@ -179,11 +141,6 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
       handle <- launcher$workers$handle[[1]]
       !is_crew_null(handle) && handle$is_alive()
     },
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  crew_wait(
-    ~identical(length(launcher$inactive()), 0L),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
@@ -205,84 +162,5 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  crew_wait(
-    ~identical(length(launcher$inactive()), 1L),
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
   router$terminate()
-})
-
-crew_test("worker that immediately times out is still discovered", {
-  skip_on_cran()
-  skip_on_os("windows")
-  router <- crew_router(workers = 1L)
-  launcher <- crew_launcher_local(
-    tasks_timers = 0L,
-    seconds_launch = 360,
-    seconds_idle = 0.1
-  )
-  on.exit({
-    router$terminate()
-    launcher$terminate()
-    crew_test_sleep()
-  })
-  router$listen()
-  socket <- router$daemons$worker_socket
-  launcher$populate(sockets = router$daemons$worker_socket)
-  expect_equal(length(launcher$inactive()), 1L)
-  launcher$launch(sockets = router$daemons$worker_socket)
-  crew::crew_wait(
-    ~{
-      handle <- launcher$workers$handle[[1]]
-      !is_crew_null(handle) && !handle$is_alive()
-    },
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  crew_wait(
-    ~identical(length(launcher$inactive()), 1L),
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  listener <- launcher$workers$listener[[1]]
-  expect_equal(nanonext::stat(listener$listener[[1]], "pipes"), 0L)
-  expect_gt(nanonext::stat(listener$listener[[1]], "accept"), 0L)
-})
-
-crew_test("launcher clean()", {
-  skip_on_cran()
-  skip_on_os("windows")
-  router <- crew_router(workers = 1L)
-  launcher <- crew_launcher_local(
-    tasks_timers = 0L,
-    seconds_launch = 360,
-    seconds_idle = 360
-  )
-  on.exit({
-    launcher$terminate()
-    router$terminate()
-    crew_test_sleep()
-  })
-  router$listen()
-  socket <- router$daemons$worker_socket
-  launcher$populate(sockets = router$daemons$worker_socket)
-  launcher$launch(sockets = socket)
-  handle <- launcher$workers$handle[[1]]
-  crew_wait(
-    ~handle$is_alive(),
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  expect_true(handle$is_alive())
-  launcher$clean()
-  expect_true(handle$is_alive())
-  launcher$workers$start[1L] <- launcher$workers$start[1L] - 540
-  launcher$clean()
-  crew_wait(
-    ~!handle$is_alive(),
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  expect_false(handle$is_alive())
 })

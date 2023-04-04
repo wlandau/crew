@@ -9,7 +9,7 @@ parse_socket <- function(socket) {
   if_any(
     length(path) < 2L,
     list(index = 1L, instance = path),
-    list(index = path[1L], instance = path[2L])
+    list(index = as.integer(path[1L]), instance = path[2L])
   )
 }
 

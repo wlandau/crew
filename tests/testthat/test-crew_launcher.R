@@ -71,22 +71,22 @@ crew_test("launcher call", {
   expect_match(message, regexp = "Permission denied")
 })
 
-crew_test("launcher populate()", {
+crew_test("launcher start()", {
   skip_on_cran()
   launcher <- crew_class_launcher$new()
   workers <- launcher$workers
   expect_equal(dim(workers), c(0L, 4L))
   expect_equal(
     colnames(workers),
-    c("socket", "launches", "start", "handle")
+    c("handle", "socket", "start", "launches")
   )
-  expect_equal(workers$socket, character(0L))
-  expect_equal(workers$launches, integer(0L))
-  expect_equal(workers$start, numeric(0L))
   expect_equal(workers$handle, list())
-  launcher$populate(sockets = paste0("ws://127.0.0.1:5000/", seq_len(2L)))
+  expect_equal(workers$socket, character(0L))
+  expect_equal(workers$start, numeric(0L))
+  expect_equal(workers$launches, integer(0L))
+  launcher$start(workers = 2L)
   workers <- launcher$workers
-  expect_equal(workers$socket, paste0("ws://127.0.0.1:5000/", seq_len(2L)))
+  expect_equal(workers$socket, c(NA_character_, NA_character_))
   expect_equal(workers$start, c(NA_real_, NA_real_))
   expect_equal(workers$handle, list(crew_null, crew_null))
 })

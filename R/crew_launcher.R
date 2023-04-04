@@ -113,10 +113,10 @@ crew_class_launcher <- R6::R6Class(
   public = list(
     #' @field workers Data frame of worker information.
     workers = tibble::tibble(
+      handle = list(),
       socket = character(0L),
-      launches = integer(0L),
       start = numeric(0L),
-      handle = list()
+      launches = integer(0L)
     ),
     #' @field name Name of the launcher.
     name = NULL,
@@ -207,7 +207,7 @@ crew_class_launcher <- R6::R6Class(
       }
       true(self$cleanup, isTRUE(.) || isFALSE(.))
       true(self$workers, is.data.frame(.))
-      cols <- c("socket", "launches", "start", "handle")
+      cols <- c("handle", "socket", "start", "launches")
       true(identical(colnames(self$workers), cols))
       invisible()
     },
@@ -287,12 +287,10 @@ crew_class_launcher <- R6::R6Class(
     #' @param sockets Character vector of sockets for the workers
     #'   to launch.
     launch = function(sockets = character(0L)) {
-      paths <- map(sockets, ~parse_socket(.x))
-      indexes <- map_int(paths, ~.x$index)
-      true(indexes, . > 0L, . <= nrow(self$workers))
-      for (index in indexes) {
-        socket <- sockets[index]
-        instance <- paths[[index]]$instance
+      for (socket in sockets) {
+        path <- parse_socket(socket)
+        index <- path$index
+        instance <- path$instance
         call <- self$call(
           socket = socket,
           launcher = self$name,

@@ -210,8 +210,8 @@ crew_class_controller_group <- R6::R6Class(
       packages = character(0),
       library = NULL,
       seconds_timeout = NULL,
-      name = NULL,
       scale = TRUE,
+      name = NULL,
       controller = NULL
     ) {
       controller <- controller %|||%

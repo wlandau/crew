@@ -84,6 +84,7 @@ crew_test("crew_controller_group()", {
     )
   )
   expect_null(x$pop())
+  # substitute = TRUE # nolint
   x$push(command = ps::ps_pid(), name = "task_pid", controller = "b")
   x$wait(seconds_timeout = 5)
   out <- x$pop(scale = FALSE)
@@ -99,6 +100,28 @@ crew_test("crew_controller_group()", {
   pid_out <- out$result[[1]]
   pid_exp <- x$controllers[[2]]$launcher$workers$handle[[1]]$get_pid()
   expect_equal(pid_out, pid_exp)
+  # substitute = FALSE # nolint
+  x$push(
+    command = quote(ps::ps_pid()),
+    substitute = FALSE,
+    name = "task_pid2",
+    controller = "a"
+  )
+  x$wait(seconds_timeout = 5)
+  out <- x$pop(scale = FALSE)
+  expect_false(is.null(out))
+  expect_equal(out$name, "task_pid2")
+  expect_equal(out$command, "ps::ps_pid()")
+  expect_true(is.numeric(out$seconds))
+  expect_false(anyNA(out$seconds))
+  expect_true(out$seconds >= 0)
+  expect_true(anyNA(out$error))
+  expect_true(anyNA(out$traceback))
+  expect_true(anyNA(out$warnings))
+  pid_out <- out$result[[1]]
+  pid_exp <- x$controllers[[1]]$launcher$workers$handle[[1]]$get_pid()
+  expect_equal(pid_out, pid_exp)
+  # cleanup
   x$terminate()
   for (index in seq_len(2)) {
     crew_wait(

@@ -106,6 +106,41 @@ crew_test("crew_controller_local()", {
   )
 })
 
+crew_test("crew_controller_local() substitute = FALSE", {
+  skip_on_cran()
+  skip_on_os("windows")
+  crew_session_start()
+  x <- crew_controller_local(
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    crew_session_terminate()
+    crew_test_sleep()
+  })
+  expect_silent(x$validate())
+  expect_false(x$router$listening())
+  x$start()
+  expect_equal(x$summary()$popped_tasks, 0L)
+  expect_equal(x$summary()$popped_errors, 0L)
+  expect_equal(x$summary()$popped_warnings, 0L)
+  command <- quote(sqrt(4L) + sqrt(9L))
+  x$push(command = command, substitute = FALSE, name = "substitute")
+  x$wait(seconds_timeout = 5)
+  out <- x$pop(scale = FALSE)
+  expect_equal(out$result[[1]], 5L)
+  expect_equal(out$name, "substitute")
+  expect_true(is.numeric(out$seconds))
+  expect_false(anyNA(out$seconds))
+  expect_true(out$seconds >= 0)
+  expect_true(anyNA(out$error))
+  expect_true(anyNA(out$warnings))
+  expect_true(anyNA(out$traceback))
+  x$terminate()
+  expect_false(x$router$listening())
+  expect_equal(length(x$launcher$inactive()), 1L)
+})
+
 crew_test("crew_controller_local() warnings and errors", {
   skip_on_cran()
   skip_on_os("windows")

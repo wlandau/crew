@@ -170,6 +170,16 @@ crew_class_controller_group <- R6::R6Class(
     #' @param globals Named list of objects to temporarily assign to the
     #'   global environment for the task. At the end of the task,
     #'   these values are reset to their previous values.
+    #' @param substitute Logical of length 1, whether to call
+    #'   `base::substitute()` on the supplied value of the
+    #'   `command` argument. If `TRUE` (default) then `command` is quoted
+    #'   literally as you write it, e.g.
+    #'   `push(command = your_function_call())`. If `FALSE`, then `crew`
+    #'   assumes `command` is a language object and you are passing its
+    #'   value, e.g. `push(command = quote(your_function_call()))`.
+    #'   `substitute = TRUE` is appropriate for interactive use,
+    #'   whereas `substitute = FALSE` is meant for automated R programs
+    #'   that invoke `crew` controllers.
     #' @param seed Integer of length 1 with the pseudo-random number generator
     #'   seed to temporarily set for the evaluation of the task.
     #'   At the end of the task, the seed is restored.
@@ -194,6 +204,7 @@ crew_class_controller_group <- R6::R6Class(
       command,
       data = list(),
       globals = list(),
+      substitute = TRUE,
       seed = sample.int(n = 1e9L, size = 1L),
       garbage_collection = FALSE,
       packages = character(0),
@@ -213,10 +224,12 @@ crew_class_controller_group <- R6::R6Class(
         controller %in% names(self$controllers),
         message = sprintf("controller \"%s\" not found", controller)
       )
+      if (substitute) command <- substitute(command)
       args <- list(
-        command = substitute(command),
+        command = command,
         data = data,
         globals = globals,
+        substitute = TRUE,
         seed = seed,
         garbage_collection = garbage_collection,
         packages = packages,

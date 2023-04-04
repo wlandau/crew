@@ -242,6 +242,7 @@ Push a task to the head of the task list.
   command,
   data = list(),
   globals = list(),
+  substitute = TRUE,
   seed = sample.int(n = 1000000000L, size = 1L),
   garbage_collection = FALSE,
   packages = character(0),
@@ -264,6 +265,17 @@ evaluation environment.}
 \item{\code{globals}}{Named list of objects to temporarily assign to the
 global environment for the task. At the end of the task,
 these values are reset to their previous values.}
+
+\item{\code{substitute}}{Logical of length 1, whether to call
+\code{base::substitute()} on the supplied value of the
+\code{command} argument. If \code{TRUE} (default) then \code{command} is quoted
+literally as you write it, e.g.
+\code{push(command = your_function_call())}. If \code{FALSE}, then \code{crew}
+assumes \code{command} is a language object and you are passing its
+value, e.g. \code{push(command = quote(your_function_call()))}.
+\code{substitute = TRUE} is appropriate for interactive use,
+whereas \code{substitute = FALSE} is meant for automated R programs
+that invoke \code{crew} controllers.}
 
 \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
 seed to temporarily set for the evaluation of the task.

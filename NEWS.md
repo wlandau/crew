@@ -1,4 +1,4 @@
-# crew 0.0.5.9000
+# crew 0.0.5.9001
 
 * Remove `asyncdial` from call to `mirai::daemons()`.
 * Explain vision in the launcher plugin vignette.
@@ -13,6 +13,7 @@
 * Open and confirm bus socket listeners asynchronously in the launcher abstract class (#58).
 * Use condition variables to test the connection status of worker instances (#57, @shikokuchuo).
 * Allow the dispatcher process to not exist so that the router will keep working if `mirai` implements the dispatcher another way (#60).
+* Add a `substitute` argument to `push()` (#63).
 
 # crew 0.0.5
 

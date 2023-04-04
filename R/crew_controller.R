@@ -135,15 +135,14 @@ crew_class_controller <- R6::R6Class(
     start = function(controllers = NULL) {
       if (!self$router$listening()) {
         self$router$listen()
-        sockets <- self$router$daemons$worker_socket
-        self$launcher$populate(sockets = sockets)
+        workers <- length(self$router$sockets())
+        self$launcher$start(workers = workers)
         self$log <- tibble::tibble(
-          worker_socket = sockets,
-          popped_tasks = rep(0L, length(sockets)),
-          popped_seconds = rep(0, length(sockets)),
-          popped_errors = rep(0L, length(sockets)),
-          popped_warnings = rep(0L, length(sockets)),
-          controller = rep(self$router$name, length(sockets))
+          popped_tasks = rep(0L, workers),
+          popped_seconds = rep(0, workers),
+          popped_errors = rep(0L, workers),
+          popped_warnings = rep(0L, workers),
+          controller = rep(self$router$name, workers)
         )
       }
       invisible()
@@ -163,7 +162,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      inactive <- self$launcher$inactive()
+      inactive <- self$inactive()
       sockets <- utils::head(inactive, n = n)
       if (length(sockets) > 0L) {
         self$launcher$launch(sockets = sockets)

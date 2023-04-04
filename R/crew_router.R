@@ -194,6 +194,12 @@ crew_class_router <- R6::R6Class(
     sockets = function() {
       as.character(rownames(mirai::daemons(.compute = self$name)$daemons))
     },
+    #' @description Change the websocket path of a worker.
+    #' @param index Integer of length 1, worker index.
+    #' @return Character of length 1, new websocket path of the worker.
+    rotate = function(index) {
+      mirai::saisei(i = index, .compute = self$name)
+    },
     #' @description Update the `daemons` field with
     #'   information on the `mirai` daemons.
     #' @details Call `mirai::daemons()` to get information about the workers.

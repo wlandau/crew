@@ -82,3 +82,16 @@ crew_test("crew_router() works", {
   expect_true(is.na(router$daemons$worker_connected))
   expect_true(is.na(router$daemons$worker_busy))
 })
+
+crew_test("router rotate()", {
+  skip_on_cran()
+  skip_on_os("windows")
+  router <- crew_router(workers = 2L)
+  router$listen()
+  on.exit(router$terminate())
+  old <- router$sockets()
+  new <- router$rotate(index = 2L)
+  expect_equal(old == router$sockets(), c(TRUE, FALSE))
+  expect_false(new == old[2L])
+  expect_equal(new, router$sockets()[2L])
+})

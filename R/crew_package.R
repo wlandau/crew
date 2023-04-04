@@ -24,7 +24,6 @@
 #' @importFrom mirai daemons mirai server
 #' @importFrom nanonext cv cv_value cv_reset random sha1 socket stat
 #'   .unresolved
-#' @importFrom parallelly freePort
 #' @importFrom ps ps_handle ps_is_running ps_kill
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function enquo quo_squash

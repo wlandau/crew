@@ -189,6 +189,11 @@ crew_class_router <- R6::R6Class(
       }
       invisible()
     },
+    #' @description Get the current socket addresses.
+    #' @return A character vector of socket addresses.
+    sockets = function() {
+      as.character(rownames(mirai::daemons(.compute = self$name)$daemons))
+    },
     #' @description Update the `daemons` field with
     #'   information on the `mirai` daemons.
     #' @details Call `mirai::daemons()` to get information about the workers.
@@ -207,8 +212,10 @@ crew_class_router <- R6::R6Class(
         return(invisible())
       }
       self$dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
+      sockets <- as.character(rownames(daemons))
       self$daemons <- tibble::tibble(
-        worker_socket = as.character(rownames(daemons)),
+        tasks_assigned = as.integer(daemons[, "tasks_assigned", drop = TRUE]),
+        tasks_complete = as.integer(daemons[, "tasks_complete", drop = TRUE]),
         worker_connected = as.logical(
           daemons[, "status_online", drop = TRUE] > 0L
         ),
@@ -216,8 +223,7 @@ crew_class_router <- R6::R6Class(
           daemons[, "status_busy", drop = TRUE] > 0L
         ),
         worker_instances = as.integer(daemons[, "instance #", drop = TRUE]),
-        tasks_assigned = as.integer(daemons[, "tasks_assigned", drop = TRUE]),
-        tasks_complete = as.integer(daemons[, "tasks_complete", drop = TRUE])
+        worker_instance = map_chr(sockets, ~parse_socket(.x)$instance)
       )
       invisible()
     },

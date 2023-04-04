@@ -57,10 +57,10 @@ crew_test("launcher call", {
     seconds_timeout = 0.25
   )
   out <- launcher$call(
-    socket = "ws://127.0.0.1:90000000",
-    host = "127.0.0.1",
-    port = "90000000",
-    token = "my_token"
+    socket = "ws://127.0.0.1:5000/3/cba033e58",
+    launcher = "launcher_a",
+    worker = 3L,
+    instance = "cba033e58"
   )
   expect_true(is.character(out))
   expect_true(!anyNA(out))
@@ -68,115 +68,25 @@ crew_test("launcher call", {
   expect_true(all(nzchar(out)))
   expect_true(grepl(pattern = "^crew::crew_worker\\(", x = out))
   message <- tryCatch(eval(parse(text = out)), error = conditionMessage)
-  expect_match(message, regexp = "could not connect")
+  expect_match(message, regexp = "Permission denied")
 })
 
 crew_test("launcher populate()", {
   skip_on_cran()
   launcher <- crew_class_launcher$new()
   workers <- launcher$workers
-  expect_equal(dim(workers), c(0L, 7L))
+  expect_equal(dim(workers), c(0L, 4L))
   expect_equal(
     colnames(workers),
-    c(
-      "socket",
-      "launches",
-      "start",
-      "token",
-      "listener",
-      "condition",
-      "handle"
-    )
+    c("socket", "launches", "start", "handle")
   )
   expect_equal(workers$socket, character(0L))
   expect_equal(workers$launches, integer(0L))
   expect_equal(workers$start, numeric(0L))
-  expect_equal(workers$token, character(0L))
   expect_equal(workers$handle, list())
   launcher$populate(sockets = paste0("ws://127.0.0.1:5000/", seq_len(2L)))
   workers <- launcher$workers
   expect_equal(workers$socket, paste0("ws://127.0.0.1:5000/", seq_len(2L)))
   expect_equal(workers$start, c(NA_real_, NA_real_))
-  expect_equal(workers$token, c(NA_character_, NA_character_))
-  expect_equal(workers$listener, list(crew_null, crew_null))
   expect_equal(workers$handle, list(crew_null, crew_null))
-})
-
-crew_test("launcher active(), inactive(), and lost()", {
-  skip_on_cran()
-  launcher <- crew_class_launcher$new(seconds_launch = 1)
-  port_mirai <- free_port()
-  sockets <- sprintf("ws://127.0.0.1:%s/%s", port_mirai, seq_len(9L))
-  expect_equal(length(sockets), 9L)
-  launcher$populate(sockets = sockets)
-  launcher$workers$start <- rep(c(NA_real_, -Inf, Inf), times = 3L)
-  launcher$workers$token <- replicate(9L, random_name(), simplify = TRUE)
-  port_nanonext <- free_port()
-  dialers <- list()
-  expect_equal(launcher$active(), character(0L))
-  expect_equal(launcher$inactive(), launcher$workers$socket)
-  expect_equal(launcher$lost(), character(0L))
-  for (index in seq_len(9L)) {
-    token <- launcher$workers$token[index]
-    listener <- connection_listen(
-      host = local_ip(),
-      port = port_nanonext,
-      token = token
-    )
-    connection_wait_opened(listener)
-    launcher$workers$listener[[index]] <- listener
-    launcher$workers$condition[[index]] <- condition_variable(listener)
-    if (index > 3L) {
-      dialer <- connection_dial(
-        host = local_ip(),
-        port = port_nanonext,
-        token = token
-      )
-      connection_wait_opened(dialer)
-      dialers[[length(dialers) + 1L]] <- dialer
-      Sys.sleep(0.1)
-      crew_wait(
-        ~(nanonext::stat(listener$listener[[1]], "accept") > 0L),
-        seconds_interval = 0.001,
-        seconds_timeout = 5
-      )
-    }
-    if (index > 6L) {
-      close(dialer)
-      connection_wait_closed(dialer)
-    }
-  }
-  crew_wait(
-    ~identical(
-      sort(as.character(launcher$active())),
-      sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(3L, 4L, 5L, 6L)))
-    ),
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  crew_wait(
-    ~identical(
-      sort(as.character(launcher$inactive())),
-      sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(1L, 2L, 7L, 8L, 9L)))
-    ),
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  crew_wait(
-    ~identical(
-      sort(as.character(launcher$lost())),
-      sort(sprintf("ws://127.0.0.1:%s/%s", port_mirai, c(1L, 2L)))
-    ),
-    seconds_interval = 0.001,
-    seconds_timeout = 5
-  )
-  for (dialer in dialers) {
-    if (connection_opened(dialer)) {
-      close(dialer)
-    }
-  }
-  listeners <- launcher$workers$listener
-  walk(listeners, connection_wait_opened)
-  launcher$terminate()
-  walk(listeners, connection_wait_closed)
 })

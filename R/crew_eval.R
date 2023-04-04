@@ -91,8 +91,9 @@ crew_eval <- function(
     error = state$error %|||% NA_character_,
     traceback = state$traceback %|||% NA_character_,
     warnings = state$warnings %|||% NA_character_,
-    socket_data = Sys.getenv("CREW_SOCKET_DATA", unset = NA_character_),
-    socket_session = Sys.getenv("CREW_SOCKET_SESSION", unset = NA_character_)
+    launcher = Sys.getenv("CREW_LAUNCHER", unset = NA_character_),
+    worker = as.integer(Sys.getenv("CREW_WORKER", unset = NA_character_)),
+    instance = Sys.getenv("CREW_INSTANCE", unset = NA_character_)
   )
 }
 

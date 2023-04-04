@@ -7,8 +7,9 @@ monad_init <- function(
   error = NA_character_,
   traceback = NA_character_,
   warnings = NA_character_,
-  socket_data = NA_character_,
-  socket_session = NA_character_
+  launcher = NA_character_,
+  worker = NA_integer_,
+  instance = NA_character_
 ) {
   out <- monad_new(
     name = name %|||% NA_character_,
@@ -19,8 +20,9 @@ monad_init <- function(
     error = error %|||% NA_character_,
     traceback = traceback %|||% NA_character_,
     warnings = warnings %|||% NA_character_,
-    socket_data = socket_data %|||% NA_character_,
-    socket_session = socket_session %|||% NA_character_
+    launcher = launcher %|||% NA_character_,
+    worker = worker %|||% NA_integer_,
+    instance = instance %|||% NA_character_
   )
   monad_validate(out)
   out
@@ -35,8 +37,9 @@ monad_new <- function(
   error = NULL,
   traceback = NULL,
   warnings = NULL,
-  socket_data = NULL,
-  socket_session = NULL
+  launcher = NULL,
+  worker = NULL,
+  instance = NULL
 ) {
   out <- list(
     name = name,
@@ -47,8 +50,9 @@ monad_new <- function(
     error = error,
     traceback = traceback,
     warnings = warnings,
-    socket_data = socket_data,
-    socket_session = socket_session
+    launcher = launcher,
+    worker = worker,
+    instance = instance
   )
   tibble::new_tibble(x = out, class = "crew_monad")
 }
@@ -64,8 +68,8 @@ monad_validate <- function(monad) {
     "error",
     "traceback",
     "warnings",
-    "socket_data",
-    "socket_session"
+    "launcher",
+    "instance"
   )
   for (col in cols) {
     true(is.character(monad[[col]]))
@@ -73,6 +77,7 @@ monad_validate <- function(monad) {
   for (col in c("seconds", "seed")) {
     true(is.numeric(monad[[col]]))
   }
+  true(is.integer(monad$worker))
   true(is.list(monad$result))
   invisible()
 }

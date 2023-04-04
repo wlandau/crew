@@ -110,41 +110,12 @@ crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
   cloneable = FALSE,
   portable = TRUE,
-  private = list(
-    which_launching = function() {
-      bound <- self$seconds_launch
-      start <- self$workers$start
-      now <- nanonext::mclock() / 1000
-      !is.na(start) & ((now - start) < bound)
-    },
-    which_active = function() {
-      listeners <- self$workers$listener
-      conditions <- self$workers$condition
-      launching <- private$which_launching()
-      map_lgl(
-        seq_along(listeners),
-        ~is_active(listeners[[.x]], conditions[[.x]], launching[.x])
-      )
-    },
-    which_lost = function() {
-      listeners <- self$workers$listener
-      conditions <- self$workers$condition
-      launching <- private$which_launching()
-      map_lgl(
-        seq_along(listeners),
-        ~is_lost(listeners[[.x]], conditions[[.x]], launching[.x])
-      )
-    }
-  ),
   public = list(
     #' @field workers Data frame of worker information.
     workers = tibble::tibble(
       socket = character(0L),
       launches = integer(0L),
       start = numeric(0L),
-      token = character(0L),
-      listener = list(),
-      condition = list(),
       handle = list()
     ),
     #' @field name Name of the launcher.
@@ -236,15 +207,7 @@ crew_class_launcher <- R6::R6Class(
       }
       true(self$cleanup, isTRUE(.) || isFALSE(.))
       true(self$workers, is.data.frame(.))
-      cols <- c(
-        "socket",
-        "launches",
-        "start",
-        "token",
-        "listener",
-        "condition",
-        "handle"
-      )
+      cols <- c("socket", "launches", "start", "handle")
       true(identical(colnames(self$workers), cols))
       invisible()
     },
@@ -268,50 +231,41 @@ crew_class_launcher <- R6::R6Class(
     #'   help create custom launchers.
     #' @return Character of length 1 with a call to [crew_worker()].
     #' @param socket Socket where the worker will receive tasks.
-    #' @param host IP address of the `mirai` client that sends tasks.
-    #' @param port TCP port to register a successful connection
-    #'   to the host. Different from that of `socket`.
-    #' @param name User-supplied name of the launcher.
-    #'   Each worker launched from a given launcher will have the same
-    #'   `name` argument. Together with `token`, `name` is useful
-    #'   for constructing informative worker labels.
-    #' @param token Character of length 1 that uniquely identifies the
-    #'   instance of the worker process. Useful for constructing
-    #'   informative worker labels.
+    #' @param launcher Character of length 1, name of the launcher.
+    #' @param worker Positive integer of length 1, index of the worker.
+    #'   This worker index remains the same even when the current instance
+    #'   of the worker exits and a new instance launches.
+    #' @param instance Character of length 1 to uniquely identify
+    #'   the instance of the worker.
     #' @examples
     #' launcher <- crew_launcher_local()
     #' launcher$call(
-    #'   socket = "ws://127.0.0.1:5000",
-    #'   host = "127.0.0.1",
-    #'   port = "5711",
-    #'   token = "my_token"
+    #'   socket = "ws://127.0.0.1:5000/3/cba033e58",
+    #'   launcher = "launcher_a",
+    #'   worker = 3L,
+    #'   instance = "cba033e58"
     #' )
-    call = function(socket, host, port, token) {
-      args <- self$settings(socket)
-      args$.fn <- "list"
-      call_settings <- do.call(what = rlang::call2, args = args)
+    call = function(socket, launcher, worker, instance) {
       call <- substitute(
         crew::crew_worker(
-          token = token,
-          host = host,
-          port = port,
           settings = settings,
-          seconds_interval = seconds_interval,
-          seconds_timeout = seconds_timeout
+          launcher = launcher,
+          worker = worker,
+          instance = instance
         ),
         env = list(
-          settings = call_settings,
-          host = host,
-          port = port,
-          token = token,
-          seconds_interval = self$seconds_interval,
-          seconds_timeout = self$seconds_timeout
+          settings = self$settings(socket),
+          launcher = launcher,
+          worker = worker,
+          instance = instance
         )
       )
       out <- deparse_safe(expr = call, collapse = " ")
       gsub(pattern = "   *", replacement = " ", x = out)
     },
     #' @description Populate the workers data frame.
+    #' @details Meant to be called once at the beginning of the launcher
+    #'   life cycle.
     #' @return `NULL` (invisibly).
     #' @param sockets Character vector of worker websockets.
     populate = function(sockets) {
@@ -320,122 +274,67 @@ crew_class_launcher <- R6::R6Class(
         socket = as.character(sockets),
         launches = rep(0L, n),
         start = rep(NA_real_, n),
-        token = rep(NA_character_, n),
-        listener = replicate(n, crew_null, simplify = FALSE),
-        condition = replicate(n, crew_null, simplify = FALSE),
         handle = replicate(n, crew_null, simplify = FALSE)
       )
       invisible()
     },
-    #' @description Get the active workers.
-    #' @details An active worker is a worker that should be given the chance
-    #'   to run tasks. To determine if the worker is active,
-    #'   `crew` monitors seconds past launch time, and it listens
-    #'   to a special non-`mirai` NNG websocket that the worker
-    #'   is supposed to dial into on launch.
-    #'   If the worker is currently connected to the websocket,
-    #'   then it is active. Otherwise, if the worker is not connected
-    #'   and the startup window has expired, the worker is inactive.
-    #'   Otherwise, if the worker is not connected and the startup
-    #'   window has not yet expired, then the worker is active
-    #'   if it has not ever connected to a websocket.
-    #' @return Character vector of worker websockets.
-    active = function() {
-      as.character(self$workers$socket[private$which_active()])
-    },
-    #' @description Get the inactive workers.
-    #' @details See the `active()` method for details.
-    #' @return Character vector of worker websockets.
-    inactive = function() {
-      as.character(self$workers$socket[!private$which_active()])
-    },
-    #' @description Get the lost workers.
-    #' @details A worker is lost if it was supposed to launch,
-    #'   but it never connected to the client,
-    #'   and its startup window elapsed.
-    #' @return Character vector of worker websockets.
-    lost = function() {
-      as.character(self$workers$socket[private$which_lost()])
-    },
-    #' @description Terminate lost workers.
-    #' @return `NULL` (invisibly)
-    clean = function() {
-      self$terminate(sockets = self$lost())
+    #' @description Change the websocket of a worker.
+    #' @return `NULL` (invisibly).
+    #' @param index Integer of length 1 with the index of the worker.
+    #' @param socket Character of length 1 with the new websocket.
+    rotate = function(index, socket) {
+      on.exit(self$workers$socket[index] <- socket)
+      self$terminate(index = index)
+      invisible()
     },
     #' @description Launch one or more workers.
     #' @details If a worker is already assigned to a socket,
     #'   the previous worker is terminated before the next
     #'   one is launched.
     #' @return `NULL` (invisibly).
-    #' @param sockets Sockets where the workers will dial in.
-    launch = function(sockets = character(0)) {
-      true(
-        !is.null(crew_session_port()),
-        message = "call crew_session_start() before launching workers."
-      )
-      matches <- match(x = sockets, table = self$workers$socket)
-      true(!anyNA(matches), message = "bad websocket on launch.")
-      if (length(matches) < 1L) {
-        return(invisible())
-      }
-      for (index in matches) {
-        token <- random_name()
-        self$workers$token[index] <- token
-        self$workers$listener[[index]] <- connection_listen(
-          host = crew_session_host(),
-          port = crew_session_port(),
-          token = token
-        )
-      }
-      crew_wait(
-        fun = ~all(map_lgl(self$workers$listener[matches], connection_opened)),
-        seconds_interval = self$seconds_interval,
-        seconds_timeout = self$seconds_timeout * (1 + log(nrow(self$workers)))
-      )
-      for (index in matches) {
-        self$workers$condition[[index]] <- condition_variable(
-          self$workers$listener[[index]]
-        )
-      }
-      for (index in matches) {
-        call <- self$call(
-          socket = self$workers$socket[index],
-          host = crew_session_host(),
-          port = crew_session_port(),
-          token = self$workers$token[index]
+    #' @param indexes Integer vector of indexes of the workers to launch.
+    launch = function(indexes = integer(0L)) {
+      for (index in indexes) {
+        socket <- self$workers$socket[index]
+        path <- parse_socket(socket)
+        self$workers$handle[[index]] <- self$launch_worker(
+          call = self$call(
+            socket = socket,
+            launcher = self$name,
+            worker = path$index,
+            instance = path$instance
+          ),
+          launcher = self$name,
+          worker = path$index,
+          instance = path$instance
         )
         self$workers$start[index] <- nanonext::mclock() / 1000
-        self$workers$handle[[index]] <- self$launch_worker(
-          call = call,
-          name = self$name,
-          token = self$workers$token[index]
-        )
         self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
       }
       invisible()
     },
+    #' @description Show whether each worker is launching.
+    #' @details A worker is considered "launching" if it was started
+    #'   recently (`seconds_launch` seconds ago or sooner).
+    #' @return A logical vector indicating which workers are launching.
+    launching = function() {
+      bound <- self$seconds_launch
+      start <- self$workers$start
+      now <- nanonext::mclock() / 1000
+      !is.na(start) & ((now - start) < bound)
+    },
     #' @description Terminate one or more workers.
     #' @return `NULL` (invisibly).
-    #' @param sockets Character vector of sockets of the workers
+    #' @param indexes Integer vector of the indexes of the workers
     #'   to terminate. If `NULL`, all current workers are terminated.
-    terminate = function(sockets = NULL) {
-      sockets <- sockets %|||% self$workers$socket
-      if (!length(sockets)) return(invisible())
-      matches <- match(x = sockets, table = self$workers$socket)
-      true(!anyNA(matches), message = "bad websocket on terminate.")
-      for (index in matches) {
+    terminate = function(indexes = NULL) {
+      indexes <- indexes %|||% seq_len(nrow(self$workers))
+      for (index in indexes) {
         handle <- self$workers$handle[[index]]
         if (!is_crew_null(handle)) {
           self$terminate_worker(handle)
         }
-        con <- self$workers$listener[[index]]
-        if (!is_crew_null(con) && connection_opened(con)) {
-          close(con)
-        }
         self$workers$start[index] <- NA_real_
-        self$workers$token[index] <- NA_character_
-        self$workers$listener[[index]] <- crew_null
-        self$workers$condition[[index]] <- crew_null
         self$workers$handle[[index]] <- crew_null
       }
       invisible()
@@ -453,16 +352,3 @@ crew_class_launcher <- R6::R6Class(
     }
   )
 )
-
-is_active <- function(listener, condition, launching) {
-  connection_opened(listener) && {
-    value <- nanonext::cv_value(condition)
-    if_any(value == 0L, launching, value == 1L)
-  }
-}
-
-is_lost <- function(listener, condition, launching) {
-  (!launching) &&
-    connection_opened(listener) &&
-    (nanonext::cv_value(condition) == 0L)
-}

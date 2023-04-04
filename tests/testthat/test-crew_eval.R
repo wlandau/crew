@@ -123,16 +123,19 @@ crew_test("crew_eval() globals", {
 
 crew_test("crew_eval() environment variables", {
   skip_on_cran()
-  previous <- Sys.getenv(c("CREW_SOCKET_DATA", "CREW_SOCKET_SESSION"))
-  Sys.unsetenv(c("CREW_SOCKET_DATA", "CREW_SOCKET_SESSION"))
+  envvars <- c("CREW_LAUNCHER", "CREW_WORKER", "CREW_INSTANCE")
+  previous <- Sys.getenv(envvars)
+  Sys.unsetenv(envvars)
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
   out <- crew_eval(quote(L))
-  expect_equal(out$socket_data, NA_character_)
-  expect_equal(out$socket_session, NA_character_)
-  Sys.setenv(CREW_SOCKET_DATA = "this1", CREW_SOCKET_SESSION = "this2")
+  expect_equal(out$launcher, NA_character_)
+  expect_equal(out$worker, NA_integer_)
+  expect_equal(out$instance, NA_character_)
+  Sys.setenv(CREW_LAUNCHER = "x1", CREW_WORKER = "2", CREW_INSTANCE = "x3")
   out <- crew_eval(quote(L))
-  expect_equal(out$socket_data, "this1")
-  expect_equal(out$socket_session, "this2")
+  expect_equal(out$launcher, "x1")
+  expect_equal(out$worker, 2L)
+  expect_equal(out$instance, "x3")
 })
 
 crew_test("crew_eval() options", {

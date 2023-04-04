@@ -33,8 +33,8 @@ crew_router <- function(
 ) {
   name <- as.character(name %|||% random_name())
   workers <- as.integer(workers)
-  host <- as.character(host %|||% local_ip())
-  port <- as.integer(port %|||% free_port())
+  host <- as.character(host %|||% getip::getip(type = "local"))
+  port <- as.integer(port %|||% 0L)
   router <- crew_class_router$new(
     name = name,
     workers = workers,
@@ -176,6 +176,7 @@ crew_class_router <- R6::R6Class(
           url = sprintf("ws://%s:%s", self$host, self$port),
           n = self$workers,
           dispatcher = TRUE,
+          token = TRUE,
           .compute = self$name
         )
         crew_wait(

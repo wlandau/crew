@@ -15,6 +15,20 @@ crew_test("is_named", {
   expect_false(is_named(list(a = 1, 2)))
 })
 
+crew_test("parse_socket() with index ", {
+  socket <- "ws://10.0.0.9:56546/3/a6f9411a4b98c2e851f08387345c722597a9b5b7"
+  out <- parse_socket(socket)
+  expect_equal(out$index, 3L)
+  expect_equal(out$instance, "a6f9411a4b98c2e851f08387345c722597a9b5b7")
+})
+
+crew_test("parse_socket() without index ", {
+  socket <- "ws://10.0.0.9:56546/cba033e58a8561d7f49ab87d72b7ad86e28384de"
+  out <- parse_socket(socket)
+  expect_equal(out$index, 1L)
+  expect_equal(out$instance, "cba033e58a8561d7f49ab87d72b7ad86e28384de")
+})
+
 crew_test("eval_tidyselect()", {
   expr <- rlang::new_quosure(quote(tidyselect::any_of(c("b", "c"))))
   out <- eval_tidyselect(expr = expr, choices = letters[seq_len(4L)])

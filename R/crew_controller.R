@@ -105,9 +105,9 @@ crew_class_controller <- R6::R6Class(
     #' crew_session_terminate()
     #' }
     initialize = function(
-    router = NULL,
-    launcher = NULL,
-    auto_scale = NULL
+      router = NULL,
+      launcher = NULL,
+      auto_scale = NULL
     ) {
       self$router <- router
       self$launcher <- launcher

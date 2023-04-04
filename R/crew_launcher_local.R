@@ -73,18 +73,21 @@ crew_class_launcher_local <- R6::R6Class(
   public = list(
     #' @description Launch a local process worker which will
     #'   dial into a socket.
+    #' @details The `call` argument is R code that will run to
+    #'   initiate the worker. Together, the `launcher`, `worker`,
+    #'   and `instance` arguments are useful for
+    #'   constructing informative job names.
     #' @return A handle object to allow the termination of the worker
-    #'   later on..
+    #'   later on.
     #' @param call Text string with a namespaced call to [crew_worker()]
     #'   which will run in the worker and accept tasks.
-    #' @param name User-supplied name of the launcher.
-    #'   Each worker launched from a given launcher will have the same
-    #'   `name` argument. Together with `token`, `name` is useful
-    #'   for constructing informative worker labels.
-    #' @param token Character of length 1 that uniquely identifies the
-    #'   instance of the worker process. Useful for constructing
-    #'   informative worker labels.
-    launch_worker = function(call, name, token) {
+    #' @param launcher Character of length 1, name of the launcher.
+    #' @param worker Positive integer of length 1, index of the worker.
+    #'   This worker index remains the same even when the current instance
+    #'   of the worker exits and a new instance launches.
+    #' @param instance Character of length 1 to uniquely identify
+    #'   the current instance of the worker.
+    launch_worker = function(call, launcher, worker, instance) {
       callr::r_bg(
         func = function(call) eval(parse(text = call)),
         args = list(call = call)
@@ -96,11 +99,6 @@ crew_class_launcher_local <- R6::R6Class(
     #'   returned by `launch_worker()`.
     terminate_worker = function(handle) {
       handle$kill()
-      crew_wait(
-        ~!handle$is_alive(),
-        seconds_interval = self$seconds_interval,
-        seconds_timeout = self$seconds_timeout
-      )
       invisible()
     }
   )

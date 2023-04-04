@@ -3,10 +3,6 @@ reference:
 - title: Help
   contents:
   - '`crew-package`'
-- title: Session
-  contents:
-  - '`crew_session_start`'
-  - '`crew_session_terminate`'
 - title: Controllers
   contents:
   - '`crew_controller_local`'

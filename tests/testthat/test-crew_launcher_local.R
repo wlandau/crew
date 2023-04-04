@@ -1,28 +1,21 @@
 crew_test("crew_launcher_local() can run a task on a worker", {
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router(
-    workers = 4L
-  )
+  router <- crew_router(workers = 4L)
   launcher <- crew_launcher_local(seconds_idle = 360)
-  crew_session_start()
   on.exit({
-    crew_session_terminate()
     router$terminate()
     launcher$terminate()
     crew_test_sleep()
   })
   expect_silent(launcher$validate())
   router$listen()
-  launcher$populate(sockets = router$daemons$worker_socket)
+  launcher$populate(sockets = router$sockets())
   expect_equal(nrow(launcher$workers), 4L)
-  expect_s3_class(launcher$workers$listener[[2L]], "crew_null")
   expect_s3_class(launcher$workers$handle[[2L]], "crew_null")
   socket <- launcher$workers$socket[2L]
-  expect_equal(length(launcher$inactive()), 4L)
   expect_equal(launcher$workers$launches, rep(0L, 4L))
-  expect_true(is_crew_null(launcher$workers$listener[[2]]))
-  launcher$launch(sockets = socket)
+  launcher$launch(indexes = 2L)
   expect_s3_class(launcher$workers$handle[[2L]], "r_process")
   expect_silent(launcher$validate())
   crew::crew_wait(
@@ -91,8 +84,6 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   skip_on_cran()
   skip_on_os("windows")
   launcher <- crew_launcher_local(seconds_idle = 360)
-  crew_session_start()
-  on.exit(crew_session_terminate())
   expect_silent(launcher$launch(sockets = character(0)))
 })
 
@@ -103,9 +94,7 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
     workers = 1L
   )
   launcher <- crew_launcher_local(tasks_max = 1L, seconds_idle = 360)
-  crew_session_start()
   on.exit({
-    crew_session_terminate()
     router$terminate()
     launcher$terminate()
     crew_test_sleep()
@@ -166,9 +155,7 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   skip_on_os("windows")
   router <- crew_router(workers = 1L)
   launcher <- crew_launcher_local(tasks_max = 1L, seconds_idle = 360)
-  crew_session_start()
   on.exit({
-    crew_session_terminate()
     router$terminate()
     launcher$terminate()
     crew_test_sleep()
@@ -235,9 +222,7 @@ crew_test("worker that immediately times out is still discovered", {
     seconds_launch = 360,
     seconds_idle = 0.1
   )
-  crew_session_start()
   on.exit({
-    crew_session_terminate()
     router$terminate()
     launcher$terminate()
     crew_test_sleep()
@@ -274,9 +259,7 @@ crew_test("launcher clean()", {
     seconds_launch = 360,
     seconds_idle = 360
   )
-  crew_session_start()
   on.exit({
-    crew_session_terminate()
     launcher$terminate()
     router$terminate()
     crew_test_sleep()

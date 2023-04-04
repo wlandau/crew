@@ -61,6 +61,7 @@ Other routers:
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
 \item \href{#method-crew_class_router-listening}{\code{crew_class_router$listening()}}
 \item \href{#method-crew_class_router-listen}{\code{crew_class_router$listen()}}
+\item \href{#method-crew_class_router-sockets}{\code{crew_class_router$sockets()}}
 \item \href{#method-crew_class_router-poll}{\code{crew_class_router$poll()}}
 \item \href{#method-crew_class_router-terminate}{\code{crew_class_router$terminate()}}
 }
@@ -161,6 +162,19 @@ Start listening for workers on the available sockets.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-sockets"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-sockets}{}}}
+\subsection{Method \code{sockets()}}{
+Get the current socket addresses.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$sockets()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A character vector of socket addresses.
 }
 }
 \if{html}{\out{<hr>}}

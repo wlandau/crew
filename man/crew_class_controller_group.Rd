@@ -248,8 +248,8 @@ Push a task to the head of the task list.
   packages = character(0),
   library = NULL,
   seconds_timeout = NULL,
-  name = NULL,
   scale = TRUE,
+  name = NULL,
   controller = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -292,13 +292,13 @@ argument of \code{require()}.}
 \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
-\item{\code{name}}{Optional name of the task. Replaced with a random name
-if \code{NULL} or in conflict with an existing name in the task list.}
-
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
 demand. If \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high.}
+
+\item{\code{name}}{Optional name of the task. Replaced with a random name
+if \code{NULL} or in conflict with an existing name in the task list.}
 
 \item{\code{controller}}{Character of length 1,
 name of the controller to submit the task.

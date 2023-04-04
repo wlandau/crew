@@ -245,14 +245,14 @@ crew_class_controller <- R6::R6Class(
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
-    #' @param name Optional name of the task. Replaced with a random name
-    #'   if `NULL` or in conflict with an existing name in the task list.
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high.
+    #' @param name Optional name of the task. Replaced with a random name
+    #'   if `NULL` or in conflict with an existing name in the task list.
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     push = function(

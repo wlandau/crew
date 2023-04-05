@@ -166,7 +166,7 @@ crew_class_controller <- R6::R6Class(
       if (poll) self$router$poll()
       daemons <- self$router$daemons
       launching <- self$launcher$launching()
-      which(which_inactive(daemons = daemons, launching = launching))
+      which(is_inactive(daemons = daemons, launching = launching))
     },
     #' @description Get the indexes of the lost workers.
     #' @details A worker is lost if it was supposed to launch,
@@ -179,7 +179,7 @@ crew_class_controller <- R6::R6Class(
       if (poll) self$router$poll()
       daemons <- self$router$daemons
       launching <- self$launcher$launching()
-      which(which_lost(daemons = daemons, launching = launching))
+      which(is_lost(daemons = daemons, launching = launching))
     },
     #' @description Terminate lost workers.
     #' @return `NULL` (invisibly).
@@ -567,13 +567,13 @@ controller_n_new_workers <- function(demand, auto_scale, max) {
   min(out, max)
 }
 
-which_inactive <- function(daemons, launching) {
+is_inactive <- function(daemons, launching) {
   connected <- daemons$worker_connected
   discovered <- daemons$worker_instances > 0L
   (!connected) & (discovered | (!launching))
 }
 
-which_lost <- function(daemons, launching) {
+is_lost <- function(daemons, launching) {
   not_discovered <- daemons$worker_instances < 1L
   not_discovered & (!launching)
 }

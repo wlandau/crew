@@ -70,7 +70,8 @@ Every `launch_worker()` method must accept arguments `call`, `launcher`, `worker
 To see what the `call` object looks like, create a new launcher and run the `call()` method.
 
 ```{r}
-launcher <- crew::crew_launcher_local()
+library(crew)
+launcher <- crew_launcher_local()
 launcher$call(
   socket = "ws://127.0.0.1:5000/3/aa9c59ea",
   launcher = "my_launcher",
@@ -150,16 +151,11 @@ Before you begin testing, please begin monitoring local processes and remote job
 
 When you are ready to begin testing, try out the example in the [README](https://wlandau.github.io/crew/index.html#usage), but use your your custom controller helper instead of [`crew_controller_local()`](https://wlandau.github.io/crew/reference/crew_controller_local.html). 
 
-Next, start a new `crew` session.
+
+First, create and start a controller. You may wish to monitor local processes on your computer to make sure the `mirai` dispatcher starts.
 
 ```{r}
 library(crew)
-crew_session_start()
-```
-
-Then, create and start a controller. You may wish to monitor local processes on your computer to make sure the `mirai` dispatcher starts.
-
-```{r}
 controller <- crew_controller_custom(workers = 2)
 controller$start()
 ```
@@ -196,10 +192,10 @@ If you did not set any timeouts or task limits, the worker that ran the task sho
 ```{r}
 controller$summary(columns = starts_with("worker"))
 #> # A tibble: 2 × 5
-#>   worker_socket         worker_connected worker_busy worker_launches worker_instances
-#>   <chr>                 <lgl>            <lgl>                 <int>            <int>
-#> 1 ws://10.0.0.9:58805/1 TRUE             FALSE                     1                1
-#> 2 ws://10.0.0.9:58805/2 FALSE            FALSE                     0                0
+#>   worker_connected worker_busy worker_launches worker_instances worker_socket                      
+#>   <lgl>            <lgl>                 <int>            <int> <chr>                              
+#> 1 TRUE             FALSE                     1                1 ws://10.0.0.9:49612/1/bbc1a2241dd8…
+#> 2 FALSE            FALSE                     0                0 ws://10.0.0.9:49612/2/c488c874a07e…
 ```
 
 When you are done, terminate the controller. This terminates the `mirai` dispatcher process and the `crew` workers.
@@ -216,7 +212,6 @@ If the informal testing succeeded, we recommend you scale up testing to more amb
 
 ```{r}
 library(crew)
-crew_session_start()
 controller <- crew_controller_custom(
   seconds_idle = 2L,
   workers = 2L

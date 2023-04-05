@@ -26,7 +26,6 @@ crew_test("crew_controller_local()", {
         "tasks_assigned",
         "tasks_complete",
         "worker_connected",
-        "worker_busy",
         "worker_launches",
         "worker_instances",
         "worker_socket"

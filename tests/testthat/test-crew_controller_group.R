@@ -57,7 +57,6 @@ crew_test("crew_controller_group()", {
         "controller",
         "worker_socket",
         "worker_connected",
-        "worker_busy",
         "worker_launches",
         "worker_instances",
         "tasks_assigned",

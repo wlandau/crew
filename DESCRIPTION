@@ -37,8 +37,8 @@ Depends:
 Imports:
   callr,
   getip,
-  mirai (>= 0.8.2.9002),
-  nanonext (>= 0.8.1.9005),
+  mirai (>= 0.8.2.9004),
+  nanonext (>= 0.8.1.9006),
   ps,
   R6,
   rlang,

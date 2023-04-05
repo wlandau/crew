@@ -192,10 +192,10 @@ If you did not set any timeouts or task limits, the worker that ran the task sho
 ```{r}
 controller$summary(columns = starts_with("worker"))
 #> # A tibble: 2 × 5
-#>   worker_connected worker_busy worker_launches worker_instances worker_socket                      
-#>   <lgl>            <lgl>                 <int>            <int> <chr>                              
-#> 1 TRUE             FALSE                     1                1 ws://10.0.0.9:49612/1/bbc1a2241dd8…
-#> 2 FALSE            FALSE                     0                0 ws://10.0.0.9:49612/2/c488c874a07e…
+#>   worker_connected worker_launches worker_instances worker_socket                      
+#>   <lgl>                      <int>            <int> <chr>                              
+#> 1 TRUE                           1                1 ws://10.0.0.9:49612/1/bbc1a2241dd8…
+#> 2 FALSE                          0                0 ws://10.0.0.9:49612/2/c488c874a07e…
 ```
 
 When you are done, terminate the controller. This terminates the `mirai` dispatcher process and the `crew` workers.

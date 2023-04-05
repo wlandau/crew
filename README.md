@@ -97,7 +97,7 @@ constraints of the `auto_scale` and `workers` arguments of
 controller$push(name = "get worker process ID", command = ps::ps_pid())
 ```
 
-You can retieve the results of a completed task, if available, with
+You can retrieve the results of a completed task, if available, with
 `pop()`. Like `push()`, `pop()` also tries to launch workers for pending
 tasks that need them. The return value is `NULL` if no new tasks are
 complete.

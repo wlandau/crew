@@ -468,10 +468,6 @@ popped tasks.
 to the websocket, \code{FALSE} if not connected, or \code{NA}
 if the status cannot be determined because the \code{mirai}
 client is not running.
-\item \code{worker_busy}: \code{TRUE} if a worker is currently busy running a
-task, \code{FALSE} if not busy, or \code{NA}
-if the status cannot be determined because the \code{mirai}
-client is not running.
 \item \code{worker_launches}: number of attempts to launch a worker
 at the websocket since the controller started. If
 the number of launch attempts gets much higher than

@@ -74,7 +74,7 @@ Use the `push()` method to submit a task. When you do, `crew` automatically scal
 controller$push(name = "get worker process ID", command = ps::ps_pid())
 ```
 
-You can retieve the results of a completed task, if available, with `pop()`. Like `push()`, `pop()` also tries to launch workers for pending tasks that need them. The return value is `NULL` if no new tasks are complete.
+You can retrieve the results of a completed task, if available, with `pop()`. Like `push()`, `pop()` also tries to launch workers for pending tasks that need them. The return value is `NULL` if no new tasks are complete.
 
 ```{r}
 controller$pop()

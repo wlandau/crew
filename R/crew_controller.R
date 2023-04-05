@@ -452,10 +452,6 @@ crew_class_controller <- R6::R6Class(
     #'     to the websocket, `FALSE` if not connected, or `NA`
     #'     if the status cannot be determined because the `mirai`
     #'     client is not running.
-    #'   * `worker_busy`: `TRUE` if a worker is currently busy running a
-    #'     task, `FALSE` if not busy, or `NA`
-    #'     if the status cannot be determined because the `mirai`
-    #'     client is not running.
     #'   * `worker_launches`: number of attempts to launch a worker
     #'     at the websocket since the controller started. If
     #'     the number of launch attempts gets much higher than
@@ -497,7 +493,6 @@ crew_class_controller <- R6::R6Class(
         tasks_assigned = router_log$tasks_assigned,
         tasks_complete = router_log$tasks_complete,
         worker_connected = router_log$worker_connected,
-        worker_busy = router_log$worker_busy,
         worker_launches = workers$launches,
         worker_instances = router_log$worker_instances,
         worker_socket = router_log$worker_socket
@@ -543,12 +538,12 @@ controller_n_new_workers <- function(demand, auto_scale, max) {
 }
 
 is_inactive <- function(daemons, launching) {
-  connected <- as.logical(daemons[, "status_online"] > 0L)
-  discovered <- as.logical(daemons[, "instance #"] > 0L)
+  connected <- as.logical(daemons[, "online"] > 0L)
+  discovered <- as.logical(daemons[, "instance"] > 0L)
   (!connected) & (discovered | (!launching))
 }
 
 is_lost <- function(daemons, launching) {
-  not_discovered <- as.logical(daemons[, "instance #"] < 1L)
+  not_discovered <- as.logical(daemons[, "instance"] < 1L)
   not_discovered & (!launching)
 }

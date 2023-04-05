@@ -26,7 +26,6 @@ crew_test("crew_router() works", {
         "tasks_assigned",
         "tasks_complete",
         "worker_connected",
-        "worker_busy",
         "worker_instances",
         "worker_socket"
       )

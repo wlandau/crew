@@ -244,11 +244,10 @@ crew_class_router <- R6::R6Class(
       }
       sockets <- as.character(rownames(daemons))
       tibble::tibble(
-        tasks_assigned = as.integer(daemons[, "tasks_assigned"]),
-        tasks_complete = as.integer(daemons[, "tasks_complete"]),
-        worker_connected = as.logical(daemons[, "status_online"] > 0L),
-        worker_busy = as.logical(daemons[, "status_busy"] > 0L),
-        worker_instances = as.integer(daemons[, "instance #"]),
+        tasks_assigned = as.integer(daemons[, "assigned"]),
+        tasks_complete = as.integer(daemons[, "complete"]),
+        worker_connected = as.logical(daemons[, "online"] > 0L),
+        worker_instances = as.integer(daemons[, "instance"]),
         worker_socket = sockets
       )
     },

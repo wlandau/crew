@@ -2,7 +2,7 @@ system2_launcher_class <- R6::R6Class(
   classname = "system2_launcher_class",
   inherit = crew::crew_class_launcher,
   public = list(
-    launch_worker = function(call, name, token) {
+    launch_worker = function(call, launcher, worker, instance) {
       system2(
         command = file.path(R.home("bin"), "R"),
         args = c("-e", shQuote(call)),
@@ -61,7 +61,6 @@ crew_controller_system2 <- function(
 }
 
 library(crew)
-crew_session_start()
 controller <- crew_controller_system2(
   seconds_idle = 2L,
   workers = 2L
@@ -103,12 +102,11 @@ while (!is.null(out <- controller$pop(scale = FALSE))) {
 # Check the results
 all(sort(unlist(results$result)) == seq_len(200L))
 #> [1] TRUE
-length(unique(results$socket_session))
+length(unique(results$instance))
 #> [1] 4
 # View worker and task summaries.
 View(controller$summary())
-# Terminate the controller and session.
+# Terminate the controller.
 controller$terminate()
-crew_session_terminate()
 # Now outside crew, verify that the mirai dispatcher
 # and crew workers successfully terminated.

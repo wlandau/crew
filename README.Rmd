@@ -57,34 +57,31 @@ The `start()` method starts a local [`mirai`](https://github.com/shikokuchuo/mir
 controller$start()
 ```
 
-The `summary()` method shows the activity of workers and tasks that connect to these websockets.
+The `summary()` method shows metadata on workers and tasks. Use the `columns` argument to select a subset of columns in the output. The following table has one row per worker, and each column is a summary metric on the popped tasks (tasks which completed and were retreived with `pop()`).
 
 ```{r}
-controller$summary(columns = starts_with("worker_"))
-#> # A tibble: 2 × 5
-#>   worker_socket         worker_connected worker_busy worker_launches worker_instances
-#>   <chr>                 <lgl>            <lgl>                 <int>            <int>
-#> 1 ws://10.0.0.9:64996/1 FALSE            FALSE                     0                0
-#> 2 ws://10.0.0.9:64996/2 FALSE            FALSE                     0                0
+controller$summary(columns = starts_with("popped_"))
+#> # A tibble: 2 × 4
+#>   popped_tasks popped_seconds popped_errors popped_warnings
+#>          <int>          <dbl>         <int>           <int>
+#> 1            0              0             0               0
+#> 2            0              0             0               0
 ```
 
 Use the `push()` method to submit a task. When you do, `crew` automatically scales up the number of workers to meet demand, within the constraints of the `auto_scale` and `workers` arguments of `crew_controller_local()`.
 
 ```{r}
-controller$push(
-  name = "get worker process ID",
-  command = ps::ps_pid()
-)
+controller$push(name = "get worker process ID", command = ps::ps_pid())
 ```
 
-You can try to retrieve a task with `pop()`. Like `push()`, `pop()` tries to launch workers for pending tasks that need them. The return value is `NULL` if no new tasks are complete.
+You can retieve the results of a completed task, if available, with `pop()`. Like `push()`, `pop()` also tries to launch workers for pending tasks that need them. The return value is `NULL` if no new tasks are complete.
 
 ```{r}
 controller$pop()
 #> NULL
 ```
 
-If you expect a result but see `NULL`, then `mirai` may not have assigned the task to a worker yet. This can happen if all workers self-terminate early according to the `tasks_max` and `seconds_idle` arguments of `crew_controller_local()`. Unless you configured the workers to run indefinitely, the controller will need ongoing attention to work through the backlog of tasks. To promptly re-scale workers to meet demand, you can manually loop over calls to `pop()`, or you can call `wait()`. The `wait()` method blocks the R session, repeatedly scales workers, and collects completed tasks.
+If you expect a result but see `NULL`, then `mirai` may not have assigned the task to a worker yet. This can happen if all workers self-terminate early according to the `tasks_max` and `seconds_idle` arguments of `crew_controller_local()`. Unless you configured the workers to run indefinitely, the controller will need ongoing attention to work through the backlog of tasks. To promptly re-scale workers to meet demand, you can manually repeat calls to `pop()`, or you can call `wait()`. The `wait()` method blocks the R session, repeatedly scales workers, and collects completed tasks.
 
 ```{r}
 controller$wait(mode = "all")
@@ -100,11 +97,11 @@ The result is a [monad](https://en.wikipedia.org/wiki/Monad_(functional_programm
 
 ```{r}
 out
-#> # A tibble: 1 × 7
-#>   name                  command      result seconds error traceback warni…¹
-#>   <chr>                 <chr>        <list>   <dbl> <chr> <chr>     <chr>
-#> 1 get worker process ID ps::ps_pid() <int>        0 NA    NA        NA
-#> # … with abbreviated variable name ¹ warnings
+#> # A tibble: 1 × 11
+#>   name         command result seconds   seed error trace…¹ warni…² launc…³ worker insta…⁴
+#>   <chr>        <chr>   <list>   <dbl>  <int> <chr> <chr>   <chr>   <chr>    <int> <chr>  
+#> 1 get worker … ps::ps… <int>        0 1.56e8 NA    NA      NA      79e71c…      1 7686b2…
+#> # … with abbreviated variable names ¹​traceback, ²​warnings, ³​launcher, ⁴​instance
 ```
 
 The return value of the command is available in the `result` column. In our case, it is the process ID of the parallel worker that ran it, as reported by `ps::ps_pid()`.
@@ -133,7 +130,7 @@ controller$summary(columns = starts_with("tasks"))
 ```
 
 ```{r}
-> controller$summary(columns = starts_with("popped"))
+controller$summary(columns = starts_with("popped"))
 #> # A tibble: 2 × 4
 #>   popped_tasks popped_seconds popped_errors popped_warnings
 #>          <int>          <dbl>         <int>           <int>

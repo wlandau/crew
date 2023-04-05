@@ -9,7 +9,6 @@ vignette: >
 
 ```{r setup, include = FALSE}
 set.seed(0)
-library(crew)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -23,6 +22,7 @@ Each controller object only supports only one type of worker configuration which
 We demonstrate with a controller of fully persistent workers which always stay running and a controller of semi-persistent workers which terminate after completing four tasks. We create controller objects with names.
 
 ```{r}
+library(crew)
 persistent <- crew_controller_local(name = "persistent")
 transient <- crew_controller_local(name = "semi-persistent", tasks_max = 4L)
 ```
@@ -47,15 +47,16 @@ You can choose which worker pool to receive tasks.
 group$push(name = "my task", command = sqrt(4), controller = "semi-persistent")
 ```
 
-The controller group also supports global methods for `wait()`, `pop()`, and `terminate()`. These methods operate on all controllers at once by default, but the `controllers` argument allows you to select a subset of controllers to act on.
+The controller group also supports global methods for `wait()`, `pop()`, and `terminate()`. These methods operate on all controllers at once by default, but the `controllers` argument allows you to select a subset of controllers to act on. Below in `pop()` the `launcher` column of the output indicates which controller ran the task.
 
 ```{r}
 group$wait(controllers = "semi-persistent")
 group$pop()
-#> # A tibble: 1 × 7
-#>   name    command result    seconds error traceback warnings
-#>   <chr>   <chr>   <list>      <dbl> <chr> <chr>     <chr>
-#> 1 my task sqrt(4) <dbl [1]>       0 NA    NA        NA
+#> # A tibble: 1 × 11
+#>   name    command result    seconds      seed error trace…¹ warni…² launc…³ worker insta…⁴
+#>   <chr>   <chr>   <list>      <dbl>     <int> <chr> <chr>   <chr>   <chr>    <int> <chr>  
+#> 1 my task sqrt(4) <dbl [1]> 0.00100 630014969 NA    NA      NA      semi-p…      1 67c3fd…
+#> # … with abbreviated variable names ¹​traceback, ²​warnings, ³​launcher, ⁴​instance
 ```
 
 The controller group has a `summary()` method which aggregates all the information from the selected controllers.

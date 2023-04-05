@@ -90,3 +90,11 @@ crew_test("launcher start()", {
   expect_equal(workers$start, c(NA_real_, NA_real_))
   expect_equal(workers$handle, list(crew_null, crew_null))
 })
+
+crew_test("launcher launching()", {
+  skip_on_cran()
+  launcher <- crew_class_launcher$new(seconds_launch = 60)
+  launcher$start(workers = 3L)
+  launcher$workers$start <- c(NA_real_, -Inf, Inf)
+  expect_equal(launcher$launching(), c(FALSE, FALSE, TRUE))
+})

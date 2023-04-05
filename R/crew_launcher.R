@@ -112,12 +112,7 @@ crew_class_launcher <- R6::R6Class(
   portable = TRUE,
   public = list(
     #' @field workers Data frame of worker information.
-    workers = tibble::tibble(
-      handle = list(),
-      socket = character(0L),
-      start = numeric(0L),
-      launches = integer(0L)
-    ),
+    workers = NULL,
     #' @field name Name of the launcher.
     name = NULL,
     #' @field seconds_launch See [crew_launcher()].
@@ -206,9 +201,11 @@ crew_class_launcher <- R6::R6Class(
         true(self[[field]], is.numeric(.), . >= 0, length(.) == 1L, !anyNA(.))
       }
       true(self$cleanup, isTRUE(.) || isFALSE(.))
-      true(self$workers, is.data.frame(.))
-      cols <- c("handle", "socket", "start", "launches")
-      true(identical(colnames(self$workers), cols))
+      if (!is.null(self$workers)) {
+        true(self$workers, is.data.frame(.))
+        cols <- c("handle", "socket", "start", "launches")
+        true(identical(colnames(self$workers), cols))
+      }
       invisible()
     },
     #' @description List of arguments for `mirai::server()`.
@@ -271,12 +268,14 @@ crew_class_launcher <- R6::R6Class(
     #' @param workers Positive integer of length 1,
     #'   number of workers to allow.
     start = function(workers = 1L) {
-      self$workers <- tibble::tibble(
-        handle = replicate(workers, crew_null, simplify = FALSE),
-        socket = rep(NA_character_, workers),
-        start = rep(NA_real_, workers),
-        launches = rep(0L, workers)
-      )
+      if (is.null(self$workers)) {
+        self$workers <- tibble::tibble(
+          handle = replicate(workers, crew_null, simplify = FALSE),
+          socket = rep(NA_character_, workers),
+          start = rep(NA_real_, workers),
+          launches = rep(0L, workers)
+        )
+      }
       invisible()
     },
     #' @description Launch one or more workers.

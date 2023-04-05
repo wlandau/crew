@@ -26,7 +26,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   crew::crew_wait(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons
-      status <- unname(daemons[, "status_online", drop = TRUE])[2L]
+      status <- unname(daemons[, "online", drop = TRUE])[2L]
       length(status) == 1L && status > 0L
     },
     seconds_interval = 0.001,
@@ -104,7 +104,7 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   crew::crew_wait(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons
-      status <- unname(daemons[, "status_online", drop = TRUE])
+      status <- unname(daemons[, "online", drop = TRUE])
       length(status) != 1L || status < 1L
     },
     seconds_interval = 0.001,
@@ -129,7 +129,7 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   crew::crew_wait(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons
-      status <- unname(daemons[, "status_online", drop = TRUE])
+      status <- unname(daemons[, "online", drop = TRUE])
       length(status) == 1L && status > 0L
     },
     seconds_interval = 0.001,
@@ -147,7 +147,7 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   crew::crew_wait(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons
-      status <- unname(daemons[, "status_online", drop = TRUE])
+      status <- unname(daemons[, "online", drop = TRUE])
       length(status) != 1L || status < 1L
     },
     seconds_interval = 0.001,

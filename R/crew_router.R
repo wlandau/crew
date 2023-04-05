@@ -204,7 +204,7 @@ crew_class_router <- R6::R6Class(
     #' @return Character of length 1, new websocket path of the worker.
     route = function(index) {
       rotations <- self$daemons$worker_rotations[index]
-      self$daemons$worker_rotations[index] <- rotations + 1L 
+      self$daemons$worker_rotations[index] <- rotations + 1L
       if_any(
         rotations > -1L,
         mirai::saisei(i = index, .compute = self$name),

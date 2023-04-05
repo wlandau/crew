@@ -48,16 +48,6 @@ details.
 
 # Usage
 
-First, start a `crew` session. The session reserves a TCP port to
-monitor the presence and absence of parallel workers. Call
-`crew_session_start()` to start the session. Later on, when you are done
-using `crew`, call `crew_session_terminate()` to release the port.
-
-``` r
-library(crew)
-crew_session_start()
-```
-
 First, create a controller object. Thanks to the powerful features in
 [`mirai`](https://github.com/shikokuchuo/mirai),
 `crew_controller_local()` allows several ways to customize the way
@@ -66,6 +56,7 @@ example, arguments `tasks_max` and `seconds_idle` allow for a smooth
 continuum between fully persistent workers and fully transient workers.
 
 ``` r
+library(crew)
 controller <- crew_controller_local(
   workers = 2,
   tasks_max = 3,
@@ -189,12 +180,12 @@ controller$summary(columns = starts_with("tasks"))
 #> 2            0              0             0               0
 ```
 
-When you are done, terminate the controller and the `crew` session to
-clean up the resources.
+When you are done, terminate the controller to close any workers still
+running, close the [`mirai`](https://github.com/shikokuchuo/mirai)
+dispatcher process, and free the TCP port.
 
 ``` r
 controller$terminate()
-crew_session_terminate()
 ```
 
 # Risks
@@ -213,12 +204,10 @@ your computing environment and make sure your network is secure.
 
 ### Ports
 
-`crew` may use more than one TCP port at a time. The number of ports
-used is the number of running controllers, plus one extra port that
-`crew_session_start()` reserves for checking the status of workers. TCP
-ports range from 0 to 65535, and only around 16000 of these ports are
-considered ephemeral or dynamic, so please be careful not to run too
-many controllers if you are running R on a machine you share with other
+`crew` uses one TCP port per controller. TCP ports range from 0 to
+65535, and only around 16000 of these ports are considered ephemeral or
+dynamic, so please be careful not to run too many controllers
+simultaneously if you are running R on a machine you share with other
 people (such as the login node of a computing cluster). If you are
 running a [controller
 group](https://wlandau.github.io/crew/articles/controller_groups.html)

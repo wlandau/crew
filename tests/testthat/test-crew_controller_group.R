@@ -21,7 +21,6 @@ crew_test("crew_controller_group() method signature compatibility", {
 crew_test("crew_controller_group()", {
   skip_on_cran()
   skip_on_os("windows")
-  crew_session_start()
   a <- crew_controller_local(
     name = "a",
     seconds_idle = 360
@@ -34,7 +33,6 @@ crew_test("crew_controller_group()", {
   expect_null(x$summary())
   on.exit({
     x$terminate()
-    crew_session_terminate()
     crew_test_sleep()
   })
   expect_silent(x$validate())
@@ -122,6 +120,7 @@ crew_test("crew_controller_group()", {
   pid_exp <- x$controllers[[1]]$launcher$workers$handle[[1]]$get_pid()
   expect_equal(pid_out, pid_exp)
   # cleanup
+  handle <- x$controllers[[2]]$launcher$workers$handle[[1]]
   x$terminate()
   for (index in seq_len(2)) {
     crew_wait(
@@ -130,7 +129,7 @@ crew_test("crew_controller_group()", {
       seconds_timeout = 5
     )
     crew_wait(
-      ~(length(x$controllers[[index]]$launcher$inactive()) == 1L),
+      ~!handle$is_alive(),
       seconds_interval = 0.001,
       seconds_timeout = 5
     )
@@ -140,10 +139,7 @@ crew_test("crew_controller_group()", {
 crew_test("crew_controller_group() select", {
   skip_on_cran()
   skip_on_os("windows")
-  crew_session_start()
-  a <- crew_controller_local(
-    name = "a"
-  )
+  a <- crew_controller_local(name = "a")
   b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
@@ -152,7 +148,6 @@ crew_test("crew_controller_group() select", {
   x <- crew_controller_group(a, b)
   on.exit({
     x$terminate()
-    crew_session_terminate()
     crew_test_sleep()
   })
   expect_false(a$router$listening())
@@ -169,7 +164,6 @@ crew_test("crew_controller_group() select", {
 crew_test("crew_controller_group() collect", {
   skip_on_cran()
   skip_on_os("windows")
-  crew_session_start()
   a <- crew_controller_local(
     name = "a"
   )
@@ -181,7 +175,6 @@ crew_test("crew_controller_group() collect", {
   x <- crew_controller_group(a, b)
   on.exit({
     x$terminate()
-    crew_session_terminate()
     crew_test_sleep()
   })
   expect_silent(x$validate())
@@ -209,7 +202,6 @@ crew_test("crew_controller_group() collect", {
 crew_test("crew_controller_group() launch method", {
   skip_on_cran()
   skip_on_os("windows")
-  crew_session_start()
   a <- crew_controller_local(
     name = "a",
     seconds_idle = 360
@@ -222,21 +214,21 @@ crew_test("crew_controller_group() launch method", {
   x <- crew_controller_group(a, b)
   on.exit({
     x$terminate()
-    crew_session_terminate()
     crew_test_sleep()
   })
   x$start()
   for (index in seq_len(2)) {
-    crew_wait(
-      ~(length(x$controllers[[index]]$launcher$inactive()) == 1L),
-      seconds_interval = 0.001,
-      seconds_timeout = 5
-    )
+    handle <- x$controllers[[index]]$launcher$workers$handle[[1L]]
+    expect_true(is_crew_null(handle))
   }
   expect_silent(x$launch(n = 1L))
+  handles <- list(
+    x$controllers[[1L]]$launcher$workers$handle[[1L]],
+    x$controllers[[2L]]$launcher$workers$handle[[1L]]
+  )
   for (index in seq_len(2)) {
     crew_wait(
-      ~(length(x$controllers[[index]]$launcher$inactive()) == 0L),
+      ~handles[[index]]$is_alive(),
       seconds_interval = 0.001,
       seconds_timeout = 5
     )
@@ -244,7 +236,7 @@ crew_test("crew_controller_group() launch method", {
   x$terminate()
   for (index in seq_len(2)) {
     crew_wait(
-      ~(length(x$controllers[[index]]$launcher$inactive()) == 1L),
+      ~!handles[[index]]$is_alive(),
       seconds_interval = 0.001,
       seconds_timeout = 5
     )
@@ -254,7 +246,6 @@ crew_test("crew_controller_group() launch method", {
 crew_test("crew_controller_group() scale method", {
   skip_on_cran()
   skip_on_os("windows")
-  crew_session_start()
   a <- crew_controller_local(
     name = "a",
     auto_scale = "one",
@@ -263,21 +254,20 @@ crew_test("crew_controller_group() scale method", {
   x <- crew_controller_group(a)
   on.exit({
     x$terminate()
-    crew_session_terminate()
     crew_test_sleep()
   })
   x$start()
-  expect_equal(length(a$launcher$inactive()), 1L)
   a$push(command = "x", scale = FALSE)
   expect_silent(x$scale())
+  handle <- a$launcher$workers$handle[[1L]]
   crew_wait(
-    fun = ~identical(length(a$launcher$inactive()), 0L),
+    fun = ~handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
   x$terminate()
   crew_wait(
-    fun = ~identical(length(a$launcher$inactive()), 1L),
+    fun = ~!handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )

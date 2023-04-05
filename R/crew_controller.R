@@ -73,6 +73,21 @@ crew_controller <- function(
 #' }
 crew_class_controller <- R6::R6Class(
   classname = "crew_class_controller",
+  private = list(
+    inactive = function() {
+      daemons <- self$router$daemons
+      launching <- self$launcher$launching()
+      which(is_inactive(daemons = daemons, launching = launching))
+    },
+    lost = function() {
+      daemons <- self$router$daemons
+      launching <- self$launcher$launching()
+      which(is_lost(daemons = daemons, launching = launching))
+    },
+    clean = function() {
+      self$launcher$terminate(indexes = private$lost())
+    }
+  ),
   public = list(
     #' @field router Router object.
     router = NULL,
@@ -147,47 +162,6 @@ crew_class_controller <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Get the indexes of the inactive workers.
-    #' @details An active worker is a worker that should be given the chance
-    #'   to run tasks. To determine if the worker is active,
-    #'   `crew` monitors seconds past launch time, and it listens
-    #'   to a special non-`mirai` NNG websocket that the worker
-    #'   is supposed to dial into on launch.
-    #'   If the worker is currently connected to the websocket,
-    #'   then it is active. Otherwise, if the worker is not connected
-    #'   and the startup window has expired, the worker is inactive.
-    #'   Otherwise, if the worker is not connected and the startup
-    #'   window has not yet expired, then the worker is active
-    #'   if it has not ever connected to a websocket.
-    #' @return Integer index vector indicating the inactive workers.
-    #' @param poll Logical of length 1, whether to poll for worker status
-    #'   beforehand.
-    inactive = function(poll = TRUE) {
-      if (poll) self$router$poll()
-      daemons <- self$router$daemons
-      launching <- self$launcher$launching()
-      which(is_inactive(daemons = daemons, launching = launching))
-    },
-    #' @description Get the indexes of the lost workers.
-    #' @details A worker is lost if it was supposed to launch,
-    #'   but it never connected to the client,
-    #'   and its startup window elapsed.
-    #' @return Character vector of worker websockets.
-    #' @param poll Logical of length 1, whether to poll for worker status
-    #'   beforehand.
-    lost = function(poll = TRUE) {
-      if (poll) self$router$poll()
-      daemons <- self$router$daemons
-      launching <- self$launcher$launching()
-      which(is_lost(daemons = daemons, launching = launching))
-    },
-    #' @description Terminate lost workers.
-    #' @return `NULL` (invisibly).
-    #' @param poll Logical of length 1, whether to poll for worker status
-    #'   beforehand.
-    clean = function(poll = TRUE) {
-      self$launcher$terminate(indexes = self$lost(poll = poll))
-    },
     #' @description Launch one or more workers.
     #' @return `NULL` (invisibly).
     #' @param n Number of workers to try to launch. The actual
@@ -203,7 +177,8 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      inactive <- utils::head(self$inactive(poll = TRUE), n = n)
+      self$router$poll()
+      inactive <- utils::head(private$inactive(), n = n)
       for (index in inactive) {
         self$launcher$launch(sockets = self$router$route(index = index))
       }
@@ -222,8 +197,9 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
-      inactive <- self$inactive(poll = TRUE)
-      self$clean(poll = FALSE)
+      self$router$poll()
+      inactive <- private$inactive()
+      private$clean()
       self$collect()
       demand <- controller_demand(
         tasks = length(self$queue),
@@ -387,8 +363,8 @@ crew_class_controller <- R6::R6Class(
         }
         # nocov end
         out$name <- task$name
-        if (!is.na(out$socket_data)) {
-          index <- which(out$socket_data == self$log$worker_socket)
+        if (!is.na(out$launcher)) {
+          index <- out$worker
           self$log$popped_tasks[index] <- self$log$popped_tasks[index] + 1L
           self$log$popped_seconds[index] <- self$log$popped_seconds[index] +
             out$seconds

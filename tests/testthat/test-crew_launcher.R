@@ -75,20 +75,18 @@ crew_test("launcher start()", {
   skip_on_cran()
   launcher <- crew_class_launcher$new()
   workers <- launcher$workers
-  expect_equal(dim(workers), c(0L, 4L))
+  expect_equal(workers, NULL)
+  launcher$start(workers = 2L)
+  workers <- launcher$workers
+  expect_equal(dim(workers), c(2L, 4L))
   expect_equal(
     colnames(workers),
     c("handle", "socket", "start", "launches")
   )
-  expect_equal(workers$handle, list())
-  expect_equal(workers$socket, character(0L))
-  expect_equal(workers$start, numeric(0L))
-  expect_equal(workers$launches, integer(0L))
-  launcher$start(workers = 2L)
-  workers <- launcher$workers
+  expect_equal(workers$handle, list(crew_null, crew_null))
   expect_equal(workers$socket, c(NA_character_, NA_character_))
   expect_equal(workers$start, c(NA_real_, NA_real_))
-  expect_equal(workers$handle, list(crew_null, crew_null))
+  expect_equal(workers$launches, rep(0L, 2L))
 })
 
 crew_test("launcher launching()", {

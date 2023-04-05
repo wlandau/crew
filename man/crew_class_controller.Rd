@@ -71,9 +71,6 @@ Other controllers:
 \item \href{#method-crew_class_controller-new}{\code{crew_class_controller$new()}}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
-\item \href{#method-crew_class_controller-inactive}{\code{crew_class_controller$inactive()}}
-\item \href{#method-crew_class_controller-lost}{\code{crew_class_controller$lost()}}
-\item \href{#method-crew_class_controller-clean}{\code{crew_class_controller$clean()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
@@ -163,89 +160,6 @@ Register the mirai client and register worker websockets
 with the launcher.
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-inactive"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-inactive}{}}}
-\subsection{Method \code{inactive()}}{
-Get the indexes of the inactive workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$inactive(poll = TRUE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{poll}}{Logical of length 1, whether to poll for worker status
-beforehand.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-An active worker is a worker that should be given the chance
-to run tasks. To determine if the worker is active,
-\code{crew} monitors seconds past launch time, and it listens
-to a special non-\code{mirai} NNG websocket that the worker
-is supposed to dial into on launch.
-If the worker is currently connected to the websocket,
-then it is active. Otherwise, if the worker is not connected
-and the startup window has expired, the worker is inactive.
-Otherwise, if the worker is not connected and the startup
-window has not yet expired, then the worker is active
-if it has not ever connected to a websocket.
-}
-
-\subsection{Returns}{
-Integer index vector indicating the inactive workers.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-lost"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-lost}{}}}
-\subsection{Method \code{lost()}}{
-Get the indexes of the lost workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$lost(poll = TRUE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{poll}}{Logical of length 1, whether to poll for worker status
-beforehand.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-A worker is lost if it was supposed to launch,
-but it never connected to the client,
-and its startup window elapsed.
-}
-
-\subsection{Returns}{
-Character vector of worker websockets.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-clean"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-clean}{}}}
-\subsection{Method \code{clean()}}{
-Terminate lost workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$clean(poll = TRUE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{poll}}{Logical of length 1, whether to poll for worker status
-beforehand.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

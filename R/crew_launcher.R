@@ -324,6 +324,9 @@ crew_class_launcher <- R6::R6Class(
     #' @param indexes Integer vector of the indexes of the workers
     #'   to terminate. If `NULL`, all current workers are terminated.
     terminate = function(indexes = NULL) {
+      if (is.null(self$workers)) {
+        return(invisible())
+      }
       indexes <- indexes %|||% seq_len(nrow(self$workers))
       for (index in indexes) {
         handle <- self$workers$handle[[index]]

@@ -1,12 +1,10 @@
 crew_test("crew_controller_local()", {
-  crew_session_start()
   x <- crew_controller_local(
     workers = 1L,
     seconds_idle = 360
   )
   on.exit({
     x$terminate()
-    crew_session_terminate()
     crew_test_sleep()
   })
   expect_silent(x$validate())
@@ -21,17 +19,17 @@ crew_test("crew_controller_local()", {
     sort(
       c(
         "controller",
-        "worker_socket",
+        "popped_tasks",
+        "popped_seconds",
+        "popped_errors",
+        "popped_warnings",
+        "tasks_assigned",
+        "tasks_complete",
         "worker_connected",
         "worker_busy",
         "worker_launches",
         "worker_instances",
-        "tasks_assigned",
-        "tasks_complete",
-        "popped_tasks",
-        "popped_seconds",
-        "popped_errors",
-        "popped_warnings"
+        "worker_socket"
       )
     )
   )
@@ -97,10 +95,11 @@ crew_test("crew_controller_local()", {
     expect_equal(out$result[[1]], nanonext::base64enc("x"))
   }
   # terminate
+  handle <- x$launcher$workers$handle[[1]]
   x$terminate()
   expect_false(x$router$listening())
   crew_wait(
-    ~identical(length(x$launcher$inactive()), 1L),
+    ~!handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5,
   )
@@ -109,13 +108,9 @@ crew_test("crew_controller_local()", {
 crew_test("crew_controller_local() substitute = FALSE", {
   skip_on_cran()
   skip_on_os("windows")
-  crew_session_start()
-  x <- crew_controller_local(
-    seconds_idle = 360
-  )
+  x <- crew_controller_local(seconds_idle = 360)
   on.exit({
     x$terminate()
-    crew_session_terminate()
     crew_test_sleep()
   })
   expect_silent(x$validate())
@@ -136,21 +131,22 @@ crew_test("crew_controller_local() substitute = FALSE", {
   expect_true(anyNA(out$error))
   expect_true(anyNA(out$warnings))
   expect_true(anyNA(out$traceback))
+  handle <- x$launcher$workers$handle[[1]]
   x$terminate()
   expect_false(x$router$listening())
-  expect_equal(length(x$launcher$inactive()), 1L)
+  crew_wait(
+    ~!handle$is_alive(),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
 })
 
 crew_test("crew_controller_local() warnings and errors", {
   skip_on_cran()
   skip_on_os("windows")
-  crew_session_start()
-  x <- crew_controller_local(
-    seconds_idle = 360
-  )
+  x <- crew_controller_local(seconds_idle = 360)
   on.exit({
     x$terminate()
-    crew_session_terminate()
     crew_test_sleep()
   })
   expect_silent(x$validate())
@@ -175,35 +171,65 @@ crew_test("crew_controller_local() warnings and errors", {
   expect_equal(out$error, "this is an error")
   expect_equal(out$warnings, "this is a warning")
   expect_false(anyNA(out$traceback))
+  handle <- x$launcher$workers$handle[[1]]
   x$terminate()
   expect_false(x$router$listening())
-  expect_equal(length(x$launcher$inactive()), 1L)
+  crew_wait(
+    ~!handle$is_alive(),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
+})
+
+crew_test("crew_controller_local() can terminate a lost worker", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(seconds_idle = 360)
+  x$start()
+  on.exit({
+    x$terminate()
+    crew_test_sleep()
+  })
+  x$launcher$workers$launches <- 1L
+  handle <- callr::r_bg(function() Sys.sleep(300))
+  crew_wait(
+    ~handle$is_alive(),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
+  x$launcher$workers$handle[[1L]] <- handle
+  expect_true(handle$is_alive())
+  x$scale()
+  crew_wait(
+    ~!handle$is_alive(),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
+  expect_false(handle$is_alive())
 })
 
 crew_test("crew_controller_local() launch method", {
   skip_on_cran()
   skip_on_os("windows")
-  crew_session_start()
-  x <- crew_controller_local(
-    seconds_idle = 360
-  )
+  x <- crew_controller_local(seconds_idle = 360)
   on.exit({
     x$terminate()
-    crew_session_terminate()
     crew_test_sleep()
   })
   x$start()
-  expect_equal(length(x$launcher$inactive()), 1L)
   x$launch(n = 1L)
+  handle <- x$launcher$workers$handle[[1]]
   crew_wait(
-    ~length(x$launcher$inactive()) == 0L,
+    ~handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
+  expect_true(handle$is_alive())
   x$terminate()
   crew_wait(
-    ~length(x$launcher$inactive()) > 0L,
+    ~!handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
+  expect_false(handle$is_alive())
 })

@@ -41,8 +41,8 @@ crew_test("controller_n_new_workers()", {
 
 crew_test("is_inactive()", {
   daemons <- cbind(
-    status_online = c(0L, 1L, 0L, 0L, 1L, 0L),
-    `instance #` = c(0L, 1L, 1L, 0L, 1L, 1L)
+    online = c(0L, 1L, 0L, 0L, 1L, 0L),
+    instance = c(0L, 1L, 1L, 0L, 1L, 1L)
   )
   launching <- rep(c(TRUE, FALSE), each = 3L)
   out <- is_inactive(daemons = daemons, launching = launching)
@@ -51,8 +51,8 @@ crew_test("is_inactive()", {
 
 crew_test("is_lost()", {
   daemons <- cbind(
-    status_online = c(0L, 1L, 0L, 0L, 1L, 0L),
-    `instance #` = c(0L, 1L, 1L, 0L, 1L, 1L)
+    online = c(0L, 1L, 0L, 0L, 1L, 0L),
+    instance = c(0L, 1L, 1L, 0L, 1L, 1L)
   )
   launching <- rep(c(TRUE, FALSE), each = 3L)
   out <- is_lost(daemons = daemons, launching = launching)

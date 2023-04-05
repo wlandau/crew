@@ -52,7 +52,7 @@ crew_test("crew_router() works", {
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons
       identical(
-        as.integer(unname(daemons[, "status_online", drop = TRUE])),
+        as.integer(unname(daemons[, "online", drop = TRUE])),
         1L
       )
     },

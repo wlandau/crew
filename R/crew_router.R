@@ -154,7 +154,7 @@ crew_class_router <- R6::R6Class(
     #'   `FALSE` otherwise.
     listening = function() {
       info <- mirai::daemons(.compute = self$name)
-      out <- mirai::daemons(.compute = self$name)$connections
+      out <- info$connections
       # TODO: when the dispatcher process becomes a C thread,
       # delete these superfluous checks on the dispatcher.
       # Begin dispatcher checks.
@@ -175,13 +175,14 @@ crew_class_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     listen = function() {
       if (isFALSE(self$listening())) {
-        mirai::daemons(
+        args <- list(
           url = sprintf("ws://%s:%s", self$host, self$port),
           n = self$workers,
           dispatcher = TRUE,
           token = TRUE,
           .compute = self$name
         )
+        do.call(what = mirai::daemons, args = args)
         crew_wait(
           fun = ~isTRUE(self$listening()),
           seconds_interval = self$seconds_interval,

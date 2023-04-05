@@ -92,27 +92,27 @@ crew_test("router websocket rotation", {
   on.exit(router$terminate())
   router$poll()
   expect_equal(router$daemons$worker_rotations, c(-1L, -1L))
-  # First rotation of socket 2.
+  # First instance of worker 2.
   old <- router$sockets()
-  new <- router$rotate(index = 2L)
+  new <- router$route(index = 2L)
   expect_equal(router$daemons$worker_rotations, c(-1L, 0L))
   router$poll()
   expect_equal(router$daemons$worker_rotations, c(-1L, 0L))
   expect_equal(old == router$sockets(), c(TRUE, TRUE))
   expect_equal(new, old[2L])
   expect_equal(new, router$sockets()[2L])
-  # Second rotation of socket 2.
+  # Second instance of worker 2.
   old <- router$sockets()
-  new <- router$rotate(index = 2L)
+  new <- router$route(index = 2L)
   expect_equal(router$daemons$worker_rotations, c(-1L, 1L))
   router$poll()
   expect_equal(router$daemons$worker_rotations, c(-1L, 1L))
   expect_equal(old == router$sockets(), c(TRUE, FALSE))
   expect_false(new == old[2L])
   expect_equal(new, router$sockets()[2L])
-  # First rotation of socket 1.
+  # First instance of worker 1.
   old <- router$sockets()
-  new <- router$rotate(index = 1L)
+  new <- router$route(index = 1L)
   expect_equal(router$daemons$worker_rotations, c(0L, 1L))
   router$poll()
   expect_equal(router$daemons$worker_rotations, c(0L, 1L))

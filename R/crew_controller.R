@@ -205,7 +205,7 @@ crew_class_controller <- R6::R6Class(
     launch = function(n = 1L, controllers = NULL) {
       inactive <- utils::head(self$inactive(poll = TRUE), n = n)
       for (index in inactive) {
-        self$launcher$launch(sockets = self$router$rotate(index = index))
+        self$launcher$launch(sockets = self$router$route(index = index))
       }
       invisible()
     },
@@ -236,7 +236,7 @@ crew_class_controller <- R6::R6Class(
       )
       inactive <- utils::head(inactive, n = n_new_workers)
       for (index in inactive) {
-        self$launcher$launch(sockets = self$router$rotate(index = index))
+        self$launcher$launch(sockets = self$router$route(index = index))
       }
       invisible()
     },

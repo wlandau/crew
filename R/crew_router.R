@@ -194,12 +194,15 @@ crew_class_router <- R6::R6Class(
     sockets = function() {
       as.character(rownames(mirai::daemons(.compute = self$name)$daemons))
     },
-    #' @description Change the websocket path of a worker.
-    #' @details The first call to `rotate()` does not actually change
-    #'   the socket because the first socket available is already usable.
+    #' @description Choose the websocket path for the next instance
+    #'   of the worker at a given index.
+    #' @details The first call to `route()` at a given index
+    #'   uses the original websocket path provided by `mirai::daemons()`.
+    #'   Subsequent calls to `route()` at the same index rotate
+    #'   the websocket path for robustness.
     #' @param index Integer of length 1, worker index.
     #' @return Character of length 1, new websocket path of the worker.
-    rotate = function(index) {
+    route = function(index) {
       rotations <- self$daemons$worker_rotations[index]
       self$daemons$worker_rotations[index] <- rotations + 1L 
       if_any(

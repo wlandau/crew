@@ -62,7 +62,7 @@ Other routers:
 \item \href{#method-crew_class_router-listening}{\code{crew_class_router$listening()}}
 \item \href{#method-crew_class_router-listen}{\code{crew_class_router$listen()}}
 \item \href{#method-crew_class_router-sockets}{\code{crew_class_router$sockets()}}
-\item \href{#method-crew_class_router-rotate}{\code{crew_class_router$rotate()}}
+\item \href{#method-crew_class_router-route}{\code{crew_class_router$route()}}
 \item \href{#method-crew_class_router-poll}{\code{crew_class_router$poll()}}
 \item \href{#method-crew_class_router-terminate}{\code{crew_class_router$terminate()}}
 }
@@ -179,12 +179,13 @@ A character vector of socket addresses.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-rotate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-rotate}{}}}
-\subsection{Method \code{rotate()}}{
-Change the websocket path of a worker.
+\if{html}{\out{<a id="method-crew_class_router-route"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-route}{}}}
+\subsection{Method \code{route()}}{
+Choose the websocket path for the next instance
+of the worker at a given index.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$rotate(index)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$route(index)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -195,8 +196,10 @@ Change the websocket path of a worker.
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-The first call to \code{rotate()} does not actually change
-the socket because the first socket available is already usable.
+The first call to \code{route()} at a given index
+uses the original websocket path provided by \code{mirai::daemons()}.
+Subsequent calls to \code{route()} at the same index rotate
+the websocket path for robustness.
 }
 
 \subsection{Returns}{

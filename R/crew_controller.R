@@ -404,11 +404,11 @@ crew_class_controller <- R6::R6Class(
         crew_wait(
           fun = ~{
             self$scale()
-            done <- length(self$results) > 0L
-            if (identical(mode, "all")) {
-              done <- done && (length(self$queue) < 1L)
-            }
-            done
+            if_any(
+              identical(mode, "all"),
+              length(self$queue) < 1L,
+              (length(self$queue) < 1L) || (length(self$results) > 0L)
+            )
           },
           seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout

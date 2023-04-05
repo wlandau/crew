@@ -295,10 +295,12 @@ crew_class_controller_group <- R6::R6Class(
             for (controller in control) {
               controller$collect()
               controller$scale()
-              done <- length(controller$results) > 0L
-              if (identical(mode, "all")) {
-                done <- done && (length(controller$queue) < 1L)
-              }
+              done <- if_any(
+                identical(mode, "all"),
+                length(controller$queue) < 1L,
+                (length(controller$queue) < 1L) ||
+                  (length(controller$results) > 0L)
+              )
               if (done) {
                 return(TRUE)
               }

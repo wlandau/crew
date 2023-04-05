@@ -51,6 +51,9 @@ Other routers:
 \item{\code{dispatcher}}{Process ID of the \code{mirai} dispatcher}
 
 \item{\code{daemons}}{Data frame of information from \code{mirai::daemons()}.}
+
+\item{\code{rotations}}{Logical vector to keep track of rotated
+worker websockets.}
 }
 \if{html}{\out{</div>}}
 }
@@ -64,6 +67,7 @@ Other routers:
 \item \href{#method-crew_class_router-sockets}{\code{crew_class_router$sockets()}}
 \item \href{#method-crew_class_router-route}{\code{crew_class_router$route()}}
 \item \href{#method-crew_class_router-poll}{\code{crew_class_router$poll()}}
+\item \href{#method-crew_class_router-log}{\code{crew_class_router$log()}}
 \item \href{#method-crew_class_router-terminate}{\code{crew_class_router$terminate()}}
 }
 }
@@ -226,6 +230,19 @@ of high-level worker-specific statistics.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-log"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-log}{}}}
+\subsection{Method \code{log()}}{
+Show an informative worker log.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$log()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A \code{tibble} with information on the workers.
 }
 }
 \if{html}{\out{<hr>}}

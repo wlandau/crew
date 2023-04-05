@@ -110,7 +110,6 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  router$terminate()
 })
 
 crew_test("crew_launcher_local() can run a task and end a worker", {
@@ -162,5 +161,4 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  router$terminate()
 })

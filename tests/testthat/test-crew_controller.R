@@ -40,22 +40,20 @@ crew_test("controller_n_new_workers()", {
 })
 
 crew_test("is_inactive()", {
-  daemons <- tibble::tibble(
-    worker_connected = c(FALSE, TRUE, FALSE),
-    worker_instances = c(0L, 1L, 1L)
+  daemons <- cbind(
+    status_online = c(0L, 1L, 0L, 0L, 1L, 0L),
+    `instance #` = c(0L, 1L, 1L, 0L, 1L, 1L)
   )
-  daemons <- rbind(daemons, daemons)
   launching <- rep(c(TRUE, FALSE), each = 3L)
   out <- is_inactive(daemons = daemons, launching = launching)
   expect_equal(out, c(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE))
 })
 
 crew_test("is_lost()", {
-  daemons <- tibble::tibble(
-    worker_connected = c(FALSE, TRUE, FALSE),
-    worker_instances = c(0L, 1L, 1L)
+  daemons <- cbind(
+    status_online = c(0L, 1L, 0L, 0L, 1L, 0L),
+    `instance #` = c(0L, 1L, 1L, 0L, 1L, 1L)
   )
-  daemons <- rbind(daemons, daemons)
   launching <- rep(c(TRUE, FALSE), each = 3L)
   out <- is_lost(daemons = daemons, launching = launching)
   expect_equal(out, c(FALSE, FALSE, FALSE, TRUE, FALSE, FALSE))

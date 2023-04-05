@@ -482,11 +482,10 @@ crew_class_controller <- R6::R6Class(
       columns = tidyselect::everything(),
       controllers = NULL
     ) {
-      self$router$poll()
-      daemons <- self$router$daemons
+      router_log <- self$router$log()
       workers <- self$launcher$workers
       log <- self$log
-      if (is.null(daemons) || is.null(workers) || is.null(log)) {
+      if (is.null(router_log) || is.null(workers) || is.null(log)) {
         return(NULL)
       }
       out <- tibble::tibble(
@@ -495,13 +494,13 @@ crew_class_controller <- R6::R6Class(
         popped_seconds = log$popped_seconds,
         popped_errors = log$popped_errors,
         popped_warnings = log$popped_warnings,
-        tasks_assigned = daemons$tasks_assigned,
-        tasks_complete = daemons$tasks_complete,
-        worker_connected = daemons$worker_connected,
-        worker_busy = daemons$worker_busy,
+        tasks_assigned = router_log$tasks_assigned,
+        tasks_complete = router_log$tasks_complete,
+        worker_connected = router_log$worker_connected,
+        worker_busy = router_log$worker_busy,
         worker_launches = workers$launches,
-        worker_instances = daemons$worker_instances,
-        worker_socket = daemons$worker_socket
+        worker_instances = router_log$worker_instances,
+        worker_socket = router_log$worker_socket
       )
       expr <- rlang::enquo(columns)
       select <- eval_tidyselect(expr = expr, choices = colnames(out))
@@ -544,12 +543,12 @@ controller_n_new_workers <- function(demand, auto_scale, max) {
 }
 
 is_inactive <- function(daemons, launching) {
-  connected <- daemons$worker_connected
-  discovered <- daemons$worker_instances > 0L
+  connected <- as.logical(daemons[, "status_online"] > 0L)
+  discovered <- as.logical(daemons[, "instance #"] > 0L)
   (!connected) & (discovered | (!launching))
 }
 
 is_lost <- function(daemons, launching) {
-  not_discovered <- daemons$worker_instances < 1L
+  not_discovered <- as.logical(daemons[, "instance #"] < 1L)
   not_discovered & (!launching)
 }

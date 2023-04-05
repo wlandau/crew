@@ -20,7 +20,7 @@ crew_test("crew_router() works", {
   expect_true(router$listening())
   true(all(dim(router$daemons) > 0L))
   expect_equal(
-    sort(colnames(router$daemons)),
+    sort(colnames(router$log())),
     sort(
       c(
         "tasks_assigned",
@@ -28,7 +28,6 @@ crew_test("crew_router() works", {
         "worker_connected",
         "worker_busy",
         "worker_instances",
-        "worker_rotations",
         "worker_socket"
       )
     )
@@ -41,8 +40,8 @@ crew_test("crew_router() works", {
   expect_true(is.character(socket) && length(socket) > 0L)
   expect_true(nzchar(socket) && !anyNA(socket))
   expect_equal(length(socket), 1L)
-  expect_false(router$daemons$worker_connected)
-  expect_false(router$daemons$worker_busy)
+  expect_false(router$log()$worker_connected)
+  expect_false(router$log()$worker_busy)
   daemons <- mirai::daemons(.compute = router$name)$daemons
   expect_equal(socket, as.character(rownames(daemons)))
   expect_equal(socket, router$sockets())
@@ -72,16 +71,15 @@ crew_test("crew_router() works", {
   expect_true(is.numeric(m$data))
   expect_true(abs(m$data - ps::ps_pid()) > 0.5)
   expect_true(router$listening())
-  router$poll()
-  expect_true(router$daemons$worker_connected)
-  expect_false(router$daemons$worker_busy)
+  expect_true(router$log()$worker_connected)
+  expect_false(router$log()$worker_busy)
   expect_silent(router$terminate())
   expect_false(router$listening())
   px$kill()
+  expect_null(router$daemons)
+  expect_null(router$log())
   expect_silent(router$poll())
-  true(all(dim(router$daemons) > 0L))
-  expect_true(is.na(router$daemons$worker_connected))
-  expect_true(is.na(router$daemons$worker_busy))
+  expect_null(router$log())
 })
 
 crew_test("router websocket rotation", {
@@ -91,31 +89,31 @@ crew_test("router websocket rotation", {
   router$listen()
   on.exit(router$terminate())
   router$poll()
-  expect_equal(router$daemons$worker_rotations, c(-1L, -1L))
+  expect_equal(router$rotations, c(-1L, -1L))
   # First instance of worker 2.
   old <- router$sockets()
   new <- router$route(index = 2L)
-  expect_equal(router$daemons$worker_rotations, c(-1L, 0L))
+  expect_equal(router$rotations, c(-1L, 0L))
   router$poll()
-  expect_equal(router$daemons$worker_rotations, c(-1L, 0L))
+  expect_equal(router$rotations, c(-1L, 0L))
   expect_equal(old == router$sockets(), c(TRUE, TRUE))
   expect_equal(new, old[2L])
   expect_equal(new, router$sockets()[2L])
   # Second instance of worker 2.
   old <- router$sockets()
   new <- router$route(index = 2L)
-  expect_equal(router$daemons$worker_rotations, c(-1L, 1L))
+  expect_equal(router$rotations, c(-1L, 1L))
   router$poll()
-  expect_equal(router$daemons$worker_rotations, c(-1L, 1L))
+  expect_equal(router$rotations, c(-1L, 1L))
   expect_equal(old == router$sockets(), c(TRUE, FALSE))
   expect_false(new == old[2L])
   expect_equal(new, router$sockets()[2L])
   # First instance of worker 1.
   old <- router$sockets()
   new <- router$route(index = 1L)
-  expect_equal(router$daemons$worker_rotations, c(0L, 1L))
+  expect_equal(router$rotations, c(0L, 1L))
   router$poll()
-  expect_equal(router$daemons$worker_rotations, c(0L, 1L))
+  expect_equal(router$rotations, c(0L, 1L))
   expect_equal(new, old[1L])
   expect_equal(new, router$sockets()[1L])
 })

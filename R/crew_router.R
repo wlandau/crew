@@ -79,6 +79,9 @@ crew_class_router <- R6::R6Class(
     dispatcher = NULL,
     #' @field daemons Data frame of information from `mirai::daemons()`.
     daemons = NULL,
+    #' @field rotations Logical vector to keep track of rotated
+    #'   worker websockets.
+    rotations = NULL,
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
     #' @param name Argument passed from [crew_router()].
@@ -186,6 +189,11 @@ crew_class_router <- R6::R6Class(
           message = "mirai client cannot connect."
         )
         self$poll()
+        self$dispatcher <- attr(
+          dimnames(self$daemons)[[1]],
+          "dispatcher_pid"
+        )
+        self$rotations <- rep(-1L, nrow(self$daemons))
       }
       invisible()
     },
@@ -203,12 +211,12 @@ crew_class_router <- R6::R6Class(
     #' @param index Integer of length 1, worker index.
     #' @return Character of length 1, new websocket path of the worker.
     route = function(index) {
-      rotations <- self$daemons$worker_rotations[index]
-      self$daemons$worker_rotations[index] <- rotations + 1L
+      rotations <- self$rotations[index]
+      self$rotations[index] <- rotations + 1L
       if_any(
         rotations > -1L,
         mirai::saisei(i = index, .compute = self$name),
-        self$daemons$worker_socket[index]
+        rownames(self$daemons)[index]
       )
     },
     #' @description Update the `daemons` field with
@@ -220,31 +228,29 @@ crew_class_router <- R6::R6Class(
     #'   of high-level worker-specific statistics.
     #' @return `NULL` (invisibly).
     poll = function() {
-      daemons <- mirai::daemons(.compute = self$name)$daemons
-      if (is.null(dim(daemons))) {
-        if (!is.null(dim(self$daemons))) {
-          self$daemons$worker_connected <- rep(NA, nrow(self$daemons))
-          self$daemons$worker_busy <- rep(NA, nrow(self$daemons))
-        }
-        return(invisible())
+      out <- mirai::daemons(.compute = self$name)$daemons
+      if (is.matrix(out)) {
+        self$daemons <- out
       }
-      self$dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
+      invisible()
+    },
+    #' @description Show an informative worker log.
+    #' @return A `tibble` with information on the workers.
+    log = function() {
+      self$poll()
+      daemons <- self$daemons
+      if (is.null(daemons)) {
+        return(NULL)
+      }
       sockets <- as.character(rownames(daemons))
-      worker_rotations <- self$daemons$worker_rotations
-      self$daemons <- tibble::tibble(
-        tasks_assigned = as.integer(daemons[, "tasks_assigned", drop = TRUE]),
-        tasks_complete = as.integer(daemons[, "tasks_complete", drop = TRUE]),
-        worker_connected = as.logical(
-          daemons[, "status_online", drop = TRUE] > 0L
-        ),
-        worker_busy = as.logical(
-          daemons[, "status_busy", drop = TRUE] > 0L
-        ),
-        worker_instances = as.integer(daemons[, "instance #", drop = TRUE]),
-        worker_rotations = worker_rotations %|||% rep(-1L, length(sockets)),
+      tibble::tibble(
+        tasks_assigned = as.integer(daemons[, "tasks_assigned"]),
+        tasks_complete = as.integer(daemons[, "tasks_complete"]),
+        worker_connected = as.logical(daemons[, "status_online"] > 0L),
+        worker_busy = as.logical(daemons[, "status_busy"] > 0L),
+        worker_instances = as.integer(daemons[, "instance #"]),
         worker_socket = sockets
       )
-      invisible()
     },
     #' @description Stop the mirai client and disconnect from the
     #'   worker websockets.
@@ -293,7 +299,9 @@ crew_class_router <- R6::R6Class(
           )
         }
         # End dispatcher checks block 2/2.
-        self$poll()
+        self$daemons <- NULL
+        self$dispatcher <- NULL
+        self$rotations <- NULL
       }
       invisible()
     }

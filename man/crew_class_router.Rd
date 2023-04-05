@@ -194,6 +194,11 @@ Change the websocket path of a worker.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+The first call to \code{rotate()} does not actually change
+the socket because the first socket available is already usable.
+}
+
 \subsection{Returns}{
 Character of length 1, new websocket path of the worker.
 }

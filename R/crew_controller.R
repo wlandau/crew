@@ -445,10 +445,33 @@ crew_class_controller <- R6::R6Class(
     #' @return A data frame of summary statistics on the workers and tasks.
     #'   It has one row per worker websocket and the following columns:
     #'   * `controller`: name of the controller.
-    #'   * `worker_socket` full websocket address of the worker, including
-    #'     the protocol, IP address, TCP port, and path.
-    #'     To identify specific pieces of the websocket address,
-    #'     call `nanonext::parse_url()`.
+    #'   * `popped_tasks`: number of tasks which were completed by
+    #'     a worker at the websocket and then returned by calling
+    #'     `pop()` on the controller object.
+    #'   * `popped_seconds`: total number of runtime and seconds of
+    #'     all the tasks that ran on a worker connected to this websocket
+    #'     and then were retrieved by calling `pop()` on the controller
+    #'     object.
+    #'   * `popped_errors`: total number of tasks which ran on a worker
+    #'     at the website, encountered an error in R, and then retrieved
+    #'     with `pop()`.
+    #'   * `popped_warnings`: total number of tasks which ran on a worker
+    #'     at the website, encountered one or more warnings in R,
+    #'     and then retrieved with `pop()`. Note: `popped_warnings`
+    #'     is actually the number of *tasks*, not the number of warnings.
+    #'     (A task could throw more than one warning.)
+    #'   * `tasks_assigned`: number of pushed tasks assigned to the
+    #'      current worker process at the websocket. The counter resets
+    #'      every time a new worker instance starts.
+    #'      So in the case of transient
+    #'      workers, this number may be much smaller than the number of
+    #'      popped tasks.
+    #'   * `tasks_complete`: number of pushed tasks completed by the
+    #'      current worker process at the websocket. The counter resets
+    #'      every time a new worker instance starts.
+    #'      So in the case of transient
+    #'      workers, this number may be much smaller than the number of
+    #'      popped tasks.
     #'   * `worker_connected`: `TRUE` if a worker is currently connected
     #'     to the websocket, `FALSE` if not connected, or `NA`
     #'     if the status cannot be determined because the `mirai`
@@ -465,41 +488,15 @@ crew_class_controller <- R6::R6Class(
     #'     and it is recommended to quit the pipeline and troubleshoot.
     #'   * `worker_instances`: number of different worker processes
     #'     that have connected to the websocket since the `start()`
-    #'     of the controller object. For persistent workers that
-    #'     always stay running, `worker_instances` will be no more than 1.
-    #'     However, in the case of transient workers, e.g. `tasks_max = 1`
-    #'     or a small value of `seconds_idle`, worker processes may
-    #'     time out or exit when the task workload subsides. Then when the
-    #'     task workload surges again, different workers may be launch
-    #'     and connect to the available websockets, so `worker_instances`
-    #'     could be greater than 1.
-    #'   * `tasks_assigned`: number of pushed tasks assigned to the
-    #'      current worker process at the websocket. The counter resets
-    #'      every time a new worker replaces the previous worker at the
-    #'      websocket. So in the case of transient
-    #'      workers, this number may be much smaller than the number of
-    #'      popped tasks.
-    #'   * `tasks_complete`: number of pushed tasks completed by the
-    #'      current worker process at the websocket. The counter resets
-    #'      every time a new worker replaces the previous worker at the
-    #'      websocket. So in the case of transient
-    #'      workers, this number may be much smaller than the number of
-    #'      popped tasks.
-    #'   * `popped_tasks`: number of tasks which were completed by
-    #'     a worker at the websocket and then returned by calling
-    #'     `pop()` on the controller object.
-    #'   * `popped_seconds`: total number of runtime and seconds of
-    #'     all the tasks that ran on a worker connected to this websocket
-    #'     and then were retrieved by calling `pop()` on the controller
-    #'     object.
-    #'   * `popped_errors`: total number of tasks which ran on a worker
-    #'     at the website, encountered an error in R, and then retrieved
-    #'     with `pop()`.
-    #'   * `popped_warnings`: total number of tasks which ran on a worker
-    #'     at the website, encountered one or more warnings in R,
-    #'     and then retrieved with `pop()`. Note: `popped_warnings`
-    #'     is actually the number of *tasks*, not the number of warnings.
-    #'     (A task could throw more than one warning.)
+    #'     of the controller object. Should either be 0 or 1 unless
+    #'     something is wrong and more than one worker has connected
+    #'     to the current websocket.
+    #'   * `worker_socket` full websocket address of the worker, including
+    #'     the protocol, IP address, TCP port, and path.
+    #'     This websocket rotates with every additional instance
+    #'     of a worker process.
+    #'     To identify specific pieces of the websocket address,
+    #'     call `nanonext::parse_url()`.
     #' @param columns Tidyselect expression to select a subset of columns.
     #'   Examples include `columns = contains("worker")` and
     #'   `columns = starts_with("tasks")`.
@@ -518,17 +515,17 @@ crew_class_controller <- R6::R6Class(
       }
       out <- tibble::tibble(
         controller = self$router$name,
-        worker_socket = daemons$worker_socket,
+        popped_tasks = log$popped_tasks,
+        popped_seconds = log$popped_seconds,
+        popped_errors = log$popped_errors,
+        popped_warnings = log$popped_warnings,
+        tasks_assigned = daemons$tasks_assigned,
+        tasks_complete = daemons$tasks_complete,
         worker_connected = daemons$worker_connected,
         worker_busy = daemons$worker_busy,
         worker_launches = workers$launches,
         worker_instances = daemons$worker_instances,
-        tasks_assigned = daemons$tasks_assigned,
-        tasks_complete = daemons$tasks_complete,
-        popped_tasks = log$popped_tasks,
-        popped_seconds = log$popped_seconds,
-        popped_errors = log$popped_errors,
-        popped_warnings = log$popped_warnings
+        worker_socket = daemons$worker_socket
       )
       expr <- rlang::enquo(columns)
       select <- eval_tidyselect(expr = expr, choices = colnames(out))

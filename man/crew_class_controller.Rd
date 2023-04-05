@@ -71,10 +71,13 @@ Other controllers:
 \item \href{#method-crew_class_controller-new}{\code{crew_class_controller$new()}}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
+\item \href{#method-crew_class_controller-inactive}{\code{crew_class_controller$inactive()}}
+\item \href{#method-crew_class_controller-lost}{\code{crew_class_controller$lost()}}
+\item \href{#method-crew_class_controller-clean}{\code{crew_class_controller$clean()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
-\item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
+\item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
 \item \href{#method-crew_class_controller-wait}{\code{crew_class_controller$wait()}}
 \item \href{#method-crew_class_controller-summary}{\code{crew_class_controller$summary()}}
@@ -165,6 +168,89 @@ with the launcher.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-inactive"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-inactive}{}}}
+\subsection{Method \code{inactive()}}{
+Get the indexes of the inactive workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$inactive(poll = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{poll}}{Logical of length 1, whether to poll for worker status
+beforehand.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+An active worker is a worker that should be given the chance
+to run tasks. To determine if the worker is active,
+\code{crew} monitors seconds past launch time, and it listens
+to a special non-\code{mirai} NNG websocket that the worker
+is supposed to dial into on launch.
+If the worker is currently connected to the websocket,
+then it is active. Otherwise, if the worker is not connected
+and the startup window has expired, the worker is inactive.
+Otherwise, if the worker is not connected and the startup
+window has not yet expired, then the worker is active
+if it has not ever connected to a websocket.
+}
+
+\subsection{Returns}{
+Integer index vector indicating the inactive workers.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-lost"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-lost}{}}}
+\subsection{Method \code{lost()}}{
+Get the indexes of the lost workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$lost(poll = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{poll}}{Logical of length 1, whether to poll for worker status
+beforehand.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+A worker is lost if it was supposed to launch,
+but it never connected to the client,
+and its startup window elapsed.
+}
+
+\subsection{Returns}{
+Character vector of worker websockets.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-clean"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-clean}{}}}
+\subsection{Method \code{clean()}}{
+Terminate lost workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$clean(poll = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{poll}}{Logical of length 1, whether to poll for worker status
+beforehand.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-launch}{}}}
 \subsection{Method \code{launch()}}{
@@ -226,29 +312,6 @@ number of workers.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-collect"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-collect}{}}}
-\subsection{Method \code{collect()}}{
-Check for done tasks and move the results to
-the results list.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly). Removes elements from the \code{queue}
-list as applicable and moves them to the \code{results} list.
 }
 }
 \if{html}{\out{<hr>}}
@@ -326,6 +389,29 @@ compatible with the analogous method of controller groups.}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-collect"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-collect}{}}}
+\subsection{Method \code{collect()}}{
+Check for done tasks and move the results to
+the results list.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly). Removes elements from the \code{queue}
+list as applicable and moves them to the \code{results} list.
 }
 }
 \if{html}{\out{<hr>}}
@@ -437,10 +523,33 @@ A data frame of summary statistics on the workers and tasks.
 It has one row per worker websocket and the following columns:
 \itemize{
 \item \code{controller}: name of the controller.
-\item \code{worker_socket} full websocket address of the worker, including
-the protocol, IP address, TCP port, and path.
-To identify specific pieces of the websocket address,
-call \code{nanonext::parse_url()}.
+\item \code{popped_tasks}: number of tasks which were completed by
+a worker at the websocket and then returned by calling
+\code{pop()} on the controller object.
+\item \code{popped_seconds}: total number of runtime and seconds of
+all the tasks that ran on a worker connected to this websocket
+and then were retrieved by calling \code{pop()} on the controller
+object.
+\item \code{popped_errors}: total number of tasks which ran on a worker
+at the website, encountered an error in R, and then retrieved
+with \code{pop()}.
+\item \code{popped_warnings}: total number of tasks which ran on a worker
+at the website, encountered one or more warnings in R,
+and then retrieved with \code{pop()}. Note: \code{popped_warnings}
+is actually the number of \emph{tasks}, not the number of warnings.
+(A task could throw more than one warning.)
+\item \code{tasks_assigned}: number of pushed tasks assigned to the
+current worker process at the websocket. The counter resets
+every time a new worker instance starts.
+So in the case of transient
+workers, this number may be much smaller than the number of
+popped tasks.
+\item \code{tasks_complete}: number of pushed tasks completed by the
+current worker process at the websocket. The counter resets
+every time a new worker instance starts.
+So in the case of transient
+workers, this number may be much smaller than the number of
+popped tasks.
 \item \code{worker_connected}: \code{TRUE} if a worker is currently connected
 to the websocket, \code{FALSE} if not connected, or \code{NA}
 if the status cannot be determined because the \code{mirai}
@@ -457,41 +566,15 @@ sign that something is wrong with the workers or platform,
 and it is recommended to quit the pipeline and troubleshoot.
 \item \code{worker_instances}: number of different worker processes
 that have connected to the websocket since the \code{start()}
-of the controller object. For persistent workers that
-always stay running, \code{worker_instances} will be no more than 1.
-However, in the case of transient workers, e.g. \code{tasks_max = 1}
-or a small value of \code{seconds_idle}, worker processes may
-time out or exit when the task workload subsides. Then when the
-task workload surges again, different workers may be launch
-and connect to the available websockets, so \code{worker_instances}
-could be greater than 1.
-\item \code{tasks_assigned}: number of pushed tasks assigned to the
-current worker process at the websocket. The counter resets
-every time a new worker replaces the previous worker at the
-websocket. So in the case of transient
-workers, this number may be much smaller than the number of
-popped tasks.
-\item \code{tasks_complete}: number of pushed tasks completed by the
-current worker process at the websocket. The counter resets
-every time a new worker replaces the previous worker at the
-websocket. So in the case of transient
-workers, this number may be much smaller than the number of
-popped tasks.
-\item \code{popped_tasks}: number of tasks which were completed by
-a worker at the websocket and then returned by calling
-\code{pop()} on the controller object.
-\item \code{popped_seconds}: total number of runtime and seconds of
-all the tasks that ran on a worker connected to this websocket
-and then were retrieved by calling \code{pop()} on the controller
-object.
-\item \code{popped_errors}: total number of tasks which ran on a worker
-at the website, encountered an error in R, and then retrieved
-with \code{pop()}.
-\item \code{popped_warnings}: total number of tasks which ran on a worker
-at the website, encountered one or more warnings in R,
-and then retrieved with \code{pop()}. Note: \code{popped_warnings}
-is actually the number of \emph{tasks}, not the number of warnings.
-(A task could throw more than one warning.)
+of the controller object. Should either be 0 or 1 unless
+something is wrong and more than one worker has connected
+to the current websocket.
+\item \code{worker_socket} full websocket address of the worker, including
+the protocol, IP address, TCP port, and path.
+This websocket rotates with every additional instance
+of a worker process.
+To identify specific pieces of the websocket address,
+call \code{nanonext::parse_url()}.
 }
 }
 }

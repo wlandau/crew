@@ -73,8 +73,8 @@ Other controllers:
 \item \href{#method-crew_class_controller_group-start}{\code{crew_class_controller_group$start()}}
 \item \href{#method-crew_class_controller_group-launch}{\code{crew_class_controller_group$launch()}}
 \item \href{#method-crew_class_controller_group-scale}{\code{crew_class_controller_group$scale()}}
-\item \href{#method-crew_class_controller_group-collect}{\code{crew_class_controller_group$collect()}}
 \item \href{#method-crew_class_controller_group-push}{\code{crew_class_controller_group$push()}}
+\item \href{#method-crew_class_controller_group-collect}{\code{crew_class_controller_group$collect()}}
 \item \href{#method-crew_class_controller_group-pop}{\code{crew_class_controller_group$pop()}}
 \item \href{#method-crew_class_controller_group-wait}{\code{crew_class_controller_group$wait()}}
 \item \href{#method-crew_class_controller_group-summary}{\code{crew_class_controller_group$summary()}}
@@ -210,29 +210,6 @@ See the \code{scale()} method in individual controller classes.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller_group-collect"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller_group-collect}{}}}
-\subsection{Method \code{collect()}}{
-Check for done tasks and move the results to
-the results list.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
-Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly). Removes elements from the \code{queue}
-list as applicable and moves them to the \code{results} list.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-push"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-push}{}}}
 \subsection{Method \code{push()}}{
@@ -309,6 +286,29 @@ first controller in the list.}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-collect"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-collect}{}}}
+\subsection{Method \code{collect()}}{
+Check for done tasks and move the results to
+the results list.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly). Removes elements from the \code{queue}
+list as applicable and moves them to the \code{results} list.
 }
 }
 \if{html}{\out{<hr>}}

@@ -152,16 +152,6 @@ crew_class_controller_group <- R6::R6Class(
       control <- private$select_controllers(controllers)
       walk(control, ~.x$scale())
     },
-    #' @description Check for done tasks and move the results to
-    #'   the results list.
-    #' @return `NULL` (invisibly). Removes elements from the `queue`
-    #'   list as applicable and moves them to the `results` list.
-    #' @param controllers Character vector of controller names.
-    #'   Set to `NULL` to select all controllers.
-    collect = function(controllers = NULL) {
-      control <- private$select_controllers(controllers)
-      walk(control, ~.x$collect())
-    },
     #' @description Push a task to the head of the task list.
     #' @return `NULL` (invisibly).
     #' @param command Language object with R code to run.
@@ -239,6 +229,16 @@ crew_class_controller_group <- R6::R6Class(
         scale = scale
       )
       do.call(what = self$controllers[[controller]]$push, args = args)
+    },
+    #' @description Check for done tasks and move the results to
+    #'   the results list.
+    #' @return `NULL` (invisibly). Removes elements from the `queue`
+    #'   list as applicable and moves them to the `results` list.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    collect = function(controllers = NULL) {
+      control <- private$select_controllers(controllers)
+      walk(control, ~.x$collect())
     },
     #' @description Pop a completed task from the results data frame.
     #' @return If there is a completed task available to collect, the return

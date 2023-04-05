@@ -147,6 +147,47 @@ crew_class_controller <- R6::R6Class(
       }
       invisible()
     },
+    #' @description Get the indexes of the inactive workers.
+    #' @details An active worker is a worker that should be given the chance
+    #'   to run tasks. To determine if the worker is active,
+    #'   `crew` monitors seconds past launch time, and it listens
+    #'   to a special non-`mirai` NNG websocket that the worker
+    #'   is supposed to dial into on launch.
+    #'   If the worker is currently connected to the websocket,
+    #'   then it is active. Otherwise, if the worker is not connected
+    #'   and the startup window has expired, the worker is inactive.
+    #'   Otherwise, if the worker is not connected and the startup
+    #'   window has not yet expired, then the worker is active
+    #'   if it has not ever connected to a websocket.
+    #' @return Integer index vector indicating the inactive workers.
+    #' @param poll Logical of length 1, whether to poll for worker status
+    #'   beforehand.
+    inactive = function(poll = TRUE) {
+      if (poll) self$router$poll()
+      daemons <- self$router$daemons
+      launching <- self$launcher$launching()
+      which(which_inactive(daemons = daemons, launching = launching))
+    },
+    #' @description Get the indexes of the lost workers.
+    #' @details A worker is lost if it was supposed to launch,
+    #'   but it never connected to the client,
+    #'   and its startup window elapsed.
+    #' @return Character vector of worker websockets.
+    #' @param poll Logical of length 1, whether to poll for worker status
+    #'   beforehand.
+    lost = function(poll = TRUE) {
+      if (poll) self$router$poll()
+      daemons <- self$router$daemons
+      launching <- self$launcher$launching()
+      which(which_lost(daemons = daemons, launching = launching))
+    },
+    #' @description Terminate lost workers.
+    #' @return `NULL` (invisibly).
+    #' @param poll Logical of length 1, whether to poll for worker status
+    #'   beforehand.
+    clean = function(poll = TRUE) {
+      self$launcher$terminate(indexes = self$lost(poll = poll))
+    },
     #' @description Launch one or more workers.
     #' @return `NULL` (invisibly).
     #' @param n Number of workers to try to launch. The actual
@@ -162,7 +203,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      inactive <- utils::head(self$inactive(), n = n)
+      inactive <- utils::head(self$inactive(poll = TRUE), n = n)
       for (index in inactive) {
         self$launcher$launch(sockets = self$router$rotate(index = index))
       }
@@ -181,8 +222,8 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
-      self$clean()
-      inactive <- self$inactive()
+      inactive <- self$inactive(poll = TRUE)
+      self$clean(poll = FALSE)
       self$collect()
       demand <- controller_demand(
         tasks = length(self$queue),
@@ -193,28 +234,10 @@ crew_class_controller <- R6::R6Class(
         auto_scale = self$auto_scale,
         max = self$router$workers
       )
-      sockets <- utils::head(inactive, n = n_new_workers)
-      if (length(sockets) > 0L) {
-        self$launcher$launch(sockets = sockets)
+      inactive <- utils::head(inactive, n = n_new_workers)
+      for (index in inactive) {
+        self$launcher$launch(sockets = self$router$rotate(index = index))
       }
-      invisible()
-    },
-    #' @description Check for done tasks and move the results to
-    #'   the results list.
-    #' @return `NULL` (invisibly). Removes elements from the `queue`
-    #'   list as applicable and moves them to the `results` list.
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
-    collect = function(controllers = NULL) {
-      done <- integer(0L)
-      for (index in seq_along(self$queue)) {
-        task <- self$queue[[index]]
-        if (!nanonext::.unresolved(task$handle[[1L]])) {
-          self$results[[length(self$results) + 1L]] <- task
-          done[length(done) + 1L] <- index
-        }
-      }
-      self$queue[done] <- NULL
       invisible()
     },
     #' @description Push a task to the head of the task list.
@@ -306,6 +329,24 @@ crew_class_controller <- R6::R6Class(
       )
       self$queue[[length(self$queue) + 1L]] <- task
       if (scale) self$scale()
+      invisible()
+    },
+    #' @description Check for done tasks and move the results to
+    #'   the results list.
+    #' @return `NULL` (invisibly). Removes elements from the `queue`
+    #'   list as applicable and moves them to the `results` list.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    collect = function(controllers = NULL) {
+      done <- integer(0L)
+      for (index in seq_along(self$queue)) {
+        task <- self$queue[[index]]
+        if (!nanonext::.unresolved(task$handle[[1L]])) {
+          self$results[[length(self$results) + 1L]] <- task
+          done[length(done) + 1L] <- index
+        }
+      }
+      self$queue[done] <- NULL
       invisible()
     },
     #' @description Pop a completed task from the results data frame.
@@ -527,4 +568,15 @@ controller_n_new_workers <- function(demand, auto_scale, max) {
     none = 0L
   ) %|||% 0L
   min(out, max)
+}
+
+which_inactive <- function(daemons, launching) {
+  connected <- daemons$worker_connected
+  discovered <- daemons$worker_instances > 0L
+  (!connected) & (discovered | (!launching))
+}
+
+which_lost <- function(daemons, launching) {
+  not_discovered <- daemons$worker_instances < 1L
+  not_discovered & (!launching)
 }

@@ -1,5 +1,4 @@
 library(crew)
-crew_session_start()
 x <- crew_controller_local(
   name = "test",
   tasks_max = 1L,
@@ -36,4 +35,3 @@ length(x$results) # 3
 # Clean up.
 View(x$summary())
 x$terminate()
-crew_session_terminate()

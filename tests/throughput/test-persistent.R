@@ -1,5 +1,4 @@
 library(crew)
-crew_session_start()
 x <- crew_controller_local(
   name = "test",
   workers = 2L
@@ -30,4 +29,3 @@ x$terminate()
 results <- tibble::as_tibble(do.call(rbind, results))
 results$result <- as.integer(results$result)
 table(results$result) # 200 total tasks should be about evenly distributed.
-crew_session_terminate()

@@ -1,5 +1,4 @@
 library(crew)
-crew_session_start()
 x <- crew_controller_local(
   name = "test",
   tasks_max = 1L,
@@ -19,12 +18,7 @@ time <- system.time({
 })
 message(time["elapsed"])
 
-# Check that the worker pool can scale back down. Workers should exit.
-crew_wait(
-  fun = ~identical(length(x$launcher$inactive()), 4L),
-  seconds_interval = 0.001,
-  seconds_timeout = 10
-)
+# Watch htop and wait for workers to scale back down on their own.
 
 # Launch many more tasks.
 time <- system.time({
@@ -36,12 +30,8 @@ time <- system.time({
 })
 message(time["elapsed"])
 
-# Again, wait for worker pool can scale back down. Workers should exit.
-crew_wait(
-  fun = ~identical(length(x$launcher$inactive()), 4L),
-  seconds_interval = 0.001,
-  seconds_timeout = 10
-)
+# Again, watch htop and wait wait for worker pool can scale back down
+# on their own.
 
 # Call wait() on the controller to cycle through the rest of the tasks.
 # Watch htop to see it complete.
@@ -66,4 +56,3 @@ x$terminate()
 results <- tibble::as_tibble(do.call(rbind, results))
 results$result <- as.integer(results$result)
 length(unique(results$result)) # Should be 200, one per transient worker.
-crew_session_terminate()

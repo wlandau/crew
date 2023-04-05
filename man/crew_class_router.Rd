@@ -62,6 +62,7 @@ Other routers:
 \item \href{#method-crew_class_router-listening}{\code{crew_class_router$listening()}}
 \item \href{#method-crew_class_router-listen}{\code{crew_class_router$listen()}}
 \item \href{#method-crew_class_router-sockets}{\code{crew_class_router$sockets()}}
+\item \href{#method-crew_class_router-rotate}{\code{crew_class_router$rotate()}}
 \item \href{#method-crew_class_router-poll}{\code{crew_class_router$poll()}}
 \item \href{#method-crew_class_router-terminate}{\code{crew_class_router$terminate()}}
 }
@@ -175,6 +176,26 @@ Get the current socket addresses.
 
 \subsection{Returns}{
 A character vector of socket addresses.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-rotate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-rotate}{}}}
+\subsection{Method \code{rotate()}}{
+Change the websocket path of a worker.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$rotate(index)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{index}}{Integer of length 1, worker index.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Character of length 1, new websocket path of the worker.
 }
 }
 \if{html}{\out{<hr>}}

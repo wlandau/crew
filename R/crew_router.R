@@ -95,12 +95,12 @@ crew_class_router <- R6::R6Class(
     #' router$terminate()
     #' }
     initialize = function(
-    name = NULL,
-    workers = NULL,
-    host = NULL,
-    port = NULL,
-    seconds_interval = NULL,
-    seconds_timeout = NULL
+      name = NULL,
+      workers = NULL,
+      host = NULL,
+      port = NULL,
+      seconds_interval = NULL,
+      seconds_timeout = NULL
     ) {
       self$name <- name
       self$workers <- workers
@@ -195,10 +195,18 @@ crew_class_router <- R6::R6Class(
       as.character(rownames(mirai::daemons(.compute = self$name)$daemons))
     },
     #' @description Change the websocket path of a worker.
+    #' @details The first call to `rotate()` does not actually change
+    #'   the socket because the first socket available is already usable.
     #' @param index Integer of length 1, worker index.
     #' @return Character of length 1, new websocket path of the worker.
     rotate = function(index) {
-      mirai::saisei(i = index, .compute = self$name)
+      rotations <- self$daemons$worker_rotations[index]
+      self$daemons$worker_rotations[index] <- rotations + 1L 
+      if_any(
+        rotations > -1L,
+        mirai::saisei(i = index, .compute = self$name),
+        self$daemons$worker_socket[index]
+      )
     },
     #' @description Update the `daemons` field with
     #'   information on the `mirai` daemons.
@@ -219,6 +227,7 @@ crew_class_router <- R6::R6Class(
       }
       self$dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
       sockets <- as.character(rownames(daemons))
+      worker_rotations <- self$daemons$worker_rotations
       self$daemons <- tibble::tibble(
         tasks_assigned = as.integer(daemons[, "tasks_assigned", drop = TRUE]),
         tasks_complete = as.integer(daemons[, "tasks_complete", drop = TRUE]),
@@ -229,7 +238,8 @@ crew_class_router <- R6::R6Class(
           daemons[, "status_busy", drop = TRUE] > 0L
         ),
         worker_instances = as.integer(daemons[, "instance #", drop = TRUE]),
-        worker_instance = map_chr(sockets, ~parse_socket(.x)$instance)
+        worker_rotations = worker_rotations %|||% rep(-1L, length(sockets)),
+        worker_socket = sockets
       )
       invisible()
     },

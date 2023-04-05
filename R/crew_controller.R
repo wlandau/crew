@@ -162,10 +162,9 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      inactive <- self$inactive()
-      sockets <- utils::head(inactive, n = n)
-      if (length(sockets) > 0L) {
-        self$launcher$launch(sockets = sockets)
+      inactive <- utils::head(self$inactive(), n = n)
+      for (index in inactive) {
+        self$launcher$launch(sockets = self$router$rotate(index = index))
       }
       invisible()
     },
@@ -182,8 +181,8 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
-      self$launcher$clean()
-      inactive <- self$launcher$inactive()
+      self$clean()
+      inactive <- self$inactive()
       self$collect()
       demand <- controller_demand(
         tasks = length(self$queue),

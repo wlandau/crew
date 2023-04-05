@@ -28,7 +28,8 @@ crew_test("crew_router() works", {
         "worker_connected",
         "worker_busy",
         "worker_instances",
-        "worker_instance"
+        "worker_rotations",
+        "worker_socket"
       )
     )
   )
@@ -83,15 +84,38 @@ crew_test("crew_router() works", {
   expect_true(is.na(router$daemons$worker_busy))
 })
 
-crew_test("router rotate()", {
+crew_test("router websocket rotation", {
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(workers = 2L)
   router$listen()
   on.exit(router$terminate())
+  router$poll()
+  expect_equal(router$daemons$worker_rotations, c(-1L, -1L))
+  # First rotation of socket 2.
   old <- router$sockets()
   new <- router$rotate(index = 2L)
+  expect_equal(router$daemons$worker_rotations, c(-1L, 0L))
+  router$poll()
+  expect_equal(router$daemons$worker_rotations, c(-1L, 0L))
+  expect_equal(old == router$sockets(), c(TRUE, TRUE))
+  expect_equal(new, old[2L])
+  expect_equal(new, router$sockets()[2L])
+  # Second rotation of socket 2.
+  old <- router$sockets()
+  new <- router$rotate(index = 2L)
+  expect_equal(router$daemons$worker_rotations, c(-1L, 1L))
+  router$poll()
+  expect_equal(router$daemons$worker_rotations, c(-1L, 1L))
   expect_equal(old == router$sockets(), c(TRUE, FALSE))
   expect_false(new == old[2L])
   expect_equal(new, router$sockets()[2L])
+  # First rotation of socket 1.
+  old <- router$sockets()
+  new <- router$rotate(index = 1L)
+  expect_equal(router$daemons$worker_rotations, c(0L, 1L))
+  router$poll()
+  expect_equal(router$daemons$worker_rotations, c(0L, 1L))
+  expect_equal(new, old[1L])
+  expect_equal(new, router$sockets()[1L])
 })

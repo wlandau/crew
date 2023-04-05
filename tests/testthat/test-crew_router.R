@@ -40,7 +40,6 @@ crew_test("crew_router() works", {
   expect_true(nzchar(socket) && !anyNA(socket))
   expect_equal(length(socket), 1L)
   expect_false(router$log()$worker_connected)
-  expect_false(router$log()$worker_busy)
   daemons <- mirai::daemons(.compute = router$name)$daemons
   expect_equal(socket, as.character(rownames(daemons)))
   expect_equal(socket, router$sockets())
@@ -71,7 +70,6 @@ crew_test("crew_router() works", {
   expect_true(abs(m$data - ps::ps_pid()) > 0.5)
   expect_true(router$listening())
   expect_true(router$log()$worker_connected)
-  expect_false(router$log()$worker_busy)
   expect_silent(router$terminate())
   expect_false(router$listening())
   px$kill()

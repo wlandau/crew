@@ -75,7 +75,8 @@ which will run in the worker and accept tasks.}
 
 \item{\code{worker}}{Positive integer of length 1, index of the worker.
 This worker index remains the same even when the current instance
-of the worker exits and a new instance launches.}
+of the worker exits and a new instance launches.
+It is always between 1 and the maximum number of concurrent workers.}
 
 \item{\code{instance}}{Character of length 1 to uniquely identify
 the current instance of the worker.}

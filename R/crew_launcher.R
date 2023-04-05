@@ -186,6 +186,28 @@ crew_class_launcher <- R6::R6Class(
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
     validate = function() {
+      true(
+        is.function(self$launch_worker),
+        message = "launch_worker() must be a function."
+      )
+      names <- c("call", "launcher", "worker", "instance")
+      true(
+        names %in% names(formals(self$launch_worker)),
+        message = paste(
+          "launch_worker() must have arguments \"call\", \"launcher\",",
+          "\"worker\", and \"instance\"."
+        )
+      )
+      if (!is.null(self$terminate_worker)) {
+        true(
+          is.function(self$terminate_worker),
+          message = "terminate_worker() must be a function or NULL."
+        )
+        true(
+          "handle" %in% names(formals(self$terminate_worker)),
+          message = "terminate_worker() must have a \"handle\" argument."
+        )
+      }
       true(self$name, is.character(.), length(.) == 1L, !anyNA(.), nzchar(.))
       fields <- c(
         "seconds_launch",

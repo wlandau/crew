@@ -38,7 +38,6 @@ We recommend you implement an optional [`terminate_worker()`](https://wlandau.gi
 
 If you implement [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-), it must accept a handle that identifies the worker, and this handle must be the return value of the previous call to [`launch_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-launch-worker-). A handle can be any kind of R object: a process ID, a job name, an `R6` object returned by `callr::r_bg()`, etc.
 
-
 ## Example
 
 The following is a custom custom launcher class whose workers are local R processes on Unix-like systems.^[See [`tests/launchers/test-launcher-system2.R`](https://github.com/wlandau/crew/blob/main/tests/launchers/test-launcher-system2.R) for an example launcher without a `termiante_worker()` method.]
@@ -48,7 +47,7 @@ custom_launcher_class <- R6::R6Class(
   classname = "custom_launcher_class",
   inherit = crew::crew_class_launcher,
   public = list(
-    launch_worker = function(call, name, token) {
+    launch_worker = function(call, launcher, worker, instance) {
       bin <- file.path(R.home("bin"), "R")
       processx::process$new(command = bin, args = c("-e", call))
     },
@@ -61,23 +60,24 @@ custom_launcher_class <- R6::R6Class(
 
 Inside `launch_worker()`, the `processx::process$new(command = bin, args = c("-e", call))` line runs the [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html) call in an external R process. This process runs in the background, connects back to `crew` and `mirai` over the local network, and accepts the tasks you push to the controller. `processx::process$new()` also returns a handle which the `terminate_worker()` method can use to force-terminate the process if appropriate. `mirai` has its own way to terminate workers, so a `terminate_worker()` method is not strictly required, but it is a useful safeguard in case a worker hangs in a crashed state before it establishes a connection.
 
-The `launch_worker()` method must accept the following arguments.
+Every `launch_worker()` method must accept arguments `call`, `launcher`, `worker`, and `instance`. The method does not actually need to use all these arguments, but they must be present in the function signature.
 
 * `call`: a text string with a call to  [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html).
-* `name`: the name of the launcher. Each worker instance launched with the launcher will receive the same `name` argument in `launch_worker()`.
-* `token`: a text string that uniquely identifies every newly launched worker instance. Arguments `name` and `token` are useful for creating informative worker names.
+* `launcher`: the name of the launcher. Each worker instance launched with the launcher will receive the same `launcher` argument in `launch_worker()`.
+* `worker`: integer index of the worker in the current list of workers, always between 1 and the maximum number of concurrent workers.
+* `instance`: a text string that uniquely identifies each worker instance. The value of `instance` can be used to set informative job names, and the values of `launcher` and `worker` can provide additional context.
 
 To see what the `call` object looks like, create a new launcher and run the `call()` method.
 
 ```{r}
 launcher <- crew::crew_launcher_local()
 launcher$call(
-  socket = "ws://127.0.0.1:5000",
-  host = "127.0.0.1",
-  port = "5711",
-  token = "my_token"
+  socket = "ws://127.0.0.1:5000/3/aa9c59ea",
+  launcher = "my_launcher",
+  worker = 3L,
+  instance = "aa9c59ea"
 )
-#> [1] "crew::crew_worker(token = \"my_token\", host = \"127.0.0.1\", port = \"5711\", settings = list(url = \"ws://127.0.0.1:5000\", maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, exitlinger = 1000, cleanup = FALSE, asyncdial = FALSE), seconds_interval = 0.001, seconds_timeout = 10)"
+#> [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:5000/3/aa9c59ea\", maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, exitlinger = 1000, cleanup = FALSE, asyncdial = FALSE), launcher = \"my_launcher\", worker = 3L, instance = \"aa9c59ea\")"
 ```
 
 ## Helper

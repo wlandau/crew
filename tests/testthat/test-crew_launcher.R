@@ -96,3 +96,85 @@ crew_test("launcher launching()", {
   launcher$workers$start <- c(NA_real_, -Inf, Inf)
   expect_equal(launcher$launching(), c(FALSE, FALSE, TRUE))
 })
+
+crew_test("custom launcher", {
+  skip_on_cran()
+  skip_if_not_installed("processx")
+  custom_launcher_class <- R6::R6Class(
+    classname = "custom_launcher_class",
+    inherit = crew::crew_class_launcher,
+    public = list(
+      launch_worker = function(call, launcher, worker, instance) {
+        bin <- file.path(R.home("bin"), "R")
+        processx::process$new(command = bin, args = c("-e", call))
+      },
+      terminate_worker = function(handle) {
+        handle$kill()
+      }
+    )
+  )
+  crew_controller_custom <- function(
+    name = "custom controller name",
+    workers = 1L,
+    host = NULL,
+    port = NULL,
+    seconds_launch = 30,
+    seconds_interval = 0.01,
+    seconds_timeout = 5,
+    seconds_idle = Inf,
+    seconds_wall = Inf,
+    seconds_exit = 1,
+    tasks_max = Inf,
+    tasks_timers = 0L,
+    cleanup = FALSE,
+    auto_scale = "demand"
+  ) {
+    router <- crew::crew_router(
+      name = name,
+      workers = workers,
+      host = host,
+      port = port,
+      seconds_interval = seconds_interval,
+      seconds_timeout = seconds_timeout
+    )
+    launcher <- custom_launcher_class$new(
+      name = name,
+      seconds_launch = seconds_launch,
+      seconds_interval = seconds_interval,
+      seconds_timeout = seconds_timeout,
+      seconds_idle = seconds_idle,
+      seconds_wall = seconds_wall,
+      seconds_exit = seconds_exit,
+      tasks_max = tasks_max,
+      tasks_timers = tasks_timers,
+      cleanup = cleanup
+    )
+    controller <- crew::crew_controller(
+      router = router,
+      launcher = launcher,
+      auto_scale = auto_scale
+    )
+    controller$validate()
+    controller
+  }
+  controller <- crew_controller_custom()
+  controller$start()
+  on.exit({
+    controller$terminate()
+    crew_test_sleep()
+  })
+  controller$push(name = "pid", command = ps::ps_pid())
+  controller$wait()
+  out <- controller$pop()$result[[1]]
+  handle <- controller$launcher$workers$handle[[1]]
+  exp <- handle$get_pid()
+  expect_equal(out, exp)
+  expect_true(handle$is_alive())
+  controller$launcher$terminate()
+  crew_wait(
+    ~!handle$is_alive(),
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
+  expect_false(handle$is_alive())
+})

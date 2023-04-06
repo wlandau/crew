@@ -410,9 +410,6 @@ crew_class_controller <- R6::R6Class(
             self$scale()
             empty_queue <- length(self$queue) < 1L
             empty_results <- length(self$results) < 1L
-            
-            if ((empty_queue && empty_results)) print("TOO EMPTY!!!")
-            
             (empty_queue && empty_results) || if_any(
               identical(mode, "all"),
               empty_queue && (!empty_results),

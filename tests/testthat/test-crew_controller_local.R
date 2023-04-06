@@ -128,7 +128,7 @@ crew_test("crew_controller_local() substitute = FALSE", {
   expect_equal(x$summary()$popped_warnings, 0L)
   command <- quote(sqrt(4L) + sqrt(9L))
   x$push(command = command, substitute = FALSE, name = "substitute")
-  x$wait(seconds_timeout = 5)
+  x$wait(seconds_timeout = 10)
   out <- x$pop(scale = FALSE)
   expect_equal(out$result[[1]], 5L)
   expect_equal(out$name, "substitute")

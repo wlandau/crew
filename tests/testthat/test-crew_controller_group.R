@@ -195,7 +195,7 @@ crew_test("crew_controller_group() collect", {
       x$collect()
       length(x$controllers[[1]]$results) > 0L
     },
-    seconds_interval = 0.001,
+    seconds_interval = 0.01,
     seconds_timeout = 5
   )
   out <- x$pop(scale = FALSE, controllers = "a")
@@ -266,6 +266,11 @@ crew_test("crew_controller_group() scale method", {
   x$start()
   a$push(command = "x", scale = FALSE)
   expect_silent(x$scale())
+  crew_wait(
+    ~length(a$launcher$workers$handle) > 0L,
+    seconds_interval = 0.01,
+    seconds_timeout = 5
+  )
   handle <- a$launcher$workers$handle[[1L]]
   crew_wait(
     fun = ~handle$is_alive(),

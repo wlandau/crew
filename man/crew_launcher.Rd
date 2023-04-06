@@ -7,7 +7,7 @@
 crew_launcher(
   name = NULL,
   seconds_launch = 30,
-  seconds_interval = 0.001,
+  seconds_interval = 0.01,
   seconds_timeout = 10,
   seconds_idle = Inf,
   seconds_wall = Inf,

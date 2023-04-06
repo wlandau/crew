@@ -9,7 +9,7 @@ crew_router(
   workers = 1L,
   host = NULL,
   port = NULL,
-  seconds_interval = 0.001,
+  seconds_interval = 0.01,
   seconds_timeout = 5
 )
 }

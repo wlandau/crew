@@ -406,9 +406,9 @@ crew_class_controller <- R6::R6Class(
             self$scale()
             empty_queue <- length(self$queue) < 1L
             empty_results <- length(self$results) < 1L
-            if_any(
+            (empty_queue && empty_results) || if_any(
               identical(mode, "all"),
-              empty_queue,
+              empty_queue && (!empty_results),
               empty_queue || (!empty_results)
             )
           },

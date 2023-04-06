@@ -281,12 +281,15 @@ life cycle.
 \subsection{Method \code{launch()}}{
 Launch a worker.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(socket = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(index, socket = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{index}}{Positive integer of length 1, index of the worker
+to launch.}
+
 \item{\code{socket}}{Character of length 1, sockets of the worker to launch.}
 }
 \if{html}{\out{</div>}}

@@ -302,14 +302,14 @@ crew_class_launcher <- R6::R6Class(
     },
     #' @description Launch a worker.
     #' @return `NULL` (invisibly).
+    #' @param index Positive integer of length 1, index of the worker
+    #'   to launch.
     #' @param socket Character of length 1, sockets of the worker to launch.
-    launch = function(socket = NULL) {
+    launch = function(index, socket = NULL) {
       if (!length(socket) || !is.character(socket)) {
         return(invisible())
       }
-      path <- parse_socket(socket)
-      index <- path$index
-      instance <- path$instance
+      instance <- parse_instance(socket)
       call <- self$call(
         socket = socket,
         launcher = self$name,

@@ -2,15 +2,9 @@ random_name <- function() {
   nanonext::sha1(nanonext::random(n = 100L))
 }
 
-parse_socket <- function(socket) {
-  path <- nanonext::parse_url(socket)["path"]
-  path <- strsplit(path, split = "/", fixed = TRUE)[[1]]
-  path <- path[nzchar(path)]
-  if_any(
-    length(path) < 2L,
-    list(index = 1L, instance = path),
-    list(index = as.integer(path[1L]), instance = path[2L])
-  )
+parse_instance <- function(socket) {
+  split <- strsplit(socket, split = "/", fixed = TRUE)[[1]]
+  split[length(split)]
 }
 
 is_named <- function(x) {

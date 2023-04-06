@@ -92,7 +92,7 @@ crew_class_controller <- R6::R6Class(
       inactive <- utils::head(inactive, n = n)
       for (index in inactive) {
         socket <- self$router$route(index = index)
-        self$launcher$launch(socket = socket)
+        self$launcher$launch(index = index, socket = socket)
       }
     }
   ),

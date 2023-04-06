@@ -15,7 +15,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   expect_s3_class(launcher$workers$handle[[2L]], "crew_null")
   socket <- router$sockets()[2L]
   expect_equal(launcher$workers$launches, rep(0L, 4L))
-  launcher$launch(socket = socket)
+  launcher$launch(index = 2L, socket = socket)
   expect_s3_class(launcher$workers$handle[[2L]], "r_process")
   expect_silent(launcher$validate())
   crew::crew_wait(
@@ -65,13 +65,13 @@ crew_test("crew_launcher_local() okay to not have sockets to launch", {
   expect_equal(launcher$workers$start, NA_real_)
   expect_equal(launcher$workers$launches, 0L)
   # launch with empty character vector
-  expect_silent(launcher$launch(socket = character(0L)))
+  expect_silent(launcher$launch(index = 1L, socket = character(0L)))
   expect_true(is_crew_null(launcher$workers$handle[[1]]))
   expect_equal(launcher$workers$socket, NA_character_)
   expect_equal(launcher$workers$start, NA_real_)
   expect_equal(launcher$workers$launches, 0L)
   # launch null
-  expect_silent(launcher$launch(socket = NULL))
+  expect_silent(launcher$launch(index = 1L, socket = NULL))
   expect_true(is_crew_null(launcher$workers$handle[[1]]))
   expect_equal(launcher$workers$socket, NA_character_)
   expect_equal(launcher$workers$start, NA_real_)
@@ -92,7 +92,7 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   expect_silent(launcher$validate())
   socket <- router$sockets()
   launcher$start(workers = 1L)
-  launcher$launch(socket = socket)
+  launcher$launch(index = 1L, socket = socket)
   crew::crew_wait(
     ~{
       handle <- launcher$workers$handle[[1]]
@@ -140,7 +140,7 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   router$listen()
   socket <- router$sockets()
   launcher$start(workers = 1L)
-  launcher$launch(socket = socket)
+  launcher$launch(index = 1L, socket = socket)
   crew::crew_wait(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons

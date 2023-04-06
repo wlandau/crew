@@ -27,17 +27,17 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   )
   url <- rownames(mirai::daemons()$daemons)[1]
   settings <- list(url = url, maxtasks = 1L, cleanup = FALSE)
-  path <- parse_socket(url)
+  instance <- parse_instance(url)
   crew_worker(
     settings = settings,
     launcher = "my_launcher",
-    worker = path$index,
-    instance = path$instance
+    worker = 4L,
+    instance = instance
   )
   exp <- list(
     launcher = "my_launcher",
-    worker = path$index,
-    instance = path$instance
+    worker = 4L,
+    instance = instance
   )
   crew_wait(
     ~!nanonext::.unresolved(m$data),
@@ -45,8 +45,8 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     seconds_timeout = 5
   )
   expect_equal(m$data$launcher, "my_launcher")
-  expect_equal(as.integer(m$data$worker), path$index)
-  expect_equal(m$data$instance, path$instance)
+  expect_equal(as.integer(m$data$worker), 4L)
+  expect_equal(m$data$instance, instance)
   for (var in envvars) {
     expect_equal(Sys.getenv(var, unset = ""), "")
   }

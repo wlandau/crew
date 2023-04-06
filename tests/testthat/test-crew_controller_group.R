@@ -47,6 +47,14 @@ crew_test("crew_controller_group()", {
       seconds_timeout = 5
     )
   }
+  crew_wait(
+    ~{
+      x$wait(seconds_timeout = 30)
+      TRUE
+    },
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   s <- x$summary()
   expect_equal(nrow(s), 2L)
   expect_equal(s$controller, c("a", "b"))

@@ -11,6 +11,14 @@ crew_test("crew_controller_local()", {
   expect_false(x$router$listening())
   expect_null(x$summary())
   x$start()
+  crew_wait(
+    ~{
+      x$wait(seconds_timeout = 30)
+      TRUE
+    },
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
   s <- x$summary()
   expect_true(is.data.frame(s))
   expect_equal(nrow(s), 1L)

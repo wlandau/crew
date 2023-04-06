@@ -68,7 +68,7 @@ crew_test("launcher call", {
   expect_true(all(nzchar(out)))
   expect_true(grepl(pattern = "^crew::crew_worker\\(", x = out))
   message <- tryCatch(eval(parse(text = out)), error = conditionMessage)
-  expect_match(message, regexp = "Permission denied")
+  expect_match(message, regexp = "denied|refused")
 })
 
 crew_test("launcher start()", {

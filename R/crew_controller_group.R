@@ -292,20 +292,23 @@ crew_class_controller_group <- R6::R6Class(
       tryCatch(
         crew_wait(
           fun = ~{
+            empty <- TRUE
             for (controller in control) {
               controller$collect()
               controller$scale()
+              empty_queue <- length(controller$queue) < 1L
+              empty_results <- length(controller$results) < 1L
               done <- if_any(
                 identical(mode, "all"),
-                length(controller$queue) < 1L,
-                (length(controller$queue) < 1L) ||
-                  (length(controller$results) > 0L)
+                empty_queue && (!empty_results),
+                empty_queue || (!empty_results)
               )
               if (done) {
                 return(TRUE)
               }
+              empty <- empty && empty_queue && empty_results
             }
-            FALSE
+            empty
           },
           seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout

@@ -57,7 +57,7 @@ The `start()` method starts a local [`mirai`](https://github.com/shikokuchuo/mir
 controller$start()
 ```
 
-The `summary()` method shows metadata on workers and tasks. Use the `columns` argument to select a subset of columns in the output. The following table has one row per worker, and each column is a summary metric on the popped tasks (tasks which completed and were retreived with `pop()`).
+The `summary()` method shows metadata on workers and tasks. Use the `columns` argument to select a subset of columns in the output. The following table has one row per worker, and each column is a summary metric on the popped tasks (tasks which completed and were retrieved with `pop()`).
 
 ```{r}
 controller$summary(columns = starts_with("popped_"))

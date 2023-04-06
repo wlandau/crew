@@ -76,7 +76,7 @@ controller$start()
 The `summary()` method shows metadata on workers and tasks. Use the
 `columns` argument to select a subset of columns in the output. The
 following table has one row per worker, and each column is a summary
-metric on the popped tasks (tasks which completed and were retreived
+metric on the popped tasks (tasks which completed and were retrieved
 with `pop()`).
 
 ``` r

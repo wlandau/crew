@@ -19,10 +19,10 @@
 #'   [`clustermq`](https://mschubert.github.io/clustermq/),
 #'   and [`batchtools`](https://mllg.github.io/batchtools/).
 #' @family help
-#' @importFrom callr r_bg
 #' @importFrom getip getip
 #' @importFrom mirai daemons mirai saisei server
 #' @importFrom nanonext random sha1 .unresolved
+#' @importFrom processx process
 #' @importFrom ps ps_handle ps_is_running ps_kill
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function enquo quo_squash

@@ -44,10 +44,10 @@ crew_test("crew_router() works", {
   expect_equal(socket, as.character(rownames(daemons)))
   expect_equal(socket, router$sockets())
   expect_true(all(daemons == 0L))
-  px <- callr::r_bg(
-    function(socket) mirai::server(socket),
-    args = list(socket = socket)
-  )
+  bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
+  path <- file.path(R.home("bin"), bin)
+  call <- sprintf("mirai::server('%s')", socket)
+  px <- processx::process$new(command = bin, args = c("-e", call))
   crew_wait(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons

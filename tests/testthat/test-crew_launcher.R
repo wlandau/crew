@@ -99,13 +99,19 @@ crew_test("launcher launching()", {
 
 crew_test("custom launcher", {
   skip_on_cran()
+  skip_on_os("windows")
   skip_if_not_installed("processx")
   custom_launcher_class <- R6::R6Class(
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,
     public = list(
       launch_worker = function(call, launcher, worker, instance) {
-        bin <- file.path(R.home("bin"), "R")
+        bin <- if_any(
+          tolower(Sys.info()[["sysname"]]) == "windows",
+          "R.exe",
+          "R"
+        )
+        path <- file.path(R.home("bin"), bin)
         processx::process$new(command = bin, args = c("-e", call))
       },
       terminate_worker = function(handle) {

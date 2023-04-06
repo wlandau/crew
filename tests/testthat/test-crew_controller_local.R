@@ -198,7 +198,10 @@ crew_test("crew_controller_local() can terminate a lost worker", {
     crew_test_sleep()
   })
   x$launcher$workers$launches <- 1L
-  handle <- callr::r_bg(function() Sys.sleep(300))
+  bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
+  path <- file.path(R.home("bin"), bin)
+  call <- "Sys.sleep(300)"
+  handle <- processx::process$new(command = bin, args = c("-e", call))
   crew_wait(
     ~handle$is_alive(),
     seconds_interval = 0.001,

@@ -35,10 +35,10 @@ Authors@R: c(
 Depends:
   R (>= 4.0.0)
 Imports:
-  callr,
   getip,
   mirai (>= 0.8.2.9015),
   nanonext (>= 0.8.1.9009),
+  processx,
   ps,
   R6,
   rlang,
@@ -49,7 +49,6 @@ Imports:
 Suggests:
   knitr (>= 1.30),
   markdown (>= 1.1),
-  processx,
   rmarkdown (>= 2.4),
   testthat (>= 3.0.0)
 Encoding: UTF-8

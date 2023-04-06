@@ -279,25 +279,18 @@ life cycle.
 \if{html}{\out{<a id="method-crew_class_launcher-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-launch}{}}}
 \subsection{Method \code{launch()}}{
-Launch one or more workers.
+Launch a worker.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(sockets = character(0L))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(socket = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{sockets}}{Character vector of sockets for the workers
-to launch.}
+\item{\code{socket}}{Character of length 1, sockets of the worker to launch.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Details}{
-If a worker is already assigned to a socket,
-the previous worker is terminated before the next
-one is launched.
-}
-
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

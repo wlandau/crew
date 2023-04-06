@@ -58,6 +58,7 @@ crew_controller_group <- function(...) {
 #' }
 crew_class_controller_group <- R6::R6Class(
   classname = "crew_class_controller_group",
+  cloneable = FALSE,
   private = list(
     select_controllers = function(names) {
       if (is.null(names)) {

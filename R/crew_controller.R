@@ -73,6 +73,7 @@ crew_controller <- function(
 #' }
 crew_class_controller <- R6::R6Class(
   classname = "crew_class_controller",
+  cloneable = FALSE,
   private = list(
     inactive = function() {
       daemons <- self$router$daemons
@@ -86,6 +87,15 @@ crew_class_controller <- R6::R6Class(
     },
     clean = function() {
       self$launcher$terminate(indexes = private$lost())
+    },
+    try_launch = function(inactive, n) {
+      launched <- 0L
+      for (index in inactive) {
+        if (launched >= n) break
+        socket <- self$router$route(index = index)
+        self$launcher$launch(socket = socket)
+        launched <- launched + as.integer(!is.null(socket))
+      }
     }
   ),
   public = list(
@@ -178,10 +188,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
       self$router$poll()
-      inactive <- utils::head(private$inactive(), n = n)
-      for (index in inactive) {
-        self$launcher$launch(sockets = self$router$route(index = index))
-      }
+      private$try_launch(inactive = private$inactive(), n = n)
       invisible()
     },
     #' @description Run auto-scaling.
@@ -205,15 +212,12 @@ crew_class_controller <- R6::R6Class(
         tasks = length(self$queue),
         workers = nrow(self$router$daemons) - length(inactive)
       )
-      n_new_workers <- controller_n_new_workers(
+      n <- controller_n_new_workers(
         demand = demand,
         auto_scale = self$auto_scale,
         max = self$router$workers
       )
-      inactive <- utils::head(inactive, n = n_new_workers)
-      for (index in inactive) {
-        self$launcher$launch(sockets = self$router$route(index = index))
-      }
+      private$try_launch(inactive = inactive, n = n)
       invisible()
     },
     #' @description Push a task to the head of the task list.
@@ -406,6 +410,9 @@ crew_class_controller <- R6::R6Class(
             self$scale()
             empty_queue <- length(self$queue) < 1L
             empty_results <- length(self$results) < 1L
+            
+            if ((empty_queue && empty_results)) print("TOO EMPTY!!!")
+            
             (empty_queue && empty_results) || if_any(
               identical(mode, "all"),
               empty_queue && (!empty_results),

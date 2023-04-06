@@ -1,18 +1,9 @@
-crew_test("crew_controller_group() method signature compatibility", {
+crew_test("crew_controller_group() method and signature compatibility", {
   x <- crew_controller_local()
   y <- crew_controller_group(x = x)
-  methods <- c(
-    "validate",
-    "start",
-    "launch",
-    "scale",
-    "collect",
-    "push",
-    "pop",
-    "wait",
-    "summary",
-    "terminate"
-  )
+  common <- intersect(names(x), names(y))
+  methods <- fltr(common, ~is.function(x[[.x]]))
+  methods <- setdiff(methods, "initialize")
   for (method in methods) {
     expect_equal(names(formals(x[[method]])), names(formals(y[[method]])))
   }

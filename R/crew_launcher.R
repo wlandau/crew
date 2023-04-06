@@ -300,35 +300,32 @@ crew_class_launcher <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Launch one or more workers.
-    #' @details If a worker is already assigned to a socket,
-    #'   the previous worker is terminated before the next
-    #'   one is launched.
+    #' @description Launch a worker.
     #' @return `NULL` (invisibly).
-    #' @param sockets Character vector of sockets for the workers
-    #'   to launch.
-    launch = function(sockets = character(0L)) {
-      for (socket in sockets) {
-        path <- parse_socket(socket)
-        index <- path$index
-        instance <- path$instance
-        call <- self$call(
-          socket = socket,
-          launcher = self$name,
-          worker = index,
-          instance = instance
-        )
-        handle <- self$launch_worker(
-          call = call,
-          launcher = self$name,
-          worker = index,
-          instance = instance
-        )
-        self$workers$handle[[index]] <- handle
-        self$workers$socket[index] <- socket
-        self$workers$start[index] <- nanonext::mclock() / 1000
-        self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
+    #' @param socket Character of length 1, sockets of the worker to launch.
+    launch = function(socket = NULL) {
+      if (!length(socket)) {
+        return(invisible())
       }
+      path <- parse_socket(socket)
+      index <- path$index
+      instance <- path$instance
+      call <- self$call(
+        socket = socket,
+        launcher = self$name,
+        worker = index,
+        instance = instance
+      )
+      handle <- self$launch_worker(
+        call = call,
+        launcher = self$name,
+        worker = index,
+        instance = instance
+      )
+      self$workers$handle[[index]] <- handle
+      self$workers$socket[index] <- socket
+      self$workers$start[index] <- nanonext::mclock() / 1000
+      self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
       invisible()
     },
     #' @description Show whether each worker is launching.

@@ -53,10 +53,11 @@ The controller group also supports global methods for `wait()`, `pop()`, and `te
 group$wait(controllers = "semi-persistent")
 group$pop()
 #> # A tibble: 1 × 11
-#>   name    command result    seconds      seed error trace…¹ warni…² launc…³ worker insta…⁴
-#>   <chr>   <chr>   <list>      <dbl>     <int> <chr> <chr>   <chr>   <chr>    <int> <chr>  
-#> 1 my task sqrt(4) <dbl [1]> 0.00100 630014969 NA    NA      NA      semi-p…      1 67c3fd…
-#> # … with abbreviated variable names ¹​traceback, ²​warnings, ³​launcher, ⁴​instance
+#>   name    command result seconds   seed error trace…¹ warni…² launc…³ worker
+#>   <chr>   <chr>   <list>   <dbl>  <int> <chr> <chr>   <chr>   <chr>    <int>
+#> 1 my task sqrt(4) <dbl>        0 5.11e8 NA    NA      NA      semi-p…      1
+#> # … with 1 more variable: instance <chr>, and abbreviated variable names
+#> #   ¹​traceback, ²​warnings, ³​launcher
 ```
 
 The controller group has a `summary()` method which aggregates all the information from the selected controllers.

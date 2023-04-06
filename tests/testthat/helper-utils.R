@@ -10,12 +10,9 @@ crew_test_sleep <- function() {
   on_windows <- identical(tolower(Sys.info()[["sysname"]]), "windows")
   on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
   on_ci <- isTRUE(as.logical(Sys.getenv("CI")))
-  if_any(
-    on_windows || on_cran || on_ci,
-    Sys.sleep(2.25),
-    NULL
-#    Sys.sleep(0.5)
-  )
+  if (on_windows || on_cran || on_ci) {
+    Sys.sleep(2.25)
+  }
   invisible()
 }
 

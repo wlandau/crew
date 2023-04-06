@@ -89,12 +89,10 @@ crew_class_controller <- R6::R6Class(
       self$launcher$terminate(indexes = private$lost())
     },
     try_launch = function(inactive, n) {
-      launched <- 0L
+      inactive <- utils::head(inactive, n = n)
       for (index in inactive) {
-        if (launched >= n) break
         socket <- self$router$route(index = index)
         self$launcher$launch(socket = socket)
-        launched <- launched + as.integer(!is.null(socket))
       }
     }
   ),

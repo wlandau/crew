@@ -304,7 +304,7 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param socket Character of length 1, sockets of the worker to launch.
     launch = function(socket = NULL) {
-      if (!length(socket)) {
+      if (!length(socket) || !is.character(socket)) {
         return(invisible())
       }
       path <- parse_socket(socket)

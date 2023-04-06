@@ -79,7 +79,6 @@ Other controllers:
 \item \href{#method-crew_class_controller_group-wait}{\code{crew_class_controller_group$wait()}}
 \item \href{#method-crew_class_controller_group-summary}{\code{crew_class_controller_group$summary()}}
 \item \href{#method-crew_class_controller_group-terminate}{\code{crew_class_controller_group$terminate()}}
-\item \href{#method-crew_class_controller_group-clone}{\code{crew_class_controller_group$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -439,23 +438,6 @@ Set to \code{NULL} to select all controllers.}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller_group-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller_group-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$clone(deep = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
 }
 }
 }

@@ -23,7 +23,7 @@ generated.}
 If \code{NULL}, the host defaults to the local IP address.}
 
 \item{port}{TCP port to listen for the workers. If \code{NULL},
-then an ephemeral port is automatically chosen.}
+then an available ephemeral port is automatically chosen.}
 
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal

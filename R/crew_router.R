@@ -10,7 +10,7 @@
 #' @param host IP address of the `mirai` client to send and receive tasks.
 #'   If `NULL`, the host defaults to the local IP address.
 #' @param port TCP port to listen for the workers. If `NULL`,
-#'   then an ephemeral port is automatically chosen.
+#'   then an available ephemeral port is automatically chosen.
 #' @param seconds_interval Number of seconds between
 #'   polling intervals waiting for certain internal
 #'   synchronous operations to complete.

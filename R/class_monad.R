@@ -12,17 +12,17 @@ monad_init <- function(
   instance = NA_character_
 ) {
   out <- monad_new(
-    name = name %|||% NA_character_,
-    command = command %|||% NA_character_,
-    result = result %|||% NA,
-    seconds = seconds %|||% NA_real_,
-    seed = seed %|||% NA_integer_,
-    error = error %|||% NA_character_,
-    traceback = traceback %|||% NA_character_,
-    warnings = warnings %|||% NA_character_,
-    launcher = launcher %|||% NA_character_,
-    worker = worker %|||% NA_integer_,
-    instance = instance %|||% NA_character_
+    name = name,
+    command = command,
+    result = result,
+    seconds = seconds,
+    seed = seed,
+    error = error,
+    traceback = traceback,
+    warnings = warnings,
+    launcher = launcher,
+    worker = worker,
+    instance = instance
   )
   out
 }

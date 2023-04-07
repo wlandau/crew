@@ -33,10 +33,6 @@ crew_eval <- function(
   packages = character(0),
   library = NULL
 ) {
-  true(data, is.list(.), is_named(.))
-  true(globals, is.list(.), is_named(.))
-  true(seed, is.numeric(.), length(.) == 1L, !anyNA(.))
-  true(garbage_collection, isTRUE(.) || isFALSE(.))
   load_packages(packages = packages, library = library)
   old_options <- options()
   old_globals <- envir_state(names(globals), envir = globalenv())
@@ -84,7 +80,7 @@ crew_eval <- function(
   seconds <- (nanonext::mclock() - start) / 1000
   monad_init(
     command = deparse_safe(command),
-    result = result,
+    result = result %|||% NA,
     seconds = seconds,
     seed = seed,
     error = state$error %|||% NA_character_,

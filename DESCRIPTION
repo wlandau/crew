@@ -42,6 +42,7 @@ Imports:
   ps,
   R6,
   rlang,
+  stats,
   tibble,
   tidyselect,
   utils,

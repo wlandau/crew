@@ -8,7 +8,7 @@ crew_eval(
   command,
   data = list(),
   globals = list(),
-  seed = sample.int(n = 1000000000L, size = 1L),
+  seed = as.integer(stats::runif(n = 1L, min = 1, max = 1e+09)),
   garbage_collection = FALSE,
   packages = character(0),
   library = NULL

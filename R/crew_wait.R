@@ -31,9 +31,10 @@ crew_wait <- function(
   }
   true(seconds_interval, is.numeric(.), length(.) == 1L, !anyNA(.), . >= 0)
   true(seconds_timeout, is.numeric(.), length(.) == 1L, !anyNA(.), . >= 0)
-  start <- as.numeric(proc.time()["elapsed"])
+  start <- nanonext::mclock()
+  milli_timeout <- 1000 * seconds_timeout
   while (!all(do.call(what = fun, args = args))) {
-    if (as.numeric(proc.time()["elapsed"]) - start > seconds_timeout) {
+    if ((nanonext::mclock() - start) > milli_timeout) {
       message <- paste(
         "timed out after waiting",
         seconds_timeout,
@@ -42,7 +43,7 @@ crew_wait <- function(
       )
       crew_expire(message)
     }
-    Sys.sleep(seconds_interval)
+    nanonext::msleep(1000 * seconds_interval)
   }
   invisible()
 }

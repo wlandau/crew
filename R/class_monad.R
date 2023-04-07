@@ -24,7 +24,6 @@ monad_init <- function(
     worker = worker %|||% NA_integer_,
     instance = instance %|||% NA_character_
   )
-  monad_validate(out)
   out
 }
 

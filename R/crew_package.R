@@ -22,10 +22,11 @@
 #' @importFrom callr r_bg
 #' @importFrom getip getip
 #' @importFrom mirai daemons mirai saisei server
-#' @importFrom nanonext random sha1 .unresolved
+#' @importFrom nanonext mclock msleep random sha1 .unresolved
 #' @importFrom ps ps_handle ps_is_running ps_kill
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function enquo quo_squash
+#' @importFrom stats runif
 #' @importFrom tibble tibble
 #' @importFrom tidyselect all_of any_of contains ends_with eval_select
 #'   everything last_col matches num_range one_of starts_with

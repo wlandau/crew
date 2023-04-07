@@ -28,12 +28,11 @@ crew_eval <- function(
   command,
   data = list(),
   globals = list(),
-  seed = sample.int(n = 1e9L, size = 1L),
+  seed = as.integer(stats::runif(n = 1L, min = 1, max = 1e9)),
   garbage_collection = FALSE,
   packages = character(0),
   library = NULL
 ) {
-  true(is.language(command))
   true(data, is.list(.), is_named(.))
   true(globals, is.list(.), is_named(.))
   true(seed, is.numeric(.), length(.) == 1L, !anyNA(.))
@@ -73,7 +72,7 @@ crew_eval <- function(
     invokeRestart("muffleWarning")
   }
   state <- new.env(hash = FALSE, parent = emptyenv())
-  start <- as.numeric(proc.time()["elapsed"])
+  start <- nanonext::mclock()
   result <- tryCatch(
     expr = withCallingHandlers(
       expr = eval(expr = command, envir = envir),
@@ -82,7 +81,7 @@ crew_eval <- function(
     ),
     error = function(condition) NULL
   )
-  seconds <- as.numeric(proc.time()["elapsed"]) - start
+  seconds <- (nanonext::mclock() - start) / 1000
   monad_init(
     command = deparse_safe(command),
     result = result,

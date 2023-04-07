@@ -112,7 +112,7 @@ crew_test("custom launcher", {
           "R"
         )
         path <- file.path(R.home("bin"), bin)
-        processx::process$new(command = bin, args = c("-e", call))
+        processx::process$new(command = path, args = c("-e", call))
       },
       terminate_worker = function(handle) {
         handle$kill()

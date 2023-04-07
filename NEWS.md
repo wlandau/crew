@@ -15,6 +15,8 @@
 * Allow the dispatcher process to not exist so that the router will keep working if `mirai` implements the dispatcher another way (#60).
 * Add a `substitute` argument to `push()` (#63).
 * Remove dependency on custom NNG bus sockets, which significantly simplifies the internals, improves robustness, and smooths the integration with `mirai` (#61).
+* Use `processx` instead of `callr` for the local process launcher (#64").
+* Speed up `crew_eval()` by relying on `nanonext::mclock()` for the time.
 
 # crew 0.0.5
 

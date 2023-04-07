@@ -58,16 +58,18 @@ crew_test("crew_controller_local()", {
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  x$push(command = ps::ps_pid(), name = "task_pid")
+  instance <- parse_instance(x$router$sockets())
+  x$push(command = Sys.getenv("CREW_INSTANCE"), name = "task")
   x$wait(seconds_timeout = 5)
-  # pid task
+  # first task
   out <- x$pop(scale = TRUE)
   expect_equal(x$summary()$popped_tasks, 1L)
   expect_equal(x$summary()$popped_errors, 0L)
   expect_equal(x$summary()$popped_warnings, 0L)
-  expect_equal(out$name, "task_pid")
-  expect_equal(out$command, "ps::ps_pid()")
-  expect_equal(out$result[[1]], x$launcher$workers$handle[[1]]$get_pid())
+  expect_equal(out$name, "task")
+  expect_equal(out$command, "Sys.getenv(\"CREW_INSTANCE\")")
+  expect_equal(out$result[[1]], instance)
+  expect_false(any(instance == Sys.getenv("CREW_INSTANCE")))
   expect_true(is.numeric(out$seconds))
   expect_false(anyNA(out$seconds))
   expect_true(out$seconds >= 0)
@@ -198,7 +200,10 @@ crew_test("crew_controller_local() can terminate a lost worker", {
     crew_test_sleep()
   })
   x$launcher$workers$launches <- 1L
-  handle <- callr::r_bg(function() Sys.sleep(300))
+  bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
+  path <- file.path(R.home("bin"), bin)
+  call <- "Sys.sleep(300)"
+  handle <- processx::process$new(command = path, args = c("-e", call))
   crew_wait(
     ~handle$is_alive(),
     seconds_interval = 0.001,

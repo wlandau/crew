@@ -16,7 +16,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   socket <- router$sockets()[2L]
   expect_equal(launcher$workers$launches, rep(0L, 4L))
   launcher$launch(index = 2L, socket = socket)
-  expect_s3_class(launcher$workers$handle[[2L]], "r_process")
+  expect_s3_class(launcher$workers$handle[[2L]], "process")
   expect_silent(launcher$validate())
   crew::crew_wait(
     ~launcher$workers$handle[[2L]]$is_alive(),

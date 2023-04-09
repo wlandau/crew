@@ -153,13 +153,12 @@ crew_class_router <- R6::R6Class(
     #' @return `TRUE` if successfully listening for dialed-in workers,
     #'   `FALSE` otherwise.
     listening = function() {
-      info <- mirai::daemons(.compute = self$name)
-      connections <- info$connections
-      n_daemons <- nrow(info$daemons)
+      self$poll()
+      n_daemons <- nrow(self$daemons)
       # TODO: when the dispatcher process becomes a C thread,
       # delete these superfluous checks on the dispatcher.
       # Begin dispatcher checks.
-      dispatcher <- attr(dimnames(info$daemons)[[1]], "dispatcher_pid")
+      dispatcher <- attr(dimnames(self$daemons)[[1]], "dispatcher_pid")
       dispatcher_running <- TRUE
       if (!is.null(dispatcher)) {
         handle <- ps::ps_handle(pid = dispatcher)
@@ -167,13 +166,9 @@ crew_class_router <- R6::R6Class(
       }
       dispatcher_running &&
       # End dispatcher checks.
-        (length(connections) == 1L) &&
         (length(n_daemons) == 1L) &&
-        !anyNA(connections) &&
         !anyNA(n_daemons) &&
-        is.numeric(connections) &&
         is.numeric(n_daemons) &&
-        all(connections > 0L) &&
         all(n_daemons > 0L)
     },
     #' @description Start listening for workers on the available sockets.
@@ -194,13 +189,12 @@ crew_class_router <- R6::R6Class(
           seconds_timeout = self$seconds_timeout,
           message = "mirai client cannot connect."
         )
-        self$poll()
         # TODO: remove code that gets the dispatcher PID if the dispatcher
         # process is phased out of mirai.
         # Begin dispatcher code.
         self$dispatcher <- attr(dimnames(self$daemons)[[1]], "dispatcher_pid")
         # End dispatcher code.
-        self$rotations <- rep(-1L, nrow(self$daemons))
+        self$rotations <- rep(-1L, self$workers)
       }
       invisible()
     },
@@ -236,9 +230,7 @@ crew_class_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     poll = function() {
       out <- mirai::daemons(.compute = self$name)$daemons
-      if (is.matrix(out)) {
-        self$daemons <- out
-      }
+      self$daemons <- if_any(is.matrix(out), out, NULL)
       invisible()
     },
     #' @description Show an informative worker log.
@@ -263,14 +255,11 @@ crew_class_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     terminate = function() {
       if (isTRUE(self$listening())) {
-        self$poll()
-        daemons <- mirai::daemons(.compute = self$name)$daemons
         # TODO: when the dispatcher process becomes a C thread,
         # delete these superfluous checks on the dispatcher.
         # Begin dispatcher checks block 1/2.
-        dispatcher <- attr(dimnames(daemons)[[1]], "dispatcher_pid")
-        if (!is.null(dispatcher)) {
-          handle <- ps::ps_handle(pid = dispatcher)
+        if (!is.null(self$dispatcher)) {
+          handle <- ps::ps_handle(pid = self$dispatcher)
         }
         # End dispatcher checks block 1/2.
         mirai::daemons(n = 0L, .compute = self$name)
@@ -281,7 +270,7 @@ crew_class_router <- R6::R6Class(
           message = "mirai client could not terminate."
         )
         # Begin dispatcher checks block 2/2.
-        if (!is.null(dispatcher)) {
+        if (!is.null(self$dispatcher)) {
           tryCatch(
             crew_wait(
               fun = ~!ps::ps_is_running(p = handle),

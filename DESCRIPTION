@@ -45,7 +45,6 @@ Imports:
   stats,
   tibble,
   tidyselect,
-  tools,
   utils,
   withr
 Suggests:

@@ -303,17 +303,6 @@ crew_class_router <- R6::R6Class(
             ),
             crew_expire = function(condition) NULL
           )
-          if_any(
-            ps::ps_is_running(p = handle),
-            tools::pskill(pid = dispatcher, signal = tools::SIGQUIT),
-            NULL
-          )
-          crew_wait(
-            fun = ~!ps::ps_is_running(p = handle),
-            seconds_interval = self$seconds_interval,
-            seconds_timeout = self$seconds_timeout,
-            message = paste("could not terminate dispatcher PID", dispatcher)
-          )
         }
         # End dispatcher checks block 2/2.
         self$daemons <- NULL

@@ -31,6 +31,9 @@ crew_test("crew_controller_group()", {
     expect_false(x$controllers[[index]]$router$listening())
   }
   x$start()
+  expect_true(x$empty())
+  expect_true(x$empty(controllers = "a"))
+  expect_true(x$empty(controllers = "b"))
   for (index in seq_len(2)) {
     crew_wait(
       ~x$controllers[[index]]$router$listening(),
@@ -82,8 +85,17 @@ crew_test("crew_controller_group()", {
   expect_null(x$pop())
   # substitute = TRUE # nolint
   x$push(command = ps::ps_pid(), name = "task_pid", controller = "b")
+  expect_false(x$empty())
+  expect_true(x$empty(controllers = "a"))
+  expect_false(x$empty(controllers = "b"))
   x$wait(seconds_timeout = 5)
+  expect_false(x$empty())
+  expect_true(x$empty(controllers = "a"))
+  expect_false(x$empty(controllers = "b"))
   out <- x$pop(scale = FALSE)
+  expect_true(x$empty())
+  expect_true(x$empty(controllers = "a"))
+  expect_true(x$empty(controllers = "b"))
   expect_false(is.null(out))
   expect_equal(out$name, "task_pid")
   expect_equal(out$command, "ps::ps_pid()")

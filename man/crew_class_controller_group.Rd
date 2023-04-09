@@ -70,6 +70,7 @@ Other controllers:
 \itemize{
 \item \href{#method-crew_class_controller_group-new}{\code{crew_class_controller_group$new()}}
 \item \href{#method-crew_class_controller_group-validate}{\code{crew_class_controller_group$validate()}}
+\item \href{#method-crew_class_controller_group-empty}{\code{crew_class_controller_group$empty()}}
 \item \href{#method-crew_class_controller_group-start}{\code{crew_class_controller_group$start()}}
 \item \href{#method-crew_class_controller_group-launch}{\code{crew_class_controller_group$launch()}}
 \item \href{#method-crew_class_controller_group-scale}{\code{crew_class_controller_group$scale()}}
@@ -136,6 +137,33 @@ Validate the router.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-empty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-empty}{}}}
+\subsection{Method \code{empty()}}{
+See if the controllers are empty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$empty(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+A controller is empty if it has no running tasks
+or completed tasks waiting to be retrieved with \code{push()}.
+}
+
+\subsection{Returns}{
+\code{TRUE} if all the selected controllers are empty,
+\code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}

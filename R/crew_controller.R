@@ -149,6 +149,15 @@ crew_class_controller <- R6::R6Class(
       self$launcher$validate()
       invisible()
     },
+    #' @description See if the controller is empty.
+    #' @details A controller is empty if it has no running tasks
+    #'   or completed tasks waiting to be retrieved with `push()`.
+    #' @return `TRUE` if the controller is empty, `FALSE` otherwise.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    empty = function(controllers = NULL) {
+      (length(self$queue) < 1L) && (length(self$results) < 1L)
+    },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
     #'   with the launcher.

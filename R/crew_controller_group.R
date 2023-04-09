@@ -126,6 +126,17 @@ crew_class_controller_group <- R6::R6Class(
       true(identical(out, exp), message = "bad controller names")
       invisible()
     },
+    #' @description See if the controllers are empty.
+    #' @details A controller is empty if it has no running tasks
+    #'   or completed tasks waiting to be retrieved with `push()`.
+    #' @return `TRUE` if all the selected controllers are empty,
+    #'   `FALSE` otherwise.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    empty = function(controllers = NULL) {
+      control <- private$select_controllers(controllers)
+      all(map_lgl(control, ~.x$empty()))
+    },
     #' @description Start one or more controllers.
     #' @return `NULL` (invisibly).
     #' @param controllers Character vector of controller names.

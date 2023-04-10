@@ -28,7 +28,10 @@ crew_controller_system2 <- function(
   seconds_exit = 0.1,
   tasks_max = Inf,
   tasks_timers = 0L,
-  cleanup = FALSE,
+  reset_globals = TRUE,
+  reset_packages = FALSE,
+  reset_options = FALSE,
+  garbage_collection = FALSE,
   auto_scale = "demand"
 ) {
   router <- crew::crew_router(
@@ -49,7 +52,10 @@ crew_controller_system2 <- function(
     seconds_exit = seconds_exit,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
-    cleanup = cleanup
+    reset_globals = reset_globals,
+    reset_packages = reset_packages,
+    reset_options = reset_options,
+    garbage_collection = garbage_collection
   )
   controller <- crew::crew_controller(
     router = router,

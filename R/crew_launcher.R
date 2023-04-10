@@ -41,9 +41,16 @@
 #' @param tasks_timers Number of tasks to do before activating
 #'   the timers for `seconds_idle` and `seconds_wall`.
 #'   See the `timerlaunch` argument of `mirai::server()`.
-#' @param cleanup Logical, whether to clean up global options and the
-#'   global environment after every task.
-#'   See the `cleanup` argument of `mirai::server()`.
+#' @param reset_globals `TRUE` to reset global environment
+#'   variables between tasks, `FALSE` to leave them alone.
+#' @param reset_packages `TRUE` to unload any packages loaded during
+#'   a task (runs between each task), `FALSE` to leave packages alone.
+#' @param reset_options `TRUE` to reset global options to their original
+#'   state between each task, `FALSE` otherwise. It is recommended to
+#'   only set `reset_options = TRUE` if `reset_packages` is also `TRUE`
+#'   because packages sometimes rely on options they set at loading time.
+#' @param garbage_collection `TRUE` to run garbage collection between
+#'   tasks, `FALSE` to skip.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' crew_session_start()
@@ -68,7 +75,10 @@ crew_launcher <- function(
   seconds_exit = 0.1,
   tasks_max = Inf,
   tasks_timers = 0L,
-  cleanup = FALSE
+  reset_globals = TRUE,
+  reset_packages = FALSE,
+  reset_options = FALSE,
+  garbage_collection = FALSE
 ) {
   name <- as.character(name %|||% random_name())
   launcher <- crew_class_launcher_local$new(
@@ -81,7 +91,10 @@ crew_launcher <- function(
     seconds_exit = seconds_exit,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
-    cleanup = cleanup
+    reset_globals = reset_globals,
+    reset_packages = reset_packages,
+    reset_options = reset_options,
+    garbage_collection = garbage_collection
   )
   launcher$validate()
   launcher
@@ -131,8 +144,14 @@ crew_class_launcher <- R6::R6Class(
     tasks_max = NULL,
     #' @field tasks_timers See [crew_launcher()].
     tasks_timers = NULL,
-    #' @field cleanup See [crew_launcher()].
-    cleanup = NULL,
+    #' @field reset_globals See [crew_launcher()].
+    reset_globals = NULL,
+    #' @field reset_packages See [crew_launcher()].
+    reset_packages = NULL,
+    #' @field reset_options See [crew_launcher()].
+    reset_options = NULL,
+    #' @field garbage_collection See [crew_launcher()].
+    garbage_collection = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
     #' @param name See [crew_launcher()].
@@ -145,7 +164,10 @@ crew_class_launcher <- R6::R6Class(
     #' @param seconds_exit See [crew_launcher()].
     #' @param tasks_max See [crew_launcher()].
     #' @param tasks_timers See [crew_launcher()].
-    #' @param cleanup See [crew_launcher()].
+    #' @param reset_globals See [crew_launcher()].
+    #' @param reset_packages See [crew_launcher()].
+    #' @param reset_options See [crew_launcher()].
+    #' @param garbage_collection See [crew_launcher()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' crew_session_start()
@@ -170,7 +192,10 @@ crew_class_launcher <- R6::R6Class(
       seconds_exit = NULL,
       tasks_max = NULL,
       tasks_timers = NULL,
-      cleanup = NULL
+      reset_globals = NULL,
+      reset_packages = NULL,
+      reset_options = NULL,
+      garbage_collection = NULL
     ) {
       self$name <- name
       self$seconds_launch <- seconds_launch
@@ -181,7 +206,10 @@ crew_class_launcher <- R6::R6Class(
       self$seconds_exit <- seconds_exit
       self$tasks_max <- tasks_max
       self$tasks_timers <- tasks_timers
-      self$cleanup <- cleanup
+      self$reset_globals <- reset_globals
+      self$reset_packages <- reset_packages
+      self$reset_options <- reset_options
+      self$garbage_collection <- garbage_collection
     },
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
@@ -222,7 +250,15 @@ crew_class_launcher <- R6::R6Class(
       for (field in fields) {
         true(self[[field]], is.numeric(.), . >= 0, length(.) == 1L, !anyNA(.))
       }
-      true(self$cleanup, isTRUE(.) || isFALSE(.))
+      fields <- c(
+        "reset_globals",
+        "reset_packages",
+        "reset_options",
+        "garbage_collection"
+      )
+      for (field in fields) {
+        true(self[[field]], isTRUE(.) || isFALSE(.))
+      }
       if (!is.null(self$workers)) {
         true(self$workers, is.data.frame(.))
         cols <- c("handle", "socket", "start", "launches")
@@ -235,6 +271,10 @@ crew_class_launcher <- R6::R6Class(
     #' @param socket Character of length 1, websocket address of the worker
     #'   to launch.
     settings = function(socket) {
+      cleanup <- as.integer(isTRUE(self$reset_globals)) +
+        (2L * as.integer(isTRUE(self$reset_packages))) +
+        (4L * as.integer(isTRUE(self$reset_options))) + 
+        (8L * as.integer(isTRUE(self$garbage_collection)))
       list(
         url = socket,
         maxtasks = self$tasks_max,
@@ -242,7 +282,7 @@ crew_class_launcher <- R6::R6Class(
         walltime = self$seconds_wall * 1000,
         timerstart = self$tasks_timers,
         exitlinger = self$seconds_exit * 1000,
-        cleanup = self$cleanup,
+        cleanup = cleanup,
         asyncdial = FALSE
       )
     },

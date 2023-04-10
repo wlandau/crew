@@ -78,7 +78,7 @@ launcher$call(
   worker = 3L,
   instance = "aa9c59ea"
 )
-#> [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:5000/3/aa9c59ea\", maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, exitlinger = 1000, cleanup = FALSE, asyncdial = FALSE), launcher = \"my_launcher\", worker = 3L, instance = \"aa9c59ea\")"
+#> [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:5000/3/aa9c59ea\", maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, exitlinger = 1000, cleanup = 1L, asyncdial = FALSE), launcher = \"my_launcher\", worker = 3L, instance = \"aa9c59ea\")"
 ```
 
 ## Helper
@@ -112,7 +112,10 @@ crew_controller_custom <- function(
   seconds_exit = 1,
   tasks_max = Inf,
   tasks_timers = 0L,
-  cleanup = FALSE,
+  reset_globals = TRUE,
+  reset_packages = FALSE,
+  reset_options = FALSE,
+  garbage_collection = FALSE,
   auto_scale = "demand"
 ) {
   router <- crew::crew_router(
@@ -133,7 +136,10 @@ crew_controller_custom <- function(
     seconds_exit = seconds_exit,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
-    cleanup = cleanup
+    reset_globals = reset_globals,
+    reset_packages = reset_packages,
+    reset_options = reset_options,
+    garbage_collection = garbage_collection
   )
   controller <- crew::crew_controller(
     router = router,
@@ -173,8 +179,8 @@ Wait for the task to complete and look at the result.
 
 ```{r}
 controller$wait()
-out <- controller$pop()
-out$result[[1]]
+result <- controller$pop()
+result$result[[1]]
 #> [1] "192.168.0.2 27336"
 ```
 
@@ -245,9 +251,9 @@ crew_wait(
 )
 # Collect the results.
 results <- NULL
-while (!is.null(out <- controller$pop(scale = FALSE))) {
-  if (!is.null(out)) {
-    results <- dplyr::bind_rows(results, out)
+while (!is.null(result <- controller$pop(scale = FALSE))) {
+  if (!is.null(result)) {
+    results <- dplyr::bind_rows(results, result)
   }
 }
 # Check the results

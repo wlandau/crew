@@ -82,7 +82,13 @@ Other launchers:
 
 \item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{cleanup}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{reset_globals}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{reset_packages}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{reset_options}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -116,7 +122,10 @@ Launcher constructor.
   seconds_exit = NULL,
   tasks_max = NULL,
   tasks_timers = NULL,
-  cleanup = NULL
+  reset_globals = NULL,
+  reset_packages = NULL,
+  reset_options = NULL,
+  garbage_collection = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -142,7 +151,13 @@ See the \code{idletime} argument of \code{mirai::server()}.}
 
 \item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{cleanup}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{reset_globals}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{reset_packages}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{reset_options}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 }
 \if{html}{\out{</div>}}
 }

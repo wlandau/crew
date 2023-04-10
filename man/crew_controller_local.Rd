@@ -17,7 +17,10 @@ crew_controller_local(
   seconds_exit = 0.1,
   tasks_max = Inf,
   tasks_timers = 0L,
-  cleanup = FALSE,
+  reset_globals = TRUE,
+  reset_packages = FALSE,
+  reset_options = FALSE,
+  garbage_collection = FALSE,
   auto_scale = "demand"
 )
 }
@@ -75,9 +78,19 @@ the assignment of tasks to workers, it is recommended to set
 the timers for \code{seconds_idle} and \code{seconds_wall}.
 See the \code{timerlaunch} argument of \code{mirai::server()}.}
 
-\item{cleanup}{Logical, whether to clean up global options and the
-global environment after every task.
-See the \code{cleanup} argument of \code{mirai::server()}.}
+\item{reset_globals}{\code{TRUE} to reset global environment
+variables between tasks, \code{FALSE} to leave them alone.}
+
+\item{reset_packages}{\code{TRUE} to unload any packages loaded during
+a task (runs between each task), \code{FALSE} to leave packages alone.}
+
+\item{reset_options}{\code{TRUE} to reset global options to their original
+state between each task, \code{FALSE} otherwise. It is recommended to
+only set \code{reset_options = TRUE} if \code{reset_packages} is also \code{TRUE}
+because packages sometimes rely on options they set at loading time.}
+
+\item{garbage_collection}{\code{TRUE} to run garbage collection between
+tasks, \code{FALSE} to skip.}
 
 \item{auto_scale}{Character of length 1, name of the method for
 automatically scaling workers to meet demand. \code{NULL} to default to

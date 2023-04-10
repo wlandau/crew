@@ -26,7 +26,10 @@ crew_test("launcher settings", {
     seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
-    cleanup = TRUE
+    reset_globals = TRUE,
+    reset_packages = TRUE,
+    reset_options = TRUE,
+    garbage_collection = TRUE
   )
   expect_equal(launcher$name, "my_launcher_name")
   socket <- "ws://127.0.0.1:5000"
@@ -38,7 +41,61 @@ crew_test("launcher settings", {
   expect_equal(settings$walltime, 3000)
   expect_equal(settings$timerstart, 8)
   expect_equal(settings$exitlinger, 4000)
-  expect_true(settings$cleanup)
+  expect_equal(settings$cleanup, 15L)
+})
+
+crew_test("launcher alternative cleanup", {
+  launcher <- crew_class_launcher$new(
+    name = "my_launcher_name",
+    seconds_launch = 1,
+    seconds_idle = 2,
+    seconds_wall = 3,
+    seconds_exit = 4,
+    tasks_max = 7,
+    tasks_timers = 8,
+    reset_globals = FALSE,
+    reset_packages = TRUE,
+    reset_options = FALSE,
+    garbage_collection = TRUE
+  )
+  settings <- launcher$settings(socket = socket)
+  expect_equal(settings$cleanup, 10L)
+})
+
+crew_test("launcher alternative cleanup 2", {
+  launcher <- crew_class_launcher$new(
+    name = "my_launcher_name",
+    seconds_launch = 1,
+    seconds_idle = 2,
+    seconds_wall = 3,
+    seconds_exit = 4,
+    tasks_max = 7,
+    tasks_timers = 8,
+    reset_globals = TRUE,
+    reset_packages = FALSE,
+    reset_options = TRUE,
+    garbage_collection = FALSE
+  )
+  settings <- launcher$settings(socket = socket)
+  expect_equal(settings$cleanup, 5L)
+})
+
+crew_test("launcher alternative cleanup 3", {
+  launcher <- crew_class_launcher$new(
+    name = "my_launcher_name",
+    seconds_launch = 1,
+    seconds_idle = 2,
+    seconds_wall = 3,
+    seconds_exit = 4,
+    tasks_max = 7,
+    tasks_timers = 8,
+    reset_globals = FALSE,
+    reset_packages = FALSE,
+    reset_options = FALSE,
+    garbage_collection = FALSE
+  )
+  settings <- launcher$settings(socket = socket)
+  expect_equal(settings$cleanup, 0L)
 })
 
 crew_test("launcher call", {

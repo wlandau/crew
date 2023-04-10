@@ -170,8 +170,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @param data Named list of local data objects in the
     #'   evaluation environment.
     #' @param globals Named list of objects to temporarily assign to the
-    #'   global environment for the task. At the end of the task,
-    #'   these values are reset to their previous values.
+    #'   global environment for the task. See the `reset_globals`
+    #'   argument of [crew_controller_local()].
     #' @param substitute Logical of length 1, whether to call
     #'   `base::substitute()` on the supplied value of the
     #'   `command` argument. If `TRUE` (default) then `command` is quoted
@@ -185,8 +185,6 @@ crew_class_controller_group <- R6::R6Class(
     #' @param seed Integer of length 1 with the pseudo-random number generator
     #'   seed to temporarily set for the evaluation of the task.
     #'   At the end of the task, the seed is restored.
-    #' @param garbage_collection Logical, whether to run garbage collection
-    #'   with `gc()` before running the task.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -208,7 +206,6 @@ crew_class_controller_group <- R6::R6Class(
       globals = list(),
       substitute = TRUE,
       seed = sample.int(n = 1e9L, size = 1L),
-      garbage_collection = FALSE,
       packages = character(0),
       library = NULL,
       seconds_timeout = NULL,
@@ -233,7 +230,6 @@ crew_class_controller_group <- R6::R6Class(
         globals = globals,
         substitute = TRUE,
         seed = seed,
-        garbage_collection = garbage_collection,
         packages = packages,
         library = library,
         seconds_timeout = seconds_timeout,

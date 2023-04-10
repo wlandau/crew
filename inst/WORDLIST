@@ -24,6 +24,7 @@ writeable
 YAML
 RJ
 ZeroMQ
+globals
 NNG
 Fargate
 validator

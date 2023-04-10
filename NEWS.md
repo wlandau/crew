@@ -18,6 +18,8 @@
 * Use `processx` instead of `callr` for the local process launcher (#64").
 * Speed up `crew_eval()` by e.g. relying on `nanonext::mclock()` for the time.
 * Add an `empty()` method to check if the controller or controller group is empty.
+* Rely on `mirai` for globals cleanup, garbage collection, and global option resets (#65).
+* Expose the package unloading capabilities of `mirai` (#65).
 
 # crew 0.0.5
 

@@ -273,7 +273,7 @@ crew_class_launcher <- R6::R6Class(
     settings = function(socket) {
       cleanup <- as.integer(isTRUE(self$reset_globals)) +
         (2L * as.integer(isTRUE(self$reset_packages))) +
-        (4L * as.integer(isTRUE(self$reset_options))) + 
+        (4L * as.integer(isTRUE(self$reset_options))) +
         (8L * as.integer(isTRUE(self$garbage_collection)))
       list(
         url = socket,

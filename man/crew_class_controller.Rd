@@ -266,7 +266,6 @@ Push a task to the head of the task list.
   globals = list(),
   substitute = TRUE,
   seed = sample.int(n = 1000000000L, size = 1L),
-  garbage_collection = FALSE,
   packages = character(0),
   library = NULL,
   seconds_timeout = NULL,
@@ -285,8 +284,8 @@ Push a task to the head of the task list.
 evaluation environment.}
 
 \item{\code{globals}}{Named list of objects to temporarily assign to the
-global environment for the task. At the end of the task,
-these values are reset to their previous values.}
+global environment for the task. See the \code{reset_globals} argument
+of \code{\link[=crew_controller_local]{crew_controller_local()}}.}
 
 \item{\code{substitute}}{Logical of length 1, whether to call
 \code{base::substitute()} on the supplied value of the
@@ -302,9 +301,6 @@ that invoke \code{crew} controllers.}
 \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
 seed to temporarily set for the evaluation of the task.
 At the end of the task, the seed is restored.}
-
-\item{\code{garbage_collection}}{Logical, whether to run garbage collection
-with \code{gc()} before running the task.}
 
 \item{\code{packages}}{Character vector of packages to load for the task.}
 

@@ -77,50 +77,6 @@ crew_test("crew_eval() seed", {
   expect_true(abs(out1$result[[1]] - out3$result[[1]]) > 1L)
 })
 
-crew_test("crew_eval() local data and garbage collection", {
-  out <- crew_eval(
-    quote(local_object + 1L),
-    data = list(local_object = 2L),
-    garbage_collection = TRUE
-  )
-  expect_equal(out$result[[1L]], 3L)
-})
-
-crew_test("envir_state() and envir_restore()", {
-  names <- c("a", "b", "c", "d")
-  envir <- new.env(parent = emptyenv())
-  envir$c <- "old_c"
-  envir$d <- "old_d"
-  envir$e <- "old_e"
-  state <- envir_state(names = names, envir = envir)
-  expect_equal(sort(c(state$delete)), sort(c("a", "b")))
-  expect_equal(state$revert, list(c = "old_c", d = "old_d"))
-  new <- list(a = "new_a", b = "new_b", c = "new_c", d = "new_d")
-  list2env(new, envir = envir)
-  expect_equal(sort(names(envir)), sort(letters[seq_len(5)]))
-  expect_equal(envir$a, "new_a")
-  expect_equal(envir$b, "new_b")
-  expect_equal(envir$c, "new_c")
-  expect_equal(envir$d, "new_d")
-  expect_equal(envir$e, "old_e")
-  envir_restore(state = state, envir = envir)
-  expect_equal(names(envir), sort(c("c", "d", "e")))
-  expect_equal(envir$c, "old_c")
-  expect_equal(envir$d, "old_d")
-  expect_equal(envir$e, "old_e")
-})
-
-crew_test("crew_eval() globals", {
-  skip_on_cran()
-  expect_false(exists(x = "crew_global_object", envir = globalenv()))
-  out <- crew_eval(
-    quote(crew_global_object + 1L),
-    globals = list(crew_global_object = 2L)
-  )
-  expect_equal(out$result[[1L]], 3L)
-  expect_false(exists(x = "crew_global_object", envir = globalenv()))
-})
-
 crew_test("crew_eval() environment variables", {
   skip_on_cran()
   envvars <- c("CREW_LAUNCHER", "CREW_WORKER", "CREW_INSTANCE")
@@ -136,35 +92,4 @@ crew_test("crew_eval() environment variables", {
   expect_equal(out$launcher, "x1")
   expect_equal(out$worker, 2L)
   expect_equal(out$instance, "x3")
-})
-
-crew_test("crew_eval() options", {
-  skip_on_cran()
-  old_options <- options()
-  on.exit(options(old_options)) # Reset to old options on exit.
-  expect_null(getOption("crew_option_1"))
-  expect_null(getOption("crew_option_2"))
-  expect_lt(getOption("warn"), 10)
-  out <- crew_eval(
-    quote({
-      options(crew_option_1 = 1L, crew_option_2 = 2L, warn = 10)
-      list(
-        crew_option_1 = getOption("crew_option_1"),
-        crew_option_2 = getOption("crew_option_2"),
-        warn = getOption("warn")
-      )
-    })
-  )
-  expect_null(getOption("crew_option_1"))
-  expect_null(getOption("crew_option_2"))
-  expect_lt(getOption("warn"), 10)
-  expect_equal(
-    out$result[[1]],
-    list(
-      crew_option_1 = 1L,
-      crew_option_2 = 2L,
-      warn = 10L
-    )
-  )
-  options(old_options) # Reset to old options.
 })

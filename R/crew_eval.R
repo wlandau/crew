@@ -12,13 +12,10 @@
 #' @param command Language object with R code to run.
 #' @param data Named list of local data objects in the evaluation environment.
 #' @param globals Named list of objects to temporarily assign to the
-#'   global environment for the task. At the end of the task,
-#'   these values are reset to their previous values.
+#'   global environment for the task.
 #' @param seed Integer of length 1 with the pseudo-random number generator
 #'   seed to temporarily set for the evaluation of the task.
 #'   At the end of the task, the seed is restored.
-#' @param garbage_collection Logical, whether to run garbage collection
-#'   with `gc()` before running the task.
 #' @param packages Character vector of packages to load for the task.
 #' @param library Library path to load the packages. See the `lib.loc`
 #'   argument of `require()`.
@@ -29,21 +26,13 @@ crew_eval <- function(
   data = list(),
   globals = list(),
   seed = as.integer(stats::runif(n = 1L, min = 1, max = 1e9)),
-  garbage_collection = FALSE,
   packages = character(0),
   library = NULL
 ) {
   load_packages(packages = packages, library = library)
-  old_options <- options()
-  old_globals <- envir_state(names(globals), envir = globalenv())
   withr::local_seed(seed)
-  on.exit(envir_restore(state = old_globals, envir = globalenv()), add = TRUE)
-  on.exit(options_restore(old_options), add = TRUE)
   list2env(x = globals, envir = globalenv())
   envir <- list2env(x = data, parent = globalenv())
-  if (garbage_collection) {
-    gc()
-  }
   capture_error <- function(condition) {
     state$error <- crew_eval_message(condition)
     state$error_class <- class(condition)
@@ -90,31 +79,6 @@ crew_eval <- function(
     worker = as.integer(Sys.getenv("CREW_WORKER", unset = NA_character_)),
     instance = Sys.getenv("CREW_INSTANCE", unset = NA_character_)
   )
-}
-
-envir_state <- function(names, envir) {
-  names_revert <- intersect(names, names(envir))
-  revert <- map(names_revert, get, envir = envir)
-  names(revert) <- names_revert
-  list(
-    delete = setdiff(names, names(envir)),
-    revert = revert
-  )
-}
-
-envir_restore <- function(state, envir) {
-  rm(list = as.character(state$delete), envir = envir)
-  list2env(state$revert, envir = envir)
-  invisible()
-}
-
-options_restore <- function(x) {
-  names <- setdiff(names(options()), names(x))
-  drop <- replicate(length(names), NULL, simplify = FALSE)
-  names(drop) <- names
-  do.call(what = options, args = drop)
-  options(x)
-  invisible()
 }
 
 crew_eval_message <- function(condition, prefix = character(0)) {

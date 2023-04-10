@@ -1,4 +1,4 @@
-# crew 0.0.5.9001
+# crew 0.0.5.9004
 
 * Remove `asyncdial` from call to `mirai::daemons()`.
 * Explain vision in the launcher plugin vignette.
@@ -17,6 +17,7 @@
 * Remove dependency on custom NNG bus sockets, which significantly simplifies the internals, improves robustness, and smooths the integration with `mirai` (#61).
 * Use `processx` instead of `callr` for the local process launcher (#64").
 * Speed up `crew_eval()` by e.g. relying on `nanonext::mclock()` for the time.
+* Add an `empty()` method to check if the controller or controller group is empty.
 
 # crew 0.0.5
 

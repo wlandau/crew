@@ -11,6 +11,7 @@ crew_test("crew_controller_local()", {
   expect_false(x$router$listening())
   expect_null(x$summary())
   x$start()
+  expect_true(x$empty())
   crew_wait(
     ~{
       x$wait(seconds_timeout = 30)
@@ -60,9 +61,12 @@ crew_test("crew_controller_local()", {
   )
   instance <- parse_instance(x$router$sockets())
   x$push(command = Sys.getenv("CREW_INSTANCE"), name = "task")
+  expect_false(x$empty())
   x$wait(seconds_timeout = 5)
+  expect_false(x$empty())
   # first task
   out <- x$pop(scale = TRUE)
+  expect_true(x$empty())
   expect_equal(x$summary()$popped_tasks, 1L)
   expect_equal(x$summary()$popped_errors, 0L)
   expect_equal(x$summary()$popped_warnings, 0L)

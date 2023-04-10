@@ -1,6 +1,6 @@
 crew_test("abstract launcher class", {
   expect_silent(crew_launcher()$validate)
-  expect_crew_error(crew_launcher(cleanup = -1)$validate())
+  expect_crew_error(crew_launcher(reset_options = -1)$validate())
 })
 
 crew_test("default terminate_launcher() method", {
@@ -12,7 +12,10 @@ crew_test("default terminate_launcher() method", {
     seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
-    cleanup = TRUE
+    reset_globals = TRUE,
+    reset_packages = FALSE,
+    reset_options = FALSE,
+    garbage_collection = FALSE
   )
   expect_null(launcher$terminate_worker())
 })
@@ -58,7 +61,7 @@ crew_test("launcher alternative cleanup", {
     reset_options = FALSE,
     garbage_collection = TRUE
   )
-  settings <- launcher$settings(socket = socket)
+  settings <- launcher$settings(socket = "ws://127.0.0.1:5000")
   expect_equal(settings$cleanup, 10L)
 })
 
@@ -76,7 +79,7 @@ crew_test("launcher alternative cleanup 2", {
     reset_options = TRUE,
     garbage_collection = FALSE
   )
-  settings <- launcher$settings(socket = socket)
+  settings <- launcher$settings(socket = "ws://127.0.0.1:5000")
   expect_equal(settings$cleanup, 5L)
 })
 
@@ -94,7 +97,7 @@ crew_test("launcher alternative cleanup 3", {
     reset_options = FALSE,
     garbage_collection = FALSE
   )
-  settings <- launcher$settings(socket = socket)
+  settings <- launcher$settings(socket = "ws://127.0.0.1:5000")
   expect_equal(settings$cleanup, 0L)
 })
 
@@ -109,7 +112,10 @@ crew_test("launcher call", {
     seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
-    cleanup = TRUE,
+    reset_globals = TRUE,
+    reset_packages = FALSE,
+    reset_options = FALSE,
+    garbage_collection = FALSE,
     seconds_interval = 0.1,
     seconds_timeout = 0.25
   )
@@ -189,7 +195,10 @@ crew_test("custom launcher", {
     seconds_exit = 1,
     tasks_max = Inf,
     tasks_timers = 0L,
-    cleanup = FALSE,
+    reset_globals = TRUE,
+    reset_packages = FALSE,
+    reset_options = FALSE,
+    garbage_collection = FALSE,
     auto_scale = "demand"
   ) {
     router <- crew::crew_router(
@@ -210,7 +219,10 @@ crew_test("custom launcher", {
       seconds_exit = seconds_exit,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
-      cleanup = cleanup
+      reset_globals = reset_globals,
+      reset_packages = reset_packages,
+      reset_options = reset_options,
+      garbage_collection = garbage_collection
     )
     controller <- crew::crew_controller(
       router = router,

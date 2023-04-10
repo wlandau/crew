@@ -288,7 +288,7 @@ crew_class_controller <- R6::R6Class(
         NULL,
         seconds_timeout * 1000
       )
-      mirai_args <- list(
+      handle <- mirai::mirai(
         .expr = expr,
         data = data,
         globals = globals,
@@ -299,7 +299,6 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = self$router$name
       )
-      handle <- do.call(what = mirai::mirai, args = mirai_args)
       task <- list(
         name = name,
         command = string,

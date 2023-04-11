@@ -368,6 +368,7 @@ crew_class_controller <- R6::R6Class(
         }
         # nocov end
         out$name <- task$name
+        out <- tibble::as_tibble(as.list(out))
         if (!is.na(out$launcher)) {
           index <- out$worker
           self$log$popped_tasks[index] <- self$log$popped_tasks[index] + 1L

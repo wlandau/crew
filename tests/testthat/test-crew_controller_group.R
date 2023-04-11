@@ -103,7 +103,7 @@ crew_test("crew_controller_group()", {
   expect_false(anyNA(out$seconds))
   expect_true(out$seconds >= 0)
   expect_true(anyNA(out$error))
-  expect_true(anyNA(out$traceback))
+  expect_true(anyNA(out$trace))
   expect_true(anyNA(out$warnings))
   pid_out <- out$result[[1]]
   pid_exp <- x$controllers[[2]]$launcher$workers$handle[[1]]$get_pid()
@@ -124,7 +124,7 @@ crew_test("crew_controller_group()", {
   expect_false(anyNA(out$seconds))
   expect_true(out$seconds >= 0)
   expect_true(anyNA(out$error))
-  expect_true(anyNA(out$traceback))
+  expect_true(anyNA(out$trace))
   expect_true(anyNA(out$warnings))
   pid_out <- out$result[[1]]
   pid_exp <- x$controllers[[1]]$launcher$workers$handle[[1]]$get_pid()

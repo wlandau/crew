@@ -98,10 +98,10 @@ The result is a [monad](https://en.wikipedia.org/wiki/Monad_(functional_programm
 ```{r}
 out
 #> # A tibble: 1 × 11
-#>   name         command result seconds   seed error trace…¹ warni…² launc…³ worker insta…⁴
-#>   <chr>        <chr>   <list>   <dbl>  <int> <chr> <chr>   <chr>   <chr>    <int> <chr>  
-#> 1 get worker … ps::ps… <int>        0 1.56e8 NA    NA      NA      79e71c…      1 7686b2…
-#> # … with abbreviated variable names ¹​traceback, ²​warnings, ³​launcher, ⁴​instance
+#>   name         command result seconds   seed error trace warni…¹ launc…² worker insta…³
+#>   <chr>        <chr>   <list>   <dbl>  <int> <chr> <chr> <chr>   <chr>    <int> <chr>  
+#> 1 get worker … ps::ps… <int>        0 1.56e8 NA    NA    NA      79e71c…      1 7686b2…
+#> # … with abbreviated variable names ¹​warnings, ²​launcher, ³​instance
 ```
 
 The return value of the command is available in the `result` column. In our case, it is the process ID of the parallel worker that ran it, as reported by `ps::ps_pid()`.

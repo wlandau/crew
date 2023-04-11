@@ -36,7 +36,7 @@ crew_eval <- function(
   capture_error <- function(condition) {
     state$error <- crew_eval_message(condition)
     state$error_class <- class(condition)
-    state$traceback <- paste(as.character(sys.calls()), collapse = "\n")
+    state$trace <- paste(as.character(sys.calls()), collapse = "\n")
     NULL
   }
   capture_warning <- function(condition) {
@@ -73,7 +73,7 @@ crew_eval <- function(
     seconds = seconds,
     seed = seed,
     error = state$error %|||% NA_character_,
-    traceback = state$traceback %|||% NA_character_,
+    trace = state$trace %|||% NA_character_,
     warnings = state$warnings %|||% NA_character_,
     launcher = Sys.getenv("CREW_LAUNCHER", unset = NA_character_),
     worker = as.integer(Sys.getenv("CREW_WORKER", unset = NA_character_)),

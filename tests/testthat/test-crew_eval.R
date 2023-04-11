@@ -14,23 +14,23 @@ crew_test("run without error", {
   monad <- crew_eval(quote(1L + 1L))
   expect_equal(monad$result, list(2L))
   expect_true(anyNA(monad$error))
-  expect_true(anyNA(monad$traceback))
+  expect_true(anyNA(monad$trace))
 })
 
 crew_test("run with error", {
   monad <- crew_eval(quote(stop(12345)))
   expect_equal(monad$result, list(NA))
   expect_true(any(grepl("12345", monad$error)))
-  expect_true(any(grepl("12345", monad$traceback)))
+  expect_true(any(grepl("12345", monad$trace)))
 })
 
 crew_test("error with no message", {
   monad <- crew_eval(quote(stop()))
   expect_equal(monad$result, list(NA))
   expect_equal(monad$error, ".")
-  expect_true(is.character(monad$traceback))
-  expect_true(length(monad$traceback) > 0L)
-  expect_true(any(nzchar(monad$traceback)))
+  expect_true(is.character(monad$trace))
+  expect_true(length(monad$trace) > 0L)
+  expect_true(any(nzchar(monad$trace)))
 })
 
 crew_test("run with warning, warning recorded", {

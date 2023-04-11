@@ -78,7 +78,7 @@ crew_test("crew_controller_local()", {
   expect_false(anyNA(out$seconds))
   expect_true(out$seconds >= 0)
   expect_true(anyNA(out$error))
-  expect_true(anyNA(out$traceback))
+  expect_true(anyNA(out$trace))
   expect_true(anyNA(out$warnings))
   windows_or_cran <- identical(tolower(Sys.info()[["sysname"]]), "windows") ||
     !identical(Sys.getenv("NOT_CRAN"), "true")
@@ -143,7 +143,7 @@ crew_test("crew_controller_local() substitute = FALSE", {
   expect_true(out$seconds >= 0)
   expect_true(anyNA(out$error))
   expect_true(anyNA(out$warnings))
-  expect_true(anyNA(out$traceback))
+  expect_true(anyNA(out$trace))
   handle <- x$launcher$workers$handle[[1]]
   x$terminate()
   expect_false(x$router$listening())
@@ -183,7 +183,7 @@ crew_test("crew_controller_local() warnings and errors", {
   expect_true(out$seconds >= 0)
   expect_equal(out$error, "this is an error")
   expect_equal(out$warnings, "this is a warning")
-  expect_false(anyNA(out$traceback))
+  expect_false(anyNA(out$trace))
   handle <- x$launcher$workers$handle[[1]]
   x$terminate()
   expect_false(x$router$listening())

@@ -1,4 +1,4 @@
-# crew 0.0.5.9004
+# crew 0.0.5.9006
 
 * Remove `asyncdial` from call to `mirai::daemons()`.
 * Explain vision in the launcher plugin vignette.
@@ -20,6 +20,7 @@
 * Add an `empty()` method to check if the controller or controller group is empty.
 * Rely on `mirai` for globals cleanup, garbage collection, and global option resets (#65).
 * Expose the package unloading capabilities of `mirai` (#65).
+* Make monads classed environments and leave tibbles to the last minute in `pop()`.
 
 # crew 0.0.5
 

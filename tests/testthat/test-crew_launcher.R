@@ -236,6 +236,8 @@ crew_test("custom launcher", {
   controller$start()
   on.exit({
     controller$terminate()
+    rm(controller)
+    gc()
     crew_test_sleep()
   })
   controller$push(name = "pid", command = ps::ps_pid())

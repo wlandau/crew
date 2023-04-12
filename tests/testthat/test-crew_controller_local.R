@@ -5,6 +5,8 @@ crew_test("crew_controller_local()", {
   )
   on.exit({
     x$terminate()
+    rm(x)
+    gc()
     crew_test_sleep()
   })
   expect_silent(x$validate())
@@ -133,6 +135,8 @@ crew_test("crew_controller_local() substitute = FALSE", {
   x <- crew_controller_local(seconds_idle = 360)
   on.exit({
     x$terminate()
+    rm(x)
+    gc()
     crew_test_sleep()
   })
   expect_silent(x$validate())
@@ -169,6 +173,8 @@ crew_test("crew_controller_local() warnings and errors", {
   x <- crew_controller_local(seconds_idle = 360)
   on.exit({
     x$terminate()
+    rm(x)
+    gc()
     crew_test_sleep()
   })
   expect_silent(x$validate())
@@ -210,6 +216,8 @@ crew_test("crew_controller_local() can terminate a lost worker", {
   x$start()
   on.exit({
     x$terminate()
+    rm(x)
+    gc()
     crew_test_sleep()
   })
   x$launcher$workers$launches <- 1L
@@ -239,6 +247,8 @@ crew_test("crew_controller_local() launch method", {
   x <- crew_controller_local(seconds_idle = 360)
   on.exit({
     x$terminate()
+    rm(x)
+    gc()
     crew_test_sleep()
   })
   x$start()

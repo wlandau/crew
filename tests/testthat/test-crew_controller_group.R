@@ -24,6 +24,8 @@ crew_test("crew_controller_group()", {
   expect_null(x$summary())
   on.exit({
     x$terminate()
+    rm(x)
+    gc()
     crew_test_sleep()
   })
   expect_silent(x$validate())
@@ -158,6 +160,8 @@ crew_test("crew_controller_group() select", {
   x <- crew_controller_group(a, b)
   on.exit({
     x$terminate()
+    rm(x)
+    gc()
     crew_test_sleep()
   })
   expect_false(a$router$listening())
@@ -185,6 +189,8 @@ crew_test("crew_controller_group() collect", {
   x <- crew_controller_group(a, b)
   on.exit({
     x$terminate()
+    rm(x)
+    gc()
     crew_test_sleep()
   })
   expect_silent(x$validate())
@@ -224,6 +230,8 @@ crew_test("crew_controller_group() launch method", {
   x <- crew_controller_group(a, b)
   on.exit({
     x$terminate()
+    rm(x)
+    gc()
     crew_test_sleep()
   })
   x$start()
@@ -264,6 +272,8 @@ crew_test("crew_controller_group() scale method", {
   x <- crew_controller_group(a)
   on.exit({
     x$terminate()
+    rm(x)
+    gc()
     crew_test_sleep()
   })
   x$start()

@@ -11,6 +11,7 @@ crew_test("crew_router() works", {
   router <- crew_router()
   on.exit({
     router$terminate()
+    rm(router)
     crew_test_sleep()
   })
   expect_false(router$listening())

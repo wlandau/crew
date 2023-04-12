@@ -6,6 +6,9 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   on.exit({
     router$terminate()
     launcher$terminate()
+    rm(router)
+    rm(launcher)
+    gc()
     crew_test_sleep()
   })
   expect_silent(launcher$validate())
@@ -89,6 +92,9 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   on.exit({
     router$terminate()
     launcher$terminate()
+    rm(router)
+    rm(launcher)
+    gc()
     crew_test_sleep()
   })
   router$listen()
@@ -138,6 +144,9 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   on.exit({
     router$terminate()
     launcher$terminate()
+    rm(router)
+    rm(launcher)
+    gc()
     crew_test_sleep()
   })
   router$listen()

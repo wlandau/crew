@@ -26,6 +26,9 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   crew::crew_wait(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons
+      if (is.null(nrow(daemons))) {
+        return(FALSE)
+      }
       status <- unname(daemons[, "online", drop = TRUE])[2L]
       length(status) == 1L && status > 0L
     },

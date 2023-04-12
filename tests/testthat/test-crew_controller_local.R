@@ -65,7 +65,16 @@ crew_test("crew_controller_local()", {
   x$wait(seconds_timeout = 5)
   expect_false(x$empty())
   # first task
-  out <- x$pop(scale = TRUE)
+  envir <- new.env(parent = emptyenv())
+  crew_wait(
+    ~{
+      envir$out <- x$pop(scale = TRUE)
+      !is.null(envir$out)
+    },
+    seconds_interval = 0.001,
+    seconds_timeout = 5
+  )
+  out <- envir$out
   expect_true(x$empty())
   expect_equal(x$summary()$popped_tasks, 1L)
   expect_equal(x$summary()$popped_errors, 0L)

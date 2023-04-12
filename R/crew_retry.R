@@ -13,6 +13,7 @@
 #'   number of seconds to loop before timing out.
 #' @param message Character of length 1, optional error message
 #'   if the wait times out.
+#' @param envir Environment to evaluate `fun`.
 #' @examples
 #' crew_retry(fun = function() TRUE)
 crew_retry <- function(
@@ -20,8 +21,10 @@ crew_retry <- function(
   args = list(),
   seconds_interval = 1,
   seconds_timeout = 60,
-  message = character(0)
+  message = character(0),
+  envir = parent.frame()
 ) {
+  force(envir)
   fun <- rlang::as_function(fun)
   true(is.function(fun))
   true(is.list(args))
@@ -33,7 +36,7 @@ crew_retry <- function(
   true(seconds_timeout, is.numeric(.), length(.) == 1L, !anyNA(.), . >= 0)
   start <- nanonext::mclock()
   milli_timeout <- 1000 * seconds_timeout
-  while (!all(do.call(what = fun, args = args))) {
+  while (!all(do.call(what = fun, args = args, envir = envir))) {
     if ((nanonext::mclock() - start) > milli_timeout) {
       message <- paste(
         "timed out after retrying for",

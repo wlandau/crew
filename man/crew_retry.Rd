@@ -9,7 +9,8 @@ crew_retry(
   args = list(),
   seconds_interval = 1,
   seconds_timeout = 60,
-  message = character(0)
+  message = character(0),
+  envir = parent.frame()
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ number of seconds to loop before timing out.}
 
 \item{message}{Character of length 1, optional error message
 if the wait times out.}
+
+\item{envir}{Environment to evaluate \code{fun}.}
 }
 \value{
 \code{NULL} (invisibly).

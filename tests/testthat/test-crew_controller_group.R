@@ -35,13 +35,13 @@ crew_test("crew_controller_group()", {
   expect_true(x$empty(controllers = "a"))
   expect_true(x$empty(controllers = "b"))
   for (index in seq_len(2)) {
-    crew_wait(
+    crew_retry(
       ~x$controllers[[index]]$router$listening(),
       seconds_interval = 0.001,
       seconds_timeout = 5
     )
   }
-  crew_wait(
+  crew_retry(
     ~{
       x$wait(seconds_timeout = 30)
       TRUE
@@ -133,12 +133,12 @@ crew_test("crew_controller_group()", {
   handle <- x$controllers[[2]]$launcher$workers$handle[[1]]
   x$terminate()
   for (index in seq_len(2)) {
-    crew_wait(
+    crew_retry(
       ~!x$controllers[[index]]$router$listening(),
       seconds_interval = 0.001,
       seconds_timeout = 5
     )
-    crew_wait(
+    crew_retry(
       ~!handle$is_alive(),
       seconds_interval = 0.001,
       seconds_timeout = 5
@@ -193,7 +193,7 @@ crew_test("crew_controller_group() collect", {
   x$start()
   expect_null(x$pop())
   x$push(command = ps::ps_pid(), name = "task_pid")
-  crew_wait(
+  crew_retry(
     fun = ~{
       x$collect()
       length(x$controllers[[1]]$results) > 0L
@@ -237,7 +237,7 @@ crew_test("crew_controller_group() launch method", {
     x$controllers[[2L]]$launcher$workers$handle[[1L]]
   )
   for (index in seq_len(2)) {
-    crew_wait(
+    crew_retry(
       ~handles[[index]]$is_alive(),
       seconds_interval = 0.001,
       seconds_timeout = 5
@@ -245,7 +245,7 @@ crew_test("crew_controller_group() launch method", {
   }
   x$terminate()
   for (index in seq_len(2)) {
-    crew_wait(
+    crew_retry(
       ~!handles[[index]]$is_alive(),
       seconds_interval = 0.001,
       seconds_timeout = 5
@@ -269,19 +269,19 @@ crew_test("crew_controller_group() scale method", {
   x$start()
   a$push(command = "x", scale = FALSE)
   expect_silent(x$scale())
-  crew_wait(
+  crew_retry(
     ~length(a$launcher$workers$handle) > 0L,
     seconds_interval = 0.01,
     seconds_timeout = 5
   )
   handle <- a$launcher$workers$handle[[1L]]
-  crew_wait(
+  crew_retry(
     fun = ~handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
   x$terminate()
-  crew_wait(
+  crew_retry(
     fun = ~!handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5

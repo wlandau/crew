@@ -20,7 +20,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
       instance = Sys.getenv("CREW_INSTANCE")
     )
   )
-  crew_wait(
+  crew_retry(
     ~mirai::daemons()$connections > 0L,
     seconds_interval = 0.001,
     seconds_timeout = 5
@@ -39,7 +39,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     worker = 4L,
     instance = instance
   )
-  crew_wait(
+  crew_retry(
     ~!nanonext::.unresolved(m$data),
     seconds_interval = 0.001,
     seconds_timeout = 5

@@ -13,7 +13,7 @@ for (index in seq_len(100L)) {
 # Wait for the tasks to complete.
 controller$wait()
 # Wait for the workers to idle out and exit on their own.
-crew_wait(
+crew_retry(
   ~all(controller$summary()$worker_connected == FALSE),
   seconds_interval = 1,
   seconds_timeout = 60
@@ -25,7 +25,7 @@ for (index in (seq_len(100L) + 100L)) {
   message(paste("push", name))
 }
 controller$wait()
-crew_wait(
+crew_retry(
   ~all(controller$summary()$worker_connected == FALSE),
   seconds_interval = 1,
   seconds_timeout = 60

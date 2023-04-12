@@ -27,6 +27,6 @@ Launch a \code{crew} worker which runs a \code{mirai} server.
 \seealso{
 Other utilities: 
 \code{\link{crew_eval}()},
-\code{\link{crew_wait}()}
+\code{\link{crew_retry}()}
 }
 \concept{utilities}

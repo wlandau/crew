@@ -1,7 +1,7 @@
-#' @title Wait for an event.
+#' @title Retry code.
 #' @export
 #' @family utilities
-#' @description Repeatedly run a function while it keeps returning `FALSE`
+#' @description Repeatedly retry a function while it keeps returning `FALSE`
 #'   and exit the loop when it returns `TRUE`
 #' @return `NULL` (invisibly).
 #' @param fun Function that returns `FALSE` to keep waiting
@@ -14,8 +14,8 @@
 #' @param message Character of length 1, optional error message
 #'   if the wait times out.
 #' @examples
-#' crew_wait(fun = function() TRUE)
-crew_wait <- function(
+#' crew_retry(fun = function() TRUE)
+crew_retry <- function(
   fun,
   args = list(),
   seconds_interval = 1,
@@ -36,7 +36,7 @@ crew_wait <- function(
   while (!all(do.call(what = fun, args = args))) {
     if ((nanonext::mclock() - start) > milli_timeout) {
       message <- paste(
-        "timed out after waiting",
+        "timed out after retrying for",
         seconds_timeout,
         "seconds.",
         message

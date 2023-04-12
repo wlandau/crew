@@ -183,7 +183,7 @@ crew_class_router <- R6::R6Class(
           .compute = self$name
         )
         do.call(what = mirai::daemons, args = args)
-        crew_wait(
+        crew_retry(
           fun = ~isTRUE(self$listening()),
           seconds_interval = self$seconds_interval,
           seconds_timeout = self$seconds_timeout,
@@ -263,7 +263,7 @@ crew_class_router <- R6::R6Class(
         }
         # End dispatcher checks block 1/2.
         mirai::daemons(n = 0L, .compute = self$name)
-        crew_wait(
+        crew_retry(
           fun = ~isFALSE(self$listening()),
           seconds_interval = self$seconds_interval,
           seconds_timeout = self$seconds_timeout,
@@ -272,7 +272,7 @@ crew_class_router <- R6::R6Class(
         # Begin dispatcher checks block 2/2.
         if (!is.null(self$dispatcher)) {
           tryCatch(
-            crew_wait(
+            crew_retry(
               fun = ~!ps::ps_is_running(p = handle),
               seconds_interval = self$seconds_interval,
               seconds_timeout = self$seconds_timeout
@@ -285,7 +285,7 @@ crew_class_router <- R6::R6Class(
             NULL
           )
           tryCatch(
-            crew_wait(
+            crew_retry(
               fun = ~!ps::ps_is_running(p = handle),
               seconds_interval = self$seconds_interval,
               seconds_timeout = self$seconds_timeout

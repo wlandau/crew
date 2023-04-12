@@ -12,7 +12,7 @@ crew_test("crew_controller_local()", {
   expect_null(x$summary())
   x$start()
   expect_true(x$empty())
-  crew_wait(
+  crew_retry(
     ~{
       x$wait(seconds_timeout = 30)
       TRUE
@@ -54,7 +54,7 @@ crew_test("crew_controller_local()", {
     )
   )
   expect_equal(s$popped_tasks, 0L)
-  crew_wait(
+  crew_retry(
     ~x$router$listening(),
     seconds_interval = 0.001,
     seconds_timeout = 5
@@ -66,7 +66,7 @@ crew_test("crew_controller_local()", {
   expect_false(x$empty())
   # first task
   envir <- new.env(parent = emptyenv())
-  crew_wait(
+  crew_retry(
     ~{
       envir$out <- x$pop(scale = TRUE)
       !is.null(envir$out)
@@ -120,7 +120,7 @@ crew_test("crew_controller_local()", {
   handle <- x$launcher$workers$handle[[1]]
   x$terminate()
   expect_false(x$router$listening())
-  crew_wait(
+  crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5,
@@ -156,7 +156,7 @@ crew_test("crew_controller_local() substitute = FALSE", {
   handle <- x$launcher$workers$handle[[1]]
   x$terminate()
   expect_false(x$router$listening())
-  crew_wait(
+  crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5
@@ -196,7 +196,7 @@ crew_test("crew_controller_local() warnings and errors", {
   handle <- x$launcher$workers$handle[[1]]
   x$terminate()
   expect_false(x$router$listening())
-  crew_wait(
+  crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5
@@ -217,7 +217,7 @@ crew_test("crew_controller_local() can terminate a lost worker", {
   path <- file.path(R.home("bin"), bin)
   call <- "Sys.sleep(300)"
   handle <- processx::process$new(command = path, args = c("-e", call))
-  crew_wait(
+  crew_retry(
     ~handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5
@@ -225,7 +225,7 @@ crew_test("crew_controller_local() can terminate a lost worker", {
   x$launcher$workers$handle[[1L]] <- handle
   expect_true(handle$is_alive())
   x$scale()
-  crew_wait(
+  crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5
@@ -244,14 +244,14 @@ crew_test("crew_controller_local() launch method", {
   x$start()
   x$launch(n = 1L)
   handle <- x$launcher$workers$handle[[1]]
-  crew_wait(
+  crew_retry(
     ~handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
   expect_true(handle$is_alive())
   x$terminate()
-  crew_wait(
+  crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5

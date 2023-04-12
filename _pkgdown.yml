@@ -20,5 +20,5 @@ reference:
   - '`crew_class_router`'
 - title: Utilities
   contents:
-  - '`crew_wait`'
+  - '`crew_retry`'
   - '`crew_worker`'

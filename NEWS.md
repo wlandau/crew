@@ -21,6 +21,7 @@
 * Rely on `mirai` for globals cleanup, garbage collection, and global option resets (#65).
 * Expose the package unloading capabilities of `mirai` (#65).
 * Make monads classed environments and leave tibbles to the last minute in `pop()`.
+* Rename `crew_wait()` to `crew_retry()`.
 
 # crew 0.0.5
 

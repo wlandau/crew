@@ -298,7 +298,7 @@ crew_class_controller_group <- R6::R6Class(
       true(mode, identical(., "all") || identical(., "one"))
       control <- private$select_controllers(controllers)
       tryCatch(
-        crew_wait(
+        crew_retry(
           fun = ~{
             empty <- TRUE
             for (controller in control) {

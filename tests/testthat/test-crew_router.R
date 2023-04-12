@@ -48,7 +48,7 @@ crew_test("crew_router() works", {
   path <- file.path(R.home("bin"), bin)
   call <- sprintf("mirai::server('%s')", socket)
   px <- processx::process$new(command = path, args = c("-e", call))
-  crew_wait(
+  crew_retry(
     ~{
       daemons <- mirai::daemons(.compute = router$name)$daemons
       identical(
@@ -60,7 +60,7 @@ crew_test("crew_router() works", {
     seconds_timeout = 5
   )
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
-  crew_wait(
+  crew_retry(
     ~!anyNA(m$data),
     seconds_interval = 0.001,
     seconds_timeout = 5

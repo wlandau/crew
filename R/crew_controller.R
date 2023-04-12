@@ -407,7 +407,7 @@ crew_class_controller <- R6::R6Class(
       mode <- as.character(mode)
       true(mode, identical(., "all") || identical(., "one"))
       tryCatch(
-        crew_wait(
+        crew_retry(
           fun = ~{
             self$scale()
             empty_queue <- length(self$queue) < 1L

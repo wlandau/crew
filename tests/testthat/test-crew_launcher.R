@@ -246,7 +246,7 @@ crew_test("custom launcher", {
   expect_equal(out, exp)
   expect_true(handle$is_alive())
   controller$launcher$terminate()
-  crew_wait(
+  crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.001,
     seconds_timeout = 5

@@ -1,7 +1,7 @@
-crew_test("crew_wait() with argless function", {
-  expect_silent(crew_wait(fun = function() TRUE))
+crew_test("crew_retry() with argless function", {
+  expect_silent(crew_retry(fun = function() TRUE))
   expect_error(
-    crew_wait(
+    crew_retry(
       fun = function() FALSE,
       seconds_interval = 0.01,
       seconds_timeout = 0.05
@@ -10,13 +10,13 @@ crew_test("crew_wait() with argless function", {
   )
 })
 
-crew_test("crew_wait() on a file", {
+crew_test("crew_retry() on a file", {
   skip_on_cran()
   tmp <- tempfile()
   fun <- function(x) file.exists(x)
   args <- list(x = tmp)
   expect_error(
-    crew_wait(
+    crew_retry(
       fun = ~FALSE,
       args = args,
       seconds_interval = 0.01,
@@ -26,5 +26,5 @@ crew_test("crew_wait() on a file", {
   )
   file.create(tmp)
   on.exit(unlink(tmp))
-  expect_silent(crew_wait(fun = fun, args = args))
+  expect_silent(crew_retry(fun = fun, args = args))
 })

@@ -1,8 +1,8 @@
-crew_test("true()", {
-  expect_silent(true(TRUE))
-  expect_error(true(FALSE), class = "crew_error")
-  expect_silent(true(c(2, 3), . > 1, . > 0))
-  expect_error(true(2, . < 1), class = "crew_error")
+crew_test("crew_assert()", {
+  expect_silent(crew_assert(TRUE))
+  expect_error(crew_assert(FALSE), class = "crew_error")
+  expect_silent(crew_assert(c(2, 3), . > 1, . > 0))
+  expect_error(crew_assert(2, . < 1), class = "crew_error")
 })
 
 crew_test("crew_error()", {

@@ -27,7 +27,7 @@ eval_tidyselect <- function(expr, choices) {
     strict = FALSE
   )
   out <- names(out)
-  true(
+  crew_assert(
     is.character(out),
     message = paste(
       "tidyselect failed. Please supply a valid tidyselect expression",

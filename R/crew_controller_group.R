@@ -65,7 +65,7 @@ crew_class_controller_group <- R6::R6Class(
         return(self$controllers)
       }
       message <- "'controllers' must be a valid nonempty character vector."
-      true(
+      crew_assert(
         names,
         length(.) > 0L,
         is.character(.),
@@ -74,7 +74,7 @@ crew_class_controller_group <- R6::R6Class(
         message = message
       )
       invalid <- setdiff(names, names(self$controllers))
-      true(
+      crew_assert(
         !length(invalid),
         message = sprintf(
           "controllers not found: %s",
@@ -117,13 +117,13 @@ crew_class_controller_group <- R6::R6Class(
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
     validate = function() {
-      true(
+      crew_assert(
         map_lgl(self$controllers, ~inherits(.x, "crew_class_controller")),
         message = "All objects in a controller group must be controllers."
       )
       out <- unname(map_chr(self$controllers, ~.x$router$name))
       exp <- names(self$controllers)
-      true(identical(out, exp), message = "bad controller names")
+      crew_assert(identical(out, exp), message = "bad controller names")
       invisible()
     },
     #' @description See if the controllers are empty.
@@ -215,11 +215,11 @@ crew_class_controller_group <- R6::R6Class(
     ) {
       controller <- controller %|||%
         utils::head(names(self$controllers), n = 1L)
-      true(
+      crew_assert(
         length(controller) == 1L,
         message = "controller argument of push() must have length 1."
       )
-      true(
+      crew_assert(
         controller %in% names(self$controllers),
         message = sprintf("controller \"%s\" not found", controller)
       )
@@ -295,7 +295,7 @@ crew_class_controller_group <- R6::R6Class(
       controllers = NULL
     ) {
       mode <- as.character(mode)
-      true(mode, identical(., "all") || identical(., "one"))
+      crew_assert(mode, identical(., "all") || identical(., "one"))
       control <- private$select_controllers(controllers)
       tryCatch(
         crew_retry(

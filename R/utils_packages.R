@@ -15,5 +15,5 @@ load_packages <- function(packages, library) {
     "in library paths",
     paste(library, collapse = ", ")
   )
-  true(all(out), message = msg)
+  crew_assert(all(out), message = msg)
 }

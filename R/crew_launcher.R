@@ -214,12 +214,12 @@ crew_class_launcher <- R6::R6Class(
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
     validate = function() {
-      true(
+      crew_assert(
         is.function(self$launch_worker),
         message = "launch_worker() must be a function."
       )
       names <- c("call", "launcher", "worker", "instance")
-      true(
+      crew_assert(
         names %in% names(formals(self$launch_worker)),
         message = paste(
           "launch_worker() must have arguments \"call\", \"launcher\",",
@@ -227,16 +227,22 @@ crew_class_launcher <- R6::R6Class(
         )
       )
       if (!is.null(self$terminate_worker)) {
-        true(
+        crew_assert(
           is.function(self$terminate_worker),
           message = "terminate_worker() must be a function or NULL."
         )
-        true(
+        crew_assert(
           "handle" %in% names(formals(self$terminate_worker)),
           message = "terminate_worker() must have a \"handle\" argument."
         )
       }
-      true(self$name, is.character(.), length(.) == 1L, !anyNA(.), nzchar(.))
+      crew_assert(
+        self$name,
+        is.character(.),
+        length(.) == 1L,
+        !anyNA(.),
+        nzchar(.)
+      )
       fields <- c(
         "seconds_launch",
         "seconds_interval",
@@ -248,7 +254,13 @@ crew_class_launcher <- R6::R6Class(
         "tasks_timers"
       )
       for (field in fields) {
-        true(self[[field]], is.numeric(.), . >= 0, length(.) == 1L, !anyNA(.))
+        crew_assert(
+          self[[field]],
+          is.numeric(.),
+          . >= 0,
+          length(.) == 1L,
+          !anyNA(.)
+        )
       }
       fields <- c(
         "reset_globals",
@@ -257,12 +269,12 @@ crew_class_launcher <- R6::R6Class(
         "garbage_collection"
       )
       for (field in fields) {
-        true(self[[field]], isTRUE(.) || isFALSE(.))
+        crew_assert(self[[field]], isTRUE(.) || isFALSE(.))
       }
       if (!is.null(self$workers)) {
-        true(self$workers, is.data.frame(.))
+        crew_assert(self$workers, is.data.frame(.))
         cols <- c("handle", "socket", "start", "launches")
-        true(identical(colnames(self$workers), cols))
+        crew_assert(identical(colnames(self$workers), cols))
       }
       invisible()
     },

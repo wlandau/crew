@@ -55,8 +55,8 @@ monad_new <- function(
 }
 
 monad_validate <- function(monad) {
-  true(inherits(monad, "crew_monad"))
-  true(identical(names(monad), names(formals(monad_new))))
+  crew_assert(inherits(monad, "crew_monad"))
+  crew_assert(identical(names(monad), names(formals(monad_new))))
   cols <- c(
     "name",
     "command",
@@ -67,13 +67,13 @@ monad_validate <- function(monad) {
     "instance"
   )
   for (col in cols) {
-    true(monad[[col]], is.character(.), length(.) == 1L)
+    crew_assert(monad[[col]], is.character(.), length(.) == 1L)
   }
   for (col in c("seconds", "seed")) {
-    true(monad[[col]], is.numeric(.), length(.) == 1L)
+    crew_assert(monad[[col]], is.numeric(.), length(.) == 1L)
   }
-  true(monad$worker, is.integer(.), length(.) == 1L)
-  true(monad$result, is.list(.), length(.) == 1L)
+  crew_assert(monad$worker, is.integer(.), length(.) == 1L)
+  crew_assert(monad$result, is.list(.), length(.) == 1L)
   invisible()
 }
 

@@ -20,5 +20,6 @@ reference:
   - '`crew_class_router`'
 - title: Utilities
   contents:
+  - '`crew_assert`'
   - '`crew_retry`'
   - '`crew_worker`'

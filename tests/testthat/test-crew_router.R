@@ -19,7 +19,7 @@ crew_test("crew_router() works", {
   expect_null(router$daemons)
   expect_silent(router$listen())
   expect_true(router$listening())
-  true(all(dim(router$daemons) > 0L))
+  expect_true(all(dim(router$daemons) > 0L))
   expect_equal(
     sort(colnames(router$log())),
     sort(

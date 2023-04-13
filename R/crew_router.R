@@ -115,17 +115,34 @@ crew_class_router <- R6::R6Class(
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
     validate = function() {
-      true(self$name, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
-      true(self$workers, is.integer(.), length(.) == 1L, !anyNA(.), . > 0L)
-      true(self$host, is.character(.), length(.) == 1L, !anyNA(.), nzchar(.))
-      true(self$port, is.integer(.), length(.) == 1L, !anyNA(.))
-      true(self$port, . >= 0L, . <= 65535L)
+      crew_assert(
+        self$name,
+        is.character(.),
+        length(.) == 1L,
+        nzchar(.),
+        !anyNA(.)
+      )
+      crew_assert(
+        self$workers,
+        is.integer(.),
+        length(.) == 1L,
+        !anyNA(.), . > 0L
+      )
+      crew_assert(
+        self$host,
+        is.character(.),
+        length(.) == 1L,
+        !anyNA(.),
+        nzchar(.)
+      )
+      crew_assert(self$port, is.integer(.), length(.) == 1L, !anyNA(.))
+      crew_assert(self$port, . >= 0L, . <= 65535L)
       fields <- c(
         "seconds_interval",
         "seconds_timeout"
       )
       for (field in fields) {
-        true(
+        crew_assert(
           self[[field]],
           is.numeric(.),
           length(.) == 1L,
@@ -133,15 +150,15 @@ crew_class_router <- R6::R6Class(
           . >= 0
         )
       }
-      true(
+      crew_assert(
         self$dispatcher %|||% 0L,
         is.numeric(.),
         length(.) == 1L,
         !is.na(.),
         . >= 0
       )
-      true(self$seconds_timeout >= self$seconds_interval)
-      true(self$daemons, is.null(.) || is.data.frame(.))
+      crew_assert(self$seconds_timeout >= self$seconds_interval)
+      crew_assert(self$daemons, is.null(.) || is.data.frame(.))
       invisible()
     },
     #' @description Check if the `mirai` client is listening

@@ -140,11 +140,11 @@ crew_class_controller <- R6::R6Class(
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
     validate = function() {
-      true(is.list(self$queue))
-      true(is.list(self$results))
-      true(self$log, is.null(.) %|||% is.data.frame(.))
-      true(inherits(self$router, "crew_class_router"))
-      true(inherits(self$launcher, "crew_class_launcher"))
+      crew_assert(is.list(self$queue))
+      crew_assert(is.list(self$results))
+      crew_assert(self$log, is.null(.) %|||% is.data.frame(.))
+      crew_assert(inherits(self$router, "crew_class_router"))
+      crew_assert(inherits(self$launcher, "crew_class_launcher"))
       self$router$validate()
       self$launcher$validate()
       invisible()
@@ -274,7 +274,7 @@ crew_class_controller <- R6::R6Class(
       name = NULL,
       controller = NULL
     ) {
-      true(scale, isTRUE(.) || isFALSE(.))
+      crew_assert(scale, isTRUE(.) || isFALSE(.))
       while (is.null(name) || name %in% self$queue$name) name <- random_name()
       if (substitute) command <- substitute(command)
       string <- deparse_safe(command)
@@ -405,7 +405,7 @@ crew_class_controller <- R6::R6Class(
       controllers = NULL
     ) {
       mode <- as.character(mode)
-      true(mode, identical(., "all") || identical(., "one"))
+      crew_assert(mode, identical(., "all") || identical(., "one"))
       tryCatch(
         crew_retry(
           fun = ~{

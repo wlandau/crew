@@ -3,14 +3,14 @@ Title: A Distributed Worker Launcher
 Description: In computationally demanding analysis projects,
   statisticians and data scientists asynchronously
   deploy long-running tasks to distributed systems,
-  ranging from traditional clusters to cloud services
+  ranging from traditional clusters to cloud services.
   The 'NNG'-powered 'mirai' R package by Gao (2023)
   <https://CRAN.R-project.org/package=mirai> is a sleek
   and sophisticated scheduler that
   efficiently processes these intense workloads.
   The 'crew' package extends 'mirai' with a unifying
   interface for third-party worker launchers.
-  Inspiration also comes from packages
+  Inspiration also comes from packages.
   'future' by Bengtsson (2021) <doi:10.32614/RJ-2021-048>,
   'rrq' by FitzJohn and Ashton (2023) <https://github.com/mrc-ide/rrq>,
   'clustermq' by Schubert (2019) <doi:10.1093/bioinformatics/btz284>),

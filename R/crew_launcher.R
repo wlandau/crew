@@ -159,7 +159,6 @@ crew_class_launcher <- R6::R6Class(
     #' @param seconds_interval See [crew_launcher()].
     #' @param seconds_timeout See [crew_launcher()].
     #' @param seconds_idle See [crew_launcher()].
-    #'   See the `idletime` argument of `mirai::server()`.
     #' @param seconds_wall See [crew_launcher()].
     #' @param seconds_exit See [crew_launcher()].
     #' @param tasks_max See [crew_launcher()].

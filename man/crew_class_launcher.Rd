@@ -140,8 +140,7 @@ Launcher constructor.
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.
-See the \code{idletime} argument of \code{mirai::server()}.}
+\item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 

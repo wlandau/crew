@@ -81,7 +81,7 @@ tasks, \code{FALSE} to skip.}
 }
 \description{
 Create an \code{R6} object to launch and maintain
-local process workers for a controller.
+local process workers.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {

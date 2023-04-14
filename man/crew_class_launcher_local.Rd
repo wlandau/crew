@@ -2,9 +2,9 @@
 % Please edit documentation in R/crew_launcher_local.R
 \name{crew_class_launcher_local}
 \alias{crew_class_launcher_local}
-\title{\code{mirai} launcher class}
+\title{Local process launcher class}
 \description{
-\code{R6} class to launch and manage \code{mirai} workers.
+\code{R6} class to launch and manage local process workers.
 }
 \details{
 See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.

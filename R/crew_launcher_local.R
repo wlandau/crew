@@ -2,7 +2,7 @@
 #' @export
 #' @family launchers
 #' @description Create an `R6` object to launch and maintain
-#'   local process workers for a controller.
+#'   local process workers.
 #' @inheritParams crew_launcher
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -53,10 +53,10 @@ crew_launcher_local <- function(
   launcher
 }
 
-#' @title `mirai` launcher class
+#' @title Local process launcher class
 #' @export
 #' @family launchers
-#' @description `R6` class to launch and manage `mirai` workers.
+#' @description `R6` class to launch and manage local process workers.
 #' @details See [crew_launcher_local()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {

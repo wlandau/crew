@@ -22,7 +22,7 @@
 * Expose the package unloading capabilities of `mirai` (#65).
 * Make monads classed environments and leave tibbles to the last minute in `pop()`.
 * Rename `crew_wait()` to `crew_retry()`.
-* Export `crew_assert()` to help launcher plugins.
+* Export `crew_assert()` and `crew_random_name()` to help launcher plugins.
 
 # crew 0.0.5
 

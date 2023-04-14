@@ -21,5 +21,6 @@ reference:
 - title: Utilities
   contents:
   - '`crew_assert`'
+  - '`crew_random_name`'
   - '`crew_retry`'
   - '`crew_worker`'

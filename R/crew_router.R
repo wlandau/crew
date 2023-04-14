@@ -31,7 +31,7 @@ crew_router <- function(
   seconds_interval = 0.01,
   seconds_timeout = 5
 ) {
-  name <- as.character(name %|||% random_name())
+  name <- as.character(name %|||% crew_random_name())
   workers <- as.integer(workers)
   host <- as.character(host %|||% getip::getip(type = "local"))
   port <- as.integer(port %|||% 0L)

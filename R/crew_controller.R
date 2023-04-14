@@ -275,7 +275,7 @@ crew_class_controller <- R6::R6Class(
       controller = NULL
     ) {
       crew_assert(scale, isTRUE(.) || isFALSE(.))
-      while (is.null(name) || name %in% self$queue$name) name <- random_name()
+      while (is.null(name) || name %in% self$queue$name) name <- crew_random_name()
       if (substitute) command <- substitute(command)
       string <- deparse_safe(command)
       command <- rlang::call2("quote", command)

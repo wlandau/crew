@@ -1,7 +1,3 @@
-random_name <- function() {
-  nanonext::sha1(nanonext::random(n = 100L))
-}
-
 parse_instance <- function(socket) {
   split <- strsplit(socket, split = "/", fixed = TRUE)[[1]]
   split[length(split)]

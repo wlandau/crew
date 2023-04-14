@@ -33,7 +33,7 @@ crew_launcher_local <- function(
   reset_options = FALSE,
   garbage_collection = FALSE
 ) {
-  name <- as.character(name %|||% random_name())
+  name <- as.character(name %|||% crew_random_name())
   launcher <- crew_class_launcher_local$new(
     name = name,
     seconds_launch = seconds_launch,

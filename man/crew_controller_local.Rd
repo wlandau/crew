@@ -121,7 +121,7 @@ launch workers on local processes.
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 controller <- crew_controller_local()
-controller$connect()
+controller$start()
 controller$push(name = "task", command = sqrt(4))
 controller$wait()
 controller$pop()

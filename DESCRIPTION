@@ -37,7 +37,7 @@ Depends:
 Imports:
   getip,
   mirai (>= 0.8.2.9032),
-  nanonext (>= 0.8.1.9028),
+  nanonext (>= 0.8.2),
   processx,
   ps,
   R6,

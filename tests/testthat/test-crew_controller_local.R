@@ -212,7 +212,7 @@ crew_test("crew_controller_local() warnings and errors", {
 crew_test("crew_controller_local() can terminate a lost worker", {
   skip_on_cran()
   skip_on_os("windows")
-  x <- crew_controller_local(seconds_idle = 360)
+  x <- crew_controller_local(seconds_idle = 360, seconds_launch = 180)
   x$start()
   on.exit({
     x$terminate()
@@ -231,6 +231,9 @@ crew_test("crew_controller_local() can terminate a lost worker", {
     seconds_timeout = 5
   )
   x$launcher$workers$handle[[1L]] <- handle
+  x$launcher$workers$socket[1L] <- x$router$sockets()
+  x$launcher$workers$start[1L] <- - Inf
+  x$launcher$workers$launches[1L] <- 1L
   expect_true(handle$is_alive())
   x$scale()
   crew_retry(

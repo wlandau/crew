@@ -101,6 +101,7 @@ Other launchers:
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
+\item \href{#method-crew_class_launcher-expected}{\code{crew_class_launcher$expected()}}
 \item \href{#method-crew_class_launcher-launching}{\code{crew_class_launcher$launching()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
@@ -310,6 +311,20 @@ to launch.}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-expected"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-expected}{}}}
+\subsection{Method \code{expected()}}{
+Show which workers are expected to launch.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$expected()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A logical vector indicating which workers are expected
+to launch.
 }
 }
 \if{html}{\out{<hr>}}

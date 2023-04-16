@@ -227,13 +227,15 @@ crew_class_router <- R6::R6Class(
     #'   Subsequent calls to `route()` at the same index rotate
     #'   the websocket path for robustness.
     #' @param index Integer of length 1, worker index.
+    #' @param force `TRUE` to force a rotation even if e.g. tasks are underway,
+    #'   `FALSE` otherwise.
     #' @return Character of length 1, new websocket path of the worker.
-    route = function(index) {
+    route = function(index, force = FALSE) {
       rotations <- self$rotations[index]
       self$rotations[index] <- rotations + 1L
       if_any(
         rotations > -1L,
-        mirai::saisei(i = index, .compute = self$name),
+        mirai::saisei(i = index, force = force, .compute = self$name),
         rownames(self$daemons)[index]
       )
     },

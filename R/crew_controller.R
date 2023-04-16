@@ -82,11 +82,21 @@ crew_class_controller <- R6::R6Class(
     },
     lost = function() {
       daemons <- self$router$daemons
+      expected <- self$launcher$expected()
       launching <- self$launcher$launching()
-      which(is_lost(daemons = daemons, launching = launching))
+      lost <- is_lost(
+        expected = expected,
+        daemons = daemons,
+        launching = launching
+      )
+      which(lost)
     },
     clean = function() {
-      self$launcher$terminate(indexes = private$lost())
+      lost <- private$lost()
+      if (length(lost) > 0L) {
+        walk(x = lost, f = ~self$router$route(index = .x, force = TRUE))
+        self$launcher$terminate(indexes = lost)
+      }
     },
     try_launch = function(inactive, n) {
       inactive <- utils::head(inactive, n = n)
@@ -553,7 +563,7 @@ is_inactive <- function(daemons, launching) {
   (!connected) & (discovered | (!launching))
 }
 
-is_lost <- function(daemons, launching) {
+is_lost <- function(expected, daemons, launching) {
   not_discovered <- as.logical(daemons[, "instance"] < 1L)
-  not_discovered & (!launching)
+  expected & not_discovered & (!launching)
 }

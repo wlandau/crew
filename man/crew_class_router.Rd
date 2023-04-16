@@ -189,13 +189,16 @@ A character vector of socket addresses.
 Choose the websocket path for the next instance
 of the worker at a given index.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$route(index)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$route(index, force = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{index}}{Integer of length 1, worker index.}
+
+\item{\code{force}}{\code{TRUE} to force a rotation even if e.g. tasks are underway,
+\code{FALSE} otherwise.}
 }
 \if{html}{\out{</div>}}
 }

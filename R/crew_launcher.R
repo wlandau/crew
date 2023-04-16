@@ -274,6 +274,7 @@ crew_class_launcher <- R6::R6Class(
         crew_assert(self$workers, is.data.frame(.))
         cols <- c("handle", "socket", "start", "launches")
         crew_assert(identical(colnames(self$workers), cols))
+        crew_assert(nrow(self$workers) > 0L)
       }
       invisible()
     },
@@ -341,6 +342,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param workers Positive integer of length 1,
     #'   number of workers to allow.
     start = function(workers = 1L) {
+      crew_assert(workers > 0L, message = "workers must be > 0")
       if (is.null(self$workers)) {
         self$workers <- tibble::tibble(
           handle = replicate(workers, crew_null, simplify = FALSE),

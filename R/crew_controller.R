@@ -78,6 +78,10 @@ crew_class_controller <- R6::R6Class(
     inactive = function() {
       daemons <- self$router$daemons
       launching <- self$launcher$launching()
+      crew_assert(
+        length(launching) == self$router$workers,
+        message = "no workers to report launching status"
+      )
       which(is_inactive(daemons = daemons, launching = launching))
     },
     lost = function() {

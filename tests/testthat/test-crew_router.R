@@ -18,6 +18,11 @@ crew_test("crew_router() works", {
   expect_null(router$dispatcher)
   expect_null(router$daemons)
   expect_silent(router$listen())
+  crew_retry(
+    ~router$listening(),
+    seconds_interval = 0.01,
+    seconds_timeout = 5
+  )
   expect_true(router$listening())
   expect_true(all(dim(router$daemons) > 0L))
   expect_equal(

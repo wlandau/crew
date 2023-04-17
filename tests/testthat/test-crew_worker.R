@@ -26,7 +26,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     seconds_timeout = 5
   )
   url <- rownames(mirai::daemons()$daemons)[1]
-  settings <- list(url = url, maxtasks = 1L, cleanup = FALSE)
+  settings <- list(url = url, maxtasks = 1L, cleanup = 0L)
   instance <- parse_instance(url)
   crew_worker(
     settings = settings,

@@ -335,12 +335,12 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     collect = function(controllers = NULL) {
-      done <- integer(0L)
-      for (index in seq_along(self$queue)) {
+      done <- rep(FALSE, length(self$queue))
+      for (index in seq_along(done)) {
         task <- self$queue[[index]]
         if (!nanonext::.unresolved(task$handle[[1L]])) {
           self$results[[length(self$results) + 1L]] <- task
-          done[length(done) + 1L] <- index
+          done[index] <- TRUE
         }
       }
       self$queue[done] <- NULL

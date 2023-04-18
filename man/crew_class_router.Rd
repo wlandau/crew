@@ -150,6 +150,9 @@ This method may stall and time out if there are
 tasks in the queue. Methods \code{start()} and \code{terminate()}
 call \code{listening()} to manage the connection before
 and after the entire workload, respectively.
+In addition, a false negative result is possible
+if there is a momentary connection issue. (\code{listening()}
+does not retry the connection.)
 }
 
 \subsection{Returns}{

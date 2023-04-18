@@ -169,26 +169,13 @@ crew_class_router <- R6::R6Class(
     #'   tasks in the queue. Methods `start()` and `terminate()`
     #'   call `listening()` to manage the connection before
     #'   and after the entire workload, respectively.
+    #'   In addition, a false negative result is possible
+    #'   if there is a momentary connection issue. (`listening()`
+    #'   does not retry the connection.)
     #' @return `TRUE` if successfully listening for dialed-in workers,
     #'   `FALSE` otherwise.
     listening = function() {
-      self$poll(max_tries = 1L, error = FALSE)
-      n_daemons <- nrow(self$daemons)
-      # TODO: when the dispatcher process becomes a C thread,
-      # delete these superfluous checks on the dispatcher.
-      # Begin dispatcher checks.
-      dispatcher <- attr(dimnames(self$daemons)[[1]], "dispatcher_pid")
-      dispatcher_running <- TRUE
-      if (!is.null(dispatcher)) {
-        handle <- ps::ps_handle(pid = dispatcher)
-        dispatcher_running <- ps::ps_is_running(p = handle)
-      }
-      dispatcher_running &&
-      # End dispatcher checks.
-        (length(n_daemons) == 1L) &&
-        !anyNA(n_daemons) &&
-        is.numeric(n_daemons) &&
-        all(n_daemons > 0L)
+      daemons_valid(mirai::daemons(.compute = self$name)$daemons)
     },
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
@@ -270,11 +257,11 @@ crew_class_router <- R6::R6Class(
       crew_retry(
         ~{
           out <- mirai::daemons(.compute = self$name)$daemons
-          good <- is.matrix(out) && all(dim(out) > 0L)
-          if (good) {
+          valid <- daemons_valid(out)
+          if (valid) {
             self$daemons <- out
           }
-          good
+          valid
         },
         seconds_interval = seconds_interval,
         seconds_timeout = seconds_timeout,
@@ -357,3 +344,7 @@ crew_class_router <- R6::R6Class(
     }
   )
 )
+
+daemons_valid <- function(daemons) {
+  is.matrix(daemons) && all(dim(daemons) > 0L)
+}

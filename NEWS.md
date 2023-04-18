@@ -1,4 +1,4 @@
-# crew 0.0.5.9022 (development)
+# crew 0.0.5.9024 (development)
 
 * Remove `asyncdial` from call to `mirai::daemons()`.
 * Explain vision in the launcher plugin vignette.
@@ -26,7 +26,7 @@
 * Rename the `listen()` method to `start()` in the router class.
 * The `poll()` method now retries `mirai::daemons()` for robustness.
 * `crew_retry()` gains a `max_tries` argument.
-* Bugfix: stop setting `router$daemons` to `NULL` in `poll()` when the connection has a momentary problem.
+* Bug fix: stop setting `router$daemons` to `NULL` in `poll()` when the connection has a momentary problem.
 
 # crew 0.0.5
 

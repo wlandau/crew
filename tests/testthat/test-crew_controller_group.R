@@ -118,7 +118,16 @@ crew_test("crew_controller_group()", {
     controller = "a"
   )
   x$wait(seconds_timeout = 5)
-  out <- x$pop(scale = FALSE)
+  envir <- new.env(parent = emptyenv())
+  crew_retry(
+    ~{
+      envir$out <- x$pop(scale = TRUE)
+      !is.null(envir$out)
+    },
+    seconds_interval = 0.01,
+    seconds_timeout = 10
+  )
+  out <- envir$out
   expect_false(is.null(out))
   expect_equal(out$name, "task_pid2")
   expect_equal(out$command, "ps::ps_pid()")

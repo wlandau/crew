@@ -270,8 +270,11 @@ crew_class_router <- R6::R6Class(
       crew_retry(
         ~{
           out <- mirai::daemons(.compute = self$name)$daemons
-          self$daemons <- if_any(is.matrix(out), out, NULL)
-          is.matrix(out)
+          good <- is.matrix(out) && all(dim(out) > 0L)
+          if (good) {
+            self$daemons <- out
+          }
+          good
         },
         seconds_interval = seconds_interval,
         seconds_timeout = seconds_timeout,

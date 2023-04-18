@@ -208,7 +208,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      self$router$poll(error = TRUE)
+      self$router$poll(error = FALSE, max_tries = 1L)
       private$try_launch(inactive = private$inactive(), n = n)
       invisible()
     },
@@ -225,7 +225,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
-      self$router$poll(error = TRUE)
+      self$router$poll(error = FALSE, max_tries = 1L)
       inactive <- private$inactive()
       private$clean()
       self$collect()

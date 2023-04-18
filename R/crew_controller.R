@@ -179,9 +179,9 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     start = function(controllers = NULL) {
-      if (!self$router$listening()) {
-        self$router$listen()
-        workers <- length(self$router$sockets())
+      if (!isTRUE(self$router$started)) {
+        self$router$start()
+        workers <- nrow(self$router$daemons)
         self$launcher$start(workers = workers)
         self$log <- tibble::tibble(
           popped_tasks = rep(0L, workers),
@@ -208,7 +208,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      self$router$poll()
+      self$router$poll(error = TRUE)
       private$try_launch(inactive = private$inactive(), n = n)
       invisible()
     },
@@ -225,7 +225,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
-      self$router$poll()
+      self$router$poll(error = TRUE)
       inactive <- private$inactive()
       private$clean()
       self$collect()

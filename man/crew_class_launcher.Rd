@@ -11,7 +11,7 @@ which launch and manage workers.
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
 router <- crew_router()
-router$listen()
+router$start()
 launcher <- crew_launcher_local()
 launcher$populate(sockets = router$sockets)
 launcher$launch()
@@ -29,7 +29,7 @@ crew_session_terminate()
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
 router <- crew_router()
-router$listen()
+router$start()
 launcher <- crew_launcher_local()
 launcher$populate(sockets = router$sockets)
 launcher$launch()
@@ -169,7 +169,7 @@ An \code{R6} object with the launcher.
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
 router <- crew_router()
-router$listen()
+router$start()
 launcher <- crew_launcher_local()
 launcher$populate(sockets = router$sockets)
 launcher$launch()

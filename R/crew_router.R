@@ -19,7 +19,7 @@
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
-#' router$listen()
+#' router$start()
 #' router$daemons
 #' router$terminate()
 #' }
@@ -55,7 +55,7 @@ crew_router <- function(
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
-#' router$listen()
+#' router$start()
 #' router$daemons
 #' router$terminate()
 #' }
@@ -75,6 +75,8 @@ crew_class_router <- R6::R6Class(
     seconds_interval = NULL,
     #' @field seconds_timeout See [crew_router()].
     seconds_timeout = NULL,
+    #' @field started Whether the router is started.
+    started = NULL,
     #' @field dispatcher Process ID of the `mirai` dispatcher
     dispatcher = NULL,
     #' @field daemons Data frame of information from `mirai::daemons()`.
@@ -93,7 +95,7 @@ crew_class_router <- R6::R6Class(
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' router <- crew_router()
-    #' router$listen()
+    #' router$start()
     #' router$daemons
     #' router$terminate()
     #' }
@@ -164,13 +166,13 @@ crew_class_router <- R6::R6Class(
     #' @description Check if the `mirai` client is listening
     #'   to worker websockets.
     #' @details This method may stall and time out if there are
-    #'   tasks in the queue. Methods `listen()` and `terminate()`
+    #'   tasks in the queue. Methods `start()` and `terminate()`
     #'   call `listening()` to manage the connection before
     #'   and after the entire workload, respectively.
     #' @return `TRUE` if successfully listening for dialed-in workers,
     #'   `FALSE` otherwise.
     listening = function() {
-      self$poll()
+      self$poll(max_tries = 1L, error = FALSE)
       n_daemons <- nrow(self$daemons)
       # TODO: when the dispatcher process becomes a C thread,
       # delete these superfluous checks on the dispatcher.
@@ -190,8 +192,8 @@ crew_class_router <- R6::R6Class(
     },
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
-    listen = function() {
-      if (isFALSE(self$listening())) {
+    start = function() {
+      if (!isTRUE(self$started)) {
         args <- list(
           url = sprintf("ws://%s:%s", self$host, self$port),
           n = self$workers,
@@ -200,12 +202,8 @@ crew_class_router <- R6::R6Class(
           .compute = self$name
         )
         do.call(what = mirai::daemons, args = args)
-        crew_retry(
-          fun = ~isTRUE(self$listening()),
-          seconds_interval = self$seconds_interval,
-          seconds_timeout = self$seconds_timeout,
-          message = "mirai client cannot connect."
-        )
+        self$started <- TRUE
+        self$poll(error = TRUE)
         # TODO: remove code that gets the dispatcher PID if the dispatcher
         # process is phased out of mirai.
         # Begin dispatcher code.
@@ -214,11 +212,6 @@ crew_class_router <- R6::R6Class(
         self$rotations <- rep(-1L, self$workers)
       }
       invisible()
-    },
-    #' @description Get the current socket addresses.
-    #' @return A character vector of socket addresses.
-    sockets = function() {
-      as.character(rownames(mirai::daemons(.compute = self$name)$daemons))
     },
     #' @description Choose the websocket path for the next instance
     #'   of the worker at a given index.
@@ -245,17 +238,56 @@ crew_class_router <- R6::R6Class(
     #'   If the workers cannot be reached or the router has not started,
     #'   then do not modify the `daemons` field. Otherwise, if the workers
     #'   are reachable, populate the `daemons` field with a data frame
-    #'   of high-level worker-specific statistics.
+    #'   of high-level worker-specific statistics. `poll()` retries
+    #'   and times out with [crew_retry()] using the values in arguments
+    #'   `seconds_interval` and `seconds_timeout`.
     #' @return `NULL` (invisibly).
-    poll = function() {
-      out <- mirai::daemons(.compute = self$name)$daemons
-      self$daemons <- if_any(is.matrix(out), out, NULL)
+    #' @param seconds_interval Number of seconds to wait between retries
+    #'   polling the `mirai` dispatcher for worker information.
+    #'   Defaults to the `seconds_interval` field of the router object.
+    #' @param seconds_timeout Number of seconds to time out
+    #'   polling the `mirai` dispatcher for worker information.
+    #'   Defaults to the `seconds_timeout` field of the router object.
+    #' @param max_tries Maximum number of attempts to poll the
+    #'   mirai dispatcher.
+    #' @param error `TRUE` to throw an error if the `mirai` dispatcher
+    #'   cannot be reached, `FALSE` otherwise.
+    poll = function(
+      seconds_interval = NULL,
+      seconds_timeout = NULL,
+      max_tries = Inf,
+      error = FALSE
+    ) {
+      if (!isTRUE(self$started)) {
+        if (error) {
+          crew_error("crew router not started.")
+        } else {
+          return(invisible())
+        }
+      }
+      seconds_interval <- seconds_interval %|||% self$seconds_interval
+      seconds_timeout <- seconds_timeout %|||% self$seconds_timeout
+      crew_retry(
+        ~{
+          out <- mirai::daemons(.compute = self$name)$daemons
+          self$daemons <- if_any(is.matrix(out), out, NULL)
+          is.matrix(out)
+        },
+        seconds_interval = seconds_interval,
+        seconds_timeout = seconds_timeout,
+        max_tries = max_tries,
+        error = FALSE,
+        message = "cannot poll mirai client."
+      )
       invisible()
     },
     #' @description Show an informative worker log.
+    #' @details This method tries once to update the worker information
+    #'   using `poll()`. If unsuccessful the first time, it just uses
+    #'   the existing information in the `daemons` field.
     #' @return A `tibble` with information on the workers.
     log = function() {
-      self$poll()
+      self$poll(max_tries = 1L, error = FALSE)
       daemons <- self$daemons
       if (is.null(daemons)) {
         return(NULL)
@@ -273,7 +305,7 @@ crew_class_router <- R6::R6Class(
     #'   worker websockets.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      if (isTRUE(self$listening())) {
+      if (isTRUE(self$started)) {
         # TODO: when the dispatcher process becomes a C thread,
         # delete these superfluous checks on the dispatcher.
         # Begin dispatcher checks block 1/2.
@@ -316,6 +348,7 @@ crew_class_router <- R6::R6Class(
         self$daemons <- NULL
         self$dispatcher <- NULL
         self$rotations <- NULL
+        self$started <- FALSE
       }
       invisible()
     }

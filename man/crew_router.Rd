@@ -39,7 +39,7 @@ client.
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 router <- crew_router()
-router$listen()
+router$start()
 router$daemons
 router$terminate()
 }

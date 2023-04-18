@@ -61,7 +61,7 @@ crew_test("crew_controller_local()", {
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  instance <- parse_instance(x$router$sockets())
+  instance <- parse_instance(rownames(x$router$daemons))
   x$push(command = Sys.getenv("CREW_INSTANCE"), name = "task")
   expect_false(x$empty())
   x$wait(seconds_timeout = 5)
@@ -231,7 +231,7 @@ crew_test("crew_controller_local() can terminate a lost worker", {
     seconds_timeout = 5
   )
   x$launcher$workers$handle[[1L]] <- handle
-  x$launcher$workers$socket[1L] <- x$router$sockets()
+  x$launcher$workers$socket[1L] <- rownames(x$router$daemons)
   x$launcher$workers$start[1L] <- - Inf
   x$launcher$workers$launches[1L] <- 1L
   expect_true(handle$is_alive())

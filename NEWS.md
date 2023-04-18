@@ -23,6 +23,9 @@
 * Make monads classed environments and leave tibbles to the last minute in `pop()`.
 * Rename `crew_wait()` to `crew_retry()`.
 * Export `crew_assert()` and `crew_random_name()` to help launcher plugins.
+* Rename the `listen()` method to `start()` in the router class.
+* The `poll()` method now retries `mirai::daemons()` for robustness.
+* `crew_retry()` gains a `max_tries` argument.
 
 # crew 0.0.5
 

@@ -12,11 +12,11 @@ crew_test("crew_launcher_local() can run a task on a worker", {
     crew_test_sleep()
   })
   expect_silent(launcher$validate())
-  router$listen()
+  router$start()
   launcher$start(workers = 4L)
   expect_equal(nrow(launcher$workers), 4L)
   expect_s3_class(launcher$workers$handle[[2L]], "crew_null")
-  socket <- router$sockets()[2L]
+  socket <- rownames(router$daemons)[2L]
   expect_equal(launcher$workers$launches, rep(0L, 4L))
   launcher$launch(index = 2L, socket = socket)
   expect_s3_class(launcher$workers$handle[[2L]], "process")
@@ -97,9 +97,9 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
     gc()
     crew_test_sleep()
   })
-  router$listen()
+  router$start()
   expect_silent(launcher$validate())
-  socket <- router$sockets()
+  socket <- rownames(router$daemons)
   launcher$start(workers = 1L)
   launcher$launch(index = 1L, socket = socket)
   crew::crew_retry(
@@ -149,8 +149,8 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
     gc()
     crew_test_sleep()
   })
-  router$listen()
-  socket <- router$sockets()
+  router$start()
+  socket <- rownames(router$daemons)
   launcher$start(workers = 1L)
   launcher$launch(index = 1L, socket = socket)
   crew::crew_retry(

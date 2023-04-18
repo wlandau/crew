@@ -9,6 +9,8 @@ crew_retry(
   args = list(),
   seconds_interval = 1,
   seconds_timeout = 60,
+  max_tries = Inf,
+  error = TRUE,
   message = character(0),
   envir = parent.frame()
 )
@@ -24,6 +26,11 @@ number of seconds to wait between calls to \code{fun}.}
 
 \item{seconds_timeout}{Nonnegative numeric of length 1,
 number of seconds to loop before timing out.}
+
+\item{max_tries}{Maximum number of calls to \code{fun} to try
+before giving up.}
+
+\item{error}{Whether to throw an error on a timeout or max tries.}
 
 \item{message}{Character of length 1, optional error message
 if the wait times out.}

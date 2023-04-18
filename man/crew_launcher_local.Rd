@@ -87,7 +87,7 @@ local process workers.
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 crew_session_start()
 router <- crew_router()
-router$listen()
+router$start()
 launcher <- crew_launcher_local()
 launcher$populate(sockets = router$sockets)
 launcher$launch()

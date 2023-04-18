@@ -181,7 +181,7 @@ crew_class_controller <- R6::R6Class(
     start = function(controllers = NULL) {
       if (!isTRUE(self$router$started)) {
         self$router$start()
-        workers <- nrow(self$router$daemons)
+        workers <- router$workers
         self$launcher$start(workers = workers)
         self$log <- tibble::tibble(
           popped_tasks = rep(0L, workers),

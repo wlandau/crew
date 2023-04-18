@@ -1,4 +1,4 @@
-# crew 0.0.5.9010
+# crew 0.0.5.9022 (development)
 
 * Remove `asyncdial` from call to `mirai::daemons()`.
 * Explain vision in the launcher plugin vignette.

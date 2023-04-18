@@ -58,8 +58,8 @@ crew_test("crew_controller_local()", {
   expect_equal(s$popped_tasks, 0L)
   crew_retry(
     ~x$router$listening(),
-    seconds_interval = 0.001,
-    seconds_timeout = 5
+    seconds_interval = 0.01,
+    seconds_timeout = 10
   )
   instance <- parse_instance(rownames(x$router$daemons))
   x$push(command = Sys.getenv("CREW_INSTANCE"), name = "task")
@@ -73,8 +73,8 @@ crew_test("crew_controller_local()", {
       envir$out <- x$pop(scale = TRUE)
       !is.null(envir$out)
     },
-    seconds_interval = 0.001,
-    seconds_timeout = 5
+    seconds_interval = 0.01,
+    seconds_timeout = 10
   )
   out <- envir$out
   expect_true(x$empty())

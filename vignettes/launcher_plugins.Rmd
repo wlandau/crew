@@ -184,7 +184,7 @@ result$result[[1]]
 #> [1] "192.168.0.2 27336"
 ```
 
-Please use the result to verify that the task really ran on a worker as intended. The process ID above should agree with the one from the handle. In addition, if the worker is running on a different computer, the worker IP address should be different than the local IP address. Since our custom launcher creates local processes, the IP addresses are the same in this case, but they should be different for a [SLURM](https://slurm.schedmd.com/) or [AWS Batch](https://aws.amazon.com/batch/) launcher. 
+Please use the result to verify that the task really ran on a worker as intended. The process ID above should agree with the one from the handle ([except on Windows](https://github.com/r-lib/processx/issues/364) because the actual R process may be different from the `R.exe` process created first). In addition, if the worker is running on a different computer, the worker IP address should be different than the local IP address. Since our custom launcher creates local processes, the IP addresses are the same in this case, but they should be different for a [SLURM](https://slurm.schedmd.com/) or [AWS Batch](https://aws.amazon.com/batch/) launcher. 
 
 ```{r}
 getip::getip(type = "local")

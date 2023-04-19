@@ -175,7 +175,12 @@ crew_class_router <- R6::R6Class(
     #' @return `TRUE` if successfully listening for dialed-in workers,
     #'   `FALSE` otherwise.
     listening = function() {
-      daemons_valid(mirai::daemons(.compute = self$name)$daemons)
+      daemons_valid(
+        rlang::duplicate(
+          x = mirai::daemons(.compute = self$name)$daemons,
+          shallow = FALSE
+        )
+      )
     },
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
@@ -256,7 +261,10 @@ crew_class_router <- R6::R6Class(
       seconds_timeout <- seconds_timeout %|||% self$seconds_timeout
       crew_retry(
         ~{
-          out <- mirai::daemons(.compute = self$name)$daemons
+          out <- rlang::duplicate(
+            x = mirai::daemons(.compute = self$name)$daemons,
+            shallow = FALSE
+          )
           valid <- daemons_valid(out)
           if (valid) {
             self$daemons <- out

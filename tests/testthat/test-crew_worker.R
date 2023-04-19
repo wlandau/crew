@@ -20,12 +20,19 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
       instance = Sys.getenv("CREW_INSTANCE")
     )
   )
+  envir <- new.env(parent = emptyenv())
   crew_retry(
-    ~mirai::daemons()$connections > 0L,
+    ~{
+      envir$daemons <- rlang::duplicate(
+        x = mirai::daemons()$daemons,
+        shallow = FALSE
+      )
+      daemons_valid(envir$daemons)
+    },
     seconds_interval = 0.001,
     seconds_timeout = 5
   )
-  url <- rownames(mirai::daemons()$daemons)[1]
+  url <- rownames(envir$daemons)[1]
   settings <- list(url = url, maxtasks = 1L, cleanup = 0L)
   instance <- parse_instance(url)
   crew_worker(

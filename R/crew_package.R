@@ -25,7 +25,7 @@
 #' @importFrom processx process
 #' @importFrom ps ps_handle ps_is_running ps_kill
 #' @importFrom R6 R6Class
-#' @importFrom rlang abort as_function enquo quo_squash
+#' @importFrom rlang abort as_function duplicate enquo quo_squash
 #' @importFrom stats runif
 #' @importFrom tibble tibble
 #' @importFrom tidyselect all_of any_of contains ends_with eval_select

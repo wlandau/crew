@@ -28,7 +28,10 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   )
   crew::crew_retry(
     ~{
-      daemons <- mirai::daemons(.compute = router$name)$daemons
+      daemons <- rlang::duplicate(
+        x = mirai::daemons(.compute = router$name)$daemons,
+        shallow = FALSE
+      )
       if (is.null(nrow(daemons))) {
         return(FALSE)
       }
@@ -127,7 +130,10 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   )
   crew::crew_retry(
     ~{
-      daemons <- mirai::daemons(.compute = router$name)$daemons
+      daemons <- rlang::duplicate(
+        x = mirai::daemons(.compute = router$name)$daemons,
+        shallow = FALSE
+      )
       status <- unname(daemons[, "online", drop = TRUE])
       length(status) != 1L || status < 1L
     },
@@ -155,7 +161,10 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   launcher$launch(index = 1L, socket = socket)
   crew::crew_retry(
     ~{
-      daemons <- mirai::daemons(.compute = router$name)$daemons
+      daemons <- rlang::duplicate(
+        x = mirai::daemons(.compute = router$name)$daemons,
+        shallow = FALSE
+      )
       status <- unname(daemons[, "online", drop = TRUE])
       length(status) == 1L && status > 0L
     },
@@ -173,7 +182,10 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   expect_silent(launcher$terminate())
   crew::crew_retry(
     ~{
-      daemons <- mirai::daemons(.compute = router$name)$daemons
+      daemons <- rlang::duplicate(
+        x = mirai::daemons(.compute = router$name)$daemons,
+        shallow = FALSE
+      )
       status <- unname(daemons[, "online", drop = TRUE])
       length(status) != 1L || status < 1L
     },

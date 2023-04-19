@@ -1,4 +1,4 @@
 library(testthat)
 library(crew)
 
-test_check("crew", reporter = ProgressReporter$new())
+test_check("crew")

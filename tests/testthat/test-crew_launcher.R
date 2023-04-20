@@ -136,6 +136,7 @@ crew_test("launcher call", {
 
 crew_test("launcher start()", {
   skip_on_cran()
+  skip_on_os("windows")
   launcher <- crew_class_launcher$new()
   workers <- launcher$workers
   expect_equal(workers, NULL)

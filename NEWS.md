@@ -1,3 +1,7 @@
+# crew 0.1.1
+
+* Ensure checks pass on CRAN.
+
 # crew 0.1.0
 
 * Remove `asyncdial` from call to `mirai::daemons()`.

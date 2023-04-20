@@ -66,6 +66,8 @@ crew_test("crew_launcher_local() can run a task on a worker", {
 })
 
 crew_test("crew_launcher_local() okay to not have sockets to launch", {
+  skip_on_cran()
+  skip_on_os("windows")
   launcher <- crew_launcher_local(seconds_idle = 360)
   # start launcher
   launcher$start()

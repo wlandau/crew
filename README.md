@@ -238,13 +238,7 @@ Services](https://aws.amazon.com/).
 
 ### Workers
 
-`mirai` usually terminates workers when they are no longer needed, but
-sometimes it cannot reach a worker, e.g. when a worker comes online
-after its startup time from `seconds_start` elapses. To make sure
-workers do not run indefinitely if something goes wrong, it is always
-prudent to set arguments like `seconds_idle` in functions like
-`crew_controller_local()`. In addition, please learn how to find and
-terminate workers on the specific computing platform where they run. And
+`mirai` robustly terminates workers as appropriate, but this safeguard cannot protect against the risk of a worker that gets stuck in a crashed state before it can even start R. To be absolutely sure that workers do not run indefinitely if something goes wrong,  please learn how to find and terminate workers on the specific computing platform where they run. And
 if you are writing a custom launcher plugin, it is recommended (although
 not strictly required) to write a custom `terminate_worker()` method.
 

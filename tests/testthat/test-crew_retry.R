@@ -1,4 +1,5 @@
 crew_test("crew_retry() with argless function", {
+  skip_on_cran()
   expect_silent(crew_retry(fun = function() TRUE))
   expect_error(
     crew_retry(
@@ -12,6 +13,7 @@ crew_test("crew_retry() with argless function", {
 })
 
 crew_test("crew_retry() with argless function and error = FALSE", {
+  skip_on_cran()
   expect_silent(crew_retry(fun = function() TRUE))
   expect_silent(
     crew_retry(

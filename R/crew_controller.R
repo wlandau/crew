@@ -304,6 +304,13 @@ crew_class_controller <- R6::R6Class(
         packages = quote(packages),
         library = quote(library)
       )
+      .args <- list(
+        data = data,
+        globals = globals,
+        seed = seed,
+        packages = packages,
+        library = library
+      )
       .timeout <- if_any(
         is.null(seconds_timeout),
         NULL,
@@ -311,11 +318,7 @@ crew_class_controller <- R6::R6Class(
       )
       handle <- mirai::mirai(
         .expr = expr,
-        data = data,
-        globals = globals,
-        seed = seed,
-        packages = packages,
-        library = library,
+        .args = .args,
         .timeout = .timeout,
         .compute = self$router$name
       )

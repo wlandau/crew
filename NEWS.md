@@ -1,6 +1,6 @@
 # crew 0.1.1.9000 (development)
 
-
+* Use `.args` instead of `...` in `mirai::mirai()`.
 
 # crew 0.1.1
 

@@ -40,11 +40,17 @@ including a full function reference and usage tutorial vignettes.
 [launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html)
 for different types of workers that connect over the local network. This
 flexibility can extend `crew` to platforms like
-[SLURM](https://slurm.schedmd.com/), [AWS
+[SLURM](https://slurm.schedmd.com/),
+[SGE](https://en.wikipedia.org/wiki/Oracle_Grid_Engine), [AWS
 Batch](https://aws.amazon.com/batch/), and
 [Kubernetes](https://kubernetes.io/). See the [plugin
-vignette](https://wlandau.github.io/crew/articles/plugins.html) for
-details.
+vignette](https://wlandau.github.io/crew/articles/plugins.html) to learn
+how to create a launcher plugin. The following packages support
+ready-to-use plugins.
+
+- [`crew.cluster`](https://wlandau.github.io/crew.cluster): traditional
+  high-performance computing clusters such as [Sun Grid Engine
+  (SGE)](https://en.wikipedia.org/wiki/Oracle_Grid_Engine).
 
 # Usage
 
@@ -238,9 +244,14 @@ Services](https://aws.amazon.com/).
 
 ### Workers
 
-`mirai` robustly terminates workers as appropriate, but this safeguard cannot protect against the risk of a worker that gets stuck in a crashed state before it can even start R. To be absolutely sure that workers do not run indefinitely if something goes wrong,  please learn how to find and terminate workers on the specific computing platform where they run. And
-if you are writing a custom launcher plugin, it is recommended (although
-not strictly required) to write a custom `terminate_worker()` method.
+`mirai` robustly terminates workers as appropriate, but this safeguard
+cannot protect against the risk of a worker that gets stuck in a crashed
+state before it can even start R. To be absolutely sure that workers do
+not run indefinitely if something goes wrong, please learn how to find
+and terminate workers on the specific computing platform where they run.
+And if you are writing a custom launcher plugin, it is recommended
+(although not strictly required) to write a custom `terminate_worker()`
+method.
 
 Workers may run on different computing platforms, depending on the type
 of launcher you choose. Each type of launcher connects to a different

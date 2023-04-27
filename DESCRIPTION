@@ -45,8 +45,7 @@ Imports:
   stats,
   tibble,
   tidyselect,
-  utils,
-  withr
+  utils
 Suggests:
   knitr (>= 1.30),
   markdown (>= 1.1),

@@ -14,8 +14,9 @@
 #' @param globals Named list of objects to temporarily assign to the
 #'   global environment for the task.
 #' @param seed Integer of length 1 with the pseudo-random number generator
-#'   seed to temporarily set for the evaluation of the task.
-#'   At the end of the task, the seed is restored.
+#'   seed to set for the evaluation of the task. Does not restore
+#'   the original seed, but this is okay because `crew_eval()`
+#'   should only run in a non-interactive worker process.
 #' @param packages Character vector of packages to load for the task.
 #' @param library Library path to load the packages. See the `lib.loc`
 #'   argument of `require()`.
@@ -30,7 +31,7 @@ crew_eval <- function(
   library = NULL
 ) {
   load_packages(packages = packages, library = library)
-  withr::local_seed(seed)
+  set.seed(seed)
   list2env(x = globals, envir = globalenv())
   envir <- list2env(x = data, parent = globalenv())
   capture_error <- function(condition) {

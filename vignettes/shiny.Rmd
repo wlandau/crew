@@ -1,7 +1,9 @@
 ---
 title: "Using crew with Shiny"
 author: "Will Landau and Daniel Woodie"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    tabset: true
 vignette: >
   %\VignetteIndexEntry{Using crew with Shiny}
   %\VignetteEngine{knitr::rmarkdown}
@@ -23,27 +25,39 @@ The [`promises`](https://rstudio.github.io/promises/) package is a popular solut
 
 By contrast, `crew` scales out easily, and it controller asynchronously manages all the tasks from a single convenient place. This vignette demonstrates scalable asynchronous programming with `crew` in Shiny.
 
-## Example
+## Example {.tabset}
+
+### Open {.active}
 
 Our example app opens like this:
 
 ![](./figures/open.png)
 
+### Submission
+
 When you click the "Run a task (5 seconds)" button, `crew` runs a long task in the background. In this case, each task is an R function call that sleeps for 5 seconds and then produces a [`ggplot`](https://ggplot2.tidyverse.org/) of a low-resolution [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) using the [`aRtsy`](https://koenderks.github.io/aRtsy/) package. The app continuously refreshes the current time and the number of tasks in progress.
 
 ![](./figures/submitted.png)
+
+### Completion
 
 As soon as a task completes, the app retrieves the result from the `crew` workers and plots the output.
 
 ![](./figures/completed1.png)
 
+### Load
+
 You can submit many more tasks than there are workers currently running. In the following screenshot, the app is only running 2 workers, but there are 13 tasks in the queue.
 
 ![](./figures/progress.png)
 
+### End
+
 Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/mirai) in the backend, `crew` workers successfully complete all 13 tasks. Because the app runs 2 workers, as many as 2 plots may show in quick succession.
 
 ![](./figures/completed2.png)
+
+## {-}
 
 ## Tutorial
 

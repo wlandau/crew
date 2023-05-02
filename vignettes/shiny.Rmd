@@ -147,7 +147,7 @@ shinyApp(ui = ui, server = server)
 
 ## Code
 
-The complete `app.R` file is below.
+See below for the complete `app.R` file.
 
 ```r
 library(crew)

@@ -25,37 +25,27 @@ The [`promises`](https://rstudio.github.io/promises/) package is a popular solut
 
 By contrast, `crew` scales out easily, and it controller asynchronously manages all the tasks from a single convenient place. This vignette demonstrates scalable asynchronous programming with `crew` in Shiny.
 
-## Example {.tabset}
+## Example
 
-Our example app opens like this:
+Our example app looks like this when it launches:
 
 ![](./figures/open.png)
 
-## Submission
-
-When you click the "Run a task (5 seconds)" button, `crew` runs a long task in the background. In this case, each task is an R function call that sleeps for 5 seconds and then produces a [`ggplot`](https://ggplot2.tidyverse.org/) of a low-resolution [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) using the [`aRtsy`](https://koenderks.github.io/aRtsy/) package. The app continuously refreshes the current time and the number of tasks in progress.
+When you click the "Submit a task (5 seconds)" button, `crew` runs a long task in the background. In this case, each task is an R function call that sleeps for 5 seconds and then produces a [`ggplot`](https://ggplot2.tidyverse.org/) of a low-resolution [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) using the [`aRtsy`](https://koenderks.github.io/aRtsy/) package. The app continuously refreshes the current time and the number of tasks in progress.
 
 ![](./figures/submitted.png)
-
-## Completion
 
 As soon as a task completes, the app retrieves the result from the `crew` workers and plots the output.
 
 ![](./figures/completed1.png)
 
-## Load
-
-You can submit many more tasks than there are workers currently running. In the following screenshot, the app is only running 2 workers, but there are 13 tasks in the queue.
+You can submit many more tasks than there are workers currently running. In the following screenshot, the app is only running 2 workers, but the queue has 6 tasks left.
 
 ![](./figures/progress.png)
 
-## End
-
-Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/mirai) in the backend, `crew` workers successfully complete all 13 tasks. Because the app runs 2 workers, as many as 2 plots may show in quick succession.
+Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/mirai) in the backend, `crew` workers successfully complete all remaining 6 tasks. Because the app runs 2 workers, different plots may appear less than 5 seconds apart.
 
 ![](./figures/completed2.png)
-
-## {-}
 
 ## Tutorial
 
@@ -97,8 +87,7 @@ The [user interface](https://shiny.rstudio.com/articles/basics.html) has a butto
 
 ```r
 ui <- fluidPage(
-  titlePanel("Shiny app with crew"),
-  actionButton("task", "Run a task (5 seconds)"),
+  actionButton("task", "Submit a task (5 seconds)"),
   textOutput("status"),
   plotOutput("figure")
 )
@@ -109,7 +98,7 @@ The [server](https://shiny.rstudio.com/articles/basics.html) begins with reactiv
 ```r
 server <- function(input, output, session) {
   figure <- reactiveVal(ggplot())
-  status <- reactiveVal("Not started.")
+  status <- reactiveVal("No task submitted yet.")
   output$figure <- renderPlot(figure(), height = 600, width = 600)
   output$status <- renderText(status())
 ```
@@ -122,7 +111,7 @@ Next, we start a `crew` controller with up to 2 workers and an idle time of 10 s
   onStop(function() controller$terminate())
 ```
 
-Every time the user presses the "Run a task (5 seconds)" button, the app pushes a new task to the `crew` controller. If there are other tasks already running on the workers, the task may not actually start for several seconds.
+Every time the user presses the "Submit a task (5 seconds)" button, the app pushes a new task to the `crew` controller. If there are other tasks already running on the workers, the task may not actually start for several seconds.
 
 ```r
   observeEvent(input$task, {
@@ -188,8 +177,7 @@ status_message <- function(number_tasks) {
 }
 
 ui <- fluidPage(
-  titlePanel("Shiny app with crew"),
-  actionButton("task", "Run a task (5 seconds)"),
+  actionButton("task", "Submit a task (5 seconds)"),
   textOutput("status"),
   plotOutput("figure")
 )
@@ -197,7 +185,7 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   # reactive values and outputs
   figure <- reactiveVal(ggplot())
-  status <- reactiveVal("Not started.")
+  status <- reactiveVal("No task submitted yet.")
   output$figure <- renderPlot(figure(), height = 600, width = 600)
   output$status <- renderText(status())
   

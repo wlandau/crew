@@ -39,11 +39,11 @@ As soon as a task completes, the app retrieves the result from the `crew` worker
 
 ![](./figures/completed1.png)
 
-You can submit many more tasks than there are workers currently running. In the following screenshot, the app is only running 2 workers, but the queue has 6 tasks left.
+You can submit many more tasks than there are workers currently running. In the following screenshot, the app is only running 2 workers, but the queue has 12 tasks left.
 
 ![](./figures/progress.png)
 
-Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/mirai) in the backend, `crew` workers successfully complete all remaining 6 tasks. Because the app runs 2 workers, different plots may appear less than 5 seconds apart.
+Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/mirai) in the backend, `crew` workers successfully complete all remaining 12 tasks. Because the app runs 2 workers, different plots may appear less than 5 seconds apart.
 
 ![](./figures/completed2.png)
 

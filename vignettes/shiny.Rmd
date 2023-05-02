@@ -103,7 +103,7 @@ server <- function(input, output, session) {
   output$status <- renderText(status())
 ```
 
-Next, we start a `crew` controller with up to 2 workers and an idle time of 10 seconds. We choose the [local process launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html) below for this app, but we could have chosen the [Sun Grid Engine](https://en.wikipedia.org/wiki/Oracle_Grid_Engine) launcher from [`crew.cluster`](https://wlandau.github.io/crew.cluster/), a [controller group](https://wlandau.github.io/crew/articles/controller_groups.html) with multiple launchers, or a [custom launcher](https://wlandau.github.io/crew/articles/launcher_plugins.html) for e.g. [Kubernetes](https://kubernetes.io). With `crew`, anyone can write a [custom launcher plugins](https://wlandau.github.io/crew/articles/launcher_plugins.html).
+Next, we start a `crew` controller with up to 2 workers and an idle time of 10 seconds. We choose the [local process launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html) below for this app, but we could have chosen the [Sun Grid Engine](https://en.wikipedia.org/wiki/Oracle_Grid_Engine) launcher from [`crew.cluster`](https://wlandau.github.io/crew.cluster/), a [controller group](https://wlandau.github.io/crew/articles/controller_groups.html) with multiple launchers, or a [custom launcher](https://wlandau.github.io/crew/articles/launcher_plugins.html) for e.g. [Kubernetes](https://kubernetes.io). With `crew`, anyone can write a [custom launcher plugin](https://wlandau.github.io/crew/articles/launcher_plugins.html).
 
 ```r
   controller <- crew_controller_local(workers = 2, seconds_idle = 10)

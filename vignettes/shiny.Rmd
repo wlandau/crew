@@ -1,11 +1,11 @@
 ---
-title: "Using crew with Shiny"
+title: "Asynchronous Shiny apps"
 author: "Will Landau and Daniel Woodie"
 output:
   rmarkdown::html_vignette:
     tabset: true
 vignette: >
-  %\VignetteIndexEntry{Using crew with Shiny}
+  %\VignetteIndexEntry{Asynchronous Shiny apps}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

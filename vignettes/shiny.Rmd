@@ -27,31 +27,29 @@ By contrast, `crew` scales out easily, and it controller asynchronously manages 
 
 ## Example {.tabset}
 
-### Open {.active}
-
 Our example app opens like this:
 
 ![](./figures/open.png)
 
-### Submission
+## Submission
 
 When you click the "Run a task (5 seconds)" button, `crew` runs a long task in the background. In this case, each task is an R function call that sleeps for 5 seconds and then produces a [`ggplot`](https://ggplot2.tidyverse.org/) of a low-resolution [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) using the [`aRtsy`](https://koenderks.github.io/aRtsy/) package. The app continuously refreshes the current time and the number of tasks in progress.
 
 ![](./figures/submitted.png)
 
-### Completion
+## Completion
 
 As soon as a task completes, the app retrieves the result from the `crew` workers and plots the output.
 
 ![](./figures/completed1.png)
 
-### Load
+## Load
 
 You can submit many more tasks than there are workers currently running. In the following screenshot, the app is only running 2 workers, but there are 13 tasks in the queue.
 
 ![](./figures/progress.png)
 
-### End
+## End
 
 Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/mirai) in the backend, `crew` workers successfully complete all 13 tasks. Because the app runs 2 workers, as many as 2 plots may show in quick succession.
 

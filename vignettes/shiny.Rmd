@@ -23,7 +23,7 @@ Shiny has revolutionized interactive web apps in R. However, because of the stag
 
 The [`promises`](https://rstudio.github.io/promises/) package is a popular solution for asynchronous programming in Shiny. With the help of [`future`](https://future.futureverse.org/), it keeps the main process free and responsive. However, as [its own documentation explains](https://rstudio.github.io/promises/articles/intro.html), the [`promises`](https://rstudio.github.io/promises/) package focuses on apps with only a small number of specific bottlenecks. By design, it does not scale to the prodigious quantities of heavy tasks that industrial enterprise-level apps aim to farm out in production-level pipelines.
 
-By contrast, `crew` scales out easily, and it controller asynchronously manages all the tasks from a single convenient place. This vignette demonstrates scalable asynchronous programming with `crew` in Shiny.
+By contrast, `crew` scales out easily, and its controller asynchronously manages all the tasks from a single convenient place. This vignette demonstrates scalable asynchronous programming with `crew` in Shiny.
 
 ## Example
 

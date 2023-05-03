@@ -27,7 +27,7 @@ By contrast, `crew` scales out easily, and its controller asynchronously manages
 
 ## Example
 
-Our example app looks like this when it launches:
+We focus on the `crew`-powered Shiny app at <https://wlandau.shinyapps.io/crew-shiny/>. When it launches, it looks like this:
 
 ![](./figures/open.png)
 

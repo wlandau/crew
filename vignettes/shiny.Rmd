@@ -31,7 +31,7 @@ Our example app looks like this when it launches:
 
 ![](./figures/open.png)
 
-When you click the "Submit a task (5 seconds)" button, `crew` runs a long task in the background. In this case, each task is an R function call that sleeps for 5 seconds and then produces a [`ggplot`](https://ggplot2.tidyverse.org/) of a random low-resolution [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) using the [`aRtsy`](https://koenderks.github.io/aRtsy/) package. The app continuously refreshes the current time and the number of tasks in progress.
+When you click the "Submit a task (5 seconds)" button, `crew` runs a long task in the background. Here, the task is to wait 5 seconds and then generate a random [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) using the [`aRtsy`](https://koenderks.github.io/aRtsy/) package.^[Machine learning and Bayesian data analysis have plenty of serious examples of long-running tasks.] The app continuously refreshes the current time and the number of tasks in progress.
 
 ![](./figures/submitted.png)
 
@@ -49,27 +49,38 @@ Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/m
 
 ## Tutorial
 
-Each plot in the app is a [`ggplot`](https://ggplot2.tidyverse.org/) of a random low-resolution [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) from the [`aRtsy`](https://koenderks.github.io/aRtsy/) package. [`canvas_phyllotaxis()`](https://koenderks.github.io/aRtsy/reference/canvas_phyllotaxis.html) is actually quite fast, so we make the task noticeably long with an artificial 5-second delay.^[Machine learning and Bayesian data analysis have plenty of examples of long-running tasks in data science and statistics.]
+The app depends on the following packages.
 
 ```r
 library(crew)
 library(shiny)
 library(ggplot2)
 library(aRtsy)
+```
 
-create_figure <- function() {
+Each task waits 5 seconds and then generates a random set of parameters of a [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis).
+
+```r
+run_task <- function() {
   Sys.sleep(5)
-  canvas_phyllotaxis(
+  list(
     colors = colorPalette(name = "random", n = 3),
-    iterations = 1000,
-    angle = runif(n = 1, min = 90, max = 270),
-    size = runif(n = 1, min = 2, max = 3),
-    p = runif(n = 1, min = 0, max = 1),
+    angle = runif(n = 1, min = - 2 * pi, max = 2 * pi),
+    size = 1,
+    p = 1
   )
 }
 ```
 
-Next, we have a function that accepts the number of tasks in progress and returns a text string with the status message.
+The [`canvas_phyllotaxis()`](https://koenderks.github.io/aRtsy/reference/canvas_phyllotaxis.html) function from [`aRtsy`](https://koenderks.github.io/aRtsy/) generates a [`ggplot`](https://ggplot2.tidyverse.org/) of the [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis). Below, the `result` argument is a random set of parameters from `run_task()`.
+
+```r
+plot_result <- function(result) {
+  do.call(what = canvas_phyllotaxis, args = result)
+}
+```
+
+A separate function generates status messages based on the number of tasks in progress.
 
 ```r
 status_message <- function(number_tasks) {
@@ -93,14 +104,14 @@ ui <- fluidPage(
 )
 ```
 
-The [server](https://shiny.rstudio.com/articles/basics.html) begins with reactive values and outputs for the random  [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) figure and the status.
+The [server](https://shiny.rstudio.com/articles/basics.html) begins with reactive values and outputs for the random [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) parameters and the task status.
 
 ```r
 server <- function(input, output, session) {
-  figure <- reactiveVal(ggplot())
-  status <- reactiveVal("No task submitted yet.")
-  output$figure <- renderPlot(figure(), height = 600, width = 600)
-  output$status <- renderText(status())
+  reactive_result <- reactiveVal(ggplot())
+  reactive_status <- reactiveVal("No task submitted yet.")
+  output$result <- renderPlot(reactive_result(), height = 600, width = 600)
+  output$status <- renderText(reactive_status())
 ```
 
 Next, we start a `crew` controller with up to 2 workers and an idle time of 10 seconds. We choose the [local process launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html) below for this app, but we could have chosen the [Sun Grid Engine](https://en.wikipedia.org/wiki/Oracle_Grid_Engine) launcher from [`crew.cluster`](https://wlandau.github.io/crew.cluster/), a [controller group](https://wlandau.github.io/crew/articles/controller_groups.html) with multiple launchers, or a [custom launcher](https://wlandau.github.io/crew/articles/launcher_plugins.html) for e.g. [Kubernetes](https://kubernetes.io). With `crew`, anyone can write a [custom launcher plugin](https://wlandau.github.io/crew/articles/launcher_plugins.html).
@@ -116,8 +127,8 @@ Every time the user presses the "Submit a task (5 seconds)" button, the app push
 ```r
   observeEvent(input$task, {
     controller$push(
-      command = create_figure(),
-      data = list(create_figure = create_figure),
+      command = run_task(),
+      data = list(run_task = run_task),
       packages = "aRtsy"
     )
   })
@@ -131,9 +142,9 @@ At the bottom of `server()` is the crux of the app: the event loop that watches 
     if (isFALSE(controller$empty())) {
       result <- controller$pop()$result
       if (!is.null(result)) {
-        figure(result)
+        reactive_result(plot_result(result[[1L]]))
       }
-      status(status_message(number_tasks = length(controller$queue)))
+      reactive_status(status_message(number_tasks = length(controller$queue)))
     }
   })
 }
@@ -155,15 +166,18 @@ library(shiny)
 library(ggplot2)
 library(aRtsy)
 
-create_figure <- function() {
+run_task <- function() {
   Sys.sleep(5)
-  canvas_phyllotaxis(
+  list(
     colors = colorPalette(name = "random", n = 3),
-    iterations = 1000,
-    angle = runif(n = 1, min = 90, max = 270),
-    size = runif(n = 1, min = 2, max = 3),
-    p = runif(n = 1, min = 0, max = 1),
+    angle = runif(n = 1, min = - 2 * pi, max = 2 * pi),
+    size = 1,
+    p = 1
   )
+}
+
+plot_result <- function(result) {
+  do.call(what = canvas_phyllotaxis, args = result)
 }
 
 status_message <- function(number_tasks) {
@@ -179,15 +193,15 @@ status_message <- function(number_tasks) {
 ui <- fluidPage(
   actionButton("task", "Submit a task (5 seconds)"),
   textOutput("status"),
-  plotOutput("figure")
+  plotOutput("result")
 )
 
 server <- function(input, output, session) {
   # reactive values and outputs
-  figure <- reactiveVal(ggplot())
-  status <- reactiveVal("No task submitted yet.")
-  output$figure <- renderPlot(figure(), height = 600, width = 600)
-  output$status <- renderText(status())
+  reactive_result <- reactiveVal(ggplot())
+  reactive_status <- reactiveVal("No task submitted yet.")
+  output$result <- renderPlot(reactive_result(), height = 600, width = 600)
+  output$status <- renderText(reactive_status())
   
   # crew controller
   controller <- crew_controller_local(workers = 2, seconds_idle = 10)
@@ -197,8 +211,8 @@ server <- function(input, output, session) {
   # button to submit a task
   observeEvent(input$task, {
     controller$push(
-      command = create_figure(),
-      data = list(create_figure = create_figure),
+      command = run_task(),
+      data = list(run_task = run_task),
       packages = "aRtsy"
     )
   })
@@ -209,9 +223,9 @@ server <- function(input, output, session) {
     if (isFALSE(controller$empty())) {
       result <- controller$pop()$result
       if (!is.null(result)) {
-        figure(result)
+        reactive_result(plot_result(result[[1L]]))
       }
-      status(status_message(number_tasks = length(controller$queue)))
+      reactive_status(status_message(number_tasks = length(controller$queue)))
     }
   })
 }

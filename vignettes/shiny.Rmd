@@ -31,7 +31,7 @@ Our example app looks like this when it launches:
 
 ![](./figures/open.png)
 
-When you click the "Submit a task (5 seconds)" button, `crew` runs a long task in the background. In this case, each task is an R function call that sleeps for 5 seconds and then produces a [`ggplot`](https://ggplot2.tidyverse.org/) of a low-resolution [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) using the [`aRtsy`](https://koenderks.github.io/aRtsy/) package. The app continuously refreshes the current time and the number of tasks in progress.
+When you click the "Submit a task (5 seconds)" button, `crew` runs a long task in the background. In this case, each task is an R function call that sleeps for 5 seconds and then produces a [`ggplot`](https://ggplot2.tidyverse.org/) of a random low-resolution [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) using the [`aRtsy`](https://koenderks.github.io/aRtsy/) package. The app continuously refreshes the current time and the number of tasks in progress.
 
 ![](./figures/submitted.png)
 
@@ -49,7 +49,7 @@ Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/m
 
 ## Tutorial
 
-Each plot in the app is a [`ggplot`](https://ggplot2.tidyverse.org/) of a low-resolution [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) from the [`aRtsy`](https://koenderks.github.io/aRtsy/) package. [`canvas_phyllotaxis()`](https://koenderks.github.io/aRtsy/reference/canvas_phyllotaxis.html) is actually quite fast, so we make the task noticeably long with an artificial 5-second delay.^[Machine learning and Bayesian data analysis have plenty of examples of long-running tasks in data science and statistics.]
+Each plot in the app is a [`ggplot`](https://ggplot2.tidyverse.org/) of a random low-resolution [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) from the [`aRtsy`](https://koenderks.github.io/aRtsy/) package. [`canvas_phyllotaxis()`](https://koenderks.github.io/aRtsy/reference/canvas_phyllotaxis.html) is actually quite fast, so we make the task noticeably long with an artificial 5-second delay.^[Machine learning and Bayesian data analysis have plenty of examples of long-running tasks in data science and statistics.]
 
 ```r
 library(crew)
@@ -93,7 +93,7 @@ ui <- fluidPage(
 )
 ```
 
-The [server](https://shiny.rstudio.com/articles/basics.html) begins with reactive values and outputs for the [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) figure and the status.
+The [server](https://shiny.rstudio.com/articles/basics.html) begins with reactive values and outputs for the random  [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) figure and the status.
 
 ```r
 server <- function(input, output, session) {

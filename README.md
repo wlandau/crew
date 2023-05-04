@@ -387,14 +387,14 @@ people.
   helping [`targets`](https://github.com/ropensci/targets) submit jobs
   to Google Cloud Run.
 
-## Code of Conduct
+# Code of Conduct
 
 Please note that the `crew` project is released with a [Contributor Code
 of
 Conduct](https://github.com/wlandau/crew/blob/main/CODE_OF_CONDUCT.md).
 By contributing to this project, you agree to abide by its terms.
 
-## Citation
+# Citation
 
 ``` r
 citation("crew")

@@ -1,5 +1,5 @@
 Package: crew
-Title: A Distributed Worker Launcher
+Title: A Distributed Worker Launcher Framework
 Description: In computationally demanding analysis projects,
   statisticians and data scientists asynchronously
   deploy long-running tasks to distributed systems,

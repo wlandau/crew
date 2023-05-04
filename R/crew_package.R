@@ -1,4 +1,4 @@
-#' crew: a distributed worker launcher
+#' crew: a distributed worker launcher framework
 #' @docType package
 #' @name crew-package
 #' @description In computationally demanding analysis projects,

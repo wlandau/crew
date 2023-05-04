@@ -1,5 +1,5 @@
 
-# crew: a distributed worker launcher <img src='man/figures/logo-readme.png' align="right" height="139"/>
+# crew: a distributed worker launcher framework <img src='man/figures/logo-readme.png' align="right" height="139"/>
 
 [![CRAN](https://www.r-pkg.org/badges/version/crew)](https://CRAN.R-project.org/package=crew)
 [![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#Active)

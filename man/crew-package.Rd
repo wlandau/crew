@@ -3,7 +3,7 @@
 \docType{package}
 \name{crew-package}
 \alias{crew-package}
-\title{crew: a distributed worker launcher}
+\title{crew: a distributed worker launcher framework}
 \description{
 In computationally demanding analysis projects,
 statisticians and data scientists asynchronously deploy

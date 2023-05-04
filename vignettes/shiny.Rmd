@@ -39,11 +39,11 @@ As soon as a task completes, the app retrieves the result from the `crew` worker
 
 ![](./figures/completed1.png)
 
-You can submit many more tasks than there are workers currently running. In the following screenshot, the app is only running 2 workers, but the queue has 12 tasks left.
+You can submit many more tasks than there are workers currently running. In the following screenshot, the app is only running 4 workers, but the queue has 12 tasks left.
 
 ![](./figures/progress.png)
 
-Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/mirai) in the backend, `crew` workers successfully complete all remaining 12 tasks. Because the app runs 2 workers, different plots may appear less than 5 seconds apart.
+Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/mirai) in the backend, `crew` workers successfully complete all remaining 12 tasks. Because the app runs 4 workers, different plots may appear less than 5 seconds apart.
 
 ![](./figures/completed2.png)
 
@@ -84,12 +84,10 @@ A separate function generates status messages based on the number of tasks in pr
 
 ```r
 status_message <- function(number_tasks) {
-  if (number_tasks == 0) {
-    "All tasks completed."
-  } else if (number_tasks == 1) {
-    paste(number_tasks, "task in progress at", Sys.time())
+  if (number_tasks > 0) {
+    paste(format(Sys.time()), "tasks in progress:", number_tasks)
   } else {
-    paste(number_tasks, "tasks in progress at", Sys.time())
+    "All tasks completed."
   }
 }
 ```
@@ -114,10 +112,10 @@ server <- function(input, output, session) {
   output$status <- renderText(reactive_status())
 ```
 
-Next, we start a `crew` controller with up to 2 workers and an idle time of 10 seconds. We choose the [local process launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html) below for this app, but we could have chosen the [Sun Grid Engine](https://en.wikipedia.org/wiki/Oracle_Grid_Engine) launcher from [`crew.cluster`](https://wlandau.github.io/crew.cluster/), a [controller group](https://wlandau.github.io/crew/articles/controller_groups.html) with multiple launchers, or a [custom launcher](https://wlandau.github.io/crew/articles/launcher_plugins.html) for e.g. [Kubernetes](https://kubernetes.io). With `crew`, anyone can write a [custom launcher plugin](https://wlandau.github.io/crew/articles/launcher_plugins.html).
+Next, we start a `crew` controller with up to 4 workers and an idle time of 10 seconds. We choose the [local process launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html) below for this app, but we could have chosen the [Sun Grid Engine](https://en.wikipedia.org/wiki/Oracle_Grid_Engine) launcher from [`crew.cluster`](https://wlandau.github.io/crew.cluster/), a [controller group](https://wlandau.github.io/crew/articles/controller_groups.html) with multiple launchers, or a [custom launcher](https://wlandau.github.io/crew/articles/launcher_plugins.html) for e.g. [Kubernetes](https://kubernetes.io). With `crew`, anyone can write a [custom launcher plugin](https://wlandau.github.io/crew/articles/launcher_plugins.html).
 
 ```r
-  controller <- crew_controller_local(workers = 2, seconds_idle = 10)
+  controller <- crew_controller_local(workers = 4, seconds_idle = 10)
   controller$start()
   onStop(function() controller$terminate())
 ```
@@ -142,7 +140,7 @@ At the bottom of `server()` is the crux of the app: the event loop that watches 
     if (isFALSE(controller$empty())) {
       result <- controller$pop()$result
       if (!is.null(result)) {
-        reactive_result(plot_result(result[[1L]]))
+        reactive_result(plot_result(result[[1]]))
       }
       reactive_status(status_message(number_tasks = length(controller$queue)))
     }
@@ -161,7 +159,7 @@ shinyApp(ui = ui, server = server)
 See below for the complete `app.R` file.
 
 ```r
-library(crew)
+library(crew.cluster)
 library(shiny)
 library(ggplot2)
 library(aRtsy)
@@ -181,12 +179,10 @@ plot_result <- function(result) {
 }
 
 status_message <- function(number_tasks) {
-  if (number_tasks == 0) {
-    "All tasks completed."
-  } else if (number_tasks == 1) {
-    paste(number_tasks, "task in progress at", Sys.time())
+  if (number_tasks > 0) {
+    paste(format(Sys.time()), "tasks in progress:", number_tasks)
   } else {
-    paste(number_tasks, "tasks in progress at", Sys.time())
+    "All tasks completed."
   }
 }
 
@@ -204,7 +200,12 @@ server <- function(input, output, session) {
   output$status <- renderText(reactive_status())
   
   # crew controller
-  controller <- crew_controller_local(workers = 2, seconds_idle = 10)
+  controller <- crew_controller_sge(
+    workers = 4,
+    seconds_idle = 10,
+    sge_cwd = FALSE,
+    sge_lines = paste0("module load R/", getRversion())
+  )
   controller$start()
   onStop(function() controller$terminate())
   
@@ -223,7 +224,7 @@ server <- function(input, output, session) {
     if (isFALSE(controller$empty())) {
       result <- controller$pop()$result
       if (!is.null(result)) {
-        reactive_result(plot_result(result[[1L]]))
+        reactive_result(plot_result(result[[1]]))
       }
       reactive_status(status_message(number_tasks = length(controller$queue)))
     }

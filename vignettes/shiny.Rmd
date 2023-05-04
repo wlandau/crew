@@ -159,7 +159,7 @@ shinyApp(ui = ui, server = server)
 See below for the complete `app.R` file.
 
 ```r
-library(crew.cluster)
+library(crew)
 library(shiny)
 library(ggplot2)
 library(aRtsy)

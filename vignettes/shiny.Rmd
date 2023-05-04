@@ -200,12 +200,7 @@ server <- function(input, output, session) {
   output$status <- renderText(reactive_status())
   
   # crew controller
-  controller <- crew_controller_sge(
-    workers = 4,
-    seconds_idle = 10,
-    sge_cwd = FALSE,
-    sge_lines = paste0("module load R/", getRversion())
-  )
+  controller <- crew_controller_local(workers = 4, seconds_idle = 10)
   controller$start()
   onStop(function() controller$terminate())
   

@@ -110,6 +110,7 @@ server <- function(input, output, session) {
   reactive_status <- reactiveVal("No task submitted yet.")
   output$result <- renderPlot(reactive_result(), height = 600, width = 600)
   output$status <- renderText(reactive_status())
+  poll_for_results <- reactiveVal(FALSE)
 ```
 
 Next, we start a `crew` controller with up to 4 workers and an idle time of 10 seconds. We choose the [local process launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html) below for this app, but we could have chosen the [Sun Grid Engine](https://en.wikipedia.org/wiki/Oracle_Grid_Engine) launcher from [`crew.cluster`](https://wlandau.github.io/crew.cluster/), a [controller group](https://wlandau.github.io/crew/articles/controller_groups.html) with multiple launchers, or a [custom launcher](https://wlandau.github.io/crew/articles/launcher_plugins.html) for e.g. [Kubernetes](https://kubernetes.io). With `crew`, anyone can write a [custom launcher plugin](https://wlandau.github.io/crew/articles/launcher_plugins.html).
@@ -129,6 +130,7 @@ Every time the user presses the "Submit a task (5 seconds)" button, the app push
       data = list(run_task = run_task),
       packages = "aRtsy"
     )
+    poll_for_results(TRUE)
   })
 ```
 
@@ -136,6 +138,7 @@ At the bottom of `server()` is the crux of the app: the event loop that watches 
 
 ```r
   observe({
+    req(poll_for_results())
     invalidateLater(millis = 250)
     if (isFALSE(controller$empty())) {
       result <- controller$pop()$result
@@ -143,6 +146,8 @@ At the bottom of `server()` is the crux of the app: the event loop that watches 
         reactive_result(plot_result(result[[1]]))
       }
       reactive_status(status_message(number_tasks = length(controller$queue)))
+    } else {
+      poll_for_results(FALSE)
     }
   })
 }
@@ -198,6 +203,7 @@ server <- function(input, output, session) {
   reactive_status <- reactiveVal("No task submitted yet.")
   output$result <- renderPlot(reactive_result(), height = 600, width = 600)
   output$status <- renderText(reactive_status())
+  poll_for_results <- reactiveVal(FALSE)
   
   # crew controller
   controller <- crew_controller_local(workers = 4, seconds_idle = 10)
@@ -211,10 +217,12 @@ server <- function(input, output, session) {
       data = list(run_task = run_task),
       packages = "aRtsy"
     )
+    poll_for_results(TRUE)
   })
   
   # event loop to collect finished tasks
   observe({
+    req(poll_for_results())
     invalidateLater(millis = 250)
     if (isFALSE(controller$empty())) {
       result <- controller$pop()$result
@@ -222,7 +230,8 @@ server <- function(input, output, session) {
         reactive_result(plot_result(result[[1]]))
       }
       reactive_status(status_message(number_tasks = length(controller$queue)))
-    }
+    } else {
+      poll_for_results(FALSE)
   })
 }
 

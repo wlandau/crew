@@ -134,7 +134,7 @@ Every time the user presses the "Submit a task (5 seconds)" button, the app push
   })
 ```
 
-At the bottom of `server()` is the crux of the app: the event loop that scans for results. The leading `req(reactive_poll())` ensures the loop only runs when results could come in, and the `reactive_poll(!controller$empty())` at the end turns off polling when everything is all done. `invalidateLater(millis = 250)` says to poll every 0.25 seconds when polling is activated.^[`controller$pop()` is inexpensive, especially when there are no workers to relaunch or results to collect. In practice, the polling interval is a balance between responsiveness and CPU usage, and it may not be 0.25 seconds for every app.] The subsequent three lines collect a result, plot it if available, and update the status message.
+At the bottom of `server()` is the crux of the app: the event loop that scans for results. The leading `req(reactive_poll())` ensures the loop only runs when results could come in, and the `reactive_poll(!controller$empty())` at the end turns off polling when everything is all done. `invalidateLater(millis = 250)` says to poll every 0.25 seconds when polling is activated.^[`controller$pop()` is inexpensive, especially when there are no workers to relaunch or results to collect. In practice, the polling interval is a balance between responsiveness and CPU usage, and it may not be 0.25 seconds for every app.] The other three lines collect a result, plot it if available, and update the status message.
 
 ```r
   observe({

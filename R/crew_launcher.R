@@ -40,7 +40,7 @@
 #'   `tasks_max` to a value greater than 1.
 #' @param tasks_timers Number of tasks to do before activating
 #'   the timers for `seconds_idle` and `seconds_wall`.
-#'   See the `timerlaunch` argument of `mirai::server()`.
+#'   See the `timerstart` argument of `mirai::server()`.
 #' @param reset_globals `TRUE` to reset global environment
 #'   variables between tasks, `FALSE` to leave them alone.
 #' @param reset_packages `TRUE` to unload any packages loaded during

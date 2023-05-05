@@ -30,7 +30,8 @@
 #'   have completed.
 #'   See the `walltime` argument of `mirai::server()`.
 #' @param seconds_exit Number of seconds to wait for NNG websockets
-#'   to finish sending large data (in case an exit signal is received).
+#'   to finish sending large data (when a worker exits after reaching a
+#'   timeout or having completed a certain number of tasks).
 #'   See the `exitlinger` argument of `mirai::server()`.
 #' @param tasks_max Maximum number of tasks that a worker will do before
 #'   exiting. See the `maxtasks` argument of `mirai::server()`.

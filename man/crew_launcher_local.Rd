@@ -51,7 +51,8 @@ have completed.
 See the \code{walltime} argument of \code{mirai::server()}.}
 
 \item{seconds_exit}{Number of seconds to wait for NNG websockets
-to finish sending large data (in case an exit signal is received).
+to finish sending large data (when a worker exits after reaching a
+timeout or having completed a certain number of tasks).
 See the \code{exitlinger} argument of \code{mirai::server()}.}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before

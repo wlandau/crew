@@ -2,6 +2,7 @@
 
 * Use `.args` instead of `...` in `mirai::mirai()`.
 * Use `set.seed()` instead of `withr::local_seed()` (#67, @shikokuchuo).
+* Add a vignette to showcase integration with Shiny, co-authored with @dwoodie and with helpful suggestions by @shikokuchuo. 
 
 # crew 0.1.1
 

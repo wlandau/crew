@@ -218,11 +218,11 @@ server <- function(input, output, session) {
   # event loop to collect finished tasks
   observe({
     req(reactive_poll())
-    reactive_poll(!controller$empty())
     invalidateLater(millis = 250)
     result <- controller$pop()$result
     if (!is.null(result)) reactive_result(plot_result(result[[1L]]))
     reactive_status(status_message(number_tasks = length(controller$queue)))
+    reactive_poll(!controller$empty())
   })
 }
 

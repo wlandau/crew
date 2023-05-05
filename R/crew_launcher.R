@@ -73,7 +73,7 @@ crew_launcher <- function(
   seconds_timeout = 10,
   seconds_idle = Inf,
   seconds_wall = Inf,
-  seconds_exit = 0.1,
+  seconds_exit = 1,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,

@@ -62,7 +62,7 @@ crew_retry <- function(
   milli_timeout <- 1000 * seconds_timeout
   tries <- 0L
   start <- nanonext::mclock()
-  while (!all(do.call(what = fun, args = args, envir = envir))) {
+  while (!isTRUE(do.call(what = fun, args = args, envir = envir))) {
     if ((nanonext::mclock() - start) > milli_timeout) {
       message <- paste(
         "timed out after retrying for",

@@ -84,10 +84,7 @@ crew_class_router <- R6::R6Class(
           nanonext::msleep(interval - elapsed)
         }
       }
-      out <- rlang::duplicate(
-        mirai::daemons(.compute = self$name)$daemons,
-        shallow = FALSE
-      )
+      out <- mirai::daemons(.compute = self$name)$daemons
       if (self$pad_daemons) {
         self$polled <- nanonext::mclock()
       }

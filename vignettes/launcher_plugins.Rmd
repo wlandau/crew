@@ -110,6 +110,7 @@ crew_controller_custom <- function(
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 1,
+  pad_daemons = FALSE,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -124,7 +125,8 @@ crew_controller_custom <- function(
     host = host,
     port = port,
     seconds_interval = seconds_interval,
-    seconds_timeout = seconds_timeout
+    seconds_timeout = seconds_timeout,
+    pad_daemons = pad_daemons
   )
   launcher <- custom_launcher_class$new(
     name = name,

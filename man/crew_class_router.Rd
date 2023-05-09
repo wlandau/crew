@@ -48,6 +48,8 @@ Other routers:
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_router]{crew_router()}}.}
 
+\item{\code{spaced_poll}}{See \code{\link[=crew_router]{crew_router()}}.}
+
 \item{\code{started}}{Whether the router is started.}
 
 \item{\code{dispatcher}}{Process ID of the \code{mirai} dispatcher}
@@ -56,6 +58,9 @@ Other routers:
 
 \item{\code{rotations}}{Logical vector to keep track of rotated
 worker websockets.}
+
+\item{\code{polled}}{Numeric to keep track of when \code{mirai::daemons()}
+was last called to check worker status.}
 }
 \if{html}{\out{</div>}}
 }
@@ -84,7 +89,8 @@ worker websockets.}
   host = NULL,
   port = NULL,
   seconds_interval = NULL,
-  seconds_timeout = NULL
+  seconds_timeout = NULL,
+  spaced_poll = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -102,6 +108,8 @@ worker websockets.}
 \item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{seconds_timeout}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+
+\item{\code{spaced_poll}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 }
 \if{html}{\out{</div>}}
 }

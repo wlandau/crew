@@ -13,9 +13,19 @@
 #'   then an available ephemeral port is automatically chosen.
 #' @param seconds_interval Number of seconds between
 #'   polling intervals waiting for certain internal
-#'   synchronous operations to complete.
+#'   synchronous operations to complete. If `space_polls` is `TRUE`, then
+#'   this is also the minimum number of seconds between calls to
+#'   `mirai::daemons()` for the purposes of checking worker status.
 #' @param seconds_timeout Number of seconds until timing
 #'   out while waiting for certain synchronous operations to complete.
+#' @param spaced_poll Logical of length 1, whether to enforce
+#'   a minimum `seconds_interval` time interval between calls to
+#'   `mirai::daemons()` to check worker status.
+#'   Set to `FALSE` to boost efficiency on robust systems
+#'   or `TRUE` to safeguard against issues on finicky systems.
+#'   If the most recent call to `mirai::daemons()` is too soon,
+#'   the router object will block with `nanonext::msleep()` for the remainder
+#'   of the interval.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' router <- crew_router()
@@ -29,7 +39,8 @@ crew_router <- function(
   host = NULL,
   port = NULL,
   seconds_interval = 0.01,
-  seconds_timeout = 5
+  seconds_timeout = 5,
+  spaced_poll = FALSE
 ) {
   name <- as.character(name %|||% crew_random_name())
   workers <- as.integer(workers)
@@ -41,7 +52,8 @@ crew_router <- function(
     host = host,
     port = port,
     seconds_interval = seconds_interval,
-    seconds_timeout = seconds_timeout
+    seconds_timeout = seconds_timeout,
+    spaced_poll = spaced_poll
   )
   router$validate()
   router
@@ -62,6 +74,26 @@ crew_router <- function(
 crew_class_router <- R6::R6Class(
   classname = "crew_class_router",
   cloneable = FALSE,
+  private = list(
+    poll_daemons = function() {
+      if (self$spaced_poll && !is.null(self$polled)) {
+        now <- nanonext::mclock()
+        elapsed <- now - self$polled
+        interval <- 1000 * self$seconds_interval
+        if (elapsed < interval) {
+          nanonext::msleep(interval - elapsed)
+        }
+      }
+      out <- rlang::duplicate(
+        mirai::daemons(.compute = self$name)$daemons,
+        shallow = FALSE
+      )
+      if (self$spaced_poll) {
+        self$polled <- nanonext::mclock()
+      }
+      out
+    }
+  ),
   public = list(
     #' @field name See [crew_router()].
     name = NULL,
@@ -75,6 +107,8 @@ crew_class_router <- R6::R6Class(
     seconds_interval = NULL,
     #' @field seconds_timeout See [crew_router()].
     seconds_timeout = NULL,
+    #' @field spaced_poll See [crew_router()].
+    spaced_poll = NULL,
     #' @field started Whether the router is started.
     started = NULL,
     #' @field dispatcher Process ID of the `mirai` dispatcher
@@ -84,6 +118,9 @@ crew_class_router <- R6::R6Class(
     #' @field rotations Logical vector to keep track of rotated
     #'   worker websockets.
     rotations = NULL,
+    #' @field polled Numeric to keep track of when `mirai::daemons()`
+    #'   was last called to check worker status.
+    polled = NULL,
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
     #' @param name Argument passed from [crew_router()].
@@ -92,6 +129,7 @@ crew_class_router <- R6::R6Class(
     #' @param port Argument passed from [crew_router()].
     #' @param seconds_interval Argument passed from [crew_router()].
     #' @param seconds_timeout Argument passed from [crew_router()].
+    #' @param spaced_poll Argument passed from [crew_router()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' router <- crew_router()
@@ -105,7 +143,8 @@ crew_class_router <- R6::R6Class(
       host = NULL,
       port = NULL,
       seconds_interval = NULL,
-      seconds_timeout = NULL
+      seconds_timeout = NULL,
+      spaced_poll = NULL
     ) {
       self$name <- name
       self$workers <- workers
@@ -113,6 +152,7 @@ crew_class_router <- R6::R6Class(
       self$port <- port
       self$seconds_interval <- seconds_interval
       self$seconds_timeout <- seconds_timeout
+      self$spaced_poll <- spaced_poll
     },
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
@@ -161,6 +201,7 @@ crew_class_router <- R6::R6Class(
       )
       crew_assert(self$seconds_timeout >= self$seconds_interval)
       crew_assert(self$daemons, is.null(.) || is.data.frame(.))
+      crew_assert(self$spaced_poll, isTRUE(.) || isFALSE(.))
       invisible()
     },
     #' @description Check if the `mirai` client is listening
@@ -175,12 +216,7 @@ crew_class_router <- R6::R6Class(
     #' @return `TRUE` if successfully listening for dialed-in workers,
     #'   `FALSE` otherwise.
     listening = function() {
-      daemons_valid(
-        rlang::duplicate(
-          x = mirai::daemons(.compute = self$name)$daemons,
-          shallow = FALSE
-        )
-      )
+      daemons_valid(private$poll_daemons())
     },
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
@@ -261,10 +297,7 @@ crew_class_router <- R6::R6Class(
       seconds_timeout <- seconds_timeout %|||% self$seconds_timeout
       crew_retry(
         ~{
-          out <- rlang::duplicate(
-            x = mirai::daemons(.compute = self$name)$daemons,
-            shallow = FALSE
-          )
+          out <- private$poll_daemons()
           valid <- daemons_valid(out)
           if (valid) {
             self$daemons <- out

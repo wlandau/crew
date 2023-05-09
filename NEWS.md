@@ -2,7 +2,8 @@
 
 * Use `.args` instead of `...` in `mirai::mirai()`.
 * Use `set.seed()` instead of `withr::local_seed()` (#67, @shikokuchuo).
-* Add a vignette to showcase integration with Shiny, co-authored with @dwoodie and with helpful suggestions by @shikokuchuo. 
+* Add a vignette to showcase integration with Shiny, co-authored with @dwoodie and with helpful suggestions by @shikokuchuo.
+* Add a new `spaced_poll` argument to routers and controllers to avoid too frequent calls to `mirai::daemons()`.
 
 # crew 0.1.1
 

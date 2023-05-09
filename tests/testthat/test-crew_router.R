@@ -1,5 +1,5 @@
 crew_test("crew_router() validate", {
-  router <- crew_router()
+  router <- crew_router(seconds_interval = 0.1, spaced_poll = TRUE)
   expect_silent(router$validate())
   router$name <- NULL
   expect_crew_error(router$validate())
@@ -8,7 +8,10 @@ crew_test("crew_router() validate", {
 crew_test("crew_router() works", {
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router()
+  router <- crew_router(
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
+  )
   on.exit({
     router$terminate()
     rm(router)
@@ -23,9 +26,14 @@ crew_test("crew_router() works", {
   expect_null(router$daemons)
   expect_silent(router$start())
   expect_true(router$started)
+  polled_1 <- router$polled
+  Sys.sleep(0.2)
+  replicate(10, router$listening())
+  polled_2 <- router$polled
+  expect_gt(polled_2, polled_1)
   crew_retry(
     ~router$listening(),
-    seconds_interval = 0.01,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   expect_true(all(dim(router$daemons) > 0L))
@@ -64,13 +72,13 @@ crew_test("crew_router() works", {
         1L
       )
     },
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
   crew_retry(
     ~!anyNA(m$data),
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   expect_false(anyNA(m$data))
@@ -92,7 +100,11 @@ crew_test("crew_router() works", {
 crew_test("router websocket rotation", {
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router(workers = 2L)
+  router <- crew_router(
+    workers = 2L,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
+  )
   router$start()
   on.exit(router$terminate())
   router$poll(error = TRUE)

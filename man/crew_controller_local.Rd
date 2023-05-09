@@ -15,6 +15,7 @@ crew_controller_local(
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 1,
+  spaced_poll = FALSE,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -44,7 +45,9 @@ considered alive if it is actively connected to its assign websocket.}
 
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal
-synchronous operations to complete.}
+synchronous operations to complete. If \code{space_polls} is \code{TRUE}, then
+this is also the minimum number of seconds between calls to
+\code{mirai::daemons()} for the purposes of checking worker status.}
 
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete.}
@@ -67,6 +70,15 @@ See the \code{walltime} argument of \code{mirai::server()}.}
 to finish sending large data (when a worker exits after reaching a
 timeout or having completed a certain number of tasks).
 See the \code{exitlinger} argument of \code{mirai::server()}.}
+
+\item{spaced_poll}{Logical of length 1, whether to enforce
+a minimum \code{seconds_interval} time interval between calls to
+\code{mirai::daemons()} to check worker status.
+Set to \code{FALSE} to boost efficiency on robust systems
+or \code{TRUE} to safeguard against issues on finicky systems.
+If the most recent call to \code{mirai::daemons()} is too soon,
+the router object will block with \code{nanonext::msleep()} for the remainder
+of the interval.}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
 exiting. See the \code{maxtasks} argument of \code{mirai::server()}.

@@ -189,11 +189,12 @@ crew_test("custom launcher", {
     host = NULL,
     port = NULL,
     seconds_launch = 30,
-    seconds_interval = 0.01,
+    seconds_interval = 0.1,
     seconds_timeout = 5,
     seconds_idle = Inf,
     seconds_wall = Inf,
     seconds_exit = 1,
+    spaced_poll = TRUE,
     tasks_max = Inf,
     tasks_timers = 0L,
     reset_globals = TRUE,
@@ -208,7 +209,8 @@ crew_test("custom launcher", {
       host = host,
       port = port,
       seconds_interval = seconds_interval,
-      seconds_timeout = seconds_timeout
+      seconds_timeout = seconds_timeout,
+      spaced_poll = spaced_poll
     )
     launcher <- custom_launcher_class$new(
       name = name,
@@ -251,7 +253,7 @@ crew_test("custom launcher", {
   controller$launcher$terminate()
   crew_retry(
     ~!handle$is_alive(),
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   expect_false(handle$is_alive())

@@ -3,7 +3,9 @@ crew_test("crew_controller_local()", {
   skip_on_os("windows")
   x <- crew_controller_local(
     workers = 1L,
-    seconds_idle = 360
+    seconds_idle = 360,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
   )
   on.exit({
     x$terminate()
@@ -21,7 +23,7 @@ crew_test("crew_controller_local()", {
       x$wait(seconds_timeout = 30)
       TRUE
     },
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   s <- x$summary()
@@ -60,7 +62,7 @@ crew_test("crew_controller_local()", {
   expect_equal(s$popped_tasks, 0L)
   crew_retry(
     ~x$router$listening(),
-    seconds_interval = 0.01,
+    seconds_interval = 0.1,
     seconds_timeout = 10
   )
   instance <- parse_instance(rownames(x$router$daemons))
@@ -75,7 +77,7 @@ crew_test("crew_controller_local()", {
       envir$out <- x$pop(scale = TRUE)
       !is.null(envir$out)
     },
-    seconds_interval = 0.01,
+    seconds_interval = 0.1,
     seconds_timeout = 10
   )
   out <- envir$out
@@ -127,7 +129,7 @@ crew_test("crew_controller_local()", {
   expect_false(x$router$listening())
   crew_retry(
     ~!handle$is_alive(),
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5,
   )
 })
@@ -135,7 +137,11 @@ crew_test("crew_controller_local()", {
 crew_test("crew_controller_local() substitute = FALSE", {
   skip_on_cran()
   skip_on_os("windows")
-  x <- crew_controller_local(seconds_idle = 360)
+  x <- crew_controller_local(
+    seconds_idle = 360,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
+  )
   on.exit({
     x$terminate()
     rm(x)
@@ -165,7 +171,7 @@ crew_test("crew_controller_local() substitute = FALSE", {
   expect_false(x$router$listening())
   crew_retry(
     ~!handle$is_alive(),
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
 })
@@ -173,7 +179,11 @@ crew_test("crew_controller_local() substitute = FALSE", {
 crew_test("crew_controller_local() warnings and errors", {
   skip_on_cran()
   skip_on_os("windows")
-  x <- crew_controller_local(seconds_idle = 360)
+  x <- crew_controller_local(
+    seconds_idle = 360,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
+  )
   on.exit({
     x$terminate()
     rm(x)
@@ -207,7 +217,7 @@ crew_test("crew_controller_local() warnings and errors", {
   expect_false(x$router$listening())
   crew_retry(
     ~!handle$is_alive(),
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
 })
@@ -215,7 +225,12 @@ crew_test("crew_controller_local() warnings and errors", {
 crew_test("crew_controller_local() can terminate a lost worker", {
   skip_on_cran()
   skip_on_os("windows")
-  x <- crew_controller_local(seconds_idle = 360, seconds_launch = 180)
+  x <- crew_controller_local(
+    seconds_idle = 360,
+    seconds_launch = 180,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
+  )
   x$start()
   on.exit({
     x$terminate()
@@ -230,7 +245,7 @@ crew_test("crew_controller_local() can terminate a lost worker", {
   handle <- processx::process$new(command = path, args = c("-e", call))
   crew_retry(
     ~handle$is_alive(),
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   x$launcher$workers$handle[[1L]] <- handle
@@ -241,7 +256,7 @@ crew_test("crew_controller_local() can terminate a lost worker", {
   x$scale()
   crew_retry(
     ~!handle$is_alive(),
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   expect_false(handle$is_alive())
@@ -250,7 +265,11 @@ crew_test("crew_controller_local() can terminate a lost worker", {
 crew_test("crew_controller_local() launch method", {
   skip_on_cran()
   skip_on_os("windows")
-  x <- crew_controller_local(seconds_idle = 360)
+  x <- crew_controller_local(
+    seconds_idle = 360,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
+  )
   on.exit({
     x$terminate()
     rm(x)
@@ -262,7 +281,7 @@ crew_test("crew_controller_local() launch method", {
   handle <- x$launcher$workers$handle[[1]]
   crew_retry(
     ~handle$is_alive(),
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   expect_true(handle$is_alive())

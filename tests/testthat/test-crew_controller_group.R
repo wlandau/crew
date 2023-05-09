@@ -1,5 +1,5 @@
 crew_test("crew_controller_group() method and signature compatibility", {
-  x <- crew_controller_local()
+  x <- crew_controller_local(seconds_interval = 0.1, spaced_poll = TRUE)
   y <- crew_controller_group(x = x)
   common <- intersect(names(x), names(y))
   methods <- fltr(common, ~is.function(x[[.x]]))
@@ -14,11 +14,15 @@ crew_test("crew_controller_group()", {
   skip_on_os("windows")
   a <- crew_controller_local(
     name = "a",
-    seconds_idle = 360
+    seconds_idle = 360,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
   )
   b <- crew_controller_local(
     name = "b",
-    seconds_idle = 360
+    seconds_idle = 360,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
   )
   x <- crew_controller_group(a, b)
   expect_null(x$summary())
@@ -39,7 +43,7 @@ crew_test("crew_controller_group()", {
   for (index in seq_len(2)) {
     crew_retry(
       ~x$controllers[[index]]$router$listening(),
-      seconds_interval = 0.001,
+      seconds_interval = 0.1,
       seconds_timeout = 5
     )
   }
@@ -48,7 +52,7 @@ crew_test("crew_controller_group()", {
       x$wait(seconds_timeout = 30)
       TRUE
     },
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   s <- x$summary()
@@ -124,7 +128,7 @@ crew_test("crew_controller_group()", {
       envir$out <- x$pop(scale = TRUE)
       !is.null(envir$out)
     },
-    seconds_interval = 0.01,
+    seconds_interval = 0.1,
     seconds_timeout = 10
   )
   out <- envir$out
@@ -146,12 +150,12 @@ crew_test("crew_controller_group()", {
   for (index in seq_len(2)) {
     crew_retry(
       ~!x$controllers[[index]]$router$listening(),
-      seconds_interval = 0.001,
+      seconds_interval = 0.1,
       seconds_timeout = 5
     )
     crew_retry(
       ~!handle$is_alive(),
-      seconds_interval = 0.001,
+      seconds_interval = 0.1,
       seconds_timeout = 5
     )
   }
@@ -160,11 +164,17 @@ crew_test("crew_controller_group()", {
 crew_test("crew_controller_group() select", {
   skip_on_cran()
   skip_on_os("windows")
-  a <- crew_controller_local(name = "a")
+  a <- crew_controller_local(
+    name = "a",
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
+  )
   b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
-    seconds_idle = 360
+    seconds_idle = 360,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -188,12 +198,16 @@ crew_test("crew_controller_group() collect", {
   skip_on_cran()
   skip_on_os("windows")
   a <- crew_controller_local(
-    name = "a"
+    name = "a",
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
   )
   b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
-    seconds_idle = 360
+    seconds_idle = 360,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -213,7 +227,7 @@ crew_test("crew_controller_group() collect", {
       x$collect()
       length(x$controllers[[1]]$results) > 0L
     },
-    seconds_interval = 0.01,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   out <- x$pop(scale = FALSE, controllers = "a")
@@ -229,12 +243,16 @@ crew_test("crew_controller_group() launch method", {
   skip_on_os("windows")
   a <- crew_controller_local(
     name = "a",
-    seconds_idle = 360
+    seconds_idle = 360,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
   )
   b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
-    seconds_idle = 360
+    seconds_idle = 360,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -256,7 +274,7 @@ crew_test("crew_controller_group() launch method", {
   for (index in seq_len(2)) {
     crew_retry(
       ~handles[[index]]$is_alive(),
-      seconds_interval = 0.001,
+      seconds_interval = 0.1,
       seconds_timeout = 5
     )
   }
@@ -264,7 +282,7 @@ crew_test("crew_controller_group() launch method", {
   for (index in seq_len(2)) {
     crew_retry(
       ~!handles[[index]]$is_alive(),
-      seconds_interval = 0.001,
+      seconds_interval = 0.1,
       seconds_timeout = 5
     )
   }
@@ -276,7 +294,9 @@ crew_test("crew_controller_group() scale method", {
   a <- crew_controller_local(
     name = "a",
     auto_scale = "one",
-    seconds_idle = 360
+    seconds_idle = 360,
+    seconds_interval = 0.1,
+    spaced_poll = TRUE
   )
   x <- crew_controller_group(a)
   on.exit({
@@ -290,19 +310,19 @@ crew_test("crew_controller_group() scale method", {
   expect_silent(x$scale())
   crew_retry(
     ~length(a$launcher$workers$handle) > 0L,
-    seconds_interval = 0.01,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   handle <- a$launcher$workers$handle[[1L]]
   crew_retry(
     fun = ~handle$is_alive(),
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
   x$terminate()
   crew_retry(
     fun = ~!handle$is_alive(),
-    seconds_interval = 0.001,
+    seconds_interval = 0.1,
     seconds_timeout = 5
   )
 })

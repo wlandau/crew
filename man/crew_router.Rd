@@ -10,7 +10,8 @@ crew_router(
   host = NULL,
   port = NULL,
   seconds_interval = 0.01,
-  seconds_timeout = 5
+  seconds_timeout = 5,
+  spaced_poll = FALSE
 )
 }
 \arguments{
@@ -27,10 +28,21 @@ then an available ephemeral port is automatically chosen.}
 
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal
-synchronous operations to complete.}
+synchronous operations to complete. If \code{space_polls} is \code{TRUE}, then
+this is also the minimum number of seconds between calls to
+\code{mirai::daemons()} for the purposes of checking worker status.}
 
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete.}
+
+\item{spaced_poll}{Logical of length 1, whether to enforce
+a minimum \code{seconds_interval} time interval between calls to
+\code{mirai::daemons()} to check worker status.
+Set to \code{FALSE} to boost efficiency on robust systems
+or \code{TRUE} to safeguard against issues on finicky systems.
+If the most recent call to \code{mirai::daemons()} is too soon,
+the router object will block with \code{nanonext::msleep()} for the remainder
+of the interval.}
 }
 \description{
 Create an \code{R6} object to manage the \code{mirai} task scheduler

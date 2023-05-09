@@ -1,5 +1,5 @@
 crew_test("crew_router() validate", {
-  router <- crew_router(seconds_interval = 0.1, spaced_poll = TRUE)
+  router <- crew_router(seconds_interval = 0.1, pad_daemons = TRUE)
   expect_silent(router$validate())
   router$name <- NULL
   expect_crew_error(router$validate())
@@ -10,7 +10,7 @@ crew_test("crew_router() works", {
   skip_on_os("windows")
   router <- crew_router(
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   on.exit({
     router$terminate()
@@ -103,7 +103,7 @@ crew_test("router websocket rotation", {
   router <- crew_router(
     workers = 2L,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   router$start()
   on.exit(router$terminate())

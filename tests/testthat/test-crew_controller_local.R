@@ -5,7 +5,7 @@ crew_test("crew_controller_local()", {
     workers = 1L,
     seconds_idle = 360,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   on.exit({
     x$terminate()
@@ -140,7 +140,7 @@ crew_test("crew_controller_local() substitute = FALSE", {
   x <- crew_controller_local(
     seconds_idle = 360,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   on.exit({
     x$terminate()
@@ -182,7 +182,7 @@ crew_test("crew_controller_local() warnings and errors", {
   x <- crew_controller_local(
     seconds_idle = 360,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   on.exit({
     x$terminate()
@@ -229,7 +229,7 @@ crew_test("crew_controller_local() can terminate a lost worker", {
     seconds_idle = 360,
     seconds_launch = 180,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   x$start()
   on.exit({
@@ -268,7 +268,7 @@ crew_test("crew_controller_local() launch method", {
   x <- crew_controller_local(
     seconds_idle = 360,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   on.exit({
     x$terminate()

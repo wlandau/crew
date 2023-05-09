@@ -48,7 +48,7 @@ Other routers:
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{spaced_poll}}{See \code{\link[=crew_router]{crew_router()}}.}
+\item{\code{pad_daemons}}{See \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{started}}{Whether the router is started.}
 
@@ -90,7 +90,7 @@ was last called to check worker status.}
   port = NULL,
   seconds_interval = NULL,
   seconds_timeout = NULL,
-  spaced_poll = NULL
+  pad_daemons = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -109,7 +109,7 @@ was last called to check worker status.}
 
 \item{\code{seconds_timeout}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{spaced_poll}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
+\item{\code{pad_daemons}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 }
 \if{html}{\out{</div>}}
 }

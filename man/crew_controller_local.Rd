@@ -15,7 +15,7 @@ crew_controller_local(
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 1,
-  spaced_poll = FALSE,
+  pad_daemons = FALSE,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -45,7 +45,7 @@ considered alive if it is actively connected to its assign websocket.}
 
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal
-synchronous operations to complete. If \code{space_polls} is \code{TRUE}, then
+synchronous operations to complete. If \code{space_poll} is \code{TRUE}, then
 this is also the minimum number of seconds between calls to
 \code{mirai::daemons()} for the purposes of checking worker status.}
 
@@ -71,7 +71,7 @@ to finish sending large data (when a worker exits after reaching a
 timeout or having completed a certain number of tasks).
 See the \code{exitlinger} argument of \code{mirai::server()}.}
 
-\item{spaced_poll}{Logical of length 1, whether to enforce
+\item{pad_daemons}{Logical of length 1, whether to enforce
 a minimum \code{seconds_interval} time interval between calls to
 \code{mirai::daemons()} to check worker status.
 Set to \code{FALSE} to boost efficiency on robust systems

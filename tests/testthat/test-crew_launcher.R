@@ -194,7 +194,7 @@ crew_test("custom launcher", {
     seconds_idle = Inf,
     seconds_wall = Inf,
     seconds_exit = 1,
-    spaced_poll = TRUE,
+    pad_daemons = TRUE,
     tasks_max = Inf,
     tasks_timers = 0L,
     reset_globals = TRUE,
@@ -210,7 +210,7 @@ crew_test("custom launcher", {
       port = port,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout,
-      spaced_poll = spaced_poll
+      pad_daemons = pad_daemons
     )
     launcher <- custom_launcher_class$new(
       name = name,

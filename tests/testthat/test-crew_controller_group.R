@@ -1,5 +1,5 @@
 crew_test("crew_controller_group() method and signature compatibility", {
-  x <- crew_controller_local(seconds_interval = 0.1, spaced_poll = TRUE)
+  x <- crew_controller_local(seconds_interval = 0.1, pad_daemons = TRUE)
   y <- crew_controller_group(x = x)
   common <- intersect(names(x), names(y))
   methods <- fltr(common, ~is.function(x[[.x]]))
@@ -16,13 +16,13 @@ crew_test("crew_controller_group()", {
     name = "a",
     seconds_idle = 360,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   b <- crew_controller_local(
     name = "b",
     seconds_idle = 360,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   x <- crew_controller_group(a, b)
   expect_null(x$summary())
@@ -167,14 +167,14 @@ crew_test("crew_controller_group() select", {
   a <- crew_controller_local(
     name = "a",
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
     seconds_idle = 360,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -200,14 +200,14 @@ crew_test("crew_controller_group() collect", {
   a <- crew_controller_local(
     name = "a",
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
     seconds_idle = 360,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -245,14 +245,14 @@ crew_test("crew_controller_group() launch method", {
     name = "a",
     seconds_idle = 360,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
     seconds_idle = 360,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -296,7 +296,7 @@ crew_test("crew_controller_group() scale method", {
     auto_scale = "one",
     seconds_idle = 360,
     seconds_interval = 0.1,
-    spaced_poll = TRUE
+    pad_daemons = TRUE
   )
   x <- crew_controller_group(a)
   on.exit({

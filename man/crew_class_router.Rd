@@ -48,8 +48,6 @@ Other routers:
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_router]{crew_router()}}.}
 
-\item{\code{pad_daemons}}{See \code{\link[=crew_router]{crew_router()}}.}
-
 \item{\code{started}}{Whether the router is started.}
 
 \item{\code{dispatcher}}{Process ID of the \code{mirai} dispatcher}
@@ -58,9 +56,6 @@ Other routers:
 
 \item{\code{rotations}}{Logical vector to keep track of rotated
 worker websockets.}
-
-\item{\code{polled}}{Numeric to keep track of when \code{mirai::daemons()}
-was last called to check worker status.}
 }
 \if{html}{\out{</div>}}
 }
@@ -69,7 +64,6 @@ was last called to check worker status.}
 \itemize{
 \item \href{#method-crew_class_router-new}{\code{crew_class_router$new()}}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
-\item \href{#method-crew_class_router-listening}{\code{crew_class_router$listening()}}
 \item \href{#method-crew_class_router-start}{\code{crew_class_router$start()}}
 \item \href{#method-crew_class_router-route}{\code{crew_class_router$route()}}
 \item \href{#method-crew_class_router-poll}{\code{crew_class_router$poll()}}
@@ -89,8 +83,7 @@ was last called to check worker status.}
   host = NULL,
   port = NULL,
   seconds_interval = NULL,
-  seconds_timeout = NULL,
-  pad_daemons = NULL
+  seconds_timeout = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -108,8 +101,6 @@ was last called to check worker status.}
 \item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 
 \item{\code{seconds_timeout}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
-
-\item{\code{pad_daemons}}{Argument passed from \code{\link[=crew_router]{crew_router()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -141,31 +132,6 @@ Validate the router.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-listening"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-listening}{}}}
-\subsection{Method \code{listening()}}{
-Check if the \code{mirai} client is listening
-to worker websockets.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$listening()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-This method may stall and time out if there are
-tasks in the queue. Methods \code{start()} and \code{terminate()}
-call \code{listening()} to manage the connection before
-and after the entire workload, respectively.
-In addition, a false negative result is possible
-if there is a momentary connection issue. (\code{listening()}
-does not retry the connection.)
-}
-
-\subsection{Returns}{
-\code{TRUE} if successfully listening for dialed-in workers,
-\code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}
@@ -219,41 +185,15 @@ Character of length 1, new websocket path of the worker.
 Update the \code{daemons} field with
 information on the \code{mirai} daemons.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$poll(
-  seconds_interval = NULL,
-  seconds_timeout = NULL,
-  max_tries = Inf,
-  error = FALSE
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$poll()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{seconds_interval}}{Number of seconds to wait between retries
-polling the \code{mirai} dispatcher for worker information.
-Defaults to the \code{seconds_interval} field of the router object.}
-
-\item{\code{seconds_timeout}}{Number of seconds to time out
-polling the \code{mirai} dispatcher for worker information.
-Defaults to the \code{seconds_timeout} field of the router object.}
-
-\item{\code{max_tries}}{Maximum number of attempts to poll the
-mirai dispatcher.}
-
-\item{\code{error}}{\code{TRUE} to throw an error if the \code{mirai} dispatcher
-cannot be reached, \code{FALSE} otherwise.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Details}{
 Call \code{mirai::daemons()} to get information about the workers.
 If the workers cannot be reached or the router has not started,
 then do not modify the \code{daemons} field. Otherwise, if the workers
-are reachable, populate the \code{daemons} field with a data frame
-of high-level worker-specific statistics. \code{poll()} retries
-and times out with \code{\link[=crew_retry]{crew_retry()}} using the values in arguments
-\code{seconds_interval} and \code{seconds_timeout}.
+are reachable, populate the \code{daemons} field with a matrix
+of high-level worker-specific statistics.
 }
 
 \subsection{Returns}{

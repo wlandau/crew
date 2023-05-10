@@ -15,7 +15,6 @@ crew_controller_local(
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 1,
-  pad_daemons = FALSE,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -70,15 +69,6 @@ See the \code{walltime} argument of \code{mirai::server()}.}
 to finish sending large data (when a worker exits after reaching a
 timeout or having completed a certain number of tasks).
 See the \code{exitlinger} argument of \code{mirai::server()}.}
-
-\item{pad_daemons}{Logical of length 1, whether to enforce
-a minimum \code{seconds_interval} time interval between calls to
-\code{mirai::daemons()} to check worker status.
-Set to \code{FALSE} to boost efficiency on robust systems
-or \code{TRUE} to safeguard against issues on finicky systems.
-If the most recent call to \code{mirai::daemons()} is too soon,
-the router object will block with \code{nanonext::msleep()} for the remainder
-of the interval.}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
 exiting. See the \code{maxtasks} argument of \code{mirai::server()}.

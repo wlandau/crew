@@ -208,7 +208,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      self$router$poll(error = FALSE, max_tries = 1L)
+      self$router$poll()
       private$try_launch(inactive = private$inactive(), n = n)
       invisible()
     },
@@ -225,7 +225,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
-      self$router$poll(error = FALSE, max_tries = 1L)
+      self$router$poll()
       inactive <- private$inactive()
       private$clean()
       self$collect()
@@ -533,18 +533,8 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     terminate = function(controllers = NULL) {
-      # https://github.com/r-lib/covr/issues/315 # nolint
-      terminate_launcher_first <- identical(Sys.getenv("R_COVR"), "true") ||
-        identical(tolower(Sys.info()[["sysname"]]), "windows")
-      # nocov start
-      if (terminate_launcher_first) {
-        self$launcher$terminate()
-        self$router$terminate()
-      } else {
-        self$router$terminate()
-        self$launcher$terminate()
-      }
-      # nocov end
+      self$router$terminate()
+      self$launcher$terminate()
       invisible()
     }
   )

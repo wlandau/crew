@@ -1,5 +1,5 @@
 crew_test("crew_router() validate", {
-  router <- crew_router(seconds_interval = 0.1, pad_daemons = TRUE)
+  router <- crew_router(seconds_interval = 0.1)
   expect_silent(router$validate())
   router$name <- NULL
   expect_crew_error(router$validate())
@@ -9,30 +9,23 @@ crew_test("crew_router() works", {
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   on.exit({
     router$terminate()
     rm(router)
     crew_test_sleep()
   })
-  expect_false(router$listening())
+  expect_null(router$started)
   expect_null(router$started)
   expect_null(router$dispatcher)
   expect_null(router$daemons)
-  expect_silent(router$poll(error = FALSE))
-  expect_error(router$poll(error = TRUE), class = "crew_error")
+  expect_silent(router$poll())
   expect_null(router$daemons)
   expect_silent(router$start())
   expect_true(router$started)
-  polled_1 <- router$polled
-  Sys.sleep(0.2)
-  replicate(10, router$listening())
-  polled_2 <- router$polled
-  expect_gt(polled_2, polled_1)
   crew_retry(
-    ~router$listening(),
+    ~router$started,
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
@@ -84,16 +77,15 @@ crew_test("crew_router() works", {
   expect_false(anyNA(m$data))
   expect_true(is.numeric(m$data))
   expect_true(abs(m$data - ps::ps_pid()) > 0.5)
-  expect_true(router$listening())
+  expect_true(router$started)
   expect_true(router$log()$worker_connected)
   expect_silent(router$terminate())
   expect_false(router$started)
-  expect_false(router$listening())
+  expect_false(router$started)
   px$kill()
   expect_null(router$daemons)
   expect_null(router$log())
-  expect_silent(router$poll(error = FALSE))
-  expect_error(router$poll(error = TRUE), class = "crew_error")
+  expect_silent(router$poll())
   expect_null(router$log())
 })
 
@@ -102,18 +94,17 @@ crew_test("router websocket rotation", {
   skip_on_os("windows")
   router <- crew_router(
     workers = 2L,
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   router$start()
   on.exit(router$terminate())
-  router$poll(error = TRUE)
+  router$poll()
   expect_equal(router$rotations, c(-1L, -1L))
   # First instance of worker 2.
   old <- rownames(router$daemons)
   new <- router$route(index = 2L)
   expect_equal(router$rotations, c(-1L, 0L))
-  router$poll(error = TRUE)
+  router$poll()
   expect_equal(router$rotations, c(-1L, 0L))
   expect_equal(old == rownames(router$daemons), c(TRUE, TRUE))
   expect_equal(new, old[2L])
@@ -122,7 +113,7 @@ crew_test("router websocket rotation", {
   old <- rownames(router$daemons)
   new <- router$route(index = 2L)
   expect_equal(router$rotations, c(-1L, 1L))
-  router$poll(error = TRUE)
+  router$poll()
   expect_equal(router$rotations, c(-1L, 1L))
   expect_equal(old == rownames(router$daemons), c(TRUE, FALSE))
   expect_false(new == old[2L])
@@ -131,7 +122,7 @@ crew_test("router websocket rotation", {
   old <- rownames(router$daemons)
   new <- router$route(index = 1L)
   expect_equal(router$rotations, c(0L, 1L))
-  router$poll(error = TRUE)
+  router$poll()
   expect_equal(router$rotations, c(0L, 1L))
   expect_equal(new, old[1L])
   expect_equal(new, rownames(router$daemons)[1L])

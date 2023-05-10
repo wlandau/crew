@@ -3,8 +3,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   skip_on_os("windows")
   router <- crew_router(
     workers = 4L,
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   launcher <- crew_launcher_local(seconds_idle = 360)
   on.exit({
@@ -98,8 +97,7 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   skip_on_os("windows")
   router <- crew_router(
     workers = 1L,
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   launcher <- crew_launcher_local(tasks_max = 1L, seconds_idle = 360)
   on.exit({
@@ -157,8 +155,7 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   skip_on_os("windows")
   router <- crew_router(
     workers = 1L,
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   launcher <- crew_launcher_local(tasks_max = 1L, seconds_idle = 360)
   on.exit({

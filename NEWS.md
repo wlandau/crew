@@ -3,8 +3,8 @@
 * Use `.args` instead of `...` in `mirai::mirai()`.
 * Use `set.seed()` instead of `withr::local_seed()` (#67, @shikokuchuo).
 * Add a vignette to showcase integration with Shiny, co-authored with @dwoodie and with helpful suggestions by @shikokuchuo.
-* Add a new `pad_daemons` argument to routers and controllers to avoid too frequent calls to `mirai::daemons()`.
 * Drop `rlang::duplicate()` (#72, @shikokuchuo).
+* Do not poll dispatcher availability when starting router objects (@shikokuchuo).
 
 # crew 0.1.1
 

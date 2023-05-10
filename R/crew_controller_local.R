@@ -26,7 +26,6 @@ crew_controller_local <- function(
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 1,
-  pad_daemons = FALSE,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -41,8 +40,7 @@ crew_controller_local <- function(
     host = host,
     port = port,
     seconds_interval = seconds_interval,
-    seconds_timeout = seconds_timeout,
-    pad_daemons = pad_daemons
+    seconds_timeout = seconds_timeout
   )
   launcher <- crew_launcher_local(
     name = name,

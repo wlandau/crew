@@ -10,8 +10,7 @@ crew_router(
   host = NULL,
   port = NULL,
   seconds_interval = 0.01,
-  seconds_timeout = 5,
-  pad_daemons = FALSE
+  seconds_timeout = 5
 )
 }
 \arguments{
@@ -34,15 +33,6 @@ this is also the minimum number of seconds between calls to
 
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete.}
-
-\item{pad_daemons}{Logical of length 1, whether to enforce
-a minimum \code{seconds_interval} time interval between calls to
-\code{mirai::daemons()} to check worker status.
-Set to \code{FALSE} to boost efficiency on robust systems
-or \code{TRUE} to safeguard against issues on finicky systems.
-If the most recent call to \code{mirai::daemons()} is too soon,
-the router object will block with \code{nanonext::msleep()} for the remainder
-of the interval.}
 }
 \description{
 Create an \code{R6} object to manage the \code{mirai} task scheduler

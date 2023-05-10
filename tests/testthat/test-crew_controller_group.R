@@ -1,5 +1,5 @@
 crew_test("crew_controller_group() method and signature compatibility", {
-  x <- crew_controller_local(seconds_interval = 0.1, pad_daemons = TRUE)
+  x <- crew_controller_local(seconds_interval = 0.1)
   y <- crew_controller_group(x = x)
   common <- intersect(names(x), names(y))
   methods <- fltr(common, ~is.function(x[[.x]]))
@@ -15,14 +15,12 @@ crew_test("crew_controller_group()", {
   a <- crew_controller_local(
     name = "a",
     seconds_idle = 360,
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   b <- crew_controller_local(
     name = "b",
     seconds_idle = 360,
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   x <- crew_controller_group(a, b)
   expect_null(x$summary())
@@ -34,18 +32,14 @@ crew_test("crew_controller_group()", {
   })
   expect_silent(x$validate())
   for (index in seq_len(2)) {
-    expect_false(x$controllers[[index]]$router$listening())
+    expect_null(x$controllers[[index]]$router$started)
   }
   x$start()
   expect_true(x$empty())
   expect_true(x$empty(controllers = "a"))
   expect_true(x$empty(controllers = "b"))
   for (index in seq_len(2)) {
-    crew_retry(
-      ~x$controllers[[index]]$router$listening(),
-      seconds_interval = 0.1,
-      seconds_timeout = 5
-    )
+    expect_true(x$controllers[[index]]$router$started)
   }
   crew_retry(
     ~{
@@ -148,11 +142,7 @@ crew_test("crew_controller_group()", {
   handle <- x$controllers[[2]]$launcher$workers$handle[[1]]
   x$terminate()
   for (index in seq_len(2)) {
-    crew_retry(
-      ~!x$controllers[[index]]$router$listening(),
-      seconds_interval = 0.1,
-      seconds_timeout = 5
-    )
+    expect_false(x$controllers[[index]]$router$started)
     crew_retry(
       ~!handle$is_alive(),
       seconds_interval = 0.1,
@@ -166,15 +156,13 @@ crew_test("crew_controller_group() select", {
   skip_on_os("windows")
   a <- crew_controller_local(
     name = "a",
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
     seconds_idle = 360,
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -183,15 +171,15 @@ crew_test("crew_controller_group() select", {
     gc()
     crew_test_sleep()
   })
-  expect_false(a$router$listening())
-  expect_false(b$router$listening())
+  expect_null(a$router$started)
+  expect_null(b$router$started)
   name <- "b"
   x$start(controllers = name)
-  expect_false(a$router$listening())
-  expect_true(b$router$listening())
+  expect_null(a$router$started)
+  expect_true(b$router$started)
   x$terminate(controllers = name)
-  expect_false(a$router$listening())
-  expect_false(b$router$listening())
+  expect_null(a$router$started)
+  expect_false(b$router$started)
 })
 
 crew_test("crew_controller_group() collect", {
@@ -199,15 +187,13 @@ crew_test("crew_controller_group() collect", {
   skip_on_os("windows")
   a <- crew_controller_local(
     name = "a",
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
     seconds_idle = 360,
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -217,8 +203,8 @@ crew_test("crew_controller_group() collect", {
     crew_test_sleep()
   })
   expect_silent(x$validate())
-  expect_false(x$controllers[[1]]$router$listening())
-  expect_false(x$controllers[[2]]$router$listening())
+  expect_null(x$controllers[[1]]$router$started)
+  expect_null(x$controllers[[2]]$router$started)
   x$start()
   expect_null(x$pop())
   x$push(command = ps::ps_pid(), name = "task_pid")
@@ -244,15 +230,13 @@ crew_test("crew_controller_group() launch method", {
   a <- crew_controller_local(
     name = "a",
     seconds_idle = 360,
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   b <- crew_controller_local(
     name = "b",
     tasks_max = 1L,
     seconds_idle = 360,
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   x <- crew_controller_group(a, b)
   on.exit({
@@ -295,8 +279,7 @@ crew_test("crew_controller_group() scale method", {
     name = "a",
     auto_scale = "one",
     seconds_idle = 360,
-    seconds_interval = 0.1,
-    pad_daemons = TRUE
+    seconds_interval = 0.1
   )
   x <- crew_controller_group(a)
   on.exit({

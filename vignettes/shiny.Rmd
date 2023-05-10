@@ -39,11 +39,11 @@ As soon as a task completes, the app retrieves the result from the `crew` worker
 
 ![](./figures/completed1.png)
 
-You can submit many more tasks than there are workers currently running. In the following screenshot, the app is only running 4 workers, but the queue has 12 tasks left.
+You can submit many more tasks than there are workers currently running. In the following screenshot, the app is only running 4 workers, but the queue has 9 tasks left.
 
 ![](./figures/progress.png)
 
-Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/mirai) in the backend, `crew` workers successfully complete all remaining 12 tasks. Because the app runs 4 workers, different plots may appear less than 5 seconds apart.
+Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/mirai) in the backend, `crew` workers successfully complete all remaining 9 tasks. Because the app runs 4 workers, different plots may appear less than 5 seconds apart.
 
 ![](./figures/completed2.png)
 
@@ -58,25 +58,18 @@ library(ggplot2)
 library(aRtsy)
 ```
 
-Each task waits 5 seconds and then generates a random set of parameters of a [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis).
+Each task waits 5 seconds and then generates a random [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) [`ggplot`](https://ggplot2.tidyverse.org/) using the [`canvas_phyllotaxis()`](https://koenderks.github.io/aRtsy/reference/canvas_phyllotaxis.html) function from [`aRtsy`](https://koenderks.github.io/aRtsy/).
 
 ```r
 run_task <- function() {
   Sys.sleep(5)
-  list(
+  canvas_phyllotaxis(
     colors = colorPalette(name = "random", n = 3),
+    iterations = 1000,
     angle = runif(n = 1, min = - 2 * pi, max = 2 * pi),
     size = 1,
     p = 1
   )
-}
-```
-
-The [`canvas_phyllotaxis()`](https://koenderks.github.io/aRtsy/reference/canvas_phyllotaxis.html) function from [`aRtsy`](https://koenderks.github.io/aRtsy/) generates a [`ggplot`](https://ggplot2.tidyverse.org/) of the [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis). Below, the `result` argument is a random set of parameters from `run_task()`.
-
-```r
-plot_result <- function(result) {
-  do.call(what = canvas_phyllotaxis, args = result)
 }
 ```
 
@@ -102,7 +95,7 @@ ui <- fluidPage(
 )
 ```
 
-The [server](https://shiny.rstudio.com/articles/basics.html) begins with reactive values and outputs for the random [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) parameters and the task status. In addition, `reactive_poll` controls when the app scans for results.
+The [server](https://shiny.rstudio.com/articles/basics.html) begins with reactive values and outputs for the random [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) plot and the task status. In addition, `reactive_poll` controls when the app scans for results.
 
 ```r
 server <- function(input, output, session) {
@@ -134,14 +127,14 @@ Every time the user presses the "Submit a task (5 seconds)" button, the app push
   })
 ```
 
-At the bottom of `server()` is the crux of the app: the event loop that scans for results. The leading `req(reactive_poll())` ensures the loop only runs when results could come in, and the `reactive_poll(!controller$empty())` at the end turns off polling when everything is all done. `invalidateLater(millis = 250)` says to poll every 0.25 seconds when polling is activated.^[`controller$pop()` is inexpensive, especially when there are no workers to relaunch or results to collect. In practice, the polling interval is a balance between responsiveness and CPU usage, and it may not be 0.25 seconds for every app.] The other three lines collect a result, plot it if available, and update the status message.
+At the bottom of `server()` is the crux of the app: the event loop that scans for results. The leading `req(reactive_poll())` ensures the loop only runs when results could come in, and the `reactive_poll(!controller$empty())` at the end turns off polling when everything is all done. `invalidateLater(millis = 100)` says to poll every 0.1 seconds when polling is activated.^[`controller$pop()` is inexpensive, especially when there are no workers to relaunch or results to collect. In practice, the polling interval is a balance between responsiveness and CPU usage, and it may not be 0.1 seconds for every app.] The other three lines collect a result, plot it if available, and update the status message.
 
 ```r
   observe({
     req(reactive_poll())
-    invalidateLater(millis = 250)
+    invalidateLater(millis = 100)
     result <- controller$pop()$result
-    if (!is.null(result)) reactive_result(plot_result(result[[1L]]))
+    if (!is.null(result)) reactive_result(result[[1]])
     reactive_status(status_message(number_tasks = length(controller$queue)))
     reactive_poll(!controller$empty())
   })
@@ -166,16 +159,13 @@ library(aRtsy)
 
 run_task <- function() {
   Sys.sleep(5)
-  list(
+  canvas_phyllotaxis(
     colors = colorPalette(name = "random", n = 3),
+    iterations = 1000,
     angle = runif(n = 1, min = - 2 * pi, max = 2 * pi),
     size = 1,
     p = 1
   )
-}
-
-plot_result <- function(result) {
-  do.call(what = canvas_phyllotaxis, args = result)
 }
 
 status_message <- function(number_tasks) {
@@ -218,9 +208,9 @@ server <- function(input, output, session) {
   # event loop to collect finished tasks
   observe({
     req(reactive_poll())
-    invalidateLater(millis = 250)
+    invalidateLater(millis = 100)
     result <- controller$pop()$result
-    if (!is.null(result)) reactive_result(plot_result(result[[1L]]))
+    if (!is.null(result)) reactive_result(result[[1]])
     reactive_status(status_message(number_tasks = length(controller$queue)))
     reactive_poll(!controller$empty())
   })

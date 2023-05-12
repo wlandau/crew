@@ -71,6 +71,7 @@ Other controllers:
 \item \href{#method-crew_class_controller-new}{\code{crew_class_controller$new()}}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
 \item \href{#method-crew_class_controller-empty}{\code{crew_class_controller$empty()}}
+\item \href{#method-crew_class_controller-saturated}{\code{crew_class_controller$saturated()}}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
@@ -142,7 +143,7 @@ Validate the router.
 \if{html}{\out{<a id="method-crew_class_controller-empty"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-empty}{}}}
 \subsection{Method \code{empty()}}{
-See if the controller is empty.
+Check if the controller is empty.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$empty(controllers = NULL)}\if{html}{\out{</div>}}
 }
@@ -162,6 +163,37 @@ or completed tasks waiting to be retrieved with \code{push()}.
 
 \subsection{Returns}{
 \code{TRUE} if the controller is empty, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-saturated"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-saturated}{}}}
+\subsection{Method \code{saturated()}}{
+Check if the controller is saturated.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$saturated(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+A controller is saturated if the number of unresolved tasks
+is greater than or equal to the maximum number of workers.
+In other words, in a saturated controller, every available worker
+has a task.
+You can still push tasks to a saturated controller, but
+in the case of transient workers, you may have to call \code{wait()}
+or \code{pop()} until the backlog clears.
+}
+
+\subsection{Returns}{
+\code{TRUE} if the controller is saturated, \code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}

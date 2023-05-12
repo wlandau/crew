@@ -1,10 +1,11 @@
-# crew 0.1.1.9000 (development)
+# crew 0.1.1.9006 (development)
 
 * Use `.args` instead of `...` in `mirai::mirai()`.
 * Use `set.seed()` instead of `withr::local_seed()` (#67, @shikokuchuo).
 * Add a vignette to showcase integration with Shiny, co-authored with @dwoodie and with helpful suggestions by @shikokuchuo.
 * Drop `rlang::duplicate()` (#72, @shikokuchuo).
 * Do not poll dispatcher availability when starting router objects (@shikokuchuo).
+* Implement a `saturated()` controller method to support `targets`.
 
 # crew 0.1.1
 

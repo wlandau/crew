@@ -17,6 +17,7 @@ crew_test("crew_controller_local()", {
   expect_null(x$summary())
   x$start()
   expect_true(x$empty())
+  expect_false(x$saturated())
   crew_retry(
     ~{
       x$wait(seconds_timeout = 30)

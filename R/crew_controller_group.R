@@ -137,6 +137,22 @@ crew_class_controller_group <- R6::R6Class(
       control <- private$select_controllers(controllers)
       all(map_lgl(control, ~.x$empty()))
     },
+    #' @description Check if the controllers are saturated.
+    #' @details A controller is saturated if the number of unresolved tasks
+    #'   is greater than or equal to the maximum number of workers.
+    #'   In other words, in a saturated controller, every available worker
+    #'   has a task.
+    #'   You can still push tasks to a saturated controller, but
+    #'   in the case of transient workers, you may have to call `wait()`
+    #'   or `pop()` until the backlog clears.
+    #' @return `TRUE` if all the selected controllers are saturated,
+    #'   `FALSE` otherwise.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    saturated = function(controllers = NULL) {
+      control <- private$select_controllers(controllers)
+      all(map_lgl(control, ~.x$saturated()))
+    },
     #' @description Start one or more controllers.
     #' @return `NULL` (invisibly).
     #' @param controllers Character vector of controller names.

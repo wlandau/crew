@@ -163,7 +163,7 @@ crew_class_controller <- R6::R6Class(
       self$launcher$validate()
       invisible()
     },
-    #' @description See if the controller is empty.
+    #' @description Check if the controller is empty.
     #' @details A controller is empty if it has no running tasks
     #'   or completed tasks waiting to be retrieved with `push()`.
     #' @return `TRUE` if the controller is empty, `FALSE` otherwise.
@@ -171,6 +171,21 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     empty = function(controllers = NULL) {
       (length(self$queue) < 1L) && (length(self$results) < 1L)
+    },
+    #' @description Check if the controller is saturated.
+    #' @details A controller is saturated if the number of unresolved tasks
+    #'   is greater than or equal to the maximum number of workers.
+    #'   In other words, in a saturated controller, every available worker
+    #'   has a task.
+    #'   You can still push tasks to a saturated controller, but
+    #'   in the case of transient workers, you may have to call `wait()`
+    #'   or `pop()` until the backlog clears.
+    #' @return `TRUE` if the controller is saturated, `FALSE` otherwise.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    saturated = function(controllers = NULL) {
+      self$collect()
+      length(self$queue) >= self$router$workers
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets

@@ -71,6 +71,7 @@ Other controllers:
 \item \href{#method-crew_class_controller_group-new}{\code{crew_class_controller_group$new()}}
 \item \href{#method-crew_class_controller_group-validate}{\code{crew_class_controller_group$validate()}}
 \item \href{#method-crew_class_controller_group-empty}{\code{crew_class_controller_group$empty()}}
+\item \href{#method-crew_class_controller_group-saturated}{\code{crew_class_controller_group$saturated()}}
 \item \href{#method-crew_class_controller_group-start}{\code{crew_class_controller_group$start()}}
 \item \href{#method-crew_class_controller_group-launch}{\code{crew_class_controller_group$launch()}}
 \item \href{#method-crew_class_controller_group-scale}{\code{crew_class_controller_group$scale()}}
@@ -163,6 +164,38 @@ or completed tasks waiting to be retrieved with \code{push()}.
 
 \subsection{Returns}{
 \code{TRUE} if all the selected controllers are empty,
+\code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-saturated"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-saturated}{}}}
+\subsection{Method \code{saturated()}}{
+Check if the controllers are saturated.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$saturated(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+A controller is saturated if the number of unresolved tasks
+is greater than or equal to the maximum number of workers.
+In other words, in a saturated controller, every available worker
+has a task.
+You can still push tasks to a saturated controller, but
+in the case of transient workers, you may have to call \code{wait()}
+or \code{pop()} until the backlog clears.
+}
+
+\subsection{Returns}{
+\code{TRUE} if all the selected controllers are saturated,
 \code{FALSE} otherwise.
 }
 }

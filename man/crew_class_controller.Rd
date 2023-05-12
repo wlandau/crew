@@ -521,6 +521,7 @@ every time a new worker instance starts.
 So in the case of transient
 workers, this number may be much smaller than the number of
 popped tasks.
+\item \code{worker_index}: Numeric index of the worker within the controller.
 \item \code{worker_connected}: \code{TRUE} if a worker is currently connected
 to the websocket, \code{FALSE} if not connected, or \code{NA}
 if the status cannot be determined because the \code{mirai}

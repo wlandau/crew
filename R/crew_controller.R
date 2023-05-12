@@ -494,6 +494,7 @@ crew_class_controller <- R6::R6Class(
     #'      So in the case of transient
     #'      workers, this number may be much smaller than the number of
     #'      popped tasks.
+    #'   * `worker_index`: Numeric index of the worker within the controller.
     #'   * `worker_connected`: `TRUE` if a worker is currently connected
     #'     to the websocket, `FALSE` if not connected, or `NA`
     #'     if the status cannot be determined because the `mirai`
@@ -538,6 +539,7 @@ crew_class_controller <- R6::R6Class(
         popped_warnings = log$popped_warnings,
         tasks_assigned = router_log$tasks_assigned,
         tasks_complete = router_log$tasks_complete,
+        worker_index = seq_len(nrow(workers)),
         worker_connected = router_log$worker_connected,
         worker_launches = workers$launches,
         worker_instances = router_log$worker_instances,

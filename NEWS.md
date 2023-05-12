@@ -6,6 +6,7 @@
 * Drop `rlang::duplicate()` (#72, @shikokuchuo).
 * Do not poll dispatcher availability when starting router objects (@shikokuchuo).
 * Implement a `saturated()` controller method to support `targets`.
+* Add a `worker_index` column to controller summaries.
 
 # crew 0.1.1
 

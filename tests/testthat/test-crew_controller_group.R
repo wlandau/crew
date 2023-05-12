@@ -58,6 +58,7 @@ crew_test("crew_controller_group()", {
     sort(
       c(
         "controller",
+        "worker_index",
         "worker_socket",
         "worker_connected",
         "worker_launches",

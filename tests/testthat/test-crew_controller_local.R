@@ -40,6 +40,7 @@ crew_test("crew_controller_local()", {
         "popped_warnings",
         "tasks_assigned",
         "tasks_complete",
+        "worker_index",
         "worker_connected",
         "worker_launches",
         "worker_instances",

@@ -46,11 +46,7 @@ First, create a controller object. Thanks to the powerful features in [`mirai`](
 
 ```{r}
 library(crew)
-controller <- crew_controller_local(
-  workers = 2,
-  tasks_max = 3,
-  auto_scale = "demand"
-)
+controller <- crew_controller_local(seconds_idle = 10)
 ```
 
 The `start()` method starts a local [`mirai`](https://github.com/shikokuchuo/mirai) client and dispatcher process to listen to workers that dial in into websockets on the local network.
@@ -145,6 +141,49 @@ When you are done, terminate the controller to close any workers still running, 
 ```{r}
 controller$terminate()
 ```
+
+# Efficiency and resources
+
+Adding more workers might speed up your workflow, but not always. Beyond a certain point, the efficiency gains will diminish, and the extra workers will have nothing to do. With proper configuration, you can find the right balance. 
+
+As mentioned above, the `push()`, `pop()`, and `wait()` methods of the controller launch new workers automatically in response to changing demand. By default, these workers stay running until `controller$terminate()`. However, you can customize the controller to scale down when circumstances allow, which helps help avoid wasting resources^[Automatic down-scaling also helps comply with wall time restrictions on shared computing clusters. See the arguments of [`crew_controller_local()`](https://wlandau.github.io/crew/reference/crew_controller_local.html) for details.] The most useful arguments for down-scaling, in order of importance, are:
+
+1. `seconds_idle`: automatically shut down a worker if it spends too long waiting for a target.
+2. `tasks_max`: maximum number of tasks a worker can run before shutting down.
+3. `seconds_wall`: soft wall time of a worker.
+
+On the other hand, it is not always helpful to make workers so eager to scale down. For example, if you have thousands of tasks that complete almost instantly, then `seconds_idle` and `tasks_max` should be high in order to avoid overburdening the auto-scaling algorithm amid rapidly fluctuating demand. In addition, different situations need different numbers of workers. You may need far fewer worker than you might expect.
+
+To investigate empirically, run your workflow and then look at the output from `controller$summary()`.
+
+```{r}
+controller <- crew_controller_local(workers = 10, seconds_idle = 3)
+controller$start()
+for (index in seq_len(1000)) {
+  controller$push(command = TRUE)
+}
+controller$wait()
+result <- "start collecting results"
+while (!is.null(result)) {
+  result <- controller$pop()
+}
+controller$summary(contains(c("worker_index", "worker_launches", "popped_tasks", "popped_seconds")))
+#> # A tibble: 10 × 4
+#>    worker_index worker_launches popped_tasks popped_seconds
+#>           <int>           <int>        <int>          <dbl>
+#>  1            1               1          236          0.005
+#>  2            2               1          110          0.004
+#>  3            3               1           96          0.001
+#>  4            4               1           81          0.005
+#>  5            5               1           89          0.002
+#>  6            6               1           77          0.003
+#>  7            7               1           78          0.005
+#>  8            8               1           75          0.001
+#>  9            9               1           78          0.008
+#> 10           10               1           80          0.002
+```
+
+Each worker only launched once and moved through tasks quickly, which is a good sign for a batch of 1000 instantaneous independent tasks. However, the first worker completed many more tasks than the others, even though all workers should share the load equally in this particular case. It would be helpful to see if the same workload runs just as fast with fewer workers. 
 
 # Risks
 

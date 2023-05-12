@@ -212,15 +212,13 @@ importance, are:
     shutting down.
 3.  `seconds_wall`: soft wall time of a worker.
 
-On the other hand, it is not always helpful to make workers so eager to
-scale down. For example, if you have thousands of tasks that complete
-almost instantly, then `seconds_idle` and `tasks_max` should be high in
-order to avoid overburdening the auto-scaling algorithm amid rapidly
-fluctuating demand. In addition, different situations need different
-numbers of workers. You may need far fewer worker than you might expect.
+On the other hand, it is not always helpful to eagerly down-scale
+workers. Because the workload can fluctuate rapidly, some workers may
+quit and relaunch so often that it creates noticeable overhead.
 
-To investigate empirically, run your workflow and then look at the
-output from `controller$summary()`.
+Fortunately, you can investigate auto-scaling and configuration issues
+empirically. Simply run your workflow and then look at the output from
+`controller$summary()`.
 
 ``` r
 controller <- crew_controller_local(workers = 10, seconds_idle = 3)

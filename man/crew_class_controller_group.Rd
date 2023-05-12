@@ -173,12 +173,15 @@ or completed tasks waiting to be retrieved with \code{push()}.
 \subsection{Method \code{saturated()}}{
 Check if the controllers are saturated.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$saturated(controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$saturated(collect = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{collect}}{Logical of length 1, whether to collect the results
+of any newly resolved tasks before determining saturation.}
+
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
 }

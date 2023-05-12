@@ -147,11 +147,13 @@ crew_class_controller_group <- R6::R6Class(
     #'   or `pop()` until the backlog clears.
     #' @return `TRUE` if all the selected controllers are saturated,
     #'   `FALSE` otherwise.
+    #' @param collect Logical of length 1, whether to collect the results
+    #'   of any newly resolved tasks before determining saturation.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    saturated = function(controllers = NULL) {
+    saturated = function(collect = TRUE, controllers = NULL) {
       control <- private$select_controllers(controllers)
-      all(map_lgl(control, ~.x$saturated()))
+      all(map_lgl(control, ~.x$saturated(collect = collect)))
     },
     #' @description Start one or more controllers.
     #' @return `NULL` (invisibly).

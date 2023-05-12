@@ -181,10 +181,14 @@ crew_class_controller <- R6::R6Class(
     #'   in the case of transient workers, you may have to call `wait()`
     #'   or `pop()` until the backlog clears.
     #' @return `TRUE` if the controller is saturated, `FALSE` otherwise.
+    #' @param collect Logical of length 1, whether to collect the results
+    #'   of any newly resolved tasks before determining saturation.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    saturated = function(controllers = NULL) {
-      self$collect()
+    saturated = function(collect = TRUE, controllers = NULL) {
+      if (collect) {
+        self$collect()
+      }
       length(self$queue) >= self$router$workers
     },
     #' @description Start the controller if it is not already started.

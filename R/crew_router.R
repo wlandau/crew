@@ -162,7 +162,7 @@ crew_class_router <- R6::R6Class(
         . >= 0
       )
       crew_assert(self$seconds_timeout >= self$seconds_interval)
-      crew_assert(self$daemons, is.null(.) || is.data.frame(.))
+      crew_assert(self$daemons, is.null(.) || is.matrix(.))
       invisible()
     },
     #' @description Start listening for workers on the available sockets.

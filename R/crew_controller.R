@@ -156,7 +156,7 @@ crew_class_controller <- R6::R6Class(
     validate = function() {
       crew_assert(is.list(self$queue))
       crew_assert(is.list(self$results))
-      crew_assert(self$log, is.null(.) %|||% is.data.frame(.))
+      crew_assert(self$log, is.null(.) || is.data.frame(.))
       crew_assert(inherits(self$router, "crew_class_router"))
       crew_assert(inherits(self$launcher, "crew_class_launcher"))
       self$router$validate()

@@ -554,8 +554,18 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     terminate = function(controllers = NULL) {
-      self$router$terminate()
-      self$launcher$terminate()
+      # https://github.com/r-lib/covr/issues/315 # nolint
+      terminate_launcher_first <- identical(Sys.getenv("R_COVR"), "true") ||
+        identical(tolower(Sys.info()[["sysname"]]), "windows")
+      # nocov start
+      if (terminate_launcher_first) {
+        self$launcher$terminate()
+        self$router$terminate()
+      } else {
+        self$router$terminate()
+        self$launcher$terminate()
+      }
+      # nocov end
       invisible()
     }
   )

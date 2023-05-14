@@ -49,7 +49,7 @@ custom_launcher_class <- R6::R6Class(
   public = list(
     launch_worker = function(call, launcher, worker, instance) {
       bin <- file.path(R.home("bin"), "R")
-      processx::process$new(command = bin, args = c("-e", call))
+      processx::process$new(command = bin, args = c("-e", call), cleanup = FALSE)
     },
     terminate_worker = function(handle) {
       handle$kill()

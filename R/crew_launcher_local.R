@@ -97,7 +97,7 @@ crew_class_launcher_local <- R6::R6Class(
     launch_worker = function(call, launcher, worker, instance) {
       bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
       path <- file.path(R.home("bin"), bin)
-      processx::process$new(command = path, args = c("-e", call))
+      processx::process$new(command = path, args = c("-e", call), cleanup = FALSE)
     },
     #' @description Terminate a local process worker.
     #' @return `NULL` (invisibly).

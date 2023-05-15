@@ -2,7 +2,7 @@
 # crew: a distributed worker launcher framework <img src='man/figures/logo-readme.png' align="right" height="139"/>
 
 [![CRAN](https://www.r-pkg.org/badges/version/crew)](https://CRAN.R-project.org/package=crew)
-[![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#Active)
+[![status](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#WIP)
 [![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
 [![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
@@ -259,6 +259,12 @@ with fewer workers.
 The `crew` package has unavoidable risk. It is your responsibility as
 the user to safely use `crew`. Please read the final clause of the
 [software license](https://wlandau.github.io/crew/LICENSE.html).
+
+### Bugs
+
+`crew` is experimental new software, and it has known bugs such as
+<https://github.com/wlandau/crew/issues/75>. Use at your own risk.
+Please report bugs to <https://github.com/wlandau/crew/issues>.
 
 ### Security
 

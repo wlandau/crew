@@ -217,10 +217,18 @@ crew_class_router <- R6::R6Class(
     #'   of high-level worker-specific statistics.
     #' @return `NULL` (invisibly).
     poll = function() {
-      out <- mirai::daemons(.compute = self$name)$daemons
-      if (daemons_valid(out)) {
-        self$daemons <- out
+      if (!isTRUE(self$started)) {
+        return(invisible())
       }
+      out <- mirai::daemons(.compute = self$name)$daemons
+      # Should not happen:
+      # nocov start
+      if (!daemons_valid(out)) {
+        message <- paste(c("invalid daemons:", deparse1(out)), collapse = " ")
+        crew_error(message)
+      }
+      # nocov end
+      self$daemons <- out
       invisible()
     },
     #' @description Show an informative worker log.

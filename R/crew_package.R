@@ -27,7 +27,7 @@
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function enquo quo_squash
 #' @importFrom stats runif
-#' @importFrom tibble tibble
+#' @importFrom tibble as_tibble new_tibble tibble
 #' @importFrom tidyselect all_of any_of contains ends_with eval_select
 #'   everything last_col matches num_range one_of starts_with
 #' @importFrom utils globalVariables head

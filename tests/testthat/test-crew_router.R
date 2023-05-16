@@ -89,7 +89,7 @@ crew_test("crew_router() works", {
   expect_null(router$log())
 })
 
-crew_test("router websocket rotation", {
+crew_test("router$route()", {
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(
@@ -132,4 +132,41 @@ crew_test("router websocket rotation", {
   expect_equal(router$rotated, c(TRUE, TRUE))
   expect_equal(new, old[1L])
   expect_equal(new, rownames(router$daemons)[1L])
+})
+
+crew_test("router$tally()", {
+  skip_on_cran()
+  skip_on_os("windows")
+  router <- crew_router(workers = 8L)
+  expect_null(router$assigned)
+  expect_null(router$complete)
+  expect_null(router$tallied)
+  router$start()
+  expect_equal(router$assigned, rep(0L, router$workers))
+  expect_equal(router$complete, rep(0L, router$workers))
+  expect_equal(router$tallied, rep(FALSE, router$workers))
+  on.exit(router$terminate())
+  router$poll()
+  router$assigned <- seq_len(8L) * 100L
+  router$complete <- seq_len(8L) * 1000L
+  router$tallied <- c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE)
+  router$daemons[, "online"] <- as.integer(c(0, 0, 1, 1, 0, 0, 1, 1))
+  router$daemons[, "instance"] <- as.integer(c(0, 1, 0, 1, 0, 1, 0, 1))
+  router$daemons[, "assigned"] <- seq_len(8L)
+  router$daemons[, "complete"] <- seq_len(8L) * 10L
+  router$tally()
+  exp <- seq_len(8L) * 100L
+  exp[6L] <- 606L
+  expect_equal(router$assigned, exp)
+  exp <- seq_len(8L) * 1000L
+  exp[6L] <- 6060L
+  expect_equal(router$complete, exp)
+  exp <- c(TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, FALSE, FALSE)
+  expect_equal(router$tallied, exp)
+  router$route(index = 2)
+  exp <- c(TRUE, FALSE, TRUE, TRUE, FALSE, TRUE, FALSE, FALSE)
+  expect_equal(router$tallied, exp)
+  router$route(index = 8)
+  exp <- c(TRUE, FALSE, TRUE, TRUE, FALSE, TRUE, FALSE, FALSE)
+  expect_equal(router$tallied, exp)
 })

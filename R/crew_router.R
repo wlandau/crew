@@ -86,6 +86,15 @@ crew_class_router <- R6::R6Class(
     #' @field rotated Logical vector, whether each worker's websocket URL
     #'   was rotated at least once.
     rotated = NULL,
+    #' @field assigned Integer vector of cumulative `assigned` stats
+    #'   from `mirai::daemons()`.
+    assigned = NULL,
+    #' @field complete Integer vector of cumulative `complete` stats
+    #'   from `mirai::daemons()`.
+    complete = NULL,
+    #' @field tallied Logical vector, whether each worker's cumulative
+    #'   `assigned` and `complete` stats have been recoreded.
+    tallied = NULL,
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
     #' @param name Argument passed from [crew_router()].
@@ -177,7 +186,6 @@ crew_class_router <- R6::R6Class(
           .compute = self$name
         )
         do.call(what = mirai::daemons, args = args)
-        self$started <- TRUE
         self$daemons <- daemons_new(name = self$name, workers = self$workers)
         # TODO: remove code that gets the dispatcher PID if the dispatcher
         # process is phased out of mirai.
@@ -186,6 +194,10 @@ crew_class_router <- R6::R6Class(
         attr(rownames(self$daemons), "dispatcher_pid") <- self$dispatcher
         # End dispatcher code.
         self$rotated <- rep(FALSE, self$workers)
+        self$assigned <- rep(0L, self$workers)
+        self$complete <- rep(0L, self$workers)
+        self$tallied <- rep(FALSE, self$workers)
+        self$started <- TRUE
       }
       invisible()
     },
@@ -291,6 +303,9 @@ crew_class_router <- R6::R6Class(
         self$daemons <- NULL
         self$dispatcher <- NULL
         self$rotated <- NULL
+        self$assigned <- NULL
+        self$complete <- NULL
+        self$tallied <- NULL
         self$started <- FALSE
       }
       invisible()

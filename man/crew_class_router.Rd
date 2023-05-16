@@ -56,6 +56,15 @@ Other routers:
 
 \item{\code{rotated}}{Logical vector, whether each worker's websocket URL
 was rotated at least once.}
+
+\item{\code{assigned}}{Integer vector of cumulative \code{assigned} stats
+from \code{mirai::daemons()}.}
+
+\item{\code{complete}}{Integer vector of cumulative \code{complete} stats
+from \code{mirai::daemons()}.}
+
+\item{\code{tallied}}{Logical vector, whether each worker's cumulative
+\code{assigned} and \code{complete} stats have been recoreded.}
 }
 \if{html}{\out{</div>}}
 }

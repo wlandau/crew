@@ -82,7 +82,9 @@ crew_class_controller <- R6::R6Class(
         length(launching) > 0L,
         message = "no workers to report launching status"
       )
-      which(is_inactive(daemons = daemons, launching = launching))
+      index <- which(is_inactive(daemons = daemons, launching = launching))
+      backlog <- self$router$assigned[index] - self$router$complete[index]
+      index[order(backlog, decreasing = TRUE)]
     },
     lost = function() {
       daemons <- self$router$daemons

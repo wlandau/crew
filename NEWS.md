@@ -7,6 +7,7 @@
 * Do not poll dispatcher availability when starting router objects (@shikokuchuo).
 * Implement a `saturated()` controller method to support `targets`.
 * Add a `worker_index` column to controller summaries.
+* When relaunching workers, prioritize those with unresolved tasks stuck at the NNG level (#75, @shikokuchuo).
 
 # crew 0.1.1
 

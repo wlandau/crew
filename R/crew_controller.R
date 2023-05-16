@@ -228,8 +228,8 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
       self$router$poll()
-      inactive <- private$inactive()
       private$clean()
+      inactive <- private$inactive()
       private$try_launch(inactive = inactive, n = n)
       invisible()
     },
@@ -247,8 +247,8 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
       self$router$poll()
-      inactive <- private$inactive()
       private$clean()
+      inactive <- private$inactive()
       self$collect()
       demand <- controller_demand(
         tasks = length(self$queue),

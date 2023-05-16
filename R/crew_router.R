@@ -227,10 +227,10 @@ crew_class_router <- R6::R6Class(
     #' @return `NULL` (invisibly).
     tally = function() {
       daemons <- self$daemons
-      online <- as.logical(daemons[, "online", drop = TRUE])
-      discovered <- as.logical(daemons[, "instance", drop = TRUE])
-      assigned <- as.integer(daemons[, "assigned", drop = TRUE])
-      complete <- as.integer(daemons[, "complete", drop = TRUE])
+      online <- as.logical(daemons[, "online"])
+      discovered <- as.logical(daemons[, "instance"])
+      assigned <- as.integer(daemons[, "assigned"])
+      complete <- as.integer(daemons[, "complete"])
       done <- (!online) & discovered
       run_tally <- done & (!(self$tallied))
       self$assigned[run_tally] <- self$assigned[run_tally] +

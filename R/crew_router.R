@@ -233,8 +233,10 @@ crew_class_router <- R6::R6Class(
       complete <- as.integer(daemons[, "complete", drop = TRUE])
       done <- (!online) & discovered
       run_tally <- done & (!(self$tallied))
-      self$assigned[run_tally] <- assigned[run_tally]
-      self$complete[run_tally] <- complete[run_tally]
+      self$assigned[run_tally] <- self$assigned[run_tally] +
+        assigned[run_tally]
+      self$complete[run_tally] <- self$complete[run_tally] +
+        complete[run_tally]
       self$tallied[run_tally] <- TRUE
       invisible()
     },

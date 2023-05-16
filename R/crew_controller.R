@@ -229,6 +229,8 @@ crew_class_controller <- R6::R6Class(
     launch = function(n = 1L, controllers = NULL) {
       self$router$poll()
       private$clean()
+      self$router$poll()
+      self$router$tally()
       inactive <- private$inactive()
       private$try_launch(inactive = inactive, n = n)
       invisible()
@@ -248,6 +250,8 @@ crew_class_controller <- R6::R6Class(
     scale = function(controllers = NULL) {
       self$router$poll()
       private$clean()
+      self$router$poll()
+      self$router$tally()
       inactive <- private$inactive()
       self$collect()
       demand <- controller_demand(

@@ -57,14 +57,11 @@ Other routers:
 \item{\code{rotated}}{Logical vector, whether each worker's websocket URL
 was rotated at least once.}
 
-\item{\code{assigned}}{Integer vector of cumulative \code{assigned} stats
-from \code{mirai::daemons()}.}
+\item{\code{backlog}}{Integer vector of cumulative \code{assigned} but not
+\code{complete} tasks as extracted from \code{mirai::daemons()}.}
 
-\item{\code{complete}}{Integer vector of cumulative \code{complete} stats
-from \code{mirai::daemons()}.}
-
-\item{\code{tallied}}{Logical vector, whether each worker's cumulative
-\code{assigned} and \code{complete} stats have been recoreded.}
+\item{\code{tallied}}{Logical vector, whether the cumulative task
+backlog was recorded for the current instance of each worker.}
 }
 \if{html}{\out{</div>}}
 }
@@ -75,6 +72,7 @@ from \code{mirai::daemons()}.}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
 \item \href{#method-crew_class_router-start}{\code{crew_class_router$start()}}
 \item \href{#method-crew_class_router-route}{\code{crew_class_router$route()}}
+\item \href{#method-crew_class_router-tally}{\code{crew_class_router$tally()}}
 \item \href{#method-crew_class_router-poll}{\code{crew_class_router$poll()}}
 \item \href{#method-crew_class_router-log}{\code{crew_class_router$log()}}
 \item \href{#method-crew_class_router-terminate}{\code{crew_class_router$terminate()}}
@@ -185,6 +183,27 @@ the websocket path for robustness.
 
 \subsection{Returns}{
 Character of length 1, new websocket path of the worker.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_router-tally"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_router-tally}{}}}
+\subsection{Method \code{tally()}}{
+Update the cumulative backlog of tasks assigned but
+not completed.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$tally()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Some workers may exit but still have tasks assigned to them
+at the NNG level. By updating the cumulative backlog of tasks
+assigned but not completed, \code{crew} can make the decision to launch
+these workers before others so they can clear out the backlog.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}

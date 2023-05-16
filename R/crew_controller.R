@@ -228,7 +228,9 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
       self$router$poll()
-      private$try_launch(inactive = private$inactive(), n = n)
+      inactive <- private$inactive()
+      private$clean()
+      private$try_launch(inactive = inactive, n = n)
       invisible()
     },
     #' @description Run auto-scaling.

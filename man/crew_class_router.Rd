@@ -54,8 +54,8 @@ Other routers:
 
 \item{\code{daemons}}{Data frame of information from \code{mirai::daemons()}.}
 
-\item{\code{rotations}}{Logical vector to keep track of rotated
-worker websockets.}
+\item{\code{rotated}}{Logical vector, whether each worker's websocket URL
+was rotated at least once.}
 }
 \if{html}{\out{</div>}}
 }

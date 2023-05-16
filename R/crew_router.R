@@ -83,9 +83,9 @@ crew_class_router <- R6::R6Class(
     dispatcher = NULL,
     #' @field daemons Data frame of information from `mirai::daemons()`.
     daemons = NULL,
-    #' @field rotations Logical vector to keep track of rotated
-    #'   worker websockets.
-    rotations = NULL,
+    #' @field rotated Logical vector, whether each worker's websocket URL
+    #'   was rotated at least once.
+    rotated = NULL,
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
     #' @param name Argument passed from [crew_router()].
@@ -185,7 +185,7 @@ crew_class_router <- R6::R6Class(
         self$dispatcher <- environment(mirai::daemons)$..[[self$name]]$pid
         attr(rownames(self$daemons), "dispatcher_pid") <- self$dispatcher
         # End dispatcher code.
-        self$rotations <- rep(-1L, self$workers)
+        self$rotated <- rep(FALSE, self$workers)
       }
       invisible()
     },
@@ -200,10 +200,9 @@ crew_class_router <- R6::R6Class(
     #'   `FALSE` otherwise.
     #' @return Character of length 1, new websocket path of the worker.
     route = function(index, force = FALSE) {
-      rotations <- self$rotations[index]
-      self$rotations[index] <- rotations + 1L
+      on.exit(self$rotated[index] <- TRUE)
       if_any(
-        rotations > -1L,
+        self$rotated[index],
         mirai::saisei(i = index, force = force, .compute = self$name),
         rownames(self$daemons)[index]
       )
@@ -291,7 +290,7 @@ crew_class_router <- R6::R6Class(
         # End dispatcher checks block 2/2.
         self$daemons <- NULL
         self$dispatcher <- NULL
-        self$rotations <- NULL
+        self$rotated <- NULL
         self$started <- FALSE
       }
       invisible()

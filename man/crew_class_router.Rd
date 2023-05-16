@@ -57,11 +57,13 @@ Other routers:
 \item{\code{rotated}}{Logical vector, whether each worker's websocket URL
 was rotated at least once.}
 
-\item{\code{backlog}}{Integer vector of cumulative \code{assigned} but not
-\code{complete} tasks as extracted from \code{mirai::daemons()}.}
+\item{\code{assigned}}{Integer vector of cumulative \code{assigned} tasks.}
+
+\item{\code{complete}}{Integer vector of cumulative \code{complete} tasks.}
 
 \item{\code{tallied}}{Logical vector, whether the cumulative task
-backlog was recorded for the current instance of each worker.}
+\code{assigned} and \code{complete} stats were recorded for the current
+instance of each worker.}
 }
 \if{html}{\out{</div>}}
 }
@@ -189,16 +191,15 @@ Character of length 1, new websocket path of the worker.
 \if{html}{\out{<a id="method-crew_class_router-tally"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_router-tally}{}}}
 \subsection{Method \code{tally()}}{
-Update the cumulative backlog of tasks assigned but
-not completed.
+Update the cumulative \code{assigned} and \code{complete} task stats.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_router$tally()}\if{html}{\out{</div>}}
 }
 
 \subsection{Details}{
 Some workers may exit but still have tasks assigned to them
-at the NNG level. By updating the cumulative backlog of tasks
-assigned but not completed, \code{crew} can make the decision to launch
+at the NNG level. By updating the cumulative \code{assigned} and
+\code{completed} tasks, \code{crew} can make the decision to launch
 these workers before others so they can clear out the backlog.
 }
 

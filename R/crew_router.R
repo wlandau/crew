@@ -86,11 +86,13 @@ crew_class_router <- R6::R6Class(
     #' @field rotated Logical vector, whether each worker's websocket URL
     #'   was rotated at least once.
     rotated = NULL,
-    #' @field backlog Integer vector of cumulative `assigned` but not
-    #'   `complete` tasks as extracted from `mirai::daemons()`.
-    backlog = NULL,
+    #' @field assigned Integer vector of cumulative `assigned` tasks.
+    assigned = NULL,
+    #' @field complete Integer vector of cumulative `complete` tasks.
+    complete = NULL,
     #' @field tallied Logical vector, whether the cumulative task
-    #'   backlog was recorded for the current instance of each worker.
+    #'   `assigned` and `complete` stats were recorded for the current
+    #'   instance of each worker.
     tallied = NULL,
     #' @description `mirai` router constructor.
     #' @return An `R6` object with the router.
@@ -191,7 +193,8 @@ crew_class_router <- R6::R6Class(
         attr(rownames(self$daemons), "dispatcher_pid") <- self$dispatcher
         # End dispatcher code.
         self$rotated <- rep(FALSE, self$workers)
-        self$backlog <- rep(0L, self$workers)
+        self$assigned <- rep(0L, self$workers)
+        self$complete <- rep(0L, self$workers)
         self$tallied <- rep(FALSE, self$workers)
         self$started <- TRUE
       }
@@ -216,11 +219,10 @@ crew_class_router <- R6::R6Class(
         rownames(self$daemons)[index]
       )
     },
-    #' @description Update the cumulative backlog of tasks assigned but
-    #'   not completed.
+    #' @description Update the cumulative `assigned` and `complete` task stats.
     #' @details Some workers may exit but still have tasks assigned to them
-    #'   at the NNG level. By updating the cumulative backlog of tasks
-    #'   assigned but not completed, `crew` can make the decision to launch
+    #'   at the NNG level. By updating the cumulative `assigned` and
+    #'   `completed` tasks, `crew` can make the decision to launch
     #'   these workers before others so they can clear out the backlog.
     #' @return `NULL` (invisibly).
     tally = function() {
@@ -231,7 +233,8 @@ crew_class_router <- R6::R6Class(
       complete <- as.integer(daemons[, "complete", drop = TRUE])
       done <- (!online) & discovered
       run_tally <- done & (!(self$tallied))
-      self$backlog[run_tally] <- assigned[run_tally] - complete[run_tally]
+      self$assigned[run_tally] <- assigned[run_tally]
+      self$complete[run_tally] <- complete[run_tally]
       self$tallied[run_tally] <- TRUE
       invisible()
     },
@@ -319,7 +322,8 @@ crew_class_router <- R6::R6Class(
         self$daemons <- NULL
         self$dispatcher <- NULL
         self$rotated <- NULL
-        self$backlog <- NULL
+        self$assigned <- NULL
+        self$complete <- NULL
         self$tallied <- NULL
         self$started <- FALSE
       }

@@ -68,10 +68,6 @@ Other launchers:
 
 \item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
 \item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
@@ -116,8 +112,6 @@ Launcher constructor.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$new(
   name = NULL,
   seconds_launch = NULL,
-  seconds_interval = NULL,
-  seconds_timeout = NULL,
   seconds_idle = NULL,
   seconds_wall = NULL,
   seconds_exit = NULL,
@@ -136,10 +130,6 @@ Launcher constructor.
 \item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 

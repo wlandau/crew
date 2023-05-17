@@ -115,9 +115,7 @@ crew_test("launcher call", {
     reset_globals = TRUE,
     reset_packages = FALSE,
     reset_options = FALSE,
-    garbage_collection = FALSE,
-    seconds_interval = 0.1,
-    seconds_timeout = 0.25
+    garbage_collection = FALSE
   )
   out <- launcher$call(
     socket = "ws://127.0.0.1:5000/3/cba033e58",
@@ -213,8 +211,6 @@ crew_test("custom launcher", {
     launcher <- custom_launcher_class$new(
       name = name,
       seconds_launch = seconds_launch,
-      seconds_interval = seconds_interval,
-      seconds_timeout = seconds_timeout,
       seconds_idle = seconds_idle,
       seconds_wall = seconds_wall,
       seconds_exit = seconds_exit,

@@ -21,8 +21,6 @@
 crew_launcher_local <- function(
   name = NULL,
   seconds_launch = 30,
-  seconds_interval = 0.001,
-  seconds_timeout = 10,
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = 1,
@@ -37,8 +35,6 @@ crew_launcher_local <- function(
   launcher <- crew_class_launcher_local$new(
     name = name,
     seconds_launch = seconds_launch,
-    seconds_interval = seconds_interval,
-    seconds_timeout = seconds_timeout,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
     seconds_exit = seconds_exit,

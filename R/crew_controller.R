@@ -236,7 +236,7 @@ crew_class_controller <- R6::R6Class(
     launch = function(n = 1L, controllers = NULL) {
       self$router$poll()
       private$clean()
-      nanonext::msleep(100)
+      nanonext::msleep(1)
       self$router$poll()
       self$router$tally()
       inactive <- private$inactive()
@@ -267,7 +267,7 @@ crew_class_controller <- R6::R6Class(
       self$scaled <- now
       self$router$poll()
       private$clean()
-      nanonext::msleep(100)
+      nanonext::msleep(1)
       self$router$poll()
       self$router$tally()
       inactive <- private$inactive()

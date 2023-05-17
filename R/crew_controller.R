@@ -257,11 +257,11 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
       now <- nanonext::mclock()
-      if ((now - self$scaled) > self$router$seconds_interval) {
-        self$scaled <- now
-      } else {
+      if ((now - self$scaled) < (1000 * self$router$seconds_interval)) {
+        print("skip")
         return(invisible())
       }
+      self$scaled <- now
       self$router$poll()
       private$clean()
       nanonext::msleep(100)

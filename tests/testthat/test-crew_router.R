@@ -1,5 +1,5 @@
 crew_test("crew_router() validate", {
-  router <- crew_router(seconds_interval = 0.1)
+  router <- crew_router()
   expect_silent(router$validate())
   router$name <- NULL
   expect_crew_error(router$validate())
@@ -8,9 +8,7 @@ crew_test("crew_router() validate", {
 crew_test("crew_router() works", {
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router(
-    seconds_interval = 0.1
-  )
+  router <- crew_router()
   on.exit({
     router$terminate()
     rm(router)
@@ -26,8 +24,8 @@ crew_test("crew_router() works", {
   expect_true(router$started)
   crew_retry(
     ~router$started,
-    seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_interval = 0.5,
+    seconds_timeout = 10
   )
   expect_true(all(dim(router$daemons) > 0L))
   expect_equal(
@@ -65,14 +63,14 @@ crew_test("crew_router() works", {
         1L
       )
     },
-    seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_interval = 0.5,
+    seconds_timeout = 10
   )
   m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
   crew_retry(
     ~!anyNA(m$data),
-    seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_interval = 0.5,
+    seconds_timeout = 10
   )
   expect_false(anyNA(m$data))
   expect_true(is.numeric(m$data))
@@ -93,11 +91,11 @@ crew_test("router$route()", {
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(
-    workers = 2L,
-    seconds_interval = 0.1
+    workers = 2L
   )
   router$start()
   on.exit(router$terminate())
+  Sys.sleep(0.5)
   router$poll()
   expect_equal(router$rotated, c(FALSE, FALSE))
   expect_equal(router$tallied, c(FALSE, FALSE))
@@ -107,6 +105,7 @@ crew_test("router$route()", {
   new <- router$route(index = 2L)
   expect_equal(router$rotated, c(FALSE, TRUE))
   expect_equal(router$tallied, c(TRUE, FALSE))
+  Sys.sleep(0.5)
   router$poll()
   expect_equal(router$rotated, c(FALSE, TRUE))
   expect_equal(router$tallied, c(TRUE, FALSE))
@@ -118,6 +117,7 @@ crew_test("router$route()", {
   new <- router$route(index = 2L)
   expect_equal(router$rotated, c(FALSE, TRUE))
   expect_equal(router$tallied, c(TRUE, FALSE))
+  Sys.sleep(0.5)
   router$poll()
   expect_equal(router$rotated, c(FALSE, TRUE))
   expect_equal(old == rownames(router$daemons), c(TRUE, FALSE))
@@ -128,6 +128,7 @@ crew_test("router$route()", {
   new <- router$route(index = 1L)
   expect_equal(router$rotated, c(TRUE, TRUE))
   expect_equal(router$tallied, c(FALSE, FALSE))
+  Sys.sleep(0.5)
   router$poll()
   expect_equal(router$rotated, c(TRUE, TRUE))
   expect_equal(new, old[1L])
@@ -146,7 +147,6 @@ crew_test("router$tally()", {
   expect_equal(router$complete, rep(0L, router$workers))
   expect_equal(router$tallied, rep(FALSE, router$workers))
   on.exit(router$terminate())
-  router$poll()
   router$assigned <- seq_len(8L) * 100L
   router$complete <- seq_len(8L) * 1000L
   router$tallied <- c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE)

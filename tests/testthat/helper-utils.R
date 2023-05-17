@@ -12,6 +12,8 @@ crew_test_sleep <- function() {
   on_ci <- isTRUE(as.logical(Sys.getenv("CI")))
   if (on_windows || on_cran || on_ci) {
     Sys.sleep(2.25)
+  } else {
+    Sys.sleep(0.1)
   }
   invisible()
 }

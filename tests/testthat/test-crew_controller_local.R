@@ -3,8 +3,7 @@ crew_test("crew_controller_local()", {
   skip_on_os("windows")
   x <- crew_controller_local(
     workers = 1L,
-    seconds_idle = 360,
-    seconds_interval = 0.1
+    seconds_idle = 360
   )
   on.exit({
     x$terminate()
@@ -20,10 +19,10 @@ crew_test("crew_controller_local()", {
   expect_false(x$saturated())
   crew_retry(
     ~{
-      x$wait(seconds_timeout = 30)
+      x$wait(seconds_timeout = 30, seconds_interval = 0.5)
       TRUE
     },
-    seconds_interval = 0.1,
+    seconds_interval = 0.5,
     seconds_timeout = 5
   )
   s <- x$summary()
@@ -74,7 +73,7 @@ crew_test("crew_controller_local()", {
       envir$out <- x$pop(scale = TRUE)
       !is.null(envir$out)
     },
-    seconds_interval = 0.1,
+    seconds_interval = 0.5,
     seconds_timeout = 10
   )
   out <- envir$out
@@ -135,8 +134,7 @@ crew_test("crew_controller_local() substitute = FALSE", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
-    seconds_idle = 360,
-    seconds_interval = 0.1
+    seconds_idle = 360
   )
   on.exit({
     x$terminate()
@@ -176,8 +174,7 @@ crew_test("crew_controller_local() warnings and errors", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
-    seconds_idle = 360,
-    seconds_interval = 0.1
+    seconds_idle = 360
   )
   on.exit({
     x$terminate()
@@ -222,8 +219,7 @@ crew_test("crew_controller_local() can terminate a lost worker", {
   skip_on_os("windows")
   x <- crew_controller_local(
     seconds_idle = 360,
-    seconds_launch = 180,
-    seconds_interval = 0.1
+    seconds_launch = 180
   )
   x$start()
   on.exit({
@@ -260,8 +256,7 @@ crew_test("crew_controller_local() launch method", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
-    seconds_idle = 360,
-    seconds_interval = 0.1
+    seconds_idle = 360
   )
   on.exit({
     x$terminate()

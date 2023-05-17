@@ -206,11 +206,12 @@ crew_test("crew_controller_group() collect", {
   x$push(command = ps::ps_pid(), name = "task_pid")
   crew_retry(
     fun = ~{
+      x$scale()
       x$collect()
       length(x$controllers[[1]]$results) > 0L
     },
-    seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_interval = 0.5,
+    seconds_timeout = 10
   )
   out <- x$pop(scale = FALSE, controllers = "a")
   expect_equal(

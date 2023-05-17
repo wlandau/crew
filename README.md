@@ -48,7 +48,7 @@ vignette](https://wlandau.github.io/crew/articles/plugins.html) to learn
 how to create a launcher plugin. The following packages support
 ready-to-use plugins.
 
-- [`crew.cluster`](https://wlandau.github.io/crew.cluster): traditional
+- [`crew.cluster`](https://wlandau.github.io/crew.cluster/): traditional
   high-performance computing clusters such as [Sun Grid Engine
   (SGE)](https://en.wikipedia.org/wiki/Oracle_Grid_Engine).
 

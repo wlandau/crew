@@ -122,6 +122,13 @@ crew_class_controller <- R6::R6Class(
     results = list(),
     #' @field log Data frame task log of the workers.
     log = NULL,
+    #' @field scaled Numeric of length 1, time point at which
+    #'   workers were last auto-scaled. This field ensures auto-scaling
+    #'   is skipped if the last auto-scaling was done too recently.
+    #'   This improves efficiency because auto-scaling is complicated,
+    #'   and it improves robustness by avoiding to many successive calls to
+    #'   `mirai::daemons()`.
+    scaled = NULL,
     #' @description `mirai` controller constructor.
     #' @return An `R6` object with the controller object.
     #' @param router Router object. See [crew_controller()].
@@ -208,6 +215,7 @@ crew_class_controller <- R6::R6Class(
           popped_warnings = rep(0L, workers),
           controller = rep(self$router$name, workers)
         )
+        self$scaled <- - Inf
       }
       invisible()
     },
@@ -228,6 +236,7 @@ crew_class_controller <- R6::R6Class(
     launch = function(n = 1L, controllers = NULL) {
       self$router$poll()
       private$clean()
+      nanonext::msleep(100)
       self$router$poll()
       self$router$tally()
       inactive <- private$inactive()
@@ -247,8 +256,15 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(controllers = NULL) {
+      now <- nanonext::mclock()
+      if ((now - self$scaled) > self$router$seconds_interval) {
+        self$scaled <- now
+      } else {
+        return(invisible())
+      }
       self$router$poll()
       private$clean()
+      nanonext::msleep(100)
       self$router$poll()
       self$router$tally()
       inactive <- private$inactive()

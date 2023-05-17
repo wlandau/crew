@@ -62,6 +62,13 @@ Other controllers:
 \item{\code{results}}{List of finished tasks}
 
 \item{\code{log}}{Data frame task log of the workers.}
+
+\item{\code{scaled}}{Numeric of length 1, time point at which
+workers were last auto-scaled. This field ensures auto-scaling
+is skipped if the last auto-scaling was done too recently.
+This improves efficiency because auto-scaling is complicated,
+and it improves robustness by avoiding to many successive calls to
+\code{mirai::daemons()}.}
 }
 \if{html}{\out{</div>}}
 }

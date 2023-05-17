@@ -308,7 +308,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     wait = function(
       mode = "all",
-      seconds_interval = 0.001,
+      seconds_interval = 0.01,
       seconds_timeout = Inf,
       controllers = NULL
     ) {

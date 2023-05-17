@@ -443,7 +443,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     wait = function(
       mode = "all",
-      seconds_interval = 0.001,
+      seconds_interval = 0.01,
       seconds_timeout = Inf,
       controllers = NULL
     ) {

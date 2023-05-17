@@ -187,7 +187,7 @@ crew_test("custom launcher", {
     host = NULL,
     port = NULL,
     seconds_launch = 30,
-    seconds_interval = 0.1,
+    seconds_interval = 0.5,
     seconds_timeout = 5,
     seconds_idle = Inf,
     seconds_wall = Inf,
@@ -238,7 +238,7 @@ crew_test("custom launcher", {
     crew_test_sleep()
   })
   controller$push(name = "pid", command = ps::ps_pid())
-  controller$wait()
+  controller$wait(seconds_timeout = 10, seconds_interval = 0.5)
   out <- controller$pop()$result[[1]]
   handle <- controller$launcher$workers$handle[[1]]
   exp <- handle$get_pid()

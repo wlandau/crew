@@ -2,7 +2,7 @@
 # crew: a distributed worker launcher framework <img src='man/figures/logo-readme.png' align="right" height="139"/>
 
 [![CRAN](https://www.r-pkg.org/badges/version/crew)](https://CRAN.R-project.org/package=crew)
-[![status](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#WIP)
+[![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
 [![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
@@ -93,7 +93,8 @@ controller$summary(columns = starts_with("popped_"))
 Use the `push()` method to submit a task. When you do, `crew`
 automatically scales up the number of workers to meet demand, within the
 constraints of the `auto_scale` and `workers` arguments of
-`crew_controller_local()`.
+`crew_controller_local()`, as well as the `throttle` argument of
+`push()`.
 
 ``` r
 controller$push(name = "get worker process ID", command = ps::ps_pid())
@@ -259,12 +260,6 @@ with fewer workers.
 The `crew` package has unavoidable risk. It is your responsibility as
 the user to safely use `crew`. Please read the final clause of the
 [software license](https://wlandau.github.io/crew/LICENSE.html).
-
-### Bugs
-
-`crew` is experimental new software, and it has known bugs such as
-<https://github.com/wlandau/crew/issues/75>. Use at your own risk.
-Please report bugs to <https://github.com/wlandau/crew/issues>.
 
 ### Security
 

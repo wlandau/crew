@@ -211,9 +211,13 @@ crew_class_controller_group <- R6::R6Class(
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand. If `TRUE`, then `collect()` runs first
+    #'   demand, depending on the `throttle` argument.
+    #'   If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high.
+    #' @param throttle Whether to skip auto-scaling if auto-scaling
+    #'   has already occurred recently
+    #'   (within the last `controller$router$seconds_interval` seconds).
     #' @param name Optional name of the task. Replaced with a random name
     #'   if `NULL` or in conflict with an existing name in the task list.
     #' @param controller Character of length 1,
@@ -230,6 +234,7 @@ crew_class_controller_group <- R6::R6Class(
       library = NULL,
       seconds_timeout = NULL,
       scale = TRUE,
+      throttle = TRUE,
       name = NULL,
       controller = NULL
     ) {
@@ -253,8 +258,9 @@ crew_class_controller_group <- R6::R6Class(
         packages = packages,
         library = library,
         seconds_timeout = seconds_timeout,
-        name = name,
-        scale = scale
+        scale = scale,
+        throttle = throttle,
+        name = name
       )
       do.call(what = self$controllers[[controller]]$push, args = args)
     },
@@ -274,17 +280,21 @@ crew_class_controller_group <- R6::R6Class(
     #'   Otherwise, if there are no results available to collect,
     #'   the return value is `NULL`.
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand. If `TRUE`, then `collect()` runs first
+    #'   demand, depending on the `throttle` argument.
+    #'   If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high. Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
     #'   quickly after doing little work.
+    #' @param throttle Whether to skip auto-scaling if auto-scaling
+    #'   has already occurred recently
+    #'   (within the last `controller$router$seconds_interval` seconds).
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    pop = function(scale = TRUE, controllers = NULL) {
+    pop = function(scale = TRUE, throttle = TRUE, controllers = NULL) {
       control <- private$select_controllers(controllers)
       for (controller in control) {
-        out <- controller$pop(scale = scale)
+        out <- controller$pop(scale = scale, throttle = throttle)
         if (!is.null(out)) {
           return(out)
         }

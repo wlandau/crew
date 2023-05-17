@@ -236,7 +236,7 @@ crew_class_controller <- R6::R6Class(
     launch = function(n = 1L, controllers = NULL) {
       self$router$poll()
       private$clean()
-      nanonext::msleep(1)
+      nanonext::msleep(10)
       self$router$poll()
       self$router$tally()
       inactive <- private$inactive()
@@ -267,7 +267,7 @@ crew_class_controller <- R6::R6Class(
       self$scaled <- now
       self$router$poll()
       private$clean()
-      nanonext::msleep(1)
+      nanonext::msleep(10)
       self$router$poll()
       self$router$tally()
       inactive <- private$inactive()
@@ -311,9 +311,13 @@ crew_class_controller <- R6::R6Class(
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand. If `TRUE`, then `collect()` runs first
+    #'   demand, depending on the `throttle` argument.
+    #'   If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high.
+    #' @param throttle Whether to skip auto-scaling if auto-scaling
+    #'   has already occurred recently
+    #'   (within the last `self$router$seconds_interval` seconds).
     #' @param name Optional name of the task. Replaced with a random name
     #'   if `NULL` or in conflict with an existing name in the task list.
     #' @param controller Not used. Included to ensure the signature is
@@ -328,6 +332,7 @@ crew_class_controller <- R6::R6Class(
       library = NULL,
       seconds_timeout = NULL,
       scale = TRUE,
+      throttle = TRUE,
       name = NULL,
       controller = NULL
     ) {
@@ -371,7 +376,9 @@ crew_class_controller <- R6::R6Class(
         handle = list(handle)
       )
       self$queue[[length(self$queue) + 1L]] <- task
-      if (scale) self$scale(throttle = TRUE)
+      if (scale) {
+        self$scale(throttle = throttle)
+      }
       invisible()
     },
     #' @description Check for done tasks and move the results to
@@ -401,15 +408,19 @@ crew_class_controller <- R6::R6Class(
     #'   Otherwise, if there are no results available to collect,
     #'   the return value is `NULL`.
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand. If `TRUE`, then `collect()` runs first
+    #'   demand, depending on the `throttle` argument.
+    #'   If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high. Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
     #'   quickly after doing little work.
+    #' @param throttle Whether to skip auto-scaling if auto-scaling
+    #'   has already occurred recently
+    #'   (within the last `self$router$seconds_interval` seconds).
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    pop = function(scale = TRUE, controllers = NULL) {
-      if_any(scale, self$scale(throttle = TRUE), self$collect())
+    pop = function(scale = TRUE, throttle = TRUE, controllers = NULL) {
+      if_any(scale, self$scale(throttle = throttle), self$collect())
       out <- NULL
       if (length(self$results) > 0L) {
         task <- self$results[[1L]]

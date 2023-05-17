@@ -258,7 +258,6 @@ crew_class_controller <- R6::R6Class(
     scale = function(controllers = NULL) {
       now <- nanonext::mclock()
       if ((now - self$scaled) < (1000 * self$router$seconds_interval)) {
-        print("skip")
         return(invisible())
       }
       self$scaled <- now

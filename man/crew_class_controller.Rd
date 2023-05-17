@@ -430,7 +430,7 @@ Wait for tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$wait(
   mode = "all",
-  seconds_interval = 0.001,
+  seconds_interval = 0.01,
   seconds_timeout = Inf,
   controllers = NULL
 )}\if{html}{\out{</div>}}

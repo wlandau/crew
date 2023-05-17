@@ -176,11 +176,13 @@ crew_class_controller_group <- R6::R6Class(
     #'   in one or more controller objects.
     #' @details See the `scale()` method in individual controller classes.
     #' @return `NULL` (invisibly).
+    #' @param throttle Whether to skip auto-scaling if it was already done
+    #'   recently (within the last `self$router$seconds_interval` seconds).
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    scale = function(controllers = NULL) {
+    scale = function(throttle = FALSE, controllers = NULL) {
       control <- private$select_controllers(controllers)
-      walk(control, ~.x$scale())
+      walk(control, ~.x$scale(throttle = throttle))
     },
     #' @description Push a task to the head of the task list.
     #' @return `NULL` (invisibly).
@@ -321,7 +323,7 @@ crew_class_controller_group <- R6::R6Class(
             empty <- TRUE
             for (controller in control) {
               controller$collect()
-              controller$scale()
+              controller$scale(throttle = TRUE)
               empty_queue <- length(controller$queue) < 1L
               empty_results <- length(controller$results) < 1L
               done <- if_any(

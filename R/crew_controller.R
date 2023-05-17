@@ -253,11 +253,15 @@ crew_class_controller <- R6::R6Class(
     #'   call `launch()` on the controller with the exact desired
     #'   number of workers.
     #' @return `NULL` (invisibly).
+    #' @param throttle Whether to skip auto-scaling if it was already done
+    #'   recently (within the last `self$router$seconds_interval` seconds).
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    scale = function(controllers = NULL) {
+    scale = function(throttle = FALSE, controllers = NULL) {
       now <- nanonext::mclock()
-      if ((now - self$scaled) < (1000 * self$router$seconds_interval)) {
+      skip <- throttle &&
+        ((now - self$scaled) < (1000 * self$router$seconds_interval))
+      if (skip) {
         return(invisible())
       }
       self$scaled <- now
@@ -367,7 +371,7 @@ crew_class_controller <- R6::R6Class(
         handle = list(handle)
       )
       self$queue[[length(self$queue) + 1L]] <- task
-      if (scale) self$scale()
+      if (scale) self$scale(throttle = TRUE)
       invisible()
     },
     #' @description Check for done tasks and move the results to
@@ -405,7 +409,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop = function(scale = TRUE, controllers = NULL) {
-      if_any(scale, self$scale(), self$collect())
+      if_any(scale, self$scale(throttle = TRUE), self$collect())
       out <- NULL
       if (length(self$results) > 0L) {
         task <- self$results[[1L]]
@@ -467,7 +471,7 @@ crew_class_controller <- R6::R6Class(
       tryCatch(
         crew_retry(
           fun = ~{
-            self$scale()
+            self$scale(throttle = TRUE)
             empty_queue <- length(self$queue) < 1L
             empty_results <- length(self$results) < 1L
             (empty_queue && empty_results) || if_any(

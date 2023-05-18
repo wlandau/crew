@@ -51,8 +51,9 @@ time <- system.time({
   }
 })
 message(time["elapsed"])
-View(x$summary())
+sum <- x$summary()
+testthat::expect_equal(sum(sum$worker_launches), 2 * n)
 x$terminate()
 results <- tibble::as_tibble(do.call(rbind, results))
 results$result <- as.integer(results$result)
-length(unique(results$result)) # Should be 200, one per transient worker.
+testthat::expect_equal(length(unique(results$result)), 2 * n)

@@ -4,7 +4,7 @@
 \alias{crew_controller}
 \title{Create a controller.}
 \usage{
-crew_controller(router, launcher, auto_scale = "demand")
+crew_controller(router, launcher, auto_scale = NULL)
 }
 \arguments{
 \item{router}{An \code{R6} router object created by \code{\link[=crew_router]{crew_router()}}.}
@@ -12,27 +12,8 @@ crew_controller(router, launcher, auto_scale = "demand")
 \item{launcher}{An \code{R6} launcher object created by one of the
 \verb{crew_launcher_*()} functions such as \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
 
-\item{auto_scale}{Character of length 1, name of the method for
-automatically scaling workers to meet demand. \code{NULL} to default to
-\code{"demand"}. Possible values include the following:
-\itemize{
-\item \code{"demand"}: just after pushing a new task in \code{push()}, launch
-\code{min(n, max(0, t - w))} workers, where \code{n} is the maximum number of
-workers, \code{t} is the number of queued tasks, and \code{w} is the current
-number of workers already running. In other words, scale up the
-number of workers to meet the current demand.
-If you trust tasks not to crash workers, this is a good choice.
-But if you think a task may always crash a worker
-(e.g. segmentation fault or maxed out memory) then
-this could be somewhat risky because \code{mirai} resubmits
-failed tasks behind the scenes and \code{crew} responds by
-re-launching workers. If you are worried about this scenario,
-choose \code{auto_scale = "one"} instead, which will only launch
-up to one worker whenever a task is pushed.
-\item \code{"one"}: just after pushing a new task in \code{push()}, launch
-a one worker if demand \code{min(n, max(0, t - w))} is greater than 0.
-\item \code{"none"}: do not auto-scale at all.
-}}
+\item{auto_scale}{Deprecated. Use the \code{scale} argument of \code{push()},
+\code{pop()}, and \code{wait()} instead.}
 }
 \description{
 Create an \code{R6} object to submit tasks and launch workers.

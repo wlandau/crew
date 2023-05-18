@@ -55,8 +55,6 @@ Other controllers:
 
 \item{\code{launcher}}{Launcher object.}
 
-\item{\code{auto_scale}}{Scaling method. See \code{\link[=crew_controller]{crew_controller()}}.}
-
 \item{\code{queue}}{List of tasks in the queue.}
 
 \item{\code{results}}{List of finished tasks}
@@ -96,7 +94,7 @@ and it improves robustness by avoiding to many successive calls to
 \subsection{Method \code{new()}}{
 \code{mirai} controller constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$new(router = NULL, launcher = NULL, auto_scale = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$new(router = NULL, launcher = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -105,8 +103,6 @@ and it improves robustness by avoiding to many successive calls to
 \item{\code{router}}{Router object. See \code{\link[=crew_controller]{crew_controller()}}.}
 
 \item{\code{launcher}}{Launcher object. See \code{\link[=crew_controller]{crew_controller()}}.}
-
-\item{\code{auto_scale}}{Scaling method. See \code{\link[=crew_controller]{crew_controller()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -285,11 +281,10 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-This method is called during \code{push()}, and the method for
-scaling up workers is governed by the \code{auto_scale}
-argument of \code{\link[=crew_controller]{crew_controller()}}. It is not meant to be called
-manually. If called manually, it is recommended to call \code{collect()}
-first so \code{scale()} can accurately assess the demand.
+This method is called during \code{push()}, \code{pop()}, and \code{wait()}
+if the \code{scale} argument is \code{TRUE}.
+If called manually, it is recommended to call \code{collect()}
+first so \code{scale()} can accurately assess the task load.
 For finer control of the number of workers launched,
 call \code{launch()} on the controller with the exact desired
 number of workers.
@@ -315,7 +310,6 @@ Push a task to the head of the task list.
   library = NULL,
   seconds_timeout = NULL,
   scale = TRUE,
-  throttle = TRUE,
   name = NULL,
   controller = NULL
 )}\if{html}{\out{</div>}}
@@ -357,14 +351,10 @@ argument of \code{require()}.}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand, depending on the \code{throttle} argument.
+demand.
 If \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high.}
-
-\item{\code{throttle}}{Whether to skip auto-scaling if auto-scaling
-has already occurred recently
-(within the last \code{self$router$seconds_interval} seconds).}
 
 \item{\code{name}}{Optional name of the task. Replaced with a random name
 if \code{NULL} or in conflict with an existing name in the task list.}
@@ -407,23 +397,19 @@ list as applicable and moves them to the \code{results} list.
 \subsection{Method \code{pop()}}{
 Pop a completed task from the results data frame.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop(scale = TRUE, throttle = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop(scale = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand, depending on the \code{throttle} argument.
+demand.
 If \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high. Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off
 quickly after doing little work.}
-
-\item{\code{throttle}}{Whether to skip auto-scaling if auto-scaling
-has already occurred recently
-(within the last \code{self$router$seconds_interval} seconds).}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -453,6 +439,7 @@ Wait for tasks.
   mode = "all",
   seconds_interval = 0.01,
   seconds_timeout = Inf,
+  scale = TRUE,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -468,6 +455,9 @@ then the method waits for all tasks to complete. If \code{mode} is
 intervals waiting for tasks.}
 
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for tasks.}
+
+\item{\code{scale}}{Logical of length 1, whether to auto-scale workers
+to meet the demand of the task load.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

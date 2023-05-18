@@ -50,6 +50,7 @@ crew_eval(quote(1 + 1))
 \seealso{
 Other utilities: 
 \code{\link{crew_assert}()},
+\code{\link{crew_deprecate}()},
 \code{\link{crew_random_name}()},
 \code{\link{crew_retry}()},
 \code{\link{crew_worker}()}

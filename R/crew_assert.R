@@ -39,6 +39,39 @@ crew_assert <- function(
   invisible()
 }
 
+#' @title Deprecate a `crew` feature.
+#' @export
+#' @family utilities
+#' @description Show an informative warning when a `crew` feature is
+#'   deprecated.
+#' @return `NULL` (invisibly). Throws a warning if a feature is deprecated.
+#' @param name Name of the feature (function or argument) to deprecate.
+#' @param date Date of deprecation.
+#' @param version Package version when deprecation was instated.
+#' @param alternative Message about an alternative.
+#' @examples
+#' suppressWarnings(
+#'   crew_deprecate(
+#'     name = "auto_scale",
+#'     date = "2023-05-18",
+#'     version = "0.2.0",
+#'     alternative = "use the scale argument of push(), pop(), and wait()."
+#'   )
+#' )
+crew_deprecate <- function(name, date, version, alternative) {
+  message <- sprintf(
+    "%s was deprecated on %s (crew version %s). Alternative: %s.",
+    name,
+    date,
+    version,
+    alternative
+  )
+  crew_warn(
+    message = message,
+    class = c("crew_deprecate", "crew_warning", "crew")
+  )
+}
+
 crew_error <- function(message = NULL) {
   crew_stop(
     message = message,
@@ -58,6 +91,13 @@ crew_stop <- function(message, class) {
   on.exit(options(rlang_backtrace_on_error = old))
   options(rlang_backtrace_on_error = "none")
   rlang::abort(message = message, class = class, call = emptyenv())
+}
+
+crew_warn <- function(message, class) {
+  old <- getOption("rlang_backtrace_on_error")
+  on.exit(options(rlang_backtrace_on_error = old))
+  options(rlang_backtrace_on_error = "none")
+  rlang::warn(message = message, class = class)
 }
 
 crew_message <- function(message) {

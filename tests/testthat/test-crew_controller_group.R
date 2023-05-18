@@ -272,7 +272,6 @@ crew_test("crew_controller_group() scale method", {
   skip_on_os("windows")
   a <- crew_controller_local(
     name = "a",
-    auto_scale = "one",
     seconds_idle = 360
   )
   x <- crew_controller_group(a)

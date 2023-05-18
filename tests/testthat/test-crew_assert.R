@@ -35,3 +35,15 @@ crew_test("crew_condition_message", {
     "123"
   )
 })
+
+crew_test("crew_deprecate()", {
+  expect_warning(
+    crew_deprecate(
+      name = "auto_scale",
+      date = "2023-05-18",
+      version = "0.2.0",
+      alternative = "use the scale argument of push(), pop(), and wait()"
+    ),
+    class = "crew_deprecate"
+  )
+})

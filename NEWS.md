@@ -8,6 +8,8 @@
 * Implement a `saturated()` controller method to support `targets`.
 * Add a `worker_index` column to controller summaries.
 * When relaunching workers, prioritize those with unresolved tasks stuck at the NNG level (#75, @shikokuchuo).
+* Always relaunch backlogged inactive workers (#79).
+* Deprecate the `auto_scale` argument/field of controllers in favor of the `scale` argument of `push()`, `pop()`, and `wait()`.
 * Throttle auto-scaling with interval `self$router$seconds_interval` (#76).
 
 # crew 0.1.1

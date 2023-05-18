@@ -30,7 +30,7 @@ crew_router <- function(
   workers = 1L,
   host = NULL,
   port = NULL,
-  seconds_interval = 0.5,
+  seconds_interval = 0.25,
   seconds_timeout = 10
 ) {
   name <- as.character(name %|||% crew_random_name())

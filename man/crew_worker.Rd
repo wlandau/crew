@@ -27,6 +27,7 @@ Launch a \code{crew} worker which runs a \code{mirai} server.
 \seealso{
 Other utilities: 
 \code{\link{crew_assert}()},
+\code{\link{crew_deprecate}()},
 \code{\link{crew_eval}()},
 \code{\link{crew_random_name}()},
 \code{\link{crew_retry}()}

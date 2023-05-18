@@ -186,9 +186,9 @@ crew_test("custom launcher", {
     workers = 1L,
     host = NULL,
     port = NULL,
-    seconds_launch = 30,
     seconds_interval = 0.5,
     seconds_timeout = 5,
+    seconds_launch = 30,
     seconds_idle = Inf,
     seconds_wall = Inf,
     seconds_exit = 1,
@@ -197,8 +197,7 @@ crew_test("custom launcher", {
     reset_globals = TRUE,
     reset_packages = FALSE,
     reset_options = FALSE,
-    garbage_collection = FALSE,
-    auto_scale = "demand"
+    garbage_collection = FALSE
   ) {
     router <- crew::crew_router(
       name = name,
@@ -223,8 +222,7 @@ crew_test("custom launcher", {
     )
     controller <- crew::crew_controller(
       router = router,
-      launcher = launcher,
-      auto_scale = auto_scale
+      launcher = launcher
     )
     controller$validate()
     controller

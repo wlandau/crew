@@ -75,6 +75,7 @@ Other controllers:
 \item \href{#method-crew_class_controller_group-start}{\code{crew_class_controller_group$start()}}
 \item \href{#method-crew_class_controller_group-launch}{\code{crew_class_controller_group$launch()}}
 \item \href{#method-crew_class_controller_group-scale}{\code{crew_class_controller_group$scale()}}
+\item \href{#method-crew_class_controller_group-scale_later}{\code{crew_class_controller_group$scale_later()}}
 \item \href{#method-crew_class_controller_group-push}{\code{crew_class_controller_group$push()}}
 \item \href{#method-crew_class_controller_group-collect}{\code{crew_class_controller_group$collect()}}
 \item \href{#method-crew_class_controller_group-pop}{\code{crew_class_controller_group$pop()}}
@@ -253,15 +254,12 @@ Set to \code{NULL} to select all controllers.}
 Automatically scale up the number of workers if needed
 in one or more controller objects.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale(throttle = FALSE, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{throttle}}{Whether to skip auto-scaling if it was already done
-recently (within the last \code{self$router$seconds_interval} seconds).}
-
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
 }
@@ -269,6 +267,32 @@ Set to \code{NULL} to select all controllers.}
 }
 \subsection{Details}{
 See the \code{scale()} method in individual controller classes.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-scale_later"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-scale_later}{}}}
+\subsection{Method \code{scale_later()}}{
+Schedule auto-scaling to occur soon in the future.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale_later(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+See the \code{scale_later()} method in
+individual controller classes.
 }
 
 \subsection{Returns}{
@@ -433,6 +457,9 @@ polling intervals while checking for results.}
 
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for
 results to become available.}
+
+\item{\code{scale}}{Logical of length 1, whether to call \code{scale_later()}
+on each selected controller to schedule auto-scaling.}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}

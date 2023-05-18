@@ -99,7 +99,7 @@ crew_class_controller <- R6::R6Class(
       }
     },
     try_launch = function(inactive, n) {
-      inactive <- utils::head(inactive, n = n)
+      inactive <- utils::head(inactive, n = max(0L, n))
       for (index in inactive) {
         socket <- self$router$route(index = index, force = FALSE)
         self$launcher$launch(index = index, socket = socket)
@@ -117,13 +117,9 @@ crew_class_controller <- R6::R6Class(
     results = list(),
     #' @field log Data frame task log of the workers.
     log = NULL,
-    #' @field scaled Numeric of length 1, time point at which
-    #'   workers were last auto-scaled. This field ensures auto-scaling
-    #'   is skipped if the last auto-scaling was done too recently.
-    #'   This improves efficiency because auto-scaling is complicated,
-    #'   and it improves robustness by avoiding to many successive calls to
-    #'   `mirai::daemons()`.
-    scaled = NULL,
+    #' @field scaling_locked Logical of length 1,
+    #'   whether an auto-scaling run is already scheduled.
+    scaling_locked = NULL,
     #' @description `mirai` controller constructor.
     #' @return An `R6` object with the controller object.
     #' @param router Router object. See [crew_controller()].
@@ -207,7 +203,7 @@ crew_class_controller <- R6::R6Class(
           popped_warnings = rep(0L, workers),
           controller = rep(self$router$name, workers)
         )
-        self$scaled <- - Inf
+        self$scaling_locked <- FALSE
       }
       invisible()
     },
@@ -236,26 +232,17 @@ crew_class_controller <- R6::R6Class(
       invisible()
     },
     #' @description Run auto-scaling.
-    #' @details This method is called during `push()`, `pop()`, and `wait()`
-    #'   if the `scale` argument is `TRUE`.
-    #'   If called manually, it is recommended to call `collect()`
+    #' @details Methods `push()`, `pop()`, and `wait()` already invoke
+    #'   `scale_later()` if the `scale` argument is `TRUE`.
+    #'   If you call `scale()` manually, it is recommended to call `collect()`
     #'   first so `scale()` can accurately assess the task load.
     #'   For finer control of the number of workers launched,
     #'   call `launch()` on the controller with the exact desired
     #'   number of workers.
     #' @return `NULL` (invisibly).
-    #' @param throttle Whether to skip auto-scaling if it was already done
-    #'   recently (within the last `self$router$seconds_interval` seconds).
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    scale = function(throttle = FALSE, controllers = NULL) {
-      now <- nanonext::mclock()
-      skip <- throttle &&
-        ((now - self$scaled) < (1000 * self$router$seconds_interval))
-      if (skip) {
-        return(invisible())
-      }
-      self$scaled <- now
+    scale = function(controllers = NULL) {
       self$router$poll()
       private$clean()
       nanonext::msleep(10)
@@ -265,10 +252,24 @@ crew_class_controller <- R6::R6Class(
       private$try_launch(inactive = scalable$backlogged, n = Inf)
       available <- self$router$workers - length(scalable$resolved)
       self$collect()
-      deficit <- max(length(self$queue) - available, self$router$workers)
-      if (deficit > 0L) {
-        private$try_launch(inactive = scalable$resolved, n = deficit)
+      deficit <- min(length(self$queue) - available, self$router$workers)
+      private$try_launch(inactive = scalable$resolved, n = deficit)
+      invisible()
+    },
+    #' @description Auto-scale later.
+    #' @details Schedule auto-scaling to run `self$router$seconds_interval`
+    #'   seconds in the future and block any new auto-scaling requests
+    #'   in the meantime. The mechanism is simliar to `shiny::debounce()`.
+    #' @return `NULL` (invisibly).
+    scale_later = function() {
+      if (self$scaling_locked) {
+        return()
       }
+      self$scaling_locked <- TRUE
+      later::later(~{
+        self$scale()
+        self$scaling_locked <- FALSE
+      })
       invisible()
     },
     #' @description Push a task to the head of the task list.
@@ -297,8 +298,8 @@ crew_class_controller <- R6::R6Class(
     #'   argument of `require()`.
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
-    #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand.
+    #' @param scale Logical, whether to automatically call `scale_later()`
+    #'   to auto-scale workers to meet the demand of the task load.
     #'   If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high.
@@ -360,7 +361,7 @@ crew_class_controller <- R6::R6Class(
       )
       self$queue[[length(self$queue) + 1L]] <- task
       if (scale) {
-        self$scale(throttle = TRUE)
+        self$scale_later()
       }
       invisible()
     },
@@ -390,8 +391,8 @@ crew_class_controller <- R6::R6Class(
     #'   value is a one-row data frame with the results, warnings, and errors.
     #'   Otherwise, if there are no results available to collect,
     #'   the return value is `NULL`.
-    #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand.
+    #' @param scale Logical, whether to automatically call `scale_later()`
+    #'   to auto-scale workers to meet the demand of the task load.
     #'   If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high. Scaling up on `pop()` may be important
@@ -400,7 +401,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop = function(scale = TRUE, controllers = NULL) {
-      if_any(scale, self$scale(throttle = TRUE), self$collect())
+      if_any(scale, self$scale_later(), self$collect())
       out <- NULL
       if (length(self$results) > 0L) {
         task <- self$results[[1L]]
@@ -449,8 +450,8 @@ crew_class_controller <- R6::R6Class(
     #' @param seconds_interval Number of seconds to wait between polling
     #'   intervals waiting for tasks.
     #' @param seconds_timeout Timeout length in seconds waiting for tasks.
-    #' @param scale Logical of length 1, whether to auto-scale workers
-    #'   to meet the demand of the task load.
+    #' @param scale Logical, whether to automatically call `scale_later()`
+    #'   to auto-scale workers to meet the demand of the task load.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     wait = function(
@@ -465,7 +466,7 @@ crew_class_controller <- R6::R6Class(
       tryCatch(
         crew_retry(
           fun = ~{
-            if_any(scale, self$scale(throttle = TRUE), self$collect())
+            if_any(scale, self$scale_later(), self$collect())
             empty_queue <- length(self$queue) < 1L
             empty_results <- length(self$results) < 1L
             (empty_queue && empty_results) || if_any(

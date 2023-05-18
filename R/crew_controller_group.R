@@ -176,13 +176,21 @@ crew_class_controller_group <- R6::R6Class(
     #'   in one or more controller objects.
     #' @details See the `scale()` method in individual controller classes.
     #' @return `NULL` (invisibly).
-    #' @param throttle Whether to skip auto-scaling if it was already done
-    #'   recently (within the last `self$router$seconds_interval` seconds).
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    scale = function(throttle = FALSE, controllers = NULL) {
+    scale = function(controllers = NULL) {
       control <- private$select_controllers(controllers)
-      walk(control, ~.x$scale(throttle = throttle))
+      walk(control, ~.x$scale())
+    },
+    #' @description Schedule auto-scaling to occur soon in the future.
+    #' @details See the `scale_later()` method in
+    #'   individual controller classes.
+    #' @return `NULL` (invisibly).
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    scale_later = function(controllers = NULL) {
+      control <- private$select_controllers(controllers)
+      walk(control, ~.x$scale_later())
     },
     #' @description Push a task to the head of the task list.
     #' @return `NULL` (invisibly).
@@ -308,6 +316,8 @@ crew_class_controller_group <- R6::R6Class(
     #'   polling intervals while checking for results.
     #' @param seconds_timeout Timeout length in seconds waiting for
     #'   results to become available.
+    #' @param scale Logical of length 1, whether to call `scale_later()`
+    #'   on each selected controller to schedule auto-scaling.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     wait = function(
@@ -327,7 +337,7 @@ crew_class_controller_group <- R6::R6Class(
             for (controller in control) {
               if_any(
                 scale,
-                controller$scale(throttle = TRUE),
+                controller$scale_later(),
                 controller$collect()
               )
               empty_queue <- length(controller$queue) < 1L

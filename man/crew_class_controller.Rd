@@ -61,12 +61,8 @@ Other controllers:
 
 \item{\code{log}}{Data frame task log of the workers.}
 
-\item{\code{scaled}}{Numeric of length 1, time point at which
-workers were last auto-scaled. This field ensures auto-scaling
-is skipped if the last auto-scaling was done too recently.
-This improves efficiency because auto-scaling is complicated,
-and it improves robustness by avoiding to many successive calls to
-\code{mirai::daemons()}.}
+\item{\code{scaling_locked}}{Logical of length 1,
+whether an auto-scaling run is already scheduled.}
 }
 \if{html}{\out{</div>}}
 }
@@ -80,6 +76,7 @@ and it improves robustness by avoiding to many successive calls to
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
+\item \href{#method-crew_class_controller-scale_later}{\code{crew_class_controller$scale_later()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
 \item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
@@ -266,28 +263,44 @@ compatible with the analogous method of controller groups.}
 \subsection{Method \code{scale()}}{
 Run auto-scaling.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale(throttle = FALSE, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{throttle}}{Whether to skip auto-scaling if it was already done
-recently (within the last \code{self$router$seconds_interval} seconds).}
-
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-This method is called during \code{push()}, \code{pop()}, and \code{wait()}
-if the \code{scale} argument is \code{TRUE}.
-If called manually, it is recommended to call \code{collect()}
+Methods \code{push()}, \code{pop()}, and \code{wait()} already invoke
+\code{scale_later()} if the \code{scale} argument is \code{TRUE}.
+If you call \code{scale()} manually, it is recommended to call \code{collect()}
 first so \code{scale()} can accurately assess the task load.
 For finer control of the number of workers launched,
 call \code{launch()} on the controller with the exact desired
 number of workers.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-scale_later"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-scale_later}{}}}
+\subsection{Method \code{scale_later()}}{
+Auto-scale later.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale_later()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Schedule auto-scaling to run \code{self$router$seconds_interval}
+seconds in the future and block any new auto-scaling requests
+in the meantime. The mechanism is simliar to \code{shiny::debounce()}.
 }
 
 \subsection{Returns}{
@@ -350,8 +363,8 @@ argument of \code{require()}.}
 \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
-\item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand.
+\item{\code{scale}}{Logical, whether to automatically call \code{scale_later()}
+to auto-scale workers to meet the demand of the task load.
 If \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high.}
@@ -403,8 +416,8 @@ Pop a completed task from the results data frame.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand.
+\item{\code{scale}}{Logical, whether to automatically call \code{scale_later()}
+to auto-scale workers to meet the demand of the task load.
 If \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high. Scaling up on \code{pop()} may be important
@@ -456,8 +469,8 @@ intervals waiting for tasks.}
 
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for tasks.}
 
-\item{\code{scale}}{Logical of length 1, whether to auto-scale workers
-to meet the demand of the task load.}
+\item{\code{scale}}{Logical, whether to automatically call \code{scale_later()}
+to auto-scale workers to meet the demand of the task load.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

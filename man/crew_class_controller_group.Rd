@@ -75,7 +75,6 @@ Other controllers:
 \item \href{#method-crew_class_controller_group-start}{\code{crew_class_controller_group$start()}}
 \item \href{#method-crew_class_controller_group-launch}{\code{crew_class_controller_group$launch()}}
 \item \href{#method-crew_class_controller_group-scale}{\code{crew_class_controller_group$scale()}}
-\item \href{#method-crew_class_controller_group-scale_later}{\code{crew_class_controller_group$scale_later()}}
 \item \href{#method-crew_class_controller_group-push}{\code{crew_class_controller_group$push()}}
 \item \href{#method-crew_class_controller_group-collect}{\code{crew_class_controller_group$collect()}}
 \item \href{#method-crew_class_controller_group-pop}{\code{crew_class_controller_group$pop()}}
@@ -174,7 +173,11 @@ or completed tasks waiting to be retrieved with \code{push()}.
 \subsection{Method \code{saturated()}}{
 Check if the controllers are saturated.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$saturated(collect = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$saturated(
+  collect = TRUE,
+  throttle = TRUE,
+  controllers = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -182,6 +185,13 @@ Check if the controllers are saturated.
 \describe{
 \item{\code{collect}}{Logical of length 1, whether to collect the results
 of any newly resolved tasks before determining saturation.}
+
+\item{\code{throttle}}{Logical of length 1, whether to delay task collection
+until the next request at least \code{self$router$seconds_interval}
+seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
@@ -254,12 +264,19 @@ Set to \code{NULL} to select all controllers.}
 Automatically scale up the number of workers if needed
 in one or more controller objects.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale(controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale(throttle = FALSE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{throttle}}{Logical of length 1, whether to delay auto-scaling
+until the next auto-scaling request at least
+\code{self$router$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
+
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
 }
@@ -267,32 +284,6 @@ Set to \code{NULL} to select all controllers.}
 }
 \subsection{Details}{
 See the \code{scale()} method in individual controller classes.
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller_group-scale_later"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller_group-scale_later}{}}}
-\subsection{Method \code{scale_later()}}{
-Schedule auto-scaling to occur soon in the future.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale_later(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
-Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-See the \code{scale_later()} method in
-individual controller classes.
 }
 
 \subsection{Returns}{
@@ -315,6 +306,7 @@ Push a task to the head of the task list.
   library = NULL,
   seconds_timeout = NULL,
   scale = TRUE,
+  throttle = TRUE,
   name = NULL,
   controller = NULL
 )}\if{html}{\out{</div>}}
@@ -361,6 +353,13 @@ If \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high.}
 
+\item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
+until the next auto-scaling request at least
+\code{self$router$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
+
 \item{\code{name}}{Optional name of the task. Replaced with a random name
 if \code{NULL} or in conflict with an existing name in the task list.}
 
@@ -382,12 +381,19 @@ first controller in the list.}
 Check for done tasks and move the results to
 the results list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(throttle = FALSE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{throttle}}{whether to defer task collection
+until the next task collection request at least
+\code{self$router$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
+
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
 }
@@ -404,7 +410,11 @@ list as applicable and moves them to the \code{results} list.
 \subsection{Method \code{pop()}}{
 Pop a completed task from the results data frame.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop(scale = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop(
+  scale = TRUE,
+  throttle = TRUE,
+  controllers = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -417,6 +427,13 @@ so demand can be properly assessed before scaling and the number
 of workers is not too high. Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off
 quickly after doing little work.}
+
+\item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
+until the next auto-scaling request at least
+\code{self$router$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
@@ -441,6 +458,7 @@ Wait for tasks.
   seconds_interval = 0.01,
   seconds_timeout = Inf,
   scale = TRUE,
+  throttle = TRUE,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -459,7 +477,18 @@ polling intervals while checking for results.}
 results to become available.}
 
 \item{\code{scale}}{Logical of length 1, whether to call \code{scale_later()}
-on each selected controller to schedule auto-scaling.}
+on each selected controller to schedule auto-scaling.
+By design, auto-scaling might not actually happen on
+every iteration if \code{throttle} is \code{TRUE}.}
+
+\item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
+and task collection until the next request at least
+\code{self$router$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.
+Highly recommended to keep
+the default \code{throttle = TRUE} for \code{wait()}.}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}

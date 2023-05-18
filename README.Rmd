@@ -66,20 +66,25 @@ controller$summary(columns = starts_with("popped_"))
 #> 2            0              0             0               0
 ```
 
-Use the `push()` method to submit a task. When you do, `crew` automatically scales up the number of workers to meet demand, within the constraints of the `auto_scale` and `workers` arguments of `crew_controller_local()`, as well as the `throttle` argument of `push()`.
+Use the `push()` method to submit a task.
 
 ```{r}
 controller$push(name = "get worker process ID", command = ps::ps_pid())
 ```
 
-You can retrieve the results of a completed task, if available, with `pop()`. Like `push()`, `pop()` also tries to launch workers for pending tasks that need them. The return value is `NULL` if no new tasks are complete.
+Use `pop()` to get the result of a completed task. `pop()` returns `NULL` if there is no result yet. 
 
 ```{r}
 controller$pop()
 #> NULL
 ```
 
-If you expect a result but see `NULL`, then `mirai` may not have assigned the task to a worker yet. This can happen if all workers self-terminate early according to the `tasks_max` and `seconds_idle` arguments of `crew_controller_local()`. Unless you configured the workers to run indefinitely, the controller will need ongoing attention to work through the backlog of tasks. To promptly re-scale workers to meet demand, you can manually repeat calls to `pop()`, or you can call `wait()`. The `wait()` method blocks the R session, repeatedly scales workers, and collects completed tasks.
+Even if you submitted a task, `crew` may not have launched a worker yet. This is because `crew` uses its own version of throttling for robustness and efficiency. In other words, `push()` and `pop()` defer auto-scaling for a short window after the original request. For best results, either
+
+1. Continue to loop over frequent calls to `push()` and `pop()`, or
+2. Call `wait()`.
+
+The `wait()` method blocks the R session, repeatedly scales workers, and collects completed tasks.
 
 ```{r}
 controller$wait(mode = "all")

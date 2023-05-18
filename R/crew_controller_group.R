@@ -149,9 +149,15 @@ crew_class_controller_group <- R6::R6Class(
     #'   `FALSE` otherwise.
     #' @param collect Logical of length 1, whether to collect the results
     #'   of any newly resolved tasks before determining saturation.
+    #' @param throttle Logical of length 1, whether to delay task collection
+    #'   until the next request at least `self$router$seconds_interval`
+    #'   seconds from the original request.
+    #'   The idea is similar to `shiny::throttle()` except that `crew` does not
+    #'   accumulate a backlog of requests. The technique improves robustness
+    #'   and efficiency.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    saturated = function(collect = TRUE, controllers = NULL) {
+    saturated = function(collect = TRUE, throttle = TRUE, controllers = NULL) {
       control <- private$select_controllers(controllers)
       all(map_lgl(control, ~.x$saturated(collect = collect)))
     },
@@ -176,21 +182,17 @@ crew_class_controller_group <- R6::R6Class(
     #'   in one or more controller objects.
     #' @details See the `scale()` method in individual controller classes.
     #' @return `NULL` (invisibly).
+    #' @param throttle Logical of length 1, whether to delay auto-scaling
+    #'   until the next auto-scaling request at least
+    #'  `self$router$seconds_interval` seconds from the original request.
+    #'   The idea is similar to `shiny::throttle()` except that `crew` does not
+    #'   accumulate a backlog of requests. The technique improves robustness
+    #'   and efficiency.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    scale = function(controllers = NULL) {
+    scale = function(throttle = FALSE, controllers = NULL) {
       control <- private$select_controllers(controllers)
-      walk(control, ~.x$scale())
-    },
-    #' @description Schedule auto-scaling to occur soon in the future.
-    #' @details See the `scale_later()` method in
-    #'   individual controller classes.
-    #' @return `NULL` (invisibly).
-    #' @param controllers Character vector of controller names.
-    #'   Set to `NULL` to select all controllers.
-    scale_later = function(controllers = NULL) {
-      control <- private$select_controllers(controllers)
-      walk(control, ~.x$scale_later())
+      walk(control, ~.x$scale(throttle = throttle))
     },
     #' @description Push a task to the head of the task list.
     #' @return `NULL` (invisibly).
@@ -223,6 +225,12 @@ crew_class_controller_group <- R6::R6Class(
     #'   If `TRUE`, then `collect()` runs first
     #'   so demand can be properly assessed before scaling and the number
     #'   of workers is not too high.
+    #' @param throttle If `scale` is `TRUE`, whether to defer auto-scaling
+    #'   until the next auto-scaling request at least
+    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   The idea is similar to `shiny::throttle()` except that `crew` does not
+    #'   accumulate a backlog of requests. The technique improves robustness
+    #'   and efficiency.
     #' @param name Optional name of the task. Replaced with a random name
     #'   if `NULL` or in conflict with an existing name in the task list.
     #' @param controller Character of length 1,
@@ -239,6 +247,7 @@ crew_class_controller_group <- R6::R6Class(
       library = NULL,
       seconds_timeout = NULL,
       scale = TRUE,
+      throttle = TRUE,
       name = NULL,
       controller = NULL
     ) {
@@ -263,6 +272,7 @@ crew_class_controller_group <- R6::R6Class(
         library = library,
         seconds_timeout = seconds_timeout,
         scale = scale,
+        throttle = throttle,
         name = name
       )
       do.call(what = self$controllers[[controller]]$push, args = args)
@@ -271,11 +281,17 @@ crew_class_controller_group <- R6::R6Class(
     #'   the results list.
     #' @return `NULL` (invisibly). Removes elements from the `queue`
     #'   list as applicable and moves them to the `results` list.
+    #' @param throttle whether to defer task collection
+    #'   until the next task collection request at least
+    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   The idea is similar to `shiny::throttle()` except that `crew` does not
+    #'   accumulate a backlog of requests. The technique improves robustness
+    #'   and efficiency.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    collect = function(controllers = NULL) {
+    collect = function(throttle = FALSE, controllers = NULL) {
       control <- private$select_controllers(controllers)
-      walk(control, ~.x$collect())
+      walk(control, ~.x$collect(throttle = throttle))
     },
     #' @description Pop a completed task from the results data frame.
     #' @return If there is a completed task available to collect, the return
@@ -289,12 +305,18 @@ crew_class_controller_group <- R6::R6Class(
     #'   of workers is not too high. Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
     #'   quickly after doing little work.
+    #' @param throttle If `scale` is `TRUE`, whether to defer auto-scaling
+    #'   until the next auto-scaling request at least
+    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   The idea is similar to `shiny::throttle()` except that `crew` does not
+    #'   accumulate a backlog of requests. The technique improves robustness
+    #'   and efficiency.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    pop = function(scale = TRUE, controllers = NULL) {
+    pop = function(scale = TRUE, throttle = TRUE, controllers = NULL) {
       control <- private$select_controllers(controllers)
       for (controller in control) {
-        out <- controller$pop(scale = scale)
+        out <- controller$pop(scale = scale, throttle = throttle)
         if (!is.null(out)) {
           return(out)
         }
@@ -318,6 +340,16 @@ crew_class_controller_group <- R6::R6Class(
     #'   results to become available.
     #' @param scale Logical of length 1, whether to call `scale_later()`
     #'   on each selected controller to schedule auto-scaling.
+    #'   By design, auto-scaling might not actually happen on
+    #'   every iteration if `throttle` is `TRUE`.
+    #' @param throttle If `scale` is `TRUE`, whether to defer auto-scaling
+    #'   and task collection until the next request at least
+    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   The idea is similar to `shiny::throttle()` except that `crew` does not
+    #'   accumulate a backlog of requests. The technique improves robustness
+    #'   and efficiency.
+    #'   Highly recommended to keep
+    #'   the default `throttle = TRUE` for `wait()`.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     wait = function(
@@ -325,6 +357,7 @@ crew_class_controller_group <- R6::R6Class(
       seconds_interval = 0.01,
       seconds_timeout = Inf,
       scale = TRUE,
+      throttle = TRUE,
       controllers = NULL
     ) {
       mode <- as.character(mode)
@@ -337,8 +370,8 @@ crew_class_controller_group <- R6::R6Class(
             for (controller in control) {
               if_any(
                 scale,
-                controller$scale_later(),
-                controller$collect()
+                controller$scale(throttle = throttle),
+                controller$collect(throttle = throttle)
               )
               empty_queue <- length(controller$queue) < 1L
               empty_results <- length(controller$results) < 1L

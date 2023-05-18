@@ -61,8 +61,11 @@ Other controllers:
 
 \item{\code{log}}{Data frame task log of the workers.}
 
-\item{\code{scaling_locked}}{Logical of length 1,
-whether an auto-scaling run is already scheduled.}
+\item{\code{until_collect}}{Numeric of length 1, time point when
+throttled task collection unlocks.}
+
+\item{\code{until_scale}}{Numeric of length 1, time point when
+throttled auto-scaling unlocks.}
 }
 \if{html}{\out{</div>}}
 }
@@ -76,7 +79,6 @@ whether an auto-scaling run is already scheduled.}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
-\item \href{#method-crew_class_controller-scale_later}{\code{crew_class_controller$scale_later()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
 \item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
@@ -171,7 +173,11 @@ or completed tasks waiting to be retrieved with \code{push()}.
 \subsection{Method \code{saturated()}}{
 Check if the controller is saturated.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$saturated(collect = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$saturated(
+  collect = TRUE,
+  throttle = TRUE,
+  controllers = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -179,6 +185,13 @@ Check if the controller is saturated.
 \describe{
 \item{\code{collect}}{Logical of length 1, whether to collect the results
 of any newly resolved tasks before determining saturation.}
+
+\item{\code{throttle}}{Logical of length 1, whether to delay task collection
+until the next request at least \code{self$router$seconds_interval}
+seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -263,12 +276,19 @@ compatible with the analogous method of controller groups.}
 \subsection{Method \code{scale()}}{
 Run auto-scaling.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale(controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale(throttle = FALSE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{throttle}}{Logical of length 1, whether to delay auto-scaling
+until the next auto-scaling request at least
+\code{self$router$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
+
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
 }
@@ -276,39 +296,12 @@ compatible with the analogous method of controller groups.}
 }
 \subsection{Details}{
 Methods \code{push()}, \code{pop()}, and \code{wait()} already invoke
-\code{scale_later()} if the \code{scale} argument is \code{TRUE}.
+\code{scale()} if the \code{scale} argument is \code{TRUE}.
 If you call \code{scale()} manually, it is recommended to call \code{collect()}
 first so \code{scale()} can accurately assess the task load.
 For finer control of the number of workers launched,
 call \code{launch()} on the controller with the exact desired
 number of workers.
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-scale_later"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-scale_later}{}}}
-\subsection{Method \code{scale_later()}}{
-Auto-scale later.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale_later(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Schedule auto-scaling to run \code{self$router$seconds_interval}
-seconds in the future and block any new auto-scaling requests
-in the meantime. The mechanism is simliar to \code{shiny::debounce()}.
 }
 
 \subsection{Returns}{
@@ -331,6 +324,7 @@ Push a task to the head of the task list.
   library = NULL,
   seconds_timeout = NULL,
   scale = TRUE,
+  throttle = TRUE,
   name = NULL,
   controller = NULL
 )}\if{html}{\out{</div>}}
@@ -371,11 +365,20 @@ argument of \code{require()}.}
 \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
-\item{\code{scale}}{Logical, whether to automatically call \code{scale_later()}
+\item{\code{scale}}{Logical, whether to automatically call \code{scale()}
 to auto-scale workers to meet the demand of the task load.
-If \code{TRUE}, then \code{collect()} runs first
+By design, auto-scaling might not actually happen
+if \code{throttle = TRUE}.
+If \code{scale} is \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high.}
+
+\item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
+until the next request at least
+\code{self$router$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
 
 \item{\code{name}}{Optional name of the task. Replaced with a random name
 if \code{NULL} or in conflict with an existing name in the task list.}
@@ -396,12 +399,19 @@ compatible with the analogous method of controller groups.}
 Check for done tasks and move the results to
 the results list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(throttle = FALSE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{throttle}}{whether to defer task collection
+until the next task collection request at least
+\code{self$router$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
+
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
 }
@@ -418,7 +428,7 @@ list as applicable and moves them to the \code{results} list.
 \subsection{Method \code{pop()}}{
 Pop a completed task from the results data frame.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop(scale = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop(scale = TRUE, throttle = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -426,11 +436,19 @@ Pop a completed task from the results data frame.
 \describe{
 \item{\code{scale}}{Logical, whether to automatically call \code{scale_later()}
 to auto-scale workers to meet the demand of the task load.
+Auto-scaling might not actually happen if \code{throttle} is \code{TRUE}.
 If \code{TRUE}, then \code{collect()} runs first
 so demand can be properly assessed before scaling and the number
 of workers is not too high. Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off
 quickly after doing little work.}
+
+\item{\code{throttle}}{Whether to defer auto-scaling and task collection
+until the next request at least
+\code{self$router$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -461,6 +479,7 @@ Wait for tasks.
   seconds_interval = 0.01,
   seconds_timeout = Inf,
   scale = TRUE,
+  throttle = TRUE,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -477,8 +496,20 @@ intervals waiting for tasks.}
 
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for tasks.}
 
-\item{\code{scale}}{Logical, whether to automatically call \code{scale_later()}
-to auto-scale workers to meet the demand of the task load.}
+\item{\code{scale}}{Logical, whether to automatically call \code{scale()}
+to auto-scale workers to meet the demand of the task load.
+Might not actually auto-scale on every iteration if \code{throttle}
+is \code{TRUE}.}
+
+\item{\code{throttle}}{Whether to defer auto-scaling
+and task collection until the next request at least
+\code{self$router$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.
+Highly recommended
+to keep \code{throttle = TRUE} in \code{wait()} to ensure efficiency
+and robustness.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

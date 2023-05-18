@@ -20,6 +20,7 @@
 #'   and [`batchtools`](https://mllg.github.io/batchtools/).
 #' @family help
 #' @importFrom getip getip
+#' @importFrom later later
 #' @importFrom mirai daemons mirai saisei server
 #' @importFrom nanonext mclock msleep random sha1 .unresolved
 #' @importFrom processx process

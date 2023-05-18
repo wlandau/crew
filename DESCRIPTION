@@ -41,6 +41,7 @@ Depends:
   R (>= 4.0.0)
 Imports:
   getip,
+  later,
   mirai (>= 0.8.4),
   nanonext (>= 0.8.3),
   processx,

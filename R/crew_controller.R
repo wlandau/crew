@@ -261,7 +261,9 @@ crew_class_controller <- R6::R6Class(
     #'   seconds in the future and block any new auto-scaling requests
     #'   in the meantime. The mechanism is simliar to `shiny::debounce()`.
     #' @return `NULL` (invisibly).
-    scale_later = function() {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    scale_later = function(controllers = NULL) {
       if (self$scaling_locked) {
         return()
       }

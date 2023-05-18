@@ -294,9 +294,17 @@ number of workers.
 \subsection{Method \code{scale_later()}}{
 Auto-scale later.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale_later()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale_later(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Details}{
 Schedule auto-scaling to run \code{self$router$seconds_interval}
 seconds in the future and block any new auto-scaling requests

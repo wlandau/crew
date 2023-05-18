@@ -171,12 +171,12 @@ or completed tasks waiting to be retrieved with \code{push()}.
 \if{html}{\out{<a id="method-crew_class_controller_group-saturated"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-saturated}{}}}
 \subsection{Method \code{saturated()}}{
-Check if the controllers are saturated.
+Check if a controller is saturated.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$saturated(
   collect = TRUE,
   throttle = TRUE,
-  controllers = NULL
+  controller = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -193,8 +193,9 @@ The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
 and efficiency.}
 
-\item{\code{controllers}}{Character vector of controller names.
-Set to \code{NULL} to select all controllers.}
+\item{\code{controller}}{Character vector of length 1 with the controller name.
+Set to \code{NULL} to select the default controller that \code{push()}
+would choose.}
 }
 \if{html}{\out{</div>}}
 }
@@ -204,8 +205,7 @@ is greater than or equal to the maximum number of workers.
 In other words, in a saturated controller, every available worker
 has a task.
 You can still push tasks to a saturated controller, but
-in the case of transient workers, you may have to call \code{wait()}
-or \code{pop()} until the backlog clears.
+tools that use \code{crew} such as \code{targets} may choose not to.
 }
 
 \subsection{Returns}{

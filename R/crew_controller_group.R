@@ -82,6 +82,15 @@ crew_class_controller_group <- R6::R6Class(
         )
       )
       self$controllers[names]
+    },
+    select_single_controller = function(name) {
+      names <- names(self$controllers)
+      name <- name %|||% utils::head(names, n = 1L)
+      crew_assert(
+        name %in% names,
+        message = sprintf("controller not found: %s", name)
+      )
+      self$controllers[[name]]
     }
   ),
   public = list(
@@ -137,14 +146,13 @@ crew_class_controller_group <- R6::R6Class(
       control <- private$select_controllers(controllers)
       all(map_lgl(control, ~.x$empty()))
     },
-    #' @description Check if the controllers are saturated.
+    #' @description Check if a controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
     #'   is greater than or equal to the maximum number of workers.
     #'   In other words, in a saturated controller, every available worker
     #'   has a task.
     #'   You can still push tasks to a saturated controller, but
-    #'   in the case of transient workers, you may have to call `wait()`
-    #'   or `pop()` until the backlog clears.
+    #'   tools that use `crew` such as `targets` may choose not to.
     #' @return `TRUE` if all the selected controllers are saturated,
     #'   `FALSE` otherwise.
     #' @param collect Logical of length 1, whether to collect the results
@@ -155,11 +163,12 @@ crew_class_controller_group <- R6::R6Class(
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
-    #' @param controllers Character vector of controller names.
-    #'   Set to `NULL` to select all controllers.
-    saturated = function(collect = TRUE, throttle = TRUE, controllers = NULL) {
-      control <- private$select_controllers(controllers)
-      all(map_lgl(control, ~.x$saturated(collect = collect)))
+    #' @param controller Character vector of length 1 with the controller name.
+    #'   Set to `NULL` to select the default controller that `push()`
+    #'   would choose.
+    saturated = function(collect = TRUE, throttle = TRUE, controller = NULL) {
+      control <- private$select_single_controller(name = controller)
+      control$saturated(collect = collect, throttle = throttle)
     },
     #' @description Start one or more controllers.
     #' @return `NULL` (invisibly).
@@ -251,22 +260,15 @@ crew_class_controller_group <- R6::R6Class(
       name = NULL,
       controller = NULL
     ) {
-      controller <- controller %|||%
-        utils::head(names(self$controllers), n = 1L)
-      crew_assert(
-        length(controller) == 1L,
-        message = "controller argument of push() must have length 1."
-      )
-      crew_assert(
-        controller %in% names(self$controllers),
-        message = sprintf("controller \"%s\" not found", controller)
-      )
-      if (substitute) command <- substitute(command)
-      args <- list(
+      if (substitute) {
+        command <- substitute(command)
+      }
+      control <- private$select_single_controller(name = controller)
+      control$push(
         command = command,
         data = data,
         globals = globals,
-        substitute = TRUE,
+        substitute = FALSE,
         seed = seed,
         packages = packages,
         library = library,
@@ -275,7 +277,6 @@ crew_class_controller_group <- R6::R6Class(
         throttle = throttle,
         name = name
       )
-      do.call(what = self$controllers[[controller]]$push, args = args)
     },
     #' @description Check for done tasks and move the results to
     #'   the results list.

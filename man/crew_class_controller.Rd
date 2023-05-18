@@ -176,7 +176,7 @@ Check if the controller is saturated.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$saturated(
   collect = TRUE,
   throttle = TRUE,
-  controllers = NULL
+  controller = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -193,7 +193,7 @@ The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
 and efficiency.}
 
-\item{\code{controllers}}{Not used. Included to ensure the signature is
+\item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
@@ -204,8 +204,7 @@ is greater than or equal to the maximum number of workers.
 In other words, in a saturated controller, every available worker
 has a task.
 You can still push tasks to a saturated controller, but
-in the case of transient workers, you may have to call \code{wait()}
-or \code{pop()} until the backlog clears.
+tools that use \code{crew} such as \code{targets} may choose not to.
 }
 
 \subsection{Returns}{

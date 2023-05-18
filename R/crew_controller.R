@@ -175,8 +175,7 @@ crew_class_controller <- R6::R6Class(
     #'   In other words, in a saturated controller, every available worker
     #'   has a task.
     #'   You can still push tasks to a saturated controller, but
-    #'   in the case of transient workers, you may have to call `wait()`
-    #'   or `pop()` until the backlog clears.
+    #'   tools that use `crew` such as `targets` may choose not to.
     #' @return `TRUE` if the controller is saturated, `FALSE` otherwise.
     #' @param collect Logical of length 1, whether to collect the results
     #'   of any newly resolved tasks before determining saturation.
@@ -186,9 +185,9 @@ crew_class_controller <- R6::R6Class(
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
-    #' @param controllers Not used. Included to ensure the signature is
+    #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    saturated = function(collect = TRUE, throttle = TRUE, controllers = NULL) {
+    saturated = function(collect = TRUE, throttle = TRUE, controller = NULL) {
       if (collect) {
         self$collect(throttle = throttle)
       }
@@ -342,7 +341,9 @@ crew_class_controller <- R6::R6Class(
       while (is.null(name) || name %in% self$queue$name) {
         name <- crew_random_name()
       }
-      if (substitute) command <- substitute(command)
+      if (substitute) {
+        command <- substitute(command)
+      }
       string <- deparse_safe(command)
       command <- rlang::call2("quote", command)
       expr <- rlang::call2(

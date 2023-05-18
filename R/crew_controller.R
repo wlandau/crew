@@ -271,7 +271,7 @@ crew_class_controller <- R6::R6Class(
       later::later(~{
         self$scale()
         self$scaling_locked <- FALSE
-      })
+      }, delay = self$router$seconds_interval)
       invisible()
     },
     #' @description Push a task to the head of the task list.

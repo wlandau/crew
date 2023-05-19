@@ -11,6 +11,7 @@
 * Always relaunch backlogged inactive workers (#79).
 * Deprecate the `auto_scale` argument/field of controllers in favor of the `scale` argument of `push()`, `pop()`, and `wait()`.
 * Throttle auto-scaling with interval `self$router$seconds_interval` (#76).
+* Remove `clean()` and instead terminate lost workers on launch.
 
 # crew 0.1.1
 

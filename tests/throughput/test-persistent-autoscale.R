@@ -38,13 +38,8 @@ while (!is.null(out <- controller$pop(scale = FALSE))) {
   }
 }
 # Check the results
-all(sort(unlist(results$result)) == seq_len(200L))
-#> [1] TRUE
-length(unique(results$instance))
-#> [1] 4
-# View worker and task summaries.
-View(controller$summary())
-# Terminate the controller.
+testthat::expect_true(all(sort(unlist(results$result)) == seq_len(200L)))
+testthat::expect_equal(length(unique(results$instance)), 4L)
 controller$terminate()
 # Now outside crew, verify that the mirai dispatcher
 # and crew workers successfully terminated.

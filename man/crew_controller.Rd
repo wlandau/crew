@@ -20,7 +20,6 @@ Create an \code{R6} object to submit tasks and launch workers.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_start()
 router <- crew_router()
 launcher <- crew_launcher_local()
 controller <- crew_controller(router = router, launcher = launcher)
@@ -29,7 +28,6 @@ controller$push(name = "task", command = sqrt(4))
 controller$wait()
 controller$pop()
 controller$terminate()
-crew_session_terminate()
 }
 }
 \seealso{

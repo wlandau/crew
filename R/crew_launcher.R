@@ -49,17 +49,15 @@
 #'   tasks, `FALSE` to skip.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_session_start()
 #' router <- crew_router()
 #' router$start()
 #' launcher <- crew_launcher_local()
-#' launcher$populate(sockets = router$sockets)
-#' launcher$launch()
+#' launcher$start(workers = router$workers)
+#' launcher$launch(index = 1L, socket = rownames(router$daemons))
 #' m <- mirai::mirai("result", .compute = router$name)
 #' Sys.sleep(0.25)
 #' m$data
 #' router$terminate()
-#' crew_session_terminate()
 #' }
 crew_launcher <- function(
   name = NULL,
@@ -99,17 +97,15 @@ crew_launcher <- function(
 #'   which launch and manage workers.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_session_start()
 #' router <- crew_router()
 #' router$start()
 #' launcher <- crew_launcher_local()
-#' launcher$populate(sockets = router$sockets)
-#' launcher$launch()
+#' launcher$start(workers = router$workers)
+#' launcher$launch(index = 1L, socket = rownames(router$daemons))
 #' m <- mirai::mirai("result", .compute = router$name)
 #' Sys.sleep(0.25)
 #' m$data
 #' router$terminate()
-#' crew_session_terminate()
 #' }
 crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
@@ -155,17 +151,15 @@ crew_class_launcher <- R6::R6Class(
     #' @param garbage_collection See [crew_launcher()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' crew_session_start()
     #' router <- crew_router()
     #' router$start()
     #' launcher <- crew_launcher_local()
-    #' launcher$populate(sockets = router$sockets)
-    #' launcher$launch()
+    #' launcher$start(workers = router$workers)
+    #' launcher$launch(index = 1L, socket = rownames(router$daemons))
     #' m <- mirai::mirai("result", .compute = router$name)
     #' Sys.sleep(0.25)
     #' m$data
     #' router$terminate()
-    #' crew_session_terminate()
     #' }
     initialize = function(
       name = NULL,

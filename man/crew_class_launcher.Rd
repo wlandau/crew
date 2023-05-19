@@ -9,17 +9,15 @@ which launch and manage workers.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_start()
 router <- crew_router()
 router$start()
 launcher <- crew_launcher_local()
-launcher$populate(sockets = router$sockets)
-launcher$launch()
+launcher$start(workers = router$workers)
+launcher$launch(index = 1L, socket = rownames(router$daemons))
 m <- mirai::mirai("result", .compute = router$name)
 Sys.sleep(0.25)
 m$data
 router$terminate()
-crew_session_terminate()
 }
 
 ## ------------------------------------------------
@@ -27,17 +25,15 @@ crew_session_terminate()
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_start()
 router <- crew_router()
 router$start()
 launcher <- crew_launcher_local()
-launcher$populate(sockets = router$sockets)
-launcher$launch()
+launcher$start(workers = router$workers)
+launcher$launch(index = 1L, socket = rownames(router$daemons))
 m <- mirai::mirai("result", .compute = router$name)
 Sys.sleep(0.25)
 m$data
 router$terminate()
-crew_session_terminate()
 }
 
 ## ------------------------------------------------
@@ -156,17 +152,15 @@ An \code{R6} object with the launcher.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_start()
 router <- crew_router()
 router$start()
 launcher <- crew_launcher_local()
-launcher$populate(sockets = router$sockets)
-launcher$launch()
+launcher$start(workers = router$workers)
+launcher$launch(index = 1L, socket = rownames(router$daemons))
 m <- mirai::mirai("result", .compute = router$name)
 Sys.sleep(0.25)
 m$data
 router$terminate()
-crew_session_terminate()
 }
 }
 \if{html}{\out{</div>}}

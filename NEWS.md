@@ -1,4 +1,4 @@
-# crew 0.1.1.9011 (development)
+# crew 0.1.1.9012 (development)
 
 * Use `.args` instead of `...` in `mirai::mirai()`.
 * Use `set.seed()` instead of `withr::local_seed()` (#67, @shikokuchuo).
@@ -12,6 +12,7 @@
 * Deprecate the `auto_scale` argument/field of controllers in favor of the `scale` argument of `push()`, `pop()`, and `wait()`.
 * Throttle auto-scaling with interval `self$router$seconds_interval` (#76).
 * Remove `clean()` and instead terminate lost workers on launch.
+* Fix examples.
 
 # crew 0.1.1
 

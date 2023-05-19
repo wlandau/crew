@@ -11,21 +11,17 @@ See \code{\link[=crew_controller_group]{crew_controller_group()}}.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_start()
 persistent <- crew_controller_local(name = "persistent")
 transient <- crew_controller_local(
   name = "transient",
-  max_tasks = 1L
+  tasks_max = 1L
 )
 group <- crew_controller_group(persistent, transient)
-group$connect()
+group$start()
 group$push(name = "task", command = sqrt(4), controller = "transient")
 group$wait()
 group$pop()
-group$controllers[["persistent"]]$launcher$running() # 0
-group$controllers[["transient"]]$launcher$running() # 0
 group$terminate()
-crew_session_terminate()
 }
 
 ## ------------------------------------------------
@@ -33,21 +29,17 @@ crew_session_terminate()
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_start()
 persistent <- crew_controller_local(name = "persistent")
 transient <- crew_controller_local(
   name = "transient",
-  max_tasks = 1L
+  tasks_max = 1L
 )
 group <- crew_controller_group(persistent, transient)
-group$connect()
+group$start()
 group$push(name = "task", command = sqrt(4), controller = "transient")
 group$wait()
 group$pop()
-group$controllers[["persistent"]]$launcher$running() # 0
-group$controllers[["transient"]]$launcher$running() # 0
 group$terminate()
-crew_session_terminate()
 }
 }
 \seealso{
@@ -105,21 +97,17 @@ An \code{R6} object with the controller group object.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-crew_session_start()
 persistent <- crew_controller_local(name = "persistent")
 transient <- crew_controller_local(
   name = "transient",
-  max_tasks = 1L
+  tasks_max = 1L
 )
 group <- crew_controller_group(persistent, transient)
-group$connect()
+group$start()
 group$push(name = "task", command = sqrt(4), controller = "transient")
 group$wait()
 group$pop()
-group$controllers[["persistent"]]$launcher$running() # 0
-group$controllers[["transient"]]$launcher$running() # 0
 group$terminate()
-crew_session_terminate()
 }
 }
 \if{html}{\out{</div>}}

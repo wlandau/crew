@@ -10,7 +10,6 @@
 #'   `pop()`, and `wait()` instead.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_session_start()
 #' router <- crew_router()
 #' launcher <- crew_launcher_local()
 #' controller <- crew_controller(router = router, launcher = launcher)
@@ -19,7 +18,6 @@
 #' controller$wait()
 #' controller$pop()
 #' controller$terminate()
-#' crew_session_terminate()
 #' }
 crew_controller <- function(
   router,
@@ -49,7 +47,6 @@ crew_controller <- function(
 #' @details See [crew_controller()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' crew_session_start()
 #' router <- crew_router()
 #' launcher <- crew_launcher_local()
 #' controller <- crew_controller(router = router, launcher = launcher)
@@ -58,7 +55,6 @@ crew_controller <- function(
 #' controller$wait()
 #' controller$pop()
 #' controller$terminate()
-#' crew_session_terminate()
 #' }
 crew_class_controller <- R6::R6Class(
   classname = "crew_class_controller",
@@ -111,7 +107,6 @@ crew_class_controller <- R6::R6Class(
     #' @param launcher Launcher object. See [crew_controller()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' crew_session_start()
     #' router <- crew_router()
     #' launcher <- crew_launcher_local()
     #' controller <- crew_controller(router = router, launcher = launcher)
@@ -120,7 +115,6 @@ crew_class_controller <- R6::R6Class(
     #' controller$wait()
     #' controller$pop()
     #' controller$terminate()
-    #' crew_session_terminate()
     #' }
     initialize = function(
       router = NULL,

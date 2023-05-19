@@ -1,5 +1,4 @@
 crew_test("crew_controller_local()", {
-  skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
     workers = 1L,

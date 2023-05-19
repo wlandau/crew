@@ -24,7 +24,6 @@ time <- system.time({
   }
 })
 message(time["elapsed"])
-View(x$summary())
 x$terminate()
 results <- tibble::as_tibble(do.call(rbind, results))
 results$result <- as.integer(results$result)

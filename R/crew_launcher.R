@@ -363,12 +363,6 @@ crew_class_launcher <- R6::R6Class(
       self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
       invisible()
     },
-    #' @description Show which workers are expected to launch.
-    #' @return A logical vector indicating which workers are expected
-    #'   to launch.
-    expected = function() {
-      !is.na(self$workers$socket)
-    },
     #' @description Show whether each worker is launching.
     #' @details A worker is considered "launching" if it was started
     #'   recently (`seconds_launch` seconds ago or sooner).

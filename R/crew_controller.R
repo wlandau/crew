@@ -80,24 +80,6 @@ crew_class_controller <- R6::R6Class(
         n_inactive = sum(inactive)
       )
     },
-    lost = function() {
-      daemons <- self$router$daemons
-      expected <- self$launcher$expected()
-      launching <- self$launcher$launching()
-      lost <- is_lost(
-        expected = expected,
-        daemons = daemons,
-        launching = launching
-      )
-      which(lost)
-    },
-    clean = function() {
-      lost <- private$lost()
-      if (length(lost) > 0L) {
-        walk(x = lost, f = ~self$router$route(index = .x, force = TRUE))
-        self$launcher$terminate(indexes = lost)
-      }
-    },
     try_launch = function(inactive, n) {
       inactive <- utils::head(inactive, n = max(0L, n))
       for (index in inactive) {
@@ -230,7 +212,6 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
       self$router$poll()
-      private$clean()
       nanonext::msleep(10)
       self$router$poll()
       self$router$tally()
@@ -268,7 +249,6 @@ crew_class_controller <- R6::R6Class(
         }
       }
       self$router$poll()
-      private$clean()
       nanonext::msleep(10)
       self$router$poll()
       self$router$tally()
@@ -657,9 +637,4 @@ is_inactive <- function(daemons, launching) {
   connected <- as.logical(daemons[, "online"] > 0L)
   discovered <- as.logical(daemons[, "instance"] > 0L)
   (!connected) & (discovered | (!launching))
-}
-
-is_lost <- function(expected, daemons, launching) {
-  not_discovered <- as.logical(daemons[, "instance"] < 1L)
-  expected & not_discovered & (!launching)
 }

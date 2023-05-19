@@ -347,6 +347,10 @@ crew_class_launcher <- R6::R6Class(
         worker = index,
         instance = instance
       )
+      handle <- self$workers$handle[[index]]
+      if (!is_crew_null(handle)) {
+        self$terminate_worker(handle)
+      }
       handle <- self$launch_worker(
         call = call,
         launcher = self$name,

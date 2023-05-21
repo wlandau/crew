@@ -1,4 +1,5 @@
 crew_test("crew_launcher_local() can run a task on a worker", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(
@@ -68,6 +69,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
 })
 
 crew_test("crew_launcher_local() okay to not have sockets to launch", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   launcher <- crew_launcher_local(seconds_idle = 360)
@@ -92,6 +94,7 @@ crew_test("crew_launcher_local() okay to not have sockets to launch", {
 })
 
 crew_test("crew_launcher_local() can run a task and time out a worker", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(
@@ -149,6 +152,7 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
 })
 
 crew_test("crew_launcher_local() can run a task and end a worker", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(

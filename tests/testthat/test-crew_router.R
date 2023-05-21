@@ -6,6 +6,7 @@ crew_test("crew_router() validate", {
 })
 
 crew_test("crew_router() works", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router()
@@ -88,6 +89,7 @@ crew_test("crew_router() works", {
 })
 
 crew_test("router$route()", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(
@@ -136,6 +138,7 @@ crew_test("router$route()", {
 })
 
 crew_test("router$tally()", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   router <- crew_router(workers = 8L)

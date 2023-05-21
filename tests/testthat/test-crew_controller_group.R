@@ -10,6 +10,7 @@ crew_test("crew_controller_group() method and signature compatibility", {
 })
 
 crew_test("crew_controller_group()", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   a <- crew_controller_local(
@@ -152,6 +153,7 @@ crew_test("crew_controller_group()", {
 })
 
 crew_test("crew_controller_group() select", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   a <- crew_controller_local(
@@ -181,6 +183,7 @@ crew_test("crew_controller_group() select", {
 })
 
 crew_test("crew_controller_group() collect", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   a <- crew_controller_local(
@@ -222,6 +225,7 @@ crew_test("crew_controller_group() collect", {
 })
 
 crew_test("crew_controller_group() launch method", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   a <- crew_controller_local(
@@ -268,6 +272,7 @@ crew_test("crew_controller_group() launch method", {
 })
 
 crew_test("crew_controller_group() scale method", {
+  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   a <- crew_controller_local(

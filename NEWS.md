@@ -1,4 +1,4 @@
-# crew 0.1.1.9012 (development)
+# crew 0.2.0
 
 * Use `.args` instead of `...` in `mirai::mirai()`.
 * Use `set.seed()` instead of `withr::local_seed()` (#67, @shikokuchuo).

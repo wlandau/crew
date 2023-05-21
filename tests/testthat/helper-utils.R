@@ -21,3 +21,17 @@ crew_test_sleep <- function() {
 expect_crew_error <- function(object) {
   testthat::expect_error(object, class = "crew_error")
 }
+
+# TODO: always test and bump required versions when the next
+# mirai/nanonext are on CRAN.
+skip_if_low_dep_versions <- function() {
+  sufficient_versions <- rlang::is_installed(
+    pkg = c(
+      "mirai (>= 0.8.7.9012)",
+      "nanonext (>= 0.8.3.9007)"
+    )
+  )
+  if (!sufficient_versions) {
+    skip("version of mirai or nanonext is too low")
+  }
+}

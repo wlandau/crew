@@ -1,6 +1,6 @@
 # crew 0.2.0.9000 (development)
 
-
+* Use `packageStartupMessage()`.
 
 # crew 0.2.0
 

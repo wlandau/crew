@@ -3,12 +3,12 @@
   "@type": "SoftwareSourceCode",
   "identifier": "crew",
   "description": "In computationally demanding analysis projects, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services. The 'NNG'-powered 'mirai' R package by Gao (2023) <https://CRAN.R-project.org/package=mirai> is a sleek and sophisticated scheduler that efficiently processes these intense workloads. The 'crew' package extends 'mirai' with a unifying interface for third-party worker launchers. Inspiration also comes from packages. 'future' by Bengtsson (2021) <doi:10.32614/RJ-2021-048>, 'rrq' by FitzJohn and Ashton (2023) <https://github.com/mrc-ide/rrq>, 'clustermq' by Schubert (2019) <doi:10.1093/bioinformatics/btz284>), and 'batchtools' by Lang, Bischel, and Surmann (2017) <doi:10.21105/joss.00135>.",
-  "name": "crew: A Distributed Worker Launcher",
+  "name": "crew: A Distributed Worker Launcher Framework",
   "relatedLink": ["https://wlandau.github.io/crew/", "https://CRAN.R-project.org/package=crew"],
   "codeRepository": "https://github.com/wlandau/crew",
   "issueTracker": "https://github.com/wlandau/crew/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.1.1.9000",
+  "version": "0.2.0.9000",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -28,6 +28,13 @@
       "familyName": "Landau",
       "email": "will.landau@gmail.com",
       "@id": "https://orcid.org/0000-0003-1878-3253"
+    }
+  ],
+  "contributor": [
+    {
+      "@type": "Person",
+      "givenName": "Daniel",
+      "familyName": "Woodie"
     }
   ],
   "copyrightHolder": [
@@ -122,7 +129,7 @@
       "@type": "SoftwareApplication",
       "identifier": "mirai",
       "name": "mirai",
-      "version": ">= 0.8.3",
+      "version": ">= 0.8.4",
       "provider": {
         "@id": "https://cran.r-project.org",
         "@type": "Organization",
@@ -135,7 +142,7 @@
       "@type": "SoftwareApplication",
       "identifier": "nanonext",
       "name": "nanonext",
-      "version": ">= 0.8.2",
+      "version": ">= 0.8.3",
       "provider": {
         "@id": "https://cran.r-project.org",
         "@type": "Organization",
@@ -228,10 +235,10 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "558.306KB",
+  "fileSize": "875.623KB",
   "releaseNotes": "https://github.com/wlandau/crew/blob/master/NEWS.md",
   "readme": "https://github.com/wlandau/crew/blob/main/README.md",
   "contIntegration": ["https://github.com/wlandau/crew/actions?query=workflow%3Acheck", "https://app.codecov.io/gh/wlandau/crew", "https://github.com/wlandau/crew/actions?query=workflow%3Alint"],
-  "developmentStatus": "https://www.repostatus.org/#Active",
+  "developmentStatus": "https://www.repostatus.org/#active",
   "keywords": ["r-package", "r", "rstats", "high-performance-computing"]
 }

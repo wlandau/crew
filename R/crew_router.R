@@ -322,11 +322,6 @@ crew_class_router <- R6::R6Class(
         }
         # End dispatcher checks block 2/2.
         self$daemons <- NULL
-        self$dispatcher <- NULL
-        self$rotated <- NULL
-        self$assigned <- NULL
-        self$complete <- NULL
-        self$tallied <- NULL
         self$started <- FALSE
       }
       invisible()

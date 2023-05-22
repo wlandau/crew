@@ -401,7 +401,8 @@ crew_class_controller <- R6::R6Class(
     #'   value is a one-row data frame with the results, warnings, and errors.
     #'   Otherwise, if there are no results available to collect,
     #'   the return value is `NULL`.
-    #' @param scale Logical, whether to automatically call `scale_later()`
+    #' @param scale Logical of length 1,
+    #'   whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
     #'   Auto-scaling might not actually happen if `throttle` is `TRUE`.
     #'   If `TRUE`, then `collect()` runs first
@@ -409,6 +410,10 @@ crew_class_controller <- R6::R6Class(
     #'   of workers is not too high. Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
     #'   quickly after doing little work.
+    #' @param collect Logical of length 1. If `scale` is `FALSE`,
+    #'   whether to call `collect()`
+    #'   to pick up the results of completed tasks. This task collection
+    #'   step always happens (with throttling) when `scale` is `TRUE`.
     #' @param throttle Whether to defer auto-scaling and task collection
     #'   until the next request at least
     #'   `self$router$seconds_interval` seconds from the original request.
@@ -417,12 +422,17 @@ crew_class_controller <- R6::R6Class(
     #'   and efficiency.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    pop = function(scale = TRUE, throttle = TRUE, controllers = NULL) {
-      if_any(
-        scale,
-        self$scale(throttle = throttle),
+    pop = function(
+      scale = TRUE,
+      collect = TRUE,
+      throttle = TRUE,
+      controllers = NULL
+    ) {
+      if (scale) {
+        self$scale(throttle = throttle)
+      } else if (collect) {
         self$collect(throttle = throttle)
-      )
+      }
       out <- NULL
       if (length(self$results) > 0L) {
         task <- self$results[[1L]]

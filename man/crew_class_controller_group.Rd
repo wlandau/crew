@@ -400,6 +400,7 @@ Pop a completed task from the results data frame.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop(
   scale = TRUE,
+  collect = TRUE,
   throttle = TRUE,
   controllers = NULL
 )}\if{html}{\out{</div>}}
@@ -415,6 +416,11 @@ so demand can be properly assessed before scaling and the number
 of workers is not too high. Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off
 quickly after doing little work.}
+
+\item{\code{collect}}{Logical of length 1. If \code{scale} is \code{FALSE},
+whether to call \code{collect()}
+to pick up the results of completed tasks. This task collection
+step always happens (with throttling) when \code{scale} is \code{TRUE}.}
 
 \item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
 until the next auto-scaling request at least

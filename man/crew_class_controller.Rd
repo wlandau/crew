@@ -421,13 +421,19 @@ list as applicable and moves them to the \code{results} list.
 \subsection{Method \code{pop()}}{
 Pop a completed task from the results data frame.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop(scale = TRUE, throttle = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop(
+  scale = TRUE,
+  collect = TRUE,
+  throttle = TRUE,
+  controllers = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{scale}}{Logical, whether to automatically call \code{scale_later()}
+\item{\code{scale}}{Logical of length 1,
+whether to automatically call \code{scale()}
 to auto-scale workers to meet the demand of the task load.
 Auto-scaling might not actually happen if \code{throttle} is \code{TRUE}.
 If \code{TRUE}, then \code{collect()} runs first
@@ -435,6 +441,11 @@ so demand can be properly assessed before scaling and the number
 of workers is not too high. Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off
 quickly after doing little work.}
+
+\item{\code{collect}}{Logical of length 1. If \code{scale} is \code{FALSE},
+whether to call \code{collect()}
+to pick up the results of completed tasks. This task collection
+step always happens (with throttling) when \code{scale} is \code{TRUE}.}
 
 \item{\code{throttle}}{Whether to defer auto-scaling and task collection
 until the next request at least

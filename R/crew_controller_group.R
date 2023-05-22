@@ -294,6 +294,10 @@ crew_class_controller_group <- R6::R6Class(
     #'   of workers is not too high. Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
     #'   quickly after doing little work.
+    #' @param collect Logical of length 1. If `scale` is `FALSE`,
+    #'   whether to call `collect()`
+    #'   to pick up the results of completed tasks. This task collection
+    #'   step always happens (with throttling) when `scale` is `TRUE`.
     #' @param throttle If `scale` is `TRUE`, whether to defer auto-scaling
     #'   until the next auto-scaling request at least
     #'   `self$router$seconds_interval` seconds from the original request.
@@ -302,10 +306,19 @@ crew_class_controller_group <- R6::R6Class(
     #'   and efficiency.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    pop = function(scale = TRUE, throttle = TRUE, controllers = NULL) {
+    pop = function(
+      scale = TRUE,
+      collect = TRUE,
+      throttle = TRUE,
+      controllers = NULL
+    ) {
       control <- private$select_controllers(controllers)
       for (controller in control) {
-        out <- controller$pop(scale = scale, throttle = throttle)
+        out <- controller$pop(
+          scale = scale,
+          collect = collect,
+          throttle = throttle
+        )
         if (!is.null(out)) {
           return(out)
         }

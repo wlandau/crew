@@ -13,6 +13,7 @@
 * Throttle auto-scaling with interval `self$router$seconds_interval` (#76).
 * Remove `clean()` and instead terminate lost workers on launch.
 * Fix examples.
+* Add a `collect` argument to `pop()`.
 
 # crew 0.1.1
 

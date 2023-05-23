@@ -311,7 +311,6 @@ crew_class_controller <- R6::R6Class(
       name = NULL,
       controller = NULL
     ) {
-      crew_assert(scale, isTRUE(.) || isFALSE(.))
       while (is.null(name) || name %in% self$queue$name) {
         name <- crew_random_name()
       }

@@ -51,11 +51,11 @@ monad_new <- function(
   force(launcher)
   force(worker)
   force(instance)
-  as_class(environment(), "crew_monad")
+  environment()
 }
 
 monad_validate <- function(monad) {
-  crew_assert(inherits(monad, "crew_monad"))
+  crew_assert(is.environment(monad))
   crew_assert(identical(names(monad), names(formals(monad_new))))
   cols <- c(
     "name",
@@ -75,9 +75,4 @@ monad_validate <- function(monad) {
   crew_assert(monad$worker, is.integer(.), length(.) == 1L)
   crew_assert(monad$result, is.list(.), length(.) == 1L)
   invisible()
-}
-
-#' @export
-print.crew_monad <- function(x, ...) {
-  cat("<crew_monad>\n ", paste0(paste_list(as.list(x)), collapse = "\n  "))
 }

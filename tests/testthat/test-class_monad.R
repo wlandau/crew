@@ -13,8 +13,3 @@ crew_test("bad field", {
   out$nope <- 0
   expect_crew_error(monad_validate(out))
 })
-
-crew_test("print monad", {
-  out <- utils::capture.output(print(monad_init()))
-  expect_true(any(grepl(pattern = "<crew_monad>", x = out, fixed = TRUE)))
-})

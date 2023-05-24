@@ -1,6 +1,6 @@
 # crew 0.2.1.9000 (development)
 
-
+* Remove the class attribute from monads (for performance).
 
 # crew 0.2.1
 

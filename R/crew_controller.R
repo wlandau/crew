@@ -441,7 +441,7 @@ crew_class_controller <- R6::R6Class(
         # I cannot cover this in automated tests, but
         # I did test it by hand.
         # nocov start
-        if (!inherits(out, "crew_monad")) {
+        if (!is.environment(out)) {
           out <- monad_init(
             command = task$command,
             error = paste(

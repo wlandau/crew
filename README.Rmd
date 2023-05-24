@@ -280,6 +280,18 @@ Please note that the `crew` project is released with a [Contributor Code of Cond
 
 # Citation
 
-```{r, warning = FALSE, comment = ""}
-citation("crew")
+```{r, eval = FALSE, warning = FALSE, comment = ""}
+To cite package ‘crew’ in publications use:
+
+  Landau WM (2023). _crew: A Distributed Worker Launcher Framework_.
+  https://wlandau.github.io/crew/, https://github.com/wlandau/crew.
+
+A BibTeX entry for LaTeX users is
+
+  @Manual{,
+    title = {crew: A Distributed Worker Launcher Framework},
+    author = {William Michael Landau},
+    year = {2023},
+    note = {https://wlandau.github.io/crew/, https://github.com/wlandau/crew},
+  }
 ```

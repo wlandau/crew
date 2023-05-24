@@ -465,7 +465,19 @@ By contributing to this project, you agree to abide by its terms.
 # Citation
 
 ``` r
-citation("crew")
+To cite package ‘crew’ in publications use:
+
+  Landau WM (2023). _crew: A Distributed Worker Launcher Framework_.
+  https://wlandau.github.io/crew/, https://github.com/wlandau/crew.
+
+A BibTeX entry for LaTeX users is
+
+  @Manual{,
+    title = {crew: A Distributed Worker Launcher Framework},
+    author = {William Michael Landau},
+    year = {2023},
+    note = {https://wlandau.github.io/crew/, https://github.com/wlandau/crew},
+  }
 ```
 
 [^1]: Automatic down-scaling also helps comply with wall time

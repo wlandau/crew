@@ -32,6 +32,12 @@ This vignette demonstrates how to write a `crew` launcher plugin. It assumes pri
 
 To create your own launcher plugin, write an [`R6`](https://r6.r-lib.org/articles/Introduction.html) subclass of [`crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.html) with a [`launch_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-launch-worker-) method analogous the one in the [local process launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html). `launch_worker()` must accept the same arguments as the [local process `launch_worker()` method](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-launch-worker-), generate a call to [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html), and then submit a new job or process to run that call.
 
+## Network
+
+Each worker that launches must be able to dial into the client over the local network. The `host` argument of `crew_router()` provides the local IP address, and the `port` argument provides the TCP port. The controller helper function (see below) should expose arguments `host` and `port` in order to solve potential network problems like [this one](https://github.com/wlandau/crew.cluster/issues/1#issuecomment-1546024163).
+
+By default, `host` is the local IP address. `crew` assumes the local network is secure. Please take the time to assess the network security risks of your computing environment. Use at your own risk.
+
 ## Termination
 
 We recommend you implement an optional [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-) method. Although `mirai` has its own way of terminating workers, it only works if the worker already connected, and it cannot reach workers that fail to connect and hang in a crashed state. An optional [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-) method in your `crew` launcher plugin is extra assurance that these workers will exit.

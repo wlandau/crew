@@ -180,7 +180,7 @@ crew_class_controller <- R6::R6Class(
         self$router$start()
         workers <- self$router$workers
         self$launcher$start(workers = workers)
-        self$log <- tibble::tibble(
+        self$log <- list(
           popped_tasks = rep(0L, workers),
           popped_seconds = rep(0, workers),
           popped_errors = rep(0L, workers),

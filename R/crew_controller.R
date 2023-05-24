@@ -381,15 +381,16 @@ crew_class_controller <- R6::R6Class(
           self$until_collect <- NULL
         }
       }
-      done <- rep(FALSE, length(self$queue))
-      for (index in seq_along(done)) {
-        task <- self$queue[[index]]
-        if (!nanonext::.unresolved(task$handle[[1L]])) {
-          self$results[[length(self$results) + 1L]] <- task
-          done[index] <- TRUE
-        }
-      }
-      self$queue[done] <- NULL
+      is_done <- !vapply(
+        X = self$queue,
+        FUN = function(task) {
+          nanonext::.unresolved(task$handle[[1]])
+        },
+        FUN.VALUE = logical(1L),
+        USE.NAMES = FALSE
+      )
+      self$results <- c(self$results, self$queue[is_done])
+      self$queue[is_done] <- NULL
       invisible()
     },
     #' @description Pop a completed task from the results data frame.

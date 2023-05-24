@@ -312,7 +312,7 @@ Push a task to the head of the task list.
   data = list(),
   globals = list(),
   substitute = TRUE,
-  seed = sample.int(n = 1000000000L, size = 1L),
+  seed = as.integer(nanonext::random()/2),
   packages = character(0),
   library = NULL,
   seconds_timeout = NULL,

@@ -4,6 +4,7 @@
 * Remove the class attribute from monads for performance (#81, @shikokuchuo).
 * Speed up monad-to-tibble transformations (#81, @shikokuchuo).
 * Use `.subset2()` when updating the controller log (#81, @brendanf).
+* Use `nanonext::random()` to propose task seeds (#81, @shikokuchuo).
 
 # crew 0.2.1
 

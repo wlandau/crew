@@ -302,7 +302,7 @@ crew_class_controller <- R6::R6Class(
       data = list(),
       globals = list(),
       substitute = TRUE,
-      seed = sample.int(n = 1e9L, size = 1L),
+      seed = as.integer(nanonext::random() / 2),
       packages = character(0),
       library = NULL,
       seconds_timeout = NULL,

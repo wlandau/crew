@@ -311,7 +311,7 @@ crew_class_controller <- R6::R6Class(
       name = NULL,
       controller = NULL
     ) {
-      while (is.null(name) || name %in% self$queue$name) {
+      if (is.null(name)) {
         name <- crew_random_name()
       }
       if (substitute) {

@@ -13,3 +13,9 @@ crew_test("bad field", {
   out$nope <- 0
   expect_crew_error(monad_validate(out))
 })
+
+crew_test("monad_tibble()", {
+  out <- monad_tibble(monad_init(name = "x"))
+  expect_true(tibble::is_tibble(out))
+  expect_equal(nrow(out), 1L)
+})

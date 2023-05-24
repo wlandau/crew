@@ -76,3 +76,16 @@ monad_validate <- function(monad) {
   crew_assert(monad$result, is.list(.), length(.) == 1L)
   invisible()
 }
+
+monad_tibble <- function(monad) {
+  out <- as.list(monad)
+  attributes(out) <- list(
+    names = monad_names,
+    class = c("tbl_df", "tbl", "data.frame"),
+    row.names = .set_row_names(1L)
+  )
+  out
+}
+
+monad_names <- names(formals(monad_new))
+monad_names_n <- length(monad_names)

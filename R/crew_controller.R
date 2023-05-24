@@ -452,16 +452,24 @@ crew_class_controller <- R6::R6Class(
         }
         # nocov end
         out$name <- task$name
-        out <- tibble::new_tibble(as.list(out))
+        out <- monad_tibble(out)
+        log <- self$log
         if (!is.na(out$launcher)) {
           index <- out$worker
-          self$log$popped_tasks[index] <- self$log$popped_tasks[index] + 1L
-          self$log$popped_seconds[index] <- self$log$popped_seconds[index] +
-            out$seconds
-          self$log$popped_errors[index] <- self$log$popped_errors[index] +
-            !anyNA(out$error)
-          self$log$popped_warnings[index] <-
-            self$log$popped_warnings[index] + !anyNA(out$warnings)
+          self$log$popped_tasks[index] <-
+            .subset2(log, "popped_tasks")[index] + 1L
+          self$log$popped_seconds[index] <-
+            .subset2(log, "popped_seconds")[index] + .subset2(out, "seconds")
+          returned_error <- !anyNA(.subset2(out, "error"))
+          returned_warning <- !anyNA(.subset2(out, "warnings"))
+          if (returned_error) {
+            self$log$popped_errors[index] <-
+              .subset2(log, "popped_errors")[index] + 1L
+          }
+          if (returned_warning) {
+            self$log$popped_warnings[index] <-
+            .subset2(log, "popped_warnings")[index] + 1L
+          }
         }
         self$results[[1L]] <- NULL
       }

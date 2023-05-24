@@ -1,6 +1,9 @@
 # crew 0.2.1.9000 (development)
 
-* Remove the class attribute from monads (for performance).
+* Track warnings properly (#81, @brendanf).
+* Remove the class attribute from monads for performance (#81, @shikokuchuo).
+* Speed up monad-to-tibble transformations (#81, @shikokuchuo).
+* Use `.subset2()` when updating the controller log (#81, @brendanf).
 
 # crew 0.2.1
 

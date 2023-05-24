@@ -461,7 +461,7 @@ crew_class_controller <- R6::R6Class(
           self$log$popped_errors[index] <- self$log$popped_errors[index] +
             !anyNA(out$error)
           self$log$popped_warnings[index] <-
-            self$log$popped_warnings[index] + !anyNA(out$error)
+            self$log$popped_warnings[index] + !anyNA(out$warnings)
         }
         self$results[[1L]] <- NULL
       }

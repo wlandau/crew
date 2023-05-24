@@ -346,10 +346,10 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = self$router$name
       )
-      task <- list(
+      task <- structure(
+        handle,
         name = name,
-        command = string,
-        handle = list(handle)
+        command = string
       )
       self$queue[[length(self$queue) + 1L]] <- task
       if (scale) {
@@ -383,9 +383,7 @@ crew_class_controller <- R6::R6Class(
       }
       is_done <- !vapply(
         X = self$queue,
-        FUN = function(task) {
-          nanonext::.unresolved(task$handle[[1]])
-        },
+        FUN = nanonext::.unresolved,
         FUN.VALUE = logical(1L),
         USE.NAMES = FALSE
       )
@@ -436,7 +434,7 @@ crew_class_controller <- R6::R6Class(
       out <- NULL
       if (length(self$results) > 0L) {
         task <- self$results[[1L]]
-        out <- task$handle[[1L]]$data
+        out <- task$data
         # The contents of the if() statement below happen
         # if mirai cannot evaluate the command.
         # I cannot cover this in automated tests, but
@@ -444,7 +442,7 @@ crew_class_controller <- R6::R6Class(
         # nocov start
         if (!is.environment(out)) {
           out <- monad_init(
-            command = task$command,
+            command = attr(task, "command"),
             error = paste(
               utils::capture.output(print(out), type = "output"),
               collapse = "\n"
@@ -452,7 +450,7 @@ crew_class_controller <- R6::R6Class(
           )
         }
         # nocov end
-        out$name <- task$name
+        out$name <- attr(task, "name")
         out <- monad_tibble(out)
         log <- self$log
         if (!is.na(out$launcher)) {

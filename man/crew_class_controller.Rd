@@ -55,6 +55,8 @@ Other controllers:
 
 \item{\code{results}}{List of finished tasks}
 
+\item{\code{n_push}}{Number of attempts to \code{push()} a task so far.}
+
 \item{\code{log}}{Data frame task log of the workers.}
 
 \item{\code{until_collect}}{Numeric of length 1, time point when

@@ -69,7 +69,7 @@ crew_eval <- function(
   )
   seconds <- (nanonext::mclock() - start) / 1000
   monad_init(
-    command = deparse_safe(command),
+    command = NA_character_,
     result = result %|||% NA,
     seconds = seconds,
     seed = seed,

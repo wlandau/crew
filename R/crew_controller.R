@@ -465,6 +465,7 @@ crew_class_controller <- R6::R6Class(
         }
         # nocov end
         out$name <- attr(task, "name")
+        out$command <- attr(task, "command")
         out <- monad_tibble(out)
         log <- self$log
         if (!is.na(out$launcher)) {

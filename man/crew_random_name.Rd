@@ -4,7 +4,10 @@
 \alias{crew_random_name}
 \title{Random name}
 \usage{
-crew_random_name()
+crew_random_name(n = 1L)
+}
+\arguments{
+\item{n}{Length of the random vector to hash.}
 }
 \value{
 A random character string.

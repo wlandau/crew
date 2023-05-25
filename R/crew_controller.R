@@ -90,9 +90,9 @@ crew_class_controller <- R6::R6Class(
     #' @field launcher Launcher object.
     launcher = NULL,
     #' @field queue List of tasks in the queue.
-    queue = list(),
+    queue = NULL,
     #' @field results List of finished tasks
-    results = list(),
+    results = NULL,
     #' @field log Data frame task log of the workers.
     log = NULL,
     #' @field until_collect Numeric of length 1, time point when
@@ -127,8 +127,8 @@ crew_class_controller <- R6::R6Class(
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
     validate = function() {
-      crew_assert(is.list(self$queue))
-      crew_assert(is.list(self$results))
+      crew_assert(self$queue, is.null(.) || is.environment(.))
+      crew_assert(self$results, is.null(.) || is.environment(.))
       crew_assert(self$log, is.null(.) || is.data.frame(.))
       crew_assert(inherits(self$router, "crew_class_router"))
       crew_assert(inherits(self$launcher, "crew_class_launcher"))
@@ -143,7 +143,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     empty = function(controllers = NULL) {
-      (length(self$queue) < 1L) && (length(self$results) < 1L)
+      (length(names(self$queue)) < 1L) && (length(names(self$results)) < 1L)
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -167,7 +167,7 @@ crew_class_controller <- R6::R6Class(
       if (collect) {
         self$collect(throttle = throttle)
       }
-      length(self$queue) >= self$router$workers
+      length(names(self$queue)) >= self$router$workers
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
@@ -187,6 +187,8 @@ crew_class_controller <- R6::R6Class(
           popped_warnings = rep(0L, workers),
           controller = rep(self$router$name, workers)
         )
+        self$queue <- new.env(hash = TRUE, parent = emptyenv())
+        self$results <- new.env(hash = TRUE, parent = emptyenv())
       }
       invisible()
     },
@@ -250,7 +252,10 @@ crew_class_controller <- R6::R6Class(
       private$try_launch(inactive = scalable$backlogged, n = Inf)
       available <- self$router$workers - length(scalable$resolved)
       self$collect(throttle = FALSE)
-      deficit <- min(length(self$queue) - available, self$router$workers)
+      deficit <- min(
+        length(names(self$queue)) - available,
+        self$router$workers
+      )
       private$try_launch(inactive = scalable$resolved, n = deficit)
       invisible()
     },
@@ -311,9 +316,8 @@ crew_class_controller <- R6::R6Class(
       name = NULL,
       controller = NULL
     ) {
-      if (is.null(name)) {
-        name <- crew_random_name()
-      }
+      id <- crew_random_name(n = 1L)
+      name <- name %|||% id
       if (substitute) {
         command <- substitute(command)
       }
@@ -349,9 +353,10 @@ crew_class_controller <- R6::R6Class(
       task <- structure(
         handle,
         name = name,
+        id = id,
         command = string
       )
-      self$queue[[length(self$queue) + 1L]] <- task
+      self$queue[[id]] <- task
       if (scale) {
         self$scale(throttle = throttle)
       }
@@ -381,14 +386,15 @@ crew_class_controller <- R6::R6Class(
           self$until_collect <- NULL
         }
       }
-      is_done <- !vapply(
-        X = self$queue,
-        FUN = nanonext::.unresolved,
-        FUN.VALUE = logical(1L),
-        USE.NAMES = FALSE
-      )
-      self$results <- c(self$results, self$queue[is_done])
-      self$queue[is_done] <- NULL
+      results <- self$results
+      queue <- self$queue
+      not_done <- eapply(env = queue, FUN = nanonext::.unresolved)
+      index_done <- !as.logical(not_done)
+      which_collect <- names(not_done)[index_done]
+      for (id in which_collect) {
+        results[[id]] <- queue[[id]]
+      }
+      rm(list = which_collect, envir = queue)
       invisible()
     },
     #' @description Pop a completed task from the results data frame.
@@ -432,8 +438,10 @@ crew_class_controller <- R6::R6Class(
         self$collect(throttle = throttle)
       }
       out <- NULL
-      if (length(self$results) > 0L) {
-        task <- self$results[[1L]]
+      ids <- names(self$results)
+      if (length(ids) > 0L) {
+        id <- ids[[1L]]
+        task <- self$results[[id]]
         out <- task$data
         # The contents of the if() statement below happen
         # if mirai cannot evaluate the command.
@@ -470,7 +478,7 @@ crew_class_controller <- R6::R6Class(
             .subset2(log, "popped_warnings")[index] + 1L
           }
         }
-        self$results[[1L]] <- NULL
+        rm(list = id, envir = self$results)
       }
       out
     },
@@ -520,8 +528,8 @@ crew_class_controller <- R6::R6Class(
               self$scale(throttle = throttle),
               self$collect(throttle = throttle)
             )
-            empty_queue <- length(self$queue) < 1L
-            empty_results <- length(self$results) < 1L
+            empty_queue <- length(names(self$queue)) < 1L
+            empty_results <- length(names(self$results)) < 1L
             (empty_queue && empty_results) || if_any(
               identical(mode, "all"),
               empty_queue && (!empty_results),

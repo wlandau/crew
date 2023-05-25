@@ -40,22 +40,23 @@ monad_new <- function(
   worker = NULL,
   instance = NULL
 ) {
-  force(name)
-  force(command)
-  force(result)
-  force(seconds)
-  force(seed)
-  force(error)
-  force(trace)
-  force(warnings)
-  force(launcher)
-  force(worker)
-  force(instance)
-  environment()
+  list(
+    name = name,
+    command = command,
+    result = result,
+    seconds = seconds,
+    seed = seed,
+    error = error,
+    trace = trace,
+    warnings = warnings,
+    launcher = launcher,
+    worker = worker,
+    instance = instance
+  )
 }
 
 monad_validate <- function(monad) {
-  crew_assert(is.environment(monad))
+  crew_assert(is.list(monad))
   crew_assert(identical(names(monad), names(formals(monad_new))))
   cols <- c(
     "name",
@@ -78,14 +79,14 @@ monad_validate <- function(monad) {
 }
 
 monad_tibble <- function(monad) {
-  out <- as.list(monad)
-  attributes(out) <- list(
+  attributes(monad) <- list(
     names = monad_names,
     class = c("tbl_df", "tbl", "data.frame"),
-    row.names = .set_row_names(1L)
+    row.names = monad_rownames
   )
-  out
+  monad
 }
 
 monad_names <- names(formals(monad_new))
 monad_names_n <- length(monad_names)
+monad_rownames <- .set_row_names(1L)

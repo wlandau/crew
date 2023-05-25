@@ -318,7 +318,7 @@ Push a task to the head of the task list.
   seconds_timeout = NULL,
   scale = TRUE,
   throttle = TRUE,
-  name = NULL,
+  name = "task",
   controller = NULL
 )}\if{html}{\out{</div>}}
 }

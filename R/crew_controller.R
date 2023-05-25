@@ -143,7 +143,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     empty = function(controllers = NULL) {
-      (length(names(self$queue)) < 1L) && (length(names(self$results)) < 1L)
+      (length(self$queue) < 1L) && (length(self$results) < 1L)
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -167,7 +167,7 @@ crew_class_controller <- R6::R6Class(
       if (collect) {
         self$collect(throttle = throttle)
       }
-      length(names(self$queue)) >= self$router$workers
+      length(self$queue) >= self$router$workers
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
@@ -253,7 +253,7 @@ crew_class_controller <- R6::R6Class(
       available <- self$router$workers - length(scalable$resolved)
       self$collect(throttle = FALSE)
       deficit <- min(
-        length(names(self$queue)) - available,
+        length(self$queue) - available,
         self$router$workers
       )
       private$try_launch(inactive = scalable$resolved, n = deficit)
@@ -313,7 +313,7 @@ crew_class_controller <- R6::R6Class(
       seconds_timeout = NULL,
       scale = TRUE,
       throttle = TRUE,
-      name = NULL,
+      name = "task",
       controller = NULL
     ) {
       id <- crew_random_name(n = 1L)
@@ -388,7 +388,14 @@ crew_class_controller <- R6::R6Class(
       }
       results <- self$results
       queue <- self$queue
-      not_done <- eapply(env = queue, FUN = nanonext::.unresolved)
+      not_done <- vapply(
+        X = names(queue),
+        FUN = function(id) {
+          .unresolved(queue[[id]])
+        },
+        FUN.VALUE = logical(1L),
+        USE.NAMES = TRUE
+      )
       index_done <- !as.logical(not_done)
       which_collect <- names(not_done)[index_done]
       for (id in which_collect) {
@@ -528,8 +535,8 @@ crew_class_controller <- R6::R6Class(
               self$scale(throttle = throttle),
               self$collect(throttle = throttle)
             )
-            empty_queue <- length(names(self$queue)) < 1L
-            empty_results <- length(names(self$results)) < 1L
+            empty_queue <- length(self$queue) < 1L
+            empty_results <- length(self$results) < 1L
             (empty_queue && empty_results) || if_any(
               identical(mode, "all"),
               empty_queue && (!empty_results),

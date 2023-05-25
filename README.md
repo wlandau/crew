@@ -53,8 +53,7 @@ including a full function reference and usage tutorial vignettes.
 [launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html)
 for different types of workers that connect over the local network. This
 flexibility can extend `crew` to platforms like
-[SLURM](https://slurm.schedmd.com/),
-[SGE](https://en.wikipedia.org/wiki/Oracle_Grid_Engine), [AWS
+[SLURM](https://slurm.schedmd.com/), Sun Grid Engine, [AWS
 Batch](https://aws.amazon.com/batch/), and
 [Kubernetes](https://kubernetes.io/). See the [plugin
 vignette](https://wlandau.github.io/crew/articles/plugins.html) to learn
@@ -62,8 +61,7 @@ how to create a launcher plugin. The following packages support
 ready-to-use plugins.
 
 - [`crew.cluster`](https://wlandau.github.io/crew.cluster/): traditional
-  high-performance computing clusters such as [Sun Grid Engine
-  (SGE)](https://en.wikipedia.org/wiki/Oracle_Grid_Engine).
+  high-performance computing clusters such as Sun Grid Engine (SGE).
 
 # Usage
 

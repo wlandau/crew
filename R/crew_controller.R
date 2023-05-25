@@ -353,7 +353,6 @@ crew_class_controller <- R6::R6Class(
       task <- structure(
         handle,
         name = name,
-        id = id,
         command = string
       )
       self$queue[[id]] <- task

@@ -20,9 +20,9 @@
 #' controller$terminate()
 #' }
 crew_controller <- function(
-  router,
-  launcher,
-  auto_scale = NULL
+    router,
+    launcher,
+    auto_scale = NULL
 ) {
   if (!is.null(auto_scale)) {
     crew_deprecate(
@@ -121,8 +121,8 @@ crew_class_controller <- R6::R6Class(
     #' controller$terminate()
     #' }
     initialize = function(
-      router = NULL,
-      launcher = NULL
+    router = NULL,
+    launcher = NULL
     ) {
       self$router <- router
       self$launcher <- launcher
@@ -308,18 +308,18 @@ crew_class_controller <- R6::R6Class(
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     push = function(
-      command,
-      data = list(),
-      globals = list(),
-      substitute = TRUE,
-      seed = as.integer(nanonext::random() / 2),
-      packages = character(0),
-      library = NULL,
-      seconds_timeout = NULL,
-      scale = TRUE,
-      throttle = TRUE,
-      name = "task",
-      controller = NULL
+    command,
+    data = list(),
+    globals = list(),
+    substitute = TRUE,
+    seed = as.integer(nanonext::random() / 2),
+    packages = character(0),
+    library = NULL,
+    seconds_timeout = NULL,
+    scale = TRUE,
+    throttle = TRUE,
+    name = "task",
+    controller = NULL
     ) {
       index <- .subset2(self, "n_push") + 1L
       self$n_push <- index
@@ -331,15 +331,17 @@ crew_class_controller <- R6::R6Class(
         command <- substitute(command)
       }
       string <- deparse_safe(command)
-      command <- rlang::call2("quote", command)
-      expr <- rlang::call2(
-        .fn = quote(crew::crew_eval),
-        command = command,
-        data = quote(data),
-        globals = quote(globals),
-        seed = quote(seed),
-        packages = quote(packages),
-        library = quote(library)
+      command <- as.call(list(lang_quote, command))
+      expr <-  as.call(
+        list(
+          lang_crew_eval,
+          command = command,
+          data = quote(data),
+          globals = quote(globals),
+          seed = quote(seed),
+          packages = quote(packages),
+          library = quote(library)
+        )
       )
       .args <- list(
         data = data,
@@ -435,10 +437,10 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop = function(
-      scale = TRUE,
-      collect = TRUE,
-      throttle = TRUE,
-      controllers = NULL
+    scale = TRUE,
+    collect = TRUE,
+    throttle = TRUE,
+    controllers = NULL
     ) {
       if (scale) {
         self$scale(throttle = throttle)
@@ -483,7 +485,7 @@ crew_class_controller <- R6::R6Class(
           }
           if (returned_warning) {
             self$log$popped_warnings[index] <-
-            .subset2(log, "popped_warnings")[index] + 1L
+              .subset2(log, "popped_warnings")[index] + 1L
           }
         }
         rm(list = head, envir = self$results)
@@ -520,12 +522,12 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     wait = function(
-      mode = "all",
-      seconds_interval = 0.01,
-      seconds_timeout = Inf,
-      scale = TRUE,
-      throttle = TRUE,
-      controllers = NULL
+    mode = "all",
+    seconds_interval = 0.01,
+    seconds_timeout = Inf,
+    scale = TRUE,
+    throttle = TRUE,
+    controllers = NULL
     ) {
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
@@ -611,8 +613,8 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     summary = function(
-      columns = tidyselect::everything(),
-      controllers = NULL
+    columns = tidyselect::everything(),
+    controllers = NULL
     ) {
       router_log <- self$router$log()
       workers <- self$launcher$workers
@@ -665,3 +667,6 @@ is_inactive <- function(daemons, launching) {
   discovered <- as.logical(daemons[, "instance"] > 0L)
   (!connected) & (discovered | (!launching))
 }
+
+lang_quote <- as.symbol("quote")
+lang_crew_eval <- quote(crew::crew_eval)

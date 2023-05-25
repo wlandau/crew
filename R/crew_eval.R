@@ -26,7 +26,7 @@ crew_eval <- function(
   command,
   data = list(),
   globals = list(),
-  seed = as.integer(stats::runif(n = 1L, min = 1, max = 1e9)),
+  seed = as.integer(nanonext::random() / 2),
   packages = character(0),
   library = NULL
 ) {

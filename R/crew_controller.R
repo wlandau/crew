@@ -387,14 +387,7 @@ crew_class_controller <- R6::R6Class(
       }
       results <- self$results
       queue <- self$queue
-      not_done <- vapply(
-        X = names(queue),
-        FUN = function(id) {
-          .unresolved(queue[[id]])
-        },
-        FUN.VALUE = logical(1L),
-        USE.NAMES = TRUE
-      )
+      not_done <- lapply(X = queue, FUN = .unresolved)
       index_done <- !as.logical(not_done)
       which_collect <- names(not_done)[index_done]
       for (id in which_collect) {

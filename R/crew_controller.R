@@ -121,8 +121,8 @@ crew_class_controller <- R6::R6Class(
     #' controller$terminate()
     #' }
     initialize = function(
-    router = NULL,
-    launcher = NULL
+      router = NULL,
+      launcher = NULL
     ) {
       self$router <- router
       self$launcher <- launcher
@@ -307,19 +307,24 @@ crew_class_controller <- R6::R6Class(
     #'   if `NULL` or in conflict with an existing name in the task list.
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
+    #' @param save_command Logical of length 1. If `TRUE`, the controller
+    #'   deparses the command and returns it with the output on `pop()`.
+    #'   If `FALSE` (default), the controller skips this step to
+    #'   increase speed.
     push = function(
-    command,
-    data = list(),
-    globals = list(),
-    substitute = TRUE,
-    seed = as.integer(nanonext::random() / 2),
-    packages = character(0),
-    library = NULL,
-    seconds_timeout = NULL,
-    scale = TRUE,
-    throttle = TRUE,
-    name = "task",
-    controller = NULL
+      command,
+      data = list(),
+      globals = list(),
+      substitute = TRUE,
+      seed = as.integer(nanonext::random() / 2),
+      packages = character(0),
+      library = NULL,
+      seconds_timeout = NULL,
+      scale = TRUE,
+      throttle = TRUE,
+      name = "task",
+      controller = NULL,
+      save_command = FALSE
     ) {
       index <- .subset2(self, "n_push") + 1L
       self$n_push <- index
@@ -330,7 +335,11 @@ crew_class_controller <- R6::R6Class(
       if (substitute) {
         command <- substitute(command)
       }
-      string <- deparse_safe(command)
+      if (save_command) {
+        string <- deparse_safe(command)
+      } else {
+        string <- NA_character_
+      }
       command <- as.call(list(lang_quote, command))
       expr <-  as.call(
         list(
@@ -441,10 +450,10 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop = function(
-    scale = TRUE,
-    collect = TRUE,
-    throttle = TRUE,
-    controllers = NULL
+      scale = TRUE,
+      collect = TRUE,
+      throttle = TRUE,
+      controllers = NULL
     ) {
       if (scale) {
         self$scale(throttle = throttle)

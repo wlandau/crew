@@ -323,7 +323,8 @@ Push a task to the head of the task list.
   scale = TRUE,
   throttle = TRUE,
   name = "task",
-  controller = NULL
+  controller = NULL,
+  save_command = FALSE
 )}\if{html}{\out{</div>}}
 }
 
@@ -382,6 +383,11 @@ if \code{NULL} or in conflict with an existing name in the task list.}
 
 \item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
+
+\item{\code{save_command}}{Logical of length 1. If \code{TRUE}, the controller
+deparses the command and returns it with the output on \code{pop()}.
+If \code{FALSE} (default), the controller skips this step to
+increase speed.}
 }
 \if{html}{\out{</div>}}
 }

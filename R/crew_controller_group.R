@@ -234,6 +234,10 @@ crew_class_controller_group <- R6::R6Class(
     #'   name of the controller to submit the task.
     #'   If `NULL`, the controller defaults to the
     #'   first controller in the list.
+    #' @param save_command Logical of length 1. If `TRUE`, the controller
+    #'   deparses the command and returns it with the output on `pop()`.
+    #'   If `FALSE` (default), the controller skips this step to
+    #'   increase speed.
     push = function(
       command,
       data = list(),
@@ -246,7 +250,8 @@ crew_class_controller_group <- R6::R6Class(
       scale = TRUE,
       throttle = TRUE,
       name = NULL,
-      controller = NULL
+      controller = NULL,
+      save_command = FALSE
     ) {
       if (substitute) {
         command <- substitute(command)
@@ -263,7 +268,8 @@ crew_class_controller_group <- R6::R6Class(
         seconds_timeout = seconds_timeout,
         scale = scale,
         throttle = throttle,
-        name = name
+        name = name,
+        save_command = save_command
       )
     },
     #' @description Check for done tasks and move the results to

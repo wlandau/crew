@@ -85,7 +85,12 @@ crew_test("crew_controller_group()", {
   )
   expect_null(x$pop())
   # substitute = TRUE # nolint
-  x$push(command = ps::ps_pid(), name = "task_pid", controller = "b")
+  x$push(
+    command = ps::ps_pid(),
+    name = "task_pid",
+    controller = "b",
+    save_command = TRUE
+  )
   expect_false(x$empty())
   expect_true(x$empty(controllers = "a"))
   expect_false(x$empty(controllers = "b"))
@@ -114,7 +119,8 @@ crew_test("crew_controller_group()", {
     command = quote(ps::ps_pid()),
     substitute = FALSE,
     name = "task_pid2",
-    controller = "a"
+    controller = "a",
+    save_command = FALSE
   )
   x$wait(seconds_timeout = 5)
   envir <- new.env(parent = emptyenv())
@@ -129,7 +135,7 @@ crew_test("crew_controller_group()", {
   out <- envir$out
   expect_false(is.null(out))
   expect_equal(out$name, "task_pid2")
-  expect_equal(out$command, "ps::ps_pid()")
+  expect_true(anyNA(out$command))
   expect_true(is.numeric(out$seconds))
   expect_false(anyNA(out$seconds))
   expect_true(out$seconds >= 0)

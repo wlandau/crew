@@ -62,7 +62,11 @@ crew_test("crew_controller_local()", {
   expect_equal(s$popped_tasks, 0L)
   expect_true(x$router$started)
   instance <- parse_instance(rownames(x$router$daemons))
-  x$push(command = Sys.getenv("CREW_INSTANCE"), name = "task")
+  x$push(
+    command = Sys.getenv("CREW_INSTANCE"),
+    name = "task",
+    save_command = TRUE
+  )
   expect_false(x$empty())
   x$wait(seconds_timeout = 5)
   expect_false(x$empty())
@@ -100,12 +104,14 @@ crew_test("crew_controller_local()", {
       command = paste0("a", x, .crew_y, sample.int(n = 1e9L, size = 1L)),
       data = list(x = "b"),
       globals = list(.crew_y = "c"),
-      seed = 0L
+      seed = 0L,
+      save_command = FALSE
     )
     x$wait(seconds_timeout = 5)
     out <- x$pop()
     set.seed(0L)
     exp <- paste0("abc", sample.int(n = 1e9L, size = 1L))
+    expect_true(anyNA(out$command))
     expect_equal(out$result[[1]], exp)
     expect_equal(out$error, NA_character_)
     expect_false(exists(x = ".crew_y", envir = globalenv()))

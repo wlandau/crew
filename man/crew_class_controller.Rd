@@ -55,9 +55,11 @@ Other controllers:
 
 \item{\code{results}}{List of finished tasks}
 
+\item{\code{log}}{Data frame task log of the workers.}
+
 \item{\code{n_push}}{Number of attempts to \code{push()} a task so far.}
 
-\item{\code{log}}{Data frame task log of the workers.}
+\item{\code{head}}{ID of the task at the head of the \code{results} stack.}
 
 \item{\code{until_collect}}{Numeric of length 1, time point when
 throttled task collection unlocks.}

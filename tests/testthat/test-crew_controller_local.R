@@ -286,3 +286,34 @@ crew_test("crew_controller_local() launch method", {
   )
   expect_false(handle$is_alive())
 })
+
+crew_test("task collection and results stack work", {
+  skip_if_low_dep_versions()
+  skip_on_cran()
+  x <- crew_controller_local(seconds_idle = 120)
+  x$start()
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  n <- 200L
+  for (i in seq_len(3L)) {
+    for (index in seq_len(n)) {
+      name <- paste0("task_", index)
+      x$push(name = name, command = index, data = list(index = index))
+    }
+    results <- list()
+    while (length(results) < n) {
+      out <- x$pop()
+      if (!is.null(out)) {
+        results[[length(results) + 1L]] <- out
+      }
+    }
+    results <- tibble::as_tibble(do.call(rbind, results))
+    results$result <- as.integer(results$result)
+    expect_equal(sort(results$result), seq_len(200L))
+  }
+  x$terminate()
+})

@@ -93,10 +93,12 @@ crew_class_controller <- R6::R6Class(
     queue = NULL,
     #' @field results List of finished tasks
     results = NULL,
-    #' @field n_push Number of attempts to `push()` a task so far.
-    n_push = NULL,
     #' @field log Data frame task log of the workers.
     log = NULL,
+    #' @field n_push Number of attempts to `push()` a task so far.
+    n_push = NULL,
+    #' @field head ID of the task at the head of the `results` stack.
+    head = NULL,
     #' @field until_collect Numeric of length 1, time point when
     #'   throttled task collection unlocks.
     until_collect = NULL,
@@ -357,11 +359,8 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = self$router$name
       )
-      task <- structure(
-        handle,
-        name = name,
-        command = string
-      )
+      task <- handle
+      attributes(handle) <- list(id = id, name = name, command = string)
       self$queue[[id]] <- task
       if (scale) {
         self$scale(throttle = throttle)
@@ -398,7 +397,10 @@ crew_class_controller <- R6::R6Class(
       index_done <- !as.logical(not_done)
       which_collect <- names(not_done)[index_done]
       for (id in which_collect) {
-        results[[id]] <- queue[[id]]
+        task <- queue[[id]]
+        attr(task, "next") <- .subset2(self, "head")
+        self$head <- id
+        results[[id]] <- task
       }
       rm(list = which_collect, envir = queue)
       invisible()
@@ -444,10 +446,9 @@ crew_class_controller <- R6::R6Class(
         self$collect(throttle = throttle)
       }
       out <- NULL
-      ids <- names(self$results)
-      if (length(ids) > 0L) {
-        id <- ids[[1L]]
-        task <- self$results[[id]]
+      head <- .subset2(self, "head")
+      if (!is.null(head)) {
+        task <- self$results[[head]]
         out <- task$data
         # The contents of the if() statement below happen
         # if mirai cannot evaluate the command.
@@ -485,7 +486,8 @@ crew_class_controller <- R6::R6Class(
             .subset2(log, "popped_warnings")[index] + 1L
           }
         }
-        rm(list = id, envir = self$results)
+        rm(list = head, envir = self$results)
+        self$head <- attr(task, "next")
       }
       out
     },

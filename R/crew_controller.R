@@ -322,7 +322,7 @@ crew_class_controller <- R6::R6Class(
       seconds_timeout = NULL,
       scale = TRUE,
       throttle = TRUE,
-      name = "task",
+      name = NULL,
       controller = NULL,
       save_command = FALSE
     ) {

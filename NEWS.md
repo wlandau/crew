@@ -1,7 +1,8 @@
-# crew 0.2.1.9001 (development)
+# crew 0.2.1.9002 (development)
 
 * Track warnings properly (#81, @brendanf).
 * Optimize heavily (#81, #83, @shikokuchuo, @brendanf).
+* Use CRAN `nanonext` 0.9.0.
 
 # crew 0.2.1
 

@@ -4,11 +4,6 @@
 # nocov start
 .onLoad <- function(libname, pkgname) {
   package_version_check(
-    package = "nanonext",
-    version = "0.8.3.9010",
-    repo = "https://shikokuchuo.r-universe.dev"
-  )
-  package_version_check(
     package = "mirai",
     version = "0.8.7.9013",
     repo = "https://shikokuchuo.r-universe.dev"

@@ -20,9 +20,9 @@
 #' controller$terminate()
 #' }
 crew_controller <- function(
-    router,
-    launcher,
-    auto_scale = NULL
+  router,
+  launcher,
+  auto_scale = NULL
 ) {
   if (!is.null(auto_scale)) {
     crew_deprecate(
@@ -106,7 +106,7 @@ crew_class_controller <- R6::R6Class(
     #'   throttled auto-scaling unlocks.
     until_scale = NULL,
     #' @description `mirai` controller constructor.
-    #' @return An `R6` object with the controller object.
+    #' @return An `R6` controller object.
     #' @param router Router object. See [crew_controller()].
     #' @param launcher Launcher object. See [crew_controller()].
     #' @examples

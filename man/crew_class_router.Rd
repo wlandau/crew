@@ -30,6 +30,7 @@ router$terminate()
 }
 \seealso{
 Other routers: 
+\code{\link{crew_class_schedule}},
 \code{\link{crew_router}()}
 }
 \concept{routers}

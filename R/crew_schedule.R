@@ -1,0 +1,135 @@
+#' @title Create a schedule.
+#' @export
+#' @keywords internal
+#' @description Create an `R6` object to contain and manage task objects.
+#' @details Not a user-side function. There are no examples. Please see
+#'   [crew_controller_local()] for details.
+#' @param seconds_interval Number of seconds between throttled iterations
+#'   of task collection.
+crew_schedule <- function(seconds_interval = 0.25) {
+  out <- crew_class_schedule$new(seconds_interval = seconds_interval)
+  out$validate()
+  out
+}
+
+#' @title Schedule class
+#' @export
+#' @family routers
+#' @description `R6` class to contain and manage task objects.
+#' @details Not a user-side class. There are no examples. Please see
+#'   [crew_controller_local()] for details.
+crew_class_schedule <- R6::R6Class(
+  classname = "crew_class_schedule",
+  cloneable = FALSE,
+  public = list(
+    #' @field seconds_interval See [crew_schedule()].
+    seconds_interval = NULL,
+    #' @field pushed Hash table of pushed tasks.
+    pushed = NULL,
+    #' @field collected Stack of resolved tasks with results available.
+    collected = NULL,
+    #' @field head ID of the task at the head of the `collected` stack.
+    head = NULL,
+    #' @field until Numeric of length 1, time point when
+    #'   throttled task collection unlocks.
+    until = NULL,
+    #' @description Schedule constructor.
+    #' @return An `R6` schedule object.
+    #' @param seconds_interval See [crew_schedule()].
+    initialize = function(seconds_interval = NULL) {
+      self$seconds_interval <- seconds_interval
+      invisible()
+    },
+    #' @description Validate the schedule.
+    #' @return `NULL` (invisibly).
+    validate = function() {
+      crew_assert(is.numeric(self$seconds_interval))
+      crew_assert(self$pushed, is.null(.) || is.environment(.))
+      crew_assert(self$collected, is.null(.) || is.environment(.))
+      crew_assert(
+        self$head %|||% "head",
+        is.character(.),
+        length(.) == 1L,
+        !anyNA(.),
+        nzchar(.)
+      )
+      crew_assert(
+        self$until %|||% 0,
+        is.numeric(.),
+        length(.) == 1L,
+        !anyNA(.),
+        is.finite(.),
+        . >= 0
+      )
+      invisible()
+    },
+    #' @description Start the schedule.
+    #' @details Sets the `pushed` and `collected` hash tables to new
+    #'   empty environments.
+    #' @return NULL (invisibly).
+    start = function() {
+      self$pushed <- new.env(hash = TRUE, parent = emptyenv())
+      self$collected <- new.env(hash = TRUE, parent = emptyenv())
+      invisible()
+    },
+    #' @description Push a task.
+    #' @details Add a task to the `pushed` hash table
+    #' @return `NULL` (invisibly).
+    #' @param task The decorated `mirai` task object to push.
+    #' @param id The task ID.
+    push = function(task, id) {
+      pushed <- .subset2(self, "pushed")
+      pushed[[id]] <- task
+      invisible()
+    },
+    #' @description Collect resolved tasks.
+    #' @details Scan the tasks in `pushed` and move the resolved ones to the
+    #'   head of the `collected` stack.
+    #' @return `NULL` (invisibly).
+    #' @param throttle whether to defer task collection
+    #'   until the next task collection request at least
+    #'   `seconds_interval` seconds from the original request.
+    #'   The idea is similar to `shiny::throttle()` except that `crew` does not
+    #'   accumulate a backlog of requests. The technique improves robustness
+    #'   and efficiency.
+    collect = function(throttle = FALSE) {
+      if (throttle) {
+        now <- nanonext::mclock()
+        if (is.null(.subset2(self, "until"))) {
+          self$until <- now + (1000 * .subset2(self, "seconds_interval"))
+        }
+        if (now < .subset2(self, "until")) {
+          return(invisible())
+        } else {
+          self$until <- NULL
+        }
+      }
+      pushed <- .subset2(self, "pushed")
+      collected <- .subset2(self, "collected")
+      index_unresolved <- lapply(X = pushed, FUN = .unresolved)
+      index_resolved <- !as.logical(index_unresolved)
+      which_resolved <- names(index_unresolved)[index_resolved]
+      for (id in which_resolved) {
+        task <- pushed[[id]]
+        attr(task, "next") <- .subset2(self, "head")
+        self$head <- id
+        collected[[id]] <- task
+      }
+      rm(list = which_resolved, envir = pushed)
+      invisible()
+    },
+    #' @description Pop a task from the `collected` stack.
+    #' @return A task object if available, `NULL` otherwise.
+    pop = function() {
+      head <- .subset2(self, "head")
+      if (is.null(head)) {
+        return(NULL)
+      }
+      collected <- .subset2(self, "collected")
+      task <- collected[[head]]
+      rm(list = head, envir = collected)
+      self$head <- attr(task, "next")
+      task
+    }
+  )
+)

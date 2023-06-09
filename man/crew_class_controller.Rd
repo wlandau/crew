@@ -106,7 +106,7 @@ throttled auto-scaling unlocks.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An \code{R6} object with the controller object.
+An \code{R6} controller object.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

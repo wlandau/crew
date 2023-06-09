@@ -151,6 +151,21 @@ crew_class_schedule <- R6::R6Class(
     nonempty = function() {
       (!is.null(.subset2(self, "head"))) ||
         length(.subset2(self, "pushed")) > 0L
+    },
+    #' @description Check if all previously pushed tasks are now collected.
+    #' @return `TRUE` if all previously pushed tasks are now collected,
+    #'   `FALSE` otherwise. Could be `FALSE` if there are unresolved tasks
+    #'   or there are no tasks at all.
+    collected_all = function() {
+      length(.subset2(self, "pushed")) < 1L
+    },
+    #' @description Check if there is at least one collected task or
+    #'   there are no pushed tasks.
+    #' @return `TRUE` if there is at least one collected task or
+    #'   there are no pushed tasks, `FALSE` otherwise.
+    collected_one = function() {
+      (!is.null(.subset2(self, "head"))) ||
+        (length(.subset2(self, "pushed")) < 1L)
     }
   )
 )

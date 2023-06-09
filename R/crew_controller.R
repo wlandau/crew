@@ -262,7 +262,8 @@ crew_class_controller <- R6::R6Class(
       workers <- self$router$workers
       available <- workers - length(scalable$resolved)
       self$collect(throttle = FALSE)
-      deficit <- min(length(self$queue) - available, workers)
+      demand <- length(.subset2(.subset2(self, "schedule"), "pushed"))
+      deficit <- min(demand - available, workers)
       private$try_launch(inactive = scalable$resolved, n = deficit)
       invisible()
     },
@@ -359,7 +360,7 @@ crew_class_controller <- R6::R6Class(
         NULL,
         seconds_timeout * 1000
       )
-      handle <- mirai::mirai(
+      task <- mirai::mirai(
         .expr = expr,
         data = data,
         globals = globals,
@@ -369,8 +370,7 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = self$router$name
       )
-      task <- handle
-      attributes(handle) <- list(name = name, command = string)
+      attributes(task) <- list(name = name, command = string)
       .subset2(.subset2(self, "schedule"), "push")(task = task)
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
@@ -432,11 +432,10 @@ crew_class_controller <- R6::R6Class(
       } else if (collect) {
         .subset2(self, "collect")(throttle = throttle)
       }
-      result <- .subset2(.subset2(self, "schedule"), "pop")()
-      if (is.null(result)) {
+      task <- .subset2(.subset2(self, "schedule"), "pop")()
+      if (is.null(task)) {
         return(NULL)
       }
-      task <- .subset2(result, "task")
       out <- task$data
       # The contents of the if() statement below happen
       # if mirai cannot evaluate the command.
@@ -507,12 +506,12 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     wait = function(
-    mode = "all",
-    seconds_interval = 0.01,
-    seconds_timeout = Inf,
-    scale = TRUE,
-    throttle = TRUE,
-    controllers = NULL
+      mode = "all",
+      seconds_interval = 0.01,
+      seconds_timeout = Inf,
+      scale = TRUE,
+      throttle = TRUE,
+      controllers = NULL
     ) {
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
@@ -524,12 +523,12 @@ crew_class_controller <- R6::R6Class(
               self$scale(throttle = throttle),
               self$collect(throttle = throttle)
             )
-            empty_queue <- length(self$queue) < 1L
-            empty_results <- length(self$results) < 1L
-            (empty_queue && empty_results) || if_any(
+            empty_pushed <- length(self$schedule$pushed) < 1L
+            empty_collected <- length(self$schedule$collected) < 1L
+            (empty_pushed && empty_collected) || if_any(
               identical(mode, "all"),
-              empty_queue && (!empty_results),
-              empty_queue || (!empty_results)
+              empty_pushed && (!empty_collected),
+              empty_pushed || (!empty_collected)
             )
           },
           seconds_interval = seconds_interval,

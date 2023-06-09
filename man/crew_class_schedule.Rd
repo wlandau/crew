@@ -45,6 +45,8 @@ throttled task collection unlocks.}
 \item \href{#method-crew_class_schedule-pop}{\code{crew_class_schedule$pop()}}
 \item \href{#method-crew_class_schedule-empty}{\code{crew_class_schedule$empty()}}
 \item \href{#method-crew_class_schedule-nonempty}{\code{crew_class_schedule$nonempty()}}
+\item \href{#method-crew_class_schedule-collected_all}{\code{crew_class_schedule$collected_all()}}
+\item \href{#method-crew_class_schedule-collected_one}{\code{crew_class_schedule$collected_one()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -191,6 +193,36 @@ Check if the schedule is nonempty.
 \subsection{Returns}{
 \code{TRUE} if either \code{pushed} or \code{collected} is nonempty,
 \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_schedule-collected_all"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_schedule-collected_all}{}}}
+\subsection{Method \code{collected_all()}}{
+Check if all previously pushed tasks are now collected.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_schedule$collected_all()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} if all previously pushed tasks are now collected,
+\code{FALSE} otherwise. Could be \code{FALSE} if there are unresolved tasks
+or there are no tasks at all.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_schedule-collected_one"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_schedule-collected_one}{}}}
+\subsection{Method \code{collected_one()}}{
+Check if there is at least one collected task or
+there are no pushed tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_schedule$collected_one()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} if there is at least one collected task or
+there are no pushed tasks, \code{FALSE} otherwise.
 }
 }
 }

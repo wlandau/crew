@@ -149,3 +149,45 @@ test_that("schedule nonempty", {
   x$pop()
   expect_false(x$nonempty())
 })
+
+test_that("schedule collected_all", {
+  x <- crew_schedule()
+  expect_true(x$collected_all())
+  x$start()
+  expect_true(x$collected_all())
+  x$push(crew_null)
+  expect_false(x$collected_all())
+  x$push(crew_null)
+  expect_false(x$collected_all())
+  x$collect()
+  expect_true(x$collected_all())
+  x$push(crew_null)
+  expect_false(x$collected_all())
+  x$collect()
+  expect_true(x$collected_all())
+  while (x$nonempty()) {
+    x$pop()
+    expect_true(x$collected_all())
+  }
+})
+
+test_that("schedule collected_one", {
+  x <- crew_schedule()
+  expect_true(x$collected_one())
+  x$start()
+  expect_true(x$collected_one())
+  x$push(crew_null)
+  expect_false(x$collected_one())
+  x$push(crew_null)
+  expect_false(x$collected_one())
+  x$collect()
+  expect_true(x$collected_one())
+  x$push(crew_null)
+  expect_true(x$collected_one())
+  x$collect()
+  expect_true(x$collected_one())
+  while (x$nonempty()) {
+    x$pop()
+    expect_true(x$collected_one())
+  }
+})

@@ -130,6 +130,19 @@ crew_class_schedule <- R6::R6Class(
       rm(list = head, envir = collected)
       self$head <- attr(task, "next")
       task
+    },
+    #' @description Check if the schedule is empty.
+    #' @return `TRUE` if the `pushed` and `collected` hash tables are both
+    #'   empty, `FALSE` otherwise.
+    empty = function() {
+      is.null(.subset2(self, "head")) && length(.subset2(self, "pushed")) < 1L
+    },
+    #' @description Check if the schedule is nonempty.
+    #' @return `TRUE` if either `pushed` or `collected` is nonempty,
+    #'   `FALSE` otherwise.
+    nonempty = function() {
+      (!is.null(.subset2(self, "head"))) ||
+        length(.subset2(self, "pushed")) > 0L
     }
   )
 )

@@ -118,3 +118,27 @@ test_that("schedule collected stack", {
   expect_null(x$pop())
   expect_equal(sort(results), sort(letters))
 })
+
+test_that("schedule empty", {
+  x <- crew_schedule()
+  expect_true(x$empty())
+  x$start()
+  x$push(task = crew_null, id = "x")
+  expect_false(x$empty())
+  x$collect(throttle = FALSE)
+  expect_false(x$empty())
+  x$pop()
+  expect_true(x$empty())
+})
+
+test_that("schedule nonempty", {
+  x <- crew_schedule()
+  expect_false(x$nonempty())
+  x$start()
+  x$push(task = crew_null, id = "x")
+  expect_true(x$nonempty())
+  x$collect(throttle = FALSE)
+  expect_true(x$nonempty())
+  x$pop()
+  expect_false(x$nonempty())
+})

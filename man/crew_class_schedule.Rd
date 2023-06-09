@@ -41,6 +41,8 @@ throttled task collection unlocks.}
 \item \href{#method-crew_class_schedule-push}{\code{crew_class_schedule$push()}}
 \item \href{#method-crew_class_schedule-collect}{\code{crew_class_schedule$collect()}}
 \item \href{#method-crew_class_schedule-pop}{\code{crew_class_schedule$pop()}}
+\item \href{#method-crew_class_schedule-empty}{\code{crew_class_schedule$empty()}}
+\item \href{#method-crew_class_schedule-nonempty}{\code{crew_class_schedule$nonempty()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -161,6 +163,34 @@ Pop a task from the \code{collected} stack.
 
 \subsection{Returns}{
 A task object if available, \code{NULL} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_schedule-empty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_schedule-empty}{}}}
+\subsection{Method \code{empty()}}{
+Check if the schedule is empty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_schedule$empty()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} if the \code{pushed} and \code{collected} hash tables are both
+empty, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_schedule-nonempty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_schedule-nonempty}{}}}
+\subsection{Method \code{nonempty()}}{
+Check if the schedule is nonempty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_schedule$nonempty()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} if either \code{pushed} or \code{collected} is nonempty,
+\code{FALSE} otherwise.
 }
 }
 }

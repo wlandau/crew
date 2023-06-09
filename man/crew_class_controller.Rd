@@ -51,18 +51,9 @@ Other controllers:
 
 \item{\code{launcher}}{Launcher object.}
 
-\item{\code{queue}}{List of tasks in the queue.}
-
-\item{\code{results}}{List of finished tasks}
+\item{\code{schedule}}{Schedule object.}
 
 \item{\code{log}}{Data frame task log of the workers.}
-
-\item{\code{pushes}}{Number of attempts to \code{push()} a task so far.}
-
-\item{\code{head}}{ID of the task at the head of the \code{results} stack.}
-
-\item{\code{until_collect}}{Numeric of length 1, time point when
-throttled task collection unlocks.}
 
 \item{\code{until_scale}}{Numeric of length 1, time point when
 throttled auto-scaling unlocks.}
@@ -75,6 +66,7 @@ throttled auto-scaling unlocks.}
 \item \href{#method-crew_class_controller-new}{\code{crew_class_controller$new()}}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
 \item \href{#method-crew_class_controller-empty}{\code{crew_class_controller$empty()}}
+\item \href{#method-crew_class_controller-nonempty}{\code{crew_class_controller$nonempty()}}
 \item \href{#method-crew_class_controller-saturated}{\code{crew_class_controller$saturated()}}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
@@ -93,7 +85,7 @@ throttled auto-scaling unlocks.}
 \subsection{Method \code{new()}}{
 \code{mirai} controller constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$new(router = NULL, launcher = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$new(router = NULL, launcher = NULL, schedule = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -102,6 +94,8 @@ throttled auto-scaling unlocks.}
 \item{\code{router}}{Router object. See \code{\link[=crew_controller]{crew_controller()}}.}
 
 \item{\code{launcher}}{Launcher object. See \code{\link[=crew_controller]{crew_controller()}}.}
+
+\item{\code{schedule}}{Schedule object from \code{\link[=crew_schedule]{crew_schedule()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -146,6 +140,32 @@ Validate the router.
 Check if the controller is empty.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$empty(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+A controller is empty if it has no running tasks
+or completed tasks waiting to be retrieved with \code{push()}.
+}
+
+\subsection{Returns}{
+\code{TRUE} if the controller is empty, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-nonempty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-nonempty}{}}}
+\subsection{Method \code{nonempty()}}{
+Check if the controller is nonempty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$nonempty(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -322,7 +342,7 @@ Push a task to the head of the task list.
   seconds_timeout = NULL,
   scale = TRUE,
   throttle = TRUE,
-  name = NULL,
+  name = NA_character_,
   controller = NULL,
   save_command = FALSE
 )}\if{html}{\out{</div>}}
@@ -378,8 +398,7 @@ The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
 and efficiency.}
 
-\item{\code{name}}{Optional name of the task. Replaced with a random name
-if \code{NULL} or in conflict with an existing name in the task list.}
+\item{\code{name}}{Optional name of the task.}
 
 \item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -410,7 +429,7 @@ the results list.
 \describe{
 \item{\code{throttle}}{whether to defer task collection
 until the next task collection request at least
-\code{self$router$seconds_interval} seconds from the original request.
+\code{seconds_interval} seconds from the original request.
 The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
 and efficiency.}

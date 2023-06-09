@@ -32,9 +32,11 @@ crew_controller <- function(
       alternative = "use the scale argument of push(), pop(), and wait()"
     )
   }
+  schedule <- schedule$new(seconds_interval = router$seconds_interval)
   controller <- crew_class_controller$new(
     router = router,
-    launcher = launcher
+    launcher = launcher,
+    schedule = schedule
   )
   controller$validate()
   controller
@@ -89,19 +91,10 @@ crew_class_controller <- R6::R6Class(
     router = NULL,
     #' @field launcher Launcher object.
     launcher = NULL,
-    #' @field queue List of tasks in the queue.
-    queue = NULL,
-    #' @field results List of finished tasks
-    results = NULL,
+    #' @field schedule Schedule object.
+    schedule = NULL,
     #' @field log Data frame task log of the workers.
     log = NULL,
-    #' @field pushes Number of attempts to `push()` a task so far.
-    pushes = NULL,
-    #' @field head ID of the task at the head of the `results` stack.
-    head = NULL,
-    #' @field until_collect Numeric of length 1, time point when
-    #'   throttled task collection unlocks.
-    until_collect = NULL,
     #' @field until_scale Numeric of length 1, time point when
     #'   throttled auto-scaling unlocks.
     until_scale = NULL,
@@ -109,6 +102,7 @@ crew_class_controller <- R6::R6Class(
     #' @return An `R6` controller object.
     #' @param router Router object. See [crew_controller()].
     #' @param launcher Launcher object. See [crew_controller()].
+    #' @param schedule Schedule object from [crew_schedule()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' router <- crew_router()
@@ -122,22 +116,24 @@ crew_class_controller <- R6::R6Class(
     #' }
     initialize = function(
       router = NULL,
-      launcher = NULL
+      launcher = NULL,
+      schedule = NULL
     ) {
       self$router <- router
       self$launcher <- launcher
+      self$schedule <- schedule
       invisible()
     },
     #' @description Validate the router.
     #' @return `NULL` (invisibly).
     validate = function() {
-      crew_assert(self$queue, is.null(.) || is.environment(.))
-      crew_assert(self$results, is.null(.) || is.environment(.))
-      crew_assert(self$log, is.null(.) || is.data.frame(.))
       crew_assert(inherits(self$router, "crew_class_router"))
       crew_assert(inherits(self$launcher, "crew_class_launcher"))
+      crew_assert(inherits(self$schedule, "crew_class_schedule"))
       self$router$validate()
       self$launcher$validate()
+      self$schedule$validate()
+      crew_assert(self$log, is.null(.) || is.data.frame(.))
       invisible()
     },
     #' @description Check if the controller is empty.
@@ -147,7 +143,16 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     empty = function(controllers = NULL) {
-      (length(self$queue) < 1L) && (length(self$results) < 1L)
+      .subset2(.subset2(self, "schedule"), "empty")()
+    },
+    #' @description Check if the controller is nonempty.
+    #' @details A controller is empty if it has no running tasks
+    #'   or completed tasks waiting to be retrieved with `push()`.
+    #' @return `TRUE` if the controller is empty, `FALSE` otherwise.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    nonempty = function(controllers = NULL) {
+      .subset2(.subset2(self, "schedule"), "nonempty")()
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -169,9 +174,10 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     saturated = function(collect = TRUE, throttle = TRUE, controller = NULL) {
       if (collect) {
-        self$collect(throttle = throttle)
+        .subset2(self, "collect")(throttle = throttle)
       }
-      length(self$queue) >= self$router$workers
+      length(.subset2(.subset2(self, "schedule"), "pushed")) >=
+        .subset2(.subset2(self, "router"), "workers")
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
@@ -184,6 +190,7 @@ crew_class_controller <- R6::R6Class(
         self$router$start()
         workers <- self$router$workers
         self$launcher$start(workers = workers)
+        self$schedule$start()
         self$log <- list(
           popped_tasks = rep(0L, workers),
           popped_seconds = rep(0, workers),
@@ -191,9 +198,6 @@ crew_class_controller <- R6::R6Class(
           popped_warnings = rep(0L, workers),
           controller = rep(self$router$name, workers)
         )
-        self$queue <- new.env(hash = TRUE, parent = emptyenv())
-        self$results <- new.env(hash = TRUE, parent = emptyenv())
-        self$pushes <- 0L
       }
       invisible()
     },
@@ -255,12 +259,10 @@ crew_class_controller <- R6::R6Class(
       self$router$tally()
       scalable <- private$scalable()
       private$try_launch(inactive = scalable$backlogged, n = Inf)
-      available <- self$router$workers - length(scalable$resolved)
+      workers <- self$router$workers
+      available <- workers - length(scalable$resolved)
       self$collect(throttle = FALSE)
-      deficit <- min(
-        length(self$queue) - available,
-        self$router$workers
-      )
+      deficit <- min(length(self$queue) - available, workers)
       private$try_launch(inactive = scalable$resolved, n = deficit)
       invisible()
     },
@@ -303,8 +305,7 @@ crew_class_controller <- R6::R6Class(
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
-    #' @param name Optional name of the task. Replaced with a random name
-    #'   if `NULL` or in conflict with an existing name in the task list.
+    #' @param name Optional name of the task.
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     #' @param save_command Logical of length 1. If `TRUE`, the controller
@@ -322,16 +323,10 @@ crew_class_controller <- R6::R6Class(
       seconds_timeout = NULL,
       scale = TRUE,
       throttle = TRUE,
-      name = NULL,
+      name = NA_character_,
       controller = NULL,
       save_command = FALSE
     ) {
-      index <- .subset2(self, "pushes") + 1L
-      self$pushes <- index
-      id <- as.character(index)
-      if (is.null(name)) {
-        name <- id
-      }
       if (substitute) {
         command <- substitute(command)
       }
@@ -375,10 +370,10 @@ crew_class_controller <- R6::R6Class(
         .compute = self$router$name
       )
       task <- handle
-      attributes(handle) <- list(id = id, name = name, command = string)
-      self$queue[[id]] <- task
+      attributes(handle) <- list(name = name, command = string)
+      .subset2(.subset2(self, "schedule"), "push")(task = task)
       if (scale) {
-        self$scale(throttle = throttle)
+        .subset2(self, "scale")(throttle = throttle)
       }
       invisible()
     },
@@ -388,37 +383,14 @@ crew_class_controller <- R6::R6Class(
     #'   list as applicable and moves them to the `results` list.
     #' @param throttle whether to defer task collection
     #'   until the next task collection request at least
-    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   `seconds_interval` seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     collect = function(throttle = FALSE, controllers = NULL) {
-      if (throttle) {
-        now <- nanonext::mclock()
-        if (is.null(self$until_collect)) {
-          self$until_collect <- now + (1000 * self$router$seconds_interval)
-        }
-        if (now < self$until_collect) {
-          return(invisible())
-        } else {
-          self$until_collect <- NULL
-        }
-      }
-      results <- self$results
-      queue <- self$queue
-      not_done <- lapply(X = queue, FUN = .unresolved)
-      index_done <- !as.logical(not_done)
-      which_collect <- names(not_done)[index_done]
-      for (id in which_collect) {
-        task <- queue[[id]]
-        attr(task, "next") <- .subset2(self, "head")
-        self$head <- id
-        results[[id]] <- task
-      }
-      rm(list = which_collect, envir = queue)
-      invisible()
+      .subset2(.subset2(self, "schedule"), "collect")(throttle = throttle)
     },
     #' @description Pop a completed task from the results data frame.
     #' @details If not task is currently completed and collected, `pop()`
@@ -456,53 +428,53 @@ crew_class_controller <- R6::R6Class(
       controllers = NULL
     ) {
       if (scale) {
-        self$scale(throttle = throttle)
+        .subset2(self, "scale")(throttle = throttle)
       } else if (collect) {
-        self$collect(throttle = throttle)
+        .subset2(self, "collect")(throttle = throttle)
       }
-      out <- NULL
-      head <- .subset2(self, "head")
-      if (!is.null(head)) {
-        task <- self$results[[head]]
-        out <- task$data
-        # The contents of the if() statement below happen
-        # if mirai cannot evaluate the command.
-        # I cannot cover this in automated tests, but
-        # I did test it by hand.
-        # nocov start
-        if (!is.list(out)) {
-          out <- monad_init(
-            command = attr(task, "command"),
-            error = paste(
-              utils::capture.output(print(out), type = "output"),
-              collapse = "\n"
-            )
+      result <- .subset2(.subset2(self, "schedule"), "pop")()
+      if (is.null(result)) {
+        return(NULL)
+      }
+      task <- .subset2(result, "task")
+      out <- task$data
+      # The contents of the if() statement below happen
+      # if mirai cannot evaluate the command.
+      # I cannot cover this in automated tests, but
+      # I did test it by hand.
+      # nocov start
+      if (!is.list(out)) {
+        out <- monad_init(
+          command = attr(task, "command"),
+          error = paste(
+            utils::capture.output(print(out), type = "output"),
+            collapse = "\n"
           )
-        }
-        # nocov end
-        out$name <- attr(task, "name")
-        out$command <- attr(task, "command")
-        out <- monad_tibble(out)
-        log <- self$log
-        if (!is.na(out$launcher)) {
-          index <- out$worker
-          self$log$popped_tasks[index] <-
-            .subset2(log, "popped_tasks")[index] + 1L
-          self$log$popped_seconds[index] <-
-            .subset2(log, "popped_seconds")[index] + .subset2(out, "seconds")
-          returned_error <- !anyNA(.subset2(out, "error"))
-          returned_warning <- !anyNA(.subset2(out, "warnings"))
-          if (returned_error) {
-            self$log$popped_errors[index] <-
-              .subset2(log, "popped_errors")[index] + 1L
-          }
-          if (returned_warning) {
-            self$log$popped_warnings[index] <-
-              .subset2(log, "popped_warnings")[index] + 1L
-          }
-        }
-        rm(list = head, envir = self$results)
-        self$head <- attr(task, "next")
+        )
+      }
+      # nocov end
+      out$name <- attr(task, "name")
+      out$command <- attr(task, "command")
+      out <- monad_tibble(out)
+      log <- self$log
+      if (anyNA(out$launcher)) {
+        return(out)
+      }
+      index <- out$worker
+      popped_tasks <- .subset2(log, "popped_tasks")[index]
+      popped_seconds <- .subset2(log, "popped_seconds")[index]
+      seconds <- .subset2(out, "seconds")
+      popped_errors <- .subset2(log, "popped_errors")[index]
+      popped_warnings <- .subset2(log, "popped_warnings")[index]
+      self$log$popped_tasks[index] <- popped_tasks + 1L
+      self$log$popped_seconds[index] <- popped_seconds + seconds
+      returned_error <- !anyNA(.subset2(out, "error"))
+      returned_warning <- !anyNA(.subset2(out, "warnings"))
+      if (returned_error) {
+        self$log$popped_errors[index] <- popped_errors + 1L
+      }
+      if (returned_warning) {
+        self$log$popped_warnings[index] <- popped_warnings + 1L
       }
       out
     },

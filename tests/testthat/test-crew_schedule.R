@@ -82,3 +82,39 @@ test_that("schedule collect with throttling and long interval", {
     Sys.sleep(0.1)
   }
 })
+
+test_that("schedule pop", {
+  x <- crew_schedule()
+  expect_null(x$pop())
+  expect_null(x$head)
+  x$start()
+  expect_null(x$pop())
+  expect_null(x$head)
+  x$push(task = crew_null, id = "1")
+  expect_null(x$head)
+  expect_null(x$pop())
+  x$collect(throttle = FALSE)
+  expect_equal(x$head, "1")
+  task <- x$pop()
+  expect_true(is_crew_null(task))
+  expect_null(x$head)
+})
+
+test_that("schedule collected stack", {
+  x <- crew_schedule()
+  x$start()
+  for (id in letters) {
+    x$push(task = list(id = id), id = id)
+  }
+  x$collect(throttle = FALSE)
+  expect_true(nzchar(x$head))
+  results <- c()
+  while (length(x$pushed) > 0L || length(x$collected) > 0L) {
+    expect_true(x$head %in% setdiff(letters, results))
+    task <- x$pop()
+    results <- c(results, task$id)
+  }
+  expect_null(x$head)
+  expect_null(x$pop())
+  expect_equal(sort(results), sort(letters))
+})

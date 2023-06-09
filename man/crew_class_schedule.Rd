@@ -11,11 +11,11 @@ Not a user-side class. There are no examples. Please see
 \code{\link[=crew_controller_local]{crew_controller_local()}} for details.
 }
 \seealso{
-Other routers: 
-\code{\link{crew_class_router}},
-\code{\link{crew_router}()}
+Other schedule: 
+\code{\link{crew_schedule}()}
 }
-\concept{routers}
+\concept{schedule}
+\keyword{internal}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{

@@ -17,4 +17,9 @@ Create an \code{R6} object to contain and manage task objects.
 Not a user-side function. There are no examples. Please see
 \code{\link[=crew_controller_local]{crew_controller_local()}} for details.
 }
+\seealso{
+Other schedule: 
+\code{\link{crew_class_schedule}}
+}
+\concept{schedule}
 \keyword{internal}

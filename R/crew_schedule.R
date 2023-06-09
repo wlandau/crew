@@ -1,5 +1,6 @@
 #' @title Create a schedule.
 #' @export
+#' @family schedule
 #' @keywords internal
 #' @description Create an `R6` object to contain and manage task objects.
 #' @details Not a user-side function. There are no examples. Please see
@@ -14,7 +15,8 @@ crew_schedule <- function(seconds_interval = 0.25) {
 
 #' @title Schedule class
 #' @export
-#' @family routers
+#' @family schedule
+#' @keywords internal
 #' @description `R6` class to contain and manage task objects.
 #' @details Not a user-side class. There are no examples. Please see
 #'   [crew_controller_local()] for details.

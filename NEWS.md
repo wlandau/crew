@@ -1,4 +1,4 @@
-# crew 0.2.1.9002 (development)
+# crew 0.2.1.9003 (development)
 
 * Track warnings properly (#81, @brendanf).
 * Optimize heavily (#81, #83, @shikokuchuo, @brendanf).

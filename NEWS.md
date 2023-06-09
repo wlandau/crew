@@ -2,6 +2,7 @@
 
 * Track warnings properly (#81, @brendanf).
 * Optimize heavily (#81, #83, @shikokuchuo, @brendanf).
+* Delegate the task pushing and collection logic to a new `R6` schedule class (#84).
 
 # crew 0.2.1
 

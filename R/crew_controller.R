@@ -32,7 +32,7 @@ crew_controller <- function(
       alternative = "use the scale argument of push(), pop(), and wait()"
     )
   }
-  schedule <- schedule$new(seconds_interval = router$seconds_interval)
+  schedule <- crew_schedule(seconds_interval = router$seconds_interval)
   controller <- crew_class_controller$new(
     router = router,
     launcher = launcher,

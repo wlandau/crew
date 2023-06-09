@@ -25,6 +25,8 @@ Other routers:
 
 \item{\code{collected}}{Stack of resolved tasks with results available.}
 
+\item{\code{pushes}}{Number of times a task has been pushed.}
+
 \item{\code{head}}{ID of the task at the head of the \code{collected} stack.}
 
 \item{\code{until}}{Numeric of length 1, time point when
@@ -102,15 +104,13 @@ NULL (invisibly).
 \subsection{Method \code{push()}}{
 Push a task.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_schedule$push(task, id)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_schedule$push(task)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{task}}{The decorated \code{mirai} task object to push.}
-
-\item{\code{id}}{The task ID.}
+\item{\code{task}}{The \code{mirai} task object to push.}
 }
 \if{html}{\out{</div>}}
 }

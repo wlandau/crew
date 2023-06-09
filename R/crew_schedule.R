@@ -28,6 +28,8 @@ crew_class_schedule <- R6::R6Class(
     pushed = NULL,
     #' @field collected Stack of resolved tasks with results available.
     collected = NULL,
+    #' @field pushes Number of times a task has been pushed.
+    pushes = NULL,
     #' @field head ID of the task at the head of the `collected` stack.
     head = NULL,
     #' @field until Numeric of length 1, time point when
@@ -46,20 +48,22 @@ crew_class_schedule <- R6::R6Class(
       crew_assert(is.numeric(self$seconds_interval))
       crew_assert(self$pushed, is.null(.) || is.environment(.))
       crew_assert(self$collected, is.null(.) || is.environment(.))
+      for (field in c("pushes", "until")) {
+        crew_assert(
+          self[[field]] %|||% 0,
+          is.numeric(.),
+          length(.) == 1L,
+          !anyNA(.),
+          is.finite(.),
+          . >= 0
+        )
+      }
       crew_assert(
         self$head %|||% "head",
         is.character(.),
         length(.) == 1L,
         !anyNA(.),
         nzchar(.)
-      )
-      crew_assert(
-        self$until %|||% 0,
-        is.numeric(.),
-        length(.) == 1L,
-        !anyNA(.),
-        is.finite(.),
-        . >= 0
       )
       invisible()
     },
@@ -70,16 +74,18 @@ crew_class_schedule <- R6::R6Class(
     start = function() {
       self$pushed <- new.env(hash = TRUE, parent = emptyenv())
       self$collected <- new.env(hash = TRUE, parent = emptyenv())
+      self$pushes <- 0L
       invisible()
     },
     #' @description Push a task.
     #' @details Add a task to the `pushed` hash table
     #' @return `NULL` (invisibly).
-    #' @param task The decorated `mirai` task object to push.
-    #' @param id The task ID.
-    push = function(task, id) {
+    #' @param task The `mirai` task object to push.
+    push = function(task) {
+      index <- .subset2(self, "pushes") + 1L
+      self$pushes <- index
       pushed <- .subset2(self, "pushed")
-      pushed[[id]] <- task
+      pushed[[as.character(index)]] <- task
       invisible()
     },
     #' @description Collect resolved tasks.
@@ -110,10 +116,12 @@ crew_class_schedule <- R6::R6Class(
       index_resolved <- !as.logical(index_unresolved)
       which_resolved <- names(index_unresolved)[index_resolved]
       for (id in which_resolved) {
-        task <- pushed[[id]]
-        attr(task, "next") <- .subset2(self, "head")
+        result <- list(
+          task = .subset2(pushed, id),
+          head = .subset2(self, "head")
+        )
         self$head <- id
-        collected[[id]] <- task
+        collected[[id]] <- result
       }
       rm(list = which_resolved, envir = pushed)
       invisible()
@@ -126,10 +134,10 @@ crew_class_schedule <- R6::R6Class(
         return(NULL)
       }
       collected <- .subset2(self, "collected")
-      task <- collected[[head]]
+      result <- collected[[head]]
       rm(list = head, envir = collected)
-      self$head <- attr(task, "next")
-      task
+      self$head <- .subset2(result, "head")
+      .subset2(result, "task")
     },
     #' @description Check if the schedule is empty.
     #' @return `TRUE` if the `pushed` and `collected` hash tables are both

@@ -523,13 +523,7 @@ crew_class_controller <- R6::R6Class(
               self$scale(throttle = throttle),
               self$collect(throttle = throttle)
             )
-            empty_pushed <- length(self$schedule$pushed) < 1L
-            empty_collected <- length(self$schedule$collected) < 1L
-            (empty_pushed && empty_collected) || if_any(
-              identical(mode, "all"),
-              empty_pushed && (!empty_collected),
-              empty_pushed || (!empty_collected)
-            )
+            self$schedule$collected_mode(mode = mode)
           },
           seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout

@@ -47,6 +47,7 @@ throttled task collection unlocks.}
 \item \href{#method-crew_class_schedule-nonempty}{\code{crew_class_schedule$nonempty()}}
 \item \href{#method-crew_class_schedule-collected_all}{\code{crew_class_schedule$collected_all()}}
 \item \href{#method-crew_class_schedule-collected_one}{\code{crew_class_schedule$collected_one()}}
+\item \href{#method-crew_class_schedule-collected_mode}{\code{crew_class_schedule$collected_mode()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -223,6 +224,29 @@ there are no pushed tasks.
 \subsection{Returns}{
 \code{TRUE} if there is at least one collected task or
 there are no pushed tasks, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_schedule-collected_mode"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_schedule-collected_mode}{}}}
+\subsection{Method \code{collected_mode()}}{
+Either \code{collected_all()} or \code{collected_one()}, depending
+on the \code{mode} argument.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_schedule$collected_mode(mode = "all")}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mode}}{\code{"all"} to call \code{collected_all()} or \code{"one"} to call
+\code{collected_one()}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{TRUE} or \code{FALSE}, depending on \code{mode} and the state of the
+schedule.
 }
 }
 }

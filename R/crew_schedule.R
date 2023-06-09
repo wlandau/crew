@@ -166,6 +166,19 @@ crew_class_schedule <- R6::R6Class(
     collected_one = function() {
       (!is.null(.subset2(self, "head"))) ||
         (length(.subset2(self, "pushed")) < 1L)
+    },
+    #' @description Either `collected_all()` or `collected_one()`, depending
+    #'   on the `mode` argument.
+    #' @return `TRUE` or `FALSE`, depending on `mode` and the state of the
+    #'   schedule.
+    #' @param mode `"all"` to call `collected_all()` or `"one"` to call
+    #'   `collected_one()`.
+    collected_mode = function(mode = "all") {
+      if_any(
+        identical(mode, "all"),
+        self$collected_all(),
+        self$collected_one()
+      )
     }
   )
 )

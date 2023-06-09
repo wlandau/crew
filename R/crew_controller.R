@@ -456,9 +456,12 @@ crew_class_controller <- R6::R6Class(
       out$command <- attr(task, "command")
       out <- monad_tibble(out)
       log <- self$log
+      # Same as above.
+      # nocov start
       if (anyNA(out$launcher)) {
         return(out)
       }
+      # nocov end
       index <- out$worker
       popped_tasks <- .subset2(log, "popped_tasks")[index]
       popped_seconds <- .subset2(log, "popped_seconds")[index]

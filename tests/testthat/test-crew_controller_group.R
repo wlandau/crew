@@ -94,7 +94,7 @@ crew_test("crew_controller_group()", {
   expect_false(x$empty())
   expect_true(x$empty(controllers = "a"))
   expect_false(x$empty(controllers = "b"))
-  x$wait(seconds_timeout = 5)
+  x$wait(mode = "all", seconds_timeout = 5)
   expect_false(x$empty())
   expect_true(x$empty(controllers = "a"))
   expect_false(x$empty(controllers = "b"))
@@ -217,7 +217,7 @@ crew_test("crew_controller_group() collect", {
     fun = ~{
       x$scale()
       x$collect()
-      length(x$controllers[[1]]$results) > 0L
+      length(x$controllers[[1]]$schedule$collected) > 0L
     },
     seconds_interval = 0.5,
     seconds_timeout = 10

@@ -382,7 +382,8 @@ crew_class_controller_group <- R6::R6Class(
                 controller$collect(throttle = throttle)
               )
               done <- controller$schedule$collected_mode(mode = mode)
-              if (done) {
+              empty <- controller$schedule$empty()
+              if (done && !empty) {
                 return(TRUE)
               }
               empty <- empty && controller$schedule$empty()

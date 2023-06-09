@@ -68,8 +68,10 @@ crew_test("crew_controller_local()", {
     save_command = TRUE
   )
   expect_false(x$empty())
+  expect_true(x$nonempty())
   x$wait(seconds_timeout = 5)
   expect_false(x$empty())
+  expect_true(x$nonempty())
   # first task
   envir <- new.env(parent = emptyenv())
   crew_retry(
@@ -82,6 +84,7 @@ crew_test("crew_controller_local()", {
   )
   out <- envir$out
   expect_true(x$empty())
+  expect_false(x$nonempty())
   expect_equal(x$summary()$popped_tasks, 1L)
   expect_equal(x$summary()$popped_errors, 0L)
   expect_equal(x$summary()$popped_warnings, 0L)

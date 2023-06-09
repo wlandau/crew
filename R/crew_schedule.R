@@ -1,0 +1,184 @@
+#' @title Create a schedule.
+#' @export
+#' @keywords internal
+#' @description Create an `R6` object to contain and manage task objects.
+#' @details Not a user-side function. There are no examples. Please see
+#'   [crew_controller_local()] for details.
+#' @param seconds_interval Number of seconds between throttled iterations
+#'   of task collection.
+crew_schedule <- function(seconds_interval = 0.25) {
+  out <- crew_class_schedule$new(seconds_interval = seconds_interval)
+  out$validate()
+  out
+}
+
+#' @title Schedule class
+#' @export
+#' @family routers
+#' @description `R6` class to contain and manage task objects.
+#' @details Not a user-side class. There are no examples. Please see
+#'   [crew_controller_local()] for details.
+crew_class_schedule <- R6::R6Class(
+  classname = "crew_class_schedule",
+  cloneable = FALSE,
+  public = list(
+    #' @field seconds_interval See [crew_schedule()].
+    seconds_interval = NULL,
+    #' @field pushed Hash table of pushed tasks.
+    pushed = NULL,
+    #' @field collected Stack of resolved tasks with results available.
+    collected = NULL,
+    #' @field pushes Number of times a task has been pushed.
+    pushes = NULL,
+    #' @field head ID of the task at the head of the `collected` stack.
+    head = NULL,
+    #' @field until Numeric of length 1, time point when
+    #'   throttled task collection unlocks.
+    until = NULL,
+    #' @description Schedule constructor.
+    #' @return An `R6` schedule object.
+    #' @param seconds_interval See [crew_schedule()].
+    initialize = function(seconds_interval = NULL) {
+      self$seconds_interval <- seconds_interval
+      invisible()
+    },
+    #' @description Validate the schedule.
+    #' @return `NULL` (invisibly).
+    validate = function() {
+      crew_assert(is.numeric(self$seconds_interval))
+      crew_assert(self$pushed, is.null(.) || is.environment(.))
+      crew_assert(self$collected, is.null(.) || is.environment(.))
+      for (field in c("pushes", "until")) {
+        crew_assert(
+          self[[field]] %|||% 0,
+          is.numeric(.),
+          length(.) == 1L,
+          !anyNA(.),
+          is.finite(.),
+          . >= 0
+        )
+      }
+      crew_assert(
+        self$head %|||% "head",
+        is.character(.),
+        length(.) == 1L,
+        !anyNA(.),
+        nzchar(.)
+      )
+      invisible()
+    },
+    #' @description Start the schedule.
+    #' @details Sets the `pushed` and `collected` hash tables to new
+    #'   empty environments.
+    #' @return NULL (invisibly).
+    start = function() {
+      self$pushed <- new.env(hash = TRUE, parent = emptyenv())
+      self$collected <- new.env(hash = TRUE, parent = emptyenv())
+      self$pushes <- 0L
+      invisible()
+    },
+    #' @description Push a task.
+    #' @details Add a task to the `pushed` hash table
+    #' @return `NULL` (invisibly).
+    #' @param task The `mirai` task object to push.
+    push = function(task) {
+      index <- .subset2(self, "pushes") + 1L
+      self$pushes <- index
+      pushed <- .subset2(self, "pushed")
+      pushed[[as.character(index)]] <- task
+      invisible()
+    },
+    #' @description Collect resolved tasks.
+    #' @details Scan the tasks in `pushed` and move the resolved ones to the
+    #'   head of the `collected` stack.
+    #' @return `NULL` (invisibly).
+    #' @param throttle whether to defer task collection
+    #'   until the next task collection request at least
+    #'   `seconds_interval` seconds from the original request.
+    #'   The idea is similar to `shiny::throttle()` except that `crew` does not
+    #'   accumulate a backlog of requests. The technique improves robustness
+    #'   and efficiency.
+    collect = function(throttle = FALSE) {
+      if (throttle) {
+        now <- nanonext::mclock()
+        if (is.null(.subset2(self, "until"))) {
+          self$until <- now + (1000 * .subset2(self, "seconds_interval"))
+        }
+        if (now < .subset2(self, "until")) {
+          return(invisible())
+        } else {
+          self$until <- NULL
+        }
+      }
+      pushed <- .subset2(self, "pushed")
+      collected <- .subset2(self, "collected")
+      index_unresolved <- lapply(X = pushed, FUN = .unresolved)
+      index_resolved <- !as.logical(index_unresolved)
+      which_resolved <- names(index_unresolved)[index_resolved]
+      for (id in which_resolved) {
+        result <- list(
+          task = .subset2(pushed, id),
+          head = .subset2(self, "head")
+        )
+        self$head <- id
+        collected[[id]] <- result
+      }
+      rm(list = which_resolved, envir = pushed)
+      invisible()
+    },
+    #' @description Pop a task from the `collected` stack.
+    #' @return A task object if available, `NULL` otherwise.
+    pop = function() {
+      head <- .subset2(self, "head")
+      if (is.null(head)) {
+        return(NULL)
+      }
+      collected <- .subset2(self, "collected")
+      result <- collected[[head]]
+      rm(list = head, envir = collected)
+      self$head <- .subset2(result, "head")
+      .subset2(result, "task")
+    },
+    #' @description Check if the schedule is empty.
+    #' @return `TRUE` if the `pushed` and `collected` hash tables are both
+    #'   empty, `FALSE` otherwise.
+    empty = function() {
+      is.null(.subset2(self, "head")) && length(.subset2(self, "pushed")) < 1L
+    },
+    #' @description Check if the schedule is nonempty.
+    #' @return `TRUE` if either `pushed` or `collected` is nonempty,
+    #'   `FALSE` otherwise.
+    nonempty = function() {
+      (!is.null(.subset2(self, "head"))) ||
+        length(.subset2(self, "pushed")) > 0L
+    },
+    #' @description Check if all previously pushed tasks are now collected.
+    #' @return `TRUE` if all previously pushed tasks are now collected,
+    #'   `FALSE` otherwise. Could be `FALSE` if there are unresolved tasks
+    #'   or there are no tasks at all.
+    collected_all = function() {
+      length(.subset2(self, "pushed")) < 1L
+    },
+    #' @description Check if there is at least one collected task or
+    #'   there are no pushed tasks.
+    #' @return `TRUE` if there is at least one collected task or
+    #'   there are no pushed tasks, `FALSE` otherwise.
+    collected_one = function() {
+      (!is.null(.subset2(self, "head"))) ||
+        (length(.subset2(self, "pushed")) < 1L)
+    },
+    #' @description Either `collected_all()` or `collected_one()`, depending
+    #'   on the `mode` argument.
+    #' @return `TRUE` or `FALSE`, depending on `mode` and the state of the
+    #'   schedule.
+    #' @param mode `"all"` to call `collected_all()` or `"one"` to call
+    #'   `collected_one()`.
+    collected_mode = function(mode = "all") {
+      if_any(
+        identical(mode, "all"),
+        self$collected_all(),
+        self$collected_one()
+      )
+    }
+  )
+)

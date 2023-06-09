@@ -18,19 +18,19 @@ time <- system.time({
 })
 print(time["elapsed"])
 
-# Check the queue and results lists.
-testthat::expect_equal(length(x$queue), 100L)
-testthat::expect_equal(length(x$results), 0L)
+# Check the schedule.
+testthat::expect_equal(length(x$schedule$pushed), 100L)
+testthat::expect_equal(length(x$schedule$collected), 0L)
 
 # Wait for just one of the tasks.
 x$wait(mode = "one")
 
 # Pop just one of the tasks
-testthat::expect_equal(length(x$queue), 96L)
-testthat::expect_equal(length(x$results), 4L)
+testthat::expect_equal(length(x$schedule$pushed), 96L)
+testthat::expect_equal(length(x$schedule$collected), 4L)
 x$pop(scale = FALSE) # monad data frame
-testthat::expect_equal(length(x$queue), 96L)
-testthat::expect_equal(length(x$results), 3L)
+testthat::expect_equal(length(x$schedule$pushed), 96L)
+testthat::expect_equal(length(x$schedule$collected), 3L)
 
 # Clean up.
 x$terminate()

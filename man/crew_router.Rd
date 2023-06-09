@@ -48,7 +48,8 @@ router$terminate()
 }
 \seealso{
 Other routers: 
-\code{\link{crew_class_router}}
+\code{\link{crew_class_router}},
+\code{\link{crew_class_schedule}}
 }
 \concept{routers}
 \keyword{internal}

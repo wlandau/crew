@@ -381,17 +381,12 @@ crew_class_controller_group <- R6::R6Class(
                 controller$scale(throttle = throttle),
                 controller$collect(throttle = throttle)
               )
-              empty_queue <- length(controller$queue) < 1L
-              empty_results <- length(controller$results) < 1L
-              done <- if_any(
-                identical(mode, "all"),
-                empty_queue && (!empty_results),
-                empty_queue || (!empty_results)
-              )
-              if (done) {
+              done <- controller$schedule$collected_mode(mode = mode)
+              empty <- controller$schedule$empty()
+              if (done && !empty) {
                 return(TRUE)
               }
-              empty <- empty && empty_queue && empty_results
+              empty <- empty && controller$schedule$empty()
             }
             empty
           },

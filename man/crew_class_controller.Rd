@@ -57,7 +57,7 @@ Other controllers:
 
 \item{\code{log}}{Data frame task log of the workers.}
 
-\item{\code{n_push}}{Number of attempts to \code{push()} a task so far.}
+\item{\code{pushes}}{Number of attempts to \code{push()} a task so far.}
 
 \item{\code{head}}{ID of the task at the head of the \code{results} stack.}
 

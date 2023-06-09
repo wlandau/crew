@@ -95,8 +95,8 @@ crew_class_controller <- R6::R6Class(
     results = NULL,
     #' @field log Data frame task log of the workers.
     log = NULL,
-    #' @field n_push Number of attempts to `push()` a task so far.
-    n_push = NULL,
+    #' @field pushes Number of attempts to `push()` a task so far.
+    pushes = NULL,
     #' @field head ID of the task at the head of the `results` stack.
     head = NULL,
     #' @field until_collect Numeric of length 1, time point when
@@ -193,7 +193,7 @@ crew_class_controller <- R6::R6Class(
         )
         self$queue <- new.env(hash = TRUE, parent = emptyenv())
         self$results <- new.env(hash = TRUE, parent = emptyenv())
-        self$n_push <- 0L
+        self$pushes <- 0L
       }
       invisible()
     },
@@ -326,8 +326,8 @@ crew_class_controller <- R6::R6Class(
       controller = NULL,
       save_command = FALSE
     ) {
-      index <- .subset2(self, "n_push") + 1L
-      self$n_push <- index
+      index <- .subset2(self, "pushes") + 1L
+      self$pushes <- index
       id <- as.character(index)
       if (is.null(name)) {
         name <- id

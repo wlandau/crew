@@ -344,13 +344,13 @@ Number of workers launched.
 \subsection{Method \code{terminate()}}{
 Terminate one or more workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate(indexes = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate(index = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{indexes}}{Integer vector of the indexes of the workers
+\item{\code{index}}{Integer vector of the indexes of the workers
 to terminate. If \code{NULL}, all current workers are terminated.}
 }
 \if{html}{\out{</div>}}

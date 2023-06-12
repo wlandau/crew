@@ -362,10 +362,13 @@ crew_class_launcher <- R6::R6Class(
     #' @description Update internal info about worker activity and task load.
     #' @return `NULL` (invisibly).
     poll = function() {
+      bound <- self$seconds_launch
+      start <- self$workers$start
+      now <- nanonext::mclock() / 1000
+      launching <- !is.na(start) & ((now - start) < bound)
       daemons <- daemons_info(name = self$name)
       online <- as.logical(daemons[, "online"])
       discovered <- as.logical(daemons[, "instance"])
-      launching <- self$launching()
       self$workers$inactive <- (!online) & (discovered | (!launching))
       done <- (!online) & discovered
       new_assigned <- as.integer(daemons[, "assigned"])
@@ -381,16 +384,6 @@ crew_class_launcher <- R6::R6Class(
       self$workers$assigned[index] <- assigned
       self$workers$complete[index] <- complete
       invisible()
-    },
-    #' @description Show whether each worker is launching.
-    #' @details A worker is considered "launching" if it was started
-    #'   recently (`seconds_launch` seconds ago or sooner).
-    #' @return A logical vector indicating which workers are launching.
-    launching = function() {
-      bound <- self$seconds_launch
-      start <- self$workers$start
-      now <- nanonext::mclock() / 1000
-      !is.na(start) & ((now - start) < bound)
     },
     #' @description Launch a worker.
     #' @return `NULL` (invisibly).

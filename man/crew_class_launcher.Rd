@@ -97,7 +97,6 @@ Other launchers:
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
 \item \href{#method-crew_class_launcher-poll}{\code{crew_class_launcher$poll()}}
-\item \href{#method-crew_class_launcher-launching}{\code{crew_class_launcher$launching()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
@@ -296,24 +295,6 @@ Update internal info about worker activity and task load.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-launching"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-launching}{}}}
-\subsection{Method \code{launching()}}{
-Show whether each worker is launching.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launching()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-A worker is considered "launching" if it was started
-recently (\code{seconds_launch} seconds ago or sooner).
-}
-
-\subsection{Returns}{
-A logical vector indicating which workers are launching.
 }
 }
 \if{html}{\out{<hr>}}

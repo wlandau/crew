@@ -265,7 +265,17 @@ crew_class_launcher <- R6::R6Class(
       }
       if (!is.null(self$workers)) {
         crew_assert(self$workers, is.data.frame(.))
-        cols <- c("handle", "socket", "start", "launches")
+        cols <- c(
+          "handle",
+          "socket",
+          "start",
+          "launches",
+          "inactive",
+          "backlogged",
+          "tallied",
+          "assigned",
+          "complete"
+        )
         crew_assert(identical(colnames(self$workers), cols))
         crew_assert(nrow(self$workers) > 0L)
       }
@@ -343,9 +353,9 @@ crew_class_launcher <- R6::R6Class(
         launches = rep(0L, workers),
         inactive = rep(TRUE, workers),
         backlogged = rep(FALSE, workers),
+        tallied = rep(FALSE, workers),
         assigned = rep(0L, workers),
-        complete = rep(0L, workers),
-        tallied = rep(FALSE, workers)
+        complete = rep(0L, workers)
       )
       invisible()
     },

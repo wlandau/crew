@@ -1,3 +1,12 @@
+name_worker <- function(launcher, worker, instance) {
+  out <- paste(launcher, worker, instance, sep = "-")
+  alpha <- all(grepl(pattern = "^[[:alpha:]]", x = out))
+  if (!alpha) {
+    out <- paste0("worker-", out)
+  }
+  out
+}
+
 parse_instance <- function(socket) {
   split <- strsplit(socket, split = "/", fixed = TRUE)[[1]]
   split[length(split)]

@@ -24,7 +24,7 @@ crew_controller_local(
 )
 }
 \arguments{
-\item{name}{Name of the router object. If \code{NULL}, a name is automatically
+\item{name}{Name of the client object. If \code{NULL}, a name is automatically
 generated.}
 
 \item{workers}{Integer, maximum number of parallel workers to run.}

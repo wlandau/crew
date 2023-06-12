@@ -77,15 +77,15 @@ local process workers.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-router <- crew_router()
-router$start()
+client <- crew_client()
+client$start()
 launcher <- crew_launcher_local()
-launcher$start(workers = router$workers)
-launcher$launch(index = 1L, socket = rownames(router$daemons))
-m <- mirai::mirai("result", .compute = router$name)
+launcher$start(workers = client$workers)
+launcher$launch(index = 1L, socket = rownames(client$daemons))
+m <- mirai::mirai("result", .compute = client$name)
 Sys.sleep(0.25)
 m$data
-router$terminate()
+client$terminate()
 }
 }
 \seealso{

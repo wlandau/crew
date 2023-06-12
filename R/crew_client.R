@@ -1,10 +1,9 @@
-#' @title Create a router.
+#' @title Create a client object.
 #' @export
 #' @keywords internal
-#' @family routers
-#' @description Create an `R6` object to manage the `mirai` task scheduler
-#'   client.
-#' @param name Name of the router object. If `NULL`, a name is automatically
+#' @family clients
+#' @description Create an `R6` wrapper object to manage the `mirai` client.
+#' @param name Name of the client object. If `NULL`, a name is automatically
 #'   generated.
 #' @param workers Integer, maximum number of parallel workers to run.
 #' @param host IP address of the `mirai` client to send and receive tasks.
@@ -20,12 +19,12 @@
 #'   out while waiting for certain synchronous operations to complete.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_router()
-#' router$start()
-#' router$daemons
-#' router$terminate()
+#' client <- crew_client()
+#' client$start()
+#' client$daemons
+#' client$terminate()
 #' }
-crew_router <- function(
+crew_client <- function(
   name = NULL,
   workers = 1L,
   host = NULL,
@@ -37,7 +36,7 @@ crew_router <- function(
   workers <- as.integer(workers)
   host <- as.character(host %|||% getip::getip(type = "local"))
   port <- as.integer(port %|||% 0L)
-  router <- crew_class_router$new(
+  client <- crew_class_client$new(
     name = name,
     workers = workers,
     host = host,
@@ -45,56 +44,56 @@ crew_router <- function(
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout
   )
-  router$validate()
-  router
+  client$validate()
+  client
 }
 
-#' @title Router class
+#' @title `R6` client class.
 #' @export
-#' @family routers
-#' @description `R6` class for `mirai` routers.
-#' @details See [crew_router()].
+#' @family clients
+#' @description `R6` class for `mirai` clients.
+#' @details See [crew_client()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_router()
-#' router$start()
-#' router$daemons
-#' router$terminate()
+#' client <- crew_client()
+#' client$start()
+#' client$daemons
+#' client$terminate()
 #' }
-crew_class_router <- R6::R6Class(
-  classname = "crew_class_router",
+crew_class_client <- R6::R6Class(
+  classname = "crew_class_client",
   cloneable = FALSE,
   public = list(
-    #' @field name See [crew_router()].
+    #' @field name See [crew_client()].
     name = NULL,
-    #' @field workers See [crew_router()].
+    #' @field workers See [crew_client()].
     workers = NULL,
-    #' @field host See [crew_router()].
+    #' @field host See [crew_client()].
     host = NULL,
-    #' @field port See [crew_router()].
+    #' @field port See [crew_client()].
     port = NULL,
-    #' @field seconds_interval See [crew_router()].
+    #' @field seconds_interval See [crew_client()].
     seconds_interval = NULL,
-    #' @field seconds_timeout See [crew_router()].
+    #' @field seconds_timeout See [crew_client()].
     seconds_timeout = NULL,
-    #' @field started Whether the router is started.
+    #' @field started Whether the client is started.
     started = NULL,
     #' @field dispatcher Process ID of the `mirai` dispatcher
     dispatcher = NULL,
-    #' @description `mirai` router constructor.
-    #' @return An `R6` object with the router.
-    #' @param name Argument passed from [crew_router()].
-    #' @param workers Argument passed from [crew_router()].
-    #' @param host Argument passed from [crew_router()].
-    #' @param port Argument passed from [crew_router()].
-    #' @param seconds_interval Argument passed from [crew_router()].
-    #' @param seconds_timeout Argument passed from [crew_router()].
+    #' @description `mirai` client constructor.
+    #' @return An `R6` object with the client.
+    #' @param name Argument passed from [crew_client()].
+    #' @param workers Argument passed from [crew_client()].
+    #' @param host Argument passed from [crew_client()].
+    #' @param port Argument passed from [crew_client()].
+    #' @param seconds_interval Argument passed from [crew_client()].
+    #' @param seconds_timeout Argument passed from [crew_client()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' router <- crew_router()
-    #' router$start()
-    #' router$daemons
-    #' router$terminate()
+    #' client <- crew_client()
+    #' client$start()
+    #' client$daemons
+    #' client$terminate()
     #' }
     initialize = function(
       name = NULL,
@@ -111,7 +110,7 @@ crew_class_router <- R6::R6Class(
       self$seconds_interval <- seconds_interval
       self$seconds_timeout <- seconds_timeout
     },
-    #' @description Validate the router.
+    #' @description Validate the client.
     #' @return `NULL` (invisibly).
     validate = function() {
       crew_assert(

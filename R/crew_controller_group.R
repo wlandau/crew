@@ -23,7 +23,7 @@
 #' }
 crew_controller_group <- function(...) {
   controllers <- unlist(list(...), recursive = TRUE)
-  names(controllers) <- map_chr(controllers, ~.x$router$name)
+  names(controllers) <- map_chr(controllers, ~.x$client$name)
   out <- crew_class_controller_group$new(controllers = controllers)
   out$validate()
   out
@@ -111,14 +111,14 @@ crew_class_controller_group <- R6::R6Class(
       self$controllers <- controllers
       invisible()
     },
-    #' @description Validate the router.
+    #' @description Validate the client.
     #' @return `NULL` (invisibly).
     validate = function() {
       crew_assert(
         map_lgl(self$controllers, ~inherits(.x, "crew_class_controller")),
         message = "All objects in a controller group must be controllers."
       )
-      out <- unname(map_chr(self$controllers, ~.x$router$name))
+      out <- unname(map_chr(self$controllers, ~.x$client$name))
       exp <- names(self$controllers)
       crew_assert(identical(out, exp), message = "bad controller names")
       invisible()
@@ -146,7 +146,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param collect Logical of length 1, whether to collect the results
     #'   of any newly resolved tasks before determining saturation.
     #' @param throttle Logical of length 1, whether to delay task collection
-    #'   until the next request at least `self$router$seconds_interval`
+    #'   until the next request at least `self$client$seconds_interval`
     #'   seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
@@ -181,7 +181,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param throttle Logical of length 1, whether to delay auto-scaling
     #'   until the next auto-scaling request at least
-    #'  `self$router$seconds_interval` seconds from the original request.
+    #'  `self$client$seconds_interval` seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
@@ -224,7 +224,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   of workers is not too high.
     #' @param throttle If `scale` is `TRUE`, whether to defer auto-scaling
     #'   until the next auto-scaling request at least
-    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   `self$client$seconds_interval` seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
@@ -278,7 +278,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   list as applicable and moves them to the `results` list.
     #' @param throttle whether to defer task collection
     #'   until the next task collection request at least
-    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   `self$client$seconds_interval` seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
@@ -306,7 +306,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   step always happens (with throttling) when `scale` is `TRUE`.
     #' @param throttle If `scale` is `TRUE`, whether to defer auto-scaling
     #'   until the next auto-scaling request at least
-    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   `self$client$seconds_interval` seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
@@ -352,7 +352,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   every iteration if `throttle` is `TRUE`.
     #' @param throttle If `scale` is `TRUE`, whether to defer auto-scaling
     #'   and task collection until the next request at least
-    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   `self$client$seconds_interval` seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
@@ -423,7 +423,7 @@ crew_class_controller_group <- R6::R6Class(
       }
       tibble::as_tibble(do.call(what = rbind, args = out))
     },
-    #' @description Terminate the workers and disconnect the router
+    #' @description Terminate the workers and disconnect the client
     #'   for one or more controllers.
     #' @return `NULL` (invisibly).
     #' @param controllers Character vector of controller names.

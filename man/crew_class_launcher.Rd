@@ -9,15 +9,15 @@ which launch and manage workers.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-router <- crew_router()
-router$start()
+client <- crew_client()
+client$start()
 launcher <- crew_launcher_local()
-launcher$start(workers = router$workers)
-launcher$launch(index = 1L, socket = rownames(router$daemons))
-m <- mirai::mirai("result", .compute = router$name)
+launcher$start(workers = client$workers)
+launcher$launch(index = 1L, socket = rownames(client$daemons))
+m <- mirai::mirai("result", .compute = client$name)
 Sys.sleep(0.25)
 m$data
-router$terminate()
+client$terminate()
 }
 
 ## ------------------------------------------------
@@ -25,15 +25,15 @@ router$terminate()
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-router <- crew_router()
-router$start()
+client <- crew_client()
+client$start()
 launcher <- crew_launcher_local()
-launcher$start(workers = router$workers)
-launcher$launch(index = 1L, socket = rownames(router$daemons))
-m <- mirai::mirai("result", .compute = router$name)
+launcher$start(workers = client$workers)
+launcher$launch(index = 1L, socket = rownames(client$daemons))
+m <- mirai::mirai("result", .compute = client$name)
 Sys.sleep(0.25)
 m$data
-router$terminate()
+client$terminate()
 }
 
 ## ------------------------------------------------
@@ -61,6 +61,10 @@ Other launchers:
 \item{\code{workers}}{Data frame of worker information.}
 
 \item{\code{name}}{Name of the launcher.}
+
+\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
@@ -108,6 +112,8 @@ Launcher constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$new(
   name = NULL,
+  seconds_interval = NULL,
+  seconds_timeout = NULL,
   seconds_launch = NULL,
   seconds_idle = NULL,
   seconds_wall = NULL,
@@ -125,6 +131,10 @@ Launcher constructor.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
@@ -154,15 +164,15 @@ An \code{R6} object with the launcher.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-router <- crew_router()
-router$start()
+client <- crew_client()
+client$start()
 launcher <- crew_launcher_local()
-launcher$start(workers = router$workers)
-launcher$launch(index = 1L, socket = rownames(router$daemons))
-m <- mirai::mirai("result", .compute = router$name)
+launcher$start(workers = client$workers)
+launcher$launch(index = 1L, socket = rownames(client$daemons))
+m <- mirai::mirai("result", .compute = client$name)
 Sys.sleep(0.25)
 m$data
-router$terminate()
+client$terminate()
 }
 }
 \if{html}{\out{</div>}}

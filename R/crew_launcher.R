@@ -7,6 +7,9 @@
 #'   `@inheritParams crew::crew_launcher` in the source code file of
 #'   [crew_launcher_local()].
 #' @param name Name of the launcher.
+#' @param seconds_interval Seconds to wait between asynchronous operations.
+#' @param seconds_timeout Timeout in seconds while waiting for an asynchronous
+#'   operation.
 #' @param seconds_launch Seconds of startup time to allow.
 #'   A worker is unconditionally assumed to be alive
 #'   from the moment of its launch until `seconds_launch` seconds later.
@@ -49,18 +52,20 @@
 #'   tasks, `FALSE` to skip.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_router()
-#' router$start()
+#' client <- crew_client()
+#' client$start()
 #' launcher <- crew_launcher_local()
-#' launcher$start(workers = router$workers)
-#' launcher$launch(index = 1L, socket = rownames(router$daemons))
-#' m <- mirai::mirai("result", .compute = router$name)
+#' launcher$start(workers = client$workers)
+#' launcher$launch(index = 1L, socket = rownames(client$daemons))
+#' m <- mirai::mirai("result", .compute = client$name)
 #' Sys.sleep(0.25)
 #' m$data
-#' router$terminate()
+#' client$terminate()
 #' }
 crew_launcher <- function(
   name = NULL,
+  seconds_interval = 0.25,
+  seconds_timeout = 10,
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
@@ -75,6 +80,8 @@ crew_launcher <- function(
   name <- as.character(name %|||% crew_random_name())
   launcher <- crew_class_launcher_local$new(
     name = name,
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
@@ -97,15 +104,15 @@ crew_launcher <- function(
 #'   which launch and manage workers.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_router()
-#' router$start()
+#' client <- crew_client()
+#' client$start()
 #' launcher <- crew_launcher_local()
-#' launcher$start(workers = router$workers)
-#' launcher$launch(index = 1L, socket = rownames(router$daemons))
-#' m <- mirai::mirai("result", .compute = router$name)
+#' launcher$start(workers = client$workers)
+#' launcher$launch(index = 1L, socket = rownames(client$daemons))
+#' m <- mirai::mirai("result", .compute = client$name)
 #' Sys.sleep(0.25)
 #' m$data
-#' router$terminate()
+#' client$terminate()
 #' }
 crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
@@ -116,6 +123,10 @@ crew_class_launcher <- R6::R6Class(
     workers = NULL,
     #' @field name Name of the launcher.
     name = NULL,
+    #' @field seconds_interval See [crew_launcher()].
+    seconds_interval = NULL,
+    #' @field seconds_timeout See [crew_launcher()].
+    seconds_timeout = NULL,
     #' @field seconds_launch See [crew_launcher()].
     seconds_launch = NULL,
     #' @field seconds_idle See [crew_launcher()].
@@ -139,6 +150,8 @@ crew_class_launcher <- R6::R6Class(
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
     #' @param name See [crew_launcher()].
+    #' @param seconds_interval See [crew_launcher()].
+    #' @param seconds_timeout See [crew_launcher()].
     #' @param seconds_launch See [crew_launcher()].
     #' @param seconds_idle See [crew_launcher()].
     #' @param seconds_wall See [crew_launcher()].
@@ -151,18 +164,20 @@ crew_class_launcher <- R6::R6Class(
     #' @param garbage_collection See [crew_launcher()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' router <- crew_router()
-    #' router$start()
+    #' client <- crew_client()
+    #' client$start()
     #' launcher <- crew_launcher_local()
-    #' launcher$start(workers = router$workers)
-    #' launcher$launch(index = 1L, socket = rownames(router$daemons))
-    #' m <- mirai::mirai("result", .compute = router$name)
+    #' launcher$start(workers = client$workers)
+    #' launcher$launch(index = 1L, socket = rownames(client$daemons))
+    #' m <- mirai::mirai("result", .compute = client$name)
     #' Sys.sleep(0.25)
     #' m$data
-    #' router$terminate()
+    #' client$terminate()
     #' }
     initialize = function(
       name = NULL,
+      seconds_interval = NULL,
+      seconds_timeout = NULL,
       seconds_launch = NULL,
       seconds_idle = NULL,
       seconds_wall = NULL,
@@ -175,6 +190,8 @@ crew_class_launcher <- R6::R6Class(
       garbage_collection = NULL
     ) {
       self$name <- name
+      self$seconds_interval <- seconds_interval
+      self$seconds_timeout <- seconds_timeout
       self$seconds_launch <- seconds_launch
       self$seconds_idle <- seconds_idle
       self$seconds_wall <- seconds_wall
@@ -219,6 +236,8 @@ crew_class_launcher <- R6::R6Class(
         nzchar(.)
       )
       fields <- c(
+        "seconds_interval",
+        "seconds_timeout",
         "seconds_launch",
         "seconds_idle",
         "seconds_wall",
@@ -380,12 +399,12 @@ crew_class_launcher <- R6::R6Class(
       if (!is_crew_null(handle)) {
         self$terminate_worker(handle)
       }
-      handle <- self$launch_worker(
-        call = call,
+      name <- name_worker(
         launcher = self$name,
         worker = index,
         instance = instance
       )
+      handle <- self$launch_worker(name = name, call = call)
       self$workers$handle[[index]] <- handle
       self$workers$socket[index] <- socket
       self$workers$start[index] <- nanonext::mclock() / 1000

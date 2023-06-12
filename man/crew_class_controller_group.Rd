@@ -119,7 +119,7 @@ group$terminate()
 \if{html}{\out{<a id="method-crew_class_controller_group-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-validate}{}}}
 \subsection{Method \code{validate()}}{
-Validate the router.
+Validate the client.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$validate()}\if{html}{\out{</div>}}
 }
@@ -175,7 +175,7 @@ Check if a controller is saturated.
 of any newly resolved tasks before determining saturation.}
 
 \item{\code{throttle}}{Logical of length 1, whether to delay task collection
-until the next request at least \code{self$router$seconds_interval}
+until the next request at least \code{self$client$seconds_interval}
 seconds from the original request.
 The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
@@ -260,7 +260,7 @@ in one or more controller objects.
 \describe{
 \item{\code{throttle}}{Logical of length 1, whether to delay auto-scaling
 until the next auto-scaling request at least
-\code{self$router$seconds_interval} seconds from the original request.
+\code{self$client$seconds_interval} seconds from the original request.
 The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
 and efficiency.}
@@ -344,7 +344,7 @@ of workers is not too high.}
 
 \item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
 until the next auto-scaling request at least
-\code{self$router$seconds_interval} seconds from the original request.
+\code{self$client$seconds_interval} seconds from the original request.
 The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
 and efficiency.}
@@ -383,7 +383,7 @@ the results list.
 \describe{
 \item{\code{throttle}}{whether to defer task collection
 until the next task collection request at least
-\code{self$router$seconds_interval} seconds from the original request.
+\code{self$client$seconds_interval} seconds from the original request.
 The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
 and efficiency.}
@@ -430,7 +430,7 @@ step always happens (with throttling) when \code{scale} is \code{TRUE}.}
 
 \item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
 until the next auto-scaling request at least
-\code{self$router$seconds_interval} seconds from the original request.
+\code{self$client$seconds_interval} seconds from the original request.
 The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
 and efficiency.}
@@ -483,7 +483,7 @@ every iteration if \code{throttle} is \code{TRUE}.}
 
 \item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
 and task collection until the next request at least
-\code{self$router$seconds_interval} seconds from the original request.
+\code{self$client$seconds_interval} seconds from the original request.
 The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
 and efficiency.
@@ -544,7 +544,7 @@ class for specific information about the columns in the output.
 \if{html}{\out{<a id="method-crew_class_controller_group-terminate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-terminate}{}}}
 \subsection{Method \code{terminate()}}{
-Terminate the workers and disconnect the router
+Terminate the workers and disconnect the client
 for one or more controllers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$terminate(controllers = NULL)}\if{html}{\out{</div>}}

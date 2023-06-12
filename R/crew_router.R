@@ -176,28 +176,29 @@ crew_class_router <- R6::R6Class(
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
     start = function() {
-      if (!isTRUE(self$started)) {
-        args <- list(
-          url = sprintf("ws://%s:%s", self$host, self$port),
-          n = self$workers,
-          dispatcher = TRUE,
-          token = TRUE,
-          .compute = self$name
-        )
-        do.call(what = mirai::daemons, args = args)
-        self$daemons <- daemons_new(name = self$name, workers = self$workers)
-        # TODO: remove code that gets the dispatcher PID if the dispatcher
-        # process is phased out of mirai.
-        # Begin dispatcher code.
-        self$dispatcher <- environment(mirai::daemons)$..[[self$name]]$pid
-        attr(rownames(self$daemons), "dispatcher_pid") <- self$dispatcher
-        # End dispatcher code.
-        self$rotated <- rep(FALSE, self$workers)
-        self$assigned <- rep(0L, self$workers)
-        self$complete <- rep(0L, self$workers)
-        self$tallied <- rep(FALSE, self$workers)
-        self$started <- TRUE
+      if (isTRUE(self$started)) {
+        return(invisible())
       }
+      args <- list(
+        url = sprintf("ws://%s:%s", self$host, self$port),
+        n = self$workers,
+        dispatcher = TRUE,
+        token = TRUE,
+        .compute = self$name
+      )
+      do.call(what = mirai::daemons, args = args)
+      self$daemons <- daemons_new(name = self$name, workers = self$workers)
+      # TODO: remove code that gets the dispatcher PID if the dispatcher
+      # process becomes a C thread.
+      # Begin dispatcher code.
+      self$dispatcher <- environment(mirai::daemons)$..[[self$name]]$pid
+      attr(rownames(self$daemons), "dispatcher_pid") <- self$dispatcher
+      # End dispatcher code.
+      self$rotated <- rep(FALSE, self$workers)
+      self$assigned <- rep(0L, self$workers)
+      self$complete <- rep(0L, self$workers)
+      self$tallied <- rep(FALSE, self$workers)
+      self$started <- TRUE
       invisible()
     },
     #' @description Choose the websocket path for the next instance
@@ -287,43 +288,45 @@ crew_class_router <- R6::R6Class(
     #'   worker websockets.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      if (isTRUE(self$started)) {
-        # TODO: when the dispatcher process becomes a C thread,
-        # delete these superfluous checks on the dispatcher.
-        # Begin dispatcher checks block 1/2.
-        if (!is.null(self$dispatcher)) {
-          handle <- ps::ps_handle(pid = self$dispatcher)
-        }
-        # End dispatcher checks block 1/2.
-        mirai::daemons(n = 0L, .compute = self$name)
-        # Begin dispatcher checks block 2/2.
-        if (!is.null(self$dispatcher)) {
-          tryCatch(
-            crew_retry(
-              fun = ~!ps::ps_is_running(p = handle),
-              seconds_interval = self$seconds_interval,
-              seconds_timeout = self$seconds_timeout
-            ),
-            crew_expire = function(condition) NULL
-          )
-          if_any(
-            ps::ps_is_running(p = handle),
-            ps::ps_kill(p = handle),
-            NULL
-          )
-          tryCatch(
-            crew_retry(
-              fun = ~!ps::ps_is_running(p = handle),
-              seconds_interval = self$seconds_interval,
-              seconds_timeout = self$seconds_timeout
-            ),
-            crew_expire = function(condition) NULL
-          )
-        }
-        # End dispatcher checks block 2/2.
-        self$daemons <- NULL
-        self$started <- FALSE
+      if (!isTRUE(self$started)) {
+        return(invisible())
       }
+      # TODO: if the dispatcher process becomes a C thread,
+      # delete these superfluous checks on the dispatcher.
+      # Begin dispatcher checks block 1/2.
+      if (!is.null(self$dispatcher)) {
+        handle <- ps::ps_handle(pid = self$dispatcher)
+      }
+      # End dispatcher checks block 1/2.
+      mirai::daemons(n = 0L, .compute = self$name)
+      self$daemons <- NULL
+      self$started <- FALSE
+      # Begin dispatcher checks block 2/2.
+      if (is.null(self$dispatcher)) {
+        return(invisible())
+      }
+      tryCatch(
+        crew_retry(
+          fun = ~!ps::ps_is_running(p = handle),
+          seconds_interval = self$seconds_interval,
+          seconds_timeout = self$seconds_timeout
+        ),
+        crew_expire = function(condition) NULL
+      )
+      if_any(
+        ps::ps_is_running(p = handle),
+        ps::ps_kill(p = handle),
+        NULL
+      )
+      tryCatch(
+        crew_retry(
+          fun = ~!ps::ps_is_running(p = handle),
+          seconds_interval = self$seconds_interval,
+          seconds_timeout = self$seconds_timeout
+        ),
+        crew_expire = function(condition) NULL
+      )
+      # End dispatcher checks block 2/2.
       invisible()
     }
   )

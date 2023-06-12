@@ -210,13 +210,9 @@ crew_class_launcher <- R6::R6Class(
         is.function(self$launch_worker),
         message = "launch_worker() must be a function."
       )
-      names <- c("call", "launcher", "worker", "instance")
       crew_assert(
-        names %in% names(formals(self$launch_worker)),
-        message = paste(
-          "launch_worker() must have arguments \"call\", \"launcher\",",
-          "\"worker\", and \"instance\"."
-        )
+        c("name", "call") %in% names(formals(self$launch_worker)),
+        message =  "launch_worker() must have args \"name\", and \"call\""
       )
       if (!is.null(self$terminate_worker)) {
         crew_assert(

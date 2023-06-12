@@ -200,8 +200,7 @@ crew_class_controller <- R6::R6Class(
       index <- head(which(self$launcher$workers$inactive), n = n)
       walk(x = index, f = self$launcher$launch)
       launched <- length(index)
-      schedule <- .subset2(self, "schedule")
-      schedule$demand <- .subset2(schedule, "demand") - launched
+      self$schedule$demand <- self$schedule$demand - launched
       invisible()
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
@@ -565,8 +564,8 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     summary = function(
-    columns = tidyselect::everything(),
-    controllers = NULL
+      columns = tidyselect::everything(),
+      controllers = NULL
     ) {
       client_log <- self$client$log()
       workers <- self$launcher$workers

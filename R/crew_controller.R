@@ -32,6 +32,7 @@ crew_controller <- function(
       alternative = "use the scale argument of push(), pop(), and wait()"
     )
   }
+  launcher$name <- router$name
   schedule <- crew_schedule(seconds_interval = router$seconds_interval)
   controller <- crew_class_controller$new(
     router = router,
@@ -133,6 +134,10 @@ crew_class_controller <- R6::R6Class(
       self$router$validate()
       self$launcher$validate()
       self$schedule$validate()
+      crew_assert(
+        identical(self$router$name, self$launcher$name),
+        message = "router and launcher must have the same name"
+      )
       crew_assert(self$log, is.null(.) || is.data.frame(.))
       invisible()
     },

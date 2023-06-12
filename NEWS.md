@@ -4,6 +4,7 @@
 * Optimize heavily (#81, #83, @shikokuchuo, @brendanf).
 * Use CRAN `nanonext` 0.9.0.
 * Delegate the task pushing and collection logic to a new `R6` schedule class (#84).
+* Simplify internals (#84).
 
 # crew 0.2.1
 

@@ -83,9 +83,6 @@ crew_class_router <- R6::R6Class(
     dispatcher = NULL,
     #' @field daemons Data frame of information from `mirai::daemons()`.
     daemons = NULL,
-    #' @field rotated Logical vector, whether each worker's websocket URL
-    #'   was rotated at least once.
-    rotated = NULL,
     #' @field assigned Integer vector of cumulative `assigned` tasks.
     assigned = NULL,
     #' @field complete Integer vector of cumulative `complete` tasks.
@@ -194,7 +191,6 @@ crew_class_router <- R6::R6Class(
       self$dispatcher <- environment(mirai::daemons)$..[[self$name]]$pid
       attr(rownames(self$daemons), "dispatcher_pid") <- self$dispatcher
       # End dispatcher code.
-      self$rotated <- rep(FALSE, self$workers)
       self$assigned <- rep(0L, self$workers)
       self$complete <- rep(0L, self$workers)
       self$tallied <- rep(FALSE, self$workers)
@@ -208,17 +204,10 @@ crew_class_router <- R6::R6Class(
     #'   Subsequent calls to `route()` at the same index rotate
     #'   the websocket path for robustness.
     #' @param index Integer of length 1, worker index.
-    #' @param force `TRUE` to force a rotation even if e.g. tasks are underway,
-    #'   `FALSE` otherwise.
-    #' @return Character of length 1, new websocket path of the worker.
-    route = function(index, force = FALSE) {
-      on.exit(self$rotated[index] <- TRUE)
-      on.exit(self$tallied[index] <- FALSE, add = TRUE)
-      if_any(
-        self$rotated[index],
-        mirai::saisei(i = index, force = force, .compute = self$name),
-        rownames(self$daemons)[index]
-      )
+    #' @return `NULL` (invisibly).
+    route = function(index) {
+      self$tallied[index] <- FALSE
+      NULL
     },
     #' @description Update the cumulative `assigned` and `complete` task stats.
     #' @details Some workers may exit but still have tasks assigned to them

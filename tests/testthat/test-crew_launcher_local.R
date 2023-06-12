@@ -5,7 +5,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   router <- crew_router(
     workers = 4L
   )
-  launcher <- crew_launcher_local(seconds_idle = 360)
+  launcher <- crew_launcher_local(name = router$name, seconds_idle = 360)
   on.exit({
     router$terminate()
     launcher$terminate()
@@ -19,9 +19,10 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   launcher$start(workers = 4L)
   expect_equal(nrow(launcher$workers), 4L)
   expect_s3_class(launcher$workers$handle[[2L]], "crew_null")
-  socket <- rownames(router$daemons)[2L]
   expect_equal(launcher$workers$launches, rep(0L, 4L))
-  launcher$launch(index = 2L, socket = socket)
+  launcher$launch(index = 2L)
+  router$poll()
+  socket <- rownames(router$daemons)[2L]
   expect_s3_class(launcher$workers$handle[[2L]], "process")
   expect_silent(launcher$validate())
   crew::crew_retry(
@@ -68,31 +69,6 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   )
 })
 
-crew_test("crew_launcher_local() okay to not have sockets to launch", {
-  skip_if_low_dep_versions()
-  skip_on_cran()
-  skip_on_os("windows")
-  launcher <- crew_launcher_local(seconds_idle = 360)
-  # start launcher
-  launcher$start()
-  expect_true(is_crew_null(launcher$workers$handle[[1]]))
-  expect_equal(launcher$workers$socket, NA_character_)
-  expect_equal(launcher$workers$start, NA_real_)
-  expect_equal(launcher$workers$launches, 0L)
-  # launch with empty character vector
-  expect_silent(launcher$launch(index = 1L, socket = character(0L)))
-  expect_true(is_crew_null(launcher$workers$handle[[1]]))
-  expect_equal(launcher$workers$socket, NA_character_)
-  expect_equal(launcher$workers$start, NA_real_)
-  expect_equal(launcher$workers$launches, 0L)
-  # launch null
-  expect_silent(launcher$launch(index = 1L, socket = NULL))
-  expect_true(is_crew_null(launcher$workers$handle[[1]]))
-  expect_equal(launcher$workers$socket, NA_character_)
-  expect_equal(launcher$workers$start, NA_real_)
-  expect_equal(launcher$workers$launches, 0L)
-})
-
 crew_test("crew_launcher_local() can run a task and time out a worker", {
   skip_if_low_dep_versions()
   skip_on_cran()
@@ -100,7 +76,11 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   router <- crew_router(
     workers = 1L
   )
-  launcher <- crew_launcher_local(tasks_max = 1L, seconds_idle = 360)
+  launcher <- crew_launcher_local(
+    name = router$name,
+    tasks_max = 1L,
+    seconds_idle = 360
+  )
   on.exit({
     router$terminate()
     launcher$terminate()
@@ -111,9 +91,8 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   })
   router$start()
   expect_silent(launcher$validate())
-  socket <- rownames(router$daemons)
   launcher$start(workers = 1L)
-  launcher$launch(index = 1L, socket = socket)
+  launcher$launch(index = 1L)
   crew::crew_retry(
     ~{
       handle <- launcher$workers$handle[[1]]
@@ -158,7 +137,11 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   router <- crew_router(
     workers = 1L
   )
-  launcher <- crew_launcher_local(tasks_max = 1L, seconds_idle = 360)
+  launcher <- crew_launcher_local(
+    name = router$name,
+    tasks_max = 1L,
+    seconds_idle = 360
+  )
   on.exit({
     router$terminate()
     launcher$terminate()
@@ -170,7 +153,7 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   router$start()
   socket <- rownames(router$daemons)
   launcher$start(workers = 1L)
-  launcher$launch(index = 1L, socket = socket)
+  launcher$launch(index = 1L)
   crew::crew_retry(
     ~{
       daemons <- rlang::duplicate(

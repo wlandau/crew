@@ -54,9 +54,6 @@ Other routers:
 
 \item{\code{daemons}}{Data frame of information from \code{mirai::daemons()}.}
 
-\item{\code{rotated}}{Logical vector, whether each worker's websocket URL
-was rotated at least once.}
-
 \item{\code{assigned}}{Integer vector of cumulative \code{assigned} tasks.}
 
 \item{\code{complete}}{Integer vector of cumulative \code{complete} tasks.}
@@ -163,16 +160,13 @@ Start listening for workers on the available sockets.
 Choose the websocket path for the next instance
 of the worker at a given index.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$route(index, force = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$route(index)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{index}}{Integer of length 1, worker index.}
-
-\item{\code{force}}{\code{TRUE} to force a rotation even if e.g. tasks are underway,
-\code{FALSE} otherwise.}
 }
 \if{html}{\out{</div>}}
 }
@@ -184,7 +178,7 @@ the websocket path for robustness.
 }
 
 \subsection{Returns}{
-Character of length 1, new websocket path of the worker.
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}

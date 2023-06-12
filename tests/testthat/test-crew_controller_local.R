@@ -61,7 +61,6 @@ crew_test("crew_controller_local()", {
   )
   expect_equal(s$popped_tasks, 0L)
   expect_true(x$router$started)
-  instance <- parse_instance(rownames(x$router$daemons))
   x$push(
     command = Sys.getenv("CREW_INSTANCE"),
     name = "task",
@@ -88,6 +87,8 @@ crew_test("crew_controller_local()", {
   expect_equal(x$summary()$popped_tasks, 1L)
   expect_equal(x$summary()$popped_errors, 0L)
   expect_equal(x$summary()$popped_warnings, 0L)
+  x$router$poll()
+  instance <- parse_instance(rownames(x$router$daemons))
   expect_equal(out$name, "task")
   expect_equal(out$command, "Sys.getenv(\"CREW_INSTANCE\")")
   expect_equal(out$result[[1]], instance)

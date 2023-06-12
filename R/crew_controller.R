@@ -62,31 +62,6 @@ crew_controller <- function(
 crew_class_controller <- R6::R6Class(
   classname = "crew_class_controller",
   cloneable = FALSE,
-  private = list(
-    inactive = function() {
-      daemons <- self$router$daemons
-      launching <- self$launcher$launching()
-      which(is_inactive(daemons = daemons, launching = launching))
-    },
-    scalable = function() {
-      daemons <- self$router$daemons
-      launching <- self$launcher$launching()
-      inactive <- is_inactive(daemons = daemons, launching = launching)
-      backlogged <- self$router$assigned > self$router$complete
-      list(
-        backlogged = which(inactive & backlogged),
-        resolved = which(inactive & (!backlogged)),
-        n_inactive = sum(inactive)
-      )
-    },
-    try_launch = function(inactive, n) {
-      inactive <- utils::head(inactive, n = max(0L, n))
-      for (index in inactive) {
-        self$router$route(index = index)
-        self$launcher$launch(index = index)
-      }
-    }
-  ),
   public = list(
     #' @field router Router object.
     router = NULL,
@@ -96,9 +71,9 @@ crew_class_controller <- R6::R6Class(
     schedule = NULL,
     #' @field log Data frame task log of the workers.
     log = NULL,
-    #' @field until_scale Numeric of length 1, time point when
+    #' @field until Numeric of length 1, time point when
     #'   throttled auto-scaling unlocks.
-    until_scale = NULL,
+    until = NULL,
     #' @description `mirai` controller constructor.
     #' @return An `R6` controller object.
     #' @param router Router object. See [crew_controller()].
@@ -221,15 +196,15 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      self$router$poll()
-      nanonext::msleep(10)
-      self$router$poll()
-      self$router$tally()
-      inactive <- private$inactive()
-      private$try_launch(inactive = inactive, n = n)
+      self$launcher$poll()
+      index <- head(which(self$launcher$workers$inactive), n = n)
+      walk(x = index, f = self$launcher$launch)
+      launched <- length(index)
+      schedule <- .subset2(self, "schedule")
+      schedule$demand <- .subset2(schedule, "demand") - launched
       invisible()
     },
-    #' @description Run auto-scaling.
+    #' @description Auto-scale workers out to meet the demand of tasks.
     #' @details Methods `push()`, `pop()`, and `wait()` already invoke
     #'   `scale()` if the `scale` argument is `TRUE`.
     #'   If you call `scale()` manually, it is recommended to call `collect()`
@@ -249,27 +224,18 @@ crew_class_controller <- R6::R6Class(
     scale = function(throttle = FALSE, controllers = NULL) {
       if (throttle) {
         now <- nanonext::mclock()
-        if (is.null(self$until_scale)) {
-          self$until_scale <- now + (1000 * self$router$seconds_interval)
+        if (is.null(self$until)) {
+          self$until <- now + (1000 * self$router$seconds_interval)
         }
-        if (now < self$until_scale) {
+        if (now < self$until) {
           return(invisible())
         } else {
-          self$until_scale <- NULL
+          self$until <- NULL
         }
       }
-      self$router$poll()
-      nanonext::msleep(10)
-      self$router$poll()
-      self$router$tally()
-      scalable <- private$scalable()
-      private$try_launch(inactive = scalable$backlogged, n = Inf)
-      workers <- self$router$workers
-      available <- workers - length(scalable$resolved)
-      self$collect(throttle = FALSE)
-      demand <- length(.subset2(.subset2(self, "schedule"), "pushed"))
-      deficit <- min(demand - available, workers)
-      private$try_launch(inactive = scalable$resolved, n = deficit)
+      self$schedule$collect(throttle = FALSE)
+      launched <- self$launcher$launch(demand = schedule$demand)
+      schedule$demand <- demand - launched
       invisible()
     },
     #' @description Push a task to the head of the task list.
@@ -647,12 +613,6 @@ crew_class_controller <- R6::R6Class(
     }
   )
 )
-
-is_inactive <- function(daemons, launching) {
-  connected <- as.logical(daemons[, "online"] > 0L)
-  discovered <- as.logical(daemons[, "instance"] > 0L)
-  (!connected) & (discovered | (!launching))
-}
 
 lang_quote <- as.symbol("quote")
 lang_crew_eval <- quote(crew::crew_eval)

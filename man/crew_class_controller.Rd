@@ -55,7 +55,7 @@ Other controllers:
 
 \item{\code{log}}{Data frame task log of the workers.}
 
-\item{\code{until_scale}}{Numeric of length 1, time point when
+\item{\code{until}}{Numeric of length 1, time point when
 throttled auto-scaling unlocks.}
 }
 \if{html}{\out{</div>}}
@@ -291,7 +291,7 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{<a id="method-crew_class_controller-scale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-scale}{}}}
 \subsection{Method \code{scale()}}{
-Run auto-scaling.
+Auto-scale workers out to meet the demand of tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale(throttle = FALSE, controllers = NULL)}\if{html}{\out{</div>}}
 }

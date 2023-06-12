@@ -51,16 +51,6 @@ Other routers:
 \item{\code{started}}{Whether the router is started.}
 
 \item{\code{dispatcher}}{Process ID of the \code{mirai} dispatcher}
-
-\item{\code{daemons}}{Data frame of information from \code{mirai::daemons()}.}
-
-\item{\code{assigned}}{Integer vector of cumulative \code{assigned} tasks.}
-
-\item{\code{complete}}{Integer vector of cumulative \code{complete} tasks.}
-
-\item{\code{tallied}}{Logical vector, whether the cumulative task
-\code{assigned} and \code{complete} stats were recorded for the current
-instance of each worker.}
 }
 \if{html}{\out{</div>}}
 }
@@ -70,9 +60,6 @@ instance of each worker.}
 \item \href{#method-crew_class_router-new}{\code{crew_class_router$new()}}
 \item \href{#method-crew_class_router-validate}{\code{crew_class_router$validate()}}
 \item \href{#method-crew_class_router-start}{\code{crew_class_router$start()}}
-\item \href{#method-crew_class_router-route}{\code{crew_class_router$route()}}
-\item \href{#method-crew_class_router-tally}{\code{crew_class_router$tally()}}
-\item \href{#method-crew_class_router-poll}{\code{crew_class_router$poll()}}
 \item \href{#method-crew_class_router-log}{\code{crew_class_router$log()}}
 \item \href{#method-crew_class_router-terminate}{\code{crew_class_router$terminate()}}
 }
@@ -154,88 +141,12 @@ Start listening for workers on the available sockets.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-route"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-route}{}}}
-\subsection{Method \code{route()}}{
-Choose the websocket path for the next instance
-of the worker at a given index.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$route(index)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{index}}{Integer of length 1, worker index.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-The first call to \code{route()} at a given index
-uses the original websocket path provided by \code{mirai::daemons()}.
-Subsequent calls to \code{route()} at the same index rotate
-the websocket path for robustness.
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-tally"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-tally}{}}}
-\subsection{Method \code{tally()}}{
-Update the cumulative \code{assigned} and \code{complete} task stats.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$tally()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Some workers may exit but still have tasks assigned to them
-at the NNG level. By updating the cumulative \code{assigned} and
-\code{completed} tasks, \code{crew} can make the decision to launch
-these workers before others so they can clear out the backlog.
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_router-poll"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_router-poll}{}}}
-\subsection{Method \code{poll()}}{
-Update the \code{daemons} field with
-information on the \code{mirai} daemons.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_router$poll()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Call \code{mirai::daemons()} to get information about the workers.
-If the workers cannot be reached or the router has not started,
-then do not modify the \code{daemons} field. Otherwise, if the workers
-are reachable, populate the \code{daemons} field with a matrix
-of high-level worker-specific statistics.
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_router-log"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_router-log}{}}}
 \subsection{Method \code{log()}}{
 Show an informative worker log.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_router$log()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-This method tries once to update the worker information
-using \code{poll()}. If unsuccessful the first time, it just uses
-the existing information in the \code{daemons} field.
 }
 
 \subsection{Returns}{

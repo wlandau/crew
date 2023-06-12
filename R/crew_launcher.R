@@ -321,16 +321,54 @@ crew_class_launcher <- R6::R6Class(
         handle = replicate(workers, crew_null, simplify = FALSE),
         socket = rep(NA_character_, workers),
         start = rep(NA_real_, workers),
-        launches = rep(0L, workers)
+        launches = rep(0L, workers),
+        inactive = rep(TRUE, workers),
+        backlogged = rep(FALSE, workers),
+        assigned = rep(0L, workers),
+        complete = rep(0L, workers),
+        tallied = rep(FALSE, workers)
       )
       invisible()
+    },
+    #' @description Update internal info about worker activity and task load.
+    #' @return `NULL` (invisibly).
+    poll = function() {
+      daemons <- daemons_info(name = self$name)
+      online <- as.logical(daemons[, "online"])
+      discovered <- as.logical(daemons[, "instance"])
+      launching <- self$launching()
+      self$workers$inactive <- (!online) & (discovered | (!launching))
+      done <- (!online) & discovered
+      new_assigned <- as.integer(daemons[, "assigned"])
+      new_complete <- as.integer(daemons[, "complete"])
+      old_assigned <- self$workers$assigned
+      old_complete <- self$workers$complete
+      tallied <- self$workers$tallied
+      index <- done & (!tallied)
+      self$workers$tallied[index] <- TRUE
+      assigned <- old_assigned[index] + new_assigned[index]
+      complete <- old_complete[index] + new_complete[index]
+      self$workers$backlogged[index] <- assigned > complete
+      self$workers$assigned[index] <- assigned
+      self$workers$complete[index] <- complete
+      invisible()
+    },
+    #' @description Show whether each worker is launching.
+    #' @details A worker is considered "launching" if it was started
+    #'   recently (`seconds_launch` seconds ago or sooner).
+    #' @return A logical vector indicating which workers are launching.
+    launching = function() {
+      bound <- self$seconds_launch
+      start <- self$workers$start
+      now <- nanonext::mclock() / 1000
+      !is.na(start) & ((now - start) < bound)
     },
     #' @description Launch a worker.
     #' @return `NULL` (invisibly).
     #' @param index Positive integer of length 1, index of the worker
     #'   to launch.
     launch = function(index) {
-      socket <- mirai::saisei(i = index, force = FALSE, .compute = self$name)
+      socket <- mirai::saisei(i = index, force = TRUE, .compute = self$name)
       instance <- parse_instance(socket)
       call <- self$call(
         socket = socket,
@@ -351,18 +389,25 @@ crew_class_launcher <- R6::R6Class(
       self$workers$handle[[index]] <- handle
       self$workers$socket[index] <- socket
       self$workers$start[index] <- nanonext::mclock() / 1000
-      self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
+      self$workers$launches[index] <- self$workers$launches[index] + 1L
+      self$workers$tallied[index] <- FALSE
       invisible()
     },
-    #' @description Show whether each worker is launching.
-    #' @details A worker is considered "launching" if it was started
-    #'   recently (`seconds_launch` seconds ago or sooner).
-    #' @return A logical vector indicating which workers are launching.
-    launching = function() {
-      bound <- self$seconds_launch
-      start <- self$workers$start
-      now <- nanonext::mclock() / 1000
-      !is.na(start) & ((now - start) < bound)
+    #' @description Auto-scale workers out to meet the demand of tasks.
+    #' @return Number of workers launched.
+    #' @param demand Number of tasks without workers to launch them yet.
+    scale = function(demand) {
+      self$poll()
+      inactive <- self$workers$inactive
+      backlogged <- self$workers$backlogged
+      launch_backlogged <- which(inactive & backlogged)
+      walk(x = launch_backlogged, f = self$launch)
+      resolved <- which(inactive & (!backlogged))
+      active <- nrow(self$workers) - length(resolved)
+      deficit <- min(demand - active, nrow(self$workers))
+      launch_resolved <- head(resolved, n = deficit)
+      walk(x = launch_resolved, f = self$launch)
+      length(launch_backlogged) + length(launch_resolved)
     },
     #' @description Terminate one or more workers.
     #' @return `NULL` (invisibly).

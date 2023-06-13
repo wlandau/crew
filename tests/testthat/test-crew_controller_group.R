@@ -31,7 +31,7 @@ crew_test("crew_controller_group()", {
   })
   expect_silent(x$validate())
   for (index in seq_len(2)) {
-    expect_null(x$controllers[[index]]$router$started)
+    expect_null(x$controllers[[index]]$client$started)
   }
   x$start()
   expect_true(x$empty())
@@ -39,7 +39,7 @@ crew_test("crew_controller_group()", {
   expect_true(x$empty(controllers = "a"))
   expect_true(x$empty(controllers = "b"))
   for (index in seq_len(2)) {
-    expect_true(x$controllers[[index]]$router$started)
+    expect_true(x$controllers[[index]]$client$started)
   }
   crew_retry(
     ~{
@@ -149,7 +149,7 @@ crew_test("crew_controller_group()", {
   handle <- x$controllers[[2]]$launcher$workers$handle[[1]]
   x$terminate()
   for (index in seq_len(2)) {
-    expect_false(x$controllers[[index]]$router$started)
+    expect_false(x$controllers[[index]]$client$started)
     crew_retry(
       ~!handle$is_alive(),
       seconds_interval = 0.1,
@@ -177,15 +177,15 @@ crew_test("crew_controller_group() select", {
     gc()
     crew_test_sleep()
   })
-  expect_null(a$router$started)
-  expect_null(b$router$started)
+  expect_null(a$client$started)
+  expect_null(b$client$started)
   name <- "b"
   x$start(controllers = name)
-  expect_null(a$router$started)
-  expect_true(b$router$started)
+  expect_null(a$client$started)
+  expect_true(b$client$started)
   x$terminate(controllers = name)
-  expect_null(a$router$started)
-  expect_false(b$router$started)
+  expect_null(a$client$started)
+  expect_false(b$client$started)
 })
 
 crew_test("crew_controller_group() collect", {
@@ -208,8 +208,8 @@ crew_test("crew_controller_group() collect", {
     crew_test_sleep()
   })
   expect_silent(x$validate())
-  expect_null(x$controllers[[1]]$router$started)
-  expect_null(x$controllers[[2]]$router$started)
+  expect_null(x$controllers[[1]]$client$started)
+  expect_null(x$controllers[[2]]$client$started)
   x$start()
   expect_null(x$pop())
   x$push(command = ps::ps_pid(), name = "task_pid")

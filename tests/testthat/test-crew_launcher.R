@@ -202,7 +202,7 @@ crew_test("custom launcher", {
     reset_options = FALSE,
     garbage_collection = FALSE
   ) {
-    router <- crew::crew_router(
+    client <- crew::crew_client(
       name = name,
       workers = workers,
       host = host,
@@ -224,7 +224,7 @@ crew_test("custom launcher", {
       garbage_collection = garbage_collection
     )
     controller <- crew::crew_controller(
-      router = router,
+      client = client,
       launcher = launcher
     )
     controller$validate()

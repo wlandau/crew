@@ -21,7 +21,7 @@
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
 #' client$start()
-#' client$daemons
+#' client$log()
 #' client$terminate()
 #' }
 crew_client <- function(
@@ -57,7 +57,7 @@ crew_client <- function(
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
 #' client$start()
-#' client$daemons
+#' client$log()
 #' client$terminate()
 #' }
 crew_class_client <- R6::R6Class(
@@ -92,7 +92,7 @@ crew_class_client <- R6::R6Class(
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
     #' client$start()
-    #' client$daemons
+    #' client$log()
     #' client$terminate()
     #' }
     initialize = function(

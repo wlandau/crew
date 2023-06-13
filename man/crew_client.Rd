@@ -41,7 +41,7 @@ Create an \code{R6} wrapper object to manage the \code{mirai} client.
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
-client$daemons
+client$log()
 client$terminate()
 }
 }

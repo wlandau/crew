@@ -13,7 +13,7 @@ See \code{\link[=crew_client]{crew_client()}}.
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
-client$daemons
+client$log()
 client$terminate()
 }
 
@@ -24,7 +24,7 @@ client$terminate()
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
-client$daemons
+client$log()
 client$terminate()
 }
 }
@@ -105,7 +105,7 @@ An \code{R6} object with the client.
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
-client$daemons
+client$log()
 client$terminate()
 }
 }

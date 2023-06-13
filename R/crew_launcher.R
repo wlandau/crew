@@ -203,10 +203,14 @@ crew_class_launcher <- R6::R6Class(
         is.function(self$launch_worker),
         message = "launch_worker() must be a function."
       )
-      crew_assert(
-        c("name", "call") %in% names(formals(self$launch_worker)),
-        message =  "launch_worker() must have args \"name\", and \"call\""
-      )
+      # TODO: tighten up this validation after crew.cluster release with new
+      # formals.
+      # nolint start
+      # crew_assert(
+      #   c("call", "name") %in% names(formals(self$launch_worker)),
+      #   message =  "launch_worker() must have args \"call\", and \"name\""
+      # )
+      # nolint end
       if (!is.null(self$terminate_worker)) {
         crew_assert(
           is.function(self$terminate_worker),
@@ -388,16 +392,28 @@ crew_class_launcher <- R6::R6Class(
         worker = index,
         instance = instance
       )
-      handle <- self$workers$handle[[index]]
-      if (!is_crew_null(handle)) {
-        self$terminate_worker(handle)
-      }
       name <- name_worker(
         launcher = self$name,
         worker = index,
         instance = instance
       )
-      handle <- self$launch_worker(name = name, call = call)
+      handle <- self$workers$handle[[index]]
+      if (!is_crew_null(handle)) {
+        self$terminate_worker(handle)
+      }
+      # TODO: move to the `name` argument after next crew.cluster release.
+      if ("name" %in% names(formals(self$launch_worker))) {
+        handle <- self$launch_worker(call = call, name = name)
+      } else {
+        # nocov start
+        handle <- self$launch_worker(
+          call = call,
+          launcher = self$name,
+          worker = index,
+          instance = instance
+        )
+        # nocov end
+      }
       self$workers$handle[[index]] <- handle
       self$workers$socket[index] <- socket
       self$workers$start[index] <- nanonext::mclock() / 1000

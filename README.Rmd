@@ -235,7 +235,7 @@ Depending on user settings, `crew` workers may run for the entire length of the 
 The [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher is designed to gracefully exit when you call `terminate()` on the controller object or when you restart your R session. However, if you ever need to shut down the dispatcher manually, you can find the process ID using the controller object, then use `ps::ps_kill()` to terminate the process.
 
 ```{r}
-controller$router$dispatcher
+controller$client$dispatcher
 #> [1] 86028
 handle <- ps::ps_handle(pid = 86028L)
 ps::ps_is_running(handle)
@@ -257,7 +257,7 @@ ps::ps_is_running(handle)
 * [`later`](https://r-lib.github.io/later/): delayed evaluation of synchronous tasks.
 * [`promises`](https://rstudio.github.io/promises/): minimally-invasive asynchronous programming for a small number of tasks within Shiny apps.
 * [`callr`](https://github.com/r-lib/callr): initiates R process from other R processes.
-* [High-performance computing CRAN task view](	https://CRAN.R-project.org/view=HighPerformanceComputing).
+* [High-performance computing CRAN task view](https://CRAN.R-project.org/view=HighPerformanceComputing).
 
 # Thanks
 

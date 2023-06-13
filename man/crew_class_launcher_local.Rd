@@ -62,16 +62,16 @@ Other launchers:
 Launch a local process worker which will
 dial into a socket.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$launch_worker(name, call)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$launch_worker(call, name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character of length 1 with an informative worker name.}
-
 \item{\code{call}}{Character of length 1 with a namespaced call to
 \code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
+
+\item{\code{name}}{Character of length 1 with an informative worker name.}
 }
 \if{html}{\out{</div>}}
 }

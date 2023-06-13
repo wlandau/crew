@@ -53,7 +53,7 @@ custom_launcher_class <- R6::R6Class(
   classname = "custom_launcher_class",
   inherit = crew::crew_class_launcher,
   public = list(
-    launch_worker = function(call, launcher, worker, instance) {
+    launch_worker = function(call, name) {
       bin <- file.path(R.home("bin"), "R")
       processx::process$new(
         command = bin,

@@ -79,10 +79,10 @@ crew_class_launcher_local <- R6::R6Class(
     #'   constructing informative job names.
     #' @return A handle object to allow the termination of the worker
     #'   later on.
-    #' @param name Character of length 1 with an informative worker name.
     #' @param call Character of length 1 with a namespaced call to
     #'   [crew_worker()] which will run in the worker and accept tasks.
-    launch_worker = function(name, call) {
+    #' @param name Character of length 1 with an informative worker name.
+    launch_worker = function(call, name) {
       bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
       path <- file.path(R.home("bin"), bin)
       processx::process$new(

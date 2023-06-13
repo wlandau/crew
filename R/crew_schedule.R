@@ -15,8 +15,8 @@
 #' schedule$push(task = mirai::mirai(2 + 2))
 #' Sys.sleep(4)
 #' schedule$collect(throttle = FALSE)
-#' schedule$pop()$data # 1
-#' schedule$pop()$data # 2
+#' schedule$pop()$data # numeric result
+#' schedule$pop()$data # numeric result
 #' schedule$pop()$data # NULL
 #' }
 crew_schedule <- function(seconds_interval = 0.25) {

@@ -7,6 +7,20 @@
 #'   [crew_controller_local()] for details.
 #' @param seconds_interval Number of seconds between throttled iterations
 #'   of task collection.
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' schedule <- crew_schedule()
+#' schedule$start()
+#' task <- mirai::mirai(1 + 1)
+#' schedule$push(task = task)
+#' task <- mirai::mirai(2 + 2)
+#' schedule$push(task = task)
+#' Sys.sleep(4)
+#' schedule$collect(throttle = FALSE)
+#' schedule$pop()$data # 1
+#' schedule$pop()$data # 2
+#' schedule$pop()$data # NULL
+#' }
 crew_schedule <- function(seconds_interval = 0.25) {
   out <- crew_class_schedule$new(seconds_interval = seconds_interval)
   out$validate()

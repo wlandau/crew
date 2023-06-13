@@ -17,6 +17,21 @@ Create an \code{R6} object to contain and manage task objects.
 Not a user-side function. There are no examples. Please see
 \code{\link[=crew_controller_local]{crew_controller_local()}} for details.
 }
+\examples{
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+schedule <- crew_schedule()
+schedule$start()
+task <- mirai::mirai(1 + 1)
+schedule$push(task = task)
+task <- mirai::mirai(2 + 2)
+schedule$push(task = task)
+Sys.sleep(4)
+schedule$collect(throttle = FALSE)
+schedule$pop()$data # 1
+schedule$pop()$data # 2
+schedule$pop()$data # NULL
+}
+}
 \seealso{
 Other schedule: 
 \code{\link{crew_class_schedule}}

@@ -430,7 +430,7 @@ crew_class_launcher <- R6::R6Class(
     #'   and efficiency.
     scale = function(demand, throttle = FALSE) {
       if (throttle && self$throttle()) {
-        return(invisible())
+        return(0L)
       }
       self$poll()
       inactive <- self$workers$inactive

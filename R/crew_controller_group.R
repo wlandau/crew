@@ -376,11 +376,10 @@ crew_class_controller_group <- R6::R6Class(
           fun = ~{
             empty <- TRUE
             for (controller in control) {
-              if_any(
-                scale,
-                controller$scale(throttle = throttle),
-                controller$collect(throttle = throttle)
-              )
+              controller$schedule$collect(throttle = throttle)
+              if (scale) {
+                controller$scale(throttle = throttle)
+              }
               done <- controller$schedule$collected_mode(mode = mode)
               empty <- controller$schedule$empty()
               if (done && !empty) {

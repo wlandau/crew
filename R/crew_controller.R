@@ -206,8 +206,6 @@ crew_class_controller <- R6::R6Class(
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @details Methods `push()`, `pop()`, and `wait()` already invoke
     #'   `scale()` if the `scale` argument is `TRUE`.
-    #'   If you call `scale()` manually, it is recommended to call `collect()`
-    #'   first so `scale()` can accurately assess the task load.
     #'   For finer control of the number of workers launched,
     #'   call `launch()` on the controller with the exact desired
     #'   number of workers.
@@ -225,7 +223,7 @@ crew_class_controller <- R6::R6Class(
         demand = self$schedule$demand,
         throttle = throttle
       )
-      self$schedule$demand <- demand - launched
+      self$schedule$demand <- self$schedule$demand - launched
       invisible()
     },
     #' @description Push a task to the head of the task list.
@@ -258,9 +256,6 @@ crew_class_controller <- R6::R6Class(
     #'   to auto-scale workers to meet the demand of the task load.
     #'   By design, auto-scaling might not actually happen
     #'   if `throttle = TRUE`.
-    #'   If `scale` is `TRUE`, then `collect()` runs first
-    #'   so demand can be properly assessed before scaling and the number
-    #'   of workers is not too high.
     #' @param throttle If `scale` is `TRUE`, whether to defer auto-scaling
     #'   until the next request at least
     #'   `self$client$seconds_interval` seconds from the original request.
@@ -365,15 +360,11 @@ crew_class_controller <- R6::R6Class(
     #'   whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
     #'   Auto-scaling might not actually happen if `throttle` is `TRUE`.
-    #'   If `TRUE`, then `collect()` runs first
-    #'   so demand can be properly assessed before scaling and the number
-    #'   of workers is not too high. Scaling up on `pop()` may be important
+    #'   Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
     #'   quickly after doing little work.
-    #' @param collect Logical of length 1. If `scale` is `FALSE`,
-    #'   whether to call `collect()`
-    #'   to pick up the results of completed tasks. This task collection
-    #'   step always happens (with throttling) when `scale` is `TRUE`.
+    #' @param collect Logical of length 1,
+    #'   whether to collect the results of completed tasks.
     #' @param throttle Whether to defer auto-scaling and task collection
     #'   until the next request at least
     #'   `self$client$seconds_interval` seconds from the original request.
@@ -388,10 +379,11 @@ crew_class_controller <- R6::R6Class(
       throttle = TRUE,
       controllers = NULL
     ) {
+      if (collect) {
+        .subset2(.subset2(self, "schedule"), "collect")(throttle = throttle)
+      }
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
-      } else if (collect) {
-        .subset2(self, "collect")(throttle = throttle)
       }
       task <- .subset2(.subset2(self, "schedule"), "pop")()
       if (is.null(task)) {
@@ -482,11 +474,10 @@ crew_class_controller <- R6::R6Class(
       tryCatch(
         crew_retry(
           fun = ~{
-            if_any(
-              scale,
-              self$scale(throttle = throttle),
-              self$collect(throttle = throttle)
-            )
+            self$schedule$collect(throttle = throttle)
+            if (scale) {
+              self$scale(throttle = throttle)
+            }
             self$schedule$collected_mode(mode = mode)
           },
           seconds_interval = seconds_interval,

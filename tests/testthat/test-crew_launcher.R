@@ -162,6 +162,72 @@ crew_test("launcher start()", {
   expect_equal(workers$launches, rep(0L, 2L))
 })
 
+crew_test("launcher poll()", {
+  grid <- expand.grid(
+    complete = c(3L, 7L),
+    start = c(NA_real_, -Inf, Inf),
+    instance = c(0L, 1L),
+    online = c(0L, 1L)
+  )
+  launcher <- crew_class_launcher$new(seconds_launch = 9999)
+  launcher$start(workers = nrow(grid))
+  launcher$workers$start <- grid$start
+  daemons <- cbind(
+    online = grid$online,
+    instance = grid$instance,
+    assigned = rep(7L, nrow(grid)),
+    complete = grid$complete
+  )
+  expect_equal(launcher$workers$backlogged, rep(FALSE, nrow(grid)))
+  expect_equal(launcher$workers$tallied, rep(FALSE, nrow(grid)))
+  expect_equal(launcher$workers$assigned, rep(0L, nrow(grid)))
+  expect_equal(launcher$workers$complete, rep(0L, nrow(grid)))
+  launcher$workers$backlogged <- rep(NA, nrow(grid))
+  launcher$poll(daemons = daemons)
+  expect_equal(
+    launcher$workers$inactive,
+    c(rep(TRUE, 4L), rep(FALSE, 2L), rep(TRUE, 6L), rep(FALSE, 12L))
+  )
+  expect_equal(
+    launcher$workers$backlogged,
+    c(rep(NA, 6L), rep(c(TRUE, FALSE), times = 3L), rep(NA, 12L))
+  )
+  expect_equal(
+    launcher$workers$tallied,
+    c(rep(FALSE, 6L), rep(TRUE, 6L), rep(FALSE, 12L))
+  )
+  expect_equal(
+    launcher$workers$assigned,
+    c(rep(0L, 6L), rep(7L, 6L), rep(0L, 12L))
+  )
+  expect_equal(
+    launcher$workers$complete,
+    c(rep(0L, 6L), rep(c(3L, 7L), times = 3L), rep(0L, 12L))
+  )
+  launcher$workers$tallied[seq(7L, 9L)] <- FALSE
+  launcher$poll(daemons = daemons)
+  expect_equal(
+    launcher$workers$inactive,
+    c(rep(TRUE, 4L), rep(FALSE, 2L), rep(TRUE, 6L), rep(FALSE, 12L))
+  )
+  expect_equal(
+    launcher$workers$backlogged,
+    c(rep(NA, 6L), rep(c(TRUE, FALSE), times = 3L), rep(NA, 12L))
+  )
+  expect_equal(
+    launcher$workers$tallied,
+    c(rep(FALSE, 6L), rep(TRUE, 6L), rep(FALSE, 12L))
+  )
+  expect_equal(
+    launcher$workers$assigned,
+    c(rep(0L, 6L), rep(14L, 3L), rep(7L, 3L), rep(0L, 12L))
+  )
+  expect_equal(
+    launcher$workers$complete,
+    c(rep(0L, 6L), c(6L, 14L, 6L, 7L, 3L, 7L), rep(0L, 12L))
+  )
+})
+
 crew_test("custom launcher", {
   skip_if_low_dep_versions()
   skip_on_cran()

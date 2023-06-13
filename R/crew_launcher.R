@@ -349,12 +349,14 @@ crew_class_launcher <- R6::R6Class(
     },
     #' @description Update internal info about worker activity and task load.
     #' @return `NULL` (invisibly).
-    poll = function() {
+    #' @param daemons `mirai` daemons matrix. For testing only. Users
+    #'   should not set this.
+    poll = function(daemons = NULL) {
       bound <- self$seconds_launch
       start <- self$workers$start
       now <- nanonext::mclock() / 1000
       launching <- !is.na(start) & ((now - start) < bound)
-      daemons <- daemons_info(name = self$name)
+      daemons <- daemons %|||% daemons_info(name = self$name)
       online <- as.logical(daemons[, "online"])
       discovered <- as.logical(daemons[, "instance"])
       self$workers$inactive <- (!online) & (discovered | (!launching))

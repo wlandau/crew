@@ -33,7 +33,7 @@ crew_controller_system2 <- function(
   reset_options = FALSE,
   garbage_collection = FALSE
 ) {
-  router <- crew::crew_router(
+  client <- crew::crew_client(
     name = name,
     workers = workers,
     host = host,
@@ -43,6 +43,7 @@ crew_controller_system2 <- function(
   )
   launcher <- system2_launcher_class$new(
     name = name,
+    seconds_interval = seconds_interval,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
@@ -54,7 +55,7 @@ crew_controller_system2 <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection
   )
-  controller <- crew::crew_controller(router = router, launcher = launcher)
+  controller <- crew::crew_controller(client = client, launcher = launcher)
   controller$validate()
   controller
 }

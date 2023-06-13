@@ -112,7 +112,7 @@ Launcher constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$new(
   name = NULL,
-  seconds_interval = NULL,
+  seconds_interval = 0.25,
   seconds_launch = NULL,
   seconds_idle = NULL,
   seconds_wall = NULL,

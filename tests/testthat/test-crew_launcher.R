@@ -1,6 +1,6 @@
 crew_test("abstract launcher class", {
-  expect_silent(crew_launcher()$validate)
-  expect_crew_error(crew_launcher(reset_options = -1)$validate())
+  out <- crew_launcher(reset_options = -1)
+  expect_crew_error(out$validate())
 })
 
 crew_test("default terminate_launcher() method", {

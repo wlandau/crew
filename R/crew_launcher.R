@@ -75,7 +75,7 @@ crew_launcher <- function(
   garbage_collection = FALSE
 ) {
   name <- as.character(name %|||% crew_random_name())
-  launcher <- crew_class_launcher_local$new(
+  crew_class_launcher$new(
     name = name,
     seconds_interval = seconds_interval,
     seconds_launch = seconds_launch,
@@ -89,8 +89,6 @@ crew_launcher <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection
   )
-  launcher$validate()
-  launcher
 }
 
 #' @title Launcher abstract class
@@ -171,7 +169,7 @@ crew_class_launcher <- R6::R6Class(
     #' }
     initialize = function(
       name = NULL,
-      seconds_interval = NULL,
+      seconds_interval = 0.25, # TODO: NULL after next crew.cluster
       seconds_launch = NULL,
       seconds_idle = NULL,
       seconds_wall = NULL,

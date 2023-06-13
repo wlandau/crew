@@ -111,7 +111,7 @@ crew_class_schedule <- R6::R6Class(
     throttle = function() {
       now <- nanonext::mclock()
       if (is.null(self$until)) {
-        self$until <- now + (1000 * self$client$seconds_interval)
+        self$until <- now + (1000 * self$seconds_interval)
       }
       if (now < self$until) {
         return(TRUE)

@@ -1,10 +1,11 @@
-# crew 0.2.1.9003 (development)
+# crew 0.3.0
 
 * Track warnings properly (#81, @brendanf).
 * Optimize heavily (#81, #83, @shikokuchuo, @brendanf).
 * Use CRAN `nanonext` 0.9.0.
 * Delegate the task pushing and collection logic to a new `R6` schedule class (#84).
 * Simplify internals (#84).
+* Rename "router" to "client" and change the function signature of `launch_worker()` (#84). Unfortunately neither of these changes is back-compatible for third-party launcher plugins, but the controller interface is still back-compatible.
 
 # crew 0.2.1
 

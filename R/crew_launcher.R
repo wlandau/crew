@@ -382,7 +382,10 @@ crew_class_launcher <- R6::R6Class(
     #' @param index Positive integer of length 1, index of the worker
     #'   to launch.
     launch = function(index) {
-      socket <- mirai::saisei(i = index, force = TRUE, .compute = self$name)
+      socket <- mirai::saisei(i = index, force = FALSE, .compute = self$name)
+      if (is.null(socket)) {
+        return(invisible()) # nocov
+      }
       instance <- parse_instance(socket)
       call <- self$call(
         socket = socket,

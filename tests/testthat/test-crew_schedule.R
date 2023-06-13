@@ -39,6 +39,21 @@ test_that("schedule push", {
   expect_true(is_crew_null(x$pushed[["1"]]))
 })
 
+test_that("schedule throttle", {
+  x <- crew_schedule(seconds_interval = 9999)
+  x$start()
+  expect_null(x$until)
+  expect_true(x$throttle())
+  expect_true(is.numeric(x$until))
+  x$until <- Inf
+  expect_true(x$throttle())
+  x$until <- -Inf
+  expect_false(x$throttle())
+  expect_null(x$until)
+  expect_true(x$throttle())
+  expect_true(is.numeric(x$until))
+})
+
 test_that("schedule collect without throttling", {
   x <- crew_schedule()
   x$start()

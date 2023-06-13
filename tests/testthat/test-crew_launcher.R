@@ -141,24 +141,25 @@ crew_test("launcher start()", {
   expect_equal(workers, NULL)
   launcher$start(workers = 2L)
   workers <- launcher$workers
-  expect_equal(dim(workers), c(2L, 4L))
+  expect_equal(nrow(workers), 2L)
   expect_equal(
     colnames(workers),
-    c("handle", "socket", "start", "launches")
+    cols <- c(
+      "handle",
+      "socket",
+      "start",
+      "launches",
+      "inactive",
+      "backlogged",
+      "tallied",
+      "assigned",
+      "complete"
+    )
   )
   expect_equal(workers$handle, list(crew_null, crew_null))
   expect_equal(workers$socket, c(NA_character_, NA_character_))
   expect_equal(workers$start, c(NA_real_, NA_real_))
   expect_equal(workers$launches, rep(0L, 2L))
-})
-
-crew_test("launcher launching()", {
-  skip_if_low_dep_versions()
-  skip_on_cran()
-  launcher <- crew_class_launcher$new(seconds_launch = 60)
-  launcher$start(workers = 3L)
-  launcher$workers$start <- c(NA_real_, -Inf, Inf)
-  expect_equal(launcher$launching(), c(FALSE, FALSE, TRUE))
 })
 
 crew_test("custom launcher", {

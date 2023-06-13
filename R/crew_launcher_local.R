@@ -8,9 +8,9 @@
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
 #' client$start()
-#' launcher <- crew_launcher_local()
+#' launcher <- crew_launcher_local(name = client$name)
 #' launcher$start(workers = client$workers)
-#' launcher$launch(index = 1L, socket = rownames(client$daemons))
+#' launcher$launch(index = 1L)
 #' m <- mirai::mirai("result", .compute = client$name)
 #' Sys.sleep(0.25)
 #' m$data
@@ -58,9 +58,9 @@ crew_launcher_local <- function(
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
 #' client$start()
-#' launcher <- crew_launcher_local()
+#' launcher <- crew_launcher_local(name = client$name)
 #' launcher$start(workers = client$workers)
-#' launcher$launch(index = 1L, socket = rownames(client$daemons))
+#' launcher$launch(index = 1L)
 #' m <- mirai::mirai("result", .compute = client$name)
 #' Sys.sleep(0.25)
 #' m$data

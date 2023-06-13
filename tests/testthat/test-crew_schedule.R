@@ -20,6 +20,7 @@ test_that("schedule start", {
   expect_true(is.environment(x$pushed))
   expect_true(is.environment(x$collected))
   expect_equal(x$pushes, 0L)
+  expect_equal(x$demand, 0L)
 })
 
 test_that("schedule push", {
@@ -28,10 +29,12 @@ test_that("schedule push", {
   expect_equal(length(x$pushed), 0L)
   expect_equal(length(x$collected), 0L)
   expect_equal(x$pushes, 0L)
+  expect_equal(x$demand, 0L)
   expect_null(x$head)
   expect_null(x$until)
   x$push(task = crew_null)
   expect_equal(x$pushes, 1L)
+  expect_equal(x$demand, 1L)
   expect_equal(length(x$pushed), 1L)
   expect_equal(length(x$collected), 0L)
   expect_null(x$head)

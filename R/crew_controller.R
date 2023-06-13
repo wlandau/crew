@@ -398,7 +398,6 @@ crew_class_controller <- R6::R6Class(
       # nocov start
       if (!is.list(out)) {
         out <- monad_init(
-          command = attr(task, "command"),
           error = paste(
             utils::capture.output(print(out), type = "output"),
             collapse = "\n"

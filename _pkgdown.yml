@@ -13,11 +13,11 @@ reference:
   - '`crew_launcher_local`'
 - title: Classes
   contents:
+  - '`crew_class_client`'
   - '`crew_class_controller`'
   - '`crew_class_controller_group`'
   - '`crew_class_launcher`'
   - '`crew_class_launcher_local`'
-  - '`crew_class_router`'
 - title: Utilities
   contents:
   - '`crew_assert`'

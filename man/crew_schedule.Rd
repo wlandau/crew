@@ -21,10 +21,8 @@ Not a user-side function. There are no examples. Please see
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 schedule <- crew_schedule()
 schedule$start()
-task <- mirai::mirai(1 + 1)
-schedule$push(task = task)
-task <- mirai::mirai(2 + 2)
-schedule$push(task = task)
+schedule$push(task = mirai::mirai(1 + 1))
+schedule$push(task = mirai::mirai(2 + 2))
 Sys.sleep(4)
 schedule$collect(throttle = FALSE)
 schedule$pop()$data # 1

@@ -43,6 +43,7 @@ throttled task collection unlocks.}
 \item \href{#method-crew_class_schedule-validate}{\code{crew_class_schedule$validate()}}
 \item \href{#method-crew_class_schedule-start}{\code{crew_class_schedule$start()}}
 \item \href{#method-crew_class_schedule-push}{\code{crew_class_schedule$push()}}
+\item \href{#method-crew_class_schedule-throttle}{\code{crew_class_schedule$throttle()}}
 \item \href{#method-crew_class_schedule-collect}{\code{crew_class_schedule$collect()}}
 \item \href{#method-crew_class_schedule-pop}{\code{crew_class_schedule$pop()}}
 \item \href{#method-crew_class_schedule-empty}{\code{crew_class_schedule$empty()}}
@@ -125,6 +126,19 @@ Add a task to the \code{pushed} hash table
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_schedule-throttle"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_schedule-throttle}{}}}
+\subsection{Method \code{throttle()}}{
+Throttle repeated calls.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_schedule$throttle()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} to throttle, \code{FALSE} to continue.
 }
 }
 \if{html}{\out{<hr>}}

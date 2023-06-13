@@ -94,6 +94,20 @@ crew_class_schedule <- R6::R6Class(
       pushed[[as.character(index)]] <- task
       invisible()
     },
+    #' @description Throttle repeated calls.
+    #' @return `TRUE` to throttle, `FALSE` to continue.
+    throttle = function() {
+      now <- nanonext::mclock()
+      if (is.null(self$until)) {
+        self$until <- now + (1000 * self$client$seconds_interval)
+      }
+      if (now < self$until) {
+        return(TRUE)
+      } else {
+        self$until <- NULL
+        return(FALSE)
+      }
+    },
     #' @description Collect resolved tasks.
     #' @details Scan the tasks in `pushed` and move the resolved ones to the
     #'   head of the `collected` stack.
@@ -105,16 +119,8 @@ crew_class_schedule <- R6::R6Class(
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
     collect = function(throttle = FALSE) {
-      if (throttle) {
-        now <- nanonext::mclock()
-        if (is.null(.subset2(self, "until"))) {
-          self$until <- now + (1000 * .subset2(self, "seconds_interval"))
-        }
-        if (now < .subset2(self, "until")) {
-          return(invisible())
-        } else {
-          self$until <- NULL
-        }
+      if (throttle && self$throttle()) {
+        return(invisible())
       }
       pushed <- .subset2(self, "pushed")
       collected <- .subset2(self, "collected")

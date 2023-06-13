@@ -147,6 +147,8 @@ crew_class_launcher <- R6::R6Class(
     reset_options = NULL,
     #' @field garbage_collection See [crew_launcher()].
     garbage_collection = NULL,
+    #' @field until Numeric of length 1, time point when throttled unlocks.
+    until = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
     #' @param name See [crew_launcher()].
@@ -411,10 +413,33 @@ crew_class_launcher <- R6::R6Class(
       self$workers$tallied[index] <- FALSE
       invisible()
     },
+    #' @description Throttle repeated calls.
+    #' @return `TRUE` to throttle, `FALSE` to continue.
+    throttle = function() {
+      now <- nanonext::mclock()
+      if (is.null(self$until)) {
+        self$until <- now + (1000 * self$client$seconds_interval)
+      }
+      if (now < self$until) {
+        return(TRUE)
+      } else {
+        self$until <- NULL
+        return(FALSE)
+      }
+    },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return Number of workers launched.
     #' @param demand Number of tasks without workers to launch them yet.
-    scale = function(demand) {
+    #' @param throttle Logical of length 1, whether to delay auto-scaling
+    #'   until the next auto-scaling request at least
+    #'  `self$client$seconds_interval` seconds from the original request.
+    #'   The idea is similar to `shiny::throttle()` except that `crew` does not
+    #'   accumulate a backlog of requests. The technique improves robustness
+    #'   and efficiency.
+    scale = function(demand, throttle = FALSE) {
+      if (throttle && self$throttle()) {
+        return(invisible())
+      }
       self$poll()
       inactive <- self$workers$inactive
       backlogged <- self$workers$backlogged

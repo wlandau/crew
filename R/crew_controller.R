@@ -221,20 +221,11 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(throttle = FALSE, controllers = NULL) {
-      if (throttle) {
-        now <- nanonext::mclock()
-        if (is.null(self$until)) {
-          self$until <- now + (1000 * self$client$seconds_interval)
-        }
-        if (now < self$until) {
-          return(invisible())
-        } else {
-          self$until <- NULL
-        }
-      }
-      self$schedule$collect(throttle = FALSE)
-      launched <- self$launcher$launch(demand = schedule$demand)
-      schedule$demand <- demand - launched
+      launched <- self$launcher$scale(
+        demand = self$schedule$demand,
+        throttle = throttle
+      )
+      self$schedule$demand <- demand - launched
       invisible()
     },
     #' @description Push a task to the head of the task list.

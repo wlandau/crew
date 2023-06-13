@@ -24,5 +24,6 @@ system.time(
     }
   }
 )
-testthat::expect_equal(length(controller$queue), 0L)
+testthat::expect_equal(length(controller$schedule$pushed), 0L)
+testthat::expect_equal(length(controller$schedule$collected), 0L)
 controller$terminate()

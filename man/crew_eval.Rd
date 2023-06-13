@@ -6,6 +6,8 @@
 \usage{
 crew_eval(
   command,
+  name = NA_character_,
+  string = NA_character_,
   data = list(),
   globals = list(),
   seed = as.integer(nanonext::random()/2),
@@ -15,6 +17,10 @@ crew_eval(
 }
 \arguments{
 \item{command}{Language object with R code to run.}
+
+\item{name}{Character of length 1, name of the task.}
+
+\item{string}{Character of length 1, string representation of the command.}
 
 \item{data}{Named list of local data objects in the evaluation environment.}
 

@@ -10,6 +10,8 @@
 #'   are restored to their original values on exit.
 #' @return A monad object with results and metadata.
 #' @param command Language object with R code to run.
+#' @param name Character of length 1, name of the task.
+#' @param string Character of length 1, string representation of the command.
 #' @param data Named list of local data objects in the evaluation environment.
 #' @param globals Named list of objects to temporarily assign to the
 #'   global environment for the task.
@@ -24,6 +26,8 @@
 #' crew_eval(quote(1 + 1))
 crew_eval <- function(
   command,
+  name = NA_character_,
+  string = NA_character_,
   data = list(),
   globals = list(),
   seed = as.integer(nanonext::random() / 2),
@@ -69,7 +73,8 @@ crew_eval <- function(
   )
   seconds <- (nanonext::mclock() - start) / 1000
   monad_init(
-    command = NA_character_,
+    name = name,
+    command = string,
     result = result %|||% NA,
     seconds = seconds,
     seed = seed,

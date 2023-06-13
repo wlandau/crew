@@ -296,7 +296,9 @@ crew_class_controller <- R6::R6Class(
       expr <-  as.call(
         list(
           lang_crew_eval,
+          name = name,
           command = command,
+          string = string,
           data = quote(data),
           globals = quote(globals),
           seed = quote(seed),
@@ -326,8 +328,6 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = self$client$name
       )
-      attr(task, "name") <- name
-      attr(task, "command") <- string
       .subset2(.subset2(self, "schedule"), "push")(task = task)
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
@@ -406,8 +406,6 @@ crew_class_controller <- R6::R6Class(
         )
       }
       # nocov end
-      out$name <- attr(task, "name")
-      out$command <- attr(task, "command")
       out <- monad_tibble(out)
       log <- self$log
       # Same as above.

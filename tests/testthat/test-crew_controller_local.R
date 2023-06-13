@@ -87,8 +87,7 @@ crew_test("crew_controller_local()", {
   expect_equal(x$summary()$popped_tasks, 1L)
   expect_equal(x$summary()$popped_errors, 0L)
   expect_equal(x$summary()$popped_warnings, 0L)
-  x$client$poll()
-  instance <- parse_instance(rownames(x$client$daemons))
+  instance <- parse_instance(x$client$log()$worker_socket)
   expect_equal(out$name, "task")
   expect_equal(out$command, "Sys.getenv(\"CREW_INSTANCE\")")
   expect_equal(out$result[[1]], instance)
@@ -253,7 +252,7 @@ crew_test("crew_controller_local() can terminate a lost worker", {
     seconds_timeout = 5
   )
   x$launcher$workers$handle[[1L]] <- handle
-  x$launcher$workers$socket[1L] <- rownames(x$client$daemons)
+  x$launcher$workers$socket[1L] <- x$client$log()$worker_socket
   x$launcher$workers$start[1L] <- - Inf
   x$launcher$workers$launches[1L] <- 1L
   expect_true(handle$is_alive())

@@ -207,7 +207,7 @@ crew_class_launcher <- R6::R6Class(
         message = paste(
           "launch_worker() must have the following arguments:",
           paste(sprintf("\"%s\"", fields), collapse = ", ")
-        ) 
+        )
       )
       if (!is.null(self$terminate_worker)) {
         crew_assert(

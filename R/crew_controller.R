@@ -326,7 +326,8 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = self$client$name
       )
-      attributes(task) <- list(name = name, command = string)
+      attr(task, "name") <- name
+      attr(task, "command") <- string
       .subset2(.subset2(self, "schedule"), "push")(task = task)
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)

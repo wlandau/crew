@@ -82,7 +82,14 @@ crew_class_launcher_local <- R6::R6Class(
     #' @param call Character of length 1 with a namespaced call to
     #'   [crew_worker()] which will run in the worker and accept tasks.
     #' @param name Character of length 1 with an informative worker name.
-    launch_worker = function(call, name) {
+    #' @param launcher Character of length 1, name of the launcher.
+    #' @param worker Positive integer of length 1, index of the worker.
+    #'   This worker index remains the same even when the current instance
+    #'   of the worker exits and a new instance launches.
+    #'   It is always between 1 and the maximum number of concurrent workers.
+    #' @param instance Character of length 1 to uniquely identify
+    #'   the current instance of the worker a the index in the launcher.
+    launch_worker = function(call, name, launcher, worker, instance) {
       bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
       path <- file.path(R.home("bin"), bin)
       processx::process$new(

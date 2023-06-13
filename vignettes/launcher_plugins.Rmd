@@ -53,7 +53,7 @@ custom_launcher_class <- R6::R6Class(
   classname = "custom_launcher_class",
   inherit = crew::crew_class_launcher,
   public = list(
-    launch_worker = function(call, name) {
+    launch_worker = function(call, name, launcher, worker, instance) {
       bin <- file.path(R.home("bin"), "R")
       processx::process$new(
         command = bin,
@@ -72,8 +72,12 @@ Inside `launch_worker()`, the `processx::process$new(command = bin, args = c("-e
 
 Every `launch_worker()` method must accept arguments `call`, `launcher`, `worker`, and `instance`. The method does not actually need to use all these arguments, but they must be present in the function signature.
 
-* `call`: a text string with a call to  [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html).
-* `name`: a text string that uniquely identifies the worker instance and serves as an informative worker/job name.
+* `call`: text string with a call to  [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html).
+* `name`: text string with an informative name for the worker instance.
+* `launcher`: text string with the name of the launcher.
+* `worker`: positive integer index of the worker. Ranges from 1 to the maximum number of simultaneous workers configured for the controller.
+* `instance`: text string with the instance of the worker in the launcher at the given worker index.
+
 
 To see what the `call` object looks like, create a new launcher and run the `call()` method.
 

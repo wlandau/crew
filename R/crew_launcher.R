@@ -395,7 +395,13 @@ crew_class_launcher <- R6::R6Class(
       if (!is_crew_null(handle)) {
         self$terminate_worker(handle)
       }
-      handle <- self$launch_worker(call = call, name = name)
+      handle <- self$launch_worker(
+        call = as.character(call),
+        name = as.character(name),
+        launcher = as.character(self$name),
+        worker = as.integer(index),
+        instance = as.character(instance)
+      )
       self$workers$handle[[index]] <- handle
       self$workers$socket[index] <- socket
       self$workers$start[index] <- nanonext::mclock() / 1000

@@ -237,7 +237,7 @@ crew_test("custom launcher", {
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,
     public = list(
-      launch_worker = function(name, call) {
+      launch_worker = function(call, name, launcher, worker, instance) {
         bin <- if_any(
           tolower(Sys.info()[["sysname"]]) == "windows",
           "R.exe",

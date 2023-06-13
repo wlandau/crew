@@ -222,11 +222,11 @@ crew_class_client <- R6::R6Class(
           seconds_interval = self$seconds_interval,
           seconds_timeout = self$seconds_timeout
         ),
-        crew_expire = function(condition) NULL
+        error = function(condition) NULL
       )
       if_any(
         ps::ps_is_running(p = handle),
-        ps::ps_kill(p = handle),
+        try(ps::ps_kill(p = handle), silent = TRUE),
         NULL
       )
       tryCatch(
@@ -235,7 +235,7 @@ crew_class_client <- R6::R6Class(
           seconds_interval = self$seconds_interval,
           seconds_timeout = self$seconds_timeout
         ),
-        crew_expire = function(condition) NULL
+        error = function(condition) NULL
       )
       # End dispatcher checks block 2/2.
       invisible()

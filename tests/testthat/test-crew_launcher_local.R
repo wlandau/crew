@@ -21,8 +21,8 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   expect_s3_class(launcher$workers$handle[[2L]], "crew_null")
   expect_equal(launcher$workers$launches, rep(0L, 4L))
   launcher$launch(index = 2L)
-  client$poll()
-  socket <- rownames(client$daemons)[2L]
+  log <- client$log()
+  socket <- log$worker_socket[2L]
   expect_s3_class(launcher$workers$handle[[2L]], "process")
   expect_silent(launcher$validate())
   crew::crew_retry(

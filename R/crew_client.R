@@ -176,7 +176,6 @@ crew_class_client <- R6::R6Class(
       # process becomes a C thread.
       # Begin dispatcher code.
       self$dispatcher <- environment(mirai::daemons)$..[[self$name]]$pid
-      attr(rownames(self$daemons), "dispatcher_pid") <- self$dispatcher
       # End dispatcher code.
       self$started <- TRUE
       invisible()

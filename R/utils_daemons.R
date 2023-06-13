@@ -1,5 +1,5 @@
 daemons_info <- function(name) {
-  out <- mirai::daemons(.compute = self$name)$daemons
+  out <- mirai::daemons(.compute = name)$daemons
   # Should not happen:
   # nocov start
   if (!daemons_valid(out)) {

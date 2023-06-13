@@ -73,6 +73,9 @@ crew_test("crew_client() works", {
   expect_silent(client$start())
   expect_silent(client$terminate())
   expect_silent(client$terminate())
+  client$started <- TRUE
+  client$dispatcher <- NULL
+  expect_silent(client$terminate())
   expect_false(client$started)
   px$kill()
   expect_null(client$log())

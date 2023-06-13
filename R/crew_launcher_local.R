@@ -18,6 +18,7 @@
 #' }
 crew_launcher_local <- function(
   name = NULL,
+  seconds_interval = 0.25,
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
@@ -32,6 +33,7 @@ crew_launcher_local <- function(
   name <- as.character(name %|||% crew_random_name())
   launcher <- crew_class_launcher_local$new(
     name = name,
+    seconds_interval = seconds_interval,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,

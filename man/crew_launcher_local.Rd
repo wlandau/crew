@@ -6,6 +6,7 @@
 \usage{
 crew_launcher_local(
   name = NULL,
+  seconds_interval = 0.25,
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
@@ -20,6 +21,8 @@ crew_launcher_local(
 }
 \arguments{
 \item{name}{Name of the launcher.}
+
+\item{seconds_interval}{Seconds to wait between asynchronous operations.}
 
 \item{seconds_launch}{Seconds of startup time to allow.
 A worker is unconditionally assumed to be alive

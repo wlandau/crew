@@ -70,6 +70,8 @@ crew_test("crew_client() works", {
   expect_true(abs(m$data - ps::ps_pid()) > 0.5)
   expect_true(client$started)
   expect_true(client$log()$worker_connected)
+  expect_silent(client$start())
+  expect_silent(client$terminate())
   expect_silent(client$terminate())
   expect_false(client$started)
   px$kill()

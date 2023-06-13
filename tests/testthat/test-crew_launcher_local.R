@@ -2,26 +2,27 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router(
+  client <- crew_client(
     workers = 4L
   )
-  launcher <- crew_launcher_local(seconds_idle = 360)
+  launcher <- crew_launcher_local(name = client$name, seconds_idle = 360)
   on.exit({
-    router$terminate()
+    client$terminate()
     launcher$terminate()
-    rm(router)
+    rm(client)
     rm(launcher)
     gc()
     crew_test_sleep()
   })
   expect_silent(launcher$validate())
-  router$start()
+  client$start()
   launcher$start(workers = 4L)
   expect_equal(nrow(launcher$workers), 4L)
   expect_s3_class(launcher$workers$handle[[2L]], "crew_null")
-  socket <- rownames(router$daemons)[2L]
   expect_equal(launcher$workers$launches, rep(0L, 4L))
-  launcher$launch(index = 2L, socket = socket)
+  launcher$launch(index = 2L)
+  log <- client$log()
+  socket <- log$worker_socket[2L]
   expect_s3_class(launcher$workers$handle[[2L]], "process")
   expect_silent(launcher$validate())
   crew::crew_retry(
@@ -32,7 +33,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   crew::crew_retry(
     ~{
       daemons <- rlang::duplicate(
-        x = mirai::daemons(.compute = router$name)$daemons,
+        x = mirai::daemons(.compute = client$name)$daemons,
         shallow = FALSE
       )
       if (is.null(nrow(daemons))) {
@@ -45,14 +46,14 @@ crew_test("crew_launcher_local() can run a task on a worker", {
     seconds_timeout = 10
   )
   expect_equal(launcher$workers$launches, c(0L, 1L, 0L, 0L))
-  m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
+  m <- mirai::mirai(ps::ps_pid(), .compute = client$name)
   crew_retry(
     ~!anyNA(m$data),
     seconds_interval = 0.5,
     seconds_timeout = 10
   )
   expect_equal(m$data, launcher$workers$handle[[2L]]$get_pid())
-  router$terminate()
+  client$terminate()
   tryCatch(
     crew::crew_retry(
       ~{
@@ -68,52 +69,30 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   )
 })
 
-crew_test("crew_launcher_local() okay to not have sockets to launch", {
-  skip_if_low_dep_versions()
-  skip_on_cran()
-  skip_on_os("windows")
-  launcher <- crew_launcher_local(seconds_idle = 360)
-  # start launcher
-  launcher$start()
-  expect_true(is_crew_null(launcher$workers$handle[[1]]))
-  expect_equal(launcher$workers$socket, NA_character_)
-  expect_equal(launcher$workers$start, NA_real_)
-  expect_equal(launcher$workers$launches, 0L)
-  # launch with empty character vector
-  expect_silent(launcher$launch(index = 1L, socket = character(0L)))
-  expect_true(is_crew_null(launcher$workers$handle[[1]]))
-  expect_equal(launcher$workers$socket, NA_character_)
-  expect_equal(launcher$workers$start, NA_real_)
-  expect_equal(launcher$workers$launches, 0L)
-  # launch null
-  expect_silent(launcher$launch(index = 1L, socket = NULL))
-  expect_true(is_crew_null(launcher$workers$handle[[1]]))
-  expect_equal(launcher$workers$socket, NA_character_)
-  expect_equal(launcher$workers$start, NA_real_)
-  expect_equal(launcher$workers$launches, 0L)
-})
-
 crew_test("crew_launcher_local() can run a task and time out a worker", {
   skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router(
+  client <- crew_client(
     workers = 1L
   )
-  launcher <- crew_launcher_local(tasks_max = 1L, seconds_idle = 360)
+  launcher <- crew_launcher_local(
+    name = client$name,
+    tasks_max = 1L,
+    seconds_idle = 360
+  )
   on.exit({
-    router$terminate()
+    client$terminate()
     launcher$terminate()
-    rm(router)
+    rm(client)
     rm(launcher)
     gc()
     crew_test_sleep()
   })
-  router$start()
+  client$start()
   expect_silent(launcher$validate())
-  socket <- rownames(router$daemons)
   launcher$start(workers = 1L)
-  launcher$launch(index = 1L, socket = socket)
+  launcher$launch(index = 1L)
   crew::crew_retry(
     ~{
       handle <- launcher$workers$handle[[1]]
@@ -122,7 +101,7 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
-  m <- mirai::mirai(ps::ps_pid(), .compute = router$name)
+  m <- mirai::mirai(ps::ps_pid(), .compute = client$name)
   crew::crew_retry(
     ~!anyNA(m$data),
     seconds_interval = 0.1,
@@ -140,7 +119,7 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   crew::crew_retry(
     ~{
       daemons <- rlang::duplicate(
-        x = mirai::daemons(.compute = router$name)$daemons,
+        x = mirai::daemons(.compute = client$name)$daemons,
         shallow = FALSE
       )
       status <- unname(daemons[, "online", drop = TRUE])
@@ -155,26 +134,30 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
-  router <- crew_router(
+  client <- crew_client(
     workers = 1L
   )
-  launcher <- crew_launcher_local(tasks_max = 1L, seconds_idle = 360)
+  launcher <- crew_launcher_local(
+    name = client$name,
+    tasks_max = 1L,
+    seconds_idle = 360
+  )
   on.exit({
-    router$terminate()
+    client$terminate()
     launcher$terminate()
-    rm(router)
+    rm(client)
     rm(launcher)
     gc()
     crew_test_sleep()
   })
-  router$start()
-  socket <- rownames(router$daemons)
+  client$start()
+  socket <- rownames(client$daemons)
   launcher$start(workers = 1L)
-  launcher$launch(index = 1L, socket = socket)
+  launcher$launch(index = 1L)
   crew::crew_retry(
     ~{
       daemons <- rlang::duplicate(
-        x = mirai::daemons(.compute = router$name)$daemons,
+        x = mirai::daemons(.compute = client$name)$daemons,
         shallow = FALSE
       )
       status <- unname(daemons[, "online", drop = TRUE])
@@ -195,7 +178,7 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   crew::crew_retry(
     ~{
       daemons <- rlang::duplicate(
-        x = mirai::daemons(.compute = router$name)$daemons,
+        x = mirai::daemons(.compute = client$name)$daemons,
         shallow = FALSE
       )
       status <- unname(daemons[, "online", drop = TRUE])

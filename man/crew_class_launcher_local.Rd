@@ -11,15 +11,15 @@ See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-router <- crew_router()
-router$start()
-launcher <- crew_launcher_local()
-launcher$start(workers = router$workers)
-launcher$launch(index = 1L, socket = rownames(router$daemons))
-m <- mirai::mirai("result", .compute = router$name)
+client <- crew_client()
+client$start()
+launcher <- crew_launcher_local(name = client$name)
+launcher$start(workers = client$workers)
+launcher$launch(index = 1L)
+m <- mirai::mirai("result", .compute = client$name)
 Sys.sleep(0.25)
 m$data
-router$terminate()
+client$terminate()
 }
 }
 \seealso{
@@ -45,10 +45,12 @@ Other launchers:
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="call"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-call'><code>crew::crew_class_launcher$call()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="initialize"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-initialize'><code>crew::crew_class_launcher$initialize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch'><code>crew::crew_class_launcher$launch()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launching"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launching'><code>crew::crew_class_launcher$launching()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="poll"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-poll'><code>crew::crew_class_launcher$poll()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="scale"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-scale'><code>crew::crew_class_launcher$scale()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="settings"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-settings'><code>crew::crew_class_launcher$settings()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="start"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-start'><code>crew::crew_class_launcher$start()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate'><code>crew::crew_class_launcher$terminate()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="throttle"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-throttle'><code>crew::crew_class_launcher$throttle()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="validate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-validate'><code>crew::crew_class_launcher$validate()</code></a></span></li>
 </ul>
 </details>
@@ -60,14 +62,16 @@ Other launchers:
 Launch a local process worker which will
 dial into a socket.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$launch_worker(call, launcher, worker, instance)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$launch_worker(call, name, launcher, worker, instance)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{call}}{Text string with a namespaced call to \code{\link[=crew_worker]{crew_worker()}}
-which will run in the worker and accept tasks.}
+\item{\code{call}}{Character of length 1 with a namespaced call to
+\code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
+
+\item{\code{name}}{Character of length 1 with an informative worker name.}
 
 \item{\code{launcher}}{Character of length 1, name of the launcher.}
 
@@ -77,7 +81,7 @@ of the worker exits and a new instance launches.
 It is always between 1 and the maximum number of concurrent workers.}
 
 \item{\code{instance}}{Character of length 1 to uniquely identify
-the current instance of the worker.}
+the current instance of the worker a the index in the launcher.}
 }
 \if{html}{\out{</div>}}
 }

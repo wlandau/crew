@@ -6,18 +6,19 @@
 #' @inheritParams crew_launcher
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_router()
-#' router$start()
-#' launcher <- crew_launcher_local()
-#' launcher$start(workers = router$workers)
-#' launcher$launch(index = 1L, socket = rownames(router$daemons))
-#' m <- mirai::mirai("result", .compute = router$name)
+#' client <- crew_client()
+#' client$start()
+#' launcher <- crew_launcher_local(name = client$name)
+#' launcher$start(workers = client$workers)
+#' launcher$launch(index = 1L)
+#' m <- mirai::mirai("result", .compute = client$name)
 #' Sys.sleep(0.25)
 #' m$data
-#' router$terminate()
+#' client$terminate()
 #' }
 crew_launcher_local <- function(
   name = NULL,
+  seconds_interval = 0.25,
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
@@ -32,6 +33,7 @@ crew_launcher_local <- function(
   name <- as.character(name %|||% crew_random_name())
   launcher <- crew_class_launcher_local$new(
     name = name,
+    seconds_interval = seconds_interval,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
@@ -54,15 +56,15 @@ crew_launcher_local <- function(
 #' @details See [crew_launcher_local()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_router()
-#' router$start()
-#' launcher <- crew_launcher_local()
-#' launcher$start(workers = router$workers)
-#' launcher$launch(index = 1L, socket = rownames(router$daemons))
-#' m <- mirai::mirai("result", .compute = router$name)
+#' client <- crew_client()
+#' client$start()
+#' launcher <- crew_launcher_local(name = client$name)
+#' launcher$start(workers = client$workers)
+#' launcher$launch(index = 1L)
+#' m <- mirai::mirai("result", .compute = client$name)
 #' Sys.sleep(0.25)
 #' m$data
-#' router$terminate()
+#' client$terminate()
 #' }
 crew_class_launcher_local <- R6::R6Class(
   classname = "crew_class_launcher_local",
@@ -77,16 +79,17 @@ crew_class_launcher_local <- R6::R6Class(
     #'   constructing informative job names.
     #' @return A handle object to allow the termination of the worker
     #'   later on.
-    #' @param call Text string with a namespaced call to [crew_worker()]
-    #'   which will run in the worker and accept tasks.
+    #' @param call Character of length 1 with a namespaced call to
+    #'   [crew_worker()] which will run in the worker and accept tasks.
+    #' @param name Character of length 1 with an informative worker name.
     #' @param launcher Character of length 1, name of the launcher.
     #' @param worker Positive integer of length 1, index of the worker.
     #'   This worker index remains the same even when the current instance
     #'   of the worker exits and a new instance launches.
     #'   It is always between 1 and the maximum number of concurrent workers.
     #' @param instance Character of length 1 to uniquely identify
-    #'   the current instance of the worker.
-    launch_worker = function(call, launcher, worker, instance) {
+    #'   the current instance of the worker a the index in the launcher.
+    launch_worker = function(call, name, launcher, worker, instance) {
       bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
       path <- file.path(R.home("bin"), bin)
       processx::process$new(

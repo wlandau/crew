@@ -3,16 +3,16 @@
 #' @keywords internal
 #' @family controllers
 #' @description Create an `R6` object to submit tasks and launch workers.
-#' @param router An `R6` router object created by [crew_router()].
+#' @param client An `R6` client object created by [crew_client()].
 #' @param launcher An `R6` launcher object created by one of the
 #'   `crew_launcher_*()` functions such as [crew_launcher_local()].
 #' @param auto_scale Deprecated. Use the `scale` argument of `push()`,
 #'   `pop()`, and `wait()` instead.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_router()
+#' client <- crew_client()
 #' launcher <- crew_launcher_local()
-#' controller <- crew_controller(router = router, launcher = launcher)
+#' controller <- crew_controller(client = client, launcher = launcher)
 #' controller$start()
 #' controller$push(name = "task", command = sqrt(4))
 #' controller$wait()
@@ -20,7 +20,7 @@
 #' controller$terminate()
 #' }
 crew_controller <- function(
-  router,
+  client,
   launcher,
   auto_scale = NULL
 ) {
@@ -32,10 +32,10 @@ crew_controller <- function(
       alternative = "use the scale argument of push(), pop(), and wait()"
     )
   }
-  launcher$name <- router$name
-  schedule <- crew_schedule(seconds_interval = router$seconds_interval)
+  launcher$name <- client$name
+  schedule <- crew_schedule(seconds_interval = client$seconds_interval)
   controller <- crew_class_controller$new(
-    router = router,
+    client = client,
     launcher = launcher,
     schedule = schedule
   )
@@ -50,9 +50,9 @@ crew_controller <- function(
 #' @details See [crew_controller()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_router()
+#' client <- crew_client()
 #' launcher <- crew_launcher_local()
-#' controller <- crew_controller(router = router, launcher = launcher)
+#' controller <- crew_controller(client = client, launcher = launcher)
 #' controller$start()
 #' controller$push(name = "task", command = sqrt(4))
 #' controller$wait()
@@ -62,53 +62,28 @@ crew_controller <- function(
 crew_class_controller <- R6::R6Class(
   classname = "crew_class_controller",
   cloneable = FALSE,
-  private = list(
-    inactive = function() {
-      daemons <- self$router$daemons
-      launching <- self$launcher$launching()
-      which(is_inactive(daemons = daemons, launching = launching))
-    },
-    scalable = function() {
-      daemons <- self$router$daemons
-      launching <- self$launcher$launching()
-      inactive <- is_inactive(daemons = daemons, launching = launching)
-      backlogged <- self$router$assigned > self$router$complete
-      list(
-        backlogged = which(inactive & backlogged),
-        resolved = which(inactive & (!backlogged)),
-        n_inactive = sum(inactive)
-      )
-    },
-    try_launch = function(inactive, n) {
-      inactive <- utils::head(inactive, n = max(0L, n))
-      for (index in inactive) {
-        socket <- self$router$route(index = index, force = FALSE)
-        self$launcher$launch(index = index, socket = socket)
-      }
-    }
-  ),
   public = list(
-    #' @field router Router object.
-    router = NULL,
+    #' @field client Router object.
+    client = NULL,
     #' @field launcher Launcher object.
     launcher = NULL,
     #' @field schedule Schedule object.
     schedule = NULL,
     #' @field log Data frame task log of the workers.
     log = NULL,
-    #' @field until_scale Numeric of length 1, time point when
+    #' @field until Numeric of length 1, time point when
     #'   throttled auto-scaling unlocks.
-    until_scale = NULL,
+    until = NULL,
     #' @description `mirai` controller constructor.
     #' @return An `R6` controller object.
-    #' @param router Router object. See [crew_controller()].
+    #' @param client Router object. See [crew_controller()].
     #' @param launcher Launcher object. See [crew_controller()].
     #' @param schedule Schedule object from [crew_schedule()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' router <- crew_router()
+    #' client <- crew_client()
     #' launcher <- crew_launcher_local()
-    #' controller <- crew_controller(router = router, launcher = launcher)
+    #' controller <- crew_controller(client = client, launcher = launcher)
     #' controller$start()
     #' controller$push(name = "task", command = sqrt(4))
     #' controller$wait()
@@ -116,27 +91,27 @@ crew_class_controller <- R6::R6Class(
     #' controller$terminate()
     #' }
     initialize = function(
-      router = NULL,
+      client = NULL,
       launcher = NULL,
       schedule = NULL
     ) {
-      self$router <- router
+      self$client <- client
       self$launcher <- launcher
       self$schedule <- schedule
       invisible()
     },
-    #' @description Validate the router.
+    #' @description Validate the client.
     #' @return `NULL` (invisibly).
     validate = function() {
-      crew_assert(inherits(self$router, "crew_class_router"))
+      crew_assert(inherits(self$client, "crew_class_client"))
       crew_assert(inherits(self$launcher, "crew_class_launcher"))
       crew_assert(inherits(self$schedule, "crew_class_schedule"))
-      self$router$validate()
+      self$client$validate()
       self$launcher$validate()
       self$schedule$validate()
       crew_assert(
-        identical(self$router$name, self$launcher$name),
-        message = "router and launcher must have the same name"
+        identical(self$client$name, self$launcher$name),
+        message = "client and launcher must have the same name"
       )
       crew_assert(self$log, is.null(.) || is.data.frame(.))
       invisible()
@@ -170,7 +145,7 @@ crew_class_controller <- R6::R6Class(
     #' @param collect Logical of length 1, whether to collect the results
     #'   of any newly resolved tasks before determining saturation.
     #' @param throttle Logical of length 1, whether to delay task collection
-    #'   until the next request at least `self$router$seconds_interval`
+    #'   until the next request at least `self$client$seconds_interval`
     #'   seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
@@ -182,7 +157,7 @@ crew_class_controller <- R6::R6Class(
         .subset2(self, "collect")(throttle = throttle)
       }
       length(.subset2(.subset2(self, "schedule"), "pushed")) >=
-        .subset2(.subset2(self, "router"), "workers")
+        .subset2(.subset2(self, "client"), "workers")
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
@@ -191,9 +166,9 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     start = function(controllers = NULL) {
-      if (!isTRUE(self$router$started)) {
-        self$router$start()
-        workers <- self$router$workers
+      if (!isTRUE(self$client$started)) {
+        self$client$start()
+        workers <- self$client$workers
         self$launcher$start(workers = workers)
         self$schedule$start()
         self$log <- list(
@@ -201,7 +176,7 @@ crew_class_controller <- R6::R6Class(
           popped_seconds = rep(0, workers),
           popped_errors = rep(0L, workers),
           popped_warnings = rep(0L, workers),
-          controller = rep(self$router$name, workers)
+          controller = rep(self$client$name, workers)
         )
       }
       invisible()
@@ -221,55 +196,34 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      self$router$poll()
-      nanonext::msleep(10)
-      self$router$poll()
-      self$router$tally()
-      inactive <- private$inactive()
-      private$try_launch(inactive = inactive, n = n)
+      self$launcher$poll()
+      index <- head(which(self$launcher$workers$inactive), n = n)
+      walk(x = index, f = self$launcher$launch)
+      launched <- length(index)
+      self$schedule$demand <- self$schedule$demand - launched
       invisible()
     },
-    #' @description Run auto-scaling.
+    #' @description Auto-scale workers out to meet the demand of tasks.
     #' @details Methods `push()`, `pop()`, and `wait()` already invoke
     #'   `scale()` if the `scale` argument is `TRUE`.
-    #'   If you call `scale()` manually, it is recommended to call `collect()`
-    #'   first so `scale()` can accurately assess the task load.
     #'   For finer control of the number of workers launched,
     #'   call `launch()` on the controller with the exact desired
     #'   number of workers.
     #' @return `NULL` (invisibly).
     #' @param throttle Logical of length 1, whether to delay auto-scaling
     #'   until the next auto-scaling request at least
-    #'  `self$router$seconds_interval` seconds from the original request.
+    #'  `self$client$seconds_interval` seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(throttle = FALSE, controllers = NULL) {
-      if (throttle) {
-        now <- nanonext::mclock()
-        if (is.null(self$until_scale)) {
-          self$until_scale <- now + (1000 * self$router$seconds_interval)
-        }
-        if (now < self$until_scale) {
-          return(invisible())
-        } else {
-          self$until_scale <- NULL
-        }
-      }
-      self$router$poll()
-      nanonext::msleep(10)
-      self$router$poll()
-      self$router$tally()
-      scalable <- private$scalable()
-      private$try_launch(inactive = scalable$backlogged, n = Inf)
-      workers <- self$router$workers
-      available <- workers - length(scalable$resolved)
-      self$collect(throttle = FALSE)
-      demand <- length(.subset2(.subset2(self, "schedule"), "pushed"))
-      deficit <- min(demand - available, workers)
-      private$try_launch(inactive = scalable$resolved, n = deficit)
+      launched <- self$launcher$scale(
+        demand = self$schedule$demand,
+        throttle = throttle
+      )
+      self$schedule$demand <- self$schedule$demand - launched
       invisible()
     },
     #' @description Push a task to the head of the task list.
@@ -302,12 +256,9 @@ crew_class_controller <- R6::R6Class(
     #'   to auto-scale workers to meet the demand of the task load.
     #'   By design, auto-scaling might not actually happen
     #'   if `throttle = TRUE`.
-    #'   If `scale` is `TRUE`, then `collect()` runs first
-    #'   so demand can be properly assessed before scaling and the number
-    #'   of workers is not too high.
     #' @param throttle If `scale` is `TRUE`, whether to defer auto-scaling
     #'   until the next request at least
-    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   `self$client$seconds_interval` seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
@@ -373,7 +324,7 @@ crew_class_controller <- R6::R6Class(
         packages = packages,
         library = library,
         .timeout = .timeout,
-        .compute = self$router$name
+        .compute = self$client$name
       )
       attributes(task) <- list(name = name, command = string)
       .subset2(.subset2(self, "schedule"), "push")(task = task)
@@ -409,18 +360,14 @@ crew_class_controller <- R6::R6Class(
     #'   whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
     #'   Auto-scaling might not actually happen if `throttle` is `TRUE`.
-    #'   If `TRUE`, then `collect()` runs first
-    #'   so demand can be properly assessed before scaling and the number
-    #'   of workers is not too high. Scaling up on `pop()` may be important
+    #'   Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
     #'   quickly after doing little work.
-    #' @param collect Logical of length 1. If `scale` is `FALSE`,
-    #'   whether to call `collect()`
-    #'   to pick up the results of completed tasks. This task collection
-    #'   step always happens (with throttling) when `scale` is `TRUE`.
+    #' @param collect Logical of length 1,
+    #'   whether to collect the results of completed tasks.
     #' @param throttle Whether to defer auto-scaling and task collection
     #'   until the next request at least
-    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   `self$client$seconds_interval` seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
@@ -432,10 +379,11 @@ crew_class_controller <- R6::R6Class(
       throttle = TRUE,
       controllers = NULL
     ) {
+      if (collect) {
+        .subset2(.subset2(self, "schedule"), "collect")(throttle = throttle)
+      }
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
-      } else if (collect) {
-        .subset2(self, "collect")(throttle = throttle)
       }
       task <- .subset2(.subset2(self, "schedule"), "pop")()
       if (is.null(task)) {
@@ -504,7 +452,7 @@ crew_class_controller <- R6::R6Class(
     #'   is `TRUE`.
     #' @param throttle Whether to defer auto-scaling
     #'   and task collection until the next request at least
-    #'   `self$router$seconds_interval` seconds from the original request.
+    #'   `self$client$seconds_interval` seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
@@ -526,11 +474,10 @@ crew_class_controller <- R6::R6Class(
       tryCatch(
         crew_retry(
           fun = ~{
-            if_any(
-              scale,
-              self$scale(throttle = throttle),
-              self$collect(throttle = throttle)
-            )
+            self$schedule$collect(throttle = throttle)
+            if (scale) {
+              self$scale(throttle = throttle)
+            }
             self$schedule$collected_mode(mode = mode)
           },
           seconds_interval = seconds_interval,
@@ -599,28 +546,28 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     summary = function(
-    columns = tidyselect::everything(),
-    controllers = NULL
+      columns = tidyselect::everything(),
+      controllers = NULL
     ) {
-      router_log <- self$router$log()
+      client_log <- self$client$log()
       workers <- self$launcher$workers
       log <- self$log
-      if (is.null(router_log) || is.null(workers) || is.null(log)) {
+      if (is.null(client_log) || is.null(workers) || is.null(log)) {
         return(NULL)
       }
       out <- tibble::tibble(
-        controller = self$router$name,
+        controller = self$client$name,
         popped_tasks = log$popped_tasks,
         popped_seconds = log$popped_seconds,
         popped_errors = log$popped_errors,
         popped_warnings = log$popped_warnings,
-        tasks_assigned = router_log$tasks_assigned,
-        tasks_complete = router_log$tasks_complete,
+        tasks_assigned = client_log$tasks_assigned,
+        tasks_complete = client_log$tasks_complete,
         worker_index = seq_len(nrow(workers)),
-        worker_connected = router_log$worker_connected,
+        worker_connected = client_log$worker_connected,
         worker_launches = workers$launches,
-        worker_instances = router_log$worker_instances,
-        worker_socket = router_log$worker_socket
+        worker_instances = client_log$worker_instances,
+        worker_socket = client_log$worker_socket
       )
       expr <- rlang::enquo(columns)
       select <- eval_tidyselect(expr = expr, choices = colnames(out))
@@ -637,9 +584,9 @@ crew_class_controller <- R6::R6Class(
       # nocov start
       if (terminate_launcher_first) {
         self$launcher$terminate()
-        self$router$terminate()
+        self$client$terminate()
       } else {
-        self$router$terminate()
+        self$client$terminate()
         self$launcher$terminate()
       }
       # nocov end
@@ -647,12 +594,6 @@ crew_class_controller <- R6::R6Class(
     }
   )
 )
-
-is_inactive <- function(daemons, launching) {
-  connected <- as.logical(daemons[, "online"] > 0L)
-  discovered <- as.logical(daemons[, "instance"] > 0L)
-  (!connected) & (discovered | (!launching))
-}
 
 lang_quote <- as.symbol("quote")
 lang_crew_eval <- quote(crew::crew_eval)

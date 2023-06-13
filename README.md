@@ -359,7 +359,7 @@ ID using the controller object, then use `ps::ps_kill()` to terminate
 the process.
 
 ``` r
-controller$router$dispatcher
+controller$client$dispatcher
 #> [1] 86028
 handle <- ps::ps_handle(pid = 86028L)
 ps::ps_is_running(handle)

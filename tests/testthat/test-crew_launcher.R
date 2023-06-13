@@ -1,6 +1,6 @@
 crew_test("abstract launcher class", {
-  expect_silent(crew_launcher()$validate)
-  expect_crew_error(crew_launcher(reset_options = -1)$validate())
+  out <- crew_launcher(reset_options = -1)
+  expect_crew_error(out$validate())
 })
 
 crew_test("default terminate_launcher() method", {
@@ -141,10 +141,20 @@ crew_test("launcher start()", {
   expect_equal(workers, NULL)
   launcher$start(workers = 2L)
   workers <- launcher$workers
-  expect_equal(dim(workers), c(2L, 4L))
+  expect_equal(nrow(workers), 2L)
   expect_equal(
     colnames(workers),
-    c("handle", "socket", "start", "launches")
+    cols <- c(
+      "handle",
+      "socket",
+      "start",
+      "launches",
+      "inactive",
+      "backlogged",
+      "tallied",
+      "assigned",
+      "complete"
+    )
   )
   expect_equal(workers$handle, list(crew_null, crew_null))
   expect_equal(workers$socket, c(NA_character_, NA_character_))
@@ -152,13 +162,70 @@ crew_test("launcher start()", {
   expect_equal(workers$launches, rep(0L, 2L))
 })
 
-crew_test("launcher launching()", {
-  skip_if_low_dep_versions()
-  skip_on_cran()
-  launcher <- crew_class_launcher$new(seconds_launch = 60)
-  launcher$start(workers = 3L)
-  launcher$workers$start <- c(NA_real_, -Inf, Inf)
-  expect_equal(launcher$launching(), c(FALSE, FALSE, TRUE))
+crew_test("launcher poll()", {
+  grid <- expand.grid(
+    complete = c(3L, 7L),
+    start = c(NA_real_, -Inf, Inf),
+    instance = c(0L, 1L),
+    online = c(0L, 1L)
+  )
+  launcher <- crew_class_launcher$new(seconds_launch = 9999)
+  launcher$start(workers = nrow(grid))
+  launcher$workers$start <- grid$start
+  daemons <- cbind(
+    online = grid$online,
+    instance = grid$instance,
+    assigned = rep(7L, nrow(grid)),
+    complete = grid$complete
+  )
+  expect_equal(launcher$workers$backlogged, rep(FALSE, nrow(grid)))
+  expect_equal(launcher$workers$tallied, rep(FALSE, nrow(grid)))
+  expect_equal(launcher$workers$assigned, rep(0L, nrow(grid)))
+  expect_equal(launcher$workers$complete, rep(0L, nrow(grid)))
+  launcher$workers$backlogged <- rep(NA, nrow(grid))
+  launcher$poll(daemons = daemons)
+  expect_equal(
+    launcher$workers$inactive,
+    c(rep(TRUE, 4L), rep(FALSE, 2L), rep(TRUE, 6L), rep(FALSE, 12L))
+  )
+  expect_equal(
+    launcher$workers$backlogged,
+    c(rep(NA, 6L), rep(c(TRUE, FALSE), times = 3L), rep(NA, 12L))
+  )
+  expect_equal(
+    launcher$workers$tallied,
+    c(rep(FALSE, 6L), rep(TRUE, 6L), rep(FALSE, 12L))
+  )
+  expect_equal(
+    launcher$workers$assigned,
+    c(rep(0L, 6L), rep(7L, 6L), rep(0L, 12L))
+  )
+  expect_equal(
+    launcher$workers$complete,
+    c(rep(0L, 6L), rep(c(3L, 7L), times = 3L), rep(0L, 12L))
+  )
+  launcher$workers$tallied[seq(7L, 9L)] <- FALSE
+  launcher$poll(daemons = daemons)
+  expect_equal(
+    launcher$workers$inactive,
+    c(rep(TRUE, 4L), rep(FALSE, 2L), rep(TRUE, 6L), rep(FALSE, 12L))
+  )
+  expect_equal(
+    launcher$workers$backlogged,
+    c(rep(NA, 6L), rep(c(TRUE, FALSE), times = 3L), rep(NA, 12L))
+  )
+  expect_equal(
+    launcher$workers$tallied,
+    c(rep(FALSE, 6L), rep(TRUE, 6L), rep(FALSE, 12L))
+  )
+  expect_equal(
+    launcher$workers$assigned,
+    c(rep(0L, 6L), rep(14L, 3L), rep(7L, 3L), rep(0L, 12L))
+  )
+  expect_equal(
+    launcher$workers$complete,
+    c(rep(0L, 6L), c(6L, 14L, 6L, 7L, 3L, 7L), rep(0L, 12L))
+  )
 })
 
 crew_test("custom launcher", {
@@ -170,7 +237,7 @@ crew_test("custom launcher", {
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,
     public = list(
-      launch_worker = function(call, launcher, worker, instance) {
+      launch_worker = function(call, name, launcher, worker, instance) {
         bin <- if_any(
           tolower(Sys.info()[["sysname"]]) == "windows",
           "R.exe",
@@ -202,7 +269,7 @@ crew_test("custom launcher", {
     reset_options = FALSE,
     garbage_collection = FALSE
   ) {
-    router <- crew::crew_router(
+    client <- crew::crew_client(
       name = name,
       workers = workers,
       host = host,
@@ -212,6 +279,7 @@ crew_test("custom launcher", {
     )
     launcher <- custom_launcher_class$new(
       name = name,
+      seconds_interval = seconds_interval,
       seconds_launch = seconds_launch,
       seconds_idle = seconds_idle,
       seconds_wall = seconds_wall,
@@ -224,7 +292,7 @@ crew_test("custom launcher", {
       garbage_collection = garbage_collection
     )
     controller <- crew::crew_controller(
-      router = router,
+      client = client,
       launcher = launcher
     )
     controller$validate()

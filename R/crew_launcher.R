@@ -7,6 +7,7 @@
 #'   `@inheritParams crew::crew_launcher` in the source code file of
 #'   [crew_launcher_local()].
 #' @param name Name of the launcher.
+#' @param seconds_interval Seconds to wait between asynchronous operations.
 #' @param seconds_launch Seconds of startup time to allow.
 #'   A worker is unconditionally assumed to be alive
 #'   from the moment of its launch until `seconds_launch` seconds later.
@@ -49,18 +50,19 @@
 #'   tasks, `FALSE` to skip.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_router()
-#' router$start()
-#' launcher <- crew_launcher_local()
-#' launcher$start(workers = router$workers)
-#' launcher$launch(index = 1L, socket = rownames(router$daemons))
-#' m <- mirai::mirai("result", .compute = router$name)
+#' client <- crew_client()
+#' client$start()
+#' launcher <- crew_launcher_local(name = client$name)
+#' launcher$start(workers = client$workers)
+#' launcher$launch(index = 1L)
+#' m <- mirai::mirai("result", .compute = client$name)
 #' Sys.sleep(0.25)
 #' m$data
-#' router$terminate()
+#' client$terminate()
 #' }
 crew_launcher <- function(
   name = NULL,
+  seconds_interval = 0.25,
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
@@ -73,8 +75,9 @@ crew_launcher <- function(
   garbage_collection = FALSE
 ) {
   name <- as.character(name %|||% crew_random_name())
-  launcher <- crew_class_launcher_local$new(
+  crew_class_launcher$new(
     name = name,
+    seconds_interval = seconds_interval,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
@@ -86,8 +89,6 @@ crew_launcher <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection
   )
-  launcher$validate()
-  launcher
 }
 
 #' @title Launcher abstract class
@@ -97,15 +98,15 @@ crew_launcher <- function(
 #'   which launch and manage workers.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' router <- crew_router()
-#' router$start()
-#' launcher <- crew_launcher_local()
-#' launcher$start(workers = router$workers)
-#' launcher$launch(index = 1L, socket = rownames(router$daemons))
-#' m <- mirai::mirai("result", .compute = router$name)
+#' client <- crew_client()
+#' client$start()
+#' launcher <- crew_launcher_local(name = client$name)
+#' launcher$start(workers = client$workers)
+#' launcher$launch(index = 1L)
+#' m <- mirai::mirai("result", .compute = client$name)
 #' Sys.sleep(0.25)
 #' m$data
-#' router$terminate()
+#' client$terminate()
 #' }
 crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
@@ -116,6 +117,8 @@ crew_class_launcher <- R6::R6Class(
     workers = NULL,
     #' @field name Name of the launcher.
     name = NULL,
+    #' @field seconds_interval See [crew_launcher()].
+    seconds_interval = NULL,
     #' @field seconds_launch See [crew_launcher()].
     seconds_launch = NULL,
     #' @field seconds_idle See [crew_launcher()].
@@ -136,9 +139,12 @@ crew_class_launcher <- R6::R6Class(
     reset_options = NULL,
     #' @field garbage_collection See [crew_launcher()].
     garbage_collection = NULL,
+    #' @field until Numeric of length 1, time point when throttled unlocks.
+    until = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
     #' @param name See [crew_launcher()].
+    #' @param seconds_interval See [crew_launcher()].
     #' @param seconds_launch See [crew_launcher()].
     #' @param seconds_idle See [crew_launcher()].
     #' @param seconds_wall See [crew_launcher()].
@@ -151,18 +157,19 @@ crew_class_launcher <- R6::R6Class(
     #' @param garbage_collection See [crew_launcher()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-    #' router <- crew_router()
-    #' router$start()
-    #' launcher <- crew_launcher_local()
-    #' launcher$start(workers = router$workers)
-    #' launcher$launch(index = 1L, socket = rownames(router$daemons))
-    #' m <- mirai::mirai("result", .compute = router$name)
+    #' client <- crew_client()
+    #' client$start()
+    #' launcher <- crew_launcher_local(name = client$name)
+    #' launcher$start(workers = client$workers)
+    #' launcher$launch(index = 1L)
+    #' m <- mirai::mirai("result", .compute = client$name)
     #' Sys.sleep(0.25)
     #' m$data
-    #' router$terminate()
+    #' client$terminate()
     #' }
     initialize = function(
       name = NULL,
+      seconds_interval = NULL,
       seconds_launch = NULL,
       seconds_idle = NULL,
       seconds_wall = NULL,
@@ -175,6 +182,7 @@ crew_class_launcher <- R6::R6Class(
       garbage_collection = NULL
     ) {
       self$name <- name
+      self$seconds_interval <- seconds_interval
       self$seconds_launch <- seconds_launch
       self$seconds_idle <- seconds_idle
       self$seconds_wall <- seconds_wall
@@ -193,12 +201,12 @@ crew_class_launcher <- R6::R6Class(
         is.function(self$launch_worker),
         message = "launch_worker() must be a function."
       )
-      names <- c("call", "launcher", "worker", "instance")
+      fields <- c("call", "name", "launcher", "worker", "instance")
       crew_assert(
-        names %in% names(formals(self$launch_worker)),
+        fields %in% names(formals(self$launch_worker)),
         message = paste(
-          "launch_worker() must have arguments \"call\", \"launcher\",",
-          "\"worker\", and \"instance\"."
+          "launch_worker() must have the following arguments:",
+          paste(sprintf("\"%s\"", fields), collapse = ", ")
         )
       )
       if (!is.null(self$terminate_worker)) {
@@ -219,6 +227,7 @@ crew_class_launcher <- R6::R6Class(
         nzchar(.)
       )
       fields <- c(
+        "seconds_interval",
         "seconds_launch",
         "seconds_idle",
         "seconds_wall",
@@ -246,7 +255,17 @@ crew_class_launcher <- R6::R6Class(
       }
       if (!is.null(self$workers)) {
         crew_assert(self$workers, is.data.frame(.))
-        cols <- c("handle", "socket", "start", "launches")
+        cols <- c(
+          "handle",
+          "socket",
+          "start",
+          "launches",
+          "inactive",
+          "backlogged",
+          "tallied",
+          "assigned",
+          "complete"
+        )
         crew_assert(identical(colnames(self$workers), cols))
         crew_assert(nrow(self$workers) > 0L)
       }
@@ -321,22 +340,57 @@ crew_class_launcher <- R6::R6Class(
         handle = replicate(workers, crew_null, simplify = FALSE),
         socket = rep(NA_character_, workers),
         start = rep(NA_real_, workers),
-        launches = rep(0L, workers)
+        launches = rep(0L, workers),
+        inactive = rep(TRUE, workers),
+        backlogged = rep(FALSE, workers),
+        tallied = rep(FALSE, workers),
+        assigned = rep(0L, workers),
+        complete = rep(0L, workers)
       )
+      invisible()
+    },
+    #' @description Update internal info about worker activity and task load.
+    #' @return `NULL` (invisibly).
+    #' @param daemons `mirai` daemons matrix. For testing only. Users
+    #'   should not set this.
+    poll = function(daemons = NULL) {
+      bound <- self$seconds_launch
+      start <- self$workers$start
+      now <- nanonext::mclock() / 1000
+      launching <- !is.na(start) & ((now - start) < bound)
+      daemons <- daemons %|||% daemons_info(name = self$name)
+      online <- as.logical(daemons[, "online"])
+      discovered <- as.logical(daemons[, "instance"])
+      self$workers$inactive <- (!online) & (discovered | (!launching))
+      done <- (!online) & discovered
+      new_assigned <- as.integer(daemons[, "assigned"])
+      new_complete <- as.integer(daemons[, "complete"])
+      old_assigned <- self$workers$assigned
+      old_complete <- self$workers$complete
+      tallied <- self$workers$tallied
+      index <- done & (!tallied)
+      self$workers$tallied[index] <- TRUE
+      assigned <- old_assigned[index] + new_assigned[index]
+      complete <- old_complete[index] + new_complete[index]
+      self$workers$backlogged[index] <- assigned > complete
+      self$workers$assigned[index] <- assigned
+      self$workers$complete[index] <- complete
       invisible()
     },
     #' @description Launch a worker.
     #' @return `NULL` (invisibly).
     #' @param index Positive integer of length 1, index of the worker
     #'   to launch.
-    #' @param socket Character of length 1, sockets of the worker to launch.
-    launch = function(index, socket = NULL) {
-      if (!length(socket) || !is.character(socket)) {
-        return(invisible())
-      }
+    launch = function(index) {
+      socket <- mirai::saisei(i = index, force = TRUE, .compute = self$name)
       instance <- parse_instance(socket)
       call <- self$call(
         socket = socket,
+        launcher = self$name,
+        worker = index,
+        instance = instance
+      )
+      name <- name_worker(
         launcher = self$name,
         worker = index,
         instance = instance
@@ -346,44 +400,75 @@ crew_class_launcher <- R6::R6Class(
         self$terminate_worker(handle)
       }
       handle <- self$launch_worker(
-        call = call,
-        launcher = self$name,
-        worker = index,
-        instance = instance
+        call = as.character(call),
+        name = as.character(name),
+        launcher = as.character(self$name),
+        worker = as.integer(index),
+        instance = as.character(instance)
       )
       self$workers$handle[[index]] <- handle
       self$workers$socket[index] <- socket
       self$workers$start[index] <- nanonext::mclock() / 1000
-      self$workers$launches[[index]] <- self$workers$launches[[index]] + 1L
+      self$workers$launches[index] <- self$workers$launches[index] + 1L
+      self$workers$tallied[index] <- FALSE
       invisible()
     },
-    #' @description Show whether each worker is launching.
-    #' @details A worker is considered "launching" if it was started
-    #'   recently (`seconds_launch` seconds ago or sooner).
-    #' @return A logical vector indicating which workers are launching.
-    launching = function() {
-      bound <- self$seconds_launch
-      start <- self$workers$start
-      now <- nanonext::mclock() / 1000
-      !is.na(start) & ((now - start) < bound)
+    #' @description Throttle repeated calls.
+    #' @return `TRUE` to throttle, `FALSE` to continue.
+    throttle = function() {
+      now <- nanonext::mclock()
+      if (is.null(self$until)) {
+        self$until <- now + (1000 * self$seconds_interval)
+      }
+      if (now < self$until) {
+        return(TRUE)
+      } else {
+        self$until <- NULL
+        return(FALSE)
+      }
+    },
+    #' @description Auto-scale workers out to meet the demand of tasks.
+    #' @return Number of workers launched.
+    #' @param demand Number of tasks without workers to launch them yet.
+    #' @param throttle Logical of length 1, whether to delay auto-scaling
+    #'   until the next auto-scaling request at least
+    #'  `self$client$seconds_interval` seconds from the original request.
+    #'   The idea is similar to `shiny::throttle()` except that `crew` does not
+    #'   accumulate a backlog of requests. The technique improves robustness
+    #'   and efficiency.
+    scale = function(demand, throttle = FALSE) {
+      if (throttle && self$throttle()) {
+        return(0L)
+      }
+      self$poll()
+      inactive <- self$workers$inactive
+      backlogged <- self$workers$backlogged
+      launch_backlogged <- which(inactive & backlogged)
+      walk(x = launch_backlogged, f = self$launch)
+      resolved <- which(inactive & (!backlogged))
+      active <- nrow(self$workers) - length(resolved)
+      deficit <- min(demand - active, nrow(self$workers))
+      launch_resolved <- head(resolved, n = deficit)
+      walk(x = launch_resolved, f = self$launch)
+      length(launch_backlogged) + length(launch_resolved)
     },
     #' @description Terminate one or more workers.
     #' @return `NULL` (invisibly).
-    #' @param indexes Integer vector of the indexes of the workers
+    #' @param index Integer vector of the indexes of the workers
     #'   to terminate. If `NULL`, all current workers are terminated.
-    terminate = function(indexes = NULL) {
+    terminate = function(index = NULL) {
       if (is.null(self$workers)) {
         return(invisible())
       }
-      indexes <- indexes %|||% seq_len(nrow(self$workers))
-      for (index in indexes) {
-        handle <- self$workers$handle[[index]]
+      index <- index %|||% seq_len(nrow(self$workers))
+      for (worker in index) {
+        handle <- self$workers$handle[[worker]]
         if (!is_crew_null(handle)) {
           self$terminate_worker(handle)
         }
-        self$workers$handle[[index]] <- crew_null
-        self$workers$socket[index] <- NA_character_
-        self$workers$start[index] <- NA_real_
+        self$workers$handle[[worker]] <- crew_null
+        self$workers$socket[worker] <- NA_character_
+        self$workers$start[worker] <- NA_real_
       }
       invisible()
     },

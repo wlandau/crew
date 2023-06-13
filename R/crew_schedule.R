@@ -7,6 +7,18 @@
 #'   [crew_controller_local()] for details.
 #' @param seconds_interval Number of seconds between throttled iterations
 #'   of task collection.
+#' @examples
+#' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+#' schedule <- crew_schedule()
+#' schedule$start()
+#' schedule$push(task = mirai::mirai(1 + 1))
+#' schedule$push(task = mirai::mirai(2 + 2))
+#' Sys.sleep(4)
+#' schedule$collect(throttle = FALSE)
+#' schedule$pop()$data # numeric result
+#' schedule$pop()$data # numeric result
+#' schedule$pop()$data # NULL
+#' }
 crew_schedule <- function(seconds_interval = 0.25) {
   out <- crew_class_schedule$new(seconds_interval = seconds_interval)
   out$validate()
@@ -32,6 +44,8 @@ crew_class_schedule <- R6::R6Class(
     collected = NULL,
     #' @field pushes Number of times a task has been pushed.
     pushes = NULL,
+    #' @field demand Number of pushed tasks without workers to run them yet.
+    demand = NULL,
     #' @field head ID of the task at the head of the `collected` stack.
     head = NULL,
     #' @field until Numeric of length 1, time point when
@@ -77,6 +91,7 @@ crew_class_schedule <- R6::R6Class(
       self$pushed <- new.env(hash = TRUE, parent = emptyenv())
       self$collected <- new.env(hash = TRUE, parent = emptyenv())
       self$pushes <- 0L
+      self$demand <- 0L
       invisible()
     },
     #' @description Push a task.
@@ -86,9 +101,24 @@ crew_class_schedule <- R6::R6Class(
     push = function(task) {
       index <- .subset2(self, "pushes") + 1L
       self$pushes <- index
+      self$demand <- .subset2(self, "demand") + 1L
       pushed <- .subset2(self, "pushed")
       pushed[[as.character(index)]] <- task
       invisible()
+    },
+    #' @description Throttle repeated calls.
+    #' @return `TRUE` to throttle, `FALSE` to continue.
+    throttle = function() {
+      now <- nanonext::mclock()
+      if (is.null(self$until)) {
+        self$until <- now + (1000 * self$seconds_interval)
+      }
+      if (now < self$until) {
+        return(TRUE)
+      } else {
+        self$until <- NULL
+        return(FALSE)
+      }
     },
     #' @description Collect resolved tasks.
     #' @details Scan the tasks in `pushed` and move the resolved ones to the
@@ -101,16 +131,8 @@ crew_class_schedule <- R6::R6Class(
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
     collect = function(throttle = FALSE) {
-      if (throttle) {
-        now <- nanonext::mclock()
-        if (is.null(.subset2(self, "until"))) {
-          self$until <- now + (1000 * .subset2(self, "seconds_interval"))
-        }
-        if (now < .subset2(self, "until")) {
-          return(invisible())
-        } else {
-          self$until <- NULL
-        }
+      if (throttle && self$throttle()) {
+        return(invisible())
       }
       pushed <- .subset2(self, "pushed")
       collected <- .subset2(self, "collected")

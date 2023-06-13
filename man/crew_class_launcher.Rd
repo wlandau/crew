@@ -9,15 +9,15 @@ which launch and manage workers.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-router <- crew_router()
-router$start()
-launcher <- crew_launcher_local()
-launcher$start(workers = router$workers)
-launcher$launch(index = 1L, socket = rownames(router$daemons))
-m <- mirai::mirai("result", .compute = router$name)
+client <- crew_client()
+client$start()
+launcher <- crew_launcher_local(name = client$name)
+launcher$start(workers = client$workers)
+launcher$launch(index = 1L)
+m <- mirai::mirai("result", .compute = client$name)
 Sys.sleep(0.25)
 m$data
-router$terminate()
+client$terminate()
 }
 
 ## ------------------------------------------------
@@ -25,15 +25,15 @@ router$terminate()
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-router <- crew_router()
-router$start()
-launcher <- crew_launcher_local()
-launcher$start(workers = router$workers)
-launcher$launch(index = 1L, socket = rownames(router$daemons))
-m <- mirai::mirai("result", .compute = router$name)
+client <- crew_client()
+client$start()
+launcher <- crew_launcher_local(name = client$name)
+launcher$start(workers = client$workers)
+launcher$launch(index = 1L)
+m <- mirai::mirai("result", .compute = client$name)
 Sys.sleep(0.25)
 m$data
-router$terminate()
+client$terminate()
 }
 
 ## ------------------------------------------------
@@ -62,6 +62,8 @@ Other launchers:
 
 \item{\code{name}}{Name of the launcher.}
 
+\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
 \item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
@@ -81,6 +83,8 @@ Other launchers:
 \item{\code{reset_options}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{until}}{Numeric of length 1, time point when throttled unlocks.}
 }
 \if{html}{\out{</div>}}
 }
@@ -92,8 +96,10 @@ Other launchers:
 \item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
+\item \href{#method-crew_class_launcher-poll}{\code{crew_class_launcher$poll()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
-\item \href{#method-crew_class_launcher-launching}{\code{crew_class_launcher$launching()}}
+\item \href{#method-crew_class_launcher-throttle}{\code{crew_class_launcher$throttle()}}
+\item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
 }
@@ -106,6 +112,7 @@ Launcher constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$new(
   name = NULL,
+  seconds_interval = NULL,
   seconds_launch = NULL,
   seconds_idle = NULL,
   seconds_wall = NULL,
@@ -123,6 +130,8 @@ Launcher constructor.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
@@ -152,15 +161,15 @@ An \code{R6} object with the launcher.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-router <- crew_router()
-router$start()
-launcher <- crew_launcher_local()
-launcher$start(workers = router$workers)
-launcher$launch(index = 1L, socket = rownames(router$daemons))
-m <- mirai::mirai("result", .compute = router$name)
+client <- crew_client()
+client$start()
+launcher <- crew_launcher_local(name = client$name)
+launcher$start(workers = client$workers)
+launcher$launch(index = 1L)
+m <- mirai::mirai("result", .compute = client$name)
 Sys.sleep(0.25)
 m$data
-router$terminate()
+client$terminate()
 }
 }
 \if{html}{\out{</div>}}
@@ -274,21 +283,19 @@ life cycle.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-launch"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-launch}{}}}
-\subsection{Method \code{launch()}}{
-Launch a worker.
+\if{html}{\out{<a id="method-crew_class_launcher-poll"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-poll}{}}}
+\subsection{Method \code{poll()}}{
+Update internal info about worker activity and task load.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(index, socket = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$poll(daemons = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{index}}{Positive integer of length 1, index of the worker
-to launch.}
-
-\item{\code{socket}}{Character of length 1, sockets of the worker to launch.}
+\item{\code{daemons}}{\code{mirai} daemons matrix. For testing only. Users
+should not set this.}
 }
 \if{html}{\out{</div>}}
 }
@@ -297,21 +304,64 @@ to launch.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-launching"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-launching}{}}}
-\subsection{Method \code{launching()}}{
-Show whether each worker is launching.
+\if{html}{\out{<a id="method-crew_class_launcher-launch"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-launch}{}}}
+\subsection{Method \code{launch()}}{
+Launch a worker.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launching()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(index)}\if{html}{\out{</div>}}
 }
 
-\subsection{Details}{
-A worker is considered "launching" if it was started
-recently (\code{seconds_launch} seconds ago or sooner).
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{index}}{Positive integer of length 1, index of the worker
+to launch.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-throttle"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-throttle}{}}}
+\subsection{Method \code{throttle()}}{
+Throttle repeated calls.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$throttle()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-A logical vector indicating which workers are launching.
+\code{TRUE} to throttle, \code{FALSE} to continue.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-scale"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-scale}{}}}
+\subsection{Method \code{scale()}}{
+Auto-scale workers out to meet the demand of tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$scale(demand, throttle = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{demand}}{Number of tasks without workers to launch them yet.}
+
+\item{\code{throttle}}{Logical of length 1, whether to delay auto-scaling
+until the next auto-scaling request at least
+\code{self$client$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Number of workers launched.
 }
 }
 \if{html}{\out{<hr>}}
@@ -320,13 +370,13 @@ A logical vector indicating which workers are launching.
 \subsection{Method \code{terminate()}}{
 Terminate one or more workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate(indexes = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate(index = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{indexes}}{Integer vector of the indexes of the workers
+\item{\code{index}}{Integer vector of the indexes of the workers
 to terminate. If \code{NULL}, all current workers are terminated.}
 }
 \if{html}{\out{</div>}}

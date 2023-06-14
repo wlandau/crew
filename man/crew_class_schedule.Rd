@@ -27,8 +27,6 @@ Other schedule:
 
 \item{\code{pushes}}{Number of times a task has been pushed.}
 
-\item{\code{demand}}{Number of pushed tasks without workers to run them yet.}
-
 \item{\code{head}}{ID of the task at the head of the \code{collected} stack.}
 
 \item{\code{until}}{Numeric of length 1, time point when

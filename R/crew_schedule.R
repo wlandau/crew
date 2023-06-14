@@ -44,8 +44,6 @@ crew_class_schedule <- R6::R6Class(
     collected = NULL,
     #' @field pushes Number of times a task has been pushed.
     pushes = NULL,
-    #' @field demand Number of pushed tasks without workers to run them yet.
-    demand = NULL,
     #' @field head ID of the task at the head of the `collected` stack.
     head = NULL,
     #' @field until Numeric of length 1, time point when
@@ -91,7 +89,6 @@ crew_class_schedule <- R6::R6Class(
       self$pushed <- new.env(hash = TRUE, parent = emptyenv())
       self$collected <- new.env(hash = TRUE, parent = emptyenv())
       self$pushes <- 0L
-      self$demand <- 0L
       invisible()
     },
     #' @description Push a task.
@@ -101,7 +98,6 @@ crew_class_schedule <- R6::R6Class(
     push = function(task) {
       index <- .subset2(self, "pushes") + 1L
       self$pushes <- index
-      self$demand <- .subset2(self, "demand") + 1L
       pushed <- .subset2(self, "pushed")
       pushed[[as.character(index)]] <- task
       invisible()

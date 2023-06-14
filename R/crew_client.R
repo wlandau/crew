@@ -206,14 +206,19 @@ crew_class_client <- R6::R6Class(
       # TODO: if the dispatcher process becomes a C thread,
       # delete these superfluous checks on the dispatcher.
       # Begin dispatcher checks block 1/2.
-      if (!is.null(self$dispatcher)) {
-        handle <- ps::ps_handle(pid = self$dispatcher)
-      }
+      handle <- if_any(
+        is.null(self$dispatcher),
+        NULL,
+        tryCatch(
+          ps::ps_handle(pid = self$dispatcher),
+          error = function(condition) NULL
+        )
+      )
       # End dispatcher checks block 1/2.
       mirai::daemons(n = 0L, .compute = self$name)
       self$started <- FALSE
       # Begin dispatcher checks block 2/2.
-      if (is.null(self$dispatcher)) {
+      if (is.null(self$dispatcher) || is.null(handle)) {
         return(invisible())
       }
       tryCatch(

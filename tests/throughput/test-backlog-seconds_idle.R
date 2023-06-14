@@ -26,4 +26,8 @@ system.time(
 )
 testthat::expect_equal(length(controller$schedule$pushed), 0L)
 testthat::expect_equal(length(controller$schedule$collected), 0L)
+controller$launcher$terminate()
+controller$launcher$poll()
+testthat::expect_equal(sum(controller$launcher$workers$assigned), n_tasks)
+testthat::expect_equal(sum(controller$launcher$workers$complete), n_tasks)
 controller$terminate()

@@ -42,10 +42,13 @@ Other launchers:
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="backlogged"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-backlogged'><code>crew::crew_class_launcher$backlogged()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="call"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-call'><code>crew::crew_class_launcher$call()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="inactive"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-inactive'><code>crew::crew_class_launcher$inactive()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="initialize"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-initialize'><code>crew::crew_class_launcher$initialize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch'><code>crew::crew_class_launcher$launch()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="poll"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-poll'><code>crew::crew_class_launcher$poll()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="resolved"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-resolved'><code>crew::crew_class_launcher$resolved()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="scale"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-scale'><code>crew::crew_class_launcher$scale()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="settings"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-settings'><code>crew::crew_class_launcher$settings()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="start"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-start'><code>crew::crew_class_launcher$start()</code></a></span></li>

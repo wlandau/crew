@@ -261,7 +261,6 @@ crew_class_launcher <- R6::R6Class(
           "start",
           "launches",
           "inactive",
-          "backlogged",
           "tallied",
           "assigned",
           "complete"
@@ -342,7 +341,6 @@ crew_class_launcher <- R6::R6Class(
         start = rep(NA_real_, workers),
         launches = rep(0L, workers),
         inactive = rep(TRUE, workers),
-        backlogged = rep(FALSE, workers),
         tallied = rep(FALSE, workers),
         assigned = rep(0L, workers),
         complete = rep(0L, workers)
@@ -361,21 +359,52 @@ crew_class_launcher <- R6::R6Class(
       daemons <- daemons %|||% daemons_info(name = self$name)
       online <- as.logical(daemons[, "online"])
       discovered <- as.logical(daemons[, "instance"])
-      self$workers$inactive <- (!online) & (discovered | (!launching))
-      done <- (!online) & discovered
       new_assigned <- as.integer(daemons[, "assigned"])
       new_complete <- as.integer(daemons[, "complete"])
       old_assigned <- self$workers$assigned
       old_complete <- self$workers$complete
+      done <- (!online) & discovered
       tallied <- self$workers$tallied
       index <- done & (!tallied)
-      self$workers$tallied[index] <- TRUE
       assigned <- old_assigned[index] + new_assigned[index]
       complete <- old_complete[index] + new_complete[index]
-      self$workers$backlogged[index] <- assigned > complete
       self$workers$assigned[index] <- assigned
       self$workers$complete[index] <- complete
+      self$workers$tallied[index] <- TRUE
+      self$workers$inactive <- (!online) & (discovered | (!launching))
       invisible()
+    },
+    #' @description List inactive workers with backlogged workers first.
+    #' @return Integer vector of worker indexes with backlogged workers first.
+    #' @param n Maximum number of worker indexes to return.
+    inactive = function(n = Inf) {
+      workers <- self$workers
+      backlogged <- workers$assigned > workers$complete
+      inactive <- workers$inactive
+      first <- inactive & backlogged
+      second <- inactive & (!backlogged)
+      out <- c(which(first), which(second))
+      utils::head(x = out, n = n)
+    },
+    #' @description List inactive backlogged workers.
+    #' @return Integer vector of worker indexes.
+    #' @param n Maximum number of worker indexes to return.
+    backlogged = function(n = Inf) {
+      workers <- self$workers
+      backlogged <- workers$assigned > workers$complete
+      inactive <- workers$inactive
+      out <- which(inactive & backlogged)
+      utils::head(x = out, n = n)
+    },
+    #' @description List inactive non-backlogged workers.
+    #' @return Integer vector of worker indexes.
+    #' @param n Maximum number of worker indexes to return.
+    resolved = function(n = Inf) {
+      workers <- self$workers
+      backlogged <- workers$assigned > workers$complete
+      inactive <- workers$inactive
+      out <- which(inactive & (!backlogged))
+      utils::head(x = out, n = n)
     },
     #' @description Launch a worker.
     #' @return `NULL` (invisibly).
@@ -432,7 +461,7 @@ crew_class_launcher <- R6::R6Class(
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return Number of workers launched.
-    #' @param demand Number of tasks without workers to launch them yet.
+    #' @param demand Number of unresolved tasks.
     #' @param throttle Logical of length 1, whether to delay auto-scaling
     #'   until the next auto-scaling request at least
     #'  `self$client$seconds_interval` seconds from the original request.
@@ -444,16 +473,11 @@ crew_class_launcher <- R6::R6Class(
         return(0L)
       }
       self$poll()
-      inactive <- self$workers$inactive
-      backlogged <- self$workers$backlogged
-      launch_backlogged <- which(inactive & backlogged)
-      walk(x = launch_backlogged, f = self$launch)
-      resolved <- which(inactive & (!backlogged))
+      walk(x = self$backlogged(), f = self$launch)
+      resolved <- self$resolved()
       active <- nrow(self$workers) - length(resolved)
-      deficit <- min(demand - active, nrow(self$workers))
-      launch_resolved <- head(resolved, n = deficit)
-      walk(x = launch_resolved, f = self$launch)
-      length(launch_backlogged) + length(launch_resolved)
+      deficit <- min(demand - active, length(resolved))
+      walk(x = head(resolved, n = deficit), f = self$launch)
     },
     #' @description Terminate one or more workers.
     #' @return `NULL` (invisibly).

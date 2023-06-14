@@ -97,6 +97,9 @@ Other launchers:
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
 \item \href{#method-crew_class_launcher-poll}{\code{crew_class_launcher$poll()}}
+\item \href{#method-crew_class_launcher-inactive}{\code{crew_class_launcher$inactive()}}
+\item \href{#method-crew_class_launcher-backlogged}{\code{crew_class_launcher$backlogged()}}
+\item \href{#method-crew_class_launcher-resolved}{\code{crew_class_launcher$resolved()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-throttle}{\code{crew_class_launcher$throttle()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
@@ -304,6 +307,66 @@ should not set this.}
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-inactive"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-inactive}{}}}
+\subsection{Method \code{inactive()}}{
+List inactive workers with backlogged workers first.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$inactive(n = Inf)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Maximum number of worker indexes to return.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Integer vector of worker indexes with backlogged workers first.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-backlogged"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-backlogged}{}}}
+\subsection{Method \code{backlogged()}}{
+List inactive backlogged workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$backlogged(n = Inf)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Maximum number of worker indexes to return.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Integer vector of worker indexes.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-resolved"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-resolved}{}}}
+\subsection{Method \code{resolved()}}{
+List inactive non-backlogged workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$resolved(n = Inf)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Maximum number of worker indexes to return.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Integer vector of worker indexes.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-launch}{}}}
 \subsection{Method \code{launch()}}{
@@ -349,7 +412,7 @@ Auto-scale workers out to meet the demand of tasks.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{demand}}{Number of tasks without workers to launch them yet.}
+\item{\code{demand}}{Number of unresolved tasks.}
 
 \item{\code{throttle}}{Logical of length 1, whether to delay auto-scaling
 until the next auto-scaling request at least

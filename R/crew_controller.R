@@ -197,10 +197,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
       self$launcher$poll()
-      index <- head(which(self$launcher$workers$inactive), n = n)
-      walk(x = index, f = self$launcher$launch)
-      launched <- length(index)
-      self$schedule$demand <- self$schedule$demand - launched
+      walk(x = self$launcher$inactive(n = n), f = self$launcher$launch)
       invisible()
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
@@ -219,11 +216,9 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(throttle = FALSE, controllers = NULL) {
-      launched <- self$launcher$scale(
-        demand = self$schedule$demand,
-        throttle = throttle
-      )
-      self$schedule$demand <- self$schedule$demand - launched
+      self$schedule$collect(throttle = FALSE)
+      demand <- length(self$schedule$pushed)
+      self$launcher$scale(demand = demand, throttle = throttle)
       invisible()
     },
     #' @description Push a task to the head of the task list.

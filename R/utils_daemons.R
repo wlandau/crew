@@ -1,7 +1,4 @@
 daemons_info <- function(name) {
-  
-  print(targets:::time_seconds())
-  
   out <- mirai::daemons(.compute = name)$daemons
   # Should not happen:
   # nocov start

@@ -16,7 +16,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   })
   expect_silent(launcher$validate())
   client$start()
-  launcher$start(workers = 4L)
+  launcher$start()
   expect_equal(nrow(launcher$workers), 4L)
   expect_s3_class(launcher$workers$handle[[2L]], "crew_null")
   expect_equal(launcher$workers$launches, rep(0L, 4L))
@@ -91,7 +91,7 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   })
   client$start()
   expect_silent(launcher$validate())
-  launcher$start(workers = 1L)
+  launcher$start()
   launcher$launch(index = 1L)
   crew::crew_retry(
     ~{
@@ -152,7 +152,7 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   })
   client$start()
   socket <- rownames(client$daemons)
-  launcher$start(workers = 1L)
+  launcher$start()
   launcher$launch(index = 1L)
   crew::crew_retry(
     ~{

@@ -375,7 +375,7 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param index Integer index of a worker.
     rotate = function(index) {
-      socket <- mirai::saisei(i = index, force = FALSE,.compute = self$name)
+      socket <- mirai::saisei(i = index, force = FALSE, .compute = self$name)
       if (!is.null(socket)) {
         self$workers$socket[index] <- socket
         self$workers$launched[index] <- FALSE

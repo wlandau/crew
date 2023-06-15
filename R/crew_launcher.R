@@ -394,7 +394,7 @@ crew_class_launcher <- R6::R6Class(
       new_complete <- as.integer(daemons[, "complete"])
       old_assigned <- self$workers$assigned
       old_complete <- self$workers$complete
-      index <- self$workers$launched
+      index <- !(self$workers$launched)
       self$workers$assigned[index] <- old_assigned[index] + new_assigned[index]
       self$workers$complete[index] <- old_complete[index] + new_complete[index]
       invisible()

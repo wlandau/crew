@@ -198,44 +198,49 @@ crew_test("launcher done()", {
   expect_equal(launcher$done(daemons = daemons), seq_len(nrow(grid)))
 })
 
-crew_test("launcher inactive(), backlogged(), and resolved()", {
+crew_test("launcher tally()", {
+  grid <- expand.grid(complete = c(3L, 7L), launched = c(TRUE, FALSE))
+  launcher <- crew_class_launcher$new(seconds_launch = 9999)
+  launcher$start(workers = nrow(grid))
+  launcher$workers$launched <- grid$launched
+  daemons <- cbind(assigned = rep(7L, nrow(grid)), complete = grid$complete)
+  expect_equal(launcher$workers$assigned, rep(0L, nrow(grid)))
+  expect_equal(launcher$workers$complete, rep(0L, nrow(grid)))
+  launcher$tally(daemons = daemons)
+  expect_equal(launcher$workers$assigned, c(0L, 0L, 7L, 7L))
+  expect_equal(launcher$workers$complete, c(0L, 0L, 3L, 7L))
+  launcher$workers$launched[1L] <- FALSE
+  launcher$workers$launched[4L] <- TRUE
+  launcher$tally(daemons = daemons)
+  expect_equal(launcher$workers$assigned, c(7L, 0L, 14L, 7L))
+  expect_equal(launcher$workers$complete, c(3L, 0L, 6L, 7L))
+  launcher$workers$launched <- !(launcher$workers$launched)
+  launcher$tally(daemons = daemons)
+  expect_equal(launcher$workers$assigned, c(7L, 7L, 14L, 14L))
+  expect_equal(launcher$workers$complete, c(3L, 7L, 6L, 14L))
+})
+
+crew_test("launcher unlaunched()", {
+  launcher <- crew_class_launcher$new(seconds_launch = 9999)
+  launcher$start(workers = 5L)
+  launcher$workers$launched <- c(TRUE, FALSE, FALSE, FALSE, TRUE)
+  expect_equal(launcher$unlaunched(), c(2L, 3L, 4L))
+  expect_equal(launcher$unlaunched(n = 2L), c(2L, 3L))
+})
+
+crew_test("launcher backlogged() and resolved()", {
   grid <- expand.grid(
-    complete = c(3L, 7L),
-    start = c(NA_real_, -Inf, Inf),
-    instance = c(0L, 1L),
-    online = c(0L, 1L)
+    launched = c(TRUE, FALSE),
+    assigned = c(7L, 7L),
+    complete = c(3L, 7L)
   )
   launcher <- crew_class_launcher$new(seconds_launch = 9999)
   launcher$start(workers = nrow(grid))
-  launcher$workers$start <- grid$start
-  daemons <- cbind(
-    online = grid$online,
-    instance = grid$instance,
-    assigned = rep(7L, nrow(grid)),
-    complete = grid$complete
-  )
-  expect_equal(launcher$workers$tallied, rep(FALSE, nrow(grid)))
-  expect_equal(launcher$workers$assigned, rep(0L, nrow(grid)))
-  expect_equal(launcher$workers$complete, rep(0L, nrow(grid)))
-  launcher$poll(daemons = daemons)
-  exp <- c(7L, 9L, 11L, 1L, 2L, 3L, 4L, 8L, 10L, 12L)
-  expect_equal(launcher$inactive(), exp)
-  for (n in c(11L, 12L, 13L, Inf)) {
-    expect_equal(launcher$inactive(n = n), exp)
+  for (field in colnames(grid)) {
+    launcher$workers[[field]] <- grid[[field]]
   }
-  expect_equal(launcher$inactive(n = 0L), integer(0L))
-  for (n in seq_along(exp)) {
-    expect_equal(launcher$inactive(n = n), exp[seq_len(n)])
-  }
-  expect_equal(launcher$backlogged(), c(7L, 9L, 11L))
-  expect_equal(launcher$backlogged(n = 2L), c(7L, 9L))
-  expect_equal(launcher$resolved(), c(1L, 2L, 3L, 4L, 8L, 10L, 12L))
-  expect_equal(launcher$resolved(n = 3L), c(1L, 2L, 3L))
-  launcher$workers$tallied[seq(7L, 9L)] <- FALSE
-  launcher$poll(daemons = daemons)
-  expect_equal(launcher$inactive(), exp)
-  expect_equal(launcher$backlogged(), c(7L, 9L, 11L))
-  expect_equal(launcher$resolved(), c(1L, 2L, 3L, 4L, 8L, 10L, 12L))
+  expect_equal(launcher$backlogged(), c(2L, 4L))
+  expect_equal(launcher$resolved(), c(6L, 8L))
 })
 
 crew_test("custom launcher", {

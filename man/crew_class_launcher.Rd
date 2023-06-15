@@ -296,6 +296,14 @@ Get done workers.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$done(daemons = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{daemons}}{\code{mirai} daemons matrix. For testing only. Users
+should not set this.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Details}{
 A worker is "done" if it is launched and inactive.
 (A worker is also done if its websocket is \code{NA}.)

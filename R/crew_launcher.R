@@ -469,7 +469,7 @@ crew_class_launcher <- R6::R6Class(
       }
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
-    #' @return Number of workers launched.
+    #' @return `NULL` (invisibly)
     #' @param demand Number of unresolved tasks.
     #' @param throttle Logical of length 1, whether to delay auto-scaling
     #'   until the next auto-scaling request at least
@@ -479,7 +479,7 @@ crew_class_launcher <- R6::R6Class(
     #'   and efficiency.
     scale = function(demand, throttle = FALSE) {
       if (throttle && self$throttle()) {
-        return(0L)
+        return(invisible())
       }
       walk(x = self$done(), f = self$rotate)
       self$tally()
@@ -488,6 +488,7 @@ crew_class_launcher <- R6::R6Class(
       active <- nrow(self$workers) - length(resolved)
       deficit <- min(demand - active, length(resolved))
       walk(x = head(x = resolved, n = deficit), f = self$launch)
+      invisible()
     },
     #' @description Terminate one or more workers.
     #' @return `NULL` (invisibly).

@@ -478,7 +478,7 @@ and efficiency.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Number of workers launched.
+\code{NULL} (invisibly)
 }
 }
 \if{html}{\out{<hr>}}

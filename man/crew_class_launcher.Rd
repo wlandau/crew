@@ -96,8 +96,10 @@ Other launchers:
 \item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
-\item \href{#method-crew_class_launcher-poll}{\code{crew_class_launcher$poll()}}
-\item \href{#method-crew_class_launcher-inactive}{\code{crew_class_launcher$inactive()}}
+\item \href{#method-crew_class_launcher-done}{\code{crew_class_launcher$done()}}
+\item \href{#method-crew_class_launcher-rotate}{\code{crew_class_launcher$rotate()}}
+\item \href{#method-crew_class_launcher-tally}{\code{crew_class_launcher$tally()}}
+\item \href{#method-crew_class_launcher-unlaunched}{\code{crew_class_launcher$unlaunched()}}
 \item \href{#method-crew_class_launcher-backlogged}{\code{crew_class_launcher$backlogged()}}
 \item \href{#method-crew_class_launcher-resolved}{\code{crew_class_launcher$resolved()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
@@ -286,12 +288,65 @@ life cycle.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-poll"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-poll}{}}}
-\subsection{Method \code{poll()}}{
-Update internal info about worker activity and task load.
+\if{html}{\out{<a id="method-crew_class_launcher-done"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-done}{}}}
+\subsection{Method \code{done()}}{
+Get done workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$poll(daemons = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$done(daemons = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+A worker is "done" if it is launched and inactive.
+(A worker is also done if its websocket is \code{NA}.)
+A worker is "launched" if \code{launch()} was called
+and the worker websocket has not been rotated since.
+If a worker is currently online, then it is not inactive.
+If a worker is not currently online, then it is inactive
+if and only if (1) either it connected to the current
+websocket at some point in the past,
+or (2) \code{seconds_launch} seconds elapsed since launch.
+}
+
+\subsection{Returns}{
+Integer index of inactive workers.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-rotate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-rotate}{}}}
+\subsection{Method \code{rotate()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$rotate(index)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{index}}{Integer index of a worker.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Rotate a websocket.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-tally"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-tally}{}}}
+\subsection{Method \code{tally()}}{
+Update the cumulative assigned and complete statistics.
+
+
+Used to detect backlogged workers with more assigned
+than complete tasks. If terminated, these workers need to be
+relaunched until the backlog of assigned tasks is complete.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$tally(daemons = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -307,12 +362,12 @@ should not set this.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-inactive"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-inactive}{}}}
-\subsection{Method \code{inactive()}}{
-List inactive workers with backlogged workers first.
+\if{html}{\out{<a id="method-crew_class_launcher-unlaunched"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-unlaunched}{}}}
+\subsection{Method \code{unlaunched()}}{
+Get workers available for launch.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$inactive(n = Inf)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$unlaunched(n = Inf)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -323,25 +378,18 @@ List inactive workers with backlogged workers first.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Integer vector of worker indexes with backlogged workers first.
+Integer index of workers available for launch.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-backlogged"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-backlogged}{}}}
 \subsection{Method \code{backlogged()}}{
-List inactive backlogged workers.
+List non-launched backlogged workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$backlogged(n = Inf)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$backlogged()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{n}}{Maximum number of worker indexes to return.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 Integer vector of worker indexes.
 }
@@ -350,9 +398,9 @@ Integer vector of worker indexes.
 \if{html}{\out{<a id="method-crew_class_launcher-resolved"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-resolved}{}}}
 \subsection{Method \code{resolved()}}{
-List inactive non-backlogged workers.
+List non-launched non-backlogged workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$resolved(n = Inf)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$resolved()}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

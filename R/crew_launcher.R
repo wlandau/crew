@@ -260,8 +260,7 @@ crew_class_launcher <- R6::R6Class(
           "socket",
           "start",
           "launches",
-          "inactive",
-          "tallied",
+          "launched",
           "assigned",
           "complete"
         )
@@ -340,18 +339,24 @@ crew_class_launcher <- R6::R6Class(
         socket = rep(NA_character_, workers),
         start = rep(NA_real_, workers),
         launches = rep(0L, workers),
-        inactive = rep(TRUE, workers),
-        tallied = rep(FALSE, workers),
+        launched = rep(FALSE, workers),
         assigned = rep(0L, workers),
         complete = rep(0L, workers)
       )
       invisible()
     },
-    #' @description Update internal info about worker activity and task load.
-    #' @return `NULL` (invisibly).
-    #' @param daemons `mirai` daemons matrix. For testing only. Users
-    #'   should not set this.
-    poll = function(daemons = NULL) {
+    #' @description Get done workers.
+    #' @details A worker is "done" if it is launched and inactive.
+    #'   (A worker is also done if its websocket is `NA`.)
+    #'   A worker is "launched" if `launch()` was called
+    #'   and the worker websocket has not been rotated since.
+    #'   If a worker is currently online, then it is not inactive.
+    #'   If a worker is not currently online, then it is inactive
+    #'   if and only if (1) either it connected to the current
+    #'   websocket at some point in the past,
+    #'   or (2) `seconds_launch` seconds elapsed since launch.
+    #' @return Integer index of inactive workers.
+    done = function(daemons = NULL) {
       bound <- self$seconds_launch
       start <- self$workers$start
       now <- nanonext::mclock() / 1000
@@ -359,62 +364,66 @@ crew_class_launcher <- R6::R6Class(
       daemons <- daemons %|||% daemons_info(name = self$name)
       online <- as.logical(daemons[, "online"])
       discovered <- as.logical(daemons[, "instance"])
+      launched <- self$workers$launched
+      missing <- is.na(self$workers$socket)
+      inactive <- (!online) & (discovered | (!launching))
+      (inactive & launched) | missing
+    },
+    #' @details Rotate a websocket.
+    #' @return `NULL` (invisibly).
+    #' @param index Integer index of a worker.
+    rotate = function(index) {
+      socket <- mirai::saisei(i = index, force = FALSE,.compute = self$name)
+      if (!is.null(socket)) {
+        self$workers$socket[index] <- socket
+        self$workers$launched[index] <- FALSE
+      }
+    },
+    #' @description Update the cumulative assigned and complete statistics.
+    #' @description Used to detect backlogged workers with more assigned
+    #'   than complete tasks. If terminated, these workers need to be
+    #'   relaunched until the backlog of assigned tasks is complete.
+    #' @return `NULL` (invisibly).
+    #' @param daemons `mirai` daemons matrix. For testing only. Users
+    #'   should not set this.
+    tally = function(daemons = NULL) {
+      daemons <- daemons %|||% daemons_info(name = self$name)
       new_assigned <- as.integer(daemons[, "assigned"])
       new_complete <- as.integer(daemons[, "complete"])
       old_assigned <- self$workers$assigned
       old_complete <- self$workers$complete
-      done <- (!online) & discovered
-      tallied <- self$workers$tallied
-      index <- done & (!tallied)
-      assigned <- old_assigned[index] + new_assigned[index]
-      complete <- old_complete[index] + new_complete[index]
-      self$workers$assigned[index] <- assigned
-      self$workers$complete[index] <- complete
-      self$workers$tallied[index] <- TRUE
-      self$workers$inactive <- (!online) & (discovered | (!launching))
+      index <- self$workers$launched
+      self$workers$assigned[index] <- old_assigned[index] + new_assigned[index]
+      self$workers$complete[index] <- old_complete[index] + new_complete[index]
       invisible()
     },
-    #' @description List inactive workers with backlogged workers first.
-    #' @return Integer vector of worker indexes with backlogged workers first.
+    #' @description Get workers available for launch.
+    #' @return Integer index of workers available for launch.
     #' @param n Maximum number of worker indexes to return.
-    inactive = function(n = Inf) {
-      workers <- self$workers
-      backlogged <- workers$assigned > workers$complete
-      inactive <- workers$inactive
-      first <- inactive & backlogged
-      second <- inactive & (!backlogged)
-      out <- c(which(first), which(second))
-      utils::head(x = out, n = n)
+    unlaunched  = function(n = Inf) {
+      head(x = which(!self$workers$launched), n = n)
     },
-    #' @description List inactive backlogged workers.
+    #' @description List non-launched backlogged workers.
+    #' @return Integer vector of worker indexes.
+    backlogged = function() {
+      workers <- self$workers
+      index <- !(workers$launched) & (workers$assigned > workers$complete)
+      which(index)
+    },
+    #' @description List non-launched non-backlogged workers.
     #' @return Integer vector of worker indexes.
     #' @param n Maximum number of worker indexes to return.
-    backlogged = function(n = Inf) {
+    resolved = function() {
       workers <- self$workers
-      backlogged <- workers$assigned > workers$complete
-      inactive <- workers$inactive
-      out <- which(inactive & backlogged)
-      utils::head(x = out, n = n)
-    },
-    #' @description List inactive non-backlogged workers.
-    #' @return Integer vector of worker indexes.
-    #' @param n Maximum number of worker indexes to return.
-    resolved = function(n = Inf) {
-      workers <- self$workers
-      backlogged <- workers$assigned > workers$complete
-      inactive <- workers$inactive
-      out <- which(inactive & (!backlogged))
-      utils::head(x = out, n = n)
+      index <- !(workers$launched) & !(workers$assigned > workers$complete)
+      which(index)
     },
     #' @description Launch a worker.
     #' @return `NULL` (invisibly).
     #' @param index Positive integer of length 1, index of the worker
     #'   to launch.
     launch = function(index) {
-      socket <- mirai::saisei(i = index, force = FALSE, .compute = self$name)
-      if (is.null(socket)) {
-        return(invisible()) # nocov
-      }
+      socket <- self$workers$socket[index]
       instance <- parse_instance(socket)
       call <- self$call(
         socket = socket,
@@ -442,7 +451,7 @@ crew_class_launcher <- R6::R6Class(
       self$workers$socket[index] <- socket
       self$workers$start[index] <- nanonext::mclock() / 1000
       self$workers$launches[index] <- self$workers$launches[index] + 1L
-      self$workers$tallied[index] <- FALSE
+      self$workers$launched[index] <- TRUE
       invisible()
     },
     #' @description Throttle repeated calls.
@@ -472,12 +481,13 @@ crew_class_launcher <- R6::R6Class(
       if (throttle && self$throttle()) {
         return(0L)
       }
-      self$poll()
+      walk(x = self$done(), f = self$rotate)
+      self$tally()
       walk(x = self$backlogged(), f = self$launch)
       resolved <- self$resolved()
       active <- nrow(self$workers) - length(resolved)
       deficit <- min(demand - active, length(resolved))
-      walk(x = head(resolved, n = deficit), f = self$launch)
+      walk(x = head(x = resolved, n = deficit), f = self$launch)
     },
     #' @description Terminate one or more workers.
     #' @return `NULL` (invisibly).

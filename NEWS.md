@@ -4,7 +4,7 @@
 * Optimize heavily (#81, #83, @shikokuchuo, @brendanf).
 * Use CRAN `nanonext` 0.9.0.
 * Delegate the task pushing and collection logic to a new `R6` schedule class (#84).
-* delegate auto-scaling to the launcher (#84).
+* Delegate auto-scaling to the launcher (#84).
 * Drastically simplify internal logic (#84).
 * Rename "router" to "client" and change the function signature of `launch_worker()` (#84). Unfortunately neither of these changes is back-compatible for third-party launcher plugins, but the controller interface is still back-compatible.
 

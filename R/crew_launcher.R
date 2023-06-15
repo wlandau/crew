@@ -356,6 +356,8 @@ crew_class_launcher <- R6::R6Class(
     #'   websocket at some point in the past,
     #'   or (2) `seconds_launch` seconds elapsed since launch.
     #' @return Integer index of inactive workers.
+    #' @param daemons `mirai` daemons matrix. For testing only. Users
+    #'   should not set this.
     done = function(daemons = NULL) {
       bound <- self$seconds_launch
       start <- self$workers$start
@@ -367,7 +369,7 @@ crew_class_launcher <- R6::R6Class(
       launched <- self$workers$launched
       missing <- is.na(self$workers$socket)
       inactive <- (!online) & (discovered | (!launching))
-      (inactive & launched) | missing
+      which((inactive & launched) | missing)
     },
     #' @details Rotate a websocket.
     #' @return `NULL` (invisibly).

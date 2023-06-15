@@ -163,7 +163,7 @@ crew_test("launcher start()", {
   expect_equal(workers$complete, rep(0L, 2L))
 })
 
-crew_test("launcher poll()", {
+crew_test("launcher done()", {
   grid <- expand.grid(
     complete = c(3L, 7L),
     start = c(NA_real_, -Inf, Inf),
@@ -173,50 +173,29 @@ crew_test("launcher poll()", {
   launcher <- crew_class_launcher$new(seconds_launch = 9999)
   launcher$start(workers = nrow(grid))
   launcher$workers$start <- grid$start
+  socket <- sprintf(
+    "ws://127.0.0.1:5000/%s/token",
+    seq_len(nrow(grid))
+  )
+  launcher$workers$socket <- socket
+  launcher$workers$launched <- rep(TRUE, nrow(grid))
   daemons <- cbind(
     online = grid$online,
     instance = grid$instance,
     assigned = rep(7L, nrow(grid)),
     complete = grid$complete
   )
-  expect_equal(launcher$workers$tallied, rep(FALSE, nrow(grid)))
   expect_equal(launcher$workers$assigned, rep(0L, nrow(grid)))
   expect_equal(launcher$workers$complete, rep(0L, nrow(grid)))
-  launcher$poll(daemons = daemons)
-  expect_equal(
-    launcher$workers$inactive,
-    c(rep(TRUE, 4L), rep(FALSE, 2L), rep(TRUE, 6L), rep(FALSE, 12L))
-  )
-  expect_equal(
-    launcher$workers$tallied,
-    c(rep(FALSE, 6L), rep(TRUE, 6L), rep(FALSE, 12L))
-  )
-  expect_equal(
-    launcher$workers$assigned,
-    c(rep(0L, 6L), rep(7L, 6L), rep(0L, 12L))
-  )
-  expect_equal(
-    launcher$workers$complete,
-    c(rep(0L, 6L), rep(c(3L, 7L), times = 3L), rep(0L, 12L))
-  )
-  launcher$workers$tallied[seq(7L, 9L)] <- FALSE
-  launcher$poll(daemons = daemons)
-  expect_equal(
-    launcher$workers$inactive,
-    c(rep(TRUE, 4L), rep(FALSE, 2L), rep(TRUE, 6L), rep(FALSE, 12L))
-  )
-  expect_equal(
-    launcher$workers$tallied,
-    c(rep(FALSE, 6L), rep(TRUE, 6L), rep(FALSE, 12L))
-  )
-  expect_equal(
-    launcher$workers$assigned,
-    c(rep(0L, 6L), rep(14L, 3L), rep(7L, 3L), rep(0L, 12L))
-  )
-  expect_equal(
-    launcher$workers$complete,
-    c(rep(0L, 6L), c(6L, 14L, 6L, 7L, 3L, 7L), rep(0L, 12L))
-  )
+  out <- launcher$done(daemons = daemons)
+  exp <- c(1L, 2L, 3L, 4L, 7L, 8L, 9L, 10L, 11L, 12L)
+  expect_equal(out, exp)
+  launcher$workers$launched <- rep(FALSE, nrow(grid))
+  expect_equal(launcher$done(daemons = daemons), integer(0L))
+  launcher$workers$socket <- rep(NA_character_, nrow(grid))
+  expect_equal(launcher$done(daemons = daemons), seq_len(nrow(grid)))
+  launcher$workers$launched <- rep(TRUE, nrow(grid))
+  expect_equal(launcher$done(daemons = daemons), seq_len(nrow(grid)))
 })
 
 crew_test("launcher inactive(), backlogged(), and resolved()", {

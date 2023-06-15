@@ -266,21 +266,20 @@ launcher$call(
 \subsection{Method \code{start()}}{
 Start the launcher.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$start(workers = 1L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$start(sockets = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{workers}}{Positive integer of length 1,
-number of workers to allow.}
+\item{\code{sockets}}{For testing purposes only.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
 Creates the workers data frame.
 Meant to be called once at the beginning of the launcher
-life cycle.
+life cycle, after the client has started.
 }
 
 \subsection{Returns}{
@@ -306,7 +305,6 @@ should not set this.}
 }
 \subsection{Details}{
 A worker is "done" if it is launched and inactive.
-(A worker is also done if its websocket is \code{NA}.)
 A worker is "launched" if \code{launch()} was called
 and the worker websocket has not been rotated since.
 If a worker is currently online, then it is not inactive.

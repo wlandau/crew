@@ -256,7 +256,7 @@ crew_test("crew_controller_local() can terminate a lost worker", {
   x$launcher$workers$start[1L] <- - Inf
   x$launcher$workers$launches[1L] <- 1L
   expect_true(handle$is_alive())
-  x$launch()
+  x$launcher$rotate(index = 1L)
   crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.1,

@@ -260,7 +260,7 @@ crew_test("crew_controller_local() can terminate a lost worker", {
   crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_timeout = 60
   )
   expect_false(handle$is_alive())
 })

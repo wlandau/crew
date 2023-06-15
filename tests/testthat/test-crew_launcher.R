@@ -149,8 +149,7 @@ crew_test("launcher start()", {
       "socket",
       "start",
       "launches",
-      "inactive",
-      "tallied",
+      "launched",
       "assigned",
       "complete"
     )
@@ -159,6 +158,9 @@ crew_test("launcher start()", {
   expect_equal(workers$socket, c(NA_character_, NA_character_))
   expect_equal(workers$start, c(NA_real_, NA_real_))
   expect_equal(workers$launches, rep(0L, 2L))
+  expect_equal(workers$launched, rep(FALSE, 2L))
+  expect_equal(workers$assigned, rep(0L, 2L))
+  expect_equal(workers$complete, rep(0L, 2L))
 })
 
 crew_test("launcher poll()", {

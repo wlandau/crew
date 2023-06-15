@@ -139,7 +139,7 @@ crew_test("launcher start()", {
   launcher <- crew_class_launcher$new()
   workers <- launcher$workers
   expect_equal(workers, NULL)
-  launcher$start(workers = 2L)
+  launcher$start(sockets = c("a", "b"))
   workers <- launcher$workers
   expect_equal(nrow(workers), 2L)
   expect_equal(
@@ -155,7 +155,7 @@ crew_test("launcher start()", {
     )
   )
   expect_equal(workers$handle, list(crew_null, crew_null))
-  expect_equal(workers$socket, c(NA_character_, NA_character_))
+  expect_equal(workers$socket, c("a", "b"))
   expect_equal(workers$start, c(NA_real_, NA_real_))
   expect_equal(workers$launches, rep(0L, 2L))
   expect_equal(workers$launched, rep(FALSE, 2L))
@@ -171,7 +171,7 @@ crew_test("launcher done()", {
     online = c(0L, 1L)
   )
   launcher <- crew_class_launcher$new(seconds_launch = 9999)
-  launcher$start(workers = nrow(grid))
+  launcher$start(sockets = rep("x", nrow(grid)))
   launcher$workers$start <- grid$start
   socket <- sprintf(
     "ws://127.0.0.1:5000/%s/token",
@@ -192,16 +192,12 @@ crew_test("launcher done()", {
   expect_equal(out, exp)
   launcher$workers$launched <- rep(FALSE, nrow(grid))
   expect_equal(launcher$done(daemons = daemons), integer(0L))
-  launcher$workers$socket <- rep(NA_character_, nrow(grid))
-  expect_equal(launcher$done(daemons = daemons), seq_len(nrow(grid)))
-  launcher$workers$launched <- rep(TRUE, nrow(grid))
-  expect_equal(launcher$done(daemons = daemons), seq_len(nrow(grid)))
 })
 
 crew_test("launcher tally()", {
   grid <- expand.grid(complete = c(3L, 7L), launched = c(TRUE, FALSE))
   launcher <- crew_class_launcher$new(seconds_launch = 9999)
-  launcher$start(workers = nrow(grid))
+  launcher$start(sockets = rep("x", nrow(grid)))
   launcher$workers$launched <- grid$launched
   daemons <- cbind(assigned = rep(7L, nrow(grid)), complete = grid$complete)
   expect_equal(launcher$workers$assigned, rep(0L, nrow(grid)))
@@ -222,7 +218,7 @@ crew_test("launcher tally()", {
 
 crew_test("launcher unlaunched()", {
   launcher <- crew_class_launcher$new(seconds_launch = 9999)
-  launcher$start(workers = 5L)
+  launcher$start(sockets = rep("x", 5L))
   launcher$workers$launched <- c(TRUE, FALSE, FALSE, FALSE, TRUE)
   expect_equal(launcher$unlaunched(), c(2L, 3L, 4L))
   expect_equal(launcher$unlaunched(n = 2L), c(2L, 3L))
@@ -235,7 +231,7 @@ crew_test("launcher backlogged() and resolved()", {
     complete = c(3L, 7L)
   )
   launcher <- crew_class_launcher$new(seconds_launch = 9999)
-  launcher$start(workers = nrow(grid))
+  launcher$start(sockets = rep("x", nrow(grid)))
   for (field in colnames(grid)) {
     launcher$workers[[field]] <- grid[[field]]
   }

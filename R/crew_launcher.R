@@ -328,26 +328,25 @@ crew_class_launcher <- R6::R6Class(
     #' @description Start the launcher.
     #' @details Creates the workers data frame.
     #'   Meant to be called once at the beginning of the launcher
-    #'   life cycle.
+    #'   life cycle, after the client has started.
     #' @return `NULL` (invisibly).
-    #' @param workers Positive integer of length 1,
-    #'   number of workers to allow.
-    start = function(workers = 1L) {
-      crew_assert(workers > 0L, message = "workers must be > 0")
+    #' @param sockets For testing purposes only.
+    start = function(sockets = NULL) {
+      sockets = sockets %|||% environment(mirai::daemons)$..[[self$name]]$urls
+      n <- length(sockets)
       self$workers <- tibble::tibble(
-        handle = replicate(workers, crew_null, simplify = FALSE),
-        socket = rep(NA_character_, workers),
-        start = rep(NA_real_, workers),
-        launches = rep(0L, workers),
-        launched = rep(FALSE, workers),
-        assigned = rep(0L, workers),
-        complete = rep(0L, workers)
+        handle = replicate(n, crew_null, simplify = FALSE),
+        socket = sockets,
+        start = rep(NA_real_, n),
+        launches = rep(0L, n),
+        launched = rep(FALSE, n),
+        assigned = rep(0L, n),
+        complete = rep(0L, n)
       )
       invisible()
     },
     #' @description Get done workers.
     #' @details A worker is "done" if it is launched and inactive.
-    #'   (A worker is also done if its websocket is `NA`.)
     #'   A worker is "launched" if `launch()` was called
     #'   and the worker websocket has not been rotated since.
     #'   If a worker is currently online, then it is not inactive.
@@ -366,10 +365,9 @@ crew_class_launcher <- R6::R6Class(
       daemons <- daemons %|||% daemons_info(name = self$name)
       online <- as.logical(daemons[, "online"])
       discovered <- as.logical(daemons[, "instance"])
-      launched <- self$workers$launched
-      missing <- is.na(self$workers$socket)
       inactive <- (!online) & (discovered | (!launching))
-      which((inactive & launched) | missing)
+      launched <- self$workers$launched
+      which(inactive & launched)
     },
     #' @details Rotate a websocket.
     #' @return `NULL` (invisibly).

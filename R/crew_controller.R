@@ -169,7 +169,7 @@ crew_class_controller <- R6::R6Class(
       if (!isTRUE(self$client$started)) {
         self$client$start()
         workers <- self$client$workers
-        self$launcher$start(workers = workers)
+        self$launcher$start()
         self$schedule$start()
         self$log <- list(
           popped_tasks = rep(0L, workers),

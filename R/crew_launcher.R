@@ -332,7 +332,7 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param sockets For testing purposes only.
     start = function(sockets = NULL) {
-      sockets = sockets %|||% environment(mirai::daemons)$..[[self$name]]$urls
+      sockets <- sockets %|||% environment(mirai::daemons)$..[[self$name]]$urls
       n <- length(sockets)
       self$workers <- tibble::tibble(
         handle = replicate(n, crew_null, simplify = FALSE),

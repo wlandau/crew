@@ -288,34 +288,16 @@ crew_class_controller <- R6::R6Class(
       } else {
         string <- NA_character_
       }
-      command <- as.call(list(lang_quote, command))
-      expr <-  as.call(
-        list(
-          lang_crew_eval,
-          name = name,
-          command = command,
-          string = string,
-          data = quote(data),
-          globals = quote(globals),
-          seed = quote(seed),
-          packages = quote(packages),
-          library = quote(library)
-        )
-      )
-      .args <- list(
-        data = data,
-        globals = globals,
-        seed = seed,
-        packages = packages,
-        library = library
-      )
-      .timeout <- if_any(
-        is.null(seconds_timeout),
-        NULL,
-        seconds_timeout * 1000
-      )
+      if (is.null(seconds_timeout)) {
+        .timeout <- NULL
+      } else {
+        .timeout <- seconds_timeout * 1000
+      }
       task <- mirai::mirai(
-        .expr = expr,
+        .expr = expr_crew_eval,
+        name = name,
+        command = command,
+        string = string,
         data = data,
         globals = globals,
         seed = seed,
@@ -589,5 +571,15 @@ crew_class_controller <- R6::R6Class(
   )
 )
 
-lang_quote <- as.symbol("quote")
-lang_crew_eval <- quote(crew::crew_eval)
+expr_crew_eval <- quote(
+  crew::crew_eval(
+    name = name,
+    command = command,
+    string = string,
+    data = data,
+    globals = globals,
+    seed = seed,
+    packages = packages,
+    library = library
+  )
+)

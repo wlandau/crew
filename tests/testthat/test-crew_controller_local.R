@@ -61,6 +61,7 @@ crew_test("crew_controller_local()", {
   )
   expect_equal(s$popped_tasks, 0L)
   expect_true(x$client$started)
+  # first task
   x$push(
     command = Sys.getenv("CREW_INSTANCE"),
     name = "task",
@@ -71,7 +72,6 @@ crew_test("crew_controller_local()", {
   x$wait(seconds_timeout = 5)
   expect_false(x$empty())
   expect_true(x$nonempty())
-  # first task
   envir <- new.env(parent = emptyenv())
   crew_retry(
     ~{
@@ -108,7 +108,8 @@ crew_test("crew_controller_local()", {
       data = list(x = "b"),
       globals = list(.crew_y = "c"),
       seed = 0L,
-      save_command = FALSE
+      save_command = FALSE,
+      .timeout = 100
     )
     x$wait(seconds_timeout = 5)
     out <- x$pop()

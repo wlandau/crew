@@ -36,8 +36,8 @@ message(time["elapsed"])
 # Call wait() on the controller to cycle through the rest of the tasks.
 # Watch htop to see it complete.
 x$wait(mode = "all")
-testthat::expect_equal(length(x$schedule$pushed), 0L)
-testthat::expect_equal(length(x$schedule$collected), 200L)
+testthat::expect_equal(x$schedule$summary()$pushed, 0L)
+testthat::expect_equal(x$schedule$summary()$collected, 200L)
 
 # All results should now be available.
 results <- list()
@@ -51,9 +51,8 @@ time <- system.time({
   }
 })
 message(time["elapsed"])
-sum <- x$summary()
-testthat::expect_equal(sum(sum$worker_launches), 2 * n)
-x$terminate()
+testthat::expect_equal(sum(x$launcher$summary()$launches), 2 * n)
 results <- tibble::as_tibble(do.call(rbind, results))
 results$result <- as.integer(results$result)
 testthat::expect_equal(length(unique(results$result)), 2 * n)
+x$terminate()

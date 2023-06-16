@@ -1,4 +1,4 @@
-# crew 0.2.1.9009 (development)
+# crew 0.2.1.9010 (development)
 
 * Track warnings properly (#81, @brendanf).
 * Optimize heavily (#81, #83, @shikokuchuo, @brendanf).
@@ -9,6 +9,7 @@
 * Rename "router" to "client" and change the function signature of `launch_worker()` (#84). Unfortunately neither of these changes is back-compatible for third-party launcher plugins. However, the controller interface is still back-compatible, so `targets` remains unaffected.
 * Terminate "lost" workers on websocket rotation.
 * Allow `NULL` result in `pop()$result[[1L]]`.
+* Delegate summaries among the controller, schedule, launcher, and client.
 
 # crew 0.2.1
 

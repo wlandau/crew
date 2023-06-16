@@ -116,10 +116,10 @@ Summarize the schedule.
 \code{NULL} if not started. Otherwise, a \code{tibble} with
 the following columns:
 \itemize{
-\item \code{pushed}: number of pushed tasks, which might or might not be
-resolved.
-\item \code{collected}: number of collected and resolved tasks, ready to be
-retrieved with \code{pop()}.
+\item \code{pushed}: number tasks that were pushed but not collected yet.
+These tasks may or may not have completed.
+\item \code{collected}: number of tasks that completed and were collected
+but not yet retrieved with \code{pop()}.
 }
 }
 }

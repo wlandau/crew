@@ -206,3 +206,23 @@ test_that("schedule collected_one", {
     expect_true(x$collected_mode(mode = "one"))
   }
 })
+
+test_that("schedule summary", {
+  x <- crew_schedule()
+  expect_null(x$summary())
+  x$start()
+  expect_true(tibble::is_tibble(x$summary()))
+  expect_equal(nrow(x$summary()), 1L)
+  expect_equal(sort(colnames(x$summary())), sort(c("pushed", "collected")))
+  expect_equal(x$summary()$pushed, 0L)
+  expect_equal(x$summary()$collected, 0L)
+  x$push(task = crew_null)
+  expect_equal(x$summary()$pushed, 1L)
+  expect_equal(x$summary()$collected, 0L)
+  x$collect(throttle = FALSE)
+  expect_equal(x$summary()$pushed, 0L)
+  expect_equal(x$summary()$collected, 1L)
+  x$pop()
+  expect_equal(x$summary()$pushed, 0L)
+  expect_equal(x$summary()$collected, 0L)
+})

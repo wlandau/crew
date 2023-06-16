@@ -587,7 +587,7 @@ at the website, encountered an error in R, and then retrieved
 with \code{pop()}.
 \item \code{warnings}: total number of tasks which ran on a worker
 at the website, encountered one or more warnings in R,
-and then retrieved with \code{pop()}. Note: \code{popped_warnings}
+and then retrieved with \code{pop()}. Note: \code{warnings}
 is actually the number of \emph{tasks}, not the number of warnings.
 (A task could throw more than one warning.
 }

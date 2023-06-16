@@ -473,7 +473,7 @@ crew_class_controller <- R6::R6Class(
     #'     with `pop()`.
     #'   * `warnings`: total number of tasks which ran on a worker
     #'     at the website, encountered one or more warnings in R,
-    #'     and then retrieved with `pop()`. Note: `popped_warnings`
+    #'     and then retrieved with `pop()`. Note: `warnings`
     #'     is actually the number of *tasks*, not the number of warnings.
     #'     (A task could throw more than one warning.
     #' @param controllers Not used. Included to ensure the signature is

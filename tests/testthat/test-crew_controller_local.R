@@ -33,33 +33,15 @@ crew_test("crew_controller_local()", {
     sort(
       c(
         "controller",
-        "popped_tasks",
-        "popped_seconds",
-        "popped_errors",
-        "popped_warnings",
-        "tasks_assigned",
-        "tasks_complete",
-        "worker_index",
-        "worker_connected",
-        "worker_launches",
-        "worker_instances",
-        "worker_socket"
+        "worker",
+        "tasks",
+        "seconds",
+        "errors",
+        "warnings"
       )
     )
   )
-  s2 <- x$summary(columns = tidyselect::starts_with("popped"))
-  expect_equal(
-    sort(colnames(s2)),
-    sort(
-      c(
-        "popped_tasks",
-        "popped_seconds",
-        "popped_errors",
-        "popped_warnings"
-      )
-    )
-  )
-  expect_equal(s$popped_tasks, 0L)
+  expect_equal(s$tasks, 0L)
   expect_true(x$client$started)
   # first task
   x$push(
@@ -84,10 +66,10 @@ crew_test("crew_controller_local()", {
   out <- envir$out
   expect_true(x$empty())
   expect_false(x$nonempty())
-  expect_equal(x$summary()$popped_tasks, 1L)
-  expect_equal(x$summary()$popped_errors, 0L)
-  expect_equal(x$summary()$popped_warnings, 0L)
-  instance <- parse_instance(x$client$log()$worker_socket)
+  expect_equal(x$summary()$tasks, 1L)
+  expect_equal(x$summary()$errors, 0L)
+  expect_equal(x$summary()$warnings, 0L)
+  instance <- parse_instance(x$client$summary()$socket)
   expect_equal(out$name, "task")
   expect_equal(out$command, "Sys.getenv(\"CREW_INSTANCE\")")
   expect_equal(out$result[[1]], instance)
@@ -156,9 +138,9 @@ crew_test("crew_controller_local() substitute = FALSE", {
   expect_silent(x$validate())
   expect_null(x$client$started)
   x$start()
-  expect_equal(x$summary()$popped_tasks, 0L)
-  expect_equal(x$summary()$popped_errors, 0L)
-  expect_equal(x$summary()$popped_warnings, 0L)
+  expect_equal(x$summary()$tasks, 0L)
+  expect_equal(x$summary()$errors, 0L)
+  expect_equal(x$summary()$warnings, 0L)
   command <- quote(sqrt(4L) + sqrt(9L))
   x$push(command = command, substitute = FALSE, name = "substitute")
   x$wait(seconds_timeout = 10)
@@ -197,18 +179,18 @@ crew_test("crew_controller_local() warnings and errors", {
   expect_silent(x$validate())
   expect_null(x$client$started)
   x$start()
-  expect_equal(x$summary()$popped_tasks, 0L)
-  expect_equal(x$summary()$popped_errors, 0L)
-  expect_equal(x$summary()$popped_warnings, 0L)
+  expect_equal(x$summary()$tasks, 0L)
+  expect_equal(x$summary()$errors, 0L)
+  expect_equal(x$summary()$warnings, 0L)
   x$push(command = {
     warning("this is a warning")
     stop("this is an error")
   }, name = "warnings_and_errors")
   x$wait(seconds_timeout = 5)
   out <- x$pop(scale = FALSE)
-  expect_equal(x$summary()$popped_tasks, 1L)
-  expect_equal(x$summary()$popped_errors, 1L)
-  expect_equal(x$summary()$popped_warnings, 1L)
+  expect_equal(x$summary()$tasks, 1L)
+  expect_equal(x$summary()$errors, 1L)
+  expect_equal(x$summary()$warnings, 1L)
   expect_equal(out$name, "warnings_and_errors")
   expect_true(is.numeric(out$seconds))
   expect_false(anyNA(out$seconds))
@@ -253,7 +235,7 @@ crew_test("crew_controller_local() can terminate a lost worker", {
     seconds_timeout = 5
   )
   x$launcher$workers$handle[[1L]] <- handle
-  x$launcher$workers$socket[1L] <- x$client$log()$worker_socket
+  x$launcher$workers$socket[1L] <- x$client$summary()$socket
   x$launcher$workers$start[1L] <- - Inf
   x$launcher$workers$launches[1L] <- 1L
   expect_true(handle$is_alive())

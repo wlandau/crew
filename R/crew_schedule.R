@@ -94,10 +94,10 @@ crew_class_schedule <- R6::R6Class(
     #' @description Summarize the schedule.
     #' @return `NULL` if not started. Otherwise, a `tibble` with
     #'   the following columns:
-    #'   * `pushed`: number of pushed tasks, which might or might not be
-    #'     resolved.
-    #'   * `collected`: number of collected and resolved tasks, ready to be
-    #'     retrieved with `pop()`.
+    #'   * `pushed`: number tasks that were pushed but not collected yet.
+    #'     These tasks may or may not have completed.
+    #'   * `collected`: number of tasks that completed and were collected
+    #'     but not yet retrieved with `pop()`.
     summary = function() {
       pushed <- .subset2(self, "pushed")
       collected <- .subset2(self, "collected")

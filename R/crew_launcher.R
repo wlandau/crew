@@ -360,7 +360,7 @@ crew_class_launcher <- R6::R6Class(
     #'     `mirai::daemons()` and summed over all
     #'     completed instances of the worker. Does not reflect the activity
     #'     of the currently running instance of the worker.
-    #'   * `socket`: current websocket URL of the worker. 
+    #'   * `socket`: current websocket URL of the worker.
     summary = function() {
       workers <- .subset2(self, "workers")
       if (is.null(workers)) {

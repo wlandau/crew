@@ -57,29 +57,11 @@ crew_test("crew_controller_group()", {
     sort(
       c(
         "controller",
-        "worker_index",
-        "worker_socket",
-        "worker_connected",
-        "worker_launches",
-        "worker_instances",
-        "tasks_assigned",
-        "tasks_complete",
-        "popped_tasks",
-        "popped_seconds",
-        "popped_errors",
-        "popped_warnings"
-      )
-    )
-  )
-  s2 <- x$summary(columns = tidyselect::starts_with("popped"))
-  expect_equal(
-    sort(colnames(s2)),
-    sort(
-      c(
-        "popped_tasks",
-        "popped_seconds",
-        "popped_errors",
-        "popped_warnings"
+        "worker",
+        "tasks",
+        "seconds",
+        "errors",
+        "warnings"
       )
     )
   )

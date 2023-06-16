@@ -65,8 +65,8 @@ number of other platforms. As long as the worker connects to your R
 session over the local network, `crew` can use
 [`mirai`](https://github.com/shikokuchuo/mirai) to send it tasks. You
 can write your own [launcher
-plugin](https://wlandau.github.io/crew/reference/crew_class_launcher.html)
-to teach `crew` how to use your platform. The
+plugin](https://wlandau.github.io/crew/articles/plugins.html) to teach
+`crew` how to use your platform. The
 [`crew.cluster`](https://wlandau.github.io/crew.cluster/) package
 supports plugins for SLURM, Sun Grid Engine (SGE), LSF, and PBS/TORQUE.
 
@@ -253,9 +253,9 @@ dynamic, so please be careful not to run too many controllers
 simultaneously if you are running R on a machine you share with other
 people (such as the login node of a shared cluster). If you are running
 a [controller
-group](https://wlandau.github.io/crew/articles/controller_groups.html)
-please add only a small number of controllers to the group. The
-`terminate()` frees these ports again for other processes to use.
+group](https://wlandau.github.io/crew/articles/groups.html) please add
+only a small number of controllers to the group. The `terminate()` frees
+these ports again for other processes to use.
 
 ## Zombies
 

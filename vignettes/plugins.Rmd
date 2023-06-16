@@ -198,15 +198,15 @@ controller$launcher$workers$handle[[1]]$get_pid()
 #> [1] 27336
 ```
 
-If you did not set any timeouts or task limits, the worker that ran the task should still be running and connected. The other worker had no tasks, so it did not need to start an instance.
+If you did not set any timeouts or task limits, the worker that ran the task should still be online. The other worker had no tasks, so it did not need to launch.
 
 ```{r}
-controller$summary(columns = starts_with("worker"))
-#> # A tibble: 2 × 5
-#>   worker_connected worker_launches worker_instances worker_socket                      
-#>   <lgl>                      <int>            <int> <chr>                              
-#> 1 TRUE                           1                1 ws://10.0.0.9:49612/1/bbc1a2241dd8…
-#> 2 FALSE                          0                0 ws://10.0.0.9:49612/2/c488c874a07e…
+controller$client$summary()
+#> # A tibble: 2 × 6
+#>   worker online instances assigned complete socket                          
+#>    <int> <lgl>      <int>    <int>    <int> <chr>                           
+#> 1      1 TRUE           1        1        1 ws://10.0.0.32:50258/1/571bcda7…
+#> 2      2 FALSE          0        0        0 ws://10.0.0.32:50258/2/daf88d6e…
 ```
 
 When you are done, terminate the controller. This terminates the `mirai` dispatcher process and the `crew` workers.
@@ -238,7 +238,7 @@ for (index in seq_len(100L)) {
 controller$wait()
 # Wait for the workers to idle out and exit on their own.
 crew_retry(
-  ~all(controller$summary()$worker_connected == FALSE),
+  ~all(controller$client$summary()$online == FALSE),
   seconds_interval = 1,
   seconds_timeout = 60
 )
@@ -250,7 +250,7 @@ for (index in (seq_len(100L) + 100L)) {
 }
 controller$wait()
 crew_retry(
-  ~all(controller$summary()$worker_connected == FALSE),
+  ~all(controller$client$summary()$online == FALSE),
   seconds_interval = 1,
   seconds_timeout = 60
 )
@@ -264,10 +264,11 @@ while (!is.null(result <- controller$pop(scale = FALSE))) {
 # Check the results
 all(sort(unlist(results$result)) == seq_len(200L))
 #> [1] TRUE
-length(unique(results$instance))
-#> [1] 4
 # View worker and task summaries.
-View(controller$summary())
+controller$summary()
+controller$schedule$summary()
+controller$launcher$summary()
+controller$schedule$summary()
 # Terminate the controller.
 controller$terminate()
 # Now outside crew, verify that the mirai dispatcher

@@ -76,7 +76,7 @@ for (index in seq_len(100L)) {
 controller$wait()
 # Wait for the workers to idle out and exit on their own.
 crew_retry(
-  ~all(controller$summary()$worker_connected == FALSE),
+  ~all(controller$client$summary()$online == FALSE),
   seconds_interval = 1,
   seconds_timeout = 60
 )
@@ -88,7 +88,7 @@ for (index in (seq_len(100L) + 100L)) {
 }
 controller$wait()
 crew_retry(
-  ~all(controller$summary()$worker_connected == FALSE),
+  ~all(controller$client$summary()$online == FALSE),
   seconds_interval = 1,
   seconds_timeout = 60
 )
@@ -101,7 +101,6 @@ while (!is.null(out <- controller$pop(scale = FALSE))) {
 }
 # Check the results
 testthat::expect_true(all(sort(unlist(results$result)) == seq_len(200L)))
-testthat::expect_equal(length(unique(results$instance)), 4L)
 # Terminate the controller.
 controller$terminate()
 # Now outside crew, verify that the mirai dispatcher

@@ -19,31 +19,31 @@ crew_test("crew_client() works", {
   expect_null(client$dispatcher)
   expect_silent(client$start())
   expect_true(client$started)
-  log <- client$log()
+  log <- client$summary()
   expect_equal(
     sort(colnames(log)),
     sort(
       c(
-        "tasks_assigned",
-        "tasks_complete",
-        "worker_connected",
-        "worker_instances",
-        "worker_socket"
+        "worker",
+        "online",
+        "instances",
+        "assigned",
+        "complete",
+        "socket"
       )
     )
   )
   expect_true(is.integer(client$dispatcher))
   expect_equal(length(client$dispatcher), 1L)
   expect_false(anyNA(client$dispatcher))
-  socket <- log$worker_socket
+  socket <- log$socket
   expect_true(is.character(socket) && length(socket) > 0L)
   expect_true(nzchar(socket) && !anyNA(socket))
   expect_equal(length(socket), 1L)
-  expect_false(log$worker_connected)
-  expect_equal(log$tasks_assigned, 0)
-  expect_equal(log$tasks_complete, 0)
-  expect_equal(log$worker_connected, FALSE)
-  expect_equal(log$worker_instances, 0)
+  expect_false(log$online)
+  expect_equal(log$assigned, 0L)
+  expect_equal(log$complete, 0L)
+  expect_equal(log$instances, 0L)
   bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
   path <- file.path(R.home("bin"), bin)
   call <- sprintf("mirai::server('%s')", socket)
@@ -69,7 +69,7 @@ crew_test("crew_client() works", {
   expect_true(is.numeric(m$data))
   expect_true(abs(m$data - ps::ps_pid()) > 0.5)
   expect_true(client$started)
-  expect_true(client$log()$worker_connected)
+  expect_true(client$summary()$online)
   expect_silent(client$start())
   expect_silent(client$terminate())
   expect_silent(client$terminate())
@@ -78,5 +78,5 @@ crew_test("crew_client() works", {
   expect_silent(client$terminate())
   expect_false(client$started)
   px$kill()
-  expect_null(client$log())
+  expect_null(client$summary())
 })

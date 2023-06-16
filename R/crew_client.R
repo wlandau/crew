@@ -187,8 +187,9 @@ crew_class_client <- R6::R6Class(
     #'   * `worker`: integer index of the worker.
     #'   * `online`: `TRUE` if the worker is online and connected to the
     #'     websocket URL, `FALSE` otherwise.
-    #'   * `instance`: integer, number of instances of `mirai` servers
-    #'     (`crew` workers) connected to the websocket URL.
+    #'   * `instances`: integer, number of instances of `mirai` servers
+    #'     (`crew` workers) that have connected to the websocket URL
+    #'     during the life cycle of the listener.
     #'   * `assigned`: number of tasks assigned to the current websocket URL.
     #'   * `complete`: number of tasks completed at the current websocket URL.
     #'   * `socket`: websocket URL. `crew` changes the token at the end of the
@@ -199,9 +200,9 @@ crew_class_client <- R6::R6Class(
       }
       daemons <- daemons_info(name = self$name)
       tibble::tibble(
-        worker = seq_len(ncol(daemons)),
+        worker = seq_len(nrow(daemons)),
         online = as.logical(daemons[, "online"] > 0L),
-        instance = as.integer(daemons[, "instance"]),
+        instances = as.integer(daemons[, "instance"]),
         assigned = as.integer(daemons[, "assigned"]),
         complete = as.integer(daemons[, "complete"]),
         socket = as.character(rownames(daemons))

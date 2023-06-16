@@ -157,8 +157,9 @@ per worker and the following columns:
 \item \code{worker}: integer index of the worker.
 \item \code{online}: \code{TRUE} if the worker is online and connected to the
 websocket URL, \code{FALSE} otherwise.
-\item \code{instance}: integer, number of instances of \code{mirai} servers
-(\code{crew} workers) connected to the websocket URL.
+\item \code{instances}: integer, number of instances of \code{mirai} servers
+(\code{crew} workers) that have connected to the websocket URL
+during the life cycle of the listener.
 \item \code{assigned}: number of tasks assigned to the current websocket URL.
 \item \code{complete}: number of tasks completed at the current websocket URL.
 \item \code{socket}: websocket URL. \code{crew} changes the token at the end of the

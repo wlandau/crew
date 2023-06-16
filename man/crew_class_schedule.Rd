@@ -40,6 +40,7 @@ throttled task collection unlocks.}
 \item \href{#method-crew_class_schedule-new}{\code{crew_class_schedule$new()}}
 \item \href{#method-crew_class_schedule-validate}{\code{crew_class_schedule$validate()}}
 \item \href{#method-crew_class_schedule-start}{\code{crew_class_schedule$start()}}
+\item \href{#method-crew_class_schedule-summary}{\code{crew_class_schedule$summary()}}
 \item \href{#method-crew_class_schedule-push}{\code{crew_class_schedule$push()}}
 \item \href{#method-crew_class_schedule-throttle}{\code{crew_class_schedule$throttle()}}
 \item \href{#method-crew_class_schedule-collect}{\code{crew_class_schedule$collect()}}
@@ -100,6 +101,26 @@ empty environments.
 
 \subsection{Returns}{
 NULL (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_schedule-summary"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_schedule-summary}{}}}
+\subsection{Method \code{summary()}}{
+Summarize the schedule.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_schedule$summary()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} if not started. Otherwise, a \code{tibble} with
+the following columns:
+\itemize{
+\item \code{pushed}: number of pushed tasks, which might or might not be
+resolved.
+\item \code{collected}: number of collected and resolved tasks, ready to be
+retrieved with \code{pop()}.
+}
 }
 }
 \if{html}{\out{<hr>}}

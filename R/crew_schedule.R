@@ -91,6 +91,21 @@ crew_class_schedule <- R6::R6Class(
       self$pushes <- 0L
       invisible()
     },
+    #' @description Summarize the schedule.
+    #' @return `NULL` if not started. Otherwise, a `tibble` with
+    #'   the following columns:
+    #'   * `pushed`: number of pushed tasks, which might or might not be
+    #'     resolved.
+    #'   * `collected`: number of collected and resolved tasks, ready to be
+    #'     retrieved with `pop()`.
+    summary = function() {
+      pushed <- .subset2(self, "pushed")
+      collected <- .subset2(self, "collected")
+      if (is.null(pushed)) {
+        return(NULL)
+      }
+      tibble::tibble(pushed = length(pushed), collected = length(collected))
+    },
     #' @description Push a task.
     #' @details Add a task to the `pushed` hash table
     #' @return `NULL` (invisibly).

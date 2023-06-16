@@ -23,18 +23,15 @@ packages [`future`](https://future.futureverse.org/),
 
 # Installation
 
-For `crew`, it is recommended to use `nanonext` version `0.8.3.9010` or
-higher and `mirai` version `0.8.7.9013` or higher. If the latest CRAN
-releases are older, then you can install the development versions from
-R-universe.
+It is recommended to use `mirai` version `0.8.7.9016` or higher. If the
+latest CRAN release is older, then you can install the development
+version from R-universe.
 
 ``` r
-install.packages("nanonext", repos = "https://shikokuchuo.r-universe.dev")
 install.packages("mirai", repos = "https://shikokuchuo.r-universe.dev")
 ```
 
-There are multiple ways to install `crew` itself, and both the latest
-release and the development version are available.
+Install `crew` itself using one of the methods below.
 
 | Type        | Source     | Command                                                              |
 |-------------|------------|----------------------------------------------------------------------|
@@ -44,222 +41,195 @@ release and the development version are available.
 
 # Documentation
 
-Please see <https://wlandau.github.io/crew/> for documentation,
-including a full function reference and usage tutorial vignettes.
+The documentation website at <https://wlandau.github.io/crew/> includes
+a [function
+reference](https://wlandau.github.io/crew/reference/index.html) and
+tutorial vignettes.
+
+# Concepts
+
+A *task* is a piece of R code, such as an expression or a function call.
+A *worker* is a
+[non-interactive](https://stat.ethz.ch/R-manual/R-devel/library/base/html/interactive.html)
+R process that runs one or more tasks. When tasks run on workers, the
+local R session is free and responsive, and work gets done faster. For
+example, [this
+vignette](https://wlandau.github.io/crew/articles/shiny.html) shows how
+`crew` and [`mirai`](https://github.com/shikokuchuo/mirai) work together
+to speed up [Shiny](https://rstudio.github.io/shiny/) apps.
 
 # Plugins
 
-`crew` lets you write custom
-[launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html)
-for different types of workers that connect over the local network. This
-flexibility can extend `crew` to platforms like
-[SLURM](https://slurm.schedmd.com/), Sun Grid Engine, [AWS
-Batch](https://aws.amazon.com/batch/), and
-[Kubernetes](https://kubernetes.io/). See the [plugin
-vignette](https://wlandau.github.io/crew/articles/plugins.html) to learn
-how to create a launcher plugin. The following packages support
-ready-to-use plugins.
+A worker runs on your local computer, a SLURM cluster, AWS Batch, or any
+number of other platforms. As long as the worker connects to your R
+session over the local network, `crew` can use
+[`mirai`](https://github.com/shikokuchuo/mirai) to send it tasks. You
+can write your own [launcher
+plugin](https://wlandau.github.io/crew/reference/crew_class_launcher.html)
+to teach `crew` how to use your platform. The
+[`crew.cluster`](https://wlandau.github.io/crew.cluster/) package
+supports plugins for SLURM, Sun Grid Engine (SGE), LSF, and PBS/TORQUE.
 
-- [`crew.cluster`](https://wlandau.github.io/crew.cluster/): traditional
-  high-performance computing clusters such as Sun Grid Engine (SGE).
+# Tasks
 
-# Usage
-
-First, create a controller object. Thanks to the powerful features in
-[`mirai`](https://github.com/shikokuchuo/mirai),
-`crew_controller_local()` allows several ways to customize the way
-workers are launched and the conditions under which they time out. For
-example, arguments `tasks_max` and `seconds_idle` allow for a smooth
-continuum between fully persistent workers and fully transient workers.
+First, create a controller object to manage tasks and workers.
 
 ``` r
 library(crew)
-controller <- crew_controller_local(seconds_idle = 10)
+controller <- crew_controller_local(
+  name = "example",
+  workers = 2,
+  seconds_idle = 10
+)
 ```
 
-The `start()` method starts a local
-[`mirai`](https://github.com/shikokuchuo/mirai) client and dispatcher
-process to listen to workers that dial in into websockets on the local
-network.
+Next, start the controller to create the
+[`mirai`](https://github.com/shikokuchuo/mirai) client. Later, when you
+are done with the controller, call `controller$terminate()` to clean up
+the workers and dispatcher.
 
 ``` r
 controller$start()
 ```
 
-The `summary()` method shows metadata on workers and tasks. Use the
-`columns` argument to select a subset of columns in the output. The
-following table has one row per worker, and each column is a summary
-metric on the popped tasks (tasks which completed and were retrieved
-with `pop()`).
+Use `push()` to submit a new task and `pop()` to return a completed
+task.
 
 ``` r
-controller$summary(columns = starts_with("popped_"))
-#> # A tibble: 2 × 4
-#>   popped_tasks popped_seconds popped_errors popped_warnings
-#>          <int>          <dbl>         <int>           <int>
-#> 1            0              0             0               0
-#> 2            0              0             0               0
+controller$push(name = "get pid", command = ps::ps_pid())
 ```
 
-Use the `push()` method to submit a task.
+Behind the scenes, `push()` and `pop()` also launch workers to run the
+tasks. This process is expensive, so `crew` uses
+[throttling](https://css-tricks.com/debouncing-throttling-explained-examples/).
+That means not every call to `push()` or `pop()` launches any workers.
+To ensure enough workers get launched, keep calling `pop()`.
 
 ``` r
-controller$push(name = "get worker process ID", command = ps::ps_pid())
-```
-
-Use `pop()` to get the result of a completed task. `pop()` returns
-`NULL` if there is no result yet.
-
-``` r
-controller$pop()
+controller$pop() # No workers started yet and the task is not done.
 #> NULL
+
+task <- controller$pop() # Worker started, task complete.
+task
+#> # A tibble: 1 × 11
+#>   name    command result seconds   seed error trace warnings launcher worker
+#>   <chr>   <chr>   <list>   <dbl>  <int> <chr> <chr> <chr>    <chr>     <int>
+#> 1 get pid NA      <int>        0 1.78e9 NA    NA    NA       372d50b…      1
+#> # ℹ 1 more variable: instance <chr>
 ```
 
-Even if you submitted a task, `crew` may not have launched a worker yet.
-This is because `crew` uses its own version of throttling for robustness
-and efficiency. In other words, `push()` and `pop()` defer auto-scaling
-for a short window after the original request. For best results, either
-
-1.  Continue to loop over frequent calls to `push()` and `pop()`, or
-2.  Call `wait()`.
-
-The `wait()` method blocks the R session, repeatedly scales workers, and
-collects completed tasks.
+Alternatively, `wait()` is a loop that repeatedly checks tasks and
+launches workers until all tasks complete.
 
 ``` r
 controller$wait(mode = "all")
 ```
 
-When a result is available, `pop()` will retrieve it.
+The return value of the task is in the `result` column.
 
 ``` r
-out <- controller$pop()
-```
-
-The result is a
-[monad](https://en.wikipedia.org/wiki/Monad_(functional_programming))
-with the result and its metadata. Even if the command of the task throws
-an error, it will still return the same kind of
-[monad](https://en.wikipedia.org/wiki/Monad_(functional_programming)).
-
-``` r
-out
-#> # A tibble: 1 × 11
-#>   name         command result seconds   seed error trace warni…¹ launc…² worker insta…³
-#>   <chr>        <chr>   <list>   <dbl>  <int> <chr> <chr> <chr>   <chr>    <int> <chr>  
-#> 1 get worker … ps::ps… <int>        0 1.56e8 NA    NA    NA      79e71c…      1 7686b2…
-#> # … with abbreviated variable names ¹​warnings, ²​launcher, ³​instance
-```
-
-The return value of the command is available in the `result` column. In
-our case, it is the process ID of the parallel worker that ran it, as
-reported by `ps::ps_pid()`.
-
-``` r
-out$result[[1]] # process ID of the parallel worker reported by the task
+task$result[[1]] # return value of the task
 #> [1] 69631
 ```
 
-Since it ran on a parallel worker, it is different from the process ID
-of the local R session.
+# Summaries
+
+The controller summary shows how many tasks each worker ran, how many
+total seconds it spent running tasks, and how many tasks threw warnings
+and errors.
 
 ``` r
-ps::ps_pid() # local R session process ID
-#> [1] 69523
+controller$summary()
+#> # A tibble: 2 × 6
+#>   controller worker tasks seconds errors warnings
+#>   <chr>       <int> <int>   <dbl>  <int>    <int>
+#> 1 example         1     1   0.001      0        0
+#> 2 example         2     0       0      0        0
 ```
 
-Continue the above process of asynchronously submitting and collecting
-tasks until your workflow is complete. You may periodically inspect
-different columns from the `summary()` method.
+The schedule summary counts “pushed” tasks which may not be complete and
+“collected” tasks which `pop()` can return.
 
 ``` r
-controller$summary(columns = starts_with("tasks"))
-#> # A tibble: 2 × 2
-#>   tasks_assigned tasks_complete
-#>            <int>          <int>
-#> 1              1              1
-#> 2              0              0
+controller$schedule$summary()
+#> # A tibble: 1 × 2
+#>   pushed collected
+#>    <int>     <int>
+#> 1      0         0
 ```
 
+The launcher summary counts the number of times each worker was
+launched, and it shows the total number of assigned and completed tasks
+from all past terminated instances of each worker.
+
 ``` r
-controller$summary(columns = starts_with("popped"))
+controller$launcher$summary()
 #> # A tibble: 2 × 4
-#>   popped_tasks popped_seconds popped_errors popped_warnings
-#>          <int>          <dbl>         <int>           <int>
-#> 1            1              0             0               0
-#> 2            0              0             0               0
+#>   worker launches assigned complete
+#>    <int>    <int>    <int>    <int>
+#> 1      1        1        0        0
+#> 2      2        0        0        0
 ```
 
-When you are done, terminate the controller to close any workers still
-running, close the [`mirai`](https://github.com/shikokuchuo/mirai)
-dispatcher process, and free the TCP port.
+Finally, the client summary shows up-to-date worker status from
+`mirai::daemons()`.
+
+``` r
+controller$client$summary()
+#> # A tibble: 2 × 6
+#>   worker online instances assigned complete socket                          
+#>    <int> <lgl>      <int>    <int>    <int> <chr>                           
+#> 1      1 FALSE          1        1        1 ws://10.0.0.32:58685/1/15e07250…
+#> 2      2 FALSE          0        0        0 ws://10.0.0.32:58685/2/cb45b3d4…
+```
+
+# Termination
+
+Call `terminate()` on the controller after you finish using it.
+`terminate()` tries to close the the
+[`mirai`](https://github.com/shikokuchuo/mirai) dispatcher and any
+workers that may still be running. It is important to free up these
+resources.
 
 ``` r
 controller$terminate()
 ```
 
-# Efficiency and resources
+# Scale
 
-Adding more workers might speed up your workflow, but not always. Beyond
-a certain point, the efficiency gains will diminish, and the extra
-workers will have nothing to do. With proper configuration, you can find
-the right balance.
+As explained above, `push()`, `pop()`, and `wait()` launch new workers
+to run tasks. The number of new workers depends on the number of tasks
+at the time. In addition, workers can shut themselves down as work
+completes. In other words, `crew` automatically raises and lowers the
+number of workers in response to fluctuations in the task workload.
 
-As mentioned above, the `push()`, `pop()`, and `wait()` methods of the
-controller launch new workers automatically in response to changing
-demand. By default, these workers stay running until
-`controller$terminate()`. However, you can customize the controller to
-scale down when circumstances allow, which helps help avoid wasting
-resources[^1] The most useful arguments for down-scaling, in order of
-importance, are:
+The most useful arguments for down-scaling, in order of importance, are:
 
-1.  `seconds_idle`: automatically shut down a worker if it spends too
-    long waiting for a target.
-2.  `tasks_max`: maximum number of tasks a worker can run before
-    shutting down.
+1.  `seconds_idle`: shut down a worker if it spends too long waiting for
+    a task.
+2.  `tasks_max`: shut down a worker after it completes a certain number
+    of tasks.
 3.  `seconds_wall`: soft wall time of a worker.
 
-On the other hand, it is not always helpful to eagerly down-scale
-workers. Because the workload can fluctuate rapidly, some workers may
-quit and relaunch so often that it creates noticeable overhead.
+Please tune these these arguments to achieve the desired balance for
+auto-scaling. The two extremes of auto-scaling are
+[`clustermq`](https://mschubert.github.io/clustermq/)-like *persistent
+workers* and [`future`](https://future.futureverse.org/)-like *transient
+workers*, and each is problematic in its own way.
 
-Fortunately, you can investigate auto-scaling and configuration issues
-empirically. Simply run your workflow and then look at the output from
-`controller$summary()`.
-
-``` r
-controller <- crew_controller_local(workers = 10, seconds_idle = 3)
-controller$start()
-for (index in seq_len(1000)) {
-  controller$push(command = TRUE)
-}
-controller$wait()
-result <- "start collecting results"
-while (!is.null(result)) {
-  result <- controller$pop()
-}
-controller$summary(contains(c("worker_index", "worker_launches", "popped_tasks", "popped_seconds")))
-#> # A tibble: 10 × 4
-#>    worker_index worker_launches popped_tasks popped_seconds
-#>           <int>           <int>        <int>          <dbl>
-#>  1            1               1          236          0.005
-#>  2            2               1          110          0.004
-#>  3            3               1           96          0.001
-#>  4            4               1           81          0.005
-#>  5            5               1           89          0.002
-#>  6            6               1           77          0.003
-#>  7            7               1           78          0.005
-#>  8            8               1           75          0.001
-#>  9            9               1           78          0.008
-#> 10           10               1           80          0.002
-```
-
-Each worker only launched once and moved through tasks quickly, which is
-a good sign for a batch of 1000 instantaneous independent tasks.
-However, the first worker completed many more tasks than the others,
-even though all workers should share the load equally in this particular
-case. It would be helpful to see if the same workload runs just as fast
-with fewer workers.
+1.  *Persistent workers*: a persistent worker launches once, typically
+    runs many tasks, and stays running for the entire lifetime of the
+    controller. Persistent workers minimize overhead and quickly
+    complete large numbers of short tasks. However, they risk spending
+    too much time in an idle state if there are no tasks to run.
+    Excessive idling wastes resources, which could impact your
+    colleagues on a shared cluster or drive up costs on Amazon Web
+    Services.
+2.  *Transient workers*: a transient worker terminates as soon as it
+    completes a single task. Each subsequent task requires a new
+    transient worker to run it. Transient workers avoid excessive
+    idling, but frequent worker launches cause significant overhead and
+    slows down the computation as a whole.
 
 # Risks
 
@@ -267,7 +237,7 @@ The `crew` package has unavoidable risk. It is your responsibility as
 the user to safely use `crew`. Please read the final clause of the
 [software license](https://wlandau.github.io/crew/LICENSE.html).
 
-### Security
+## Security
 
 `crew` currently uses unencrypted TCP connections for transactions with
 workers inside a trusted local network. In a compromised network, an
@@ -275,20 +245,19 @@ attacker can potentially access and exploit sensitive resources. It is
 your responsibility to assess the sensitivity and vulnerabilities of
 your computing environment and make sure your network is secure.
 
-### Ports
+## Ports
 
 `crew` uses one TCP port per controller. TCP ports range from 0 to
 65535, and only around 16000 of these ports are considered ephemeral or
 dynamic, so please be careful not to run too many controllers
 simultaneously if you are running R on a machine you share with other
-people (such as the login node of a computing cluster). If you are
-running a [controller
+people (such as the login node of a shared cluster). If you are running
+a [controller
 group](https://wlandau.github.io/crew/articles/controller_groups.html)
 please add only a small number of controllers to the group. The
-`terminate()` method of the controller and `crew_session_terminate()`
-should free these ports again for other processes to use.
+`terminate()` frees these ports again for other processes to use.
 
-### Zombies
+## Zombies
 
 The `crew` package launches external R processes:
 
@@ -333,21 +302,6 @@ or [`htop`](https://htop.dev/). For a SLURM launcher, you need
 For an [Amazon Web Services](https://aws.amazon.com/) launcher, please
 use the [AWS web console](https://aws.amazon.com/console/) or
 [CloudWatch](https://aws.amazon.com/cloudwatch/).
-
-### Scheduling
-
-Depending on user settings, `crew` workers may run for the entire length
-of the analysis pipeline, or they may exit if they idle too long or
-complete a certain number of tasks. `crew` re-launches workers if there
-are more unfinished tasks in the queue than [active
-workers](https://wlandau.github.io/crew/reference/crew_class_launcher.html#details)
-to run them at a given snapshot in time. This kind of auto-scaling does
-not dedicate any specific worker to any specific task, and it does not
-perform well when workers exit too quickly due to a small value of
-`seconds_idle`. Please set `seconds_idle` to a generous enough value for
-workers to accept work, and please use `tasks_max` to specify
-short-lived workers such as single-task transient workers
-(`tasks_max = 1`).
 
 ### Dispatcher
 
@@ -477,8 +431,3 @@ A BibTeX entry for LaTeX users is
     note = {https://wlandau.github.io/crew/, https://github.com/wlandau/crew},
   }
 ```
-
-[^1]: Automatic down-scaling also helps comply with wall time
-    restrictions on shared computing clusters. See the arguments of
-    [`crew_controller_local()`](https://wlandau.github.io/crew/reference/crew_controller_local.html)
-    for details.

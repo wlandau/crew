@@ -81,7 +81,7 @@ Every `launch_worker()` method must accept arguments `call`, `launcher`, `worker
 
 To see what the `call` object looks like, create a new launcher and run the `call()` method.
 
-```{r}
+```{r, eval = TRUE}
 library(crew)
 launcher <- crew_launcher_local()
 launcher$call(
@@ -90,7 +90,6 @@ launcher$call(
   worker = 3L,
   instance = "aa9c59ea"
 )
-#> [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:5000/3/aa9c59ea\", maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, exitlinger = 1000, cleanup = 1L, asyncdial = FALSE), launcher = \"my_launcher\", worker = 3L, instance = \"aa9c59ea\")"
 ```
 
 ## Helper
@@ -203,8 +202,8 @@ If you did not set any timeouts or task limits, the worker that ran the task sho
 ```{r}
 controller$client$summary()
 #> # A tibble: 2 × 6
-#>   worker online instances assigned complete socket                          
-#>    <int> <lgl>      <int>    <int>    <int> <chr>                           
+#>   worker online instances assigned complete socket
+#>    <int> <lgl>      <int>    <int>    <int> <chr>
 #> 1      1 TRUE           1        1        1 ws://10.0.0.32:50258/1/571bcda7…
 #> 2      2 FALSE          0        0        0 ws://10.0.0.32:50258/2/daf88d6e…
 ```

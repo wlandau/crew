@@ -239,6 +239,22 @@ crew_test("launcher backlogged() and resolved()", {
   expect_equal(launcher$resolved(), c(6L, 8L))
 })
 
+crew_test("launcher summary", {
+  x <- crew_launcher()
+  x$start(sockets = c("a", "b"))
+  out <- x$summary()
+  expect_true(tibble::is_tibble(out))
+  expect_equal(nrow(out), 2L)
+  expect_equal(
+    sort(colnames(out)),
+    sort(c("worker", "launches", "assigned", "complete"))
+  )
+  expect_equal(out$worker, c(1L, 2L))
+  for (field in c("launches", "assigned", "complete")) {
+    expect_equal(out[[field]], c(0L, 0L))
+  }
+})
+
 crew_test("custom launcher", {
   skip_if_low_dep_versions()
   skip_on_cran()
@@ -331,4 +347,11 @@ crew_test("custom launcher", {
     seconds_timeout = 5
   )
   expect_false(handle$is_alive())
+  walk(x = controller$launcher$done(), f = controller$launcher$rotate)
+  controller$launcher$tally()
+  out <- controller$launcher$summary()
+  for (field in colnames(out)) {
+    expect_equal(out[[field]], 1L)
+  }
+  controller$terminate()
 })

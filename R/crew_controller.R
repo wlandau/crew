@@ -394,7 +394,8 @@ crew_class_controller <- R6::R6Class(
       # nocov end
       index <- .subset2(out, "worker")
       self$log$tasks[index] <- .subset2(log, "tasks")[index] + 1L
-      self$log$seconds[index] <- .subset2(log, "seconds")[index] + seconds
+      self$log$seconds[index] <- .subset2(log, "seconds")[index] +
+        .subset2(out, "seconds")
       self$log$errors[index] <- .subset2(log, "errors")[index] +
         !anyNA(.subset2(out, "error"))
       self$log$warnings[index] <- .subset2(log, "warnings")[index] +

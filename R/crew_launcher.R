@@ -370,8 +370,7 @@ crew_class_launcher <- R6::R6Class(
         worker = seq_len(nrow(workers)),
         launches = .subset2(workers, "launches"),
         assigned = .subset2(workers, "assigned"),
-        complete = .subset2(workers, "complete"),
-        socket = .subset2(workers, "socket")
+        complete = .subset2(workers, "complete")
       )
     },
     #' @description Get done workers.

@@ -69,13 +69,13 @@ crew_eval <- function(
       error = capture_error,
       warning = capture_warning
     ),
-    error = function(condition) NULL
+    error = function(condition) NA
   )
   seconds <- (nanonext::mclock() - start) / 1000
   monad_init(
     name = name,
     command = string,
-    result = result %|||% NA,
+    result = result,
     seconds = seconds,
     seed = seed,
     error = state$error %|||% NA_character_,

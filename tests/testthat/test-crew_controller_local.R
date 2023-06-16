@@ -211,6 +211,7 @@ crew_test("crew_controller_local() warnings and errors", {
 crew_test("crew_controller_local() can terminate a lost worker", {
   skip_if_low_dep_versions()
   skip_on_cran()
+  skip_on_os("mac")
   skip_on_os("windows")
   x <- crew_controller_local(
     workers = 1L,

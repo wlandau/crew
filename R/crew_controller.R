@@ -171,7 +171,7 @@ crew_class_controller <- R6::R6Class(
         workers <- self$client$workers
         self$launcher$start()
         self$schedule$start()
-        self$log <- tibble::tibble(
+        self$log <- list(
           controller = rep(self$client$name, workers),
           worker = seq_len(workers),
           tasks = rep(0L, workers),
@@ -479,7 +479,11 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     summary = function(controllers = NULL) {
-      .subset2(self, "log")
+      out <- .subset2(self, "log")
+      if (!is.null(out)) {
+        out <- tibble::new_tibble(out)
+      }
+      out
     },
     #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).

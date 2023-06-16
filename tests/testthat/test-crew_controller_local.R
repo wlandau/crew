@@ -109,7 +109,7 @@ crew_test("crew_controller_local()", {
       globals = list(.crew_y = "c"),
       seed = 0L,
       save_command = FALSE,
-      .timeout = 100
+      seconds_timeout = 100
     )
     x$wait(seconds_timeout = 5)
     out <- x$pop()

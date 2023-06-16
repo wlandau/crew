@@ -398,27 +398,17 @@ crew_class_controller_group <- R6::R6Class(
     },
     #' @description Summarize the workers of one or more controllers.
     #' @return A data frame of aggregated worker summary statistics
-    #'   of all the selected controllers. It has one row per worker
-    #'   websocket, and the rows are grouped by controller.
+    #'   of all the selected controllers. It has one row per worker,
+    #'   and the rows are grouped by controller.
     #'   See the documentation of the `summary()` method of the controller
     #'   class for specific information about the columns in the output.
-    #' @param columns Tidyselect expression to select a subset of columns.
-    #'   Examples include `columns = contains("worker")` and
-    #'   `columns = starts_with("tasks")`.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    summary = function(
-      columns = tidyselect::everything(),
-      controllers = NULL
-    ) {
+    summary = function(controllers = NULL) {
       control <- private$select_controllers(controllers)
-      columns <- rlang::enquo(columns)
-      out <- map(
-        control,
-        ~do.call(what = .x$summary, args = list(columns = columns))
-      )
+      out <- map(control, ~.x$summary())
       if (all(map_lgl(out, is.null))) {
-        return(NULL)
+        return(NULL) # nocov
       }
       tibble::as_tibble(do.call(what = rbind, args = out))
     },

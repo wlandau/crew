@@ -96,6 +96,7 @@ Other launchers:
 \item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
+\item \href{#method-crew_class_launcher-summary}{\code{crew_class_launcher$summary()}}
 \item \href{#method-crew_class_launcher-done}{\code{crew_class_launcher$done()}}
 \item \href{#method-crew_class_launcher-rotate}{\code{crew_class_launcher$rotate()}}
 \item \href{#method-crew_class_launcher-tally}{\code{crew_class_launcher$tally()}}
@@ -284,6 +285,35 @@ life cycle, after the client has started.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-summary"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-summary}{}}}
+\subsection{Method \code{summary()}}{
+Summarize the workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$summary()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} if the launcher is not started. Otherwise, a \code{tibble}
+with one row per \code{crew} worker and the following columns:
+\itemize{
+\item \code{worker}: integer index of the worker.
+\item \code{launches}: number of times the worker was launched. Each launch
+occurs at a different websocket because the token at the end of the
+URL is rotated before each new launch.
+\item \code{assigned}: cumulative number of tasks assigned, reported by
+\code{mirai::daemons()} and summed over all
+completed instances of the worker. Does not reflect the activity
+of the currently running instance of the worker.
+\item \code{complete}: cumulative number of tasks completed, reported by
+\code{mirai::daemons()} and summed over all
+completed instances of the worker. Does not reflect the activity
+of the currently running instance of the worker.
+\item \code{socket}: current websocket URL of the worker.
+}
 }
 }
 \if{html}{\out{<hr>}}

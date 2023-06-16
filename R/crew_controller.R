@@ -69,7 +69,7 @@ crew_class_controller <- R6::R6Class(
     launcher = NULL,
     #' @field schedule Schedule object.
     schedule = NULL,
-    #' @field log Data frame task log of the workers.
+    #' @field log Tibble with per-worker metadata about tasks.
     log = NULL,
     #' @field until Numeric of length 1, time point when
     #'   throttled auto-scaling unlocks.
@@ -171,12 +171,13 @@ crew_class_controller <- R6::R6Class(
         workers <- self$client$workers
         self$launcher$start()
         self$schedule$start()
-        self$log <- list(
-          popped_tasks = rep(0L, workers),
-          popped_seconds = rep(0, workers),
-          popped_errors = rep(0L, workers),
-          popped_warnings = rep(0L, workers),
-          controller = rep(self$client$name, workers)
+        self$log <- tibble::tibble(
+          controller = rep(self$client$name, workers),
+          worker = seq_len(workers),
+          tasks = rep(0L, workers),
+          seconds = rep(0, workers),
+          errors = rep(0L, workers),
+          warnings = rep(0L, workers)
         )
       }
       invisible()
@@ -384,29 +385,20 @@ crew_class_controller <- R6::R6Class(
       }
       # nocov end
       out <- monad_tibble(out)
-      log <- self$log
+      log <- .subset2(self, "log")
       # Same as above.
       # nocov start
-      if (anyNA(out$launcher)) {
+      if (anyNA(.subset2(out, "launcher"))) {
         return(out)
       }
       # nocov end
-      index <- out$worker
-      popped_tasks <- .subset2(log, "popped_tasks")[index]
-      popped_seconds <- .subset2(log, "popped_seconds")[index]
-      seconds <- .subset2(out, "seconds")
-      popped_errors <- .subset2(log, "popped_errors")[index]
-      popped_warnings <- .subset2(log, "popped_warnings")[index]
-      self$log$popped_tasks[index] <- popped_tasks + 1L
-      self$log$popped_seconds[index] <- popped_seconds + seconds
-      returned_error <- !anyNA(.subset2(out, "error"))
-      returned_warning <- !anyNA(.subset2(out, "warnings"))
-      if (returned_error) {
-        self$log$popped_errors[index] <- popped_errors + 1L
-      }
-      if (returned_warning) {
-        self$log$popped_warnings[index] <- popped_warnings + 1L
-      }
+      index <- .subset2(out, "worker")
+      self$log$tasks[index] <- .subset2(log, "tasks")[index] + 1L
+      self$log$seconds[index] <- .subset2(log, "seconds")[index] + seconds
+      self$log$errors[index] <- .subset2(log, "errors")[index] +
+        !anyNA(.subset2(out, "error"))
+      self$log$warnings[index] <- .subset2(log, "warnings")[index] +
+        !anyNA(.subset2(out, "warnings"))
       out
     },
     #' @description Wait for tasks.
@@ -467,87 +459,26 @@ crew_class_controller <- R6::R6Class(
     #' @return A data frame of summary statistics on the workers and tasks.
     #'   It has one row per worker websocket and the following columns:
     #'   * `controller`: name of the controller.
-    #'   * `popped_tasks`: number of tasks which were completed by
+    #'.  * `worker`: integer index of the worker.
+    #'   * `tasks`: number of tasks which were completed by
     #'     a worker at the websocket and then returned by calling
     #'     `pop()` on the controller object.
-    #'   * `popped_seconds`: total number of runtime and seconds of
+    #'   * `seconds`: total number of runtime and seconds of
     #'     all the tasks that ran on a worker connected to this websocket
     #'     and then were retrieved by calling `pop()` on the controller
     #'     object.
-    #'   * `popped_errors`: total number of tasks which ran on a worker
+    #'   * `errors`: total number of tasks which ran on a worker
     #'     at the website, encountered an error in R, and then retrieved
     #'     with `pop()`.
-    #'   * `popped_warnings`: total number of tasks which ran on a worker
+    #'   * `warnings`: total number of tasks which ran on a worker
     #'     at the website, encountered one or more warnings in R,
     #'     and then retrieved with `pop()`. Note: `popped_warnings`
     #'     is actually the number of *tasks*, not the number of warnings.
-    #'     (A task could throw more than one warning.)
-    #'   * `tasks_assigned`: number of pushed tasks assigned to the
-    #'      current worker process at the websocket. The counter resets
-    #'      every time a new worker instance starts.
-    #'      So in the case of transient
-    #'      workers, this number may be much smaller than the number of
-    #'      popped tasks.
-    #'   * `tasks_complete`: number of pushed tasks completed by the
-    #'      current worker process at the websocket. The counter resets
-    #'      every time a new worker instance starts.
-    #'      So in the case of transient
-    #'      workers, this number may be much smaller than the number of
-    #'      popped tasks.
-    #'   * `worker_index`: Numeric index of the worker within the controller.
-    #'   * `worker_connected`: `TRUE` if a worker is currently connected
-    #'     to the websocket, `FALSE` if not connected, or `NA`
-    #'     if the status cannot be determined because the `mirai`
-    #'     client is not running.
-    #'   * `worker_launches`: number of attempts to launch a worker
-    #'     at the websocket since the controller started. If
-    #'     the number of launch attempts gets much higher than
-    #'     the number of popped tasks or worker instances, then this is a
-    #'     sign that something is wrong with the workers or platform,
-    #'     and it is recommended to quit the pipeline and troubleshoot.
-    #'   * `worker_instances`: number of different worker processes
-    #'     that have connected to the websocket since the `start()`
-    #'     of the controller object. Should either be 0 or 1 unless
-    #'     something is wrong and more than one worker has connected
-    #'     to the current websocket.
-    #'   * `worker_socket` full websocket address of the worker, including
-    #'     the protocol, IP address, TCP port, and path.
-    #'     This websocket rotates with every additional instance
-    #'     of a worker process.
-    #'     To identify specific pieces of the websocket address,
-    #'     call `nanonext::parse_url()`.
-    #' @param columns Tidyselect expression to select a subset of columns.
-    #'   Examples include `columns = contains("worker")` and
-    #'   `columns = starts_with("tasks")`.
+    #'     (A task could throw more than one warning.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    summary = function(
-      columns = tidyselect::everything(),
-      controllers = NULL
-    ) {
-      client_log <- self$client$log()
-      workers <- self$launcher$workers
-      log <- self$log
-      if (is.null(client_log) || is.null(workers) || is.null(log)) {
-        return(NULL)
-      }
-      out <- tibble::tibble(
-        controller = self$client$name,
-        popped_tasks = log$popped_tasks,
-        popped_seconds = log$popped_seconds,
-        popped_errors = log$popped_errors,
-        popped_warnings = log$popped_warnings,
-        tasks_assigned = client_log$tasks_assigned,
-        tasks_complete = client_log$tasks_complete,
-        worker_index = seq_len(nrow(workers)),
-        worker_connected = client_log$worker_connected,
-        worker_launches = workers$launches,
-        worker_instances = client_log$worker_instances,
-        worker_socket = client_log$worker_socket
-      )
-      expr <- rlang::enquo(columns)
-      select <- eval_tidyselect(expr = expr, choices = colnames(out))
-      out[, select, drop = FALSE]
+    summary = function(controllers = NULL) {
+      .subset2(self, "log")
     },
     #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).

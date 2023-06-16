@@ -514,19 +514,12 @@ based on the \code{mode} argument.
 \subsection{Method \code{summary()}}{
 Summarize the workers of one or more controllers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$summary(
-  columns = tidyselect::everything(),
-  controllers = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$summary(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{columns}}{Tidyselect expression to select a subset of columns.
-Examples include \code{columns = contains("worker")} and
-\code{columns = starts_with("tasks")}.}
-
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
 }
@@ -534,8 +527,8 @@ Set to \code{NULL} to select all controllers.}
 }
 \subsection{Returns}{
 A data frame of aggregated worker summary statistics
-of all the selected controllers. It has one row per worker
-websocket, and the rows are grouped by controller.
+of all the selected controllers. It has one row per worker,
+and the rows are grouped by controller.
 See the documentation of the \code{summary()} method of the controller
 class for specific information about the columns in the output.
 }

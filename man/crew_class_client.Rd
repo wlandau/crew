@@ -60,7 +60,7 @@ Other clients:
 \item \href{#method-crew_class_client-new}{\code{crew_class_client$new()}}
 \item \href{#method-crew_class_client-validate}{\code{crew_class_client$validate()}}
 \item \href{#method-crew_class_client-start}{\code{crew_class_client$start()}}
-\item \href{#method-crew_class_client-log}{\code{crew_class_client$log()}}
+\item \href{#method-crew_class_client-summary}{\code{crew_class_client$summary()}}
 \item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
 }
 }
@@ -141,16 +141,29 @@ Start listening for workers on the available sockets.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-log"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-log}{}}}
-\subsection{Method \code{log()}}{
+\if{html}{\out{<a id="method-crew_class_client-summary"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-summary}{}}}
+\subsection{Method \code{summary()}}{
 Show an informative worker log.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$log()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$summary()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-A \code{tibble} with information on the workers.
+A \code{tibble} with information on the workers, or \code{NULL}
+if the client is not started. The \code{tibble} has 1 row
+per worker and the following columns:
+\itemize{
+\item \code{worker}: integer index of the worker.
+\item \code{online}: \code{TRUE} if the worker is online and connected to the
+websocket URL, \code{FALSE} otherwise.
+\item \code{instance}: integer, number of instances of \code{mirai} servers
+(\code{crew} workers) connected to the websocket URL.
+\item \code{assigned}: number of tasks assigned to the current websocket URL.
+\item \code{complete}: number of tasks completed at the current websocket URL.
+\item \code{socket}: websocket URL. \code{crew} changes the token at the end of the
+URL path periodically as a safeguard while managing workers.
+}
 }
 }
 \if{html}{\out{<hr>}}

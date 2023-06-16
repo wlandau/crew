@@ -181,19 +181,30 @@ crew_class_client <- R6::R6Class(
       invisible()
     },
     #' @description Show an informative worker log.
-    #' @return A `tibble` with information on the workers.
-    log = function() {
+    #' @return A `tibble` with information on the workers, or `NULL`
+    #'   if the client is not started. The `tibble` has 1 row
+    #'   per worker and the following columns:
+    #'   * `worker`: integer index of the worker.
+    #'   * `online`: `TRUE` if the worker is online and connected to the
+    #'     websocket URL, `FALSE` otherwise.
+    #'   * `instance`: integer, number of instances of `mirai` servers
+    #'     (`crew` workers) connected to the websocket URL.
+    #'   * `assigned`: number of tasks assigned to the current websocket URL.
+    #'   * `complete`: number of tasks completed at the current websocket URL.
+    #'   * `socket`: websocket URL. `crew` changes the token at the end of the
+    #'     URL path periodically as a safeguard while managing workers.
+    summary = function() {
       if (!isTRUE(self$started)) {
         return(NULL)
       }
       daemons <- daemons_info(name = self$name)
-      sockets <- as.character(rownames(daemons))
       tibble::tibble(
-        tasks_assigned = as.integer(daemons[, "assigned"]),
-        tasks_complete = as.integer(daemons[, "complete"]),
-        worker_connected = as.logical(daemons[, "online"] > 0L),
-        worker_instances = as.integer(daemons[, "instance"]),
-        worker_socket = sockets
+        worker = seq_len(ncol(daemons)),
+        online = as.logical(daemons[, "online"] > 0L),
+        instance = as.integer(daemons[, "instance"]),
+        assigned = as.integer(daemons[, "assigned"]),
+        complete = as.integer(daemons[, "complete"]),
+        socket = as.character(rownames(daemons))
       )
     },
     #' @description Stop the mirai client and disconnect from the

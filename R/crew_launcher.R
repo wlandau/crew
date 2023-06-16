@@ -345,6 +345,35 @@ crew_class_launcher <- R6::R6Class(
       )
       invisible()
     },
+    #' @description Summarize the workers.
+    #' @return `NULL` if the launcher is not started. Otherwise, a `tibble`
+    #'   with one row per `crew` worker and the following columns:
+    #'   * `worker`: integer index of the worker.
+    #'   * `launches`: number of times the worker was launched. Each launch
+    #'     occurs at a different websocket because the token at the end of the
+    #'     URL is rotated before each new launch.
+    #'   * `assigned`: cumulative number of tasks assigned, reported by
+    #'     `mirai::daemons()` and summed over all
+    #'     completed instances of the worker. Does not reflect the activity
+    #'     of the currently running instance of the worker.
+    #'   * `complete`: cumulative number of tasks completed, reported by
+    #'     `mirai::daemons()` and summed over all
+    #'     completed instances of the worker. Does not reflect the activity
+    #'     of the currently running instance of the worker.
+    #'   * `socket`: current websocket URL of the worker. 
+    summary = function() {
+      workers <- .subset2(self, "workers")
+      if (is.null(workers)) {
+        return(NULL)
+      }
+      tibble::tibble(
+        worker = seq_len(nrow(workers)),
+        launches = .subset2(workers, "launches"),
+        assigned = .subset2(workers, "assigned"),
+        complete = .subset2(workers, "complete"),
+        socket = .subset2(workers, "socket")
+      )
+    },
     #' @description Get done workers.
     #' @details A worker is "done" if it is launched and inactive.
     #'   A worker is "launched" if `launch()` was called

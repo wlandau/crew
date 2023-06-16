@@ -53,7 +53,7 @@ Other controllers:
 
 \item{\code{schedule}}{Schedule object.}
 
-\item{\code{log}}{Data frame task log of the workers.}
+\item{\code{log}}{Tibble with per-worker metadata about tasks.}
 
 \item{\code{until}}{Numeric of length 1, time point when
 throttled auto-scaling unlocks.}
@@ -558,19 +558,12 @@ its stopping condition based on the \code{mode} argument.
 \subsection{Method \code{summary()}}{
 Summarize the workers and tasks of the controller.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$summary(
-  columns = tidyselect::everything(),
-  controllers = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$summary(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{columns}}{Tidyselect expression to select a subset of columns.
-Examples include \code{columns = contains("worker")} and
-\code{columns = starts_with("tasks")}.}
-
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
 }
@@ -581,55 +574,22 @@ A data frame of summary statistics on the workers and tasks.
 It has one row per worker websocket and the following columns:
 \itemize{
 \item \code{controller}: name of the controller.
-\item \code{popped_tasks}: number of tasks which were completed by
+.  * \code{worker}: integer index of the worker.
+\item \code{tasks}: number of tasks which were completed by
 a worker at the websocket and then returned by calling
 \code{pop()} on the controller object.
-\item \code{popped_seconds}: total number of runtime and seconds of
+\item \code{seconds}: total number of runtime and seconds of
 all the tasks that ran on a worker connected to this websocket
 and then were retrieved by calling \code{pop()} on the controller
 object.
-\item \code{popped_errors}: total number of tasks which ran on a worker
+\item \code{errors}: total number of tasks which ran on a worker
 at the website, encountered an error in R, and then retrieved
 with \code{pop()}.
-\item \code{popped_warnings}: total number of tasks which ran on a worker
+\item \code{warnings}: total number of tasks which ran on a worker
 at the website, encountered one or more warnings in R,
 and then retrieved with \code{pop()}. Note: \code{popped_warnings}
 is actually the number of \emph{tasks}, not the number of warnings.
-(A task could throw more than one warning.)
-\item \code{tasks_assigned}: number of pushed tasks assigned to the
-current worker process at the websocket. The counter resets
-every time a new worker instance starts.
-So in the case of transient
-workers, this number may be much smaller than the number of
-popped tasks.
-\item \code{tasks_complete}: number of pushed tasks completed by the
-current worker process at the websocket. The counter resets
-every time a new worker instance starts.
-So in the case of transient
-workers, this number may be much smaller than the number of
-popped tasks.
-\item \code{worker_index}: Numeric index of the worker within the controller.
-\item \code{worker_connected}: \code{TRUE} if a worker is currently connected
-to the websocket, \code{FALSE} if not connected, or \code{NA}
-if the status cannot be determined because the \code{mirai}
-client is not running.
-\item \code{worker_launches}: number of attempts to launch a worker
-at the websocket since the controller started. If
-the number of launch attempts gets much higher than
-the number of popped tasks or worker instances, then this is a
-sign that something is wrong with the workers or platform,
-and it is recommended to quit the pipeline and troubleshoot.
-\item \code{worker_instances}: number of different worker processes
-that have connected to the websocket since the \code{start()}
-of the controller object. Should either be 0 or 1 unless
-something is wrong and more than one worker has connected
-to the current websocket.
-\item \code{worker_socket} full websocket address of the worker, including
-the protocol, IP address, TCP port, and path.
-This websocket rotates with every additional instance
-of a worker process.
-To identify specific pieces of the websocket address,
-call \code{nanonext::parse_url()}.
+(A task could throw more than one warning.
 }
 }
 }

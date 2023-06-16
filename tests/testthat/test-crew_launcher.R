@@ -241,6 +241,7 @@ crew_test("launcher backlogged() and resolved()", {
 
 crew_test("launcher summary", {
   x <- crew_launcher()
+  expect_null(x$summary())
   x$start(sockets = c("a", "b"))
   out <- x$summary()
   expect_true(tibble::is_tibble(out))

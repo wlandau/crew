@@ -1,4 +1,5 @@
 library(crew)
+library(crew)
 library(mirai)
 
 # Implements throttling to avoid overburdening the {mirai} dispatcher.
@@ -98,7 +99,7 @@ scale <- function(workers) {
 }
 
 index <- 0L # current task
-n_tasks <- 6000L # all tasks
+n_tasks <- 60000L # all tasks
 while (index < n_tasks || schedule$nonempty()) { # while there is work to do
   if (!throttler$throttle()) { # avoid overburdening the {mirai} dispatcher
     rotate(workers) # Rotate the URLs of done workers.
@@ -147,11 +148,11 @@ daemons(n = 0L)
 print("worker info")
 print(workers$workers[, c("launches", "assigned", "complete")])
 
-# Should be 6000.
+# Should equal n_tasks.
 print("total assigned")
 print(sum(workers$workers$assigned))
 
-# Should be 6000.
+# Should equal n_tasks.
 print("total complete")
 print(sum(workers$workers$complete))
 

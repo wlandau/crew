@@ -1,10 +1,5 @@
 name_worker <- function(launcher, worker, instance) {
-  out <- paste(launcher, worker, instance, sep = "-")
-  alpha <- all(grepl(pattern = "^[[:alpha:]]", x = out))
-  if (!alpha) {
-    out <- paste0("worker-", out)
-  }
-  out
+  paste("crew", launcher, worker, instance, sep = "-")
 }
 
 parse_instance <- function(socket) {

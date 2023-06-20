@@ -6,7 +6,7 @@ controller <- crew_controller_local(
 controller$start()
 names <- character(0L)
 index <- 0L
-n_tasks <- 6000L
+n_tasks <- 60000L
 system.time(
   while (index < n_tasks || !(controller$empty())) {
     if (index < n_tasks) {
@@ -24,10 +24,10 @@ system.time(
     }
   }
 )
-testthat::expect_equal(length(controller$schedule$pushed), 0L)
-testthat::expect_equal(length(controller$schedule$collected), 0L)
 controller$launcher$workers$launched <- FALSE
 controller$launcher$tally()
+controller$terminate()
+testthat::expect_equal(length(controller$schedule$pushed), 0L)
+testthat::expect_equal(length(controller$schedule$collected), 0L)
 testthat::expect_equal(sum(controller$launcher$workers$assigned), n_tasks)
 testthat::expect_equal(sum(controller$launcher$workers$complete), n_tasks)
-controller$terminate()

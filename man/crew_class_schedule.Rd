@@ -23,11 +23,13 @@ Other schedule:
 
 \item{\code{pushed}}{Hash table of pushed tasks.}
 
-\item{\code{collected}}{Stack of resolved tasks with results available.}
+\item{\code{collected}}{Linked list of resolved tasks with results available.}
 
 \item{\code{pushes}}{Number of times a task has been pushed.}
 
-\item{\code{head}}{ID of the task at the head of the \code{collected} stack.}
+\item{\code{head}}{ID of the task at the head of the \code{collected} linked list.}
+
+\item{\code{tail}}{ID of the task at the tail of the \code{collected} linked list.}
 
 \item{\code{until}}{Numeric of length 1, time point when
 throttled task collection unlocks.}
@@ -183,7 +185,7 @@ and efficiency.}
 }
 \subsection{Details}{
 Scan the tasks in \code{pushed} and move the resolved ones to the
-head of the \code{collected} stack.
+head of the \code{collected} linked list.
 }
 
 \subsection{Returns}{
@@ -194,7 +196,7 @@ head of the \code{collected} stack.
 \if{html}{\out{<a id="method-crew_class_schedule-pop"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_schedule-pop}{}}}
 \subsection{Method \code{pop()}}{
-Pop a task from the \code{collected} stack.
+Pop a task from the \code{collected} linked list.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_schedule$pop()}\if{html}{\out{</div>}}
 }

@@ -40,12 +40,14 @@ crew_class_schedule <- R6::R6Class(
     seconds_interval = NULL,
     #' @field pushed Hash table of pushed tasks.
     pushed = NULL,
-    #' @field collected Stack of resolved tasks with results available.
+    #' @field collected Linked list of resolved tasks with results available.
     collected = NULL,
     #' @field pushes Number of times a task has been pushed.
     pushes = NULL,
-    #' @field head ID of the task at the head of the `collected` stack.
+    #' @field head ID of the task at the head of the `collected` linked list.
     head = NULL,
+    #' @field tail ID of the task at the tail of the `collected` linked list.
+    tail = NULL,
     #' @field until Numeric of length 1, time point when
     #'   throttled task collection unlocks.
     until = NULL,
@@ -133,7 +135,7 @@ crew_class_schedule <- R6::R6Class(
     },
     #' @description Collect resolved tasks.
     #' @details Scan the tasks in `pushed` and move the resolved ones to the
-    #'   head of the `collected` stack.
+    #'   head of the `collected` linked list.
     #' @return `NULL` (invisibly).
     #' @param throttle whether to defer task collection
     #'   until the next task collection request at least
@@ -150,18 +152,25 @@ crew_class_schedule <- R6::R6Class(
       index_unresolved <- lapply(X = pushed, FUN = .unresolved)
       index_resolved <- !as.logical(index_unresolved)
       which_resolved <- names(index_unresolved)[index_resolved]
-      for (id in which_resolved) {
-        result <- list(
-          task = .subset2(pushed, id),
-          head = .subset2(self, "head")
-        )
-        self$head <- id
-        collected[[id]] <- result
+      if (length(which_resolved) < 1L) {
+        return(invisible())
       }
+      if (is.null(.subset2(self, "head"))) {
+        self$head <- which_resolved[1L]
+      }
+      tail <- .subset2(self, "tail")
+      for (id in which_resolved) {
+        if (!is.null(tail)) {
+          collected[[tail]]$head <- id
+        }
+        collected[[id]] <- list(task = .subset2(pushed, id))
+        tail <- id
+      }
+      self$tail <- tail
       rm(list = which_resolved, envir = pushed)
       invisible()
     },
-    #' @description Pop a task from the `collected` stack.
+    #' @description Pop a task from the `collected` linked list.
     #' @return A task object if available, `NULL` otherwise.
     pop = function() {
       head <- .subset2(self, "head")

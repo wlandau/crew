@@ -120,7 +120,7 @@ test_that("schedule pop", {
   expect_null(x$head)
 })
 
-test_that("schedule collected stack", {
+test_that("schedule collected queue", {
   x <- crew_schedule()
   x$start()
   numbers <- as.character(seq_len(26L))

@@ -3,6 +3,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   skip_on_cran()
   skip_on_os("windows")
   client <- crew_client(
+    host = "127.0.0.1",
     workers = 4L
   )
   launcher <- crew_launcher_local(name = client$name, seconds_idle = 360)
@@ -74,6 +75,7 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   skip_on_cran()
   skip_on_os("windows")
   client <- crew_client(
+    host = "127.0.0.1",
     workers = 1L
   )
   launcher <- crew_launcher_local(
@@ -135,6 +137,7 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   skip_on_cran()
   skip_on_os("windows")
   client <- crew_client(
+    host = "127.0.0.1",
     workers = 1L
   )
   launcher <- crew_launcher_local(

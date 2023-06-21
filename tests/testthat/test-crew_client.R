@@ -1,5 +1,5 @@
 crew_test("crew_client() validate", {
-  client <- crew_client()
+  client <- crew_client(host = "127.0.0.1")
   expect_silent(client$validate())
   client$name <- NULL
   expect_crew_error(client$validate())
@@ -9,7 +9,7 @@ crew_test("crew_client() works", {
   skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
-  client <- crew_client()
+  client <- crew_client(host = "127.0.0.1")
   on.exit({
     client$terminate()
     rm(client)

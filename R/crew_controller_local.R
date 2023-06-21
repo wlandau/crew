@@ -18,7 +18,7 @@
 crew_controller_local <- function(
   name = NULL,
   workers = 1L,
-  host = NULL,
+  host = "127.0.0.1",
   port = NULL,
   seconds_interval = 0.25,
   seconds_timeout = 10,

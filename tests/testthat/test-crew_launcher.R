@@ -282,7 +282,7 @@ crew_test("custom launcher", {
   crew_controller_custom <- function(
     name = "custom controller name",
     workers = 1L,
-    host = NULL,
+    host = "127.0.0.1",
     port = NULL,
     seconds_interval = 0.5,
     seconds_timeout = 5,

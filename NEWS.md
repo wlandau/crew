@@ -1,4 +1,4 @@
-# crew 0.2.1.9011 (development)
+# crew 0.2.1.9012 (development)
 
 * Track warnings properly (#81, @brendanf).
 * Optimize heavily (#81, #83, @shikokuchuo, @brendanf).
@@ -10,6 +10,7 @@
 * Terminate "lost" workers on websocket rotation.
 * Allow `NULL` result in `pop()$result[[1L]]`.
 * Delegate summaries among the controller, schedule, launcher, and client.
+* Default to the loopback address for the local controller.
 
 # crew 0.2.1
 

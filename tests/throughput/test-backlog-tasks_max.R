@@ -7,7 +7,7 @@ controller$start()
 names <- character(0L)
 index <- 0L
 n_tasks <- 60000L
-proffer::pprof(
+system.time(
   while (index < n_tasks || !(controller$empty())) {
     if (index < n_tasks) {
       index <- index + 1L

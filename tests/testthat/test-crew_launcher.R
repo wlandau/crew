@@ -208,12 +208,12 @@ crew_test("launcher tally()", {
   launcher$workers$launched[1L] <- FALSE
   launcher$workers$launched[4L] <- TRUE
   launcher$tally(daemons = daemons)
-  expect_equal(launcher$workers$assigned, c(7L, 0L, 14L, 7L))
-  expect_equal(launcher$workers$complete, c(3L, 0L, 6L, 7L))
+  expect_equal(launcher$workers$assigned, c(7L, 0L, 7L, 7L))
+  expect_equal(launcher$workers$complete, c(3L, 0L, 3L, 7L))
   launcher$workers$launched <- !(launcher$workers$launched)
   launcher$tally(daemons = daemons)
-  expect_equal(launcher$workers$assigned, c(7L, 7L, 14L, 14L))
-  expect_equal(launcher$workers$complete, c(3L, 7L, 6L, 14L))
+  expect_equal(launcher$workers$assigned, c(7L, 7L, 7L, 7L))
+  expect_equal(launcher$workers$complete, c(3L, 7L, 3L, 7L))
 })
 
 crew_test("launcher unlaunched()", {

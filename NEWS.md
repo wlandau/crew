@@ -11,6 +11,7 @@
 * Allow `NULL` result in `pop()$result[[1L]]`.
 * Delegate summaries among the controller, schedule, launcher, and client.
 * Default to the loopback address for the local controller.
+* Use already cumulative `assigned` and `complete` stats from `mirai` 0.8.7.9029.
 
 # crew 0.2.1
 

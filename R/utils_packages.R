@@ -5,7 +5,7 @@
 .onLoad <- function(libname, pkgname) {
   package_version_check(
     package = "mirai",
-    version = "0.8.7.9025",
+    version = "0.8.7.9029",
     repo = "https://shikokuchuo.r-universe.dev"
   )
 }

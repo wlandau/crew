@@ -25,7 +25,7 @@ expect_crew_error <- function(object) {
 # TODO: always test and bump required versions when the next
 # mirai/nanonext are on CRAN.
 skip_if_low_dep_versions <- function() {
-  sufficient_versions <- rlang::is_installed(pkg = "mirai (>= 0.8.7.9025)")
+  sufficient_versions <- rlang::is_installed(pkg = "mirai (>= 0.8.7.9029)")
   if (!sufficient_versions) {
     skip("version of mirai or nanonext is too low")
   }

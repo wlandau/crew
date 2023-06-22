@@ -420,13 +420,9 @@ crew_class_launcher <- R6::R6Class(
     #'   should not set this.
     tally = function(daemons = NULL) {
       daemons <- daemons %|||% daemons_info(name = self$name)
-      new_assigned <- as.integer(daemons[, "assigned"])
-      new_complete <- as.integer(daemons[, "complete"])
-      old_assigned <- self$workers$assigned
-      old_complete <- self$workers$complete
       index <- !(self$workers$launched)
-      self$workers$assigned[index] <- old_assigned[index] + new_assigned[index]
-      self$workers$complete[index] <- old_complete[index] + new_complete[index]
+      self$workers$assigned[index] <- as.integer(daemons[index, "assigned"])
+      self$workers$complete[index] <- as.integer(daemons[index, "complete"])
       invisible()
     },
     #' @description Get workers available for launch.

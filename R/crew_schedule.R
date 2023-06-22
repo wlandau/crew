@@ -180,7 +180,11 @@ crew_class_schedule <- R6::R6Class(
       collected <- .subset2(self, "collected")
       result <- collected[[head]]
       rm(list = head, envir = collected)
-      self$head <- .subset2(result, "head")
+      new_head <- .subset2(result, "head")
+      self$head <- new_head
+      if (is.null(new_head)) {
+        self$tail <- NULL
+      }
       .subset2(result, "task")
     },
     #' @description Check if the schedule is empty.

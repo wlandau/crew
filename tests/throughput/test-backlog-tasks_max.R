@@ -12,6 +12,7 @@ system.time(
     if (index < n_tasks) {
       index <- index + 1L
       cat("submit", index, "\n")
+      cat("submit", index, "\n")
       controller$push(
         name = as.character(index),
         command = TRUE
@@ -24,6 +25,7 @@ system.time(
     }
   }
 )
+testthat::expect_equal(sort(as.integer(names)), seq_len(n_tasks))
 controller$launcher$workers$launched <- FALSE
 controller$launcher$tally()
 controller$terminate()

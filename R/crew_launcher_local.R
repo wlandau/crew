@@ -1,6 +1,5 @@
 #' @title Create a launcher with local process workers.
 #' @export
-#' @family launchers
 #' @description Create an `R6` object to launch and maintain
 #'   local process workers.
 #' @inheritParams crew_launcher

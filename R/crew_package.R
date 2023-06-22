@@ -1,6 +1,7 @@
 #' crew: a distributed worker launcher framework
 #' @docType package
 #' @name crew-package
+#' @family user
 #' @description In computationally demanding analysis projects,
 #'   statisticians and data scientists asynchronously deploy
 #'   long-running tasks to distributed systems, ranging from
@@ -18,7 +19,6 @@
 #'   [`rrq`](https://mrc-ide.github.io/rrq/),
 #'   [`clustermq`](https://mschubert.github.io/clustermq/),
 #'   and [`batchtools`](https://mllg.github.io/batchtools/).
-#' @family help
 #' @importFrom getip getip
 #' @importFrom mirai daemons mirai saisei server
 #' @importFrom nanonext mclock msleep random sha1 .unresolved

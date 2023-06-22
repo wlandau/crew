@@ -1,8 +1,9 @@
-#' @title Create a controller.
+#' @title Create a controller object from a client and launcher.
 #' @export
-#' @keywords internal
-#' @family controllers
-#' @description Create an `R6` object to submit tasks and launch workers.
+#' @family developer
+#' @description This function is for developers of `crew` launcher plugins.
+#'   Users should use a specific controller helper such as
+#'   [crew_controller_local()].
 #' @param client An `R6` client object created by [crew_client()].
 #' @param launcher An `R6` launcher object created by one of the
 #'   `crew_launcher_*()` functions such as [crew_launcher_local()].
@@ -32,20 +33,20 @@ crew_controller <- function(
       alternative = "use the scale argument of push(), pop(), and wait()"
     )
   }
-  launcher$name <- client$name
   schedule <- crew_schedule(seconds_interval = client$seconds_interval)
   controller <- crew_class_controller$new(
     client = client,
     launcher = launcher,
     schedule = schedule
   )
+  controller$launcher$name <- controller$client$name
   controller$validate()
   controller
 }
 
 #' @title Controller class
 #' @export
-#' @family controllers
+#' @family class
 #' @description `R6` class for controllers.
 #' @details See [crew_controller()].
 #' @examples

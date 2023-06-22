@@ -1,7 +1,6 @@
 #' @title Evaluate an R command and return results as a monad.
 #' @export
 #' @family utilities
-#' @keywords internal
 #' @description Not a user-side function. Do not call directly.
 #' @details The `crew_eval()` function evaluates an R expression
 #'   in an encapsulated environment and returns a monad with the results,

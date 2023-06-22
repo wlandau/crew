@@ -49,12 +49,13 @@ launcher$call(
 )
 }
 \seealso{
-Other launchers: 
-\code{\link{crew_class_launcher_local}},
-\code{\link{crew_launcher_local}()},
-\code{\link{crew_launcher}()}
+Other class: 
+\code{\link{crew_class_client}},
+\code{\link{crew_class_controller_group}},
+\code{\link{crew_class_controller}},
+\code{\link{crew_class_schedule}}
 }
-\concept{launchers}
+\concept{class}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{

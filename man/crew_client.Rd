@@ -46,8 +46,9 @@ client$terminate()
 }
 }
 \seealso{
-Other clients: 
-\code{\link{crew_class_client}}
+Other developer: 
+\code{\link{crew_controller}()},
+\code{\link{crew_launcher}()},
+\code{\link{crew_schedule}()}
 }
-\concept{clients}
-\keyword{internal}
+\concept{developer}

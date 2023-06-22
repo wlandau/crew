@@ -2,7 +2,7 @@
 % Please edit documentation in R/crew_schedule.R
 \name{crew_schedule}
 \alias{crew_schedule}
-\title{Create a schedule.}
+\title{Create a schedule for bookkeeping tasks.}
 \usage{
 crew_schedule(seconds_interval = 0.25)
 }
@@ -31,8 +31,9 @@ schedule$pop()$data # NULL
 }
 }
 \seealso{
-Other schedule: 
-\code{\link{crew_class_schedule}}
+Other developer: 
+\code{\link{crew_client}()},
+\code{\link{crew_controller}()},
+\code{\link{crew_launcher}()}
 }
-\concept{schedule}
-\keyword{internal}
+\concept{developer}

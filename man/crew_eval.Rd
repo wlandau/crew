@@ -62,4 +62,3 @@ Other utilities:
 \code{\link{crew_worker}()}
 }
 \concept{utilities}
-\keyword{internal}

@@ -23,4 +23,9 @@ Inspiration also comes from packages
 \href{https://mschubert.github.io/clustermq/}{\code{clustermq}},
 and \href{https://mllg.github.io/batchtools/}{\code{batchtools}}.
 }
-\concept{help}
+\seealso{
+Other user: 
+\code{\link{crew_controller_group}()},
+\code{\link{crew_controller_local}()}
+}
+\concept{user}

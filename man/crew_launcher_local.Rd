@@ -91,10 +91,3 @@ m$data
 client$terminate()
 }
 }
-\seealso{
-Other launchers: 
-\code{\link{crew_class_launcher_local}},
-\code{\link{crew_class_launcher}},
-\code{\link{crew_launcher}()}
-}
-\concept{launchers}

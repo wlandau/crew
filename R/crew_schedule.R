@@ -1,7 +1,6 @@
-#' @title Create a schedule.
+#' @title Create a schedule for bookkeeping tasks.
 #' @export
-#' @family schedule
-#' @keywords internal
+#' @family developer
 #' @description Create an `R6` object to contain and manage task objects.
 #' @details Not a user-side function. There are no examples. Please see
 #'   [crew_controller_local()] for details.
@@ -27,8 +26,7 @@ crew_schedule <- function(seconds_interval = 0.25) {
 
 #' @title Schedule class
 #' @export
-#' @family schedule
-#' @keywords internal
+#' @family class
 #' @description `R6` class to contain and manage task objects.
 #' @details Not a user-side class. There are no examples. Please see
 #'   [crew_controller_local()] for details.

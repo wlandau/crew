@@ -22,12 +22,6 @@ m$data
 client$terminate()
 }
 }
-\seealso{
-Other launchers: 
-\code{\link{crew_class_launcher}},
-\code{\link{crew_launcher_local}()},
-\code{\link{crew_launcher}()}
-}
 \concept{launchers}
 \section{Super class}{
 \code{\link[crew:crew_class_launcher]{crew::crew_class_launcher}} -> \code{crew_class_launcher_local}

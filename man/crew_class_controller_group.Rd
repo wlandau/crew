@@ -43,13 +43,13 @@ group$terminate()
 }
 }
 \seealso{
-Other controllers: 
+Other class: 
+\code{\link{crew_class_client}},
 \code{\link{crew_class_controller}},
-\code{\link{crew_controller_group}()},
-\code{\link{crew_controller_local}()},
-\code{\link{crew_controller}()}
+\code{\link{crew_class_launcher}},
+\code{\link{crew_class_schedule}}
 }
-\concept{controllers}
+\concept{class}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{

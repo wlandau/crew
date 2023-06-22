@@ -2,7 +2,7 @@
 % Please edit documentation in R/crew_controller.R
 \name{crew_controller}
 \alias{crew_controller}
-\title{Create a controller.}
+\title{Create a controller object from a client and launcher.}
 \usage{
 crew_controller(client, launcher, auto_scale = NULL)
 }
@@ -16,7 +16,9 @@ crew_controller(client, launcher, auto_scale = NULL)
 \code{pop()}, and \code{wait()} instead.}
 }
 \description{
-Create an \code{R6} object to submit tasks and launch workers.
+This function is for developers of \code{crew} launcher plugins.
+Users should use a specific controller helper such as
+\code{\link[=crew_controller_local]{crew_controller_local()}}.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -31,11 +33,9 @@ controller$terminate()
 }
 }
 \seealso{
-Other controllers: 
-\code{\link{crew_class_controller_group}},
-\code{\link{crew_class_controller}},
-\code{\link{crew_controller_group}()},
-\code{\link{crew_controller_local}()}
+Other developer: 
+\code{\link{crew_client}()},
+\code{\link{crew_launcher}()},
+\code{\link{crew_schedule}()}
 }
-\concept{controllers}
-\keyword{internal}
+\concept{developer}

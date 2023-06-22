@@ -1,7 +1,6 @@
 #' @title Create a client object.
 #' @export
-#' @keywords internal
-#' @family clients
+#' @family developer
 #' @description Create an `R6` wrapper object to manage the `mirai` client.
 #' @param name Name of the client object. If `NULL`, a name is automatically
 #'   generated.
@@ -50,7 +49,7 @@ crew_client <- function(
 
 #' @title `R6` client class.
 #' @export
-#' @family clients
+#' @family class
 #' @description `R6` class for `mirai` clients.
 #' @details See [crew_client()].
 #' @examples

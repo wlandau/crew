@@ -29,10 +29,13 @@ client$terminate()
 }
 }
 \seealso{
-Other clients: 
-\code{\link{crew_client}()}
+Other class: 
+\code{\link{crew_class_controller_group}},
+\code{\link{crew_class_controller}},
+\code{\link{crew_class_launcher}},
+\code{\link{crew_class_schedule}}
 }
-\concept{clients}
+\concept{class}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{

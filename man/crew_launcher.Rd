@@ -94,10 +94,9 @@ client$terminate()
 }
 }
 \seealso{
-Other launchers: 
-\code{\link{crew_class_launcher_local}},
-\code{\link{crew_class_launcher}},
-\code{\link{crew_launcher_local}()}
+Other developer: 
+\code{\link{crew_client}()},
+\code{\link{crew_controller}()},
+\code{\link{crew_schedule}()}
 }
-\concept{launchers}
-\keyword{internal}
+\concept{developer}

@@ -12,6 +12,7 @@
 * Delegate summaries among the controller, schedule, launcher, and client.
 * Default to the loopback address for the local controller.
 * Use already cumulative `assigned` and `complete` stats from `mirai` 0.8.7.9029.
+* Reorganize `pkgdown` reference and `Rd` families to clarify which parts are for end-users and which parts are for launcher plugin developers.
 
 # crew 0.2.1
 

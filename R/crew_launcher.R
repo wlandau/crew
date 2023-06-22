@@ -1,7 +1,6 @@
 #' @title Create an abstract launcher.
 #' @export
-#' @keywords internal
-#' @family launchers
+#' @family developer
 #' @description This function is useful for inheriting argument documentation
 #'   in functions that create custom third-party launchers. See
 #'   `@inheritParams crew::crew_launcher` in the source code file of
@@ -93,7 +92,7 @@ crew_launcher <- function(
 
 #' @title Launcher abstract class
 #' @export
-#' @family launchers
+#' @family class
 #' @description `R6` abstract class to build other subclasses
 #'   which launch and manage workers.
 #' @examples

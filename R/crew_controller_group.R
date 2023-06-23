@@ -249,14 +249,17 @@ crew_class_controller_group <- R6::R6Class(
       scale = TRUE,
       throttle = TRUE,
       name = NULL,
-      controller = NULL,
-      save_command = FALSE
+      save_command = FALSE,
+      controller = NULL
     ) {
       if (substitute) {
         command <- substitute(command)
       }
-      control <- private$select_single_controller(name = controller)
-      control$push(
+      control <- .subset2(
+        private,
+        "select_single_controller"
+      )(name = controller)
+      .subset2(control, "push")(
         command = command,
         data = data,
         globals = globals,

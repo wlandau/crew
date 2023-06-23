@@ -72,6 +72,7 @@ throttled auto-scaling unlocks.}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
+\item \href{#method-crew_class_controller-quick_push}{\code{crew_class_controller$quick_push()}}
 \item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
 \item \href{#method-crew_class_controller-wait}{\code{crew_class_controller$wait()}}
@@ -341,8 +342,8 @@ Push a task to the head of the task list.
   scale = TRUE,
   throttle = TRUE,
   name = NA_character_,
-  controller = NULL,
-  save_command = FALSE
+  save_command = FALSE,
+  controller = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -370,8 +371,7 @@ whereas \code{substitute = FALSE} is meant for automated R programs
 that invoke \code{crew} controllers.}
 
 \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
-seed to temporarily set for the evaluation of the task.
-At the end of the task, the seed is restored.}
+seed to temporarily set for the evaluation of the task.}
 
 \item{\code{packages}}{Character vector of packages to load for the task.}
 
@@ -395,16 +395,86 @@ and efficiency.}
 
 \item{\code{name}}{Optional name of the task.}
 
-\item{\code{controller}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
-
 \item{\code{save_command}}{Logical of length 1. If \code{TRUE}, the controller
 deparses the command and returns it with the output on \code{pop()}.
 If \code{FALSE} (default), the controller skips this step to
 increase speed.}
+
+\item{\code{controller}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-quick_push"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-quick_push}{}}}
+\subsection{Method \code{quick_push()}}{
+Quickly push a task to the head of the task list.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$quick_push(
+  command,
+  data = list(),
+  globals = list(),
+  seed = 0L,
+  packages = character(0),
+  library = NULL,
+  .timeout = NULL,
+  name = NA_character_
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{command}}{Language object with R code to run.}
+
+\item{\code{data}}{Named list of local data objects in the
+evaluation environment.}
+
+\item{\code{globals}}{Named list of objects to temporarily assign to the
+global environment for the task. See the \code{reset_globals} argument
+of \code{\link[=crew_controller_local]{crew_controller_local()}}.}
+
+\item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
+seed to temporarily set for the evaluation of the task.}
+
+\item{\code{packages}}{Character vector of packages to load for the task.}
+
+\item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
+argument of \code{require()}.}
+
+\item{\code{.timeout}}{Optional task timeout passed to the \code{.timeout}
+argument of \code{mirai::mirai()} (after converting to milliseconds).}
+
+\item{\code{name}}{Optional name of the task.}
+
+\item{\code{scale}}{Logical, whether to automatically call \code{scale()}
+to auto-scale workers to meet the demand of the task load.
+By design, auto-scaling might not actually happen
+if \code{throttle = TRUE}.}
+
+\item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
+until the next request at least
+\code{self$client$seconds_interval} seconds from the original request.
+The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
+accumulate a backlog of requests. The technique improves robustness
+and efficiency.}
+
+\item{\code{controller}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+For developers only. \code{quick_push()} skips some of the user
+options for \code{push()} to aggressively optimize performance.
+Not supported for controller groups.
+}
+
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

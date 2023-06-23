@@ -122,7 +122,7 @@ crew_test("crew_controller_local()", {
   )
 })
 
-crew_test("crew_controller_local() substitute = FALSE", {
+crew_test("crew_controller_local() substitute = FALSE and quick push", {
   skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
@@ -142,6 +142,7 @@ crew_test("crew_controller_local() substitute = FALSE", {
   expect_equal(x$summary()$errors, 0L)
   expect_equal(x$summary()$warnings, 0L)
   command <- quote(sqrt(4L) + sqrt(9L))
+  # regular push
   x$push(command = command, substitute = FALSE, name = "substitute")
   x$wait(seconds_timeout = 10)
   out <- x$pop(scale = FALSE)
@@ -153,6 +154,19 @@ crew_test("crew_controller_local() substitute = FALSE", {
   expect_true(anyNA(out$error))
   expect_true(anyNA(out$warnings))
   expect_true(anyNA(out$trace))
+  # quick push
+  x$quick_push(command = command, name = "substitute")
+  x$wait(seconds_timeout = 10)
+  out <- x$pop(scale = FALSE)
+  expect_equal(out$result[[1]], 5L)
+  expect_equal(out$name, "substitute")
+  expect_true(is.numeric(out$seconds))
+  expect_false(anyNA(out$seconds))
+  expect_true(out$seconds >= 0)
+  expect_true(anyNA(out$error))
+  expect_true(anyNA(out$warnings))
+  expect_true(anyNA(out$trace))
+  # cleanup
   handle <- x$launcher$workers$handle[[1]]
   x$terminate()
   expect_false(x$client$started)

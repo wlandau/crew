@@ -244,7 +244,6 @@ crew_class_controller <- R6::R6Class(
     #'   that invoke `crew` controllers.
     #' @param seed Integer of length 1 with the pseudo-random number generator
     #'   seed to temporarily set for the evaluation of the task.
-    #'   At the end of the task, the seed is restored.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -279,8 +278,8 @@ crew_class_controller <- R6::R6Class(
       scale = TRUE,
       throttle = TRUE,
       name = NA_character_,
-      controller = NULL,
-      save_command = FALSE
+      save_command = FALSE,
+      controller = NULL
     ) {
       if (substitute) {
         command <- substitute(command)
@@ -312,6 +311,63 @@ crew_class_controller <- R6::R6Class(
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
       }
+      invisible()
+    },
+    #' @description Quickly push a task to the head of the task list.
+    #' @details For developers only. `quick_push()` skips some of the user
+    #'   options for `push()` to aggressively optimize performance.
+    #'   Not supported for controller groups.
+    #' @return `NULL` (invisibly).
+    #' @param command Language object with R code to run.
+    #' @param data Named list of local data objects in the
+    #'   evaluation environment.
+    #' @param globals Named list of objects to temporarily assign to the
+    #'   global environment for the task. See the `reset_globals` argument
+    #'   of [crew_controller_local()].
+    #' @param seed Integer of length 1 with the pseudo-random number generator
+    #'   seed to temporarily set for the evaluation of the task.
+    #' @param packages Character vector of packages to load for the task.
+    #' @param library Library path to load the packages. See the `lib.loc`
+    #'   argument of `require()`.
+    #' @param .timeout Optional task timeout passed to the `.timeout`
+    #'   argument of `mirai::mirai()` (after converting to milliseconds).
+    #' @param scale Logical, whether to automatically call `scale()`
+    #'   to auto-scale workers to meet the demand of the task load.
+    #'   By design, auto-scaling might not actually happen
+    #'   if `throttle = TRUE`.
+    #' @param throttle If `scale` is `TRUE`, whether to defer auto-scaling
+    #'   until the next request at least
+    #'   `self$client$seconds_interval` seconds from the original request.
+    #'   The idea is similar to `shiny::throttle()` except that `crew` does not
+    #'   accumulate a backlog of requests. The technique improves robustness
+    #'   and efficiency.
+    #' @param name Optional name of the task.
+    #' @param controller Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    quick_push = function(
+      command,
+      data = list(),
+      globals = list(),
+      seed = 0L,
+      packages = character(0),
+      library = NULL,
+      .timeout = NULL,
+      name = NA_character_
+    ) {
+      task <- mirai::mirai(
+        .expr = expr_crew_eval,
+        name = name,
+        command = command,
+        string = FALSE,
+        data = data,
+        globals = globals,
+        seed = seed,
+        packages = packages,
+        library = library,
+        .timeout = .timeout,
+        .compute = self$client$name
+      )
+      .subset2(.subset2(self, "schedule"), "push")(task = task)
       invisible()
     },
     #' @description Check for done tasks and move the results to

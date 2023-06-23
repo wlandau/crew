@@ -72,7 +72,7 @@ throttled auto-scaling unlocks.}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
-\item \href{#method-crew_class_controller-quick_push}{\code{crew_class_controller$quick_push()}}
+\item \href{#method-crew_class_controller-shove}{\code{crew_class_controller$shove()}}
 \item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
 \item \href{#method-crew_class_controller-wait}{\code{crew_class_controller$wait()}}
@@ -410,12 +410,12 @@ compatible with the analogous method of controller groups.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-quick_push"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-quick_push}{}}}
-\subsection{Method \code{quick_push()}}{
+\if{html}{\out{<a id="method-crew_class_controller-shove"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-shove}{}}}
+\subsection{Method \code{shove()}}{
 Quickly push a task to the head of the task list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$quick_push(
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$shove(
   command,
   data = list(),
   globals = list(),
@@ -470,9 +470,10 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-For developers only. \code{quick_push()} skips some of the user
+Exists to support extensions to \code{crew} for \code{purrr}-like
+functional programming. For developers only and not supported for
+controller groups. \code{shove()} skips some of the user
 options for \code{push()} to aggressively optimize performance.
-Not supported for controller groups.
 }
 
 \subsection{Returns}{

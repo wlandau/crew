@@ -314,9 +314,10 @@ crew_class_controller <- R6::R6Class(
       invisible()
     },
     #' @description Quickly push a task to the head of the task list.
-    #' @details For developers only. `quick_push()` skips some of the user
+    #' @details Exists to support extensions to `crew` for `purrr`-like
+    #'   functional programming. For developers only and not supported for
+    #'   controller groups. `shove()` skips some of the user
     #'   options for `push()` to aggressively optimize performance.
-    #'   Not supported for controller groups.
     #' @return `NULL` (invisibly).
     #' @param command Language object with R code to run.
     #' @param data Named list of local data objects in the
@@ -344,7 +345,7 @@ crew_class_controller <- R6::R6Class(
     #' @param name Optional name of the task.
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    quick_push = function(
+    shove = function(
       command,
       data = list(),
       globals = list(),

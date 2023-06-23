@@ -48,6 +48,7 @@ throttled task collection unlocks.}
 \item \href{#method-crew_class_schedule-push}{\code{crew_class_schedule$push()}}
 \item \href{#method-crew_class_schedule-throttle}{\code{crew_class_schedule$throttle()}}
 \item \href{#method-crew_class_schedule-collect}{\code{crew_class_schedule$collect()}}
+\item \href{#method-crew_class_schedule-list}{\code{crew_class_schedule$list()}}
 \item \href{#method-crew_class_schedule-pop}{\code{crew_class_schedule$pop()}}
 \item \href{#method-crew_class_schedule-empty}{\code{crew_class_schedule$empty()}}
 \item \href{#method-crew_class_schedule-nonempty}{\code{crew_class_schedule$nonempty()}}
@@ -192,6 +193,25 @@ head of the \code{collected} linked list.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_schedule-list"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_schedule-list}{}}}
+\subsection{Method \code{list()}}{
+List collected tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_schedule$list()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Exists to support a \code{purrr}-like extension to \code{crew} for
+functional programming. For developers only. Not supported
+for controller groups.
+}
+
+\subsection{Returns}{
+A list of monad objects from individual tasks.
 }
 }
 \if{html}{\out{<hr>}}

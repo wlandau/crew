@@ -168,6 +168,14 @@ crew_class_schedule <- R6::R6Class(
       rm(list = which_resolved, envir = pushed)
       invisible()
     },
+    #' @description List collected tasks.
+    #' @details Exists to support a `purrr`-like extension to `crew` for
+    #'   functional programming. For developers only. Not supported
+    #'   for controller groups.
+    #' @return A list of monad objects from individual tasks.
+    list = function() {
+      map(self$collected, ~.subset2(.subset2(.x, "task"), "data"))
+    },
     #' @description Pop a task from the `collected` linked list.
     #' @return A task object if available, `NULL` otherwise.
     pop = function() {

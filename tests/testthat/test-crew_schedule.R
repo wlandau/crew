@@ -39,6 +39,14 @@ test_that("schedule push", {
   expect_true(is_crew_null(x$pushed[["1"]]))
 })
 
+test_that("schedule list", {
+  x <- crew_schedule()
+  x$start()
+  x$push(task = list(data = "contents"))
+  x$collect(throttle = FALSE)
+  expect_equal(x$list()[[1L]], "contents")
+})
+
 test_that("schedule throttle", {
   x <- crew_schedule(seconds_interval = 9999)
   x$start()

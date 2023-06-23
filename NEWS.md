@@ -1,4 +1,4 @@
-# crew 0.2.1.9012 (development)
+# crew 0.2.1.9013 (development)
 
 * Track warnings properly (#81, @brendanf).
 * Optimize heavily (#81, #83, @shikokuchuo, @brendanf).
@@ -13,6 +13,7 @@
 * Default to the loopback address for the local controller.
 * Use already cumulative `assigned` and `complete` stats from `mirai` 0.8.7.9029.
 * Reorganize `pkgdown` reference and `Rd` families to clarify which parts are for end-users and which parts are for launcher plugin developers.
+* Add `controller$shove()` and `schedule$list()` to support fast extensions for functional programming.
 
 # crew 0.2.1
 

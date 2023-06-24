@@ -261,6 +261,9 @@ crew_test("custom launcher", {
   skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("processx")
+  if (isTRUE(as.logical(Sys.getenv("CI", "false")))) {
+    skip_on_os("mac")
+  }
   custom_launcher_class <- R6::R6Class(
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,

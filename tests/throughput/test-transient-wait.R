@@ -26,6 +26,7 @@ testthat::expect_equal(x$schedule$summary()$collected, 0L)
 x$wait(mode = "one")
 
 # Pop just one of the tasks
+x$collect()
 testthat::expect_equal(x$schedule$summary()$pushed, 96L)
 testthat::expect_equal(x$schedule$summary()$collected, 4L)
 x$pop(scale = FALSE) # monad data frame

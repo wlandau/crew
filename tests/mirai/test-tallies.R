@@ -54,23 +54,13 @@ rotate <- function(workers) {
 # next launch, update the cumulative "assigned" and "complete" which {crew}
 # uses to detect backlogged workers (#79). A backlogged worker is a {mirai}
 # server with more assigned than complete tasks. Detecting the backlog
-# is important becuase if a worker is disconnected and backlogged,
+# is important because if a worker is disconnected and backlogged,
 # then {crew} will need to relaunch it so the backlogged tasks can run.
 tally <- function(workers) {
   info <- mirai::daemons()$daemons
-  # New stats from daemons()
-  new_assigned <- as.integer(info[, "assigned"])
-  new_complete <- as.integer(info[, "complete"])
-  # Current cumulative stats.
-  old_assigned <- workers$workers$assigned
-  old_complete <- workers$workers$complete
-  # Not all worker stats can be safely updated. We need to make sure
-  # the worker is completely done and the websocket is rotated.
-  # Otherwise, the counts could change between now and the next official
-  # launch of the worker. It is tricky to avoid this race condition.
   index <- !(workers$workers$launched) # Workers safe to update.
-  workers$workers$assigned[index] <- old_assigned[index] + new_assigned[index]
-  workers$workers$complete[index] <- old_complete[index] + new_complete[index]
+  workers$workers$assigned[index] <- as.integer(info[index, "assigned"])
+  workers$workers$complete[index] <- as.integer(info[index, "complete"])
   invisible()
 }
 

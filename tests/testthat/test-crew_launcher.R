@@ -133,7 +133,6 @@ crew_test("launcher call", {
 })
 
 crew_test("launcher start()", {
-  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   launcher <- crew_class_launcher$new()
@@ -257,7 +256,6 @@ crew_test("launcher summary", {
 })
 
 crew_test("custom launcher", {
-  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("processx")

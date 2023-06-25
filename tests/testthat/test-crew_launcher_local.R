@@ -1,5 +1,4 @@
 crew_test("crew_launcher_local() can run a task on a worker", {
-  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   client <- crew_client(
@@ -71,7 +70,6 @@ crew_test("crew_launcher_local() can run a task on a worker", {
 })
 
 crew_test("crew_launcher_local() can run a task and time out a worker", {
-  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   client <- crew_client(
@@ -133,7 +131,6 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
 })
 
 crew_test("crew_launcher_local() can run a task and end a worker", {
-  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   client <- crew_client(

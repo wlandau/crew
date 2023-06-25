@@ -1,5 +1,4 @@
 crew_test("crew_worker() can run mirai tasks and assigns env vars", {
-  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   envvars <- c("CREW_LAUNCHER", "CREW_WORKER", "CREW_INSTANCE")

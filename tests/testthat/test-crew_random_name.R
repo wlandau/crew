@@ -1,5 +1,4 @@
 crew_test("crew_random_name()", {
-  skip_if_low_dep_versions()
   out <- crew_random_name()
   expect_true(is.character(out))
   expect_false(anyNA(out))

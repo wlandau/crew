@@ -14,6 +14,7 @@
 * Use already cumulative `assigned` and `complete` stats from `mirai` 0.8.7.9029.
 * Reorganize `pkgdown` reference and `Rd` families to clarify which parts are for end-users and which parts are for launcher plugin developers.
 * Add `controller$shove()` and `schedule$list()` to support fast extensions for functional programming.
+* Depend on `mirai` 0.9.0 or greater.
 
 # crew 0.2.1
 

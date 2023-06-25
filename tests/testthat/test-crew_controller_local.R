@@ -1,5 +1,4 @@
 crew_test("crew_controller_local()", {
-  skip_if_low_dep_versions()
   skip_on_os("windows")
   x <- crew_controller_local(
     workers = 1L,
@@ -123,7 +122,6 @@ crew_test("crew_controller_local()", {
 })
 
 crew_test("crew_controller_local() substitute = FALSE and quick push", {
-  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
@@ -189,7 +187,6 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
 })
 
 crew_test("crew_controller_local() warnings and errors", {
-  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
@@ -234,7 +231,6 @@ crew_test("crew_controller_local() warnings and errors", {
 })
 
 crew_test("crew_controller_local() can terminate a lost worker", {
-  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   if (isTRUE(as.logical(Sys.getenv("CI", "false")))) {
@@ -277,7 +273,6 @@ crew_test("crew_controller_local() can terminate a lost worker", {
 })
 
 crew_test("crew_controller_local() launch method", {
-  skip_if_low_dep_versions()
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
@@ -308,7 +303,6 @@ crew_test("crew_controller_local() launch method", {
 })
 
 crew_test("task collection and results stack work", {
-  skip_if_low_dep_versions()
   skip_on_cran()
   x <- crew_controller_local(seconds_idle = 120)
   x$start()

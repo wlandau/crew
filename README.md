@@ -23,16 +23,6 @@ packages [`future`](https://future.futureverse.org/),
 
 # Installation
 
-It is recommended to use `mirai` version `0.8.7.9016` or higher. If the
-latest CRAN release is older, then you can install the development
-version from R-universe.
-
-``` r
-install.packages("mirai", repos = "https://shikokuchuo.r-universe.dev")
-```
-
-Install `crew` itself using one of the methods below.
-
 | Type        | Source     | Command                                                              |
 |-------------|------------|----------------------------------------------------------------------|
 | Release     | CRAN       | `install.packages("crew")`                                           |

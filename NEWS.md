@@ -1,3 +1,7 @@
+# crew 0.3.0.9000 (development)
+
+* Remove temporary controller summary workaround that ensured CRAN compatibility with `targets` 1.1.3.
+
 # crew 0.3.0
 
 * Track warnings properly (#81, @brendanf).

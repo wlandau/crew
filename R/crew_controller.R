@@ -541,6 +541,7 @@ crew_class_controller <- R6::R6Class(
       if (!is.null(out)) {
         out <- tibble::new_tibble(out)
         # TODO: remove the CRAN testing workaround below:
+        # nocov start
         if (file.exists("_targets")) {
           out$popped_tasks <- out$tasks
           out$popped_seconds <- out$seconds
@@ -549,6 +550,7 @@ crew_class_controller <- R6::R6Class(
           out$worker_launches <- rep(NA_integer_, nrow(out))
           out$worker_index <- seq_len(nrow(out))
         }
+        # nocov end
       }
       out
     },

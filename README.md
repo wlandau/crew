@@ -21,7 +21,7 @@ packages [`future`](https://future.futureverse.org/),
 [`clustermq`](https://mschubert.github.io/clustermq/), and
 [`batchtools`](https://mllg.github.io/batchtools/).
 
-# 📣📣📣 Request to the community 📣📣📣
+# 📣📣📣 Request for community contributions 📣📣📣
 
 **The [launcher plugin
 framework](https://wlandau.github.io/crew/articles/plugins.html) aims to

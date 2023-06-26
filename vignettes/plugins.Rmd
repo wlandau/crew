@@ -18,9 +18,13 @@ knitr::opts_chunk$set(
 
 ## About
 
-`crew` lets you write custom [launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html) for different types of workers that connect over the local network. This flexibility can extend `crew` to platforms like [SLURM](https://slurm.schedmd.com/), [AWS Batch](https://aws.amazon.com/batch/), and [Kubernetes](https://kubernetes.io/).
+`crew` lets users write custom [launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html) for different types of workers that connect over the local network. The [`crew.cluster`](https://wlandau.github.io/crew.cluster/) package already has plugins for traditional high-performance computing schedulers ([SLURM](https://slurm.schedmd.com/), SGE, LSF, and PBS/TORQUE).
 
-## Vision
+## 📣📣📣 Request to the community 📣📣📣
+
+<span style="color: blue">**The launcher plugin framework aims to extend `crew` to modern platforms and services like [AWS Batch](https://aws.amazon.com/batch/), Google Cloud Run, [Kubernetes](https://kubernetes.io/), and beyond. At the time of writing, plugins for cloud computing do not yet exist. So if you know how to use these services and connect them with R, please consider contributing a package with plugins of your own. The maintainer of `crew` would love to work with you!**</span>
+
+## How it works
 
 These [launcher](https://wlandau.github.io/crew/reference/crew_class_launcher.html) plugins need not become part of the `crew` package itself. You can write your plugin in a simple R script, or you write it in a custom R package that [depends on](https://r-pkgs.org/dependencies-in-practice.html) `crew`. Published packages with [launcher](https://wlandau.github.io/crew/reference/crew_class_launcher.html) plugins are powerful extensions that enhance `crew` for the entire open-source community. See [R Packages](https://r-pkgs.org/) by [Hadley Wickham](https://hadley.nz/) and [Jenny Bryan](https://jennybryan.org/) for how to write an R package.
 
@@ -28,7 +32,7 @@ These [launcher](https://wlandau.github.io/crew/reference/crew_class_launcher.ht
 
 This vignette demonstrates how to write a `crew` launcher plugin. It assumes prior familiarity with [`R6` classes](https://r6.r-lib.org/articles/Introduction.html) and the computing platform of your plugin.
 
-## How it works
+## Implementation
 
 To create your own launcher plugin, write an [`R6`](https://r6.r-lib.org/articles/Introduction.html) subclass of [`crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.html) with a [`launch_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-launch-worker-) method analogous the one in the [local process launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html). `launch_worker()` must accept the same arguments as the [local process `launch_worker()` method](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-launch-worker-), generate a call to [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html), and then submit a new job or process to run that call.
 

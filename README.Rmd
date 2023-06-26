@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 In computationally demanding analysis projects, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services. The [NNG](https://nng.nanomsg.org)-powered [`mirai`](https://github.com/shikokuchuo/mirai) R package is a sleek and sophisticated scheduler that efficiently processes these intense workloads. The `crew` package extends [`mirai`](https://github.com/shikokuchuo/mirai) with a unifying interface for third-party worker launchers. Inspiration also comes from packages [`future`](https://future.futureverse.org/), [`rrq`](https://mrc-ide.github.io/rrq/), [`clustermq`](https://mschubert.github.io/clustermq/), and [`batchtools`](https://mllg.github.io/batchtools/).
 
-# 📣📣📣 Request for community contributions 📣📣📣
+# 📣 Request for community contributions 📣
 
 **The [launcher plugin framework](https://wlandau.github.io/crew/articles/plugins.html) aims to extend `crew` to modern platforms and services like [AWS Batch](https://aws.amazon.com/batch/), [Google Cloud Run](https://cloud.google.com/run/), [Kubernetes](https://kubernetes.io/), and beyond. At the time of writing, plugins for cloud computing do not yet exist. So if you have access to these services and know how to use them, please consider contributing a package with plugins of your own. The tutorial at <https://wlandau.github.io/crew/articles/plugins.html> explains how. The maintainer of `crew` would love to work with you!**
 

@@ -540,6 +540,15 @@ crew_class_controller <- R6::R6Class(
       out <- .subset2(self, "log")
       if (!is.null(out)) {
         out <- tibble::new_tibble(out)
+        # TODO: remove the CRAN testing workaround below:
+        if (file.exists("_targets")) {
+          out$popped_tasks <- out$tasks
+          out$popped_seconds <- out$seconds
+          out$popped_warnings <- out$warnings
+          out$popped_errors <- out$errors
+          out$worker_launches <- rep(NA_integer_, nrow(out))
+          out$worker_index <- seq_len(nrow(out))
+        }
       }
       out
     },

@@ -23,7 +23,7 @@ packages [`future`](https://future.futureverse.org/),
 
 # 📣📣📣 Request to the community 📣📣📣
 
-<span style="color: blue">**The [launcher plugin
+**The [launcher plugin
 framework](https://wlandau.github.io/crew/articles/plugins.html) aims to
 extend `crew` to modern platforms and services like [AWS
 Batch](https://aws.amazon.com/batch/), [Google Cloud
@@ -33,7 +33,7 @@ writing, plugins for cloud computing do not yet exist. So if you know
 how to use these services and connect them with R, please consider
 contributing a package with plugins of your own. The tutorial at
 <https://wlandau.github.io/crew/articles/plugins.html> explains how. The
-maintainer of `crew` would love to work with you!**</span>
+maintainer of `crew` would love to work with you!**
 
 # Installation
 

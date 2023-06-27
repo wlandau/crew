@@ -1,12 +1,6 @@
 
 # crew: a distributed worker launcher framework <img src='man/figures/logo-readme.png' align="right" height="139"/>
 
-[![CRAN](https://www.r-pkg.org/badges/version/crew)](https://CRAN.R-project.org/package=crew)
-[![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
-[![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
-[![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
-
 In computationally demanding analysis projects, statisticians and data
 scientists asynchronously deploy long-running tasks to distributed
 systems, ranging from traditional clusters to cloud services. The
@@ -136,6 +130,54 @@ task$result[[1]] # return value of the task
 #> [1] 69631
 ```
 
+# Functional programming
+
+The
+[`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map)
+method of the controller supports functional programming similar to
+[`purrr::map()`](https://purrr.tidyverse.org/reference/map.html) and
+[`clustermq::Q()`](https://mschubert.github.io/clustermq/reference/Q.html).
+The arguments of
+[`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map)
+are mostly the same those of
+[`push()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-push),
+but there is a new `iterate` argument to define the inputs of individual
+tasks.
+[`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map)
+submits a whole collection of tasks, auto-scales the workers, waits for
+all the tasks to finish, and returns the results in a `tibble`.
+
+Below,
+[`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map)
+submits one task to compute `1 + 2 + 5 + 6` and another task to compute
+`3 + 4 + 5 + 6`. The lists and vectors inside `iterate` vary from task
+to task, while the elements of `data` and `globals` stay constant across
+tasks.
+
+``` r
+results <- controller$map(
+  command = a + b + c + d,
+  iterate = list(
+    a = c(1, 3),
+    b = c(2, 4)
+  ),
+  data = list(c = 5),
+  globals = list(d = 6)
+)
+
+results
+#> # A tibble: 2 × 11
+#>   name  command result    seconds      seed error trace warnings
+#>   <chr> <chr>   <list>      <dbl>     <int> <chr> <chr> <chr>   
+#> 1 1     NA      <dbl [1]>       0    1.82e9 NA    NA    NA      
+#> 2 2     NA      <dbl [1]>       0    1.82e9 NA    NA    NA      
+#> # ℹ 3 more variables: launcher <chr>, worker <int>,
+#> #   instance <chr>
+
+as.numeric(results$result)
+#> [1] 14 18
+```
+
 # Summaries
 
 The controller summary shows how many tasks each worker ran, how many
@@ -147,8 +189,8 @@ controller$summary()
 #> # A tibble: 2 × 6
 #>   controller worker tasks seconds errors warnings
 #>   <chr>       <int> <int>   <dbl>  <int>    <int>
-#> 1 example         1     1   0.001      0        0
-#> 2 example         2     0       0      0        0
+#> 1 example         1     2   0.001      0        0
+#> 2 example         2     1   0          0        0
 ```
 
 The schedule summary counts “pushed” tasks which may not be complete and
@@ -171,8 +213,8 @@ controller$launcher$summary()
 #> # A tibble: 2 × 4
 #>   worker launches assigned complete
 #>    <int>    <int>    <int>    <int>
-#> 1      1        1        0        0
-#> 2      2        0        0        0
+#> 1      1        2        1        1
+#> 2      2        1        0        0
 ```
 
 Finally, the client summary shows up-to-date worker status from
@@ -183,8 +225,8 @@ controller$client$summary()
 #> # A tibble: 2 × 6
 #>   worker online instances assigned complete socket                          
 #>    <int> <lgl>      <int>    <int>    <int> <chr>                           
-#> 1      1 FALSE          1        1        1 ws://10.0.0.32:58685/1/15e07250…
-#> 2      2 FALSE          0        0        0 ws://10.0.0.32:58685/2/cb45b3d4…
+#> 1      1 FALSE          1        2        2 ws://10.0.0.32:58685/1/15e07250…
+#> 2      2 FALSE          1        1        1 ws://10.0.0.32:58685/2/cb45b3d4…
 ```
 
 # Termination

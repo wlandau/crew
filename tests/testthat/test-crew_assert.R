@@ -9,6 +9,10 @@ crew_test("crew_error()", {
   expect_error(crew_error("x"), class = "crew_error")
 })
 
+crew_test("crew_warning()", {
+  expect_warning(crew_warning("x"), class = "crew_warning")
+})
+
 crew_test("crew_expire()", {
   expect_error(crew_expire("x"), class = "crew_expire")
 })

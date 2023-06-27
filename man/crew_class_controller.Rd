@@ -428,7 +428,8 @@ Quickly push a task to the head of the task list.
   packages = character(0),
   library = NULL,
   .timeout = NULL,
-  name = NA_character_
+  name = NA_character_,
+  string = NA_character_
 )}\if{html}{\out{</div>}}
 }
 
@@ -461,6 +462,8 @@ argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
 \item{\code{name}}{Optional name of the task.}
 
+\item{\code{string}}{Optional character string with the deparsed command.}
+
 \item{\code{scale}}{Logical, whether to automatically call \code{scale()}
 to auto-scale workers to meet the demand of the task load.
 By design, auto-scaling might not actually happen
@@ -472,9 +475,6 @@ until the next request at least
 The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
 and efficiency.}
-
-\item{\code{controller}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }
@@ -507,6 +507,7 @@ Apply a single command to multiple inputs.
   seconds_interval = 0.01,
   seconds_timeout = NULL,
   names = NULL,
+  save_command = FALSE,
   error = "stop",
   controller = NULL
 )}\if{html}{\out{</div>}}
@@ -570,6 +571,9 @@ argument of \code{mirai::mirai()} (after converting to milliseconds).}
 \item{\code{names}}{Optional character of length 1, name of the element of
 \code{iterate} with names for the tasks. If \code{names} is supplied,
 then \code{iterate[[names]]} must be a character vector.}
+
+\item{\code{save_command}}{Logical of length 1, whether to store
+a text string version of the R command in the output.}
 
 \item{\code{error}}{Character vector of length 1, choice of action if
 a task has an error. Possible values:

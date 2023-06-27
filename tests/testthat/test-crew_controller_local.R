@@ -331,3 +331,123 @@ crew_test("task collection and results stack work", {
   }
   x$terminate()
 })
+
+test_that("map() works", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  f <- function(x, y) x + y
+  out <- x$map(
+    command = f(x, y) + a + b,
+    iterate = list(x = c(1L, 2L), y = c(3L, 4L)),
+    data = list(a = 5L),
+    globals = list(f = f, b = 6L)
+  )
+  x$terminate()
+  expect_true(tibble::is_tibble(out))
+  expect_equal(nrow(out), 2L)
+  expect_equal(colnames(out), monad_names)
+  expect_equal(out$name, c("1", "2"))
+  expect_equal(out$command, rep(NA_character_, 2L))
+  expect_equal(out$result, list(15L, 17L))
+  expect_true(all(out$seconds >= 0))
+  expect_true(is.integer(out$seed))
+  expect_true(anyDuplicated(out$seed) < 1L)
+  expect_equal(out$error, rep(NA_character_, 2L))
+  expect_equal(out$trace, rep(NA_character_, 2L))
+  expect_equal(out$warnings, rep(NA_character_, 2L))
+  expect_equal(out$worker, rep(1L, 2L))
+  expect_equal(out$launcher, rep(x$launcher$name, 2L))
+  expect_false(anyNA(out$instance))
+  sum <- x$summary()
+  expect_equal(sum$worker, 1L)
+  expect_equal(sum$tasks, 2L)
+  expect_equal(sum$errors, 0L)
+  expect_equal(sum$warnings, 0L)
+})
+
+test_that("map() works with errors and names and command strings", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  f <- function(x, y) {
+    warning("message")
+    x + y
+  }
+  expect_silent(
+    x$map(
+      command = f(x, y) + a + b,
+      iterate = list(x = c(1L, 2L), y = c(3L, 4L), id = c("z", "w")),
+      data = list(a = 5L),
+      globals = list(f = f),
+      save_command = TRUE,
+      names = "id",
+      error = "silent"
+    )
+  )
+  expect_error(
+    x$map(
+      command = f(x, y) + a + b,
+      iterate = list(x = c(1L, 2L), y = c(3L, 4L), id = c("z", "w")),
+      data = list(a = 5L),
+      globals = list(f = f),
+      save_command = TRUE,
+      names = "id",
+      error = "stop"
+    ),
+    class = "crew_error"
+  )
+  expect_warning(
+    out <- x$map(
+      command = f(x, y) + a + b,
+      iterate = list(x = c(1L, 2L), y = c(3L, 4L), id = c("z", "w")),
+      data = list(a = 5L),
+      globals = list(f = f),
+      save_command = TRUE,
+      names = "id",
+      error = "warn"
+    ),
+    class = "crew_warning"
+  )
+  x$terminate()
+  expect_true(tibble::is_tibble(out))
+  expect_equal(nrow(out), 2L)
+  expect_equal(colnames(out), monad_names)
+  expect_equal(out$name, c("z", "w"))
+  expect_equal(out$command, rep("f(x, y) + a + b", 2L))
+  expect_equal(out$result, list(NA, NA))
+  expect_true(all(out$seconds >= 0))
+  expect_true(is.integer(out$seed))
+  expect_true(anyDuplicated(out$seed) < 1L)
+  expect_false(anyNA(out$error))
+  expect_false(anyNA(out$trace))
+  expect_false(anyNA(out$warnings))
+  expect_equal(out$worker, rep(1L, 2L))
+  expect_equal(out$launcher, rep(x$launcher$name, 2L))
+  expect_false(anyNA(out$instance))
+  sum <- x$summary()
+  expect_equal(sum$worker, 1L)
+  expect_equal(sum$tasks, 6L)
+  expect_equal(sum$errors, 6L)
+  expect_equal(sum$warnings, 6L)
+})

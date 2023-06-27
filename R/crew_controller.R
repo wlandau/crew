@@ -351,8 +351,7 @@ crew_class_controller <- R6::R6Class(
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
     #' @param name Optional name of the task.
-    #' @param controller Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
+    #' @param string Optional character string with the deparsed command.
     shove = function(
       command,
       data = list(),
@@ -361,13 +360,14 @@ crew_class_controller <- R6::R6Class(
       packages = character(0),
       library = NULL,
       .timeout = NULL,
-      name = NA_character_
+      name = NA_character_,
+      string = NA_character_
     ) {
       task <- mirai::mirai(
         .expr = expr_crew_eval,
         name = name,
         command = command,
-        string = FALSE,
+        string = string,
         data = data,
         globals = globals,
         seed = seed,
@@ -430,6 +430,8 @@ crew_class_controller <- R6::R6Class(
     #' @param names Optional character of length 1, name of the element of
     #'   `iterate` with names for the tasks. If `names` is supplied,
     #'   then `iterate[[names]]` must be a character vector.
+    #' @param save_command Logical of length 1, whether to store
+    #'   a text string version of the R command in the output.
     #' @param error Character vector of length 1, choice of action if
     #'   a task has an error. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
@@ -451,6 +453,7 @@ crew_class_controller <- R6::R6Class(
       seconds_interval = 0.01,
       seconds_timeout = NULL,
       names = NULL,
+      save_command = FALSE,
       error = "stop",
       controller = NULL
     ) {
@@ -458,6 +461,7 @@ crew_class_controller <- R6::R6Class(
       if (substitute) {
         command <- substitute(command)
       }
+      crew_assert(save_command, isTRUE(.) || isFALSE(.))
       crew_assert(
         is.language(command),
         message = "command must be a language object"
@@ -483,13 +487,13 @@ crew_class_controller <- R6::R6Class(
       crew_assert(
         data,
         is.list(.),
-        rlang::is_named(.),
+        rlang::is_named(.) || length(.) < 1L,
         message = "the \"data\" argument of map() must be a named list"
       )
       crew_assert(
         globals,
         is.list(.),
-        rlang::is_named(.),
+        rlang::is_named(.) || length(.) < 1L,
         message = "the \"globals\" argument of map() must be a named list"
       )
       crew_assert(
@@ -546,9 +550,13 @@ crew_class_controller <- R6::R6Class(
       )
       crew_assert(
         self$empty(),
-        message = "controller must be empty before calling map()"
+        message = paste(
+          "controller must be empty before calling map().",
+          "Either start a new controller or collect any",
+          "finished tasks and ensure no tasks are still running."
+        )
       )
-      string <- deparse_safe(command)
+      string <- if_any(save_command, deparse_safe(command), NA_character_)
       .timeout <- if_any(
         is.null(seconds_timeout),
         NULL,
@@ -570,9 +578,10 @@ crew_class_controller <- R6::R6Class(
         }
         .subset2(self, "shove")(
           command = command,
+          string = string,
           data = data,
           globals = globals,
-          seed = seed - (sign(seed) * index),
+          seed = seed - (as.integer(sign(seed)) * index),
           packages = packages,
           library = library,
           .timeout = .timeout,
@@ -599,7 +608,7 @@ crew_class_controller <- R6::R6Class(
         INDEX = worker,
         FUN = sum
       )
-      error <- tapply(
+      errors <- tapply(
         X = as.integer(!is.na(.subset2(out, "error"))),
         INDEX = worker,
         FUN = sum
@@ -613,8 +622,21 @@ crew_class_controller <- R6::R6Class(
       log <- .subset2(self, "log")
       self$log$tasks[index] <- .subset2(log, "tasks")[index] + tasks
       self$log$seconds[index] <- .subset2(log, "seconds")[index] + seconds
-      self$log$errors[index] <- .subset2(log, "errors")[index] + error
+      self$log$errors[index] <- .subset2(log, "errors")[index] + errors
       self$log$warnings[index] <- .subset2(log, "warnings")[index] + warnings
+      error_messages <- .subset2(out, "error")
+      if (!all(is.na(error_messages)) && !identical(error, "silent")) {
+        message <- sprintf(
+          "%s tasks encountered errors. First error message: \"%s\"",
+          sum(!is.na(error_messages)),
+          error_messages[min(which(!is.na(error_messages)))]
+        )
+        if_any(
+          identical(error, "stop"),
+          crew_error(message),
+          crew_warning(message)
+        )
+      }
       out
     },
     #' @description Check for done tasks and move the results to

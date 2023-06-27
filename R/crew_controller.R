@@ -575,6 +575,14 @@ crew_class_controller <- R6::R6Class(
           name = .subset(names, index)
         )
       }
+      crew_retry(
+        fun = ~{
+          self$scale(throttle = FALSE)
+          self$schedule$summary()$pushed < 1L
+        },
+        seconds_interval = seconds_interval,
+        seconds_timeout = Inf
+      )
       
       browser()
       

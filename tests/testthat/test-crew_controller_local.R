@@ -451,3 +451,43 @@ test_that("map() works with errors and names and command strings", {
   expect_equal(sum$errors, 6L)
   expect_equal(sum$warnings, 6L)
 })
+
+test_that("map() tasks attributed to correct workers", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 4L,
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  f <- function(x, y) {
+    warning("message")
+    Sys.sleep(0.25)
+    x + y
+  }
+  x$launcher$launch(index = 3L)
+  out <- x$map(
+    command = f(x, y) + a + b,
+    iterate = list(x = 1L, y = 3L, id = "z"),
+    data = list(a = 5L),
+    globals = list(f = f),
+    save_command = TRUE,
+    names = "id",
+    error = "silent"
+  )
+  sum <- x$summary()
+  expect_equal(sum$worker, seq_len(4L))
+  expect_equal(sum$tasks, c(0L, 0L, 1L, 0L))
+  expect_equal(
+    sum$seconds > sqrt(.Machine$double.eps),
+    c(FALSE, FALSE, TRUE, FALSE)
+  )
+  expect_equal(sum$errors, c(0L, 0L, 1L, 0L))
+  expect_equal(sum$warnings, c(0L, 0L, 1L, 0L))
+})

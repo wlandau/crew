@@ -5,7 +5,7 @@ system.time(
   out <- controller$map(
     command = {
       if (x <= 1000L) {
-        stop(x) 
+        stop(x)
       } else if (x <= 4000L) {
         warning(x)
       }

@@ -1,6 +1,8 @@
 # crew 0.3.0.9000 (development)
 
 * Remove temporary controller summary workaround that ensured CRAN compatibility with `targets` 1.1.3.
+* Add a `map()` method to the controller class for functional programming (#93).
+* Fix bug in `scale()` which launched too many workers when `active - demand` was less than 0.
 
 # crew 0.3.0
 

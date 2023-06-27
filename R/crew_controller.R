@@ -230,7 +230,11 @@ crew_class_controller <- R6::R6Class(
     #' @param data Named list of local data objects in the
     #'   evaluation environment.
     #' @param globals Named list of objects to temporarily assign to the
-    #'   global environment for the task. See the `reset_globals` argument
+    #'   global environment for the task.
+    #'   This list should
+    #'   include any functions you previously defined in the global
+    #'   environment which are required to run tasks.
+    #'   See the `reset_globals` argument
     #'   of [crew_controller_local()].
     #' @param substitute Logical of length 1, whether to call
     #'   `base::substitute()` on the supplied value of the
@@ -243,7 +247,7 @@ crew_class_controller <- R6::R6Class(
     #'   whereas `substitute = FALSE` is meant for automated R programs
     #'   that invoke `crew` controllers.
     #' @param seed Integer of length 1 with the pseudo-random number generator
-    #'   seed to temporarily set for the evaluation of the task.
+    #'   seed to set for the evaluation of the task.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -323,10 +327,14 @@ crew_class_controller <- R6::R6Class(
     #' @param data Named list of local data objects in the
     #'   evaluation environment.
     #' @param globals Named list of objects to temporarily assign to the
-    #'   global environment for the task. See the `reset_globals` argument
+    #'   global environment for the task.
+    #'   This list should
+    #'   include any functions you previously defined in the global
+    #'   environment which are required to run tasks.
+    #'   See the `reset_globals` argument
     #'   of [crew_controller_local()].
     #' @param seed Integer of length 1 with the pseudo-random number generator
-    #'   seed to temporarily set for the evaluation of the task.
+    #'   seed to set for the evaluation of the task.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -343,8 +351,7 @@ crew_class_controller <- R6::R6Class(
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
     #' @param name Optional name of the task.
-    #' @param controller Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
+    #' @param string Optional character string with the deparsed command.
     shove = function(
       command,
       data = list(),
@@ -353,13 +360,14 @@ crew_class_controller <- R6::R6Class(
       packages = character(0),
       library = NULL,
       .timeout = NULL,
-      name = NA_character_
+      name = NA_character_,
+      string = NA_character_
     ) {
       task <- mirai::mirai(
         .expr = expr_crew_eval,
         name = name,
         command = command,
-        string = FALSE,
+        string = string,
         data = data,
         globals = globals,
         seed = seed,
@@ -370,6 +378,263 @@ crew_class_controller <- R6::R6Class(
       )
       .subset2(.subset2(self, "schedule"), "push")(task = task)
       invisible()
+    },
+    #' @description Apply a single command to multiple inputs.
+    #' @details The idea comes from functional programming: for example,
+    #'   the `map()` function from the `purrr` package.
+    #'   The controller must be started and empty before calling `map()`.
+    #' @return A `tibble` of results and metadata, like the output of `pop()`
+    #'   but with multiple rows aggregated together (one row per task).
+    #' @param command Language object with R code to run.
+    #' @param iterate Named list of vectors or lists to iterate over.
+    #'   For example, to run function calls
+    #'   `f(x = 1, y = "a")` and `f(x = 2, y = "b")`,
+    #'   set `command` to `f(x, y)`, and set `iterate` to
+    #'   `list(x = c(1, 2), y = c("a", "b"))`. The individual
+    #'   function calls are evaluated as
+    #'   `f(x = iterate$x[[1]], y = iterate$y[[1]])` and
+    #'   `f(x = iterate$x[[2]], y = iterate$y[[2]])`.
+    #'   All the elements of `iterate` must have the same length.
+    #'   If there are any name conflicts between `iterate` and `data`,
+    #'   `iterate` takes precedence.
+    #' @param data Named list of constant local data objects in the
+    #'   evaluation environment. Objects in this list are treated as single
+    #'   values and are held constant for each iteration of the map.
+    #' @param globals Named list of constant objects to temporarily
+    #'   assign to the global environment for each task. This list should
+    #'   include any functions you previously defined in the global
+    #'   environment which are required to run tasks.
+    #'   See the `reset_globals` argument of [crew_controller_local()].
+    #'   Objects in this list are treated as single
+    #'   values and are held constant for each iteration of the map.
+    #' @param substitute Logical of length 1, whether to call
+    #'   `base::substitute()` on the supplied value of the
+    #'   `command` argument. If `TRUE` (default) then `command` is quoted
+    #'   literally as you write it, e.g.
+    #'   `push(command = your_function_call())`. If `FALSE`, then `crew`
+    #'   assumes `command` is a language object and you are passing its
+    #'   value, e.g. `push(command = quote(your_function_call()))`.
+    #'   `substitute = TRUE` is appropriate for interactive use,
+    #'   whereas `substitute = FALSE` is meant for automated R programs
+    #'   that invoke `crew` controllers.
+    #' @param seed Integer of length 1 with a pseudo-random number generator
+    #'   seed. Task-specific task seeds are non-randomly derived
+    #'   from this seed.
+    #' @param packages Character vector of packages to load for the task.
+    #' @param library Library path to load the packages. See the `lib.loc`
+    #'   argument of `require()`.
+    #' @param seconds_interval Number of seconds to wait between intervals
+    #'   polling the tasks for completion.
+    #' @param seconds_timeout Optional task timeout passed to the `.timeout`
+    #'   argument of `mirai::mirai()` (after converting to milliseconds).
+    #' @param names Optional character of length 1, name of the element of
+    #'   `iterate` with names for the tasks. If `names` is supplied,
+    #'   then `iterate[[names]]` must be a character vector.
+    #' @param save_command Logical of length 1, whether to store
+    #'   a text string version of the R command in the output.
+    #' @param error Character vector of length 1, choice of action if
+    #'   a task has an error. Possible values:
+    #'   * `"stop"`: throw an error in the main R session instead of returning
+    #'     a value.
+    #'   * `"warn"`: throw a warning. This allows the return value with
+    #'     all the error messages and tracebacks to be generated.
+    #'   * `"silent"`: do nothing special.
+    #' @param controller Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    map = function(
+      command,
+      iterate,
+      data = list(),
+      globals = list(),
+      substitute = TRUE,
+      seed = as.integer(nanonext::random() / 2),
+      packages = character(0),
+      library = NULL,
+      seconds_interval = 0.01,
+      seconds_timeout = NULL,
+      names = NULL,
+      save_command = FALSE,
+      error = "stop",
+      controller = NULL
+    ) {
+      crew_assert(substitute, isTRUE(.) || isFALSE(.))
+      if (substitute) {
+        command <- substitute(command)
+      }
+      crew_assert(save_command, isTRUE(.) || isFALSE(.))
+      crew_assert(
+        iterate,
+        is.list(.),
+        rlang::is_named(.),
+        message = "the \"iterate\" argument of map() must be a named list"
+      )
+      crew_assert(
+        length(iterate) > 0L,
+        message = "the \"iterate\" argument must be a nonempty named list"
+      )
+      crew_assert(
+        length(unique(map_dbl(iterate, length))) == 1L,
+        message = "all elements of \"iterate\" must have the same length"
+      )
+      crew_assert(
+        length(iterate[[1L]]) > 0L,
+        message = "all elements of \"iterate\" must be nonempty"
+      )
+      crew_assert(
+        data,
+        is.list(.),
+        rlang::is_named(.) || length(.) < 1L,
+        message = "the \"data\" argument of map() must be a named list"
+      )
+      crew_assert(
+        globals,
+        is.list(.),
+        rlang::is_named(.) || length(.) < 1L,
+        message = "the \"globals\" argument of map() must be a named list"
+      )
+      crew_assert(
+        seed,
+        is.integer(.),
+        length(.) == 1L,
+        !anyNA(seed),
+        message = "seed must be an integer of length 1"
+      )
+      crew_assert(
+        packages,
+        is.character(.),
+        !anyNA(.),
+        message = "packages must be a character vector with no element missing"
+      )
+      crew_assert(
+        library %|||% "local",
+        is.character(.),
+        !anyNA(.),
+        message = "library must be a NULL or a non-missing character vector"
+      )
+      crew_assert(
+        seconds_interval,
+        is.numeric(.),
+        length(.) == 1L,
+        !anyNA(.),
+        . >= 0,
+        message = "seconds_interval must be a nonnegative real number"
+      )
+      crew_assert(
+        seconds_timeout %|||% 0,
+        is.numeric(.),
+        length(.) == 1L,
+        !anyNA(.),
+        . >= 0,
+        message = "seconds_timeout must be NULL or a nonnegative real number"
+      )
+      crew_assert(
+        names %|||% names(iterate)[[1L]],
+        is.character(.),
+        length(.) == 1L,
+        !anyNA(.),
+        nzchar(.),
+        . %in% names(iterate),
+        message = "names argument must be NULL or an element of names(iterate)"
+      )
+      crew_assert(
+        error %in% c("stop", "warn", "silent"),
+        message = "error argument must be \"stop\", \"warn\", or \"silent\""
+      )
+      crew_assert(
+        isTRUE(self$client$started),
+        message = "controller must be started before calling map()"
+      )
+      crew_assert(
+        self$empty(),
+        message = paste(
+          "controller must be empty before calling map().",
+          "Either start a new controller or collect any",
+          "finished tasks and ensure no tasks are still running."
+        )
+      )
+      string <- if_any(save_command, deparse_safe(command), NA_character_)
+      .timeout <- if_any(
+        is.null(seconds_timeout),
+        NULL,
+        seconds_timeout * 1000
+      )
+      names <- if_any(
+        is.null(names),
+        as.character(seq_along(iterate[[1L]])),
+        iterate[[names]]
+      )
+      crew_assert(
+        anyDuplicated(names) < 1L,
+        message = "task names in map() must not have duplicates"
+      )
+      names_iterate <- names(iterate)
+      for (index in seq_along(names)) {
+        for (name in names_iterate) {
+          data[[name]] <- .subset2(.subset2(iterate, name), index)
+        }
+        .subset2(self, "shove")(
+          command = command,
+          string = string,
+          data = data,
+          globals = globals,
+          seed = seed - (as.integer(sign(seed)) * index),
+          packages = packages,
+          library = library,
+          .timeout = .timeout,
+          name = .subset(names, index)
+        )
+      }
+      crew_retry(
+        fun = ~{
+          self$scale(throttle = FALSE)
+          self$schedule$summary()$pushed < 1L
+        },
+        seconds_interval = seconds_interval,
+        seconds_timeout = Inf
+      )
+      results <- self$schedule$list()
+      self$schedule$start()
+      out <- lapply(results, monad_tibble)
+      out <- tibble::new_tibble(data.table::rbindlist(out))
+      out <- out[match(x = names, table = out$name),, drop = FALSE] # nolint
+      out <- out[!is.na(out$name),, drop = FALSE] # nolint
+      worker <- .subset2(out, "worker")
+      tasks <- table(worker)
+      seconds <- tapply(
+        X = .subset2(out, "seconds"),
+        INDEX = worker,
+        FUN = sum
+      )
+      errors <- tapply(
+        X = as.integer(!is.na(.subset2(out, "error"))),
+        INDEX = worker,
+        FUN = sum
+      )
+      warnings <- tapply(
+        X = as.integer(!is.na(.subset2(out, "warnings"))),
+        INDEX = worker,
+        FUN = sum
+      )
+      index <- as.integer(names(tasks))
+      log <- .subset2(self, "log")
+      self$log$tasks[index] <- .subset2(log, "tasks")[index] + tasks
+      self$log$seconds[index] <- .subset2(log, "seconds")[index] + seconds
+      self$log$errors[index] <- .subset2(log, "errors")[index] + errors
+      self$log$warnings[index] <- .subset2(log, "warnings")[index] + warnings
+      error_messages <- .subset2(out, "error")
+      if (!all(is.na(error_messages)) && !identical(error, "silent")) {
+        message <- sprintf(
+          "%s tasks encountered errors. First error message: \"%s\"",
+          sum(!is.na(error_messages)),
+          error_messages[min(which(!is.na(error_messages)))]
+        )
+        if_any(
+          identical(error, "stop"),
+          crew_error(message),
+          crew_warning(message)
+        )
+      }
+      out
     },
     #' @description Check for done tasks and move the results to
     #'   the results list.

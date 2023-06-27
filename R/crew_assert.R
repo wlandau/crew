@@ -79,6 +79,13 @@ crew_error <- function(message = NULL) {
   )
 }
 
+crew_warning <- function(message = NULL) {
+  crew_warn(
+    message = message,
+    class = c("crew_warning", "crew")
+  )
+}
+
 crew_expire <- function(message = NULL) {
   crew_stop(
     message = message,

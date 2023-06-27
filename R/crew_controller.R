@@ -247,7 +247,7 @@ crew_class_controller <- R6::R6Class(
     #'   whereas `substitute = FALSE` is meant for automated R programs
     #'   that invoke `crew` controllers.
     #' @param seed Integer of length 1 with the pseudo-random number generator
-    #'   seed to temporarily set for the evaluation of the task.
+    #'   seed to set for the evaluation of the task.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -334,7 +334,7 @@ crew_class_controller <- R6::R6Class(
     #'   See the `reset_globals` argument
     #'   of [crew_controller_local()].
     #' @param seed Integer of length 1 with the pseudo-random number generator
-    #'   seed to temporarily set for the evaluation of the task.
+    #'   seed to set for the evaluation of the task.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -382,6 +382,7 @@ crew_class_controller <- R6::R6Class(
     #' @description Apply a single command to multiple inputs.
     #' @details The idea comes from functional programming: for example,
     #'   the `map()` function from the `purrr` package.
+    #'   The controller must be started and empty before calling `map()`.
     #' @return A `tibble` of results and metadata, like the output of `pop()`
     #'   but with multiple rows aggregated together (one row per task).
     #' @param command Language object with R code to run.
@@ -394,6 +395,8 @@ crew_class_controller <- R6::R6Class(
     #'   `f(x = iterate$x[[1]], y = iterate$y[[1]])` and
     #'   `f(x = iterate$x[[2]], y = iterate$y[[2]])`.
     #'   All the elements of `iterate` must have the same length.
+    #'   If there are any name conflicts between `iterate` and `data`,
+    #'   `iterate` takes precedence.
     #' @param data Named list of constant local data objects in the
     #'   evaluation environment. Objects in this list are treated as single
     #'   values and are held constant for each iteration of the map.
@@ -414,9 +417,9 @@ crew_class_controller <- R6::R6Class(
     #'   `substitute = TRUE` is appropriate for interactive use,
     #'   whereas `substitute = FALSE` is meant for automated R programs
     #'   that invoke `crew` controllers.
-    #' @param seed Integer of length 1 with the pseudo-random number generator
-    #'   seed to temporarily set for the evaluation of the first task.
-    #'   Other task seeds are deterministically derived from this seed.
+    #' @param seed Integer of length 1 with a pseudo-random number generator
+    #'   seed. Task-specific task seeds are non-randomly derived
+    #'   from this seed.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -451,15 +454,129 @@ crew_class_controller <- R6::R6Class(
       error = "stop",
       controller = NULL
     ) {
+      crew_assert(substitute, isTRUE(.) || isFALSE(.))
       if (substitute) {
         command <- substitute(command)
       }
+      crew_assert(
+        is.language(command),
+        message = "command must be a language object"
+      )
+      crew_assert(
+        iterate,
+        is.list(.),
+        rlang::is_named(.),
+        message = "the \"iterate\" argument of map() must be a named list"
+      )
+      crew_assert(
+        length(iterate) > 0L,
+        message = "the \"iterate\" argument must be a nonempty named list"
+      )
+      crew_assert(
+        length(unique(map_dbl(iterate, length))) == 1L,
+        message = "all elements of \"iterate\" must have the same length"
+      )
+      crew_assert(
+        length(iterate[[1L]]) > 0L,
+        message = "all elements of \"iterate\" must be nonempty"
+      )
+      crew_assert(
+        data,
+        is.list(.),
+        rlang::is_named(.),
+        message = "the \"data\" argument of map() must be a named list"
+      )
+      crew_assert(
+        globals,
+        is.list(.),
+        rlang::is_named(.),
+        message = "the \"globals\" argument of map() must be a named list"
+      )
+      crew_assert(
+        seed,
+        is.integer(.),
+        length(.) == 1L,
+        !anyNA(seed),
+        message = "seed must be an integer of length 1"
+      )
+      crew_assert(
+        packages,
+        is.character(.),
+        !anyNA(.),
+        message = "packages must be a character vector with no element missing"
+      )
+      crew_assert(
+        library %|||% "local",
+        is.character(.),
+        !anyNA(.),
+        message = "library must be a NULL or a non-missing character vector"
+      )
+      crew_assert(
+        seconds_interval,
+        is.numeric(.),
+        length(.) == 1L,
+        !anyNA(.),
+        . >= 0,
+        message = "seconds_interval must be a nonnegative real number"
+      )
+      crew_assert(
+        seconds_timeout %|||% 0,
+        is.numeric(.),
+        length(.) == 1L,
+        !anyNA(.),
+        . >= 0,
+        message = "seconds_timeout must be NULL or a nonnegative real number"
+      )
+      crew_assert(
+        names %|||% names(iterate)[[1L]],
+        is.character(.),
+        length(.) == 1L,
+        !anyNA(.),
+        nzchar(.),
+        . %in% names(iterate),
+        message = "names argument must be NULL or an element of names(iterate)"
+      )
+      crew_assert(
+        error %in% c("stop", "warn", "silent"),
+        message = "error argument must be \"stop\", \"warn\", or \"silent\""
+      )
+      crew_assert(
+        isTRUE(self$client$started),
+        message = "controller must be started before calling map()"
+      )
+      crew_assert(
+        self$empty(),
+        message = "controller must be empty before calling map()"
+      )
       string <- deparse_safe(command)
       .timeout <- if_any(
         is.null(seconds_timeout),
         NULL,
         seconds_timeout * 1000
       )
+      names <- if_any(
+        is.null(names),
+        as.character(seq_along(iterate[[1L]])),
+        iterate[[names]]
+      )
+      names_iterate <- names(iterate)
+      for (index in seq_along(names)) {
+        for (name in names_iterate) {
+          data[[name]] <- .subset2(.subset2(iterate, name), index)
+        }
+        .subset2(self, "shove")(
+          command = command,
+          data = data,
+          globals = globals,
+          seed = seed + index,
+          packages = packages,
+          library = library,
+          .timeout = .timeout,
+          name = .subset(names, index)
+        )
+      }
+      
+      browser()
       
     },
     #' @description Check for done tasks and move the results to

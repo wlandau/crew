@@ -615,7 +615,7 @@ crew_class_controller <- R6::R6Class(
         INDEX = worker,
         FUN = sum
       )
-      index <- names(tasks)
+      index <- as.integer(names(tasks))
       log <- .subset2(self, "log")
       self$log$tasks[index] <- .subset2(log, "tasks")[index] + tasks
       self$log$seconds[index] <- .subset2(log, "seconds")[index] + seconds

@@ -20,6 +20,7 @@ sum <- controller$summary()
 testthat::expect_equal(sum(sum$errors), 1000L)
 testthat::expect_equal(sum(sum$warnings), 3000L)
 name <- as.integer(out$name)
+testthat::expect_equal(name, seq_len(6000L))
 testthat::expect_true(all((name <= 1000L) == !is.na(out$error)))
 testthat::expect_true(
   all(

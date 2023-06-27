@@ -559,6 +559,10 @@ crew_class_controller <- R6::R6Class(
         as.character(seq_along(iterate[[1L]])),
         iterate[[names]]
       )
+      crew_assert(
+        anyDuplicated(names) < 1L,
+        message = "task names in map() must not have duplicates"
+      )
       names_iterate <- names(iterate)
       for (index in seq_along(names)) {
         for (name in names_iterate) {
@@ -568,7 +572,7 @@ crew_class_controller <- R6::R6Class(
           command = command,
           data = data,
           globals = globals,
-          seed = seed + index,
+          seed = seed - (sign(seed) * index),
           packages = packages,
           library = library,
           .timeout = .timeout,
@@ -583,9 +587,35 @@ crew_class_controller <- R6::R6Class(
         seconds_interval = seconds_interval,
         seconds_timeout = Inf
       )
-      
-      browser()
-      
+      results <- self$schedule$list()
+      self$schedule$start()
+      out <- do.call(what = rbind, args = lapply(results, monad_tibble))
+      out <- out[match(out$name, names),, drop = FALSE] # nolint
+      out <- out[!is.na(out$name),, drop = FALSE] # nolint
+      worker <- .subset2(out, "worker")
+      tasks <- table(worker)
+      seconds <- tapply(
+        X = .subset2(out, "seconds"),
+        INDEX = worker,
+        FUN = sum
+      )
+      error <- tapply(
+        X = as.integer(!is.na(.subset2(out, "error"))),
+        INDEX = worker,
+        FUN = sum
+      )
+      warnings <- tapply(
+        X = as.integer(!is.na(.subset2(out, "warnings"))),
+        INDEX = worker,
+        FUN = sum
+      )
+      index <- as.integer(names(tasks))
+      log <- .subset2(self, "log")
+      self$log$tasks[index] <- .subset2(log, "tasks")[index] + tasks
+      self$log$seconds[index] <- .subset2(log, "seconds")[index] + seconds
+      self$log$errors[index] <- .subset2(log, "errors")[index] + error
+      self$log$warnings[index] <- .subset2(log, "warnings")[index] + warnings
+      out
     },
     #' @description Check for done tasks and move the results to
     #'   the results list.

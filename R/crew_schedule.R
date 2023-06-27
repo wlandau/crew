@@ -89,6 +89,8 @@ crew_class_schedule <- R6::R6Class(
       self$pushed <- new.env(hash = TRUE, parent = emptyenv())
       self$collected <- new.env(hash = TRUE, parent = emptyenv())
       self$pushes <- 0L
+      self$head <- NULL
+      self$tail <- NULL
       invisible()
     },
     #' @description Summarize the schedule.

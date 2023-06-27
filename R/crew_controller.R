@@ -230,7 +230,11 @@ crew_class_controller <- R6::R6Class(
     #' @param data Named list of local data objects in the
     #'   evaluation environment.
     #' @param globals Named list of objects to temporarily assign to the
-    #'   global environment for the task. See the `reset_globals` argument
+    #'   global environment for the task.
+    #'   This list should
+    #'   include any functions you previously defined in the global
+    #'   environment which are required to run tasks.
+    #'   See the `reset_globals` argument
     #'   of [crew_controller_local()].
     #' @param substitute Logical of length 1, whether to call
     #'   `base::substitute()` on the supplied value of the
@@ -323,7 +327,11 @@ crew_class_controller <- R6::R6Class(
     #' @param data Named list of local data objects in the
     #'   evaluation environment.
     #' @param globals Named list of objects to temporarily assign to the
-    #'   global environment for the task. See the `reset_globals` argument
+    #'   global environment for the task.
+    #'   This list should
+    #'   include any functions you previously defined in the global
+    #'   environment which are required to run tasks.
+    #'   See the `reset_globals` argument
     #'   of [crew_controller_local()].
     #' @param seed Integer of length 1 with the pseudo-random number generator
     #'   seed to temporarily set for the evaluation of the task.
@@ -370,6 +378,89 @@ crew_class_controller <- R6::R6Class(
       )
       .subset2(.subset2(self, "schedule"), "push")(task = task)
       invisible()
+    },
+    #' @description Apply a single command to multiple inputs.
+    #' @details The idea comes from functional programming: for example,
+    #'   the `map()` function from the `purrr` package.
+    #' @return A `tibble` of results and metadata, like the output of `pop()`
+    #'   but with multiple rows aggregated together (one row per task).
+    #' @param command Language object with R code to run.
+    #' @param iterate Named list of vectors or lists to iterate over.
+    #'   For example, to run function calls
+    #'   `f(x = 1, y = "a")` and `f(x = 2, y = "b")`,
+    #'   set `command` to `f(x, y)`, and set `iterate` to
+    #'   `list(x = c(1, 2), y = c("a", "b"))`. The individual
+    #'   function calls are evaluated as
+    #'   `f(x = iterate$x[[1]], y = iterate$y[[1]])` and
+    #'   `f(x = iterate$x[[2]], y = iterate$y[[2]])`.
+    #'   All the elements of `iterate` must have the same length.
+    #' @param data Named list of constant local data objects in the
+    #'   evaluation environment. Objects in this list are treated as single
+    #'   values and are held constant for each iteration of the map.
+    #' @param globals Named list of constant objects to temporarily
+    #'   assign to the global environment for each task. This list should
+    #'   include any functions you previously defined in the global
+    #'   environment which are required to run tasks.
+    #'   See the `reset_globals` argument of [crew_controller_local()].
+    #'   Objects in this list are treated as single
+    #'   values and are held constant for each iteration of the map.
+    #' @param substitute Logical of length 1, whether to call
+    #'   `base::substitute()` on the supplied value of the
+    #'   `command` argument. If `TRUE` (default) then `command` is quoted
+    #'   literally as you write it, e.g.
+    #'   `push(command = your_function_call())`. If `FALSE`, then `crew`
+    #'   assumes `command` is a language object and you are passing its
+    #'   value, e.g. `push(command = quote(your_function_call()))`.
+    #'   `substitute = TRUE` is appropriate for interactive use,
+    #'   whereas `substitute = FALSE` is meant for automated R programs
+    #'   that invoke `crew` controllers.
+    #' @param seed Integer of length 1 with the pseudo-random number generator
+    #'   seed to temporarily set for the evaluation of the first task.
+    #'   Other task seeds are deterministically derived from this seed.
+    #' @param packages Character vector of packages to load for the task.
+    #' @param library Library path to load the packages. See the `lib.loc`
+    #'   argument of `require()`.
+    #' @param seconds_interval Number of seconds to wait between intervals
+    #'   polling the tasks for completion.
+    #' @param seconds_timeout Optional task timeout passed to the `.timeout`
+    #'   argument of `mirai::mirai()` (after converting to milliseconds).
+    #' @param names Optional character of length 1, name of the element of
+    #'   `iterate` with names for the tasks. If `names` is supplied,
+    #'   then `iterate[[names]]` must be a character vector.
+    #' @param error Character vector of length 1, choice of action if
+    #'   a task has an error. Possible values:
+    #'   * `"stop"`: throw an error in the main R session instead of returning
+    #'     a value.
+    #'   * `"warn"`: throw a warning. This allows the return value with
+    #'     all the error messages and tracebacks to be generated.
+    #'   * `"silent"`: do nothing special.
+    #' @param controller Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    map = function(
+      command,
+      iterate,
+      data = list(),
+      globals = list(),
+      substitute = TRUE,
+      seed = as.integer(nanonext::random() / 2),
+      packages = character(0),
+      library = NULL,
+      seconds_interval = 0.01,
+      seconds_timeout = NULL,
+      names = NULL,
+      error = "stop",
+      controller = NULL
+    ) {
+      if (substitute) {
+        command <- substitute(command)
+      }
+      string <- deparse_safe(command)
+      .timeout <- if_any(
+        is.null(seconds_timeout),
+        NULL,
+        seconds_timeout * 1000
+      )
+      
     },
     #' @description Check for done tasks and move the results to
     #'   the results list.

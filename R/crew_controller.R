@@ -598,7 +598,8 @@ crew_class_controller <- R6::R6Class(
       )
       results <- self$schedule$list()
       self$schedule$start()
-      out <- do.call(what = rbind, args = lapply(results, monad_tibble))
+      out <- lapply(results, monad_tibble)
+      out <- do.call(what = rbind.data.frame, args = out)
       out <- out[match(out$name, names),, drop = FALSE] # nolint
       out <- out[!is.na(out$name),, drop = FALSE] # nolint
       worker <- .subset2(out, "worker")

@@ -1,7 +1,7 @@
 library(crew)
 controller <- crew_controller_local(workers = 20)
 controller$start()
-system.time(
+proffer::pprof(
   out <- controller$map(
     command = if (x <= 2000L) {
       stop(x) 

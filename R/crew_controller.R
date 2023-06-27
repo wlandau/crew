@@ -463,10 +463,6 @@ crew_class_controller <- R6::R6Class(
       }
       crew_assert(save_command, isTRUE(.) || isFALSE(.))
       crew_assert(
-        is.language(command),
-        message = "command must be a language object"
-      )
-      crew_assert(
         iterate,
         is.list(.),
         rlang::is_named(.),
@@ -619,7 +615,7 @@ crew_class_controller <- R6::R6Class(
         INDEX = worker,
         FUN = sum
       )
-      index <- as.integer(names(tasks))
+      index <- names(tasks)
       log <- .subset2(self, "log")
       self$log$tasks[index] <- .subset2(log, "tasks")[index] + tasks
       self$log$seconds[index] <- .subset2(log, "seconds")[index] + seconds

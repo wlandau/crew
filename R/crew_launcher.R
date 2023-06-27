@@ -509,7 +509,7 @@ crew_class_launcher <- R6::R6Class(
       walk(x = self$backlogged(), f = self$launch)
       resolved <- self$resolved()
       active <- nrow(self$workers) - length(resolved)
-      deficit <- min(demand - active, length(resolved))
+      deficit <- min(length(resolved), max(0L, demand - active))
       walk(x = head(x = resolved, n = deficit), f = self$launch)
       invisible()
     },

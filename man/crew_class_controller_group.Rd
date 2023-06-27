@@ -68,6 +68,7 @@ Other class:
 \item \href{#method-crew_class_controller_group-launch}{\code{crew_class_controller_group$launch()}}
 \item \href{#method-crew_class_controller_group-scale}{\code{crew_class_controller_group$scale()}}
 \item \href{#method-crew_class_controller_group-push}{\code{crew_class_controller_group$push()}}
+\item \href{#method-crew_class_controller_group-map}{\code{crew_class_controller_group$map()}}
 \item \href{#method-crew_class_controller_group-collect}{\code{crew_class_controller_group$collect()}}
 \item \href{#method-crew_class_controller_group-pop}{\code{crew_class_controller_group$pop()}}
 \item \href{#method-crew_class_controller_group-wait}{\code{crew_class_controller_group$wait()}}
@@ -366,6 +367,120 @@ first controller in the list.}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-map"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-map}{}}}
+\subsection{Method \code{map()}}{
+Apply a single command to multiple inputs.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$map(
+  command,
+  iterate,
+  data = list(),
+  globals = list(),
+  substitute = TRUE,
+  seed = as.integer(nanonext::random()/2),
+  packages = character(0),
+  library = NULL,
+  seconds_interval = 0.01,
+  seconds_timeout = NULL,
+  names = NULL,
+  save_command = FALSE,
+  error = "stop",
+  controller = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{command}}{Language object with R code to run.}
+
+\item{\code{iterate}}{Named list of vectors or lists to iterate over.
+For example, to run function calls
+\code{f(x = 1, y = "a")} and \code{f(x = 2, y = "b")},
+set \code{command} to \code{f(x, y)}, and set \code{iterate} to
+\code{list(x = c(1, 2), y = c("a", "b"))}. The individual
+function calls are evaluated as
+\code{f(x = iterate$x[[1]], y = iterate$y[[1]])} and
+\code{f(x = iterate$x[[2]], y = iterate$y[[2]])}.
+All the elements of \code{iterate} must have the same length.
+If there are any name conflicts between \code{iterate} and \code{data},
+\code{iterate} takes precedence.}
+
+\item{\code{data}}{Named list of constant local data objects in the
+evaluation environment. Objects in this list are treated as single
+values and are held constant for each iteration of the map.}
+
+\item{\code{globals}}{Named list of constant objects to temporarily
+assign to the global environment for each task. This list should
+include any functions you previously defined in the global
+environment which are required to run tasks.
+See the \code{reset_globals} argument of \code{\link[=crew_controller_local]{crew_controller_local()}}.
+Objects in this list are treated as single
+values and are held constant for each iteration of the map.}
+
+\item{\code{substitute}}{Logical of length 1, whether to call
+\code{base::substitute()} on the supplied value of the
+\code{command} argument. If \code{TRUE} (default) then \code{command} is quoted
+literally as you write it, e.g.
+\code{push(command = your_function_call())}. If \code{FALSE}, then \code{crew}
+assumes \code{command} is a language object and you are passing its
+value, e.g. \code{push(command = quote(your_function_call()))}.
+\code{substitute = TRUE} is appropriate for interactive use,
+whereas \code{substitute = FALSE} is meant for automated R programs
+that invoke \code{crew} controllers.}
+
+\item{\code{seed}}{Integer of length 1 with a pseudo-random number generator
+seed. Task-specific task seeds are non-randomly derived
+from this seed.}
+
+\item{\code{packages}}{Character vector of packages to load for the task.}
+
+\item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
+argument of \code{require()}.}
+
+\item{\code{seconds_interval}}{Number of seconds to wait between intervals
+polling the tasks for completion.}
+
+\item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
+argument of \code{mirai::mirai()} (after converting to milliseconds).}
+
+\item{\code{names}}{Optional character of length 1, name of the element of
+\code{iterate} with names for the tasks. If \code{names} is supplied,
+then \code{iterate[[names]]} must be a character vector.}
+
+\item{\code{save_command}}{Logical of length 1, whether to store
+a text string version of the R command in the output.}
+
+\item{\code{error}}{Character vector of length 1, choice of action if
+a task has an error. Possible values:
+\itemize{
+\item \code{"stop"}: throw an error in the main R session instead of returning
+a value.
+\item \code{"warn"}: throw a warning. This allows the return value with
+all the error messages and tracebacks to be generated.
+\item \code{"silent"}: do nothing special.
+}}
+
+\item{\code{controller}}{Character of length 1,
+name of the controller to submit the task.
+If \code{NULL}, the controller defaults to the
+first controller in the list.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+The idea comes from functional programming: for example,
+the \code{map()} function from the \code{purrr} package.
+The controller must be started and empty before calling \code{map()}.
+}
+
+\subsection{Returns}{
+A \code{tibble} of results and metadata, like the output of \code{pop()}
+but with multiple rows aggregated together (one row per task).
 }
 }
 \if{html}{\out{<hr>}}

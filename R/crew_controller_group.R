@@ -229,14 +229,14 @@ crew_class_controller_group <- R6::R6Class(
     #'   and efficiency.
     #' @param name Optional name of the task. Replaced with a random name
     #'   if `NULL` or in conflict with an existing name in the task list.
-    #' @param controller Character of length 1,
-    #'   name of the controller to submit the task.
-    #'   If `NULL`, the controller defaults to the
-    #'   first controller in the list.
     #' @param save_command Logical of length 1. If `TRUE`, the controller
     #'   deparses the command and returns it with the output on `pop()`.
     #'   If `FALSE` (default), the controller skips this step to
     #'   increase speed.
+    #' @param controller Character of length 1,
+    #'   name of the controller to submit the task.
+    #'   If `NULL`, the controller defaults to the
+    #'   first controller in the list.
     push = function(
       command,
       data = list(),
@@ -272,6 +272,107 @@ crew_class_controller_group <- R6::R6Class(
         throttle = throttle,
         name = name,
         save_command = save_command
+      )
+    },
+        #' @description Apply a single command to multiple inputs.
+    #' @details The idea comes from functional programming: for example,
+    #'   the `map()` function from the `purrr` package.
+    #'   The controller must be started and empty before calling `map()`.
+    #' @return A `tibble` of results and metadata, like the output of `pop()`
+    #'   but with multiple rows aggregated together (one row per task).
+    #' @param command Language object with R code to run.
+    #' @param iterate Named list of vectors or lists to iterate over.
+    #'   For example, to run function calls
+    #'   `f(x = 1, y = "a")` and `f(x = 2, y = "b")`,
+    #'   set `command` to `f(x, y)`, and set `iterate` to
+    #'   `list(x = c(1, 2), y = c("a", "b"))`. The individual
+    #'   function calls are evaluated as
+    #'   `f(x = iterate$x[[1]], y = iterate$y[[1]])` and
+    #'   `f(x = iterate$x[[2]], y = iterate$y[[2]])`.
+    #'   All the elements of `iterate` must have the same length.
+    #'   If there are any name conflicts between `iterate` and `data`,
+    #'   `iterate` takes precedence.
+    #' @param data Named list of constant local data objects in the
+    #'   evaluation environment. Objects in this list are treated as single
+    #'   values and are held constant for each iteration of the map.
+    #' @param globals Named list of constant objects to temporarily
+    #'   assign to the global environment for each task. This list should
+    #'   include any functions you previously defined in the global
+    #'   environment which are required to run tasks.
+    #'   See the `reset_globals` argument of [crew_controller_local()].
+    #'   Objects in this list are treated as single
+    #'   values and are held constant for each iteration of the map.
+    #' @param substitute Logical of length 1, whether to call
+    #'   `base::substitute()` on the supplied value of the
+    #'   `command` argument. If `TRUE` (default) then `command` is quoted
+    #'   literally as you write it, e.g.
+    #'   `push(command = your_function_call())`. If `FALSE`, then `crew`
+    #'   assumes `command` is a language object and you are passing its
+    #'   value, e.g. `push(command = quote(your_function_call()))`.
+    #'   `substitute = TRUE` is appropriate for interactive use,
+    #'   whereas `substitute = FALSE` is meant for automated R programs
+    #'   that invoke `crew` controllers.
+    #' @param seed Integer of length 1 with a pseudo-random number generator
+    #'   seed. Task-specific task seeds are non-randomly derived
+    #'   from this seed.
+    #' @param packages Character vector of packages to load for the task.
+    #' @param library Library path to load the packages. See the `lib.loc`
+    #'   argument of `require()`.
+    #' @param seconds_interval Number of seconds to wait between intervals
+    #'   polling the tasks for completion.
+    #' @param seconds_timeout Optional task timeout passed to the `.timeout`
+    #'   argument of `mirai::mirai()` (after converting to milliseconds).
+    #' @param names Optional character of length 1, name of the element of
+    #'   `iterate` with names for the tasks. If `names` is supplied,
+    #'   then `iterate[[names]]` must be a character vector.
+    #' @param save_command Logical of length 1, whether to store
+    #'   a text string version of the R command in the output.
+    #' @param error Character vector of length 1, choice of action if
+    #'   a task has an error. Possible values:
+    #'   * `"stop"`: throw an error in the main R session instead of returning
+    #'     a value.
+    #'   * `"warn"`: throw a warning. This allows the return value with
+    #'     all the error messages and tracebacks to be generated.
+    #'   * `"silent"`: do nothing special.
+    #' @param controller Character of length 1,
+    #'   name of the controller to submit the task.
+    #'   If `NULL`, the controller defaults to the
+    #'   first controller in the list.
+    map = function(
+      command,
+      iterate,
+      data = list(),
+      globals = list(),
+      substitute = TRUE,
+      seed = as.integer(nanonext::random() / 2),
+      packages = character(0),
+      library = NULL,
+      seconds_interval = 0.01,
+      seconds_timeout = NULL,
+      names = NULL,
+      save_command = FALSE,
+      error = "stop",
+      controller = NULL
+    ) {
+      crew_assert(substitute, isTRUE(.) || isFALSE(.))
+      if (substitute) {
+        command <- substitute(command)
+      }
+      control <- private$select_single_controller(name = controller)
+      control$map(
+        command = command,
+        iterate = iterate,
+        data = data,
+        globals = globals,
+        substitute = FALSE,
+        seed = seed,
+        packages = packages,
+        library = library,
+        seconds_interval = seconds_interval,
+        seconds_timeout = seconds_timeout,
+        names = names,
+        save_command = save_command,
+        error = error
       )
     },
     #' @description Check for done tasks and move the results to

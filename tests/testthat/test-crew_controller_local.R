@@ -332,7 +332,7 @@ crew_test("task collection and results stack work", {
   x$terminate()
 })
 
-test_that("map() works", {
+test_that("controller map() works", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(

@@ -290,3 +290,48 @@ crew_test("crew_controller_group() scale method", {
     seconds_timeout = 5
   )
 })
+
+test_that("controller group map() works", {
+  skip_on_cran()
+  skip_on_os("windows")
+  a <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  x <- crew_controller_group(a)
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  f <- function(x, y) x + y
+  out <- x$map(
+    command = f(x, y) + a + b,
+    iterate = list(x = c(1L, 2L), y = c(3L, 4L)),
+    data = list(a = 5L),
+    globals = list(f = f, b = 6L)
+  )
+  x$terminate()
+  expect_true(tibble::is_tibble(out))
+  expect_equal(nrow(out), 2L)
+  expect_equal(colnames(out), monad_names)
+  expect_equal(out$name, c("1", "2"))
+  expect_equal(out$command, rep(NA_character_, 2L))
+  expect_equal(out$result, list(15L, 17L))
+  expect_true(all(out$seconds >= 0))
+  expect_true(is.integer(out$seed))
+  expect_true(anyDuplicated(out$seed) < 1L)
+  expect_equal(out$error, rep(NA_character_, 2L))
+  expect_equal(out$trace, rep(NA_character_, 2L))
+  expect_equal(out$warnings, rep(NA_character_, 2L))
+  expect_equal(out$worker, rep(1L, 2L))
+  expect_equal(out$launcher, rep(a$launcher$name, 2L))
+  expect_false(anyNA(out$instance))
+  sum <- x$summary()
+  expect_equal(sum$worker, 1L)
+  expect_equal(sum$tasks, 2L)
+  expect_equal(sum$errors, 0L)
+  expect_equal(sum$warnings, 0L)
+})

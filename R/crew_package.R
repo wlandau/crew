@@ -19,6 +19,7 @@
 #'   [`rrq`](https://mrc-ide.github.io/rrq/),
 #'   [`clustermq`](https://mschubert.github.io/clustermq/),
 #'   and [`batchtools`](https://mllg.github.io/batchtools/).
+#' @importFrom data.table rbindlist
 #' @importFrom getip getip
 #' @importFrom mirai daemons mirai saisei server
 #' @importFrom nanonext mclock msleep random sha1 .unresolved

@@ -332,7 +332,7 @@ crew_test("task collection and results stack work", {
   x$terminate()
 })
 
-test_that("controller map() works", {
+crew_test("controller map() works", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
@@ -402,7 +402,8 @@ crew_test("map() works with errors and names and command strings", {
       globals = list(f = f),
       save_command = TRUE,
       names = "id",
-      error = "silent"
+      error = "silent",
+      verbose = FALSE
     )
   )
   expect_error(
@@ -492,7 +493,7 @@ crew_test("map() tasks attributed to correct workers", {
   expect_equal(sum$warnings, c(0L, 0L, 1L, 0L))
 })
 
-test_that("map() does not need an started controller", {
+crew_test("map() does not need an started controller", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(

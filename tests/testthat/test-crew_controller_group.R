@@ -291,7 +291,7 @@ crew_test("crew_controller_group() scale method", {
   )
 })
 
-test_that("controller group map() works", {
+crew_test("controller group map() works", {
   skip_on_cran()
   skip_on_os("windows")
   a <- crew_controller_local(

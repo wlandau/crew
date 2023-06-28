@@ -584,18 +584,20 @@ crew_class_controller <- R6::R6Class(
         )
       }
       schedule <- self$schedule
+      start <- nanonext::mclock()
       crew_retry(
         fun = ~{
           .subset2(self, "scale")(throttle = FALSE)
           summary <- .subset2(schedule, "summary")()
           pushed <- .subset2(summary, "pushed")
           collected <- .subset2(summary, "collected")
-          controller_map_progress_message(pushed, collected, verbose)
+          controller_map_message_progress(pushed, collected, verbose)
           pushed < 1L
         },
         seconds_interval = seconds_interval,
         seconds_timeout = Inf
       )
+      controller_map_message_complete(length(names), start)
       if_any(verbose, message(), NULL)
       results <- self$schedule$list()
       self$schedule <- old_schedule
@@ -850,18 +852,25 @@ expr_crew_eval <- quote(
   )
 )
 
-controller_map_progress_message <- function(pushed, collected, verbose) {
+controller_map_message_progress <- function(pushed, collected, verbose) {
   if (!verbose) {
     return()
   }
   symbol <- sample(c("-", "\\", "|", "/"), size = 1L)
   total <- collected + pushed
   text <- sprintf(
-    "\r%s %s of %s tasks done (%s %%)",
-    symbol,
+    "\r%s of %s tasks done (%s%%) %s",
     collected,
     total,
-    round(100 * collected / total)
+    round(100 * collected / total),
+    symbol
   )
   message(text, appendLF = FALSE)
+}
+
+controller_map_message_complete <- function(tasks, start) {
+  seconds <- (nanonext::mclock() - start) / 1000
+  time <- units_time(seconds)
+  text <- sprintf("\r%s tasks done in %s.", tasks, time)
+  message(text)
 }

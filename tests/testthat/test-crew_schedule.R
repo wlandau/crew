@@ -1,9 +1,9 @@
-test_that("schedule validate empty", {
+crew_test("schedule validate empty", {
   x <- crew_schedule()
   expect_silent(x$validate())
 })
 
-test_that("schedule validate full", {
+crew_test("schedule validate full", {
   x <- crew_schedule()
   x$start()
   x$head <- "id"
@@ -11,7 +11,7 @@ test_that("schedule validate full", {
   expect_silent(x$validate())
 })
 
-test_that("schedule start", {
+crew_test("schedule start", {
   x <- crew_schedule()
   expect_null(x$pushed)
   expect_null(x$collected)
@@ -22,7 +22,7 @@ test_that("schedule start", {
   expect_equal(x$pushes, 0L)
 })
 
-test_that("schedule push", {
+crew_test("schedule push", {
   x <- crew_schedule()
   x$start()
   expect_equal(length(x$pushed), 0L)
@@ -39,7 +39,7 @@ test_that("schedule push", {
   expect_true(is_crew_null(x$pushed[["1"]]))
 })
 
-test_that("schedule list", {
+crew_test("schedule list", {
   x <- crew_schedule()
   x$start()
   x$push(task = list(data = "contents"))
@@ -47,7 +47,7 @@ test_that("schedule list", {
   expect_equal(x$list()[[1L]], "contents")
 })
 
-test_that("schedule throttle", {
+crew_test("schedule throttle", {
   x <- crew_schedule(seconds_interval = 9999)
   x$start()
   expect_null(x$until)
@@ -62,7 +62,7 @@ test_that("schedule throttle", {
   expect_true(is.numeric(x$until))
 })
 
-test_that("schedule collect without throttling", {
+crew_test("schedule collect without throttling", {
   x <- crew_schedule()
   x$start()
   x$push(task = crew_null)
@@ -75,7 +75,7 @@ test_that("schedule collect without throttling", {
   expect_equal(x$head, "1")
 })
 
-test_that("schedule collect with throttling and short interval", {
+crew_test("schedule collect with throttling and short interval", {
   skip_on_cran()
   x <- crew_schedule(seconds_interval = 0.01)
   x$start()
@@ -95,7 +95,7 @@ test_that("schedule collect with throttling and short interval", {
   expect_equal(x$head, "1")
 })
 
-test_that("schedule collect with throttling and long interval", {
+crew_test("schedule collect with throttling and long interval", {
   skip_on_cran()
   x <- crew_schedule(seconds_interval = 9999)
   x$start()
@@ -111,7 +111,7 @@ test_that("schedule collect with throttling and long interval", {
   }
 })
 
-test_that("schedule pop", {
+crew_test("schedule pop", {
   x <- crew_schedule()
   expect_null(x$pop())
   expect_null(x$head)
@@ -128,7 +128,7 @@ test_that("schedule pop", {
   expect_null(x$head)
 })
 
-test_that("schedule collected queue", {
+crew_test("schedule collected queue", {
   x <- crew_schedule()
   x$start()
   numbers <- as.character(seq_len(26L))
@@ -149,7 +149,7 @@ test_that("schedule collected queue", {
   expect_equal(sort(results), sort(numbers))
 })
 
-test_that("schedule empty", {
+crew_test("schedule empty", {
   x <- crew_schedule()
   expect_true(x$empty())
   x$start()
@@ -161,7 +161,7 @@ test_that("schedule empty", {
   expect_true(x$empty())
 })
 
-test_that("schedule nonempty", {
+crew_test("schedule nonempty", {
   x <- crew_schedule()
   expect_false(x$nonempty())
   x$start()
@@ -173,7 +173,7 @@ test_that("schedule nonempty", {
   expect_false(x$nonempty())
 })
 
-test_that("schedule collected_all", {
+crew_test("schedule collected_all", {
   x <- crew_schedule()
   expect_true(x$collected_mode(mode = "all"))
   x$start()
@@ -194,7 +194,7 @@ test_that("schedule collected_all", {
   }
 })
 
-test_that("schedule collected_one", {
+crew_test("schedule collected_one", {
   x <- crew_schedule()
   expect_true(x$collected_mode(mode = "one"))
   x$start()
@@ -215,7 +215,7 @@ test_that("schedule collected_one", {
   }
 })
 
-test_that("schedule summary", {
+crew_test("schedule summary", {
   x <- crew_schedule()
   expect_null(x$summary())
   x$start()

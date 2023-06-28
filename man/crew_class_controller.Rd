@@ -504,11 +504,12 @@ Apply a single command to multiple inputs.
   seed = as.integer(nanonext::random()/2),
   packages = character(0),
   library = NULL,
-  seconds_interval = 0.01,
+  seconds_interval = NULL,
   seconds_timeout = NULL,
   names = NULL,
   save_command = FALSE,
   error = "stop",
+  verbose = interactive(),
   controller = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -563,7 +564,8 @@ from this seed.}
 argument of \code{require()}.}
 
 \item{\code{seconds_interval}}{Number of seconds to wait between intervals
-polling the tasks for completion.}
+polling the tasks for completion. Defaults to the \code{seconds_interval}
+field in the client object}
 
 \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
@@ -584,6 +586,8 @@ a value.
 all the error messages and tracebacks to be generated.
 \item \code{"silent"}: do nothing special.
 }}
+
+\item{\code{verbose}}{Logical of length 1, whether to print progress messages.}
 
 \item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -692,7 +696,7 @@ Wait for tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$wait(
   mode = "all",
-  seconds_interval = 0.01,
+  seconds_interval = NULL,
   seconds_timeout = Inf,
   scale = TRUE,
   throttle = TRUE,
@@ -708,7 +712,8 @@ then the method waits for all tasks to complete. If \code{mode} is
 \code{"one"}, then it waits until a one task is complete.}
 
 \item{\code{seconds_interval}}{Number of seconds to wait between polling
-intervals waiting for tasks.}
+intervals waiting for tasks. Defaults to the \code{seconds_interval}
+field of the client object.}
 
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for tasks.}
 

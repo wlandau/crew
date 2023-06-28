@@ -1,5 +1,5 @@
 library(crew)
-controller <- crew_controller_local(workers = 20)
+controller <- crew_controller_local(workers = 20, seconds_interval = 0.25)
 controller$start()
 system.time(
   out <- controller$map(

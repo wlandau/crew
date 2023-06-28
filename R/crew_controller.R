@@ -167,7 +167,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     start = function(controllers = NULL) {
-      if (!isTRUE(self$client$started)) {
+      if (!isTRUE(.subset2(.subset2(self, "client"), "started"))) {
         self$client$start()
         workers <- self$client$workers
         self$launcher$start()
@@ -264,12 +264,12 @@ crew_class_controller <- R6::R6Class(
     #'   accumulate a backlog of requests. The technique improves robustness
     #'   and efficiency.
     #' @param name Optional name of the task.
-    #' @param controller Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
     #' @param save_command Logical of length 1. If `TRUE`, the controller
     #'   deparses the command and returns it with the output on `pop()`.
     #'   If `FALSE` (default), the controller skips this step to
     #'   increase speed.
+    #' @param controller Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
     push = function(
       command,
       data = list(),
@@ -285,10 +285,7 @@ crew_class_controller <- R6::R6Class(
       save_command = FALSE,
       controller = NULL
     ) {
-      started <- .subset2(.subset2(self, "client"), "started")
-      if (is.null(started) || !started) {
-        crew_error("Please call YOUR_CONTROLLER$start() before pushing tasks.")
-      }
+      .subset2(self, "start")()
       if (substitute) {
         command <- substitute(command)
       }
@@ -428,7 +425,8 @@ crew_class_controller <- R6::R6Class(
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
     #' @param seconds_interval Number of seconds to wait between intervals
-    #'   polling the tasks for completion.
+    #'   polling the tasks for completion. Defaults to the `seconds_interval`
+    #'   field in the client object
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param names Optional character of length 1, name of the element of
@@ -443,6 +441,7 @@ crew_class_controller <- R6::R6Class(
     #'   * `"warn"`: throw a warning. This allows the return value with
     #'     all the error messages and tracebacks to be generated.
     #'   * `"silent"`: do nothing special.
+    #' @param verbose Logical of length 1, whether to print progress messages.
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     map = function(
@@ -454,14 +453,16 @@ crew_class_controller <- R6::R6Class(
       seed = as.integer(nanonext::random() / 2),
       packages = character(0),
       library = NULL,
-      seconds_interval = 0.01,
+      seconds_interval = NULL,
       seconds_timeout = NULL,
       names = NULL,
       save_command = FALSE,
       error = "stop",
+      verbose = interactive(),
       controller = NULL
     ) {
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
+      seconds_interval <- seconds_interval %|||% self$client$seconds_interval
       if (substitute) {
         command <- substitute(command)
       }
@@ -582,14 +583,20 @@ crew_class_controller <- R6::R6Class(
           name = .subset(names, index)
         )
       }
+      schedule <- self$schedule
       crew_retry(
         fun = ~{
-          self$scale(throttle = FALSE)
-          self$schedule$summary()$pushed < 1L
+          .subset2(self, "scale")(throttle = FALSE)
+          summary <- .subset2(schedule, "summary")()
+          pushed <- .subset2(summary, "pushed")
+          collected <- .subset2(summary, "collected")
+          controller_map_progress_message(pushed, collected, verbose)
+          pushed < 1L
         },
         seconds_interval = seconds_interval,
         seconds_timeout = Inf
       )
+      if_any(verbose, message(), NULL)
       results <- self$schedule$list()
       self$schedule <- old_schedule
       out <- lapply(results, monad_tibble)
@@ -734,7 +741,8 @@ crew_class_controller <- R6::R6Class(
     #'   then the method waits for all tasks to complete. If `mode` is
     #'   `"one"`, then it waits until a one task is complete.
     #' @param seconds_interval Number of seconds to wait between polling
-    #'   intervals waiting for tasks.
+    #'   intervals waiting for tasks. Defaults to the `seconds_interval`
+    #'   field of the client object.
     #' @param seconds_timeout Timeout length in seconds waiting for tasks.
     #' @param scale Logical, whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
@@ -753,7 +761,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     wait = function(
       mode = "all",
-      seconds_interval = 0.01,
+      seconds_interval = NULL,
       seconds_timeout = Inf,
       scale = TRUE,
       throttle = TRUE,
@@ -761,6 +769,7 @@ crew_class_controller <- R6::R6Class(
     ) {
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
+      seconds_interval <- seconds_interval %|||% self$client$seconds_interval
       tryCatch(
         crew_retry(
           fun = ~{
@@ -840,3 +849,19 @@ expr_crew_eval <- quote(
     library = library
   )
 )
+
+controller_map_progress_message <- function(pushed, collected, verbose) {
+  if (!verbose) {
+    return()
+  }
+  symbol <- sample(c("-", "\\", "|", "/"), size = 1L)
+  total <- collected + pushed
+  text <- sprintf(
+    "\r%s %s of %s tasks done (%s %%)",
+    symbol,
+    collected,
+    total,
+    round(100 * collected / total)
+  )
+  message(text, appendLF = FALSE)
+}

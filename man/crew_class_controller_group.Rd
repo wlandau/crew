@@ -384,11 +384,12 @@ Apply a single command to multiple inputs.
   seed = as.integer(nanonext::random()/2),
   packages = character(0),
   library = NULL,
-  seconds_interval = 0.01,
+  seconds_interval = NULL,
   seconds_timeout = NULL,
   names = NULL,
   save_command = FALSE,
   error = "stop",
+  verbose = interactive(),
   controller = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -443,7 +444,8 @@ from this seed.}
 argument of \code{require()}.}
 
 \item{\code{seconds_interval}}{Number of seconds to wait between intervals
-polling the tasks for completion.}
+polling the tasks for completion. Defaults to the \code{seconds_interval}
+field of the client object.}
 
 \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
@@ -464,6 +466,8 @@ a value.
 all the error messages and tracebacks to be generated.
 \item \code{"silent"}: do nothing special.
 }}
+
+\item{\code{verbose}}{Logical of length 1, whether to print progress messages.}
 
 \item{\code{controller}}{Character of length 1,
 name of the controller to submit the task.
@@ -586,7 +590,9 @@ then the method waits for all tasks to complete. If \code{mode} is
 \code{"one"}, then it waits until a one task is complete.}
 
 \item{\code{seconds_interval}}{Number of seconds to wait between
-polling intervals while checking for results.}
+polling intervals while checking for results.
+Defaults to a fixed value because the internal \code{seconds_interval}
+field may be different from controller to controller.}
 
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for
 results to become available.}
@@ -601,8 +607,7 @@ and task collection until the next request at least
 \code{self$client$seconds_interval} seconds from the original request.
 The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
 accumulate a backlog of requests. The technique improves robustness
-and efficiency.
-Highly recommended to keep
+and efficiency. Highly recommended to keep
 the default \code{throttle = TRUE} for \code{wait()}.}
 
 \item{\code{controllers}}{Character vector of controller names.

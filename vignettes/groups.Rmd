@@ -74,9 +74,9 @@ group$map(
 )
 #> # A tibble: 2 × 11
 #>   name  command result    seconds      seed error trace warnings
-#>   <chr> <chr>   <list>      <dbl>     <int> <chr> <chr> <chr>   
-#> 1 1     NA      <dbl [1]>       0 870591596 NA    NA    NA      
-#> 2 2     NA      <dbl [1]>       0 870591595 NA    NA    NA      
+#>   <chr> <chr>   <list>      <dbl>     <int> <chr> <chr> <chr>
+#> 1 1     NA      <dbl [1]>       0 870591596 NA    NA    NA
+#> 2 2     NA      <dbl [1]>       0 870591595 NA    NA    NA
 #> # ℹ 3 more variables: launcher <chr>, worker <int>,
 #> #   instance <chr>
 ```

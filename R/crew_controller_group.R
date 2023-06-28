@@ -319,7 +319,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
     #' @param seconds_interval Number of seconds to wait between intervals
-    #'   polling the tasks for completion.
+    #'   polling the tasks for completion. Defaults to the `seconds_interval`
+    #'   field of the client object.
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param names Optional character of length 1, name of the element of
@@ -334,6 +335,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   * `"warn"`: throw a warning. This allows the return value with
     #'     all the error messages and tracebacks to be generated.
     #'   * `"silent"`: do nothing special.
+    #' @param verbose Logical of length 1, whether to print progress messages.
     #' @param controller Character of length 1,
     #'   name of the controller to submit the task.
     #'   If `NULL`, the controller defaults to the
@@ -347,11 +349,12 @@ crew_class_controller_group <- R6::R6Class(
       seed = as.integer(nanonext::random() / 2),
       packages = character(0),
       library = NULL,
-      seconds_interval = 0.01,
+      seconds_interval = NULL,
       seconds_timeout = NULL,
       names = NULL,
       save_command = FALSE,
       error = "stop",
+      verbose = interactive(),
       controller = NULL
     ) {
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
@@ -447,6 +450,8 @@ crew_class_controller_group <- R6::R6Class(
     #'   `"one"`, then it waits until a one task is complete.
     #' @param seconds_interval Number of seconds to wait between
     #'   polling intervals while checking for results.
+    #'   Defaults to a fixed value because the internal `seconds_interval`
+    #'   field may be different from controller to controller.
     #' @param seconds_timeout Timeout length in seconds waiting for
     #'   results to become available.
     #' @param scale Logical of length 1, whether to call `scale_later()`
@@ -458,8 +463,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   `self$client$seconds_interval` seconds from the original request.
     #'   The idea is similar to `shiny::throttle()` except that `crew` does not
     #'   accumulate a backlog of requests. The technique improves robustness
-    #'   and efficiency.
-    #'   Highly recommended to keep
+    #'   and efficiency. Highly recommended to keep
     #'   the default `throttle = TRUE` for `wait()`.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.

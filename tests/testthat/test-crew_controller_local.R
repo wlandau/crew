@@ -376,7 +376,7 @@ test_that("controller map() works", {
   expect_equal(sum$warnings, 0L)
 })
 
-test_that("map() works with errors and names and command strings", {
+crew_test("map() works with errors and names and command strings", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
@@ -452,7 +452,7 @@ test_that("map() works with errors and names and command strings", {
   expect_equal(sum$warnings, 6L)
 })
 
-test_that("map() tasks attributed to correct workers", {
+crew_test("map() tasks attributed to correct workers", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
@@ -509,7 +509,7 @@ test_that("map() does not need an started controller", {
   expect_equal(nrow(results), 2L)
 })
 
-test_that("map() does not need an empty controller", {
+crew_test("map() does not need an empty controller", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(

@@ -16,5 +16,6 @@ crew_test("controller_map_message_progress()", {
 })
 
 crew_test("controller_map_message_complete()", {
-  expect_message(controller_map_message_complete(100, 10))
+  expect_silent(controller_map_message_complete(100, 10, FALSE))
+  expect_message(controller_map_message_complete(100, 10, TRUE))
 })

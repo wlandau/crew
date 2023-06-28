@@ -597,7 +597,7 @@ crew_class_controller <- R6::R6Class(
         seconds_interval = seconds_interval,
         seconds_timeout = Inf
       )
-      controller_map_message_complete(length(names), start)
+      controller_map_message_complete(length(names), start, verbose)
       if_any(verbose, message(), NULL)
       results <- self$schedule$list()
       self$schedule <- old_schedule
@@ -868,7 +868,10 @@ controller_map_message_progress <- function(pushed, collected, verbose) {
   message(text, appendLF = FALSE)
 }
 
-controller_map_message_complete <- function(tasks, start) {
+controller_map_message_complete <- function(tasks, start, verbose) {
+  if (!verbose) {
+    return()
+  }
   seconds <- (nanonext::mclock() - start) / 1000
   time <- units_time(seconds)
   text <- sprintf("\r%s tasks done in %s.", tasks, time)

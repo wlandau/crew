@@ -540,18 +540,6 @@ crew_class_controller <- R6::R6Class(
         error %in% c("stop", "warn", "silent"),
         message = "error argument must be \"stop\", \"warn\", or \"silent\""
       )
-      crew_assert(
-        isTRUE(self$client$started),
-        message = "controller must be started before calling map()"
-      )
-      crew_assert(
-        self$empty(),
-        message = paste(
-          "controller must be empty before calling map().",
-          "Either start a new controller or collect any",
-          "finished tasks and ensure no tasks are still running."
-        )
-      )
       string <- if_any(save_command, deparse_safe(command), NA_character_)
       .timeout <- if_any(
         is.null(seconds_timeout),
@@ -568,6 +556,12 @@ crew_class_controller <- R6::R6Class(
         message = "task names in map() must not have duplicates"
       )
       names_iterate <- names(iterate)
+      self$start()
+      old_schedule <- self$schedule
+      self$schedule <- crew_schedule(
+        seconds_interval = old_schedule$seconds_interval
+      )
+      self$schedule$start()
       for (index in seq_along(names)) {
         for (name in names_iterate) {
           data[[name]] <- .subset2(.subset2(iterate, name), index)
@@ -593,7 +587,7 @@ crew_class_controller <- R6::R6Class(
         seconds_timeout = Inf
       )
       results <- self$schedule$list()
-      self$schedule$start()
+      self$schedule <- old_schedule
       out <- lapply(results, monad_tibble)
       out <- tibble::new_tibble(data.table::rbindlist(out))
       out <- out[match(x = names, table = out$name),, drop = FALSE] # nolint

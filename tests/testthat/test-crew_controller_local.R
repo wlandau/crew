@@ -491,3 +491,44 @@ test_that("map() tasks attributed to correct workers", {
   expect_equal(sum$errors, c(0L, 0L, 1L, 0L))
   expect_equal(sum$warnings, c(0L, 0L, 1L, 0L))
 })
+
+test_that("map() does not need an started controller", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  results <- x$map(command = TRUE, iterate = list(x = c(1, 2)))
+  expect_equal(nrow(results), 2L)
+})
+
+test_that("map() does not need an empty controller", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(command = TRUE)
+  x$wait(seconds_timeout = 30)
+  expect_equal(x$schedule$summary()$pushed, 0L)
+  expect_equal(x$schedule$summary()$collected, 1L)
+  results <- x$map(command = TRUE, iterate = list(x = c(1, 2)))
+  expect_equal(nrow(results), 2L)
+  expect_equal(x$schedule$summary()$pushed, 0L)
+  expect_equal(x$schedule$summary()$collected, 1L)
+})

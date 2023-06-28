@@ -285,6 +285,10 @@ crew_class_controller <- R6::R6Class(
       save_command = FALSE,
       controller = NULL
     ) {
+      started <- .subset2(.subset2(self, "client"), "started")
+      if (is.null(started) || !started) {
+        crew_error("Please call YOUR_CONTROLLER$start() before pushing tasks.")
+      }
       if (substitute) {
         command <- substitute(command)
       }
@@ -320,8 +324,8 @@ crew_class_controller <- R6::R6Class(
     #' @description Quickly push a task to the head of the task list.
     #' @details Exists to support extensions to `crew` for `purrr`-like
     #'   functional programming. For developers only and not supported for
-    #'   controller groups. `shove()` skips some of the user
-    #'   options for `push()` to aggressively optimize performance.
+    #'   controller groups. Relative to `push()`, `shove()` skips user
+    #'   options and guardrails for to aggressively optimize performance.
     #' @return `NULL` (invisibly).
     #' @param command Language object with R code to run.
     #' @param data Named list of local data objects in the

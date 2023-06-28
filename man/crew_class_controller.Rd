@@ -481,8 +481,8 @@ and efficiency.}
 \subsection{Details}{
 Exists to support extensions to \code{crew} for \code{purrr}-like
 functional programming. For developers only and not supported for
-controller groups. \code{shove()} skips some of the user
-options for \code{push()} to aggressively optimize performance.
+controller groups. Relative to \code{push()}, \code{shove()} skips user
+options and guardrails for to aggressively optimize performance.
 }
 
 \subsection{Returns}{

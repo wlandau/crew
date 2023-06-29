@@ -277,15 +277,17 @@ crew_class_launcher <- R6::R6Class(
         (2L * as.integer(isTRUE(self$reset_packages))) +
         (4L * as.integer(isTRUE(self$reset_options))) +
         (8L * as.integer(isTRUE(self$garbage_collection)))
+      tls <- environment(mirai::daemons)$..[[self$name]]$tls$client
       list(
         url = socket,
+        asyncdial = FALSE,
         maxtasks = self$tasks_max,
         idletime = self$seconds_idle * 1000,
         walltime = self$seconds_wall * 1000,
         timerstart = self$tasks_timers,
         exitlinger = self$seconds_exit * 1000,
         cleanup = cleanup,
-        asyncdial = FALSE
+        tls = tls
       )
     },
     #' @description Create a call to [crew_worker()] to

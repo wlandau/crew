@@ -285,6 +285,8 @@ crew_test("custom launcher", {
     workers = 1L,
     host = "127.0.0.1",
     port = NULL,
+    tls_enable = FALSE,
+    tls_config = NULL,
     seconds_interval = 0.5,
     seconds_timeout = 5,
     seconds_launch = 30,
@@ -303,6 +305,8 @@ crew_test("custom launcher", {
       workers = workers,
       host = host,
       port = port,
+      tls_enable = tls_enable,
+      tls_config = tls_config,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout
     )

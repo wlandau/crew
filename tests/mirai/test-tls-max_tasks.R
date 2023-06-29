@@ -5,10 +5,6 @@ library(mirai)
 throttler <- crew::crew_schedule()
 
 # Efficient and convenient data structure to keep track of {mirai} tasks.
-# It has a hash table for new tasks and a first-in/first-out linked list
-# for resolved tasks. It calls nanonext::.unresolved() to collect resolved
-# tasks, but otherwise it does not rely on {mirai}/{nanonext}. I highly doubt
-# it is the source of the {crew} bugs in #88 or #89.
 schedule <- crew::crew_schedule()
 schedule$start()
 
@@ -16,7 +12,7 @@ schedule$start()
 n <- 20L
 mirai::daemons(
   n = n,
-  url = "ws://127.0.0.1:5000",
+  url = "wss://127.0.0.1:5000",
   dispatcher = TRUE,
   token = TRUE
 )
@@ -76,13 +72,17 @@ scale <- function(workers) {
     # mirai::daemons(n = 0L). This is important for updating the final
     # assigned and complete tallies later on.
     workers$workers$handle[[index]] <- callr::r_bg(
-      func = function(url) {
+      func = function(url, tls) {
         mirai::server(
           url = url,
+          tls = tls,
           maxtasks = 100L
         )
       },
-      args = list(url = workers$workers$socket[index])
+      args = list(
+        url = workers$workers$socket[index],
+        tls = environment(mirai::daemons)$..$default$tls$client
+      )
     )
     # Increment the launch count.
     workers$workers$launches[index] <- workers$workers$launches[index] + 1L
@@ -94,6 +94,7 @@ scale <- function(workers) {
 
 index <- 0L # current task
 n_tasks <- 6000L # all tasks
+results <- list()
 while (index < n_tasks || schedule$nonempty()) { # while there is work to do
   if (!throttler$throttle()) { # avoid overburdening the {mirai} dispatcher
     rotate(workers) # Rotate the URLs of done workers.
@@ -119,37 +120,22 @@ while (index < n_tasks || schedule$nonempty()) { # while there is work to do
     task <- schedule$pop() # Return a task that was resolved and collected.
     # pop() returns NULL if there is no resolved/collected task.
     if (!is.null(task)) {
-      cat("pop", task$data, "\n")
+      data <- task$data
+      results[[data]] <- data
+      cat("pop", data, "\n")
     }
   }
 }
 
-# Manually terminate the workers without calling mirai::daemons(n = 0L).
-# This allows the final tally to be updated correctly.
+# Terminate the dispatcher.
+daemons(n = 0L)
+
+# Manually terminate any remaining workers.
 for (handle in workers$workers$handle) {
   if (inherits(handle, "r_process") && handle$is_alive()) {
     handle$kill()
   }
 }
 
-# Update the final tally and clean up the dispatcher.
-rotate(workers)
-tally(workers)
-daemons(n = 0L)
-
-# The cumulative assigned and complete statistics should be equal for
-# each worker.
-print("worker info")
-print(workers$workers[, c("launches", "assigned", "complete")])
-
-# Should equal n_tasks.
-print("total assigned")
-print(sum(workers$workers$assigned))
-
-# Should equal n_tasks.
-print("total complete")
-print(sum(workers$workers$complete))
-
-# The backlog should be 0 for all workers.
-print("backlog per worker")
-print(table(workers$workers$assigned - workers$workers$complete))
+# Check the results.
+all(sort(as.integer(unlist(results))) == seq_len(n_tasks))

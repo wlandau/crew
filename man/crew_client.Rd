@@ -9,6 +9,8 @@ crew_client(
   workers = 1L,
   host = NULL,
   port = NULL,
+  tls_enable = FALSE,
+  tls_config = NULL,
   seconds_interval = 0.25,
   seconds_timeout = 10
 )
@@ -24,6 +26,32 @@ If \code{NULL}, the host defaults to the local IP address.}
 
 \item{port}{TCP port to listen for the workers. If \code{NULL},
 then an available ephemeral port is automatically chosen.}
+
+\item{tls_enable}{Logical of length 1, whether to use transport layer
+security (TLS) to secure connections between the client and workers.
+Only supported for \code{mirai} version 0.9.0.9013 and above.
+Uses an automatically generated one-time self-signed certificate by
+default. To guard against man-in-the-middle attacks, consider
+generating a one-time certificate yourself, requesting a trusted
+certificate authority (CA) to sign it, and then supplying the
+keys to the \code{tls_config} argument. Enabling TLS requires \code{mirai}
+version 0.9.0.9013 or above, and a \code{NULL} value for \code{tls_enable}
+will enable TLS if and only if the \code{mirai} version is sufficient.}
+
+\item{tls_config}{Optional and only relevant if TLS is enabled
+(see the \code{tls_config} argument). The \code{tls_config} argument
+controls how transport layer security (TLS) is configured,
+and it is directly forwarded to the \code{tls} argument of
+\code{mirai::daemons()}. If \code{tls_config} is \code{NULL},
+then \code{mirai} will generate a one-time
+self-signed certificate. This default approach is protects against
+the simplest attempts at packet sniffing, but it is still vulnerable
+to man-in-the-middle attacks. When greater security is required,
+consider generating a PEM-encoded certificate and associated
+private key yourself and using a trusted certificate authority (CA)
+to sign the former. The documentation of \code{mirai}, including the
+\code{tls} arguments of the \code{mirai::daemons()} and \code{mirai::server()}
+functions, has more details.}
 
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal

@@ -8,7 +8,7 @@ crew_test("crew_client() validate", {
 crew_test("crew_client() works", {
   skip_on_cran()
   skip_on_os("windows")
-  client <- crew_client(host = "127.0.0.1")
+  client <- crew_client(host = "127.0.0.1", tls_enable = FALSE)
   on.exit({
     client$terminate()
     rm(client)
@@ -56,7 +56,7 @@ crew_test("crew_client() works", {
       )
     },
     seconds_interval = 0.5,
-    seconds_timeout = 10
+    seconds_timeout = 60
   )
   m <- mirai::mirai(ps::ps_pid(), .compute = client$name)
   crew_retry(

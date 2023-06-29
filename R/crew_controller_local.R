@@ -20,6 +20,8 @@ crew_controller_local <- function(
   workers = 1L,
   host = "127.0.0.1",
   port = NULL,
+  tls_enable = FALSE,
+  tls_config = NULL,
   seconds_interval = 0.25,
   seconds_timeout = 10,
   seconds_launch = 30,
@@ -38,6 +40,8 @@ crew_controller_local <- function(
     workers = workers,
     host = host,
     port = port,
+    tls_enable = tls_enable,
+    tls_config = tls_config,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout
   )

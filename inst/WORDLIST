@@ -9,6 +9,8 @@ http
 joss
 LFS
 ’
+PEM
+TLS
 README
 reproducibly
 rOpenSci

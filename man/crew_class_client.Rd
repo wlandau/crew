@@ -47,6 +47,10 @@ Other class:
 
 \item{\code{port}}{See \code{\link[=crew_client]{crew_client()}}.}
 
+\item{\code{tls_enable}}{See \code{\link[=crew_client]{crew_client()}}.}
+
+\item{\code{tls_config}}{See \code{\link[=crew_client]{crew_client()}}.}
+
 \item{\code{seconds_interval}}{See \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_client]{crew_client()}}.}
@@ -78,6 +82,8 @@ Other class:
   workers = NULL,
   host = NULL,
   port = NULL,
+  tls_enable = NULL,
+  tls_config = NULL,
   seconds_interval = NULL,
   seconds_timeout = NULL
 )}\if{html}{\out{</div>}}
@@ -93,6 +99,10 @@ Other class:
 \item{\code{host}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{port}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+
+\item{\code{tls_enable}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+
+\item{\code{tls_config}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 

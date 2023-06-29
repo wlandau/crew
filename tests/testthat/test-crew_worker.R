@@ -27,7 +27,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
         x = mirai::daemons()$daemons,
         shallow = FALSE
       )
-      daemons_valid(envir$daemons)
+      is.matrix(envir$daemons) && all(dim(envir$daemons) > 0L)
     },
     seconds_interval = 0.1,
     seconds_timeout = 5

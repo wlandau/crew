@@ -11,11 +11,14 @@ schedule$start()
 
 # Start the {mirai} client and servers with TLS.
 daemons(n = 20L, url = "wss://127.0.0.1:0", dispatcher = TRUE, token = TRUE)
-codes <- lapply(environment(daemons)$..$default$urls, launch_server)
+for (url in environment(daemons)$..$default$urls) {
+  launch_server(url = url)
+  Sys.sleep(0.1)
+}
 
 # Run the tasks.
 index <- 0L # current task
-n_tasks <- 6000L # all tasks
+n_tasks <- 60000L # all tasks
 results <- list()
 while (index < n_tasks || schedule$nonempty()) { # while there is work to do
   # If there are still tasks to launch, launch one.

@@ -1,6 +1,9 @@
 ---
 title: "Launcher plugins"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: true
 vignette: >
   %\VignetteIndexEntry{Launcher plugins}
   %\VignetteEngine{knitr::rmarkdown}
@@ -16,39 +19,39 @@ knitr::opts_chunk$set(
 )
 ```
 
-## About
+# About
 
 `crew` lets users write custom [launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html) for different types of workers that connect over the local network. The [`crew.cluster`](https://wlandau.github.io/crew.cluster/) package already has plugins for traditional high-performance computing schedulers ([SLURM](https://slurm.schedmd.com/), SGE, LSF, and PBS/TORQUE).
 
-## 📣 Request for community contributions 📣
+# 📣 Request for community contributions 📣
 
 <span style="color: blue">**The launcher plugin framework aims to extend `crew` to modern platforms and services like [AWS Batch](https://aws.amazon.com/batch/), [Google Cloud Run](https://cloud.google.com/run/), [Kubernetes](https://kubernetes.io/), and beyond. At the time of writing, plugins for cloud computing do not yet exist. So if you have access to these services and know how to use them, please consider contributing a package with plugins of your own. The maintainer of `crew` would love to work with you!**</span>
 
-## How it works
+# How it works
 
 These [launcher](https://wlandau.github.io/crew/reference/crew_class_launcher.html) plugins need not become part of the `crew` package itself. You can write your plugin in a simple R script, or you write it in a custom R package that [depends on](https://r-pkgs.org/dependencies-in-practice.html) `crew`. Published packages with [launcher](https://wlandau.github.io/crew/reference/crew_class_launcher.html) plugins are powerful extensions that enhance `crew` for the entire open-source community. See [R Packages](https://r-pkgs.org/) by [Hadley Wickham](https://hadley.nz/) and [Jenny Bryan](https://jennybryan.org/) for how to write an R package.
 
-## Scope
+# Scope
 
 This vignette demonstrates how to write a `crew` launcher plugin. It assumes prior familiarity with [`R6` classes](https://r6.r-lib.org/articles/Introduction.html) and the computing platform of your plugin.
 
-## Implementation
+# Implementation
 
 To create your own launcher plugin, write an [`R6`](https://r6.r-lib.org/articles/Introduction.html) subclass of [`crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.html) with a [`launch_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-launch-worker-) method analogous the one in the [local process launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html). `launch_worker()` must accept the same arguments as the [local process `launch_worker()` method](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-launch-worker-), generate a call to [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html), and then submit a new job or process to run that call.
 
-## Network
+# Network
 
 Each worker that launches must be able to dial into the client over the local network. The `host` argument of `crew_client()` provides the local IP address, and the `port` argument provides the TCP port. The controller helper function (see below) should expose arguments `host` and `port` in order to solve potential network problems like [this one](https://github.com/wlandau/crew.cluster/issues/1#issuecomment-1546024163).
 
 By default, `host` is the local IP address. `crew` assumes the local network is secure. Please take the time to assess the network security risks of your computing environment. Use at your own risk.
 
-## Termination
+# Termination
 
 We recommend you implement an optional [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-) method. Although `mirai` has its own way of terminating workers, it only works if the worker already connected, and it cannot reach workers that fail to connect and hang in a crashed state. An optional [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-) method in your `crew` launcher plugin is extra assurance that these workers will exit.
 
 If you implement a custom [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-) method, it must not throw an error (and should not throw a warning or message) if the worker is already terminated. In addition, it must accept a handle that identifies the worker, and this handle must be the return value of the previous call to [`launch_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-launch-worker-). A handle can be any kind of R object: a process ID, a job name, an `R6` object returned by `callr::r_bg()`, etc.
 
-## Example
+# Example
 
 The following is a custom custom launcher class whose workers are local R processes on Unix-like systems.^[See [`tests/launchers/test-launcher-system2.R`](https://github.com/wlandau/crew/blob/main/tests/launchers/test-launcher-system2.R) for an example launcher without a `termiante_worker()` method.]
 
@@ -96,7 +99,7 @@ launcher$call(
 )
 ```
 
-## Helper
+# Helper
 
 It is useful to have a helper function that creates controllers with your custom launcher. It should:
 
@@ -160,7 +163,7 @@ crew_controller_custom <- function(
 }
 ```
 
-## Informal testing
+# Informal testing
 
 Before you begin testing, please begin monitoring local processes and remote jobs on your platform. In the case of the above `crew` launcher which only creates local processes, it is sufficient to start [`htop`](https://htop.dev/) and filter for R processes, or launch a new R session to monitor the process table from [`ps::ps()`](https://ps.r-lib.org/reference/ps.html). However, for more ambitious launchers that submit workers to e.g. [AWS Batch](https://aws.amazon.com/batch/), you may need to open the [CloudWatch](https://aws.amazon.com/cloudwatch/) dashboard, then view the AWS billing dashboard after testing.
 
@@ -220,7 +223,7 @@ controller$terminate()
 
 Finally, use the process monitoring interface of your computing platform or operating system to verify that all `mirai` dispatchers and `crew` workers are terminated.
 
-## Load testing
+# Load testing
 
 If the informal testing succeeded, we recommend you scale up testing to more ambitious scenarios. As one example, you can test that your workers can auto-scale and quickly churn through a large number of tasks.
 
@@ -278,7 +281,7 @@ controller$terminate()
 # and crew workers successfully terminated.
 ```
 
-## Tips
+# Tips
 
 * The [source code of the built-in local process launcher](https://github.com/wlandau/crew/blob/main/R/crew_launcher_local.R) is a helpful reference for writing your own launcher plugins.
 * For efficiency, every launch can happen asynchronously. There is no need to wait for the worker to start. When it starts, it will connect back to the `mirai` dispatcher  over the local network and start accepting tasks.

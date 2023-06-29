@@ -3,7 +3,8 @@ title: "Asynchronous Shiny apps"
 author: "Will Landau and Daniel Woodie"
 output:
   rmarkdown::html_vignette:
-    tabset: true
+    toc: true
+    number_sections: true
 vignette: >
   %\VignetteIndexEntry{Asynchronous Shiny apps}
   %\VignetteEngine{knitr::rmarkdown}
@@ -17,7 +18,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## About
+# About
 
 Shiny has revolutionized interactive web apps in R. However, because of the staggering breadth of possibilities it created, the official ecosystem still has unmet needs. In particular, long-running tasks are challenging because they may block the R session and cause the app to lag. Any degree of latency is detrimental because web app users expect instant responses. Long tasks should run asynchronously to free up the main process for user interactions.
 
@@ -25,7 +26,7 @@ The [`promises`](https://rstudio.github.io/promises/) package is a popular solut
 
 By contrast, `crew` scales out easily, and its controller asynchronously manages all the tasks from a single convenient place. This vignette demonstrates scalable asynchronous programming with `crew` in Shiny.
 
-## Example
+# Example
 
 We focus on the `crew`-powered Shiny app at <https://wlandau.shinyapps.io/crew-shiny/>. When it launches, it looks like this:
 
@@ -47,7 +48,7 @@ Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/m
 
 ![](./figures/completed2.png)
 
-## Tutorial
+# Tutorial
 
 The app depends on the following packages.
 
@@ -147,7 +148,7 @@ Finally, `shinyApp()` runs the app with the UI and server defined above.
 shinyApp(ui = ui, server = server)
 ```
 
-## Code
+# Code
 
 See below for the complete `app.R` file.
 

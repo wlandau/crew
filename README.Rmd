@@ -26,6 +26,23 @@ In computationally demanding analysis projects, statisticians and data scientist
 
 **The [launcher plugin framework](https://wlandau.github.io/crew/articles/plugins.html) aims to extend `crew` to modern platforms and services like [AWS Batch](https://aws.amazon.com/batch/), [Google Cloud Run](https://cloud.google.com/run/), [Kubernetes](https://kubernetes.io/), and beyond. At the time of writing, plugins for cloud computing do not yet exist. So if you have access to these services and know how to use them, please consider contributing a package with plugins of your own. The tutorial at <https://wlandau.github.io/crew/articles/plugins.html> explains how. The maintainer of `crew` would love to work with you!**
 
+# Table of Contents
+
+1. [Installation](#installation)
+2. [Documentation](#documentation)
+3. [Concepts](#concepts)
+4. [Plugins](#plugins)
+5. [Tasks](#tasks)
+6. [Functional programming](#functional-programming)
+7. [Summaries](#summaries)
+8. [Termination](#termination)
+9. [Scale](#scale)
+10. [Risks](#risks)
+11. [Similar work](#similar-work)
+12. [Thanks](#thanks)
+13. [Code of conduct](#code-of-conduct)
+14. [Citation](#citation)
+
 # Installation
 
 Type | Source | Command

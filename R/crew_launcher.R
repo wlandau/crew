@@ -475,7 +475,7 @@ crew_class_launcher <- R6::R6Class(
       # TODO: remove if https://github.com/shikokuchuo/mirai/issues/64 is
       # fixed in a way that does not require a 0.1-second delay.
       if_any(
-        grepl(pattern = "^wss", x = socket),
+        substr(socket, 1L, 3L) == "wss",
         nanonext::msleep(100),
         NULL
       )

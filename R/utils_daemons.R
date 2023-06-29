@@ -13,7 +13,7 @@ daemons_info <- function(name) {
   )
   daemons <- .subset2(envir, "daemons")
   valid <- .subset2(envir, "valid")
-  if_any(valid, daemons, crew_error(daemons, name))
+  if_any(valid, daemons, daemons_error(daemons, name))
 }
 
 daemons_error <- function(daemons, name) {

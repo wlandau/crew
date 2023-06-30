@@ -19,5 +19,18 @@ crew_worker <- function(settings, launcher, worker, instance) {
     CREW_WORKER = worker,
     CREW_INSTANCE = instance
   )
+  crew_worker_random_delay(settings)
   do.call(what = mirai::server, args = settings)
+}
+
+# TODO: remove delay if/when TLS workers can dial in asynchronously
+# (https://github.com/shikokuchuo/mirai/issues/64).
+crew_worker_random_delay <- function(settings) {
+  if (is.null(settings$tls)) {
+    return()
+  }
+  draw <- nanonext::random(n = 1L)
+  uniform <- (draw %% .Machine$integer.max) / .Machine$integer.max
+  sleep <- 750 * uniform + 250
+  nanonext::msleep(sleep)
 }

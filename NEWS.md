@@ -4,6 +4,7 @@
 * Add a `map()` method to the controller class for functional programming (#93).
 * Fix bug in `scale()` which launched too many workers when `active - demand` was less than 0.
 * Add guardrails to make sure the controller is started for methods that require this. Part of this involved improving the error messages.
+* Retry `daemons()` in `daemons_info()`.
 
 # crew 0.3.0
 

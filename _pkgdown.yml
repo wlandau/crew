@@ -2,6 +2,7 @@ destination: docs/
 reference:
 - title: For users
   contents:
+  - '`crew_clean`'
   - '`crew_controller_local`'
   - '`crew_controller_group`'
   - '`crew-package`'

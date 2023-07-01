@@ -33,7 +33,7 @@ writing, plugins for cloud computing do not yet exist. So if you have
 access to these services and know how to use them, please consider
 contributing a package with plugins of your own. The tutorial at
 <https://wlandau.github.io/crew/articles/plugins.html> explains how. The
-maintainer of `crew` would love to work with you\!**
+maintainer of `crew` would love to work with you!**
 
 # Table of Contents
 
@@ -55,7 +55,7 @@ maintainer of `crew` would love to work with you\!**
 # Installation
 
 | Type        | Source     | Command                                                              |
-| ----------- | ---------- | -------------------------------------------------------------------- |
+|-------------|------------|----------------------------------------------------------------------|
 | Release     | CRAN       | `install.packages("crew")`                                           |
 | Development | GitHub     | `remotes::install_github("wlandau/crew")`                            |
 | Development | R-universe | `install.packages("crew", repos = "https://wlandau.r-universe.dev")` |
@@ -264,6 +264,16 @@ resources.
 controller$terminate()
 ```
 
+The `mirai` dispatcher process should exit on its own, but if not, you
+can manually terminate the process ID at `controller$client$dispatcher`
+or call `crew_clean()` to terminate any dispatchers from current or
+previous R sessions.
+
+``` r
+crew_clean()
+#> nothing to clean up
+```
+
 # Scale
 
 As explained above, `push()`, `pop()`, and `wait()` launch new workers
@@ -392,89 +402,98 @@ ps::ps_is_running(handle)
 #> [1] FALSE
 ```
 
+Alternatively, `crew_clean()` looks for dispatcher and local processes
+associated with your user name and terminates them all.
+
+``` r
+crew_clean()
+#> terminated PID 107248 dispatcher
+#> terminated PID 378250 dispatcher
+```
+
 # Similar work
 
-  - [`mirai`](https://github.com/shikokuchuo/mirai): a powerful R
-    framework for asynchronous tasks built on
-    [NNG](https://nng.nanomsg.org). The purpose of `crew` is to extend
-    [`mirai`](https://github.com/shikokuchuo/mirai) to different
-    computing platforms for distributed workers.
-  - [`rrq`](https://mrc-ide.github.io/rrq/): a task queue for R based on
-    [Redis](https://redis.io).
-  - [`rrqueue`](http://traitecoevo.github.io/rrqueue/): predecessor of
-    [`rrq`](https://mrc-ide.github.io/rrq/).
-  - [`clustermq`](https://mschubert.github.io/clustermq/): sends R
-    function calls as jobs to computing clusters.
-  - [`future`](https://future.futureverse.org/): a unified interface for
-    asynchronous evaluation of single tasks and map-reduce calls on a
-    wide variety of backend technologies.
-  - [`batchtools`](https://mllg.github.io/batchtools/): tools for
-    computation on batch systems.
-  - [`targets`](https://docs.ropensci.org/targets/): a Make-like
-    pipeline tool for R.
-  - [`later`](https://r-lib.github.io/later/): delayed evaluation of
-    synchronous tasks.
-  - [`promises`](https://rstudio.github.io/promises/):
-    minimally-invasive asynchronous programming for a small number of
-    tasks within Shiny apps.
-  - [`callr`](https://github.com/r-lib/callr): initiates R process from
-    other R processes.
-  - [High-performance computing CRAN task
-    view](https://CRAN.R-project.org/view=HighPerformanceComputing).
+- [`mirai`](https://github.com/shikokuchuo/mirai): a powerful R
+  framework for asynchronous tasks built on
+  [NNG](https://nng.nanomsg.org). The purpose of `crew` is to extend
+  [`mirai`](https://github.com/shikokuchuo/mirai) to different computing
+  platforms for distributed workers.
+- [`rrq`](https://mrc-ide.github.io/rrq/): a task queue for R based on
+  [Redis](https://redis.io).
+- [`rrqueue`](http://traitecoevo.github.io/rrqueue/): predecessor of
+  [`rrq`](https://mrc-ide.github.io/rrq/).
+- [`clustermq`](https://mschubert.github.io/clustermq/): sends R
+  function calls as jobs to computing clusters.
+- [`future`](https://future.futureverse.org/): a unified interface for
+  asynchronous evaluation of single tasks and map-reduce calls on a wide
+  variety of backend technologies.
+- [`batchtools`](https://mllg.github.io/batchtools/): tools for
+  computation on batch systems.
+- [`targets`](https://docs.ropensci.org/targets/): a Make-like pipeline
+  tool for R.
+- [`later`](https://r-lib.github.io/later/): delayed evaluation of
+  synchronous tasks.
+- [`promises`](https://rstudio.github.io/promises/): minimally-invasive
+  asynchronous programming for a small number of tasks within Shiny
+  apps.
+- [`callr`](https://github.com/r-lib/callr): initiates R process from
+  other R processes.
+- [High-performance computing CRAN task
+  view](https://CRAN.R-project.org/view=HighPerformanceComputing).
 
 # Thanks
 
 The `crew` package incorporates insightful ideas from the following
 people.
 
-  - [Charlie Gao](https://github.com/shikokuchuo) created
-    [`mirai`](https://github.com/shikokuchuo/mirai) and
-    [`nanonext`](https://github.com/shikokuchuo/nanonext) and graciously
-    accommodated the complicated and demanding feature requests that
-    made `crew` possible.
-  - [Rich FitzJohn](https://github.com/richfitz) and [Robert
-    Ashton](https://github.com/r-ash) developed
-    [`rrq`](https://mrc-ide.github.io/rrq//).
-  - [Gábor Csárdi](https://github.com/gaborcsardi/) developed
-    [`callr`](https://github.com/r-lib/callr) and wrote an [edifying
-    blog post on implementing task
-    queues](https://www.tidyverse.org/blog/2019/09/callr-task-q/).
-  - [Kirill Müller](https://github.com/krlmlr/) created the
-    [`workers`](https://github.com/wlandau/workers) prototype, an
-    initial effort that led directly to the current implementation of
-    `crew`. `crew` would not exist without Kirill’s insights about
-    orchestration models for R processes.
-  - [Henrik Bengtsson](https://github.com/HenrikBengtsson/). Henrik’s
-    [`future`](https://github.com/HenrikBengtsson/future/) package
-    ecosystem demonstrates the incredible power of a consistent R
-    interface on top of a varying collection of high-performance
-    computing technologies.
-  - [Michael Schubert](https://github.com/mschubert/). Michael’s
-    [`clustermq`](https://mschubert.github.io/clustermq/) package
-    supports efficient high-performance computing on traditional
-    clusters, and it demonstrates the value of a central `R6` object to
-    manage an entire collection of persistent workers.
-  - [David Kretch](https://github.com/davidkretch). The
-    [`paws`](https://github.com/paws-r/paws) R package is a powerful
-    interface to Amazon Web Services, and the documentation clearly
-    communicates the capabilities and limitations of AWS to R users.
-  - [Adam Banker](https://github.com/adambanker), co-authored
-    [`paws`](https://github.com/paws-r/paws) with [David
-    Kretch](https://github.com/davidkretch).
-  - [David Neuzerling](https://github.com/mdneuzerling). David’s
-    [`lambdr`](https://github.com/mdneuzerling/lambdr/) package
-    establishes a helpful pattern to submit and collect AWS Lambda jobs
-    from R.
-  - [Mark Edmondson](https://github.com/MarkEdmondson1234/). Mark
-    maintains several R packages to interface with Google Cloud Platform
-    such as
-    [`googleCloudStorageR`](https://github.com/cloudyr/googleCloudStorageR)
-    and
-    [`googleCloudRunner`](https://github.com/MarkEdmondson1234/googleCloudRunner),
-    and he [started the
-    conversation](https://github.com/ropensci/targets/issues/720) around
-    helping [`targets`](https://github.com/ropensci/targets) submit jobs
-    to Google Cloud Run.
+- [Charlie Gao](https://github.com/shikokuchuo) created
+  [`mirai`](https://github.com/shikokuchuo/mirai) and
+  [`nanonext`](https://github.com/shikokuchuo/nanonext) and graciously
+  accommodated the complicated and demanding feature requests that made
+  `crew` possible.
+- [Rich FitzJohn](https://github.com/richfitz) and [Robert
+  Ashton](https://github.com/r-ash) developed
+  [`rrq`](https://mrc-ide.github.io/rrq//).
+- [Gábor Csárdi](https://github.com/gaborcsardi/) developed
+  [`callr`](https://github.com/r-lib/callr) and wrote an [edifying blog
+  post on implementing task
+  queues](https://www.tidyverse.org/blog/2019/09/callr-task-q/).
+- [Kirill Müller](https://github.com/krlmlr/) created the
+  [`workers`](https://github.com/wlandau/workers) prototype, an initial
+  effort that led directly to the current implementation of `crew`.
+  `crew` would not exist without Kirill’s insights about orchestration
+  models for R processes.
+- [Henrik Bengtsson](https://github.com/HenrikBengtsson/). Henrik’s
+  [`future`](https://github.com/HenrikBengtsson/future/) package
+  ecosystem demonstrates the incredible power of a consistent R
+  interface on top of a varying collection of high-performance computing
+  technologies.
+- [Michael Schubert](https://github.com/mschubert/). Michael’s
+  [`clustermq`](https://mschubert.github.io/clustermq/) package supports
+  efficient high-performance computing on traditional clusters, and it
+  demonstrates the value of a central `R6` object to manage an entire
+  collection of persistent workers.
+- [David Kretch](https://github.com/davidkretch). The
+  [`paws`](https://github.com/paws-r/paws) R package is a powerful
+  interface to Amazon Web Services, and the documentation clearly
+  communicates the capabilities and limitations of AWS to R users.
+- [Adam Banker](https://github.com/adambanker), co-authored
+  [`paws`](https://github.com/paws-r/paws) with [David
+  Kretch](https://github.com/davidkretch).
+- [David Neuzerling](https://github.com/mdneuzerling). David’s
+  [`lambdr`](https://github.com/mdneuzerling/lambdr/) package
+  establishes a helpful pattern to submit and collect AWS Lambda jobs
+  from R.
+- [Mark Edmondson](https://github.com/MarkEdmondson1234/). Mark
+  maintains several R packages to interface with Google Cloud Platform
+  such as
+  [`googleCloudStorageR`](https://github.com/cloudyr/googleCloudStorageR)
+  and
+  [`googleCloudRunner`](https://github.com/MarkEdmondson1234/googleCloudRunner),
+  and he [started the
+  conversation](https://github.com/ropensci/targets/issues/720) around
+  helping [`targets`](https://github.com/ropensci/targets) submit jobs
+  to Google Cloud Run.
 
 # Code of Conduct
 

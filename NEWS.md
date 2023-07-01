@@ -1,8 +1,15 @@
 # crew 0.3.0.9000 (development)
 
-* Remove temporary controller summary workaround that ensured CRAN compatibility with `targets` 1.1.3.
+## Highlights
+
+* Use the TLS capabilities of `nanonext` and `mirai`.
 * Add a `map()` method to the controller class for functional programming (#93).
 * Fix bug in `scale()` which launched too many workers when `active - demand` was less than 0.
+* Add `crew_clean()` to help clean up any lingering dispatchers and workers from previous sessions.
+
+## Other improvements
+
+* Remove temporary controller summary workaround that ensured CRAN compatibility with `targets` 1.1.3.
 * Add guardrails to make sure the controller is started for methods that require this. Part of this involved improving the error messages.
 * Retry `daemons()` in `daemons_info()`.
 

@@ -140,6 +140,7 @@ controller$terminate()
 \seealso{
 Other user: 
 \code{\link{crew-package}},
+\code{\link{crew_clean}()},
 \code{\link{crew_controller_group}()}
 }
 \concept{user}

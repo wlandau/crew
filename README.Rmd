@@ -199,6 +199,13 @@ Call `terminate()` on the controller after you finish using it. `terminate()` tr
 controller$terminate()
 ```
 
+The `mirai` dispatcher process should exit on its own, but if not, you can manually terminate the process ID at `controller$client$dispatcher` or call `crew_clean()` to terminate any dispatchers from current or previous R sessions.
+
+```{r}
+crew_clean()
+#> nothing to clean up
+```
+
 # Scale
 
 As explained above, `push()`, `pop()`, and `wait()` launch new workers to run tasks. The number of new workers depends on the number of tasks at the time. In addition, workers can shut themselves down as work completes. In other words, `crew` automatically raises and lowers the number of workers in response to fluctuations in the task workload.
@@ -254,6 +261,14 @@ ps::ps_is_running(handle)
 ps::ps_kill(handle)
 ps::ps_is_running(handle)
 #> [1] FALSE
+```
+
+Alternatively, `crew_clean()` looks for dispatcher and local processes associated with your user name and terminates them all.
+
+```{r}
+crew_clean()
+#> terminated PID 107248 dispatcher
+#> terminated PID 378250 dispatcher
 ```
 
 # Similar work

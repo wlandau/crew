@@ -24,7 +24,7 @@
 #' @importFrom mirai daemons mirai saisei server
 #' @importFrom nanonext mclock msleep random sha1 .unresolved
 #' @importFrom processx process
-#' @importFrom ps ps_handle ps_is_running ps_kill ps_status
+#' @importFrom ps ps_cmdline ps_handle ps_is_running ps_kill ps_status
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function enquo is_installed is_named quo_squash
 #' @importFrom stats runif

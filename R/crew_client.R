@@ -80,11 +80,11 @@ crew_client <- function(
 # TODO: remove when mirai > 0.9.0 and nanonext > 0.9.0 are on CRAN.
 tls_package_check <- function(tls_enable) {
   mirai <- utils::compareVersion(
-    as.character(packageVersion("mirai")),
+    as.character(utils::packageVersion("mirai")),
     "0.9.0"
   ) > 0L
   nanonext <- utils::compareVersion(
-    as.character(packageVersion("mirai")),
+    as.character(utils::packageVersion("mirai")),
     "0.9.0"
   ) > 0L
   if_any(

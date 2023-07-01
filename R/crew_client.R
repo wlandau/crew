@@ -11,7 +11,8 @@
 #'   then an available ephemeral port is automatically chosen.
 #' @param tls_enable Logical of length 1, whether to use transport layer
 #'   security (TLS) to secure connections between the client and workers.
-#'   Only supported for `mirai` version 0.9.0.9013 and above.
+#'   Only supported for `mirai` version 0.9.0.9020 and above and
+#'   `nanonext` version 0.9.0.9034 and above.
 #'   Uses an automatically generated one-time self-signed certificate by
 #'   default. To guard against man-in-the-middle attacks, consider
 #'   generating a one-time certificate yourself, requesting a trusted
@@ -61,6 +62,7 @@ crew_client <- function(
   workers <- as.integer(workers)
   host <- as.character(host %|||% getip::getip(type = "local"))
   port <- as.integer(port %|||% 0L)
+  tls_package_check(tls_enable)
   client <- crew_class_client$new(
     name = name,
     workers = workers,
@@ -73,6 +75,26 @@ crew_client <- function(
   )
   client$validate()
   client
+}
+
+# TODO: remove when mirai > 0.9.0 and nanonext > 0.9.0 are on CRAN.
+tls_package_check <- function(tls_enable) {
+  mirai <- utils::compareVersion(
+    as.character(packageVersion("mirai")),
+    "0.9.0"
+  ) > 0L
+  nanonext <- utils::compareVersion(
+    as.character(packageVersion("mirai")),
+    "0.9.0"
+  ) > 0L
+  if_any(
+    tls_enable && !(mirai && nanonext),
+    crew_warning(
+      "TLS in crew requires mirai >= 0.9.0.9020 and nanonext >= 0.9.0.9034.",
+      "Ignoring TLS settings."
+    ),
+    NULL
+  )
 }
 
 #' @title `R6` client class.

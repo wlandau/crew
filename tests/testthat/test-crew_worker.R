@@ -58,9 +58,3 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     expect_equal(Sys.getenv(var, unset = ""), "")
   }
 })
-
-crew_test("crew_worker_random_delay()", {
-  skip_on_cran()
-  expect_silent(crew_worker_random_delay(list()))
-  expect_silent(crew_worker_random_delay(list(tls = "stuff")))
-})

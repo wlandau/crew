@@ -29,7 +29,8 @@ then an available ephemeral port is automatically chosen.}
 
 \item{tls_enable}{Logical of length 1, whether to use transport layer
 security (TLS) to secure connections between the client and workers.
-Only supported for \code{mirai} version 0.9.0.9013 and above.
+Only supported for \code{mirai} version 0.9.0.9020 and above and
+\code{nanonext} version 0.9.0.9034 and above.
 Uses an automatically generated one-time self-signed certificate by
 default. To guard against man-in-the-middle attacks, consider
 generating a one-time certificate yourself, requesting a trusted

@@ -90,8 +90,7 @@ tls_package_check <- function(tls_enable) {
   if_any(
     tls_enable && !(mirai && nanonext),
     crew_warning(
-      "TLS in crew requires mirai >= 0.9.0.9020 and nanonext >= 0.9.0.9034.",
-      "Ignoring TLS settings."
+      "TLS in crew requires mirai >= 0.9.0.9020 and nanonext >= 0.9.0.9034."
     ),
     NULL
   )

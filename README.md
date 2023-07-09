@@ -201,6 +201,17 @@ as.numeric(results$result)
 #> [1] 14 18
 ```
 
+If at least one task in
+[`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map)
+throws an error, the default behavior is to error out in the main
+session and not return the results, If that happens, the results are
+available in the `controller$error`. To return the results instead of
+setting `controller$error`, regardless of error status, set
+`error = "warn"` or `"silent"` in
+[`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map).
+To conserve memory, consider setting `controller$error <- NULL` when you
+are done troubleshooting.
+
 # Summaries
 
 The controller summary shows how many tasks each worker ran, how many

@@ -1,4 +1,4 @@
-# crew 0.3.0.9000 (development)
+# crew 0.4.0
 
 ## Highlights
 

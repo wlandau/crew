@@ -75,6 +75,9 @@ crew_class_controller <- R6::R6Class(
     #' @field until Numeric of length 1, time point when
     #'   throttled auto-scaling unlocks.
     until = NULL,
+    #' @field error Tibble of monads from the last call to
+    #'   `map(error = "stop)`.
+    error = NULL,
     #' @description `mirai` controller constructor.
     #' @return An `R6` controller object.
     #' @param client Router object. See [crew_controller()].
@@ -437,7 +440,11 @@ crew_class_controller <- R6::R6Class(
     #' @param error Character vector of length 1, choice of action if
     #'   a task has an error. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
-    #'     a value.
+    #'     a value. In case of an error, the results from the last errored
+    #'     `map()` are in the `error` field
+    #'     of the controller, e.g. `controller_object$error`. To reduce
+    #'     memory consumption, set `controller_object$error <- NULL` after
+    #'     you are finished troubleshooting.
     #'   * `"warn"`: throw a warning. This allows the return value with
     #'     all the error messages and tracebacks to be generated.
     #'   * `"silent"`: do nothing special.
@@ -631,15 +638,22 @@ crew_class_controller <- R6::R6Class(
       error_messages <- .subset2(out, "error")
       if (!all(is.na(error_messages)) && !identical(error, "silent")) {
         message <- sprintf(
-          "%s tasks encountered errors. First error message: \"%s\"",
+          "%s tasks encountered errors. First error message: \"%s\".",
           sum(!is.na(error_messages)),
           error_messages[min(which(!is.na(error_messages)))]
         )
-        if_any(
-          identical(error, "stop"),
-          crew_error(message),
+        if (identical(error, "stop")) {
+          self$error <- out
+          message <- paste(
+            message,
+            "\nSee the \"error\" field of your controller object",
+            "for all results, including warnings, tracebacks, all",
+            "error messages, etc."
+          )
+          crew_error(message)
+        } else {
           crew_warning(message)
-        )
+        }
       }
       out
     },

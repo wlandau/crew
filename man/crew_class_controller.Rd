@@ -57,6 +57,9 @@ Other class:
 
 \item{\code{until}}{Numeric of length 1, time point when
 throttled auto-scaling unlocks.}
+
+\item{\code{error}}{Tibble of monads from the last call to
+\verb{map(error = "stop)}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -581,7 +584,11 @@ a text string version of the R command in the output.}
 a task has an error. Possible values:
 \itemize{
 \item \code{"stop"}: throw an error in the main R session instead of returning
-a value.
+a value. In case of an error, the results from the last errored
+\code{map()} are in the \code{error} field
+of the controller, e.g. \code{controller_object$error}. To reduce
+memory consumption, set \code{controller_object$error <- NULL} after
+you are finished troubleshooting.
 \item \code{"warn"}: throw a warning. This allows the return value with
 all the error messages and tracebacks to be generated.
 \item \code{"silent"}: do nothing special.

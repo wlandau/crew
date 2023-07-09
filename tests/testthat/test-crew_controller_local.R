@@ -354,6 +354,7 @@ crew_test("controller map() works", {
     globals = list(f = f, b = 6L)
   )
   x$terminate()
+  expect_null(x$error)
   expect_true(tibble::is_tibble(out))
   expect_equal(nrow(out), 2L)
   expect_equal(colnames(out), monad_names)
@@ -406,6 +407,7 @@ crew_test("map() works with errors and names and command strings", {
       verbose = FALSE
     )
   )
+  expect_null(x$error)
   expect_error(
     x$map(
       command = f(x, y) + a + b,
@@ -418,6 +420,7 @@ crew_test("map() works with errors and names and command strings", {
     ),
     class = "crew_error"
   )
+  expect_true(is.data.frame(x$error))
   expect_warning(
     out <- x$map(
       command = f(x, y) + a + b,

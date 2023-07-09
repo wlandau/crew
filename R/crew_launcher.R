@@ -277,7 +277,8 @@ crew_class_launcher <- R6::R6Class(
         (2L * as.integer(isTRUE(self$reset_packages))) +
         (4L * as.integer(isTRUE(self$reset_options))) +
         (8L * as.integer(isTRUE(self$garbage_collection)))
-      tls <- environment(mirai::daemons)$..[[self$name]]$tls$client
+      tls <- environment(mirai::daemons)$..[[self$name]]$tls
+      tls <- if_any(is.null(tls), tls, nanonext::weakref_value(tls))
       list(
         url = socket,
         asyncdial = FALSE,

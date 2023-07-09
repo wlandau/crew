@@ -81,18 +81,18 @@ crew_client <- function(
 tls_package_check <- function(tls_enable) {
   mirai <- utils::compareVersion(
     as.character(utils::packageVersion("mirai")),
-    "0.9.0"
-  ) > 0L
+    "0.9.0.9027"
+  ) >= 0L
   nanonext <- utils::compareVersion(
-    as.character(utils::packageVersion("mirai")),
-    "0.9.0"
-  ) > 0L
+    as.character(utils::packageVersion("nanonext")),
+    "0.9.0.9039"
+  ) >= 0L
   if_any(
     tls_enable && !(mirai && nanonext),
     crew_error(
       paste(
-        "tls_enable = TRUE requires mirai >= 0.9.0.9020",
-        "and nanonext >= 0.9.0.9034."
+        "tls_enable = TRUE requires mirai >= 0.9.0.9027",
+        "and nanonext >= 0.9.0.9039."
       )
     ),
     NULL

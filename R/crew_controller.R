@@ -322,8 +322,8 @@ crew_class_controller <- R6::R6Class(
       invisible()
     },
     #' @description Quickly push a task to the head of the task list.
-    #' @details Exists to support extensions to `crew` for `purrr`-like
-    #'   functional programming. For developers only and not supported for
+    #' @details Exists to support `map()`.
+    #'   For developers only and not supported for
     #'   controller groups. Relative to `push()`, `shove()` skips user
     #'   options and guardrails for to aggressively optimize performance.
     #' @return `NULL` (invisibly).
@@ -386,7 +386,6 @@ crew_class_controller <- R6::R6Class(
     #' @description Apply a single command to multiple inputs.
     #' @details The idea comes from functional programming: for example,
     #'   the `map()` function from the `purrr` package.
-    #'   The controller must be started and empty before calling `map()`.
     #' @return A `tibble` of results and metadata, like the output of `pop()`
     #'   but with multiple rows aggregated together (one row per task).
     #' @param command Language object with R code to run.

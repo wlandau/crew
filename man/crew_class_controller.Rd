@@ -482,8 +482,8 @@ and efficiency.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-Exists to support extensions to \code{crew} for \code{purrr}-like
-functional programming. For developers only and not supported for
+Exists to support \code{map()}.
+For developers only and not supported for
 controller groups. Relative to \code{push()}, \code{shove()} skips user
 options and guardrails for to aggressively optimize performance.
 }
@@ -604,7 +604,6 @@ compatible with the analogous method of controller groups.}
 \subsection{Details}{
 The idea comes from functional programming: for example,
 the \code{map()} function from the \code{purrr} package.
-The controller must be started and empty before calling \code{map()}.
 }
 
 \subsection{Returns}{

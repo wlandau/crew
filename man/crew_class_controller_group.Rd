@@ -461,7 +461,11 @@ a text string version of the R command in the output.}
 a task has an error. Possible values:
 \itemize{
 \item \code{"stop"}: throw an error in the main R session instead of returning
-a value.
+a value. In case of an error, the results from the last errored
+\code{map()} are in the \code{error} field
+of the controller, e.g. \code{controller_object$error}. To reduce
+memory consumption, set \code{controller_object$error <- NULL} after
+you are finished troubleshooting.
 \item \code{"warn"}: throw a warning. This allows the return value with
 all the error messages and tracebacks to be generated.
 \item \code{"silent"}: do nothing special.
@@ -479,7 +483,6 @@ first controller in the list.}
 \subsection{Details}{
 The idea comes from functional programming: for example,
 the \code{map()} function from the \code{purrr} package.
-The controller must be started and empty before calling \code{map()}.
 }
 
 \subsection{Returns}{

@@ -274,10 +274,9 @@ crew_class_controller_group <- R6::R6Class(
         save_command = save_command
       )
     },
-        #' @description Apply a single command to multiple inputs.
+    #' @description Apply a single command to multiple inputs.
     #' @details The idea comes from functional programming: for example,
     #'   the `map()` function from the `purrr` package.
-    #'   The controller must be started and empty before calling `map()`.
     #' @return A `tibble` of results and metadata, like the output of `pop()`
     #'   but with multiple rows aggregated together (one row per task).
     #' @param command Language object with R code to run.
@@ -331,7 +330,11 @@ crew_class_controller_group <- R6::R6Class(
     #' @param error Character vector of length 1, choice of action if
     #'   a task has an error. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
-    #'     a value.
+    #'     a value. In case of an error, the results from the last errored
+    #'     `map()` are in the `error` field
+    #'     of the controller, e.g. `controller_object$error`. To reduce
+    #'     memory consumption, set `controller_object$error <- NULL` after
+    #'     you are finished troubleshooting.
     #'   * `"warn"`: throw a warning. This allows the return value with
     #'     all the error messages and tracebacks to be generated.
     #'   * `"silent"`: do nothing special.

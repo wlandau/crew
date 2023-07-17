@@ -1,6 +1,6 @@
 # crew 0.4.0.9000 (development)
 
-
+* Suppress interactive browser on Windows which launched on each worker previously (@psychelzh).
 
 # crew 0.4.0
 

@@ -94,7 +94,7 @@ crew_class_launcher_local <- R6::R6Class(
       processx::process$new(
         command = path,
         args = c("-e", call),
-        cleanup = FALSE
+        cleanup = TRUE
       )
     },
     #' @description Terminate a local process worker.

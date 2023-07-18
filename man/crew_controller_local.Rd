@@ -46,7 +46,7 @@ default. To guard against man-in-the-middle attacks, consider
 generating a one-time certificate yourself, requesting a trusted
 certificate authority (CA) to sign it, and then supplying the
 keys to the \code{tls_config} argument. Enabling TLS requires \code{mirai}
-version 0.9.0.9013 or above, and a \code{NULL} value for \code{tls_enable}
+version 0.9.0.9027 or above, and a \code{NULL} value for \code{tls_enable}
 will enable TLS if and only if the \code{mirai} version is sufficient.}
 
 \item{tls_config}{Optional and only relevant if TLS is enabled

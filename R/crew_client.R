@@ -18,7 +18,7 @@
 #'   generating a one-time certificate yourself, requesting a trusted
 #'   certificate authority (CA) to sign it, and then supplying the
 #'   keys to the `tls_config` argument. Enabling TLS requires `mirai`
-#'   version 0.9.0.9013 or above, and a `NULL` value for `tls_enable`
+#'   version 0.9.0.9027 or above, and a `NULL` value for `tls_enable`
 #'   will enable TLS if and only if the `mirai` version is sufficient.
 #' @param tls_config Optional and only relevant if TLS is enabled
 #'   (see the `tls_config` argument). The `tls_config` argument
@@ -83,18 +83,9 @@ tls_package_check <- function(tls_enable) {
     as.character(utils::packageVersion("mirai")),
     "0.9.0.9027"
   ) >= 0L
-  nanonext <- utils::compareVersion(
-    as.character(utils::packageVersion("nanonext")),
-    "0.9.0.9039"
-  ) >= 0L
   if_any(
     tls_enable && !(mirai && nanonext),
-    crew_error(
-      paste(
-        "tls_enable = TRUE requires mirai >= 0.9.0.9027",
-        "and nanonext >= 0.9.0.9039."
-      )
-    ),
+    crew_error("tls_enable = TRUE requires mirai >= 0.9.0.9027"),
     NULL
   )
 }

@@ -84,7 +84,7 @@ tls_package_check <- function(tls_enable) {
     "0.9.0.9027"
   ) >= 0L
   if_any(
-    tls_enable && !(mirai && nanonext),
+    tls_enable && !mirai,
     crew_error("tls_enable = TRUE requires mirai >= 0.9.0.9027"),
     NULL
   )

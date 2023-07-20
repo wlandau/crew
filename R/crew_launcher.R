@@ -16,27 +16,27 @@
 #'   since the completion of the last task. If exceeded, the worker exits.
 #'   But the timer does not launch until `tasks_timers` tasks
 #'   have completed.
-#'   See the `idletime` argument of `mirai::server()`. `crew` does not
+#'   See the `idletime` argument of `mirai::daemon()`. `crew` does not
 #'   excel with perfectly transient workers because it does not micromanage
 #'   the assignment of tasks to workers, so please allow enough idle
 #'   time for a new worker to be delegated a new task.
 #' @param seconds_wall Soft wall time in seconds.
 #'   The timer does not launch until `tasks_timers` tasks
 #'   have completed.
-#'   See the `walltime` argument of `mirai::server()`.
+#'   See the `walltime` argument of `mirai::daemon()`.
 #' @param seconds_exit Number of seconds to wait for NNG websockets
 #'   to finish sending large data (when a worker exits after reaching a
 #'   timeout or having completed a certain number of tasks).
-#'   See the `exitlinger` argument of `mirai::server()`.
+#'   See the `exitlinger` argument of `mirai::daemon()`.
 #' @param tasks_max Maximum number of tasks that a worker will do before
-#'   exiting. See the `maxtasks` argument of `mirai::server()`.
+#'   exiting. See the `maxtasks` argument of `mirai::daemon()`.
 #'   `crew` does not
 #'   excel with perfectly transient workers because it does not micromanage
 #'   the assignment of tasks to workers, it is recommended to set
 #'   `tasks_max` to a value greater than 1.
 #' @param tasks_timers Number of tasks to do before activating
 #'   the timers for `seconds_idle` and `seconds_wall`.
-#'   See the `timerstart` argument of `mirai::server()`.
+#'   See the `timerstart` argument of `mirai::daemon()`.
 #' @param reset_globals `TRUE` to reset global environment
 #'   variables between tasks, `FALSE` to leave them alone.
 #' @param reset_packages `TRUE` to unload any packages loaded during
@@ -268,8 +268,8 @@ crew_class_launcher <- R6::R6Class(
       }
       invisible()
     },
-    #' @description List of arguments for `mirai::server()`.
-    #' @return List of arguments for `mirai::server()`.
+    #' @description List of arguments for `mirai::daemon()`.
+    #' @return List of arguments for `mirai::daemon()`.
     #' @param socket Character of length 1, websocket address of the worker
     #'   to launch.
     settings = function(socket) {

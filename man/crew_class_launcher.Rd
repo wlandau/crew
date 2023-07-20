@@ -201,7 +201,7 @@ Validate the launcher.
 \if{html}{\out{<a id="method-crew_class_launcher-settings"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-settings}{}}}
 \subsection{Method \code{settings()}}{
-List of arguments for \code{mirai::server()}.
+List of arguments for \code{mirai::daemon()}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$settings(socket)}\if{html}{\out{</div>}}
 }
@@ -215,7 +215,7 @@ to launch.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-List of arguments for \code{mirai::server()}.
+List of arguments for \code{mirai::daemon()}.
 }
 }
 \if{html}{\out{<hr>}}

@@ -51,7 +51,7 @@ to man-in-the-middle attacks. When greater security is required,
 consider generating a PEM-encoded certificate and associated
 private key yourself and using a trusted certificate authority (CA)
 to sign the former. The documentation of \code{mirai}, including the
-\code{tls} arguments of the \code{mirai::daemons()} and \code{mirai::server()}
+\code{tls} arguments of the \code{mirai::daemons()} and \code{mirai::daemon()}
 functions, has more details.}
 
 \item{seconds_interval}{Number of seconds between

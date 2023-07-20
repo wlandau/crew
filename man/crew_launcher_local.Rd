@@ -34,7 +34,7 @@ considered alive if it is actively connected to its assign websocket.}
 since the completion of the last task. If exceeded, the worker exits.
 But the timer does not launch until \code{tasks_timers} tasks
 have completed.
-See the \code{idletime} argument of \code{mirai::server()}. \code{crew} does not
+See the \code{idletime} argument of \code{mirai::daemon()}. \code{crew} does not
 excel with perfectly transient workers because it does not micromanage
 the assignment of tasks to workers, so please allow enough idle
 time for a new worker to be delegated a new task.}
@@ -42,15 +42,15 @@ time for a new worker to be delegated a new task.}
 \item{seconds_wall}{Soft wall time in seconds.
 The timer does not launch until \code{tasks_timers} tasks
 have completed.
-See the \code{walltime} argument of \code{mirai::server()}.}
+See the \code{walltime} argument of \code{mirai::daemon()}.}
 
 \item{seconds_exit}{Number of seconds to wait for NNG websockets
 to finish sending large data (when a worker exits after reaching a
 timeout or having completed a certain number of tasks).
-See the \code{exitlinger} argument of \code{mirai::server()}.}
+See the \code{exitlinger} argument of \code{mirai::daemon()}.}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
-exiting. See the \code{maxtasks} argument of \code{mirai::server()}.
+exiting. See the \code{maxtasks} argument of \code{mirai::daemon()}.
 \code{crew} does not
 excel with perfectly transient workers because it does not micromanage
 the assignment of tasks to workers, it is recommended to set
@@ -58,7 +58,7 @@ the assignment of tasks to workers, it is recommended to set
 
 \item{tasks_timers}{Number of tasks to do before activating
 the timers for \code{seconds_idle} and \code{seconds_wall}.
-See the \code{timerstart} argument of \code{mirai::server()}.}
+See the \code{timerstart} argument of \code{mirai::daemon()}.}
 
 \item{reset_globals}{\code{TRUE} to reset global environment
 variables between tasks, \code{FALSE} to leave them alone.}

@@ -2,7 +2,7 @@ daemons_info <- function(name) {
   envir <- new.env(parent = emptyenv())
   crew_retry(
     fun = ~{
-      daemons <- mirai::daemons(.compute = name)$daemons
+      daemons <- mirai::status(.compute = name)$daemons
       valid <- is.matrix(daemons) && all(dim(daemons) > 0L)
       envir$daemons <- daemons
       envir$valid <- valid

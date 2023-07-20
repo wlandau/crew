@@ -24,7 +24,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   crew_retry(
     ~{
       envir$daemons <- rlang::duplicate(
-        x = mirai::daemons()$daemons,
+        x = mirai::status()$daemons,
         shallow = FALSE
       )
       is.matrix(envir$daemons) && all(dim(envir$daemons) > 0L)

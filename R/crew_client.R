@@ -32,7 +32,7 @@
 #'   consider generating a PEM-encoded certificate and associated
 #'   private key yourself and using a trusted certificate authority (CA)
 #'   to sign the former. The documentation of `mirai`, including the
-#'   `tls` arguments of the `mirai::daemons()` and `mirai::server()`
+#'   `tls` arguments of the `mirai::daemons()` and `mirai::daemon()`
 #'    functions, has more details.
 #' @param seconds_interval Number of seconds between
 #'   polling intervals waiting for certain internal
@@ -251,7 +251,7 @@ crew_class_client <- R6::R6Class(
     #'   * `worker`: integer index of the worker.
     #'   * `online`: `TRUE` if the worker is online and connected to the
     #'     websocket URL, `FALSE` otherwise.
-    #'   * `instances`: integer, number of instances of `mirai` servers
+    #'   * `instances`: integer, number of instances of `mirai` daemons
     #'     (`crew` workers) that have connected to the websocket URL
     #'     during the life cycle of the listener.
     #'   * `assigned`: number of tasks assigned to the current websocket URL.

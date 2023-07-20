@@ -1,6 +1,7 @@
 # crew 0.4.0.9000 (development)
 
 * Suppress interactive browser on Windows which launched on each worker previously (@psychelzh).
+* Migrate to the new host/daemon nomenclature in `mirai` 0.9.1 (#96).
 
 # crew 0.4.0
 

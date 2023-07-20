@@ -7,7 +7,7 @@
 crew_worker(settings, launcher, worker, instance)
 }
 \arguments{
-\item{settings}{Named list of arguments to \code{mirai::server()}.}
+\item{settings}{Named list of arguments to \code{mirai::daemon()}.}
 
 \item{launcher}{Character of length 1, name of the launcher.}
 
@@ -22,7 +22,7 @@ the current instance of the worker.}
 \code{NULL} (invisibly)
 }
 \description{
-Launch a \code{crew} worker which runs a \code{mirai} server.
+Launch a \code{crew} worker which runs a \code{mirai} daemon.
 }
 \seealso{
 Other utilities: 

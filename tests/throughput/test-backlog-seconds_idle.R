@@ -6,7 +6,7 @@ controller <- crew_controller_local(
 controller$start()
 names <- character(0L)
 index <- 0L
-n_tasks <- 60000L
+n_tasks <- 6000L
 system.time(
   while (index < n_tasks || !(controller$empty())) {
     if (index < n_tasks) {

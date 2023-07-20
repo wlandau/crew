@@ -45,11 +45,11 @@ crew_test("crew_client() works", {
   expect_equal(log$instances, 0L)
   bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
   path <- file.path(R.home("bin"), bin)
-  call <- sprintf("mirai::server('%s')", socket)
+  call <- sprintf("mirai::daemon('%s')", socket)
   px <- processx::process$new(command = path, args = c("-e", call))
   crew_retry(
     ~{
-      daemons <- mirai::daemons(.compute = client$name)$daemons
+      daemons <- mirai::status(.compute = client$name)$daemons
       identical(
         as.integer(unname(daemons[, "online", drop = TRUE])),
         1L

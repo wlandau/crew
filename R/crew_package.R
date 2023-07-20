@@ -31,7 +31,7 @@
 #' @importFrom tibble as_tibble new_tibble tibble
 #' @importFrom tidyselect all_of any_of contains ends_with eval_select
 #'   everything last_col matches num_range one_of starts_with
-#' @importFrom utils compareVersion globalVariables head packageVersion
+#' @importFrom utils globalVariables head
 NULL
 
 utils::globalVariables(".")

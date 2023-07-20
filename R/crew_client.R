@@ -62,7 +62,6 @@ crew_client <- function(
   workers <- as.integer(workers)
   host <- as.character(host %|||% getip::getip(type = "local"))
   port <- as.integer(port %|||% 0L)
-  tls_package_check(tls_enable)
   client <- crew_class_client$new(
     name = name,
     workers = workers,
@@ -75,19 +74,6 @@ crew_client <- function(
   )
   client$validate()
   client
-}
-
-# TODO: remove when mirai > 0.9.0 and nanonext > 0.9.0 are on CRAN.
-tls_package_check <- function(tls_enable) {
-  mirai <- utils::compareVersion(
-    as.character(utils::packageVersion("mirai")),
-    "0.9.0.9027"
-  ) >= 0L
-  if_any(
-    tls_enable && !mirai,
-    crew_error("tls_enable = TRUE requires mirai >= 0.9.0.9027"),
-    NULL
-  )
 }
 
 #' @title `R6` client class.

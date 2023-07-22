@@ -81,10 +81,11 @@ scale <- function(workers) {
       },
       args = list(
         url = workers$workers$socket[index],
-        tls = environment(mirai::daemons)$..$default$tls$client
+        tls = nanonext::weakref_value(
+          environment(mirai::daemons)$..$default$tls
+        )
       )
     )
-    Sys.sleep(0.1)
     # Increment the launch count.
     workers$workers$launches[index] <- workers$workers$launches[index] + 1L
     # Signal to tally() to wait for this worker to complete

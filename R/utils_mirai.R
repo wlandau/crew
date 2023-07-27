@@ -9,6 +9,7 @@ daemons_info <- function(name) {
     },
     seconds_interval = 0.5,
     seconds_timeout = 60,
+    max_tries = 1L,
     error = FALSE
   )
   daemons <- .subset2(envir, "daemons")

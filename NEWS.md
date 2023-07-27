@@ -2,6 +2,7 @@
 
 * Suppress interactive browser on Windows which launched on each worker previously (@psychelzh).
 * Migrate to the new host/daemon nomenclature in `mirai` 0.9.1 (#96).
+* Suppress `status()` retries (@shikokuchuo, #100).
 
 # crew 0.4.0
 

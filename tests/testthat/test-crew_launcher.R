@@ -148,7 +148,9 @@ crew_test("launcher start()", {
       "socket",
       "start",
       "launches",
+      "futile",
       "launched",
+      "history",
       "assigned",
       "complete"
     )
@@ -298,7 +300,8 @@ crew_test("custom launcher", {
     reset_globals = TRUE,
     reset_packages = FALSE,
     reset_options = FALSE,
-    garbage_collection = FALSE
+    garbage_collection = FALSE,
+    launch_max = 5L
   ) {
     client <- crew::crew_client(
       name = name,
@@ -322,7 +325,8 @@ crew_test("custom launcher", {
       reset_globals = reset_globals,
       reset_packages = reset_packages,
       reset_options = reset_options,
-      garbage_collection = garbage_collection
+      garbage_collection = garbage_collection,
+      launch_max = launch_max
     )
     controller <- crew::crew_controller(
       client = client,

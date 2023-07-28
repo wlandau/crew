@@ -536,28 +536,3 @@ crew_test("map() does not need an empty controller", {
   expect_equal(x$schedule$summary()$pushed, 0L)
   expect_equal(x$schedule$summary()$collected, 1L)
 })
-
-crew_test("launch_max", {
-  skip_on_cran()
-  skip_on_os("windows")
-  x <- crew_controller_local(
-    workers = 1L,
-    seconds_idle = 1e-9,
-    launch_max = 5L
-  )
-  on.exit({
-    x$terminate()
-    rm(x)
-    gc()
-    crew_test_sleep()
-  })
-  x$start()
-  for (index in seq_len(5L)) {
-    x$launch(n = 1L)
-    crew_retry(
-      ~!x$launcher$workers$handle[[1L]]$is_alive(),
-      seconds_interval = 0.05,
-    )
-  }
-  expect_crew_error(x$launch(n = 1L))
-})

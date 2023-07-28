@@ -491,7 +491,7 @@ crew_class_launcher <- R6::R6Class(
       futile <- self$workers$futile[index]
       futile <- if_any(complete > history, 0L, futile + 1L)
       crew_assert(
-        futile < self$launch_max,
+        futile <= self$launch_max,
         message = paste(
           "{crew} worker",
           index,

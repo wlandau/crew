@@ -85,6 +85,8 @@ Other class:
 
 \item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
+\item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
 \item{\code{until}}{Numeric of length 1, time point when throttled unlocks.}
 }
 \if{html}{\out{</div>}}
@@ -129,7 +131,8 @@ Launcher constructor.
   reset_globals = NULL,
   reset_packages = NULL,
   reset_options = NULL,
-  garbage_collection = NULL
+  garbage_collection = NULL,
+  launch_max = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -159,6 +162,8 @@ Launcher constructor.
 \item{\code{reset_options}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 }
 \if{html}{\out{</div>}}
 }

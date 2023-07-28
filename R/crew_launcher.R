@@ -47,6 +47,15 @@
 #'   because packages sometimes rely on options they set at loading time.
 #' @param garbage_collection `TRUE` to run garbage collection between
 #'   tasks, `FALSE` to skip.
+#' @param launch_max Positive integer of length 1, maximum allowed
+#'   consecutive launch attempts which do not complete any tasks.
+#'   Enforced on a worker-by-worker basis.
+#'   The futile launch count resets to back 0
+#'   for each worker that completes a task.
+#'   It is recommended to set `launch_max` above 0
+#'   because sometimes workers are unproductive under perfectly ordinary
+#'   circumstances. But `launch_max` should still be small enough
+#'   to detect errors in the underlying platform.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -71,7 +80,8 @@ crew_launcher <- function(
   reset_globals = TRUE,
   reset_packages = FALSE,
   reset_options = FALSE,
-  garbage_collection = FALSE
+  garbage_collection = FALSE,
+  launch_max = 5L
 ) {
   name <- as.character(name %|||% crew_random_name())
   crew_class_launcher$new(
@@ -138,6 +148,8 @@ crew_class_launcher <- R6::R6Class(
     reset_options = NULL,
     #' @field garbage_collection See [crew_launcher()].
     garbage_collection = NULL,
+    #' @field launch_max See [crew_launcher()].
+    launch_max = NULL,
     #' @field until Numeric of length 1, time point when throttled unlocks.
     until = NULL,
     #' @description Launcher constructor.
@@ -154,6 +166,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param reset_packages See [crew_launcher()].
     #' @param reset_options See [crew_launcher()].
     #' @param garbage_collection See [crew_launcher()].
+    #' @param launch_max See [crew_launcher()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
@@ -178,7 +191,8 @@ crew_class_launcher <- R6::R6Class(
       reset_globals = NULL,
       reset_packages = NULL,
       reset_options = NULL,
-      garbage_collection = NULL
+      garbage_collection = NULL,
+      launch_max = NULL
     ) {
       self$name <- name
       self$seconds_interval <- seconds_interval
@@ -192,6 +206,7 @@ crew_class_launcher <- R6::R6Class(
       self$reset_packages <- reset_packages
       self$reset_options <- reset_options
       self$garbage_collection <- garbage_collection
+      self$launch_max <- launch_max
     },
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
@@ -232,7 +247,8 @@ crew_class_launcher <- R6::R6Class(
         "seconds_wall",
         "seconds_exit",
         "tasks_max",
-        "tasks_timers"
+        "tasks_timers",
+        "launch_max"
       )
       for (field in fields) {
         crew_assert(
@@ -259,7 +275,9 @@ crew_class_launcher <- R6::R6Class(
           "socket",
           "start",
           "launches",
+          "futile",
           "launched",
+          "history",
           "assigned",
           "complete"
         )
@@ -341,7 +359,9 @@ crew_class_launcher <- R6::R6Class(
         socket = sockets,
         start = rep(NA_real_, n),
         launches = rep(0L, n),
+        futile = rep(0L, n),
         launched = rep(FALSE, n),
+        history = rep(0L, n),
         assigned = rep(0L, n),
         complete = rep(0L, n)
       )
@@ -466,6 +486,22 @@ crew_class_launcher <- R6::R6Class(
         worker = index,
         instance = instance
       )
+      history <- self$workers$history[index]
+      complete <- self$workers$complete[index]
+      futile <- self$workers$futile[index]
+      futile <- if_any(complete > history, 0L, futile + 1L)
+      crew_assert(
+        futile < self$launch_max,
+        message = paste(
+          "{crew} worker",
+          index,
+          "launched",
+          self$launch_max,
+          "times in a row without completing any tasks. Either raise",
+          "launch_max or troubleshoot your platform to figure out",
+          "why {crew} workers are not launching or connecting."
+        )
+      )
       handle <- self$launch_worker(
         call = as.character(call),
         name = as.character(name),
@@ -477,7 +513,9 @@ crew_class_launcher <- R6::R6Class(
       self$workers$socket[index] <- socket
       self$workers$start[index] <- nanonext::mclock() / 1000
       self$workers$launches[index] <- self$workers$launches[index] + 1L
+      self$workers$futile[index] <- futile
       self$workers$launched[index] <- TRUE
+      self$workers$history[index] <- complete
       invisible()
     },
     #' @description Throttle repeated calls.

@@ -88,7 +88,7 @@ Every `launch_worker()` method must accept arguments `call`, `launcher`, `worker
 
 To see what the `call` object looks like, create a new launcher and run the `call()` method.
 
-```{r, eval = TRUE}
+```{r, eval = TRUE, message = FALSE}
 library(crew)
 launcher <- crew_launcher_local()
 launcher$call(
@@ -135,7 +135,8 @@ crew_controller_custom <- function(
   reset_globals = TRUE,
   reset_packages = FALSE,
   reset_options = FALSE,
-  garbage_collection = FALSE
+  garbage_collection = FALSE,
+  launch_max = 5L
 ) {
   client <- crew::crew_client(
     name = name,
@@ -159,7 +160,8 @@ crew_controller_custom <- function(
     reset_globals = reset_globals,
     reset_packages = reset_packages,
     reset_options = reset_options,
-    garbage_collection = garbage_collection
+    garbage_collection = garbage_collection,
+    launch_max = launch_max
   )
   controller <- crew::crew_controller(client = client, launcher = launcher)
   controller$validate()

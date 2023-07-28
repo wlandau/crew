@@ -22,7 +22,8 @@ crew_controller_local(
   reset_globals = TRUE,
   reset_packages = FALSE,
   reset_options = FALSE,
-  garbage_collection = FALSE
+  garbage_collection = FALSE,
+  launch_max = 5L
 )
 }
 \arguments{
@@ -122,6 +123,16 @@ because packages sometimes rely on options they set at loading time.}
 
 \item{garbage_collection}{\code{TRUE} to run garbage collection between
 tasks, \code{FALSE} to skip.}
+
+\item{launch_max}{Positive integer of length 1, maximum allowed
+consecutive launch attempts which do not complete any tasks.
+Enforced on a worker-by-worker basis.
+The futile launch count resets to back 0
+for each worker that completes a task.
+It is recommended to set \code{launch_max} above 0
+because sometimes workers are unproductive under perfectly ordinary
+circumstances. But \code{launch_max} should still be small enough
+to detect errors in the underlying platform.}
 }
 \description{
 Create an \code{R6} object to submit tasks and

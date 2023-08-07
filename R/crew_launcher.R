@@ -247,8 +247,8 @@ crew_class_launcher <- R6::R6Class(
         "seconds_wall",
         "seconds_exit",
         "tasks_max",
-        "tasks_timers",
-        "launch_max"
+        "tasks_timers"
+        # TODO: add launch_max
       )
       for (field in fields) {
         crew_assert(

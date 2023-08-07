@@ -12,7 +12,7 @@ schedule$start()
 # Start the {mirai} client and servers with TLS.
 daemons(n = 20L, url = "wss://127.0.0.1:0", dispatcher = TRUE, token = TRUE)
 for (url in environment(daemons)$..$default$urls) {
-  launch_server(url = url)
+  launch_local(url = url)
   Sys.sleep(0.1)
 }
 

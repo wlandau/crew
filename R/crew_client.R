@@ -252,7 +252,7 @@ crew_class_client <- R6::R6Class(
       tibble::tibble(
         worker = seq_len(nrow(daemons)),
         online = as.logical(daemons[, "online"] > 0L),
-        instances = as.integer(daemons[, "instance"]),
+        instances = as.integer(abs(daemons[, "instance"])),
         assigned = as.integer(daemons[, "assigned"]),
         complete = as.integer(daemons[, "complete"]),
         socket = as.character(rownames(daemons))

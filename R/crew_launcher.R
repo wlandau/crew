@@ -414,7 +414,7 @@ crew_class_launcher <- R6::R6Class(
       launching <- !is.na(start) & ((now - start) < bound)
       daemons <- daemons %|||% daemons_info(name = self$name)
       online <- as.logical(daemons[, "online"])
-      discovered <- as.logical(daemons[, "instance"])
+      discovered <- as.logical(daemons[, "instance"] > 0L)
       inactive <- (!online) & (discovered | (!launching))
       launched <- self$workers$launched
       which(inactive & launched)

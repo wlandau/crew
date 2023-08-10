@@ -4,6 +4,7 @@
 * Migrate to the new host/daemon nomenclature in `mirai` 0.9.1 (#96).
 * Suppress `status()` retries (@shikokuchuo, #100).
 * Implement `launch_max` to error out if workers repeatedly launch without completing any tasks (#101, @shikokuchuo, @multimeric).
+* Detect discovered workers more robustly in `launcher$done()`.
 
 # crew 0.4.0
 

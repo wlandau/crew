@@ -221,16 +221,6 @@ crew_class_client <- R6::R6Class(
         token = TRUE,
         .compute = self$name
       )
-      envvars <- c(
-        "RENV_CONFIG_SANDBOX_ENABLED",
-        "RENV_CONFIG_SYNCHRONIZED_CHECK"
-      )
-      previous <- Sys.getenv(envvars)
-      on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
-      Sys.setenv(
-        RENV_CONFIG_SANDBOX_ENABLED = "false",
-        RENV_CONFIG_SYNCHRONIZED_CHECK = "false"
-      )
       do.call(what = mirai::daemons, args = args)
       # TODO: remove code that gets the dispatcher PID if the dispatcher
       # process becomes a C thread.

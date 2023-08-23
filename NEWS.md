@@ -5,7 +5,6 @@
 * Suppress `status()` retries (@shikokuchuo, #100).
 * Implement `launch_max` to error out if workers repeatedly launch without completing any tasks (#101, @shikokuchuo, @multimeric).
 * Detect discovered workers more robustly in `launcher$done()`.
-* Temporarily set environment variables `RENV_CONFIG_SANDBOX_ENABLED` and `RENV_CONFIG_SYNCHRONIZED_CHECK` to `"false"` when starting the `mirai` dispatcher. Allows `renv` projects to start faster and avoid dispatcher timeouts.
 
 # crew 0.4.0
 

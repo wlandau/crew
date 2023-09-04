@@ -85,7 +85,10 @@ crew_test("crew_controller_local()", {
     # data task
     expect_false(exists(x = ".crew_y", envir = globalenv()))
     x$push(
-      command = paste0("a", x, .crew_y, sample.int(n = 1e9L, size = 1L)),
+      command = {
+        RNGkind(kind = "L'Ecuyer-CMRG")
+        paste0("a", x, .crew_y, sample.int(n = 1e9L, size = 1L))
+      },
       data = list(x = "b"),
       globals = list(.crew_y = "c"),
       seed = 0L,
@@ -95,6 +98,7 @@ crew_test("crew_controller_local()", {
     x$wait(seconds_timeout = 5)
     out <- x$pop()
     set.seed(0L)
+    RNGkind(kind = "L'Ecuyer-CMRG")
     exp <- paste0("abc", sample.int(n = 1e9L, size = 1L))
     expect_true(anyNA(out$command))
     expect_equal(out$result[[1]], exp)

@@ -5,7 +5,7 @@
 * Suppress `status()` retries (@shikokuchuo, #100).
 * Implement `launch_max` to error out if workers repeatedly launch without completing any tasks (#101, @shikokuchuo, @multimeric).
 * Detect discovered workers more robustly in `launcher$done()`.
-* Add a new `algorithm` argument to the `push()`, `shove()`, and `map()` methods of controllers and controller groups, as well as arguments/fields in `crew_eval()` and its return value (#113, @shikokuchuo). The default is `"L'Ecuyer-CMRG"` because of its desirable statistical properties for parallel computing.
+* Add a new `algorithm` argument to the `push()`, `shove()`, and `map()` methods of controllers and controller groups, as well as arguments/fields in `crew_eval()` and its return value (#113, @shikokuchuo).
 
 # crew 0.4.0
 

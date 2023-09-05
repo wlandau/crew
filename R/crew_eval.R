@@ -20,9 +20,6 @@
 #'   `crew_eval()` does not restore the original seed,
 #'   but this is okay because it
 #'   should only run in a non-interactive worker process.
-#'   For statistical reproducibility, you may wish to assign different
-#'   deterministic seeds to different tasks. `digest::digest2int(x = name)`
-#'   can help.
 #' @param algorithm Character of length 1,
 #'   name of the pseudo-random number generator algorithm.
 #'   Passed to the `kind` argument of `set.seed()`.
@@ -41,7 +38,7 @@ crew_eval <- function(
   data = list(),
   globals = list(),
   seed = as.integer(nanonext::random() / 2),
-  algorithm = "L'Ecuyer-CMRG",
+  algorithm = RNGkind()[1L],
   packages = character(0),
   library = NULL
 ) {

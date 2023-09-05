@@ -211,9 +211,6 @@ crew_class_controller_group <- R6::R6Class(
     #' @param seed Integer of length 1 with the pseudo-random number generator
     #'   seed to set for the evaluation of the task. Passed to the `seed`
     #'   argument of `set.seed()`.
-    #'   For statistical reproducibility, you may wish to assign different
-    #'   deterministic seeds to different tasks. `digest::digest2int(x = name)`
-    #'   can help.
     #' @param algorithm Integer of length 1 with the pseudo-random number
     #'   generator algorithm to set for the evaluation of the task.
     #'   Passed to the `kind` argument of `set.seed()`.
@@ -249,7 +246,7 @@ crew_class_controller_group <- R6::R6Class(
       globals = list(),
       substitute = TRUE,
       seed = sample.int(n = 1e9L, size = 1L),
-      algorithm = "L'Ecuyer-CMRG",
+      algorithm = RNGkind()[1L],
       packages = character(0),
       library = NULL,
       seconds_timeout = NULL,
@@ -361,7 +358,7 @@ crew_class_controller_group <- R6::R6Class(
       globals = list(),
       substitute = TRUE,
       seed = as.integer(nanonext::random() / 2),
-      algorithm = "L'Ecuyer-CMRG",
+      algorithm = RNGkind()[1L],
       packages = character(0),
       library = NULL,
       seconds_interval = NULL,

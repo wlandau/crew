@@ -381,7 +381,10 @@ that invoke \code{crew} controllers.}
 
 \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
 seed to set for the evaluation of the task. Passed to the \code{seed}
-argument of \code{set.seed()}.}
+argument of \code{set.seed()}.
+For statistical reproducibility, you may wish to assign different
+deterministic seeds to different tasks. \code{digest::digest2int(x = name)}
+can help.}
 
 \item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
 generator algorithm to set for the evaluation of the task.
@@ -461,7 +464,10 @@ of \code{\link[=crew_controller_local]{crew_controller_local()}}.}
 
 \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
 seed to set for the evaluation of the task. Passed to the \code{seed}
-argument of \code{set.seed()}.}
+argument of \code{set.seed()}.
+For statistical reproducibility, you may wish to assign different
+deterministic seeds to different tasks. \code{digest::digest2int(x = name)}
+can help.}
 
 \item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
 generator algorithm to set for the evaluation of the task.

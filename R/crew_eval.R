@@ -20,6 +20,9 @@
 #'   `crew_eval()` does not restore the original seed,
 #'   but this is okay because it
 #'   should only run in a non-interactive worker process.
+#'   For statistical reproducibility, you may wish to assign different
+#'   deterministic seeds to different tasks. `digest::digest2int(x = name)`
+#'   can help.
 #' @param algorithm Character of length 1,
 #'   name of the pseudo-random number generator algorithm.
 #'   Passed to the `kind` argument of `set.seed()`.

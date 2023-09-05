@@ -297,6 +297,7 @@ crew_class_launcher <- R6::R6Class(
         (8L * as.integer(isTRUE(self$garbage_collection)))
       tls <- environment(mirai::daemons)$..[[self$name]]$tls
       tls <- if_any(is.null(tls), tls, nanonext::weakref_value(tls))
+      rs <- nextstream(self$name)
       list(
         url = socket,
         asyncdial = FALSE,
@@ -306,7 +307,8 @@ crew_class_launcher <- R6::R6Class(
         timerstart = self$tasks_timers,
         exitlinger = self$seconds_exit * 1000,
         cleanup = cleanup,
-        tls = tls
+        tls = tls,
+        rs = rs
       )
     },
     #' @description Create a call to [crew_worker()] to

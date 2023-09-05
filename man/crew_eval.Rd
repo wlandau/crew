@@ -11,6 +11,7 @@ crew_eval(
   data = list(),
   globals = list(),
   seed = as.integer(nanonext::random()/2),
+  algorithm = "L'Ecuyer-CMRG",
   packages = character(0),
   library = NULL
 )
@@ -28,8 +29,17 @@ crew_eval(
 global environment for the task.}
 
 \item{seed}{Integer of length 1 with the pseudo-random number generator
-seed to set for the evaluation of the task. Does not restore
-the original seed, but this is okay because \code{crew_eval()}
+seed to set for the evaluation of the task.
+Passed to the \code{seed} argument of \code{set.seed()}.
+\code{crew_eval()} does not restore the original seed,
+but this is okay because it
+should only run in a non-interactive worker process.}
+
+\item{algorithm}{Character of length 1,
+name of the pseudo-random number generator algorithm.
+Passed to the \code{kind} argument of \code{set.seed()}.
+\code{crew_eval()} does not restore the original algorithm,
+but this is okay because it
 should only run in a non-interactive worker process.}
 
 \item{packages}{Character vector of packages to load for the task.}

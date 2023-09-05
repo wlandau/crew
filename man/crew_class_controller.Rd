@@ -340,6 +340,7 @@ Push a task to the head of the task list.
   globals = list(),
   substitute = TRUE,
   seed = as.integer(nanonext::random()/2),
+  algorithm = "L'Ecuyer-CMRG",
   packages = character(0),
   library = NULL,
   seconds_timeout = NULL,
@@ -379,7 +380,12 @@ whereas \code{substitute = FALSE} is meant for automated R programs
 that invoke \code{crew} controllers.}
 
 \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
-seed to set for the evaluation of the task.}
+seed to set for the evaluation of the task. Passed to the \code{seed}
+argument of \code{set.seed()}.}
+
+\item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
+generator algorithm to set for the evaluation of the task.
+Passed to the \code{kind} argument of \code{set.seed()}.}
 
 \item{\code{packages}}{Character vector of packages to load for the task.}
 
@@ -428,6 +434,7 @@ Quickly push a task to the head of the task list.
   data = list(),
   globals = list(),
   seed = 0L,
+  algorithm = "L'Ecuyer-CMRG",
   packages = character(0),
   library = NULL,
   .timeout = NULL,
@@ -453,7 +460,12 @@ See the \code{reset_globals} argument
 of \code{\link[=crew_controller_local]{crew_controller_local()}}.}
 
 \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
-seed to set for the evaluation of the task.}
+seed to set for the evaluation of the task. Passed to the \code{seed}
+argument of \code{set.seed()}.}
+
+\item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
+generator algorithm to set for the evaluation of the task.
+Passed to the \code{kind} argument of \code{set.seed()}.}
 
 \item{\code{packages}}{Character vector of packages to load for the task.}
 
@@ -505,6 +517,7 @@ Apply a single command to multiple inputs.
   globals = list(),
   substitute = TRUE,
   seed = as.integer(nanonext::random()/2),
+  algorithm = "L'Ecuyer-CMRG",
   packages = character(0),
   library = NULL,
   seconds_interval = NULL,
@@ -557,9 +570,13 @@ value, e.g. \code{push(command = quote(your_function_call()))}.
 whereas \code{substitute = FALSE} is meant for automated R programs
 that invoke \code{crew} controllers.}
 
-\item{\code{seed}}{Integer of length 1 with a pseudo-random number generator
-seed. Task-specific task seeds are non-randomly derived
-from this seed.}
+\item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
+seed to set for the evaluation of the task. Passed to the \code{seed}
+argument of \code{set.seed()}.}
+
+\item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
+generator algorithm to set for the evaluation of the task.
+Passed to the \code{kind} argument of \code{set.seed()}.}
 
 \item{\code{packages}}{Character vector of packages to load for the task.}
 

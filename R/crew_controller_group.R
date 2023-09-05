@@ -209,8 +209,11 @@ crew_class_controller_group <- R6::R6Class(
     #'   whereas `substitute = FALSE` is meant for automated R programs
     #'   that invoke `crew` controllers.
     #' @param seed Integer of length 1 with the pseudo-random number generator
-    #'   seed to temporarily set for the evaluation of the task.
-    #'   At the end of the task, the seed is restored.
+    #'   seed to set for the evaluation of the task. Passed to the `seed`
+    #'   argument of `set.seed()`.
+    #' @param algorithm Integer of length 1 with the pseudo-random number
+    #'   generator algorithm to set for the evaluation of the task.
+    #'   Passed to the `kind` argument of `set.seed()`.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -243,6 +246,7 @@ crew_class_controller_group <- R6::R6Class(
       globals = list(),
       substitute = TRUE,
       seed = sample.int(n = 1e9L, size = 1L),
+      algorithm = "L'Ecuyer-CMRG",
       packages = character(0),
       library = NULL,
       seconds_timeout = NULL,
@@ -265,6 +269,7 @@ crew_class_controller_group <- R6::R6Class(
         globals = globals,
         substitute = FALSE,
         seed = seed,
+        algorithm = algorithm,
         packages = packages,
         library = library,
         seconds_timeout = seconds_timeout,
@@ -311,9 +316,12 @@ crew_class_controller_group <- R6::R6Class(
     #'   `substitute = TRUE` is appropriate for interactive use,
     #'   whereas `substitute = FALSE` is meant for automated R programs
     #'   that invoke `crew` controllers.
-    #' @param seed Integer of length 1 with a pseudo-random number generator
-    #'   seed. Task-specific task seeds are non-randomly derived
-    #'   from this seed.
+    #' @param seed Integer of length 1 with the pseudo-random number generator
+    #'   seed to set for the evaluation of the task. Passed to the `seed`
+    #'   argument of `set.seed()`.
+    #' @param algorithm Integer of length 1 with the pseudo-random number
+    #'   generator algorithm to set for the evaluation of the task.
+    #'   Passed to the `kind` argument of `set.seed()`.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -350,6 +358,7 @@ crew_class_controller_group <- R6::R6Class(
       globals = list(),
       substitute = TRUE,
       seed = as.integer(nanonext::random() / 2),
+      algorithm = "L'Ecuyer-CMRG",
       packages = character(0),
       library = NULL,
       seconds_interval = NULL,
@@ -372,6 +381,7 @@ crew_class_controller_group <- R6::R6Class(
         globals = globals,
         substitute = FALSE,
         seed = seed,
+        algorithm = algorithm,
         packages = packages,
         library = library,
         seconds_interval = seconds_interval,

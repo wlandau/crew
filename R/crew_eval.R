@@ -15,8 +15,16 @@
 #' @param globals Named list of objects to temporarily assign to the
 #'   global environment for the task.
 #' @param seed Integer of length 1 with the pseudo-random number generator
-#'   seed to set for the evaluation of the task. Does not restore
-#'   the original seed, but this is okay because `crew_eval()`
+#'   seed to set for the evaluation of the task.
+#'   Passed to the `seed` argument of `set.seed()`.
+#'   `crew_eval()` does not restore the original seed,
+#'   but this is okay because it
+#'   should only run in a non-interactive worker process.
+#' @param algorithm Character of length 1,
+#'   name of the pseudo-random number generator algorithm.
+#'   Passed to the `kind` argument of `set.seed()`.
+#'   `crew_eval()` does not restore the original algorithm,
+#'   but this is okay because it
 #'   should only run in a non-interactive worker process.
 #' @param packages Character vector of packages to load for the task.
 #' @param library Library path to load the packages. See the `lib.loc`
@@ -30,11 +38,12 @@ crew_eval <- function(
   data = list(),
   globals = list(),
   seed = as.integer(nanonext::random() / 2),
+  algorithm = "L'Ecuyer-CMRG",
   packages = character(0),
   library = NULL
 ) {
   load_packages(packages = packages, library = library)
-  set.seed(seed)
+  set.seed(seed = seed, kind = algorithm)
   list2env(x = globals, envir = globalenv())
   envir <- list2env(x = data, parent = globalenv())
   capture_error <- function(condition) {
@@ -77,6 +86,7 @@ crew_eval <- function(
     result = result,
     seconds = seconds,
     seed = seed,
+    algorithm = algorithm,
     error = state$error %|||% NA_character_,
     trace = state$trace %|||% NA_character_,
     warnings = state$warnings %|||% NA_character_,

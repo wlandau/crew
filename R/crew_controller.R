@@ -250,7 +250,11 @@ crew_class_controller <- R6::R6Class(
     #'   whereas `substitute = FALSE` is meant for automated R programs
     #'   that invoke `crew` controllers.
     #' @param seed Integer of length 1 with the pseudo-random number generator
-    #'   seed to set for the evaluation of the task.
+    #'   seed to set for the evaluation of the task. Passed to the `seed`
+    #'   argument of `set.seed()`.
+    #' @param algorithm Integer of length 1 with the pseudo-random number
+    #'   generator algorithm to set for the evaluation of the task.
+    #'   Passed to the `kind` argument of `set.seed()`.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -279,6 +283,7 @@ crew_class_controller <- R6::R6Class(
       globals = list(),
       substitute = TRUE,
       seed = as.integer(nanonext::random() / 2),
+      algorithm = "L'Ecuyer-CMRG",
       packages = character(0),
       library = NULL,
       seconds_timeout = NULL,
@@ -310,6 +315,7 @@ crew_class_controller <- R6::R6Class(
         data = data,
         globals = globals,
         seed = seed,
+        algorithm = algorithm,
         packages = packages,
         library = library,
         .timeout = .timeout,
@@ -338,7 +344,11 @@ crew_class_controller <- R6::R6Class(
     #'   See the `reset_globals` argument
     #'   of [crew_controller_local()].
     #' @param seed Integer of length 1 with the pseudo-random number generator
-    #'   seed to set for the evaluation of the task.
+    #'   seed to set for the evaluation of the task. Passed to the `seed`
+    #'   argument of `set.seed()`.
+    #' @param algorithm Integer of length 1 with the pseudo-random number
+    #'   generator algorithm to set for the evaluation of the task.
+    #'   Passed to the `kind` argument of `set.seed()`.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -361,6 +371,7 @@ crew_class_controller <- R6::R6Class(
       data = list(),
       globals = list(),
       seed = 0L,
+      algorithm = "L'Ecuyer-CMRG",
       packages = character(0),
       library = NULL,
       .timeout = NULL,
@@ -375,6 +386,7 @@ crew_class_controller <- R6::R6Class(
         data = data,
         globals = globals,
         seed = seed,
+        algorithm = algorithm,
         packages = packages,
         library = library,
         .timeout = .timeout,
@@ -420,9 +432,12 @@ crew_class_controller <- R6::R6Class(
     #'   `substitute = TRUE` is appropriate for interactive use,
     #'   whereas `substitute = FALSE` is meant for automated R programs
     #'   that invoke `crew` controllers.
-    #' @param seed Integer of length 1 with a pseudo-random number generator
-    #'   seed. Task-specific task seeds are non-randomly derived
-    #'   from this seed.
+    #' @param seed Integer of length 1 with the pseudo-random number generator
+    #'   seed to set for the evaluation of the task. Passed to the `seed`
+    #'   argument of `set.seed()`.
+    #' @param algorithm Integer of length 1 with the pseudo-random number
+    #'   generator algorithm to set for the evaluation of the task.
+    #'   Passed to the `kind` argument of `set.seed()`.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -457,6 +472,7 @@ crew_class_controller <- R6::R6Class(
       globals = list(),
       substitute = TRUE,
       seed = as.integer(nanonext::random() / 2),
+      algorithm = "L'Ecuyer-CMRG",
       packages = character(0),
       library = NULL,
       seconds_interval = NULL,
@@ -509,6 +525,14 @@ crew_class_controller <- R6::R6Class(
         length(.) == 1L,
         !anyNA(seed),
         message = "seed must be an integer of length 1"
+      )
+      crew_assert(
+        algorithm,
+        is.character(.),
+        length(.) == 1L,
+        !anyNA(.),
+        nzchar(.),
+        message = "algorithm must be a valid RNG algorithm name"
       )
       crew_assert(
         packages,
@@ -583,6 +607,7 @@ crew_class_controller <- R6::R6Class(
           data = data,
           globals = globals,
           seed = seed - (as.integer(sign(seed)) * index),
+          algorithm = algorithm,
           packages = packages,
           library = library,
           .timeout = .timeout,
@@ -860,6 +885,7 @@ expr_crew_eval <- quote(
     data = data,
     globals = globals,
     seed = seed,
+    algorithm = algorithm,
     packages = packages,
     library = library
   )

@@ -142,6 +142,27 @@ crew_test("crew_eval() just algorithm", {
   expect_equal(.subset2(.GlobalEnv, ".Random.seed"), old_seed)
 })
 
+crew_test("crew_eval() RNG state not restored if not set", {
+  old_algorithm <- RNGkind()[1L]
+  old_seed <- .subset2(.GlobalEnv, ".Random.seed")
+  out1 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = NULL,
+    algorithm = NULL
+  )
+  out2 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = NULL,
+    algorithm = NULL
+  )
+  out3 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = NULL,
+    algorithm = NULL
+  )
+  expect_false(all(.subset2(.GlobalEnv, ".Random.seed") == old_seed))
+})
+
 crew_test("crew_eval() environment variables", {
   skip_on_cran()
   envvars <- c("CREW_LAUNCHER", "CREW_WORKER", "CREW_INSTANCE")

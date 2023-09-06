@@ -311,7 +311,8 @@ crew_test("controller group map() works", {
     command = f(x, y) + a + b,
     iterate = list(x = c(1L, 2L), y = c(3L, 4L)),
     data = list(a = 5L),
-    globals = list(f = f, b = 6L)
+    globals = list(f = f, b = 6L),
+    seed = 0L
   )
   x$terminate()
   expect_true(tibble::is_tibble(out))

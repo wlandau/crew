@@ -6,6 +6,7 @@
 * Implement `launch_max` to error out if workers repeatedly launch without completing any tasks (#101, @shikokuchuo, @multimeric).
 * Detect discovered workers more robustly in `launcher$done()`.
 * Add a new `algorithm` argument to the `push()`, `shove()`, and `map()` methods of controllers and controller groups, as well as arguments/fields in `crew_eval()` and its return value (#113, @shikokuchuo).
+* As a default for pseudo-random number generation, leverage widely-spaced L'Ecuyer streams as supported by `mirai::nextstream()` (#115, @shikokuchuo).
 
 # crew 0.4.0
 

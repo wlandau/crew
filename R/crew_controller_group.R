@@ -209,11 +209,21 @@ crew_class_controller_group <- R6::R6Class(
     #'   whereas `substitute = FALSE` is meant for automated R programs
     #'   that invoke `crew` controllers.
     #' @param seed Integer of length 1 with the pseudo-random number generator
-    #'   seed to set for the evaluation of the task. Passed to the `seed`
-    #'   argument of `set.seed()`.
+    #'   seed to set for the evaluation of the task. Passed to the
+    #'   `seed` argument of `set.seed()` if not `NULL`.
+    #'   If `algorithm` and `seed` are both `NULL`,
+    #'   then the random number generator defaults to the
+    #'   recommended widely spaced worker-specific
+    #'   L'Ecuyer streams as supported by `mirai::nextstream()`.
+    #'   See `vignette("parallel", package = "parallel")` for details.
     #' @param algorithm Integer of length 1 with the pseudo-random number
     #'   generator algorithm to set for the evaluation of the task.
-    #'   Passed to the `kind` argument of `set.seed()`.
+    #'   Passed to the `kind` argument of `RNGkind()` if not `NULL`.
+    #'   If `algorithm` and `seed` are both `NULL`,
+    #'   then the random number generator defaults to the
+    #'   recommended widely spaced worker-specific
+    #'   L'Ecuyer streams as supported by `mirai::nextstream()`.
+    #'   See `vignette("parallel", package = "parallel")` for details.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -245,8 +255,8 @@ crew_class_controller_group <- R6::R6Class(
       data = list(),
       globals = list(),
       substitute = TRUE,
-      seed = sample.int(n = 1e9L, size = 1L),
-      algorithm = RNGkind()[1L],
+      seed = NULL,
+      algorithm = NULL,
       packages = character(0),
       library = NULL,
       seconds_timeout = NULL,
@@ -282,8 +292,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @description Apply a single command to multiple inputs.
     #' @details The idea comes from functional programming: for example,
     #'   the `map()` function from the `purrr` package.
-    #' @return A `tibble` of results and metadata, like the output of `pop()`
-    #'   but with multiple rows aggregated together (one row per task).
+    #' @return A `tibble` of results and metadata: one row per task and
+    #'   columns corresponding to the output of `pop()`.
     #' @param command Language object with R code to run.
     #' @param iterate Named list of vectors or lists to iterate over.
     #'   For example, to run function calls
@@ -317,11 +327,21 @@ crew_class_controller_group <- R6::R6Class(
     #'   whereas `substitute = FALSE` is meant for automated R programs
     #'   that invoke `crew` controllers.
     #' @param seed Integer of length 1 with the pseudo-random number generator
-    #'   seed to set for the evaluation of the task. Passed to the `seed`
-    #'   argument of `set.seed()`.
+    #'   seed to set for the evaluation of the task. Passed to the
+    #'   `seed` argument of `set.seed()` if not `NULL`.
+    #'   If `algorithm` and `seed` are both `NULL`,
+    #'   then the random number generator defaults to the
+    #'   recommended widely spaced worker-specific
+    #'   L'Ecuyer streams as supported by `mirai::nextstream()`.
+    #'   See `vignette("parallel", package = "parallel")` for details.
     #' @param algorithm Integer of length 1 with the pseudo-random number
     #'   generator algorithm to set for the evaluation of the task.
-    #'   Passed to the `kind` argument of `set.seed()`.
+    #'   Passed to the `kind` argument of `RNGkind()` if not `NULL`.
+    #'   If `algorithm` and `seed` are both `NULL`,
+    #'   then the random number generator defaults to the
+    #'   recommended widely spaced worker-specific
+    #'   L'Ecuyer streams as supported by `mirai::nextstream()`.
+    #'   See `vignette("parallel", package = "parallel")` for details.
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
@@ -357,8 +377,8 @@ crew_class_controller_group <- R6::R6Class(
       data = list(),
       globals = list(),
       substitute = TRUE,
-      seed = as.integer(nanonext::random() / 2),
-      algorithm = RNGkind()[1L],
+      seed = NULL,
+      algorithm = NULL,
       packages = character(0),
       library = NULL,
       seconds_interval = NULL,
@@ -408,10 +428,9 @@ crew_class_controller_group <- R6::R6Class(
       walk(control, ~.x$collect(throttle = throttle))
     },
     #' @description Pop a completed task from the results data frame.
-    #' @return If there is a completed task available to collect, the return
-    #'   value is a one-row data frame with the results, warnings, and errors.
-    #'   Otherwise, if there are no results available to collect,
-    #'   the return value is `NULL`.
+    #' @return If there is no task to collect, return `NULL`. Otherwise,
+    #'   return a one-row `tibble` with the same columns as `pop()`
+    #'   for ordinary controllers.
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand.
     #'   If `TRUE`, then `collect()` runs first

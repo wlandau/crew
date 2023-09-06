@@ -339,8 +339,8 @@ Push a task to the head of the task list.
   data = list(),
   globals = list(),
   substitute = TRUE,
-  seed = as.integer(nanonext::random()/2),
-  algorithm = RNGkind()[1L],
+  seed = NULL,
+  algorithm = NULL,
   packages = character(0),
   library = NULL,
   seconds_timeout = NULL,
@@ -380,12 +380,22 @@ whereas \code{substitute = FALSE} is meant for automated R programs
 that invoke \code{crew} controllers.}
 
 \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
-seed to set for the evaluation of the task. Passed to the \code{seed}
-argument of \code{set.seed()}.}
+seed to set for the evaluation of the task. Passed to the
+\code{seed} argument of \code{set.seed()} if not \code{NULL}.
+If \code{algorithm} and \code{seed} are both \code{NULL},
+then the random number generator defaults to the
+recommended widely spaced worker-specific
+L'Ecuyer streams as supported by \code{mirai::nextstream()}.
+See \code{vignette("parallel", package = "parallel")} for details.}
 
 \item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
 generator algorithm to set for the evaluation of the task.
-Passed to the \code{kind} argument of \code{set.seed()}.}
+Passed to the \code{kind} argument of \code{RNGkind()} if not \code{NULL}.
+If \code{algorithm} and \code{seed} are both \code{NULL},
+then the random number generator defaults to the
+recommended widely spaced worker-specific
+L'Ecuyer streams as supported by \code{mirai::nextstream()}.
+See \code{vignette("parallel", package = "parallel")} for details.}
 
 \item{\code{packages}}{Character vector of packages to load for the task.}
 
@@ -433,8 +443,8 @@ Quickly push a task to the head of the task list.
   command,
   data = list(),
   globals = list(),
-  seed = 0L,
-  algorithm = RNGkind()[1L],
+  seed = NULL,
+  algorithm = NULL,
   packages = character(0),
   library = NULL,
   .timeout = NULL,
@@ -460,12 +470,22 @@ See the \code{reset_globals} argument
 of \code{\link[=crew_controller_local]{crew_controller_local()}}.}
 
 \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
-seed to set for the evaluation of the task. Passed to the \code{seed}
-argument of \code{set.seed()}.}
+seed to set for the evaluation of the task. Passed to the
+\code{seed} argument of \code{set.seed()} if not \code{NULL}.
+If \code{algorithm} and \code{seed} are both \code{NULL},
+then the random number generator defaults to the
+recommended widely spaced worker-specific
+L'Ecuyer streams as supported by \code{mirai::nextstream()}.
+See \code{vignette("parallel", package = "parallel")} for details.}
 
 \item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
 generator algorithm to set for the evaluation of the task.
-Passed to the \code{kind} argument of \code{set.seed()}.}
+Passed to the \code{kind} argument of \code{RNGkind()} if not \code{NULL}.
+If \code{algorithm} and \code{seed} are both \code{NULL},
+then the random number generator defaults to the
+recommended widely spaced worker-specific
+L'Ecuyer streams as supported by \code{mirai::nextstream()}.
+See \code{vignette("parallel", package = "parallel")} for details.}
 
 \item{\code{packages}}{Character vector of packages to load for the task.}
 
@@ -516,8 +536,8 @@ Apply a single command to multiple inputs.
   data = list(),
   globals = list(),
   substitute = TRUE,
-  seed = as.integer(nanonext::random()/2),
-  algorithm = RNGkind()[1L],
+  seed = NULL,
+  algorithm = NULL,
   packages = character(0),
   library = NULL,
   seconds_interval = NULL,
@@ -571,12 +591,22 @@ whereas \code{substitute = FALSE} is meant for automated R programs
 that invoke \code{crew} controllers.}
 
 \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
-seed to set for the evaluation of the task. Passed to the \code{seed}
-argument of \code{set.seed()}.}
+seed to set for the evaluation of the task. Passed to the
+\code{seed} argument of \code{set.seed()} if not \code{NULL}.
+If \code{algorithm} and \code{seed} are both \code{NULL},
+then the random number generator defaults to the
+recommended widely spaced worker-specific
+L'Ecuyer streams as supported by \code{mirai::nextstream()}.
+See \code{vignette("parallel", package = "parallel")} for details.}
 
 \item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
 generator algorithm to set for the evaluation of the task.
-Passed to the \code{kind} argument of \code{set.seed()}.}
+Passed to the \code{kind} argument of \code{RNGkind()} if not \code{NULL}.
+If \code{algorithm} and \code{seed} are both \code{NULL},
+then the random number generator defaults to the
+recommended widely spaced worker-specific
+L'Ecuyer streams as supported by \code{mirai::nextstream()}.
+See \code{vignette("parallel", package = "parallel")} for details.}
 
 \item{\code{packages}}{Character vector of packages to load for the task.}
 
@@ -624,8 +654,8 @@ the \code{map()} function from the \code{purrr} package.
 }
 
 \subsection{Returns}{
-A \code{tibble} of results and metadata, like the output of \code{pop()}
-but with multiple rows aggregated together (one row per task).
+A \code{tibble} of results and metadata: one row per task
+and columns corresponding to the output of \code{pop()}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -705,10 +735,33 @@ any newly completed results.
 }
 
 \subsection{Returns}{
-If there is a completed task available to collect, the return
-value is a one-row data frame with the results, warnings, and errors.
-Otherwise, if there are no results available to collect,
-the return value is \code{NULL}.
+If there is no task to collect, return \code{NULL}. Otherwise,
+return a one-row \code{tibble} with the following columns.
+\itemize{
+\item \code{name}: the task name if given.
+\item \code{command}: a character string with the R command if \code{save_command}
+was set to \code{TRUE} in \code{push()}.
+\item \code{result}: a list containing the return value of the R command.
+\item \code{seconds}: number of seconds that the task ran.
+\item \code{seed}: the single integer originally supplied to \code{push()},
+\code{NA} otherwise. The pseudo-random number generator state
+just prior to the task can be restored using
+\code{set.seed(seed = seed, kind = algorithm)}, where \code{seed} and
+\code{algorithm} are part of this output.
+\item \code{algorithm}: name of the pseudo-random number generator algorithm
+originally supplied to \code{push()},
+\code{NA} otherwise. The pseudo-random number generator state
+just prior to the task can be restored using
+\code{set.seed(seed = seed, kind = algorithm)}, where \code{seed} and
+\code{algorithm} are part of this output.
+\item \code{error}: the first 2048 characters of the error message if
+the task threw an error, \code{NA} otherwise.
+\item \code{trace}: the first 2048 characters of the text of the traceback
+if the task threw an error, \code{NA} otherwise.
+\item \code{warnings}: the first 2048 characters. of the text of
+warning messages that the task may have generated, \code{NA} otherwise.
+\item \code{launcher}: name of the \code{crew} launcher where the task ran.
+}
 }
 }
 \if{html}{\out{<hr>}}

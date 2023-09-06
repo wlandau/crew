@@ -66,10 +66,22 @@ crew_test("encoding issue error handling", {
   expect_true(grepl("text encoding issue", monad$warnings))
 })
 
-crew_test("crew_eval() seed", {
-  out1 <- crew_eval(quote(sample.int(n = 1e9L, size = 1L)), seed = 1L)
-  out2 <- crew_eval(quote(sample.int(n = 1e9L, size = 1L)), seed = 1L)
-  out3 <- crew_eval(quote(sample.int(n = 1e9L, size = 1L)), seed = 2L)
+crew_test("crew_eval() seed and algorithm", {
+  out1 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = 1L,
+    algorithm = RNGkind()[1L]
+  )
+  out2 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = 1L,
+    algorithm = RNGkind()[1L]
+  )
+  out3 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = 2L,
+    algorithm = RNGkind()[1L]
+  )
   expect_equal(out1$seed, 1L)
   expect_equal(out2$seed, 1L)
   expect_equal(out3$seed, 2L)

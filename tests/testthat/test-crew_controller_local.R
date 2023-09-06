@@ -354,7 +354,8 @@ crew_test("controller map() works", {
     command = f(x, y) + a + b,
     iterate = list(x = c(1L, 2L), y = c(3L, 4L)),
     data = list(a = 5L),
-    globals = list(f = f, b = 6L)
+    globals = list(f = f, b = 6L),
+    seed = 0L
   )
   x$terminate()
   expect_null(x$error)
@@ -445,7 +446,7 @@ crew_test("map() works with errors and names and command strings", {
   expect_equal(out$result, list(NA, NA))
   expect_true(all(out$seconds >= 0))
   expect_true(is.integer(out$seed))
-  expect_true(anyDuplicated(out$seed) < 1L)
+  expect_true(all(is.na(out$seed)))
   expect_false(anyNA(out$error))
   expect_false(anyNA(out$trace))
   expect_false(anyNA(out$warnings))

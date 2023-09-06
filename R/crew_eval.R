@@ -15,17 +15,21 @@
 #' @param globals Named list of objects to temporarily assign to the
 #'   global environment for the task.
 #' @param seed Integer of length 1 with the pseudo-random number generator
-#'   seed to set for the evaluation of the task.
-#'   Passed to the `seed` argument of `set.seed()`.
-#'   `crew_eval()` does not restore the original seed,
-#'   but this is okay because it
-#'   should only run in a non-interactive worker process.
-#' @param algorithm Character of length 1,
-#'   name of the pseudo-random number generator algorithm.
-#'   Passed to the `kind` argument of `set.seed()`.
-#'   `crew_eval()` does not restore the original algorithm,
-#'   but this is okay because it
-#'   should only run in a non-interactive worker process.
+#'   seed to set for the evaluation of the task. Passed to the
+#'   `seed` argument of `set.seed()` if not `NULL`.
+#'   If `algorithm` and `seed` are both `NULL`,
+#'   then the random number generator defaults to the
+#'   recommended widely spaced worker-specific
+#'   L'Ecuyer streams as supported by `mirai::nextstream()`.
+#'   See `vignette("parallel", package = "parallel")` for details.
+#' @param algorithm Integer of length 1 with the pseudo-random number
+#'   generator algorithm to set for the evaluation of the task.
+#'   Passed to the `kind` argument of `RNGkind()` if not `NULL`.
+#'   If `algorithm` and `seed` are both `NULL`,
+#'   then the random number generator defaults to the
+#'   recommended widely spaced worker-specific
+#'   L'Ecuyer streams as supported by `mirai::nextstream()`.
+#'   See `vignette("parallel", package = "parallel")` for details.
 #' @param packages Character vector of packages to load for the task.
 #' @param library Library path to load the packages. See the `lib.loc`
 #'   argument of `require()`.
@@ -37,13 +41,24 @@ crew_eval <- function(
   string = NA_character_,
   data = list(),
   globals = list(),
-  seed = as.integer(nanonext::random() / 2),
-  algorithm = RNGkind()[1L],
+  seed = NULL,
+  algorithm = NULL,
   packages = character(0),
   library = NULL
 ) {
+  old_algorithm <- RNGkind()[1L]
+  old_seed <- .subset2(.GlobalEnv, ".Random.seed")
+  if (!is.null(algorithm) || !is.null(seed)) {
+    if (!is.null(algorithm)) {
+      RNGkind(kind = algorithm)
+    }
+    if (!is.null(seed)) {
+      set.seed(seed = seed)
+    }
+    on.exit(RNGkind(kind = old_algorithm))
+    on.exit(.GlobalEnv$.Random.seed <- old_seed, add = TRUE)
+  }
   load_packages(packages = packages, library = library)
-  set.seed(seed = seed, kind = algorithm)
   list2env(x = globals, envir = globalenv())
   envir <- list2env(x = data, parent = globalenv())
   capture_error <- function(condition) {
@@ -85,8 +100,8 @@ crew_eval <- function(
     command = string,
     result = result,
     seconds = seconds,
-    seed = seed,
-    algorithm = algorithm,
+    seed = seed %|||% NA_integer_,
+    algorithm = algorithm %|||% NA_character_,
     error = state$error %|||% NA_character_,
     trace = state$trace %|||% NA_character_,
     warnings = state$warnings %|||% NA_character_,

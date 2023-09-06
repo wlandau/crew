@@ -52,11 +52,11 @@ The controller group also supports global methods for `wait()`, `pop()`, and `te
 ```{r}
 group$wait(controllers = "semi-persistent")
 group$pop()
-#> # A tibble: 1 × 11
-#>   name    command result seconds   seed error trace warnings launcher worker
-#>   <chr>   <chr>   <list>   <dbl>  <int> <chr> <chr> <chr>    <chr>     <int>
-#> 1 my task NA      <dbl>        0 6.30e8 NA    NA    NA       semi-pe…      1
-#> # ℹ 1 more variable: instance <chr>
+#> # A tibble: 1 × 12
+#>   name    command result seconds  seed algorithm error trace warnings
+#>   <chr>   <chr>   <list>   <dbl> <int> <chr>     <chr> <chr> <chr>
+#> 1 my task NA      <dbl>        0    NA NA        NA    NA    NA
+#> # ℹ 3 more variables: launcher <chr>, worker <int>, instance <chr>
 ```
 
 The [`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-group-map) method provides functional programming, and the `controller` argument lets you choose the controller to submit the tasks.
@@ -72,13 +72,12 @@ group$map(
   globals = list(d = 6),
   controller = "persistent"
 )
-#> # A tibble: 2 × 11
-#>   name  command result    seconds      seed error trace warnings
-#>   <chr> <chr>   <list>      <dbl>     <int> <chr> <chr> <chr>
-#> 1 1     NA      <dbl [1]>       0 870591596 NA    NA    NA
-#> 2 2     NA      <dbl [1]>       0 870591595 NA    NA    NA
-#> # ℹ 3 more variables: launcher <chr>, worker <int>,
-#> #   instance <chr>
+#> # A tibble: 2 × 12
+#>   name  command result    seconds  seed algorithm error trace warnings
+#>   <chr> <chr>   <list>      <dbl> <int> <chr>     <chr> <chr> <chr>
+#> 1 1     NA      <dbl [1]>       0    NA NA        NA    NA    NA
+#> 2 2     NA      <dbl [1]>       0    NA NA        NA    NA    NA
+#> # ℹ 3 more variables: launcher <chr>, worker <int>, instance <chr>
 ```
 
 The controller group has a `summary()` method which aggregates the summaries of one or more controllers.

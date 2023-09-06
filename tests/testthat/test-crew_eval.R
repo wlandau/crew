@@ -67,26 +67,79 @@ crew_test("encoding issue error handling", {
 })
 
 crew_test("crew_eval() seed and algorithm", {
+  old_algorithm <- RNGkind()[1L]
+  old_seed <- .subset2(.GlobalEnv, ".Random.seed")
   out1 <- crew_eval(
     quote(sample.int(n = 1e9L, size = 1L)),
     seed = 1L,
-    algorithm = RNGkind()[1L]
+    algorithm = "Super-Duper"
   )
   out2 <- crew_eval(
     quote(sample.int(n = 1e9L, size = 1L)),
     seed = 1L,
-    algorithm = RNGkind()[1L]
+    algorithm = "Super-Duper"
   )
   out3 <- crew_eval(
     quote(sample.int(n = 1e9L, size = 1L)),
     seed = 2L,
-    algorithm = RNGkind()[1L]
+    algorithm = "Super-Duper"
   )
   expect_equal(out1$seed, 1L)
   expect_equal(out2$seed, 1L)
   expect_equal(out3$seed, 2L)
   expect_equal(out1$result[[1]], out2$result[[1]])
   expect_true(abs(out1$result[[1]] - out3$result[[1]]) > 1L)
+  expect_equal(RNGkind()[1L], old_algorithm)
+  expect_equal(.subset2(.GlobalEnv, ".Random.seed"), old_seed)
+})
+
+crew_test("crew_eval() just seed", {
+  old_algorithm <- RNGkind()[1L]
+  old_seed <- .subset2(.GlobalEnv, ".Random.seed")
+  out1 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = 1L,
+    algorithm = NULL
+  )
+  out2 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = 1L,
+    algorithm = NULL
+  )
+  out3 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = 2L,
+    algorithm = NULL
+  )
+  expect_equal(out1$seed, 1L)
+  expect_equal(out2$seed, 1L)
+  expect_equal(out3$seed, 2L)
+  expect_equal(out1$result[[1]], out2$result[[1]])
+  expect_true(abs(out1$result[[1]] - out3$result[[1]]) > 1L)
+  expect_equal(RNGkind()[1L], old_algorithm)
+  expect_equal(.subset2(.GlobalEnv, ".Random.seed"), old_seed)
+})
+
+crew_test("crew_eval() just algorithm", {
+  old_algorithm <- RNGkind()[1L]
+  old_seed <- .subset2(.GlobalEnv, ".Random.seed")
+  out1 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = NULL,
+    algorithm = "Super-Duper"
+  )
+  out2 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = NULL,
+    algorithm = "Super-Duper"
+  )
+  out3 <- crew_eval(
+    quote(sample.int(n = 1e9L, size = 1L)),
+    seed = NULL,
+    algorithm = "Super-Duper"
+  )
+  expect_equal(RNGkind()[1L], old_algorithm)
+  expect_equal(.subset2(.GlobalEnv, ".Random.seed"), old_seed)
 })
 
 crew_test("crew_eval() environment variables", {

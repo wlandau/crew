@@ -254,7 +254,7 @@ Please tune these these arguments to achieve the desired balance for auto-scalin
 
 # Risks
 
-The `crew` package has unavoidable risk. It is your responsibility as the user to safely use `crew`. Please read the final clause of the [software license](https://wlandau.github.io/crew/LICENSE.html).
+The `crew` package has unavoidable risk. It is your responsibility as the user to safely use `crew`. Please read the [software license](https://wlandau.github.io/crew/LICENSE.html) and the sub-sections below about specific known risks.
 
 ## Security
 

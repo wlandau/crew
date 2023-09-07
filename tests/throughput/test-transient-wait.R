@@ -25,6 +25,9 @@ testthat::expect_equal(x$schedule$summary()$collected, 0L)
 # Wait for just one of the tasks.
 x$wait(mode = "one")
 
+# Wait a little longer for things to sync up.
+Sys.sleep(10)
+
 # Pop just one of the tasks
 x$collect()
 testthat::expect_equal(x$schedule$summary()$pushed, 96L)

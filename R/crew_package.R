@@ -21,7 +21,7 @@
 #'   and [`batchtools`](https://mllg.github.io/batchtools/).
 #' @importFrom data.table rbindlist
 #' @importFrom getip getip
-#' @importFrom mirai daemon daemons mirai saisei status nextstream
+#' @importFrom mirai daemon daemons mirai nextget nextstream saisei status
 #' @importFrom nanonext mclock msleep random sha1 .unresolved
 #' @importFrom processx process
 #' @importFrom ps ps_cmdline ps_handle ps_is_running ps_kill ps_status

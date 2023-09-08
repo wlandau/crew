@@ -22,7 +22,7 @@ mirai::daemons(
 workers <- new.env(parent = emptyenv()) # For mutability.
 workers$workers <- tibble::tibble(
   handle = replicate(n, new.env(), simplify = FALSE), # callr::r_bg() handles
-  socket = environment(mirai::daemons)$..$default$urls, # starting URLs
+  socket = nextget("urls"), # starting URLs
   launches = rep(0L, n), # number of times a worker was launched at this index
   launched = rep(FALSE, n), # FALSE if the worker is definitely done.
   assigned = rep(0L, n), # Cumulative "assigned" stat to check backlog (#79).
@@ -81,9 +81,7 @@ scale <- function(workers) {
       },
       args = list(
         url = workers$workers$socket[index],
-        tls = nanonext::weakref_value(
-          environment(mirai::daemons)$..$default$tls
-        )
+        tls = nextget("tls")
       )
     )
     # Increment the launch count.

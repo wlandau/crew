@@ -19,7 +19,7 @@ daemons_info <- function(name) {
 
 daemons_error <- function(daemons, name) {
   message <- sprintf("invalid daemons: %s\n", deparse1(daemons))
-  pid <- nextget("pid", .compute = name)
+  pid <- mirai::nextget("pid", .compute = name)
   exists <- !is.null(pid) &&
     !inherits(
       try(handle <- ps::ps_handle(pid = pid), silent = TRUE),

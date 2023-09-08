@@ -295,7 +295,7 @@ crew_class_launcher <- R6::R6Class(
         (2L * as.integer(isTRUE(self$reset_packages))) +
         (4L * as.integer(isTRUE(self$reset_options))) +
         (8L * as.integer(isTRUE(self$garbage_collection)))
-      tls <- nextget("tls", .compute = self$name)
+      tls <- mirai::nextget("tls", .compute = self$name)
       tls <- if_any(is.null(tls), tls, nanonext::weakref_value(tls))
       list(
         url = socket,
@@ -353,7 +353,7 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param sockets For testing purposes only.
     start = function(sockets = NULL) {
-      sockets <- sockets %|||% nextget("urls", .compute = self$name)
+      sockets <- sockets %|||% mirai::nextget("urls", .compute = self$name)
       n <- length(sockets)
       self$workers <- tibble::tibble(
         handle = replicate(n, crew_null, simplify = FALSE),

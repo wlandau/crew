@@ -4,10 +4,12 @@
 \alias{crew_random_name}
 \title{Random name}
 \usage{
-crew_random_name(n = 1L)
+crew_random_name(n = 12L)
 }
 \arguments{
-\item{n}{Length of the random vector to hash.}
+\item{n}{Number of bytes of information in the random string
+hashed to generate the name. Larger \code{n} is
+more likely to generate unique names, but it may be slower to compute.}
 }
 \value{
 A random character string.

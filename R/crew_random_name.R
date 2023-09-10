@@ -6,9 +6,11 @@
 #' @details The randomness is not reproducible and cannot be set with
 #'   e.g. `set.seed()` in R.
 #' @return A random character string.
-#' @param n Length of the random vector to hash.
+#' @param n Number of bytes of information in the random string
+#'   hashed to generate the name. Larger `n` is
+#'   more likely to generate unique names, but it may be slower to compute.
 #' @examples
 #' crew_random_name()
-crew_random_name <- function(n = 1L) {
+crew_random_name <- function(n = 12L) {
   nanonext::sha1(c(nanonext::random(n = n), as.numeric(Sys.time())))
 }

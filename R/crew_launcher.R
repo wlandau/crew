@@ -295,8 +295,6 @@ crew_class_launcher <- R6::R6Class(
         (2L * as.integer(isTRUE(self$reset_packages))) +
         (4L * as.integer(isTRUE(self$reset_options))) +
         (8L * as.integer(isTRUE(self$garbage_collection)))
-      tls <- mirai::nextget("tls", .compute = self$name)
-      tls <- if_any(is.null(tls), tls, nanonext::weakref_value(tls))
       list(
         url = socket,
         asyncdial = FALSE,
@@ -306,7 +304,7 @@ crew_class_launcher <- R6::R6Class(
         timerstart = self$tasks_timers,
         exitlinger = self$seconds_exit * 1000,
         cleanup = cleanup,
-        tls = tls,
+        tls = mirai::nextget("tls", .compute = self$name),
         rs = mirai::nextstream(self$name)
       )
     },

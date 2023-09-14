@@ -42,7 +42,7 @@ The documentation website at <https://wlandau.github.io/crew/> includes a [funct
 1. [Controller groups](https://wlandau.github.io/crew/articles/groups.html)
 1. [Integration with Shiny](https://wlandau.github.io/crew/articles/shiny.html)
 1. [How to write launcher plugins](https://wlandau.github.io/crew/articles/plugins.html)
-1. [Known risks and how to manage them](https://wlandau.github.io/crew/articles/risks.html)
+1. [Known risks of `crew`](https://wlandau.github.io/crew/articles/risks.html)
 
 # Risks
 

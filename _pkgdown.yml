@@ -1,4 +1,14 @@
 destination: docs/
+articles:
+- title: How to use `crew`
+  contents:
+  - introduction
+  - groups
+  - shiny
+- title: Technical details
+  contents:
+  - plugins
+  - risks
 reference:
 - title: For users
   contents:

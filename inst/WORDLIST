@@ -27,6 +27,8 @@ walkthrough
 writeable
 errored
 YAML
+VPN
+MITM
 RJ
 ZeroMQ
 globals

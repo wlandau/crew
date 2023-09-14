@@ -1,0 +1,60 @@
+---
+title: "Risks"
+output:
+  rmarkdown::html_vignette:
+    number_sections: true
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Risks}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(crew)
+```
+
+The `crew` package has unavoidable risks, and the user is responsible for safety, security, and computational resources. This vignette describes known risks and safeguards, but is by no means exhaustive. Please read the [software license](https://wlandau.github.io/crew/LICENSE.html).
+
+# Resources
+
+## Processes
+
+The `crew` package launches external R processes:
+
+1. Worker processes to run tasks, which may include expensive jobs on cloud services like AWS Batch or traditional clusters like SLURM.
+2. A local [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher process to schedule the tasks. If `x` is a `crew` controller, the process ID of the dispatcher is`x$client$dispatcher`.
+
+In the event of a poorly-timed crash or network error, these processes may not terminate properly. If that happens, they will continue to run, which may strain traditional clusters or incur heavy expenses on the cloud. Please monitor the platforms you use and manually terminate defunct hanging processes as needed.
+
+## Ports
+
+In addition, `crew` occupies one TCP port per controller. TCP ports range from 0 to 65535, and only around 16000 of these ports are considered ephemeral or dynamic, so please be careful not to run too many controllers simultaneously on shared machines, especially in [controller group](https://wlandau.github.io/crew/articles/groups.html). The `terminate()` frees these ports again for other processes to use.
+
+# Security
+
+By default, `crew` uses unencrypted TCP connections for transactions among workers. In a compromised network, an attacker can read the data in transit, and even gain direct access to the client or host.
+
+## Perimeters
+
+It is best to avoid persistent direct connections between your local computer and the public internet. The `host` argument of the controller should not be a public IP address. Instead, please try to operate entirely within a perimeter such as a firewall, a virtual private network (VPN), or an Amazon Web Services (AWS) security group. In the case of AWS, your security group can open ports to itself. That way, the `crew` workers on e.g. AWS Batch jobs can connect to a `crew` client running in the same security group on an AWS Batch job or EC2 instance.
+
+## Encryption
+
+In the age of Zero Trust, perimeters alone are seldom sufficient. Transport layer security (TLS) encrypts data to protect it from hackers while it travels over a network. TLS is the state of the art of encryption for network communications, and it is responsible for security in popular protocols such as HTTPS and SSH. TLS is based on public key cryptography, which requires two files:
+
+1. A private key file which lives in a protected location on the host machine.
+2. A public key file which is sent to the remote machine on the other side of the connection.
+
+To use TLS in `crew` with automatic configuration, simply set `tls_enable = TRUE` and `tls_config = NULL` in the controller, e.g. `crew_controller_local()`.^[[Launcher plugins](https://wlandau.github.io/crew/articles/plugins.html) should expose the `tls_enable` and `tls_config` arguments of `crew_client()`.] [`mirai`](https://github.com/shikokuchuo/mirai) generates a one-time key pair and encrypts data for the current `crew` client. The key pair expires when the client terminates, which reduces the risk of a breach. In addition, the public key is a self-signed certificate, which somewhat protects against tampering on its way from the client to the server.
+
+## Certificate authorities
+
+The signature in a self-signed certificate helps the server verify that the public key has a valid private key somewhere. However, in a "man-in-the-middle" (MITM) attack, that private key could belong to a malicious hacker instead of the true client. A certificate authority (CA) is a trusted third party that vouches for the authenticity of a certificate. A CA-backed certificate is more secure than a self-signed one. To supply a CA-backed certificate to `crew`: 
+
+1. Create a PEM-formatted private key file and matching certificate file. Details are in <https://www.feistyduck.com/library/openssl-cookbook/online/> Chapter 1.2: Key and Certificate Management. When you are done with this step, you should at least have have a private key file, a matching signed certificate, and the root certificate of the CA. If your certificate was not signed directly by the CA, you will also need all the intermediate certificates in the certificate chain. 
+2. When you create a `crew` controller, set `tls_enable = TRUE`, and supply  `tls_config` with all the certificates and the private key from (1). The easiest way is to set `tls_config = "file.txt"`, where `file.txt` is a text file with everything together: your own certificate at the top, then the other certificates in the certificate chain (ending with the root CA certificate), then your private key.

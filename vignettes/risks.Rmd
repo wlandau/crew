@@ -1,11 +1,11 @@
 ---
-title: "Risks"
+title: "Known risks of crew"
 output:
   rmarkdown::html_vignette:
     number_sections: true
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Risks}
+  %\VignetteIndexEntry{Known risks of crew}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

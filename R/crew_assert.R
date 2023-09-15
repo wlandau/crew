@@ -58,7 +58,13 @@ crew_assert <- function(
 #'     alternative = "use the scale argument of push(), pop(), and wait()."
 #'   )
 #' )
-crew_deprecate <- function(name, date, version, alternative) {
+crew_deprecate <- function(
+  name,
+  date,
+  version,
+  alternative,
+  condition = "warning"
+) {
   message <- sprintf(
     "%s was deprecated on %s (crew version %s). Alternative: %s.",
     name,
@@ -66,9 +72,16 @@ crew_deprecate <- function(name, date, version, alternative) {
     version,
     alternative
   )
-  crew_warn(
-    message = message,
-    class = c("crew_deprecate", "crew_warning", "crew")
+  if_any(
+    condition == "warning",
+    crew_warn(
+      message = message,
+      class = c("crew_deprecate", "crew_warning", "crew")
+    ),
+    rlang::inform(
+      message = message,
+      class = c("crew_deprecate", "crew_message", "crew")
+    )
   )
 }
 

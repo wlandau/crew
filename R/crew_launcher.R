@@ -297,10 +297,13 @@ crew_class_launcher <- R6::R6Class(
         crew_assert(identical(colnames(self$workers), cols))
         crew_assert(nrow(self$workers) > 0L)
       }
-      crew_assert(
-        inherits(self$tls, "crew_class_tls"),
-        message = "field tls must be an object created by crew_tls()"
-      )
+      # TODO: forbid NULL tls objects:
+      if (!is.null(self$tls)) {
+        crew_assert(
+          inherits(self$tls, "crew_class_tls"),
+          message = "field tls must be an object created by crew_tls()"
+        )
+      }
       invisible()
     },
     #' @description List of arguments for `mirai::daemon()`.
@@ -321,7 +324,12 @@ crew_class_launcher <- R6::R6Class(
         timerstart = self$tasks_timers,
         exitlinger = self$seconds_exit * 1000,
         cleanup = cleanup,
-        tls = self$tls$worker(name = self$name),
+        # TODO: always use tls objects:
+        tls = if_any(
+          is.null(self$tls),
+          NULL,
+          self$tls$worker(name = self$name)
+        ),
         rs = mirai::nextstream(self$name)
       )
     },

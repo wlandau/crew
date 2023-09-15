@@ -81,14 +81,14 @@ crew_test("crew_client() works", {
 })
 
 crew_test("crew_client() deprecate tls_enable", {
-  expect_warning(
+  expect_message(
     crew_client(host = "127.0.0.1", tls_enable = TRUE),
     class = "crew_deprecate"
   )
 })
 
 crew_test("crew_client() deprecate tls_config", {
-  expect_warning(
+  expect_message(
     crew_client(host = "127.0.0.1", tls_config = list()),
     class = "crew_deprecate"
   )

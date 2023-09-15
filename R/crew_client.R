@@ -39,12 +39,14 @@ crew_client <- function(
   seconds_interval = 0.25,
   seconds_timeout = 10
 ) {
+  # TODO: turn these into warnings:
   if (!is.null(tls_enable)) {
     crew_deprecate(
       name = "tls_enable",
       date = "2023-09-15",
       version = "0.4.1",
-      alternative = "argument tls and function crew_tls()"
+      alternative = "argument tls and function crew_tls()",
+      condition = "message"
     )
   }
   if (!is.null(tls_config)) {
@@ -52,7 +54,8 @@ crew_client <- function(
       name = "tls_config",
       date = "2023-09-15",
       version = "0.4.1",
-      alternative = "argument tls and function crew_tls()"
+      alternative = "argument tls and function crew_tls()",
+      condition = "message"
     )
   }
   name <- as.character(name %|||% crew_random_name())
@@ -214,7 +217,7 @@ crew_class_client <- R6::R6Class(
       get_password <- function() {
         self$tls$password
       }
-      args <- list(
+      mirai::daemons(
         n = self$workers,
         url = url,
         dispatcher = TRUE,
@@ -224,7 +227,6 @@ crew_class_client <- R6::R6Class(
         token = TRUE,
         .compute = self$name
       )
-      do.call(what = mirai::daemons, args = args)
       # TODO: remove code that gets the dispatcher PID if the dispatcher
       # process becomes a C thread.
       # Begin dispatcher code.

@@ -23,3 +23,6 @@ _targets_r
 _targets.yaml
 skeleton.html
 revdep
+fd.key
+fd.csr
+fd.crt

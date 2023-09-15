@@ -134,50 +134,50 @@ crew_class_launcher <- R6::R6Class(
     workers = NULL,
     #' @field name Name of the launcher.
     name = NULL,
-    #' @field seconds_interval See `crew_launcher()`.
+    #' @field seconds_interval See [crew_launcher()].
     seconds_interval = NULL,
-    #' @field seconds_launch See `crew_launcher()`.
+    #' @field seconds_launch See [crew_launcher()].
     seconds_launch = NULL,
-    #' @field seconds_idle See `crew_launcher()`.
+    #' @field seconds_idle See [crew_launcher()].
     seconds_idle = NULL,
-    #' @field seconds_wall See `crew_launcher()`.
+    #' @field seconds_wall See [crew_launcher()].
     seconds_wall = NULL,
-    #' @field seconds_exit See `crew_launcher()`.
+    #' @field seconds_exit See [crew_launcher()].
     seconds_exit = NULL,
-    #' @field tasks_max See `crew_launcher()`.
+    #' @field tasks_max See [crew_launcher()].
     tasks_max = NULL,
-    #' @field tasks_timers See `crew_launcher()`.
+    #' @field tasks_timers See [crew_launcher()].
     tasks_timers = NULL,
-    #' @field reset_globals See `crew_launcher()`.
+    #' @field reset_globals See [crew_launcher()].
     reset_globals = NULL,
-    #' @field reset_packages See `crew_launcher()`.
+    #' @field reset_packages See [crew_launcher()].
     reset_packages = NULL,
-    #' @field reset_options See `crew_launcher()`.
+    #' @field reset_options See [crew_launcher()].
     reset_options = NULL,
-    #' @field garbage_collection See `crew_launcher()`.
+    #' @field garbage_collection See [crew_launcher()].
     garbage_collection = NULL,
-    #' @field launch_max See `crew_launcher()`.
+    #' @field launch_max See [crew_launcher()].
     launch_max = NULL,
-    #' @field tls See [crew_laucher()].
+    #' @field tls See [crew_launcher()].
     tls = NULL,
     #' @field until Numeric of length 1, time point when throttled unlocks.
     until = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
-    #' @param name See `crew_launcher()`.
-    #' @param seconds_interval See `crew_launcher()`.
-    #' @param seconds_launch See `crew_launcher()`.
-    #' @param seconds_idle See `crew_launcher()`.
-    #' @param seconds_wall See `crew_launcher()`.
-    #' @param seconds_exit See `crew_launcher()`.
-    #' @param tasks_max See `crew_launcher()`.
-    #' @param tasks_timers See `crew_launcher()`.
-    #' @param reset_globals See `crew_launcher()`.
-    #' @param reset_packages See `crew_launcher()`.
-    #' @param reset_options See `crew_launcher()`.
-    #' @param garbage_collection See `crew_launcher()`.
-    #' @param launch_max See `crew_launcher()`.
-    #' @param tls See `crew_launcher()`
+    #' @param name See [crew_launcher()].
+    #' @param seconds_interval See [crew_launcher()].
+    #' @param seconds_launch See [crew_launcher()].
+    #' @param seconds_idle See [crew_launcher()].
+    #' @param seconds_wall See [crew_launcher()].
+    #' @param seconds_exit See [crew_launcher()].
+    #' @param tasks_max See [crew_launcher()].
+    #' @param tasks_timers See [crew_launcher()].
+    #' @param reset_globals See [crew_launcher()].
+    #' @param reset_packages See [crew_launcher()].
+    #' @param reset_options See [crew_launcher()].
+    #' @param garbage_collection See [crew_launcher()].
+    #' @param launch_max See [crew_launcher()].
+    #' @param tls See [crew_launcher()]
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()

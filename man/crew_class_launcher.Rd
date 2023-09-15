@@ -64,31 +64,31 @@ Other class:
 
 \item{\code{name}}{Name of the launcher.}
 
-\item{\code{seconds_interval}}{See \code{crew_launcher()}.}
+\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_launch}}{See \code{crew_launcher()}.}
+\item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_idle}}{See \code{crew_launcher()}.}
+\item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_wall}}{See \code{crew_launcher()}.}
+\item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_exit}}{See \code{crew_launcher()}.}
+\item{\code{seconds_exit}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tasks_max}}{See \code{crew_launcher()}.}
+\item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tasks_timers}}{See \code{crew_launcher()}.}
+\item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{reset_globals}}{See \code{crew_launcher()}.}
+\item{\code{reset_globals}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{reset_packages}}{See \code{crew_launcher()}.}
+\item{\code{reset_packages}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{reset_options}}{See \code{crew_launcher()}.}
+\item{\code{reset_options}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{garbage_collection}}{See \code{crew_launcher()}.}
+\item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{launch_max}}{See \code{crew_launcher()}.}
+\item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tls}}{See \code{\link[=crew_laucher]{crew_laucher()}}.}
+\item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{until}}{Numeric of length 1, time point when throttled unlocks.}
 }
@@ -143,33 +143,33 @@ Launcher constructor.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{See \code{crew_launcher()}.}
+\item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_interval}}{See \code{crew_launcher()}.}
+\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_launch}}{See \code{crew_launcher()}.}
+\item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_idle}}{See \code{crew_launcher()}.}
+\item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_wall}}{See \code{crew_launcher()}.}
+\item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_exit}}{See \code{crew_launcher()}.}
+\item{\code{seconds_exit}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tasks_max}}{See \code{crew_launcher()}.}
+\item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tasks_timers}}{See \code{crew_launcher()}.}
+\item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{reset_globals}}{See \code{crew_launcher()}.}
+\item{\code{reset_globals}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{reset_packages}}{See \code{crew_launcher()}.}
+\item{\code{reset_packages}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{reset_options}}{See \code{crew_launcher()}.}
+\item{\code{reset_options}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{garbage_collection}}{See \code{crew_launcher()}.}
+\item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{launch_max}}{See \code{crew_launcher()}.}
+\item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tls}}{See \code{crew_launcher()}}
+\item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}}
 }
 \if{html}{\out{</div>}}
 }

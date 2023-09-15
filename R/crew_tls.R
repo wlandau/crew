@@ -147,30 +147,39 @@ crew_class_tls <- R6::R6Class(
     #' @description Validation for custom mode.
     #' @return `NULL` (invisibly).
     validate_mode_custom = function() {
-      for (field in c("key", "password", "certificates")) {
-        crew_assert(
-          self[[field]],
-          is.character(.),
-          length(.) >= 1L,
-          nzchar(.),
-          !anyNA(.),
-          message = paste(
-            "If mode is \"custom\", then crew_tls() argument",
-            field,
-            "must be of type character and be non-missing and nonempty."
-          )
+      crew_assert(
+        self$key,
+        is.character(.),
+        length(.) == 1L,
+        nzchar(.),
+        !anyNA(.),
+        message = paste(
+          "If mode is \"custom\", then crew_tls() argument key",
+          "must be a nonempty nonmissing character of length 1."
         )
-      }
-      for (field in c("key", "password")) {
-        crew_assert(
-          length(self[[field]]) == 1L,
-          message = paste(
-            "If mode is \"custom\", then crew_tls() argument",
-            field,
-            "must have length 1."
-          )
+      )
+      crew_assert(
+        self$password %|||% "x",
+        is.character(.),
+        length(.) == 1L,
+        nzchar(.),
+        !anyNA(.),
+        message = paste(
+          "If mode is \"custom\", then crew_tls() argument password",
+          "must be NULL or a nonempty nonmissing character of length 1."
         )
-      }
+      )
+      crew_assert(
+        self$certificates,
+        is.character(.),
+        length(.) >= 1L,
+        nzchar(.),
+        !anyNA(.),
+        message = paste(
+          "If mode is \"custom\", then crew_tls() argument certificates",
+          "must a nonempty nonmissing character vector of length >= 1."
+        )
+      )
       files <- c(self$key, self$certificates)
       for (file in files) {
         crew_assert(
@@ -236,10 +245,10 @@ crew_tls_assert_certificate <- function(certificate) {
     )
   )
   crew_assert(
-    lines[length(lines)] == "-----BEGIN CERTIFICATE-----",
+    lines[length(lines)] == "-----END CERTIFICATE-----",
     message = paste(
       "certificate file must end with the line",
-      "-----BEGIN CERTIFICATE-----.",
+      "-----END CERTIFICATE-----.",
       "please make sure you have a valid certificate in PEM format."
     )
   )

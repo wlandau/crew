@@ -207,7 +207,7 @@ crew_class_client <- R6::R6Class(
       }
       url <- sprintf(
         "%s://%s:%s",
-        if_any(self$tls_enable, "wss", "ws"),
+        if_any(self$tls$mode == "none", "ws", "wss"),
         self$host,
         self$port
       )

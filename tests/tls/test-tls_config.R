@@ -1,4 +1,4 @@
-test_that("tls_config() custom works on real credentials", {
+test_that("crew_tls() custom works on real credentials", {
   skip_on_os("windows")
   on.exit(unlink(c("fd.key", "fd.csr", "fd.crt")))
   system(
@@ -16,4 +16,23 @@ test_that("tls_config() custom works on real credentials", {
       certificates = "fd.crt"
     )
   )
+  x <- crew_controller_local(
+    tls = crew_tls(
+      mode = "custom",
+      key = "fd.key",
+      certificates = "fd.crt"
+    )
+  )
+  x$start()
+  x$push("57")
+  x$wait()
+  expect_equal(x$pop(), "57")
+})
+
+test_that("crew_tls() automatic", {
+  x <- crew_controller_local(tls = crew_tls(mode = "automatic"))
+  x$start()
+  x$push("57")
+  x$wait()
+  expect_equal(x$pop()$result[[1L]], "57")
 })

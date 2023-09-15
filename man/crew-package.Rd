@@ -27,6 +27,7 @@ and \href{https://mllg.github.io/batchtools/}{\code{batchtools}}.
 Other user: 
 \code{\link{crew_clean}()},
 \code{\link{crew_controller_group}()},
-\code{\link{crew_controller_local}()}
+\code{\link{crew_controller_local}()},
+\code{\link{crew_tls}()}
 }
 \concept{user}

@@ -9,31 +9,12 @@
 #'   If `NULL`, the host defaults to the local IP address.
 #' @param port TCP port to listen for the workers. If `NULL`,
 #'   then an available ephemeral port is automatically chosen.
-#' @param tls_enable Logical of length 1, whether to use transport layer
-#'   security (TLS) to secure connections between the client and workers.
-#'   Only supported for `mirai` version 0.9.0.9020 and above and
-#'   `nanonext` version 0.9.0.9034 and above.
-#'   Uses an automatically generated one-time self-signed certificate by
-#'   default. To guard against man-in-the-middle attacks, consider
-#'   generating a one-time certificate yourself, requesting a trusted
-#'   certificate authority (CA) to sign it, and then supplying the
-#'   keys to the `tls_config` argument. Enabling TLS requires `mirai`
-#'   version 0.9.0.9027 or above, and a `NULL` value for `tls_enable`
-#'   will enable TLS if and only if the `mirai` version is sufficient.
-#' @param tls_config Optional and only relevant if TLS is enabled
-#'   (see the `tls_config` argument). The `tls_config` argument
-#'   controls how transport layer security (TLS) is configured,
-#'   and it is directly forwarded to the `tls` argument of
-#'   `mirai::daemons()`. If `tls_config` is `NULL`,
-#'   then `mirai` will generate a one-time
-#'   self-signed certificate. This default approach is protects against
-#'   the simplest attempts at packet sniffing, but it is still vulnerable
-#'   to man-in-the-middle attacks. When greater security is required,
-#'   consider generating a PEM-encoded certificate and associated
-#'   private key yourself and using a trusted certificate authority (CA)
-#'   to sign the former. The documentation of `mirai`, including the
-#'   `tls` arguments of the `mirai::daemons()` and `mirai::daemon()`
-#'    functions, has more details.
+#' @param tls Either `NULL` to disable transport layer security (TLS)
+#'   or a TLS configuration object from [crew_tls()].
+#' @param tls_enable Deprecated on 2023-09-15 in version 0.4.1.
+#'   Use argument `tls` instead.
+#' @param tls_config Deprecated on 2023-09-15 in version 0.4.1.
+#'   Use argument `tls` instead.
 #' @param seconds_interval Number of seconds between
 #'   polling intervals waiting for certain internal
 #'   synchronous operations to complete. If `space_poll` is `TRUE`, then

@@ -47,7 +47,8 @@ Other class:
 \code{\link{crew_class_client}},
 \code{\link{crew_class_controller}},
 \code{\link{crew_class_launcher}},
-\code{\link{crew_class_schedule}}
+\code{\link{crew_class_schedule}},
+\code{\link{crew_class_tls}}
 }
 \concept{class}
 \section{Public fields}{

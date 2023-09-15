@@ -16,6 +16,7 @@ reference:
   - '`crew_controller_local`'
   - '`crew_controller_group`'
   - '`crew-package`'
+  - '`crew_tls`'
 - title: Launcher plugin development
   contents:
   - '`crew_client`'

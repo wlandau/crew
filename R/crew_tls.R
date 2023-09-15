@@ -1,0 +1,246 @@
+#' @title Configure TLS.
+#' @export
+#' @family user
+#' @description Create an `R6` object with transport layer security (TLS)
+#'   configuration for `crew`.
+#' @details See <https://wlandau.github.io/crew/articles/risks.html> for
+#'   details.
+#' @return An `R6` object with TLS configuration settings and methods.
+#' @param mode Character of length 1. Must be one of the following:
+#'   * `"none"`: disable TLS configuration.
+#'   * `"automatic"`: let `mirai` create a one-time key pair with a
+#'     self-signed certificate.
+#'   * `"custom"`: manually supply a private key pair, an optional
+#'     password for the private key, a certificate,
+#'     an optional revocation list.
+#' @param key If `mode` is `"none"` or `"automatic"`, then `key` is `NULL`.
+#'   If `mode` is `"custom"`, then `key` is a character of length 1
+#'   with the file path to the private key file.
+#' @param password If `mode` is `"none"` or `"automatic"`,
+#'   then `password` is `NULL`.
+#'   If `mode` is `"custom"` and the private key is not encrypted, then
+#'   `password` is still `NULL`.
+#'   If `mode` is `"custom"` and the private key is encrypted,
+#'   then `password` is a character of length 1 the the password of the private
+#'   key. In this case, DO NOT SAVE THE PASSWORD IN YOUR R CODE FILES.
+#'   See the `keyring` R package for solutions.
+#' @param certificates If `mode` is `"none"` or `"automatic"`,
+#'   then `certificates` is `NULL`.
+#'   If `mode` is `"custom"`, then `certificates` is a character vector
+#'   of file paths to certificate files (signed public keys).
+#'   If the certificate is self-signed or if it is
+#'   directly signed by a certificate authority (CA),
+#'   then only the certificate of the CA is needed. But if you have a whole
+#'   certificate chain which begins at your own certificate and ends with the
+#'   CA, then you can supply the whole certificate chain as a character vector
+#'   which begins at your own certificate and ends with
+#'   the certificate of the CA.
+#' @examples
+#' crew_tls(mode = "automatic")
+crew_tls <- function(
+  mode = "none",
+  key = NULL,
+  password = NULL,
+  certificates = NULL
+) {
+  tls <- crew_class_tls$new(
+    name = crew::crew_random_name(),
+    mode = mode,
+    key = key,
+    password = password,
+    certificates = certificates
+  )
+  tls$validate()
+  tls
+}
+
+#' @title `R6` TLS class.
+#' @export
+#' @family class
+#' @description `R6` class for TLS configuration.
+#' @details See [crew_tls()].
+#' @examples
+#' crew_tls(mode = "automatic")
+crew_class_tls <- R6::R6Class(
+  classname = "crew_class_tls",
+  cloneable = FALSE,
+  public = list(
+    #' @field name Name of the [crew_client()] object paired with this TLS
+    #'   object. Automatically set in [crew_client()].
+    name = NULL,
+    #' @field mode See [crew_tls()].
+    mode = NULL,
+    #' @field key See [crew_tls()].
+    key = NULL,
+    #' @field password See [crew_tls()].
+    password = NULL,
+    #' @field certificates See [crew_tls()].
+    certificates = NULL,
+    #' @description TLS configuration constructor.
+    #' @return An `R6` object with TLS configuration.
+    #' @param name Name of the [crew_tls()] object paired with this TLS
+    #'   object. Automatically set in [crew_tls()].
+    #' @param mode Argument passed from [crew_tls()].
+    #' @param key Argument passed from [crew_tls()].
+    #' @param password Argument passed from [crew_tls()].
+    #' @param certificates Argument passed from [crew_tls()].
+    #' @examples
+    #' crew_tls(mode = "automatic")
+    initialize = function(
+      name = NULL,
+      mode = NULL,
+      key = NULL,
+      password = NULL,
+      certificates = NULL
+    ) {
+      self$name <- name
+      self$mode <- mode
+      self$key <- key
+      self$password <- password
+      self$certificates <- certificates
+    },
+    #' @description Validate the object.
+    #' @return `NULL` (invisibly).
+    validate = function() {
+      for (field in c("name", "mode")) {
+        crew_assert(
+          self[[field]],
+          is.character(.),
+          length(.) == 1L,
+          nzchar(.),
+          !anyNA(.),
+          message = paste(
+            "crew_tls() argument",
+            field,
+            "must be a character of length 1"
+          )
+        )
+      }
+      crew_assert(
+        crew_assert(
+          self$mode %in% c("none", "automatic", "custom"),
+          message = "TLS mode must be \"none\", \"automatic\", or \"custom\"."
+        )
+      )
+      if_any(
+        self$mode %in% c("none", "automatic"),
+        self$validate_mode_automatic(),
+        self$validate_mode_custom()
+      )
+      invisible()
+    },
+    #' @description Validation for non-custom modes.
+    #' @return `NULL` (invisibly).
+    validate_mode_automatic = function() {
+      for (field in c("key", "password", "certificates")) {
+        crew_assert(
+          is.null(self[[field]]),
+          message = paste(
+            "If mode is not \"custom\" in crew_tls(), then",
+            field,
+            "must be NULL."
+          )
+        )
+      }
+      invisible()
+    },
+    #' @description Validation for custom mode.
+    #' @return `NULL` (invisibly).
+    validate_mode_custom = function() {
+      for (field in c("key", "password", "certificates")) {
+        crew_assert(
+          self[[field]],
+          is.character(.),
+          length(.) >= 1L,
+          nzchar(.),
+          !anyNA(.),
+          message = paste(
+            "If mode is \"custom\", then crew_tls() argument",
+            field,
+            "must be of type character and be non-missing and nonempty."
+          )
+        )
+      }
+      for (field in c("key", "password")) {
+        crew_assert(
+          length(self[[field]]) == 1L,
+          message = paste(
+            "If mode is \"custom\", then crew_tls() argument",
+            field,
+            "must have length 1."
+          )
+        )
+      }
+      files <- c(self$key, self$certificates)
+      for (file in files) {
+        crew_assert(
+          file.exists(file),
+          message = paste("file not found:", file)
+        )
+      }
+      crew_tls_assert_key(self$key)
+      for (certificate in self$certificates) {
+        crew_tls_assert_certificate(certificate)
+      }
+      invisible()
+    }
+  )
+)
+
+crew_tls_assert_key <- function(key) {
+  crew_assert(
+    file.exists(key),
+    message = "private key file not found"
+  )
+  lines <- readLines(key)
+  crew_assert(
+    length(lines) > 0L,
+    message = "private key file is empty"
+  )
+  crew_assert(
+    lines[1L] == "-----BEGIN PRIVATE KEY-----" ||
+      lines[1L] == "-----BEGIN ENCRYPTED PRIVATE KEY-----",
+    message = paste(
+      "private key file must begin with the line",
+      "-----BEGIN PRIVATE KEY----- or -----BEGIN ENCRYPTED PRIVATE KEY-----.",
+      "please make sure you have a valid private key in PEM format."
+    )
+  )
+  crew_assert(
+    lines[length(lines)] == "-----END PRIVATE KEY-----" ||
+      lines[length(lines)] == "-----END ENCRYPTED PRIVATE KEY-----",
+    message = paste(
+      "private key file must end with the line",
+      "-----END PRIVATE KEY----- or -----END ENCRYPTED PRIVATE KEY-----.",
+      "please make sure you have a valid private key in PEM format."
+    )
+  )
+}
+
+crew_tls_assert_certificate <- function(certificate) {
+  crew_assert(
+    file.exists(certificate),
+    message = paste("certificate file not found:", certificate)
+  )
+  lines <- readLines(certificate)
+  crew_assert(
+    length(lines) > 0L,
+    message = paste("certificate file is empty:", certificate)
+  )
+  crew_assert(
+    lines[1L] == "-----BEGIN CERTIFICATE-----",
+    message = paste(
+      "certificate file must begin with the line",
+      "-----BEGIN CERTIFICATE-----.",
+      "please make sure you have a valid certificate in PEM format."
+    )
+  )
+  crew_assert(
+    lines[length(lines)] == "-----BEGIN CERTIFICATE-----",
+    message = paste(
+      "certificate file must end with the line",
+      "-----BEGIN CERTIFICATE-----.",
+      "please make sure you have a valid certificate in PEM format."
+    )
+  )
+}

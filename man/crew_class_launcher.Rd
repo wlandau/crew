@@ -88,6 +88,8 @@ Other class:
 
 \item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
+\item{\code{tls}}{See \code{\link[=crew_laucher]{crew_laucher()}}.}
+
 \item{\code{until}}{Numeric of length 1, time point when throttled unlocks.}
 }
 \if{html}{\out{</div>}}

@@ -30,8 +30,7 @@ Other class:
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{name}}{Name of the \code{\link[=crew_client]{crew_client()}} object paired with this TLS
-object. Automatically set in \code{\link[=crew_client]{crew_client()}}.}
+\item{\code{name}}{Name of the \code{mirai} compute profile to configure TLS.}
 
 \item{\code{mode}}{See \code{\link[=crew_tls]{crew_tls()}}.}
 
@@ -56,12 +55,6 @@ object. Automatically set in \code{\link[=crew_client]{crew_client()}}.}
 \if{html}{\out{<a id="method-crew_class_tls-new"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_tls-new}{}}}
 \subsection{Method \code{new()}}{
-Validation for non-custom modes.
-
-
-Validation for custom mode.
-
-
 TLS configuration constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$new(
@@ -76,8 +69,7 @@ TLS configuration constructor.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Name of the \code{\link[=crew_tls]{crew_tls()}} object paired with this TLS
-object. Automatically set in \code{\link[=crew_tls]{crew_tls()}}.}
+\item{\code{name}}{Name of the \code{mirai} compute profile.}
 
 \item{\code{mode}}{Argument passed from \code{\link[=crew_tls]{crew_tls()}}.}
 
@@ -90,7 +82,7 @@ object. Automatically set in \code{\link[=crew_tls]{crew_tls()}}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{NULL} (invisibly).
+An \code{R6} object with TLS configuration.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -126,18 +118,26 @@ with \code{nanonext::tls_config()}.}
 \if{html}{\out{<a id="method-crew_class_tls-client"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_tls-client}{}}}
 \subsection{Method \code{client()}}{
+TLS credentials for the \code{crew} client.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$client()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{NULL} or character vector, depending on the mode.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_tls-worker"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_tls-worker}{}}}
 \subsection{Method \code{worker()}}{
+TLS credentials for \code{crew} workers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$worker()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{NULL} or character vector, depending on the mode.
+}
 }
 }

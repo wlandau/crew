@@ -5,6 +5,7 @@
 #'   in functions that create custom third-party launchers. See
 #'   `@inheritParams crew::crew_launcher` in the source code file of
 #'   [crew_launcher_local()].
+#' @inheritParams crew_client
 #' @param name Name of the launcher.
 #' @param seconds_interval Seconds to wait between asynchronous operations.
 #' @param seconds_launch Seconds of startup time to allow.
@@ -81,9 +82,15 @@ crew_launcher <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L
+  launch_max = 5L,
+  tls = crew::crew_tls()
 ) {
   name <- as.character(name %|||% crew_random_name())
+  crew_assert(
+    inherits(tls, "crew_class_tls"),
+    message = "argument tls must be an object created by crew_tls()"
+  )
+  tls$name <- name
   crew_class_launcher$new(
     name = name,
     seconds_interval = seconds_interval,
@@ -96,7 +103,9 @@ crew_launcher <- function(
     reset_globals = reset_globals,
     reset_packages = reset_packages,
     reset_options = reset_options,
-    garbage_collection = garbage_collection
+    garbage_collection = garbage_collection,
+    launch_max = launch_max,
+    tls = tls
   )
 }
 
@@ -150,6 +159,8 @@ crew_class_launcher <- R6::R6Class(
     garbage_collection = NULL,
     #' @field launch_max See [crew_launcher()].
     launch_max = NULL,
+    #' @field tls See [crew_laucher()].
+    tls = NULL,
     #' @field until Numeric of length 1, time point when throttled unlocks.
     until = NULL,
     #' @description Launcher constructor.
@@ -284,6 +295,14 @@ crew_class_launcher <- R6::R6Class(
         crew_assert(identical(colnames(self$workers), cols))
         crew_assert(nrow(self$workers) > 0L)
       }
+      crew_assert(
+        inherits(self$tls, "crew_class_tls"),
+        message = "field tls must be an object created by crew_tls()"
+      )
+      crew_assert(
+        identical(self$name, self$tls$name),
+        "names of the launcher and tls objects must agree"
+      )
       invisible()
     },
     #' @description List of arguments for `mirai::daemon()`.
@@ -304,7 +323,7 @@ crew_class_launcher <- R6::R6Class(
         timerstart = self$tasks_timers,
         exitlinger = self$seconds_exit * 1000,
         cleanup = cleanup,
-        tls = mirai::nextget("tls", .compute = self$name),
+        tls = self$tls$worker(),
         rs = mirai::nextstream(self$name)
       )
     },

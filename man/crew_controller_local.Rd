@@ -9,7 +9,8 @@ crew_controller_local(
   workers = 1L,
   host = "127.0.0.1",
   port = NULL,
-  tls_enable = FALSE,
+  tls = crew::crew_tls(),
+  tls_enable = NULL,
   tls_config = NULL,
   seconds_interval = 0.25,
   seconds_timeout = 10,
@@ -37,6 +38,8 @@ If \code{NULL}, the host defaults to the local IP address.}
 
 \item{port}{TCP port to listen for the workers. If \code{NULL},
 then an available ephemeral port is automatically chosen.}
+
+\item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
 
 \item{tls_enable}{Deprecated on 2023-09-15 in version 0.4.1.
 Use argument \code{tls} instead.}

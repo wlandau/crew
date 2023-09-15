@@ -9,7 +9,8 @@ crew_client(
   workers = 1L,
   host = NULL,
   port = NULL,
-  tls_enable = FALSE,
+  tls = crew::crew_tls(),
+  tls_enable = NULL,
   tls_config = NULL,
   seconds_interval = 0.25,
   seconds_timeout = 10
@@ -27,6 +28,8 @@ If \code{NULL}, the host defaults to the local IP address.}
 \item{port}{TCP port to listen for the workers. If \code{NULL},
 then an available ephemeral port is automatically chosen.}
 
+\item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
+
 \item{tls_enable}{Deprecated on 2023-09-15 in version 0.4.1.
 Use argument \code{tls} instead.}
 
@@ -41,9 +44,6 @@ this is also the minimum number of seconds between calls to
 
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete.}
-
-\item{tls}{Either \code{NULL} to disable transport layer security (TLS)
-or a TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
 }
 \description{
 Create an \code{R6} wrapper object to manage the \code{mirai} client.

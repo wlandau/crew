@@ -59,8 +59,9 @@ Create an \code{R6} object with transport layer security (TLS)
 configuration for \code{crew}.
 }
 \details{
-See \url{https://wlandau.github.io/crew/articles/risks.html} for
-details.
+\code{\link[=crew_tls]{crew_tls()}} objects are input to the \code{tls} argument of
+\code{\link[=crew_client]{crew_client()}}, \code{\link[=crew_controller_local]{crew_controller_local()}}, etc.
+See \url{https://wlandau.github.io/crew/articles/risks.html} for details.
 }
 \examples{
 crew_tls(mode = "automatic")

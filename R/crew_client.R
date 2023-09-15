@@ -9,8 +9,7 @@
 #'   If `NULL`, the host defaults to the local IP address.
 #' @param port TCP port to listen for the workers. If `NULL`,
 #'   then an available ephemeral port is automatically chosen.
-#' @param tls Either `NULL` to disable transport layer security (TLS)
-#'   or a TLS configuration object from [crew_tls()].
+#' @param tls A TLS configuration object from [crew_tls()].
 #' @param tls_enable Deprecated on 2023-09-15 in version 0.4.1.
 #'   Use argument `tls` instead.
 #' @param tls_config Deprecated on 2023-09-15 in version 0.4.1.
@@ -34,22 +33,43 @@ crew_client <- function(
   workers = 1L,
   host = NULL,
   port = NULL,
-  tls_enable = FALSE,
+  tls = crew::crew_tls(),
+  tls_enable = NULL,
   tls_config = NULL,
   seconds_interval = 0.25,
   seconds_timeout = 10
 ) {
+  if (!is.null(tls_enable)) {
+    crew_deprecate(
+      name = "tls_enable",
+      date = "2023-09-15",
+      version = "0.4.1",
+      alternative = "argument tls and function crew_tls()"
+    )
+  }
+  if (!is.null(tls_config)) {
+    crew_deprecate(
+      name = "tls_config",
+      date = "2023-09-15",
+      version = "0.4.1",
+      alternative = "argument tls and function crew_tls()"
+    )
+  }
   name <- as.character(name %|||% crew_random_name())
   workers <- as.integer(workers)
   host <- as.character(host %|||% getip::getip(type = "local"))
   port <- as.integer(port %|||% 0L)
+  crew_assert(
+    inherits(tls, "crew_class_tls"),
+    message = "argument tls must be an object created by crew_tls()"
+  )
+  tls$name <- name
   client <- crew_class_client$new(
     name = name,
     workers = workers,
     host = host,
     port = port,
-    tls_enable = tls_enable,
-    tls_config = tls_config,
+    tls = tls,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout
   )
@@ -81,10 +101,8 @@ crew_class_client <- R6::R6Class(
     host = NULL,
     #' @field port See [crew_client()].
     port = NULL,
-    #' @field tls_enable See [crew_client()].
-    tls_enable = NULL,
-    #' @field tls_config See [crew_client()].
-    tls_config = NULL,
+    #' @field tls See [crew_client()].
+    tls = NULL,
     #' @field seconds_interval See [crew_client()].
     seconds_interval = NULL,
     #' @field seconds_timeout See [crew_client()].
@@ -99,8 +117,7 @@ crew_class_client <- R6::R6Class(
     #' @param workers Argument passed from [crew_client()].
     #' @param host Argument passed from [crew_client()].
     #' @param port Argument passed from [crew_client()].
-    #' @param tls_enable Argument passed from [crew_client()].
-    #' @param tls_config Argument passed from [crew_client()].
+    #' @param tls Argument passed from [crew_client()].
     #' @param seconds_interval Argument passed from [crew_client()].
     #' @param seconds_timeout Argument passed from [crew_client()].
     #' @examples
@@ -115,8 +132,7 @@ crew_class_client <- R6::R6Class(
       workers = NULL,
       host = NULL,
       port = NULL,
-      tls_enable = NULL,
-      tls_config = NULL,
+      tls = NULL,
       seconds_interval = NULL,
       seconds_timeout = NULL
     ) {
@@ -124,8 +140,7 @@ crew_class_client <- R6::R6Class(
       self$workers <- workers
       self$host <- host
       self$port <- port
-      self$tls_enable <- tls_enable
-      self$tls_config <- tls_config
+      self$tls <- tls
       self$seconds_interval <- seconds_interval
       self$seconds_timeout <- seconds_timeout
     },
@@ -154,7 +169,14 @@ crew_class_client <- R6::R6Class(
       )
       crew_assert(self$port, is.integer(.), length(.) == 1L, !anyNA(.))
       crew_assert(self$port, . >= 0L, . <= 65535L)
-      crew_assert(self$tls_enable, isTRUE(.) || isFALSE(.))
+      crew_assert(
+        inherits(self$tls, "crew_class_tls"),
+        message = "argument tls must be an object created by crew_tls()"
+      )
+      crew_assert(
+        identical(self$name, self$tls$name),
+        "names of the client and tls objects must agree"
+      )
       fields <- c(
         "seconds_interval",
         "seconds_timeout"
@@ -198,9 +220,11 @@ crew_class_client <- R6::R6Class(
         n = self$workers,
         url = url,
         dispatcher = TRUE,
-        tls = self$tls_config,
+        seed = NULL,
+        tls = self$tls$client(),
+        pass = self$tls$password,
         token = TRUE,
-        .compute = self$name
+        .compute = self$name,
       )
       do.call(what = mirai::daemons, args = args)
       # TODO: remove code that gets the dispatcher PID if the dispatcher

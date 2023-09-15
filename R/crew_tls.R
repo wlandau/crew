@@ -3,8 +3,9 @@
 #' @family user
 #' @description Create an `R6` object with transport layer security (TLS)
 #'   configuration for `crew`.
-#' @details See <https://wlandau.github.io/crew/articles/risks.html> for
-#'   details.
+#' @details [crew_tls()] objects are input to the `tls` argument of
+#'   [crew_client()], [crew_controller_local()], etc.
+#'   See <https://wlandau.github.io/crew/articles/risks.html> for details.
 #' @return An `R6` object with TLS configuration settings and methods.
 #' @param mode Character of length 1. Must be one of the following:
 #'   * `"none"`: disable TLS configuration.
@@ -47,7 +48,7 @@ crew_tls <- function(
   validate = TRUE
 ) {
   tls <- crew_class_tls$new(
-    name = crew::crew_random_name(),
+    name = crew_random_name(),
     mode = mode,
     key = key,
     password = password,
@@ -70,8 +71,6 @@ crew_class_tls <- R6::R6Class(
   classname = "crew_class_tls",
   cloneable = FALSE,
   private = list(
-    #' @description Validation for non-custom modes.
-    #' @return `NULL` (invisibly).
     validate_mode_automatic = function() {
       for (field in c("key", "password", "certificates")) {
         crew_assert(
@@ -85,8 +84,6 @@ crew_class_tls <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Validation for custom mode.
-    #' @return `NULL` (invisibly).
     validate_mode_custom = function() {
       crew_assert(
         self$key,
@@ -153,8 +150,7 @@ crew_class_tls <- R6::R6Class(
     }
   ),
   public = list(
-    #' @field name Name of the [crew_client()] object paired with this TLS
-    #'   object. Automatically set in [crew_client()].
+    #' @field name Name of the `mirai` compute profile to configure TLS.
     name = NULL,
     #' @field mode See [crew_tls()].
     mode = NULL,
@@ -166,8 +162,7 @@ crew_class_tls <- R6::R6Class(
     certificates = NULL,
     #' @description TLS configuration constructor.
     #' @return An `R6` object with TLS configuration.
-    #' @param name Name of the [crew_tls()] object paired with this TLS
-    #'   object. Automatically set in [crew_tls()].
+    #' @param name Name of the `mirai` compute profile.
     #' @param mode Argument passed from [crew_tls()].
     #' @param key Argument passed from [crew_tls()].
     #' @param password Argument passed from [crew_tls()].
@@ -192,24 +187,27 @@ crew_class_tls <- R6::R6Class(
     #' @param test Logical of length 1, whether to test the TLS configuration
     #'   with `nanonext::tls_config()`.
     validate = function(test = TRUE) {
-      for (field in c("name", "mode")) {
-        crew_assert(
-          self[[field]],
-          is.character(.),
-          length(.) == 1L,
-          nzchar(.),
-          !anyNA(.),
-          message = paste(
-            "crew_tls() argument",
-            field,
-            "must be a character of length 1"
-          )
-        )
-      }
       crew_assert(
-        crew_assert(
-          self$mode %in% c("none", "automatic", "custom"),
-          message = "TLS mode must be \"none\", \"automatic\", or \"custom\"."
+        self$name,
+        is.character(.),
+        length(.) == 1L,
+        nzchar(.),
+        !anyNA(.),
+        message = paste(
+          "crew_tls() argument name",
+          "must be a nonempty nonmissing character of length 1."
+        )
+      )
+      crew_assert(
+        self$mode,
+        is.character(.),
+        length(.) == 1L,
+        nzchar(.),
+        !anyNA(.),
+        . %in% c("none", "automatic", "custom"),
+        message = paste(
+          "crew_tls() argument mode",
+          "must be \"none\", \"automatic\", or \"custom\"."
         )
       )
       if_any(
@@ -230,6 +228,8 @@ crew_class_tls <- R6::R6Class(
       # nocov end
       invisible()
     },
+    #' @description TLS credentials for the `crew` client.
+    #' @return `NULL` or character vector, depending on the mode.
     client = function() {
       if (self$mode != "custom") {
         return(NULL)
@@ -237,6 +237,8 @@ crew_class_tls <- R6::R6Class(
         return(c(private$read_certificates(), private$read_key()))
       }
     },
+    #' @description TLS credentials for `crew` workers.
+    #' @return `NULL` or character vector, depending on the mode.
     worker = function() {
       if (self$mode == "none") {
         return(NULL)

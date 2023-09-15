@@ -30,8 +30,6 @@ Other class:
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{name}}{Name of the \code{mirai} compute profile to configure TLS.}
-
 \item{\code{mode}}{See \code{\link[=crew_tls]{crew_tls()}}.}
 
 \item{\code{key}}{See \code{\link[=crew_tls]{crew_tls()}}.}
@@ -58,7 +56,6 @@ Other class:
 TLS configuration constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$new(
-  name = NULL,
   mode = NULL,
   key = NULL,
   password = NULL,
@@ -69,8 +66,6 @@ TLS configuration constructor.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Name of the \code{mirai} compute profile.}
-
 \item{\code{mode}}{Argument passed from \code{\link[=crew_tls]{crew_tls()}}.}
 
 \item{\code{key}}{Argument passed from \code{\link[=crew_tls]{crew_tls()}}.}
@@ -133,9 +128,16 @@ TLS credentials for the \code{crew} client.
 \subsection{Method \code{worker()}}{
 TLS credentials for \code{crew} workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$worker()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$worker(name)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character of length 1 with the \code{mirai} compute profile.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} or character vector, depending on the mode.
 }

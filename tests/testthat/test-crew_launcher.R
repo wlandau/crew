@@ -32,7 +32,8 @@ crew_test("launcher settings", {
     reset_globals = TRUE,
     reset_packages = TRUE,
     reset_options = TRUE,
-    garbage_collection = TRUE
+    garbage_collection = TRUE,
+    tls = crew_tls()
   )
   expect_equal(launcher$name, "my_launcher_name")
   socket <- "ws://127.0.0.1:5000"
@@ -59,7 +60,8 @@ crew_test("launcher alternative cleanup", {
     reset_globals = FALSE,
     reset_packages = TRUE,
     reset_options = FALSE,
-    garbage_collection = TRUE
+    garbage_collection = TRUE,
+    tls = crew_tls()
   )
   settings <- launcher$settings(socket = "ws://127.0.0.1:5000")
   expect_equal(settings$cleanup, 10L)
@@ -77,7 +79,8 @@ crew_test("launcher alternative cleanup 2", {
     reset_globals = TRUE,
     reset_packages = FALSE,
     reset_options = TRUE,
-    garbage_collection = FALSE
+    garbage_collection = FALSE,
+    tls = crew_tls()
   )
   settings <- launcher$settings(socket = "ws://127.0.0.1:5000")
   expect_equal(settings$cleanup, 5L)
@@ -95,7 +98,8 @@ crew_test("launcher alternative cleanup 3", {
     reset_globals = FALSE,
     reset_packages = FALSE,
     reset_options = FALSE,
-    garbage_collection = FALSE
+    garbage_collection = FALSE,
+    tls = crew_tls()
   )
   settings <- launcher$settings(socket = "ws://127.0.0.1:5000")
   expect_equal(settings$cleanup, 0L)
@@ -115,7 +119,8 @@ crew_test("launcher call", {
     reset_globals = TRUE,
     reset_packages = FALSE,
     reset_options = FALSE,
-    garbage_collection = FALSE
+    garbage_collection = FALSE,
+    tls = crew_tls()
   )
   out <- launcher$call(
     socket = "ws://127.0.0.1:5000/3/cba033e58",
@@ -287,8 +292,7 @@ crew_test("custom launcher", {
     workers = 1L,
     host = "127.0.0.1",
     port = NULL,
-    tls_enable = FALSE,
-    tls_config = NULL,
+    tls = crew::crew_tls(mode = "none"),
     seconds_interval = 0.5,
     seconds_timeout = 5,
     seconds_launch = 30,
@@ -308,8 +312,7 @@ crew_test("custom launcher", {
       workers = workers,
       host = host,
       port = port,
-      tls_enable = tls_enable,
-      tls_config = tls_config,
+      tls = tls,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout
     )
@@ -326,7 +329,8 @@ crew_test("custom launcher", {
       reset_packages = reset_packages,
       reset_options = reset_options,
       garbage_collection = garbage_collection,
-      launch_max = launch_max
+      launch_max = launch_max,
+      tls = tls
     )
     controller <- crew::crew_controller(
       client = client,

@@ -61,7 +61,8 @@ crew_controller_local <- function(
     reset_packages = reset_packages,
     reset_options = reset_options,
     garbage_collection = garbage_collection,
-    launch_max = launch_max
+    launch_max = launch_max,
+    tls = tls
   )
   controller <- crew_controller(client = client, launcher = launcher)
   controller$validate()

@@ -8,7 +8,7 @@ crew_test("crew_client() validate", {
 crew_test("crew_client() works", {
   skip_on_cran()
   skip_on_os("windows")
-  client <- crew_client(host = "127.0.0.1", tls_enable = FALSE)
+  client <- crew_client(host = "127.0.0.1")
   on.exit({
     client$terminate()
     rm(client)

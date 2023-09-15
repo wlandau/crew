@@ -48,7 +48,6 @@ crew_tls <- function(
   validate = TRUE
 ) {
   tls <- crew_class_tls$new(
-    name = crew_random_name(),
     mode = mode,
     key = key,
     password = password,
@@ -150,8 +149,6 @@ crew_class_tls <- R6::R6Class(
     }
   ),
   public = list(
-    #' @field name Name of the `mirai` compute profile to configure TLS.
-    name = NULL,
     #' @field mode See [crew_tls()].
     mode = NULL,
     #' @field key See [crew_tls()].
@@ -162,7 +159,6 @@ crew_class_tls <- R6::R6Class(
     certificates = NULL,
     #' @description TLS configuration constructor.
     #' @return An `R6` object with TLS configuration.
-    #' @param name Name of the `mirai` compute profile.
     #' @param mode Argument passed from [crew_tls()].
     #' @param key Argument passed from [crew_tls()].
     #' @param password Argument passed from [crew_tls()].
@@ -170,13 +166,11 @@ crew_class_tls <- R6::R6Class(
     #' @examples
     #' crew_tls(mode = "automatic")
     initialize = function(
-      name = NULL,
       mode = NULL,
       key = NULL,
       password = NULL,
       certificates = NULL
     ) {
-      self$name <- name
       self$mode <- mode
       self$key <- key
       self$password <- password
@@ -187,17 +181,6 @@ crew_class_tls <- R6::R6Class(
     #' @param test Logical of length 1, whether to test the TLS configuration
     #'   with `nanonext::tls_config()`.
     validate = function(test = TRUE) {
-      crew_assert(
-        self$name,
-        is.character(.),
-        length(.) == 1L,
-        nzchar(.),
-        !anyNA(.),
-        message = paste(
-          "crew_tls() argument name",
-          "must be a nonempty nonmissing character of length 1."
-        )
-      )
       crew_assert(
         self$mode,
         is.character(.),
@@ -220,7 +203,7 @@ crew_class_tls <- R6::R6Class(
       # nocov start
       if (isTRUE(test)) {
         nanonext::tls_config(
-          client = self$worker(),
+          client = self$worker(name = "default"),
           server = self$client(),
           pass = self$password
         )
@@ -239,11 +222,12 @@ crew_class_tls <- R6::R6Class(
     },
     #' @description TLS credentials for `crew` workers.
     #' @return `NULL` or character vector, depending on the mode.
-    worker = function() {
+    #' @param name Character of length 1 with the `mirai` compute profile.
+    worker = function(name) {
       if (self$mode == "none") {
         return(NULL)
       } else if (self$mode == "automatic") {
-        return(mirai::nextget(x = "tls", .compute = self$name))
+        return(mirai::nextget(x = "tls", .compute = name))
       } else if (self$mode == "custom") {
         return(c(private$read_certificates(), ""))
       }

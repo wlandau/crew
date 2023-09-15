@@ -17,7 +17,8 @@ crew_launcher_local(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L
+  launch_max = 5L,
+  tls = crew::crew_tls()
 )
 }
 \arguments{
@@ -84,6 +85,8 @@ It is recommended to set \code{launch_max} above 0
 because sometimes workers are unproductive under perfectly ordinary
 circumstances. But \code{launch_max} should still be small enough
 to detect errors in the underlying platform.}
+
+\item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
 }
 \description{
 Create an \code{R6} object to launch and maintain

@@ -63,7 +63,6 @@ crew_client <- function(
     inherits(tls, "crew_class_tls"),
     message = "argument tls must be an object created by crew_tls()"
   )
-  tls$name <- name
   client <- crew_class_client$new(
     name = name,
     workers = workers,
@@ -173,10 +172,6 @@ crew_class_client <- R6::R6Class(
         inherits(self$tls, "crew_class_tls"),
         message = "argument tls must be an object created by crew_tls()"
       )
-      crew_assert(
-        identical(self$name, self$tls$name),
-        "names of the client and tls objects must agree"
-      )
       fields <- c(
         "seconds_interval",
         "seconds_timeout"
@@ -224,7 +219,7 @@ crew_class_client <- R6::R6Class(
         tls = self$tls$client(),
         pass = self$tls$password,
         token = TRUE,
-        .compute = self$name,
+        .compute = self$name
       )
       do.call(what = mirai::daemons, args = args)
       # TODO: remove code that gets the dispatcher PID if the dispatcher

@@ -2,14 +2,14 @@ test_that("crew_tls() none", {
   x <- crew_tls(mode = "none")
   expect_silent(x$validate())
   expect_null(x$client())
-  expect_null(x$worker())
+  expect_null(x$worker(name = "default"))
 })
 
 test_that("crew_tls() automatic", {
   x <- crew_tls(mode = "automatic")
   expect_silent(x$validate())
   expect_null(x$client())
-  expect_null(x$worker())
+  expect_null(x$worker(name = "default"))
 })
 
 test_that("crew_tls() custom with no files", {
@@ -51,7 +51,7 @@ test_that("crew_tls() with mock files", {
     )
   )
   expect_equal(
-    tls$worker(),
+    tls$worker(name = "default"),
     c(
       "-----BEGIN CERTIFICATE-----\nlines\n-----END CERTIFICATE-----",
       ""

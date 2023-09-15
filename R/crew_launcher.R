@@ -90,7 +90,6 @@ crew_launcher <- function(
     inherits(tls, "crew_class_tls"),
     message = "argument tls must be an object created by crew_tls()"
   )
-  tls$name <- name
   crew_class_launcher$new(
     name = name,
     seconds_interval = seconds_interval,
@@ -178,6 +177,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param reset_options See [crew_launcher()].
     #' @param garbage_collection See [crew_launcher()].
     #' @param launch_max See [crew_launcher()].
+    #' @param tls See [crew_launcher()]
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
@@ -203,7 +203,8 @@ crew_class_launcher <- R6::R6Class(
       reset_packages = NULL,
       reset_options = NULL,
       garbage_collection = NULL,
-      launch_max = NULL
+      launch_max = NULL,
+      tls = NULL
     ) {
       self$name <- name
       self$seconds_interval <- seconds_interval
@@ -218,6 +219,7 @@ crew_class_launcher <- R6::R6Class(
       self$reset_options <- reset_options
       self$garbage_collection <- garbage_collection
       self$launch_max <- launch_max
+      self$tls <- tls
     },
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
@@ -299,10 +301,6 @@ crew_class_launcher <- R6::R6Class(
         inherits(self$tls, "crew_class_tls"),
         message = "field tls must be an object created by crew_tls()"
       )
-      crew_assert(
-        identical(self$name, self$tls$name),
-        "names of the launcher and tls objects must agree"
-      )
       invisible()
     },
     #' @description List of arguments for `mirai::daemon()`.
@@ -323,7 +321,7 @@ crew_class_launcher <- R6::R6Class(
         timerstart = self$tasks_timers,
         exitlinger = self$seconds_exit * 1000,
         cleanup = cleanup,
-        tls = self$tls$worker(),
+        tls = self$tls$worker(name = self$name),
         rs = mirai::nextstream(self$name)
       )
     },

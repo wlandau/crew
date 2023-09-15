@@ -28,7 +28,8 @@ crew_launcher_local <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L
+  launch_max = 5L,
+  tls = crew::crew_tls()
 ) {
   name <- as.character(name %|||% crew_random_name())
   launcher <- crew_class_launcher_local$new(
@@ -44,7 +45,8 @@ crew_launcher_local <- function(
     reset_packages = reset_packages,
     reset_options = reset_options,
     garbage_collection = garbage_collection,
-    launch_max = launch_max
+    launch_max = launch_max,
+    tls = tls
   )
   launcher$validate()
   launcher

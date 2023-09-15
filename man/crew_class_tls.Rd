@@ -48,14 +48,20 @@ object. Automatically set in \code{\link[=crew_client]{crew_client()}}.}
 \itemize{
 \item \href{#method-crew_class_tls-new}{\code{crew_class_tls$new()}}
 \item \href{#method-crew_class_tls-validate}{\code{crew_class_tls$validate()}}
-\item \href{#method-crew_class_tls-validate_mode_automatic}{\code{crew_class_tls$validate_mode_automatic()}}
-\item \href{#method-crew_class_tls-validate_mode_custom}{\code{crew_class_tls$validate_mode_custom()}}
+\item \href{#method-crew_class_tls-client}{\code{crew_class_tls$client()}}
+\item \href{#method-crew_class_tls-worker}{\code{crew_class_tls$worker()}}
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_tls-new"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_tls-new}{}}}
 \subsection{Method \code{new()}}{
+Validation for non-custom modes.
+
+
+Validation for custom mode.
+
+
 TLS configuration constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$new(
@@ -84,7 +90,7 @@ object. Automatically set in \code{\link[=crew_tls]{crew_tls()}}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An \code{R6} object with TLS configuration.
+\code{NULL} (invisibly).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -101,37 +107,37 @@ An \code{R6} object with TLS configuration.
 \subsection{Method \code{validate()}}{
 Validate the object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$validate()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$validate(test = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{test}}{Logical of length 1, whether to test the TLS configuration
+with \code{nanonext::tls_config()}.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_tls-validate_mode_automatic"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_tls-validate_mode_automatic}{}}}
-\subsection{Method \code{validate_mode_automatic()}}{
-Validation for non-custom modes.
+\if{html}{\out{<a id="method-crew_class_tls-client"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_tls-client}{}}}
+\subsection{Method \code{client()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$validate_mode_automatic()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$client()}\if{html}{\out{</div>}}
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_tls-validate_mode_custom"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_tls-validate_mode_custom}{}}}
-\subsection{Method \code{validate_mode_custom()}}{
-Validation for custom mode.
+\if{html}{\out{<a id="method-crew_class_tls-worker"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_tls-worker}{}}}
+\subsection{Method \code{worker()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$validate_mode_custom()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$worker()}\if{html}{\out{</div>}}
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
 }
 }

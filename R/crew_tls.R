@@ -35,13 +35,16 @@
 #'   CA, then you can supply the whole certificate chain as a character vector
 #'   which begins at your own certificate and ends with
 #'   the certificate of the CA.
+#' @param validate Logical of length 1, whether to validate the configuration
+#'   object on creation. If `FALSE`, then `validate()` can be called later on.
 #' @examples
 #' crew_tls(mode = "automatic")
 crew_tls <- function(
   mode = "none",
   key = NULL,
   password = NULL,
-  certificates = NULL
+  certificates = NULL,
+  validate = TRUE
 ) {
   tls <- crew_class_tls$new(
     name = crew::crew_random_name(),
@@ -50,7 +53,9 @@ crew_tls <- function(
     password = password,
     certificates = certificates
   )
-  tls$validate()
+  if (isTRUE(validate)) {
+    tls$validate()
+  }
   tls
 }
 
@@ -64,71 +69,7 @@ crew_tls <- function(
 crew_class_tls <- R6::R6Class(
   classname = "crew_class_tls",
   cloneable = FALSE,
-  public = list(
-    #' @field name Name of the [crew_client()] object paired with this TLS
-    #'   object. Automatically set in [crew_client()].
-    name = NULL,
-    #' @field mode See [crew_tls()].
-    mode = NULL,
-    #' @field key See [crew_tls()].
-    key = NULL,
-    #' @field password See [crew_tls()].
-    password = NULL,
-    #' @field certificates See [crew_tls()].
-    certificates = NULL,
-    #' @description TLS configuration constructor.
-    #' @return An `R6` object with TLS configuration.
-    #' @param name Name of the [crew_tls()] object paired with this TLS
-    #'   object. Automatically set in [crew_tls()].
-    #' @param mode Argument passed from [crew_tls()].
-    #' @param key Argument passed from [crew_tls()].
-    #' @param password Argument passed from [crew_tls()].
-    #' @param certificates Argument passed from [crew_tls()].
-    #' @examples
-    #' crew_tls(mode = "automatic")
-    initialize = function(
-      name = NULL,
-      mode = NULL,
-      key = NULL,
-      password = NULL,
-      certificates = NULL
-    ) {
-      self$name <- name
-      self$mode <- mode
-      self$key <- key
-      self$password <- password
-      self$certificates <- certificates
-    },
-    #' @description Validate the object.
-    #' @return `NULL` (invisibly).
-    validate = function() {
-      for (field in c("name", "mode")) {
-        crew_assert(
-          self[[field]],
-          is.character(.),
-          length(.) == 1L,
-          nzchar(.),
-          !anyNA(.),
-          message = paste(
-            "crew_tls() argument",
-            field,
-            "must be a character of length 1"
-          )
-        )
-      }
-      crew_assert(
-        crew_assert(
-          self$mode %in% c("none", "automatic", "custom"),
-          message = "TLS mode must be \"none\", \"automatic\", or \"custom\"."
-        )
-      )
-      if_any(
-        self$mode %in% c("none", "automatic"),
-        self$validate_mode_automatic(),
-        self$validate_mode_custom()
-      )
-      invisible()
-    },
+  private = list(
     #' @description Validation for non-custom modes.
     #' @return `NULL` (invisibly).
     validate_mode_automatic = function() {
@@ -192,6 +133,118 @@ crew_class_tls <- R6::R6Class(
         crew_tls_assert_certificate(certificate)
       }
       invisible()
+    },
+    read_files = function(files) {
+      lines <- unlist(
+        lapply(
+          X = files,
+          FUN = function(file) {
+            readLines(file)
+          }
+        )
+      )
+      paste(lines, collapse = "\n")
+    },
+    read_key = function() {
+      private$read_files(files = self$key)
+    },
+    read_certificates = function() {
+      private$read_files(files = self$certificates)
+    }
+  ),
+  public = list(
+    #' @field name Name of the [crew_client()] object paired with this TLS
+    #'   object. Automatically set in [crew_client()].
+    name = NULL,
+    #' @field mode See [crew_tls()].
+    mode = NULL,
+    #' @field key See [crew_tls()].
+    key = NULL,
+    #' @field password See [crew_tls()].
+    password = NULL,
+    #' @field certificates See [crew_tls()].
+    certificates = NULL,
+    #' @description TLS configuration constructor.
+    #' @return An `R6` object with TLS configuration.
+    #' @param name Name of the [crew_tls()] object paired with this TLS
+    #'   object. Automatically set in [crew_tls()].
+    #' @param mode Argument passed from [crew_tls()].
+    #' @param key Argument passed from [crew_tls()].
+    #' @param password Argument passed from [crew_tls()].
+    #' @param certificates Argument passed from [crew_tls()].
+    #' @examples
+    #' crew_tls(mode = "automatic")
+    initialize = function(
+      name = NULL,
+      mode = NULL,
+      key = NULL,
+      password = NULL,
+      certificates = NULL
+    ) {
+      self$name <- name
+      self$mode <- mode
+      self$key <- key
+      self$password <- password
+      self$certificates <- certificates
+    },
+    #' @description Validate the object.
+    #' @return `NULL` (invisibly).
+    #' @param test Logical of length 1, whether to test the TLS configuration
+    #'   with `nanonext::tls_config()`.
+    validate = function(test = TRUE) {
+      for (field in c("name", "mode")) {
+        crew_assert(
+          self[[field]],
+          is.character(.),
+          length(.) == 1L,
+          nzchar(.),
+          !anyNA(.),
+          message = paste(
+            "crew_tls() argument",
+            field,
+            "must be a character of length 1"
+          )
+        )
+      }
+      crew_assert(
+        crew_assert(
+          self$mode %in% c("none", "automatic", "custom"),
+          message = "TLS mode must be \"none\", \"automatic\", or \"custom\"."
+        )
+      )
+      if_any(
+        self$mode %in% c("none", "automatic"),
+        private$validate_mode_automatic(),
+        private$validate_mode_custom()
+      )
+      # Cannot test in unit tests because custom TLS configuration
+      # is platform-dependent and low-level.
+      # nocov start
+      if (isTRUE(test)) {
+        nanonext::tls_config(
+          client = self$worker(),
+          server = self$client(),
+          pass = self$password
+        )
+      }
+      # nocov end
+      invisible()
+    },
+    client = function() {
+      if (self$mode != "custom") {
+        return(NULL)
+      } else if (self$mode == "custom") {
+        return(c(private$read_certificates(), private$read_key()))
+      }
+    },
+    worker = function() {
+      if (self$mode == "none") {
+        return(NULL)
+      } else if (self$mode == "automatic") {
+        return(mirai::nextget(x = "tls", .compute = self$name))
+      } else if (self$mode == "custom") {
+        return(c(private$read_certificates(), ""))
+      }
     }
   )
 )

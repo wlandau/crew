@@ -1,13 +1,62 @@
 test_that("crew_tls() none", {
-  expect_silent(crew_tls(mode = "none")$validate())
+  x <- crew_tls(mode = "none")
+  expect_silent(x$validate())
+  expect_null(x$client())
+  expect_null(x$worker())
 })
 
 test_that("crew_tls() automatic", {
-  expect_silent(crew_tls(mode = "automatic")$validate())
+  x <- crew_tls(mode = "automatic")
+  expect_silent(x$validate())
+  expect_null(x$client())
+  expect_null(x$worker())
 })
 
 test_that("crew_tls() custom with no files", {
   expect_crew_error(crew_tls(mode = "custom")$validate())
+})
+
+test_that("crew_tls() with mock files", {
+  key <- tempfile()
+  certificates <- tempfile()
+  on.exit(unlink(c(key, certificates)))
+  writeLines(
+    c(
+      "-----BEGIN PRIVATE KEY-----",
+      "lines",
+      "-----END PRIVATE KEY-----"
+    ),
+    key
+  )
+  writeLines(
+    c(
+      "-----BEGIN CERTIFICATE-----",
+      "lines",
+      "-----END CERTIFICATE-----"
+    ),
+    certificates
+  )
+  tls <- crew_tls(
+    mode = "custom",
+    key = key,
+    certificates = certificates,
+    validate = FALSE
+  )
+  expect_silent(tls$validate(test = FALSE))
+  expect_equal(
+    tls$client(),
+    c(
+      "-----BEGIN CERTIFICATE-----\nlines\n-----END CERTIFICATE-----",
+      "-----BEGIN PRIVATE KEY-----\nlines\n-----END PRIVATE KEY-----"
+    )
+  )
+  expect_equal(
+    tls$worker(),
+    c(
+      "-----BEGIN CERTIFICATE-----\nlines\n-----END CERTIFICATE-----",
+      ""
+    )
+  )
 })
 
 test_that("crew_tls() bad mode", {
@@ -59,28 +108,4 @@ test_that("crew_tls_assert_certificate()", {
     temp
   )
   expect_silent(crew_tls_assert_certificate(temp))
-})
-
-test_that("crew_tls() with mock credentials", {
-  key <- tempfile()
-  certificates <- tempfile()
-  on.exit(unlink(c(key, certificates)))
-  writeLines(
-    c(
-      "-----BEGIN PRIVATE KEY-----",
-      "lines",
-      "-----END PRIVATE KEY-----"
-    ),
-    key
-  )
-  writeLines(
-    c(
-      "-----BEGIN CERTIFICATE-----",
-      "lines",
-      "-----END CERTIFICATE-----"
-    ),
-    certificates
-  )
-  tls <- crew_tls(mode = "custom", key = key, certificates = certificates)
-  expect_silent(tls$validate())
 })

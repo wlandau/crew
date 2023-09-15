@@ -4,7 +4,13 @@
 \alias{crew_tls}
 \title{Configure TLS.}
 \usage{
-crew_tls(mode = "none", key = NULL, password = NULL, certificates = NULL)
+crew_tls(
+  mode = "none",
+  key = NULL,
+  password = NULL,
+  certificates = NULL,
+  validate = TRUE
+)
 }
 \arguments{
 \item{mode}{Character of length 1. Must be one of the following:
@@ -41,6 +47,9 @@ certificate chain which begins at your own certificate and ends with the
 CA, then you can supply the whole certificate chain as a character vector
 which begins at your own certificate and ends with
 the certificate of the CA.}
+
+\item{validate}{Logical of length 1, whether to validate the configuration
+object on creation. If \code{FALSE}, then \code{validate()} can be called later on.}
 }
 \value{
 An \code{R6} object with TLS configuration settings and methods.

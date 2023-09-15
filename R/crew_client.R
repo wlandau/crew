@@ -211,13 +211,16 @@ crew_class_client <- R6::R6Class(
         self$host,
         self$port
       )
+      get_password <- function() {
+        self$tls$password
+      }
       args <- list(
         n = self$workers,
         url = url,
         dispatcher = TRUE,
         seed = NULL,
         tls = self$tls$client(),
-        pass = self$tls$password,
+        pass = get_password(),
         token = TRUE,
         .compute = self$name
       )

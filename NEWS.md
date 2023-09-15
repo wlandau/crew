@@ -9,6 +9,7 @@
 * As a default for pseudo-random number generation, leverage widely-spaced L'Ecuyer streams as supported by `mirai::nextstream()` (#115, @shikokuchuo).
 * Move README documentation to vignettes.
 * Add a new `crew_tls()` function for TLS configuration.
+* Deprecate the `tls_enable` and `tls_config` arguments of `crew_client()` etc. in favor of a `tls` argument which accepts `crew_tls()` objects.
 
 # crew 0.4.0
 

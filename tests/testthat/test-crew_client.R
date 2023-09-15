@@ -79,3 +79,17 @@ crew_test("crew_client() works", {
   px$kill()
   expect_null(client$summary())
 })
+
+crew_test("crew_client() deprecate tls_enable", {
+  expect_warning(
+    crew_client(host = "127.0.0.1", tls_enable = TRUE),
+    class = "crew_deprecate"
+  )
+})
+
+crew_test("crew_client() deprecate tls_config", {
+  expect_warning(
+    crew_client(host = "127.0.0.1", tls_config = list()),
+    class = "crew_deprecate"
+  )
+})

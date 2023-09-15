@@ -27,7 +27,7 @@ The `crew` package has unavoidable risks, and the user is responsible for safety
 The `crew` package launches external R processes:
 
 1. Worker processes to run tasks, which may include expensive jobs on cloud services like AWS Batch or traditional clusters like SLURM.
-2. A local [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher process to schedule the tasks. If `x` is a `crew` controller, the process ID of the dispatcher is`x$client$dispatcher`.
+2. A local [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher process to schedule the tasks. If `x` is a `crew` controller, the process ID of the dispatcher is `x$client$dispatcher`.
 
 In the event of a poorly-timed crash or network error, these processes may not terminate properly. If that happens, they will continue to run, which may strain traditional clusters or incur heavy expenses on the cloud. Please monitor the platforms you use and manually terminate defunct hanging processes as needed.
 
@@ -58,10 +58,10 @@ The signature in a self-signed certificate helps the server verify that the publ
 
 1. Create a PEM-formatted private key file and matching PEM-formatted certificate file. Details are in <https://www.feistyduck.com/library/openssl-cookbook/online/> Chapter 1.2: Key and Certificate Management. When you are done with this step, you should at least have have a private key file, a matching signed certificate, and the root certificate of the CA. If your private key is encrypted, you will also have a password.
 2. When you create a `crew` controller, create a TLS configuration object with `crew_tls()` using the following arguments:
-  * `mode`: `"custom"`.
-  * `key`: file path the private key.
-  * `pass`: Your private key password if the private key is encrypted. Do not hard-code this value into any R code files. Instead, use a package like `keyring` to mask your password.
-  * `certificates`: Character vector of file paths to certificates. If the CA signed the certificate directly, then only your own certificate is needed. But for extra security, you could also supply the entire certificate chain, beginning with your certificate and ending with the certificate of the CA.
+    * `mode`: `"custom"`.
+    * `key`: file path the private key.
+    * `pass`: Your private key password if the private key is encrypted. Do not hard-code this value into any R code files. Instead, use a package like `keyring` to mask your password.
+    * `certificates`: Character vector of file paths to certificates. One option is to supply only your own certificate. However, for extra security, you may wish to supply the entire certificate chain. In that case, set `certificates` to the character vector of the certificate file paths in the order they appear in the chain. Begin with your own certificate, then list the certificate that signed it, then the certificate that signed that one, and so on. The final certificate should be the root certificate of the CA.
 3. As before, supply this `crew_tls()` object to the `tls` argument of functions like `crew_controller_local()` (and for plugin developers, `crew_client()`).
 
 [`mirai`](https://github.com/shikokuchuo/mirai),  [`nanonext`](https://github.com/shikokuchuo/nanonext), and [NNG](https://nng.nanomsg.org) manage encryption behind the scenes. For more details about configuring TLS, please read <https://github.com/shikokuchuo/mirai#distributed-computing-tls-secure-connections>.

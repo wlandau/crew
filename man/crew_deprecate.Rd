@@ -14,6 +14,9 @@ crew_deprecate(name, date, version, alternative, condition = "warning")
 \item{version}{Package version when deprecation was instated.}
 
 \item{alternative}{Message about an alternative.}
+
+\item{condition}{Either "warning" or "message" to indicate the type
+of condition thrown on deprecation.}
 }
 \value{
 \code{NULL} (invisibly). Throws a warning if a feature is deprecated.

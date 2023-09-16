@@ -49,6 +49,8 @@ crew_assert <- function(
 #' @param date Date of deprecation.
 #' @param version Package version when deprecation was instated.
 #' @param alternative Message about an alternative.
+#' @param condition Either "warning" or "message" to indicate the type
+#'   of condition thrown on deprecation.
 #' @examples
 #' suppressWarnings(
 #'   crew_deprecate(

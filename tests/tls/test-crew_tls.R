@@ -19,21 +19,20 @@ test_that("mirai client can start using custom credentials", {
       "fd.key -out fd.crt -passin pass:crew"
     )
   )
-  get_password <- function() {
-    "crew"
-  }
-  mirai::daemons(
-    n = 1L,
-    url = "wss://127.0.0.1:0",
-    dispatcher = TRUE,
-    seed = NULL,
-    tls = c(
-      paste(readLines("fd.crt"), collapse = "\n"),
-      paste(readLines("fd.key"), collapse = "\n")
-    ),
-    pass = get_password(),
-    token = TRUE,
-    .compute = "name"
+  expect_silent(
+    tmp <- mirai::daemons(
+      n = 1L,
+      url = "wss://127.0.0.1:0",
+      dispatcher = TRUE,
+      seed = NULL,
+      tls = c(
+        paste(readLines("fd.crt"), collapse = "\n"),
+        paste(readLines("fd.key"), collapse = "\n")
+      ),
+      pass = "crew",
+      token = TRUE,
+      .compute = "name"
+    )
   )
   mirai::daemons(n = 0L)
 })

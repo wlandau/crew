@@ -8,8 +8,8 @@
 * Add a new `algorithm` argument to the `push()`, `shove()`, and `map()` methods of controllers and controller groups, as well as arguments/fields in `crew_eval()` and its return value (#113, @shikokuchuo).
 * As a default for pseudo-random number generation, leverage widely-spaced L'Ecuyer streams as supported by `mirai::nextstream()` (#115, @shikokuchuo).
 * Move README documentation to vignettes.
-* Add a new `crew_tls()` function for TLS configuration.
-* Deprecate the `tls_enable` and `tls_config` arguments of `crew_client()` etc. in favor of a `tls` argument which accepts `crew_tls()` objects.
+* Add a new `crew_tls()` function for TLS configuration (#120).
+* Deprecate the `tls_enable` and `tls_config` arguments of `crew_client()` etc. in favor of a `tls` argument which accepts `crew_tls()` objects (#120).
 
 # crew 0.4.0
 

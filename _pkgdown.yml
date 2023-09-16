@@ -23,7 +23,6 @@ reference:
   - '`crew_controller`'
   - '`crew_class_launcher`'
   - '`crew_class_launcher_local`'
-  - '`crew_class_tls`'
 - title: Object creation
   contents:
   - '`crew_client`'
@@ -40,6 +39,7 @@ reference:
   - '`crew_class_launcher`'
   - '`crew_class_launcher_local`'
   - '`crew_class_schedule`'
+  - '`crew_class_tls`'
 - title: Utilities
   contents:
   - '`crew_assert`'

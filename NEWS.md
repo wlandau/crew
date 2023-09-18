@@ -1,3 +1,7 @@
+# crew 0.5.0.9000
+
+* Migrate checks to enforce features in version 0.5.0 for reverse dependencies.
+
 # crew 0.5.0
 
 * Suppress interactive browser on Windows which launched on each worker previously (@psychelzh).

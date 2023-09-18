@@ -39,14 +39,12 @@ crew_client <- function(
   seconds_interval = 0.25,
   seconds_timeout = 10
 ) {
-  # TODO: turn these into warnings:
   if (!is.null(tls_enable)) {
     crew_deprecate(
       name = "tls_enable",
       date = "2023-09-15",
       version = "0.4.1",
-      alternative = "argument tls and function crew_tls()",
-      condition = "message"
+      alternative = "argument tls and function crew_tls()"
     )
   }
   if (!is.null(tls_config)) {
@@ -54,8 +52,7 @@ crew_client <- function(
       name = "tls_config",
       date = "2023-09-15",
       version = "0.4.1",
-      alternative = "argument tls and function crew_tls()",
-      condition = "message"
+      alternative = "argument tls and function crew_tls()"
     )
   }
   name <- as.character(name %|||% crew_random_name())
@@ -214,16 +211,13 @@ crew_class_client <- R6::R6Class(
         self$host,
         self$port
       )
-      get_password <- function() {
-        self$tls$password
-      }
       mirai::daemons(
         n = self$workers,
         url = url,
         dispatcher = TRUE,
         seed = NULL,
         tls = self$tls$client(),
-        pass = get_password(),
+        pass = self$tls$password,
         token = TRUE,
         .compute = self$name
       )

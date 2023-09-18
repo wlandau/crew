@@ -672,7 +672,7 @@ crew_class_controller <- R6::R6Class(
       results <- self$schedule$list()
       self$schedule <- old_schedule
       out <- lapply(results, monad_tibble)
-      out <- tibble::new_tibble(data.table::rbindlist(out))
+      out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
       out <- out[match(x = names, table = out$name),, drop = FALSE] # nolint
       out <- out[!is.na(out$name),, drop = FALSE] # nolint
       worker <- .subset2(out, "worker")

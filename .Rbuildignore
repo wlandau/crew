@@ -45,3 +45,7 @@
 ^paper\.bib$
 ^CODE_OF_CONDUCT\.md$
 ^NOTICE$
+^fd\.key$
+^fd\.csr$
+^fd\.crt$
+^fd\.cert$

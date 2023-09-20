@@ -159,15 +159,15 @@ controller$schedule$summary()
 #> 1      0         0
 ```
 
-The launcher summary counts the number of times each worker was launched, and it shows the total number of assigned and completed tasks from all past terminated instances of each worker.
+The launcher summary counts the number of times each worker was launched, and it shows the total number of assigned and completed tasks from all past terminated instances of each worker. In addition, it shows whether the current worker instance was actively connected ("online") or had connected at some point during its life cycle ("discovered") as of the last call to `controller$launcher$tally()`.
 
 ```{r}
 controller$launcher$summary()
-#> # A tibble: 2 × 4
-#>   worker launches assigned complete
-#>    <int>    <int>    <int>    <int>
-#> 1      1        2        1        1
-#> 2      2        1        0        0
+#> # A tibble: 2 × 6
+#>   worker launches online discovered assigned complete
+#>    <int>    <int> <lgl>  <lgl>         <int>    <int>
+#> 1      1        2 TRUE   TRUE              0        0
+#> 2      2        1 TRUE   TRUE              0        0
 ```
 
 Finally, the client summary shows up-to-date worker status from `mirai::daemons()`.

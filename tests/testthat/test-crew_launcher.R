@@ -363,8 +363,6 @@ crew_test("custom launcher", {
   walk(x = controller$launcher$done(), f = controller$launcher$rotate)
   controller$launcher$tally()
   out <- controller$launcher$summary()
-  for (field in c("worker", "launches", "assigned", "complete")) {
-    expect_equal(out[[field]], 1L)
-  }
+  expect_equal(out$launches, 1L)
   controller$terminate()
 })

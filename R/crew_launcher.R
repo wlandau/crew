@@ -379,7 +379,7 @@ crew_class_launcher <- R6::R6Class(
         launches = rep(0L, n),
         futile = rep(0L, n),
         launched = rep(FALSE, n),
-        history = rep(0L, n),
+        history = rep(-1L, n),
         online = rep(FALSE, n),
         discovered = rep(FALSE, n),
         assigned = rep(0L, n),
@@ -497,8 +497,8 @@ crew_class_launcher <- R6::R6Class(
         worker = index,
         instance = instance
       )
-      history <- self$workers$history[index]
       complete <- self$workers$complete[index]
+      history <- self$workers$history[index]
       futile <- self$workers$futile[index]
       futile <- if_any(complete > history, 0L, futile + 1L)
       crew_assert(

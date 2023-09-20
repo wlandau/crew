@@ -1,4 +1,4 @@
-# crew 0.5.0.9000
+# crew 0.5.0.9001
 
 * Migrate checks to enforce features in version 0.5.0 for reverse dependencies.
 * Drop check of backlogged workers, c.f. https://github.com/shikokuchuo/mirai/discussions/63#discussioncomment-7051889 (#79, #124, @shikokuchuo).

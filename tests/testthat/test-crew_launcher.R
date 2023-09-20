@@ -210,23 +210,18 @@ crew_test("launcher tally()", {
   launcher$start(sockets = rep("x", nrow(grid)))
   launcher$workers$launched <- grid$launched
   daemons <- cbind(
-    online = rep(0L, nrow(grid)),
-    instance = rep(0L, nrow(grid)),
+    online = c(1L, 1L, 0L, 0L),
+    instance = c(1L, 0L, 1L, 0L),
     assigned = rep(7L, nrow(grid)),
     complete = grid$complete
   )
+  expect_equal(launcher$workers$online, rep(FALSE, nrow(grid)))
+  expect_equal(launcher$workers$discovered, rep(FALSE, nrow(grid)))
   expect_equal(launcher$workers$assigned, rep(0L, nrow(grid)))
   expect_equal(launcher$workers$complete, rep(0L, nrow(grid)))
   launcher$tally(daemons = daemons)
-  expect_equal(launcher$workers$assigned, c(0L, 0L, 7L, 7L))
-  expect_equal(launcher$workers$complete, c(0L, 0L, 3L, 7L))
-  launcher$workers$launched[1L] <- FALSE
-  launcher$workers$launched[4L] <- TRUE
-  launcher$tally(daemons = daemons)
-  expect_equal(launcher$workers$assigned, c(7L, 0L, 7L, 7L))
-  expect_equal(launcher$workers$complete, c(3L, 0L, 3L, 7L))
-  launcher$workers$launched <- !(launcher$workers$launched)
-  launcher$tally(daemons = daemons)
+  expect_equal(launcher$workers$online, c(TRUE, TRUE, FALSE, FALSE))
+  expect_equal(launcher$workers$discovered, c(TRUE, FALSE, TRUE, FALSE))
   expect_equal(launcher$workers$assigned, c(7L, 7L, 7L, 7L))
   expect_equal(launcher$workers$complete, c(3L, 7L, 3L, 7L))
 })

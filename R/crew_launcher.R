@@ -466,11 +466,10 @@ crew_class_launcher <- R6::R6Class(
     #'   should not set this.
     tally = function(daemons = NULL) {
       daemons <- daemons %|||% daemons_info(name = self$name)
-      index <- !(self$workers$launched)
       self$workers$online <- as.logical(daemons[, "online"])
       self$workers$discovered <- as.logical(daemons[, "instance"] > 0L)
-      self$workers$assigned[index] <- as.integer(daemons[index, "assigned"])
-      self$workers$complete[index] <- as.integer(daemons[index, "complete"])
+      self$workers$assigned <- as.integer(daemons[, "assigned"])
+      self$workers$complete <- as.integer(daemons[, "complete"])
       invisible()
     },
     #' @description Get workers available for launch.
@@ -509,7 +508,9 @@ crew_class_launcher <- R6::R6Class(
           "launched",
           self$launch_max,
           "times in a row without completing any tasks. Either raise",
-          "launch_max or troubleshoot your platform to figure out",
+          "launch_max above",
+          self$launch_max,
+          "or troubleshoot your platform to figure out",
           "why {crew} workers are not launching or connecting."
         )
       )

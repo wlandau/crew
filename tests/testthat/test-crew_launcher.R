@@ -156,6 +156,8 @@ crew_test("launcher start()", {
       "futile",
       "launched",
       "history",
+      "online",
+      "discovered",
       "assigned",
       "complete"
     )
@@ -193,11 +195,13 @@ crew_test("launcher done()", {
   )
   expect_equal(launcher$workers$assigned, rep(0L, nrow(grid)))
   expect_equal(launcher$workers$complete, rep(0L, nrow(grid)))
-  out <- launcher$done(daemons = daemons)
+  launcher$tally(daemons = daemons)
+  out <- launcher$done()
   exp <- c(1L, 2L, 3L, 4L, 7L, 8L, 9L, 10L, 11L, 12L)
   expect_equal(out, exp)
   launcher$workers$launched <- rep(FALSE, nrow(grid))
-  expect_equal(launcher$done(daemons = daemons), integer(0L))
+  launcher$tally(daemons = daemons)
+  expect_equal(launcher$done(), integer(0L))
 })
 
 crew_test("launcher tally()", {
@@ -205,7 +209,12 @@ crew_test("launcher tally()", {
   launcher <- crew_class_launcher$new(seconds_launch = 9999)
   launcher$start(sockets = rep("x", nrow(grid)))
   launcher$workers$launched <- grid$launched
-  daemons <- cbind(assigned = rep(7L, nrow(grid)), complete = grid$complete)
+  daemons <- cbind(
+    online = rep(0L, nrow(grid)),
+    instance = rep(0L, nrow(grid)),
+    assigned = rep(7L, nrow(grid)),
+    complete = grid$complete
+  )
   expect_equal(launcher$workers$assigned, rep(0L, nrow(grid)))
   expect_equal(launcher$workers$complete, rep(0L, nrow(grid)))
   launcher$tally(daemons = daemons)
@@ -230,21 +239,6 @@ crew_test("launcher unlaunched()", {
   expect_equal(launcher$unlaunched(n = 2L), c(2L, 3L))
 })
 
-crew_test("launcher backlogged() and resolved()", {
-  grid <- expand.grid(
-    launched = c(TRUE, FALSE),
-    assigned = c(7L, 7L),
-    complete = c(3L, 7L)
-  )
-  launcher <- crew_class_launcher$new(seconds_launch = 9999)
-  launcher$start(sockets = rep("x", nrow(grid)))
-  for (field in colnames(grid)) {
-    launcher$workers[[field]] <- grid[[field]]
-  }
-  expect_equal(launcher$backlogged(), c(2L, 4L))
-  expect_equal(launcher$resolved(), c(6L, 8L))
-})
-
 crew_test("launcher summary", {
   x <- crew_launcher()
   expect_null(x$summary())
@@ -254,11 +248,16 @@ crew_test("launcher summary", {
   expect_equal(nrow(out), 2L)
   expect_equal(
     sort(colnames(out)),
-    sort(c("worker", "launches", "assigned", "complete"))
+    sort(
+      c("worker", "launches", "online", "discovered", "assigned", "complete")
+    )
   )
   expect_equal(out$worker, c(1L, 2L))
   for (field in c("launches", "assigned", "complete")) {
     expect_equal(out[[field]], c(0L, 0L))
+  }
+  for (field in c("online", "discovered")) {
+    expect_equal(out[[field]], c(FALSE, FALSE))
   }
 })
 
@@ -364,7 +363,7 @@ crew_test("custom launcher", {
   walk(x = controller$launcher$done(), f = controller$launcher$rotate)
   controller$launcher$tally()
   out <- controller$launcher$summary()
-  for (field in colnames(out)) {
+  for (field in c("worker", "launches", "assigned", "complete")) {
     expect_equal(out[[field]], 1L)
   }
   controller$terminate()

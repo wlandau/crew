@@ -107,8 +107,6 @@ Other class:
 \item \href{#method-crew_class_launcher-rotate}{\code{crew_class_launcher$rotate()}}
 \item \href{#method-crew_class_launcher-tally}{\code{crew_class_launcher$tally()}}
 \item \href{#method-crew_class_launcher-unlaunched}{\code{crew_class_launcher$unlaunched()}}
-\item \href{#method-crew_class_launcher-backlogged}{\code{crew_class_launcher$backlogged()}}
-\item \href{#method-crew_class_launcher-resolved}{\code{crew_class_launcher$resolved()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-throttle}{\code{crew_class_launcher$throttle()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
@@ -316,6 +314,13 @@ with one row per \code{crew} worker and the following columns:
 \item \code{launches}: number of times the worker was launched. Each launch
 occurs at a different websocket because the token at the end of the
 URL is rotated before each new launch.
+\item \code{online}: logical vector, whether the current instance of each
+worker was actively connected to its NNG socket during the time of
+the last call to \code{tally()}.
+\item \code{discovered}: logical vector, whether the current instance of each
+worker had connected to its NNG socket at some point
+(and then possibly disconnected) during the time of
+the last call to \code{tally()}.
 \item \code{assigned}: cumulative number of tasks assigned, reported by
 \code{mirai::daemons()} and summed over all
 completed instances of the worker. Does not reflect the activity
@@ -334,17 +339,9 @@ of the currently running instance of the worker.
 \subsection{Method \code{done()}}{
 Get done workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$done(daemons = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$done()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{daemons}}{\code{mirai} daemons matrix. For testing only. Users
-should not set this.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Details}{
 A worker is "done" if it is launched and inactive.
 A worker is "launched" if \code{launch()} was called
@@ -387,12 +384,8 @@ Rotate a websocket.
 \if{html}{\out{<a id="method-crew_class_launcher-tally"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-tally}{}}}
 \subsection{Method \code{tally()}}{
-Update the cumulative assigned and complete statistics.
-
-
-Used to detect backlogged workers with more assigned
-than complete tasks. If terminated, these workers need to be
-relaunched until the backlog of assigned tasks is complete.
+Update the \code{daemons}-related columns of the internal
+\code{workers} data frame.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$tally(daemons = NULL)}\if{html}{\out{</div>}}
 }
@@ -427,39 +420,6 @@ Get workers available for launch.
 }
 \subsection{Returns}{
 Integer index of workers available for launch.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-backlogged"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-backlogged}{}}}
-\subsection{Method \code{backlogged()}}{
-List non-launched backlogged workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$backlogged()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Integer vector of worker indexes.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-resolved"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-resolved}{}}}
-\subsection{Method \code{resolved()}}{
-List non-launched non-backlogged workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$resolved()}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{n}}{Maximum number of worker indexes to return.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Integer vector of worker indexes.
 }
 }
 \if{html}{\out{<hr>}}

@@ -24,47 +24,25 @@ workers$workers <- tibble::tibble(
   handle = replicate(n, new.env(), simplify = FALSE), # callr::r_bg() handles
   socket = nextget("urls"), # starting URLs
   launches = rep(0L, n), # number of times a worker was launched at this index
-  launched = rep(FALSE, n), # FALSE if the worker is definitely done.
-  assigned = rep(0L, n), # Cumulative "assigned" stat to check backlog (#79).
-  complete = rep(0L, n) # Cumulative "complete" stat to check backlog (#79).
+  launched = rep(FALSE, n) # FALSE if the worker is definitely done.
 )
 
 # For {mirai} servers with online == 0L and instance == 1L,
-# rotate the websocket URL. Also set workers$launched to FALSE,
-# which signals that tally() can safely update the cumulative
-# "assigned" and "complete" statistics (#79).
+# rotate the websocket URL.
 rotate <- function(workers) {
   info <- mirai::daemons()$daemons
   done <- which(info[, "online"] < 1L & info[, "instance"] > 0L)
   for (index in done) {
     socket <- mirai::saisei(i = index, force = FALSE)
     if (!is.null(socket)) {
-      workers$workers$socket[index] <- socket # Next launch is at this URL.
-      workers$workers$launched[index] <- FALSE # Lets tally() update stats.
+      workers$workers$launched[index] <- FALSE
     }
   }
 }
 
-# For workers that are definitely done and not going to dial in until the
-# next launch, update the cumulative "assigned" and "complete" which {crew}
-# uses to detect backlogged workers (#79). A backlogged worker is a {mirai}
-# server with more assigned than complete tasks. Detecting the backlog
-# is important because if a worker is disconnected and backlogged,
-# then {crew} will need to relaunch it so the backlogged tasks can run.
-tally <- function(workers) {
-  info <- mirai::daemons()$daemons
-  index <- !(workers$workers$launched) # Workers safe to update.
-  workers$workers$assigned[index] <- as.integer(info[index, "assigned"])
-  workers$workers$complete[index] <- as.integer(info[index, "complete"])
-  invisible()
-}
-
 # In {crew}, the scale() method of the launcher class
-# re-launches all backlogged non-launched workers,
-# and then it may launch additional non-launched workers
-# in order to meet the demand of the task load.
-# The scale() function below is a simplified version which launches
-# all non-launched workers.
+# re-launches new worker instances to meet the demand of the task load.
+# The method below just launches all inactive workers.
 scale <- function(workers) {
   for (index in which(!workers$workers$launched)) { # non-launched workers
     # I would have used mirai::launch_server() here, but callr::r_bg()
@@ -73,7 +51,7 @@ scale <- function(workers) {
     # assigned and complete tallies later on.
     workers$workers$handle[[index]] <- callr::r_bg(
       func = function(url, tls) {
-        mirai::server(
+        mirai::daemon(
           url = url,
           tls = tls,
           maxtasks = 100L
@@ -84,21 +62,17 @@ scale <- function(workers) {
         tls = nextget("tls")
       )
     )
-    # Increment the launch count.
     workers$workers$launches[index] <- workers$workers$launches[index] + 1L
-    # Signal to tally() to wait for this worker to complete
-    # instead of updating the cumulative assigned and complete stats.
     workers$workers$launched[index] <- TRUE
   }
 }
 
 index <- 0L # current task
-n_tasks <- 60000L # all tasks
+n_tasks <- 6000L # all tasks
 results <- list()
 while (index < n_tasks || schedule$nonempty()) { # while there is work to do
   if (!throttler$throttle()) { # avoid overburdening the {mirai} dispatcher
     rotate(workers) # Rotate the URLs of done workers.
-    tally(workers) # Update the cumulative stats for done workers.
     scale(workers) # Re-launch all the done workers.
   }
   # If there are still tasks to launch, launch one.

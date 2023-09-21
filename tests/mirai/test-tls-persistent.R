@@ -4,8 +4,7 @@ library(mirai)
 # Efficient and convenient data structure to keep track of {mirai} tasks.
 # It has a hash table for new tasks and a first-in/first-out linked list
 # for resolved tasks. It calls nanonext::.unresolved() to collect resolved
-# tasks, but otherwise it does not rely on {mirai}/{nanonext}. I highly doubt
-# it is the source of the {crew} bugs in #88 or #89.
+# tasks, but otherwise it does not rely on {mirai}/{nanonext}.
 schedule <- crew::crew_schedule()
 schedule$start()
 
@@ -26,9 +25,6 @@ while (index < n_tasks || schedule$nonempty()) { # while there is work to do
     index <- index + 1L
     cat("push", index, "\n")
     task <- mirai(index, index = index)
-    # The "schedule" is nothing fancy for the purposes of #88 and #89,
-    # it is just a fast data structure for bookkeeping {mirai} objects
-    # without the other frills in {crew}.
     schedule$push(task)
   }
   # Try to process the results of finished tasks.

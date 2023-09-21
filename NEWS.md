@@ -1,7 +1,8 @@
-# crew 0.5.0.9001
+# crew 0.5.0.9002
 
 * Migrate checks to enforce features in version 0.5.0 for reverse dependencies.
 * Drop check of backlogged workers, c.f. https://github.com/shikokuchuo/mirai/discussions/63#discussioncomment-7051889 (#79, #124, @shikokuchuo).
+* Deprecate `seconds_exit` because `exitlinger` in `mirai` is now obsolete (#125, @shikokuchuo).
 
 # crew 0.5.0
 

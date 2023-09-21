@@ -72,8 +72,6 @@ Other class:
 
 \item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_exit}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
 \item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}

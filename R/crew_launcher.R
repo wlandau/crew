@@ -25,10 +25,8 @@
 #'   The timer does not launch until `tasks_timers` tasks
 #'   have completed.
 #'   See the `walltime` argument of `mirai::daemon()`.
-#' @param seconds_exit Number of seconds to wait for NNG websockets
-#'   to finish sending large data (when a worker exits after reaching a
-#'   timeout or having completed a certain number of tasks).
-#'   See the `exitlinger` argument of `mirai::daemon()`.
+#' @param seconds_exit Deprecated on 2023-09-21 in version 0.5.0.9002.
+#'   No longer necessary.
 #' @param tasks_max Maximum number of tasks that a worker will do before
 #'   exiting. See the `maxtasks` argument of `mirai::daemon()`.
 #'   `crew` does not
@@ -75,7 +73,7 @@ crew_launcher <- function(
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
-  seconds_exit = 1,
+  seconds_exit = NULL,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -85,6 +83,13 @@ crew_launcher <- function(
   launch_max = 5L,
   tls = crew::crew_tls()
 ) {
+  crew_deprecate(
+    name = "seconds_exit",
+    date = "2023-09-21",
+    version = "0.5.0.9002",
+    alternative = "none (no longer necessary)",
+    condition = "message"
+  )
   name <- as.character(name %|||% crew_random_name())
   crew_assert(
     inherits(tls, "crew_class_tls"),
@@ -96,7 +101,6 @@ crew_launcher <- function(
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
-    seconds_exit = seconds_exit,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
     reset_globals = reset_globals,
@@ -142,8 +146,6 @@ crew_class_launcher <- R6::R6Class(
     seconds_idle = NULL,
     #' @field seconds_wall See [crew_launcher()].
     seconds_wall = NULL,
-    #' @field seconds_exit See [crew_launcher()].
-    seconds_exit = NULL,
     #' @field tasks_max See [crew_launcher()].
     tasks_max = NULL,
     #' @field tasks_timers See [crew_launcher()].
@@ -211,7 +213,6 @@ crew_class_launcher <- R6::R6Class(
       self$seconds_launch <- seconds_launch
       self$seconds_idle <- seconds_idle
       self$seconds_wall <- seconds_wall
-      self$seconds_exit <- seconds_exit
       self$tasks_max <- tasks_max
       self$tasks_timers <- tasks_timers
       self$reset_globals <- reset_globals
@@ -258,7 +259,6 @@ crew_class_launcher <- R6::R6Class(
         "seconds_launch",
         "seconds_idle",
         "seconds_wall",
-        "seconds_exit",
         "tasks_max",
         "tasks_timers",
         "launch_max"
@@ -321,7 +321,6 @@ crew_class_launcher <- R6::R6Class(
         idletime = self$seconds_idle * 1000,
         walltime = self$seconds_wall * 1000,
         timerstart = self$tasks_timers,
-        exitlinger = self$seconds_exit * 1000,
         cleanup = cleanup,
         tls = self$tls$worker(name = self$name),
         rs = mirai::nextstream(self$name)

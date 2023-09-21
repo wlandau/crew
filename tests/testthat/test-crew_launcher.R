@@ -9,7 +9,6 @@ crew_test("default terminate_launcher() method", {
     seconds_launch = 1,
     seconds_idle = 2,
     seconds_wall = 3,
-    seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
     reset_globals = TRUE,
@@ -26,7 +25,6 @@ crew_test("launcher settings", {
     seconds_launch = 1,
     seconds_idle = 2,
     seconds_wall = 3,
-    seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
     reset_globals = TRUE,
@@ -44,7 +42,6 @@ crew_test("launcher settings", {
   expect_equal(settings$idletime, 2000)
   expect_equal(settings$walltime, 3000)
   expect_equal(settings$timerstart, 8)
-  expect_equal(settings$exitlinger, 4000)
   expect_equal(settings$cleanup, 15L)
 })
 
@@ -54,7 +51,6 @@ crew_test("launcher alternative cleanup", {
     seconds_launch = 1,
     seconds_idle = 2,
     seconds_wall = 3,
-    seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
     reset_globals = FALSE,
@@ -73,7 +69,6 @@ crew_test("launcher alternative cleanup 2", {
     seconds_launch = 1,
     seconds_idle = 2,
     seconds_wall = 3,
-    seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
     reset_globals = TRUE,
@@ -92,7 +87,6 @@ crew_test("launcher alternative cleanup 3", {
     seconds_launch = 1,
     seconds_idle = 2,
     seconds_wall = 3,
-    seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
     reset_globals = FALSE,
@@ -113,7 +107,6 @@ crew_test("launcher call", {
     seconds_launch = 1,
     seconds_idle = 0.001,
     seconds_wall = 3,
-    seconds_exit = 4,
     tasks_max = 7,
     tasks_timers = 8,
     reset_globals = TRUE,
@@ -292,7 +285,6 @@ crew_test("custom launcher", {
     seconds_launch = 30,
     seconds_idle = Inf,
     seconds_wall = Inf,
-    seconds_exit = 1,
     tasks_max = Inf,
     tasks_timers = 0L,
     reset_globals = TRUE,
@@ -316,7 +308,6 @@ crew_test("custom launcher", {
       seconds_launch = seconds_launch,
       seconds_idle = seconds_idle,
       seconds_wall = seconds_wall,
-      seconds_exit = seconds_exit,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
       reset_globals = reset_globals,

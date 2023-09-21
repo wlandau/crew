@@ -30,7 +30,7 @@ workers$workers <- tibble::tibble(
 # For {mirai} servers with online == 0L and instance == 1L,
 # rotate the websocket URL.
 rotate <- function(workers) {
-  info <- mirai::daemons()$daemons
+  info <- mirai::status()$daemons
   done <- which(info[, "online"] < 1L & info[, "instance"] > 0L)
   for (index in done) {
     socket <- mirai::saisei(i = index, force = FALSE)

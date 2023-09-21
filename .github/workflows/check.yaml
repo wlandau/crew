@@ -44,8 +44,7 @@ jobs:
         run: |
           repos <- c(
             shikokuchuo = "https://shikokuchuo.r-universe.dev",
-            wlandau = "https://wlandau.r-universe.dev",
-            cran = "https://cloud.r-project.org"
+            wlandau = "https://wlandau.r-universe.dev"
           )
           text <- paste(deparse(repos), collapse = "\n")
           lines <- sprintf("\noptions(repos = %s)\n", text)

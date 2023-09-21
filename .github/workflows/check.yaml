@@ -42,7 +42,14 @@ jobs:
 
       - name: Add r-universe to repos
         run: |
-          cat("\noptions(repos=c(shikokuchuo='https://shikokuchuo.r-universe.dev',CRAN ='https://cloud.r-project.org'))\n", file = "~/.Rprofile", append = TRUE)
+          repos <- c(
+            shikokuchuo = "https://shikokuchuo.r-universe.dev",
+            wlandau = "https://wlandau.r-universe.dev",
+            cran = "https://cloud.r-project.org"
+          )
+          text <- paste(deparse(repos), collapse = "\n")
+          lines <- sprintf("\noptions(repos = %s)\n", text)
+          cat(lines, file = "~/.Rprofile", append = TRUE)
         shell: Rscript {0}
 
       - uses: r-lib/actions/setup-r-dependencies@v2

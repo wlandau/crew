@@ -39,6 +39,7 @@ rotate <- function(workers) {
     socket <- mirai::saisei(i = index, force = FALSE)
     if (!is.null(socket)) {
       workers$workers$launched[index] <- FALSE
+      workers$workers$socket[index] <- socket
     }
   }
 }

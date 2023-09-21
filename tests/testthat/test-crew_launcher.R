@@ -352,3 +352,7 @@ crew_test("custom launcher", {
   expect_equal(out$launches, 1L)
   controller$terminate()
 })
+
+crew_test("deprecate seconds_exit", {
+  expect_message(crew_launcher(seconds_exit = 1), class = "crew_deprecate")
+})

@@ -540,3 +540,14 @@ crew_test("map() does not need an empty controller", {
   expect_equal(x$schedule$summary()$pushed, 0L)
   expect_equal(x$schedule$summary()$collected, 1L)
 })
+
+crew_test("deprecate seconds_exit", {
+  expect_message(
+    x <- crew_controller_local(
+      workers = 1L,
+      seconds_idle = 360,
+      seconds_exit = 1
+    ),
+    class = "crew_deprecate"
+  )
+})

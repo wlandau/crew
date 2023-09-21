@@ -83,13 +83,15 @@ crew_launcher <- function(
   launch_max = 5L,
   tls = crew::crew_tls()
 ) {
-  crew_deprecate(
-    name = "seconds_exit",
-    date = "2023-09-21",
-    version = "0.5.0.9002",
-    alternative = "none (no longer necessary)",
-    condition = "message"
-  )
+  if (!is.null(seconds_exit)) {
+    crew_deprecate(
+      name = "seconds_exit",
+      date = "2023-09-21",
+      version = "0.5.0.9002",
+      alternative = "none (no longer necessary)",
+      condition = "message"
+    )
+  }
   name <- as.character(name %|||% crew_random_name())
   crew_assert(
     inherits(tls, "crew_class_tls"),

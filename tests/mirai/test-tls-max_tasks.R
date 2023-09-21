@@ -24,15 +24,18 @@ workers$workers <- tibble::tibble(
   handle = replicate(n, new.env(), simplify = FALSE), # callr::r_bg() handles
   socket = nextget("urls"), # starting URLs
   launches = rep(0L, n), # number of times a worker was launched at this index
-  launched = rep(FALSE, n) # FALSE if the worker is definitely done.
+  launched = rep(FALSE, n), # FALSE if the worker is definitely done.
+  time_launch = rep(-Inf, n) # nanonext::mclock() at launch
 )
 
 # For {mirai} servers with online == 0L and instance == 1L,
 # rotate the websocket URL.
 rotate <- function(workers) {
   info <- mirai::status()$daemons
-  done <- which(info[, "online"] < 1L & info[, "instance"] > 0L)
-  for (index in done) {
+  is_done <- info[, "online"] < 1L &
+    info[, "instance"] > 0L &
+    (workers$workers$time_launch - 10000) < nanonext::mclock()
+  for (index in which(is_done)) {
     socket <- mirai::saisei(i = index, force = FALSE)
     if (!is.null(socket)) {
       workers$workers$launched[index] <- FALSE
@@ -64,6 +67,7 @@ scale <- function(workers) {
     )
     workers$workers$launches[index] <- workers$workers$launches[index] + 1L
     workers$workers$launched[index] <- TRUE
+    workers$workers$time_launch[index] <- nanonext::mclock()
   }
 }
 

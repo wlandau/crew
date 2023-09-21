@@ -73,7 +73,7 @@ scale <- function(workers) {
 }
 
 index <- 0L # current task
-n_tasks <- 6000L # all tasks
+n_tasks <- 60000L # all tasks
 results <- list()
 while (index < n_tasks || schedule$nonempty()) { # while there is work to do
   if (!throttler$throttle()) { # avoid overburdening the {mirai} dispatcher

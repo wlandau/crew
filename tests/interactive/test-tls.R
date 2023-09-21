@@ -19,7 +19,7 @@ test_that("mirai client can start using custom credentials", {
       "fd.key -out fd.crt -passin pass:crew"
     )
   )
-  on.exit(mirai::daemons(n = 0L))
+  on.exit(mirai::daemons(n = 0L), add = TRUE)
   expect_silent(
     tmp <- mirai::daemons(
       n = 1L,

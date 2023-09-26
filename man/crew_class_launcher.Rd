@@ -101,10 +101,12 @@ Other class:
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
 \item \href{#method-crew_class_launcher-summary}{\code{crew_class_launcher$summary()}}
-\item \href{#method-crew_class_launcher-done}{\code{crew_class_launcher$done()}}
-\item \href{#method-crew_class_launcher-rotate}{\code{crew_class_launcher$rotate()}}
 \item \href{#method-crew_class_launcher-tally}{\code{crew_class_launcher$tally()}}
 \item \href{#method-crew_class_launcher-unlaunched}{\code{crew_class_launcher$unlaunched()}}
+\item \href{#method-crew_class_launcher-booting}{\code{crew_class_launcher$booting()}}
+\item \href{#method-crew_class_launcher-active}{\code{crew_class_launcher$active()}}
+\item \href{#method-crew_class_launcher-done}{\code{crew_class_launcher$done()}}
+\item \href{#method-crew_class_launcher-rotate}{\code{crew_class_launcher$rotate()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-throttle}{\code{crew_class_launcher$throttle()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
@@ -332,53 +334,6 @@ of the currently running instance of the worker.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-done"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-done}{}}}
-\subsection{Method \code{done()}}{
-Get done workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$done()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-A worker is "done" if it is launched and inactive.
-A worker is "launched" if \code{launch()} was called
-and the worker websocket has not been rotated since.
-If a worker is currently online, then it is not inactive.
-If a worker is not currently online, then it is inactive
-if and only if (1) either it connected to the current
-websocket at some point in the past,
-or (2) \code{seconds_launch} seconds elapsed since launch.
-}
-
-\subsection{Returns}{
-Integer index of inactive workers.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-rotate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-rotate}{}}}
-\subsection{Method \code{rotate()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$rotate(index)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{index}}{Integer index of a worker.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Rotate a websocket.
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-tally"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-tally}{}}}
 \subsection{Method \code{tally()}}{
@@ -404,7 +359,7 @@ should not set this.}
 \if{html}{\out{<a id="method-crew_class_launcher-unlaunched"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-unlaunched}{}}}
 \subsection{Method \code{unlaunched()}}{
-Get workers available for launch.
+Get indexes of unlaunched workers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$unlaunched(n = Inf)}\if{html}{\out{</div>}}
 }
@@ -416,8 +371,91 @@ Get workers available for launch.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+A worker is "unlaunched" if it has never connected
+to the current instance of its websocket. Once a worker
+launches with the \code{launch()} method, it is considered "launched"
+until it disconnects and its websocket is rotated with \code{rotate()}.
+}
+
 \subsection{Returns}{
 Integer index of workers available for launch.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-booting"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-booting}{}}}
+\subsection{Method \code{booting()}}{
+Get workers that may still be booting up.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$booting()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+A worker is "booting" if its launch time is within the last
+\code{seconds_launch} seconds. \code{seconds_launch} is a configurable grace
+period when \code{crew} allows a worker to start up and connect to the
+\code{mirai} dispatcher. The \code{booting()} function does not know about the
+actual worker connection status, it just knows about launch times,
+so it may return \code{TRUE} for workers that have already connected
+and started doing tasks.
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-active"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-active}{}}}
+\subsection{Method \code{active()}}{
+Get active workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$active()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+A worker is "active" if its current instance is online and
+connected, or if it is within its booting time window
+and has never connected.
+In other words, "active" means \code{online | (!discovered & booting)}.
+}
+
+\subsection{Returns}{
+Logical vector with \code{TRUE} for active workers and \code{FALSE} for
+inactive ones.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-done"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-done}{}}}
+\subsection{Method \code{done()}}{
+Get done workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$done()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+A worker is "done" if it is launched and inactive.
+A worker is "launched" if \code{launch()} was called
+and the worker websocket has not been rotated since.
+}
+
+\subsection{Returns}{
+Integer index of inactive workers.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-rotate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-rotate}{}}}
+\subsection{Method \code{rotate()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$rotate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Rotate websockets at all unlaunched workers.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}

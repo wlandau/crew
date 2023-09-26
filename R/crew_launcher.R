@@ -425,41 +425,6 @@ crew_class_launcher <- R6::R6Class(
         complete = .subset2(workers, "complete")
       )
     },
-    #' @description Get done workers.
-    #' @details A worker is "done" if it is launched and inactive.
-    #'   A worker is "launched" if `launch()` was called
-    #'   and the worker websocket has not been rotated since.
-    #'   If a worker is currently online, then it is not inactive.
-    #'   If a worker is not currently online, then it is inactive
-    #'   if and only if (1) either it connected to the current
-    #'   websocket at some point in the past,
-    #'   or (2) `seconds_launch` seconds elapsed since launch.
-    #' @return Integer index of inactive workers.
-    done = function() {
-      bound <- self$seconds_launch
-      start <- self$workers$start
-      now <- nanonext::mclock() / 1000
-      launching <- !is.na(start) & ((now - start) < bound)
-      online <- self$workers$online
-      discovered <- self$workers$discovered
-      inactive <- (!online) & (discovered | (!launching))
-      launched <- self$workers$launched
-      which(inactive & launched)
-    },
-    #' @details Rotate a websocket.
-    #' @return `NULL` (invisibly).
-    #' @param index Integer index of a worker.
-    rotate = function(index) {
-      socket <- mirai::saisei(i = index, force = FALSE, .compute = self$name)
-      if (!is.null(socket)) {
-        handle <- self$workers$handle[[index]]
-        if (!is_crew_null(handle)) {
-          self$terminate_worker(handle)
-        }
-        self$workers$socket[index] <- socket
-        self$workers$launched[index] <- FALSE
-      }
-    },
     #' @description Update the `daemons`-related columns of the internal
     #'   `workers` data frame.
     #' @return `NULL` (invisibly).
@@ -473,11 +438,66 @@ crew_class_launcher <- R6::R6Class(
       self$workers$complete <- as.integer(daemons[, "complete"])
       invisible()
     },
-    #' @description Get workers available for launch.
+    #' @description Get indexes of unlaunched workers.
+    #' @details A worker is "unlaunched" if it has never connected
+    #'   to the current instance of its websocket. Once a worker
+    #'   launches with the `launch()` method, it is considered "launched"
+    #'   until it disconnects and its websocket is rotated with `rotate()`.
     #' @return Integer index of workers available for launch.
     #' @param n Maximum number of worker indexes to return.
     unlaunched = function(n = Inf) {
       head(x = which(!self$workers$launched), n = n)
+    },
+    #' @description Get workers that may still be booting up.
+    #' @details A worker is "booting" if its launch time is within the last
+    #'   `seconds_launch` seconds. `seconds_launch` is a configurable grace
+    #'   period when `crew` allows a worker to start up and connect to the
+    #'   `mirai` dispatcher. The `booting()` function does not know about the
+    #'   actual worker connection status, it just knows about launch times,
+    #'   so it may return `TRUE` for workers that have already connected
+    #'   and started doing tasks.
+    booting = function() {
+      bound <- self$seconds_launch
+      start <- self$workers$start
+      now <- nanonext::mclock() / 1000
+      launching <- !is.na(start) & ((now - start) < bound)
+    },
+    #' @description Get active workers.
+    #' @details A worker is "active" if its current instance is online and
+    #'   connected, or if it is within its booting time window
+    #'   and has never connected.
+    #'   In other words, "active" means `online | (!discovered & booting)`.
+    #' @return Logical vector with `TRUE` for active workers and `FALSE` for
+    #'   inactive ones.
+    active = function() {
+      booting <- self$booting()
+      online <- self$workers$online
+      discovered <- self$workers$discovered
+      online | (!discovered & booting)
+    },
+    #' @description Get done workers.
+    #' @details A worker is "done" if it is launched and inactive.
+    #'   A worker is "launched" if `launch()` was called
+    #'   and the worker websocket has not been rotated since.
+    #' @return Integer index of inactive workers.
+    done = function() {
+      !self$active() & self$workers$launched
+    },
+    #' @details Rotate websockets at all unlaunched workers.
+    #' @return `NULL` (invisibly).
+    rotate = function() {
+      which_done <- which(self$done())
+      for (index in which_done) {
+        socket <- mirai::saisei(i = index, force = FALSE, .compute = self$name)
+        if (!is.null(socket)) {
+          handle <- self$workers$handle[[index]]
+          if (!is_crew_null(handle)) {
+            self$terminate_worker(handle)
+          }
+          self$workers$socket[index] <- socket
+          self$workers$launched[index] <- FALSE
+        }
+      }
     },
     #' @description Launch a worker.
     #' @return `NULL` (invisibly).
@@ -512,7 +532,7 @@ crew_class_launcher <- R6::R6Class(
           "launch_max above",
           self$launch_max,
           "or troubleshoot your platform to figure out",
-          "why {crew} workers are not launching or connecting."
+          "why {crew} workers are not booting up or connecting."
         )
       )
       handle <- self$launch_worker(
@@ -559,7 +579,7 @@ crew_class_launcher <- R6::R6Class(
         return(invisible())
       }
       self$tally()
-      walk(x = self$done(), f = self$rotate)
+      self$rotate()
       unlaunched <- self$unlaunched(n = Inf)
       active <- nrow(self$workers) - length(unlaunched)
       deficit <- min(length(unlaunched), max(0L, demand - active))

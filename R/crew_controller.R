@@ -202,7 +202,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
       self$launcher$tally()
-      walk(x = self$launcher$done(), f = self$launcher$rotate)
+      self$launcher$rotate()
       walk(x = self$launcher$unlaunched(n = n), f = self$launcher$launch)
       invisible()
     },

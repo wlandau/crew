@@ -189,12 +189,12 @@ crew_test("launcher done()", {
   expect_equal(launcher$workers$assigned, rep(0L, nrow(grid)))
   expect_equal(launcher$workers$complete, rep(0L, nrow(grid)))
   launcher$tally(daemons = daemons)
-  out <- launcher$done()
+  out <- which(launcher$done())
   exp <- c(1L, 2L, 3L, 4L, 7L, 8L, 9L, 10L, 11L, 12L)
   expect_equal(out, exp)
   launcher$workers$launched <- rep(FALSE, nrow(grid))
   launcher$tally(daemons = daemons)
-  expect_equal(launcher$done(), integer(0L))
+  expect_equal(which(launcher$done()), integer(0L))
 })
 
 crew_test("launcher tally()", {
@@ -346,7 +346,7 @@ crew_test("custom launcher", {
     seconds_timeout = 5
   )
   expect_false(handle$is_alive())
-  walk(x = controller$launcher$done(), f = controller$launcher$rotate)
+  controller$launcher$rotate()
   controller$launcher$tally()
   out <- controller$launcher$summary()
   expect_equal(out$launches, 1L)

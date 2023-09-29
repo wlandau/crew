@@ -12,5 +12,5 @@
 #' @examples
 #' crew_random_name()
 crew_random_name <- function(n = 12L) {
-  nanonext::sha1(c(nanonext::random(n = n), as.numeric(Sys.time())))
+  nanonext::random(n = n)
 }

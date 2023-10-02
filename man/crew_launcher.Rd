@@ -108,7 +108,6 @@ client$terminate()
 \seealso{
 Other developer: 
 \code{\link{crew_client}()},
-\code{\link{crew_controller}()},
-\code{\link{crew_schedule}()}
+\code{\link{crew_controller}()}
 }
 \concept{developer}

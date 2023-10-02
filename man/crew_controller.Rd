@@ -35,7 +35,6 @@ controller$terminate()
 \seealso{
 Other developer: 
 \code{\link{crew_client}()},
-\code{\link{crew_launcher}()},
-\code{\link{crew_schedule}()}
+\code{\link{crew_launcher}()}
 }
 \concept{developer}

@@ -47,7 +47,6 @@ Other class:
 \code{\link{crew_class_client}},
 \code{\link{crew_class_controller}},
 \code{\link{crew_class_launcher}},
-\code{\link{crew_class_schedule}},
 \code{\link{crew_class_tls}}
 }
 \concept{class}
@@ -164,8 +163,8 @@ or completed tasks waiting to be retrieved with \code{push()}.
 Check if a controller is saturated.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$saturated(
-  collect = TRUE,
-  throttle = TRUE,
+  collect = NULL,
+  throttle = NULL,
   controller = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -173,15 +172,9 @@ Check if a controller is saturated.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{collect}}{Logical of length 1, whether to collect the results
-of any newly resolved tasks before determining saturation.}
+\item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
-\item{\code{throttle}}{Logical of length 1, whether to delay task collection
-until the next request at least \code{self$client$seconds_interval}
-seconds from the original request.
-The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
-accumulate a backlog of requests. The technique improves robustness
-and efficiency.}
+\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
 \item{\code{controller}}{Character vector of length 1 with the controller name.
 Set to \code{NULL} to select the default controller that \code{push()}
@@ -254,18 +247,13 @@ Set to \code{NULL} to select all controllers.}
 Automatically scale up the number of workers if needed
 in one or more controller objects.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale(throttle = FALSE, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale(throttle = NULL, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{throttle}}{Logical of length 1, whether to delay auto-scaling
-until the next auto-scaling request at least
-\code{self$client$seconds_interval} seconds from the original request.
-The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
-accumulate a backlog of requests. The technique improves robustness
-and efficiency.}
+\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
@@ -297,7 +285,7 @@ Push a task to the head of the task list.
   library = NULL,
   seconds_timeout = NULL,
   scale = TRUE,
-  throttle = TRUE,
+  throttle = NULL,
   name = NULL,
   save_command = FALSE,
   controller = NULL
@@ -354,17 +342,9 @@ argument of \code{require()}.}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand.
-If \code{TRUE}, then \code{collect()} runs first
-so demand can be properly assessed before scaling and the number
-of workers is not too high.}
+demand.}
 
-\item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
-until the next auto-scaling request at least
-\code{self$client$seconds_interval} seconds from the original request.
-The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
-accumulate a backlog of requests. The technique improves robustness
-and efficiency.}
+\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
 \item{\code{name}}{Optional name of the task. Replaced with a random name
 if \code{NULL} or in conflict with an existing name in the task list.}
@@ -525,30 +505,22 @@ columns corresponding to the output of \code{pop()}.
 \if{html}{\out{<a id="method-crew_class_controller_group-collect"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-collect}{}}}
 \subsection{Method \code{collect()}}{
-Check for done tasks and move the results to
-the results list.
+Deprecated in version 0.5.0.9003 (2023-10-02).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(throttle = FALSE, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(throttle = NULL, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{throttle}}{whether to defer task collection
-until the next task collection request at least
-\code{self$client$seconds_interval} seconds from the original request.
-The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
-accumulate a backlog of requests. The technique improves robustness
-and efficiency.}
+\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
 
-\item{\code{controllers}}{Character vector of controller names.
-Set to \code{NULL} to select all controllers.}
+\item{\code{controllers}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{NULL} (invisibly). Removes elements from the \code{queue}
-list as applicable and moves them to the \code{results} list.
+\code{NULL}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -559,8 +531,8 @@ Pop a completed task from the results data frame.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop(
   scale = TRUE,
-  collect = TRUE,
-  throttle = TRUE,
+  collect = NULL,
+  throttle = NULL,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -569,24 +541,13 @@ Pop a completed task from the results data frame.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand.
-If \code{TRUE}, then \code{collect()} runs first
-so demand can be properly assessed before scaling and the number
-of workers is not too high. Scaling up on \code{pop()} may be important
+demand. Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off
 quickly after doing little work.}
 
-\item{\code{collect}}{Logical of length 1. If \code{scale} is \code{FALSE},
-whether to call \code{collect()}
-to pick up the results of completed tasks. This task collection
-step always happens (with throttling) when \code{scale} is \code{TRUE}.}
+\item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
-\item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
-until the next auto-scaling request at least
-\code{self$client$seconds_interval} seconds from the original request.
-The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
-accumulate a backlog of requests. The technique improves robustness
-and efficiency.}
+\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
@@ -610,7 +571,7 @@ Wait for tasks.
   seconds_interval = 0.01,
   seconds_timeout = Inf,
   scale = TRUE,
-  throttle = TRUE,
+  throttle = NULL,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -618,9 +579,11 @@ Wait for tasks.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mode}}{If \code{mode} is \code{"all"},
-then the method waits for all tasks to complete. If \code{mode} is
-\code{"one"}, then it waits until a one task is complete.}
+\item{\code{mode}}{Character of length 1: \code{"all"} to wait for
+all tasks in all controllers to complete, \code{"one"} to wait for
+a single task in a single controller to complete. In this scheme,
+the timeout limit is applied to each controller sequentially,
+and a timeout is treated the same as a completed controller.}
 
 \item{\code{seconds_interval}}{Number of seconds to wait between
 polling intervals while checking for results.
@@ -631,17 +594,9 @@ field may be different from controller to controller.}
 results to become available.}
 
 \item{\code{scale}}{Logical of length 1, whether to call \code{scale_later()}
-on each selected controller to schedule auto-scaling.
-By design, auto-scaling might not actually happen on
-every iteration if \code{throttle} is \code{TRUE}.}
+on each selected controller to schedule auto-scaling.}
 
-\item{\code{throttle}}{If \code{scale} is \code{TRUE}, whether to defer auto-scaling
-and task collection until the next request at least
-\code{self$client$seconds_interval} seconds from the original request.
-The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
-accumulate a backlog of requests. The technique improves robustness
-and efficiency. Highly recommended to keep
-the default \code{throttle = TRUE} for \code{wait()}.}
+\item{\code{throttle}}{Deprecated in verson 0.5.0.9003 (2023-10-02).}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
@@ -649,16 +604,15 @@ Set to \code{NULL} to select all controllers.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-The \code{wait()} method blocks the calling R session,
-repeatedly auto-scales workers for tasks
-that need them, and repeatedly collects results.
-The function runs until it either times out or one of the
-controllers reaches the stopping condition
-based on the \code{mode} argument.
+The \code{wait()} method blocks the calling R session and
+repeatedly auto-scales workers for tasks that need them.
+The function runs until it either times out or the condition
+in \code{mode} is met.
 }
 
 \subsection{Returns}{
-\code{NULL} (invisibly). Call \code{pop()} to get the result.
+A logical of length 1, invisibly. \code{TRUE} if the condition
+in \code{mode} was met, \code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}

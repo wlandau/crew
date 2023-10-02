@@ -210,7 +210,7 @@ crew_class_controller <- R6::R6Class(
     #'   call `launch()` on the controller with the exact desired
     #'   number of workers.
     #' @return `NULL` (invisibly).
-    #' @param Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
+    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(throttle = NULL, controllers = NULL) {

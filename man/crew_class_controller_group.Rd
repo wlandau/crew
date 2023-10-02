@@ -596,7 +596,7 @@ results to become available.}
 \item{\code{scale}}{Logical of length 1, whether to call \code{scale_later()}
 on each selected controller to schedule auto-scaling.}
 
-\item{\code{throttle}}{Deprecated in verson 0.5.0.9003 (2023-10-02).}
+\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}

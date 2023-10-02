@@ -793,7 +793,7 @@ field of the client object.}
 \item{\code{scale}}{Logical, whether to automatically call \code{scale()}
 to auto-scale workers to meet the demand of the task load.}
 
-\item{\code{throttle}}{Deprecated in verson 0.5.0.9003 (2023-10-02).}
+\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

@@ -809,7 +809,7 @@ crew_class_controller <- R6::R6Class(
     #' @param seconds_timeout Timeout length in seconds waiting for tasks.
     #' @param scale Logical, whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
-    #' @param throttle Deprecated in verson 0.5.0.9003 (2023-10-02).
+    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     wait = function(

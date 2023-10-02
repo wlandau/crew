@@ -444,7 +444,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   results to become available.
     #' @param scale Logical of length 1, whether to call `scale_later()`
     #'   on each selected controller to schedule auto-scaling.
-    #' @param throttle Deprecated in verson 0.5.0.9003 (2023-10-02).
+    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     wait = function(

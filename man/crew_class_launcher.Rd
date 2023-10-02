@@ -63,8 +63,6 @@ Other class:
 
 \item{\code{name}}{Name of the launcher.}
 
-\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
 \item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}

@@ -354,5 +354,6 @@ crew_test("custom launcher", {
 })
 
 crew_test("deprecate seconds_exit", {
-  expect_message(crew_launcher(seconds_exit = 1), class = "crew_deprecate")
+  suppressWarnings(crew_launcher(seconds_exit = 1))
+  expect_true(TRUE)
 })

@@ -149,8 +149,6 @@ crew_class_launcher <- R6::R6Class(
     workers = NULL,
     #' @field name Name of the launcher.
     name = NULL,
-    #' @field seconds_interval See [crew_launcher()].
-    seconds_interval = NULL,
     #' @field seconds_launch See [crew_launcher()].
     seconds_launch = NULL,
     #' @field seconds_idle See [crew_launcher()].
@@ -218,7 +216,6 @@ crew_class_launcher <- R6::R6Class(
       tls = NULL
     ) {
       self$name <- name
-      self$seconds_interval <- seconds_interval
       self$seconds_launch <- seconds_launch
       self$seconds_idle <- seconds_idle
       self$seconds_wall <- seconds_wall

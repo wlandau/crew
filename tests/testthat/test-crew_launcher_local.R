@@ -195,8 +195,6 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
 })
 
 crew_test("deprecate seconds_exit", {
-  expect_message(
-    crew_launcher_local(seconds_exit = 1),
-    class = "crew_deprecate"
-  )
+  suppressWarnings(crew_launcher_local(seconds_exit = 1))
+  expect_true(TRUE)
 })

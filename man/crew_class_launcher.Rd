@@ -86,8 +86,6 @@ Other class:
 \item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{until}}{Numeric of length 1, time point when throttled unlocks.}
 }
 \if{html}{\out{</div>}}
 }
@@ -482,13 +480,13 @@ to launch.}
 \if{html}{\out{<a id="method-crew_class_launcher-throttle"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-throttle}{}}}
 \subsection{Method \code{throttle()}}{
-Throttle repeated calls.
+Deprecated in version 0.5.0.9000 (2023-10-02). Not used.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$throttle()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-\code{TRUE} to throttle, \code{FALSE} to continue.
+\code{NULL}
 }
 }
 \if{html}{\out{<hr>}}
@@ -497,7 +495,7 @@ Throttle repeated calls.
 \subsection{Method \code{scale()}}{
 Auto-scale workers out to meet the demand of tasks.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$scale(demand, throttle = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$scale(demand, throttle = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -505,12 +503,7 @@ Auto-scale workers out to meet the demand of tasks.
 \describe{
 \item{\code{demand}}{Number of unresolved tasks.}
 
-\item{\code{throttle}}{Logical of length 1, whether to delay auto-scaling
-until the next auto-scaling request at least
-\code{self$client$seconds_interval} seconds from the original request.
-The idea is similar to \code{shiny::throttle()} except that \code{crew} does not
-accumulate a backlog of requests. The technique improves robustness
-and efficiency.}
+\item{\code{throttle}}{Deprecated in version 0.5.0.9000 (2023-10-02).}
 }
 \if{html}{\out{</div>}}
 }

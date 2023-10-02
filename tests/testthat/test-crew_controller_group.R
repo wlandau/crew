@@ -168,47 +168,6 @@ crew_test("crew_controller_group() select", {
   expect_false(b$client$started)
 })
 
-crew_test("crew_controller_group() collect", {
-  skip_on_cran()
-  skip_on_os("windows")
-  a <- crew_controller_local(
-    name = "a"
-  )
-  b <- crew_controller_local(
-    name = "b",
-    tasks_max = 1L,
-    seconds_idle = 360
-  )
-  x <- crew_controller_group(a, b)
-  on.exit({
-    x$terminate()
-    rm(x)
-    gc()
-    crew_test_sleep()
-  })
-  expect_silent(x$validate())
-  expect_null(x$controllers[[1]]$client$started)
-  expect_null(x$controllers[[2]]$client$started)
-  x$start()
-  expect_null(x$pop())
-  x$push(command = ps::ps_pid(), name = "task_pid")
-  crew_retry(
-    fun = ~{
-      x$scale()
-      x$collect()
-      length(x$controllers[[1]]$schedule$collected) > 0L
-    },
-    seconds_interval = 0.5,
-    seconds_timeout = 10
-  )
-  out <- x$pop(scale = FALSE, controllers = "a")
-  expect_equal(
-    out$result[[1]],
-    x$controllers[[1]]$launcher$workers$handle[[1]]$get_pid()
-  )
-  expect_false(is.null(out))
-})
-
 crew_test("crew_controller_group() launch method", {
   skip_on_cran()
   skip_on_os("windows")

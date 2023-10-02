@@ -53,6 +53,8 @@ Other class:
 
 \item{\code{tasks}}{A list of \code{mirai::mirai()} task objects.}
 
+\item{\code{pushed}}{Number of tasks pushed since the controller was started.}
+
 \item{\code{log}}{Tibble with per-worker metadata about tasks.}
 
 \item{\code{error}}{Tibble of task results (with one result per row)

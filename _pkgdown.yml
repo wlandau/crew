@@ -30,7 +30,6 @@ reference:
   - '`crew_controller_group`'
   - '`crew_launcher`'
   - '`crew_launcher_local`'
-  - '`crew_schedule`'
 - title: Classes
   contents:
   - '`crew_class_client`'
@@ -38,7 +37,6 @@ reference:
   - '`crew_class_controller_group`'
   - '`crew_class_launcher`'
   - '`crew_class_launcher_local`'
-  - '`crew_class_schedule`'
   - '`crew_class_tls`'
 - title: Utilities
   contents:

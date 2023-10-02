@@ -22,7 +22,8 @@
 #' @importFrom data.table rbindlist
 #' @importFrom getip getip
 #' @importFrom mirai daemon daemons mirai nextget nextstream saisei status
-#' @importFrom nanonext mclock msleep nng_error random unresolved tls_config
+#' @importFrom nanonext mclock msleep nng_error random .unresolved unresolved
+#'   tls_config
 #' @importFrom processx process
 #' @importFrom ps ps_cmdline ps_handle ps_is_running ps_kill ps_status
 #' @importFrom R6 R6Class

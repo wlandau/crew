@@ -120,7 +120,7 @@ crew_test("crew_controller_local()", {
   crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.1,
-    seconds_timeout = 5,
+    seconds_timeout = 5
   )
 })
 
@@ -147,7 +147,7 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
   x$push(command = command, substitute = FALSE, name = "substitute")
   x$wait(seconds_timeout = 10)
   # just list
-  out <- x$schedule$list()[[1L]]
+  out <- monad_tibble(x$tasks[[1L]]$data)
   expect_equal(out$result[[1L]], 5L)
   expect_equal(out$name, "substitute")
   expect_true(is.numeric(out$seconds))
@@ -534,12 +534,12 @@ crew_test("map() does not need an empty controller", {
   x$start()
   x$push(command = TRUE)
   x$wait(seconds_timeout = 30)
-  expect_equal(x$schedule$summary()$pushed, 0L)
-  expect_equal(x$schedule$summary()$collected, 1L)
+  expect_equal(x$unresolved(), 0L)
+  expect_equal(x$resolved(), 1L)
   results <- x$map(command = TRUE, iterate = list(x = c(1, 2)))
   expect_equal(nrow(results), 2L)
-  expect_equal(x$schedule$summary()$pushed, 0L)
-  expect_equal(x$schedule$summary()$collected, 1L)
+  expect_equal(x$unresolved(), 0L)
+  expect_equal(x$resolved(), 3L)
 })
 
 crew_test("deprecate seconds_exit", {

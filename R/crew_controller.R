@@ -65,6 +65,8 @@ crew_class_controller <- R6::R6Class(
     launcher = NULL,
     #' @field tasks A list of `mirai::mirai()` task objects.
     tasks = NULL,
+    #' @field pushed Number of tasks pushed since the controller was started.
+    pushed = NULL,
     #' @field log Tibble with per-worker metadata about tasks.
     log = NULL,
     #' @field error Tibble of task results (with one result per row)
@@ -142,7 +144,7 @@ crew_class_controller <- R6::R6Class(
     #' @return Non-negative integer of length 1,
     #'   number of unresolved `mirai()` tasks.
     unresolved = function() {
-      length(self$tasks) - .subset2(self, "resolved")()
+      .subset2(self, "pushed") - .subset2(self, "resolved")()
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -172,6 +174,7 @@ crew_class_controller <- R6::R6Class(
         workers <- self$client$workers
         self$launcher$start()
         self$tasks <- self$tasks %|||% list()
+        self$pushed <- 0L
         self$log <- list(
           controller = rep(self$client$name, workers),
           worker = seq_len(workers),
@@ -316,6 +319,7 @@ crew_class_controller <- R6::R6Class(
         .signal = TRUE
       )
       self$tasks[[length(.subset2(self, "tasks")) + 1L]] <- task
+      self$pushed <- .subset2(self, "pushed") + 1L
       if (scale) {
         .subset2(self, "scale")()
       }
@@ -391,6 +395,7 @@ crew_class_controller <- R6::R6Class(
         .signal = TRUE
       )
       self$tasks[[length(.subset2(self, "tasks")) + 1L]] <- task
+      self$pushed <- .subset2(self, "pushed") + 1L
       invisible()
     },
     #' @description Apply a single command to multiple inputs.
@@ -749,6 +754,9 @@ crew_class_controller <- R6::R6Class(
       }
       tasks <- .subset2(self, "tasks")
       n_tasks <- length(tasks)
+      if (n_tasks < 1L) {
+        return(NULL)
+      }
       task <- NULL
       for (index in seq(n_tasks)) {
         object <- .subset2(tasks, index)
@@ -831,8 +839,21 @@ crew_class_controller <- R6::R6Class(
             envir$result <- if_any(
               mode == "all",
               self$unresolved() < 1L,
-              self$resolved() < 1L
+              self$resolved() > 0L
             )
+            tasks <- .subset2(self, "tasks")
+            n_tasks <- length(tasks)
+            if (envir$result && n_tasks > 0L) {
+              envir$result <- FALSE
+              task <- NULL
+              for (index in seq(n_tasks)) {
+                object <- .subset2(tasks, index)
+                if (!nanonext::.unresolved(object)) {
+                  envir$result <- TRUE
+                  break
+                }
+              }
+            }
             envir$result
           },
           seconds_interval = seconds_interval,
@@ -887,6 +908,7 @@ crew_class_controller <- R6::R6Class(
         self$client$terminate()
         self$launcher$terminate()
       }
+      self$pushed <- NULL
       # nocov end
       invisible()
     }

@@ -15,7 +15,7 @@ system.time(
       cat("submit", index, "\n")
       controller$push(
         name = as.character(index),
-        command = TRUE
+        command = Sys.sleep(0.005)
       )
     }
     out <- controller$pop()
@@ -28,8 +28,8 @@ system.time(
 testthat::expect_equal(sort(as.integer(names)), seq_len(n_tasks))
 controller$launcher$workers$launched <- FALSE
 controller$launcher$tally()
+testthat::expect_equal(controller$unresolved(), 0L)
 controller$terminate()
-testthat::expect_equal(length(controller$schedule$pushed), 0L)
-testthat::expect_equal(length(controller$schedule$collected), 0L)
+testthat::expect_equal(length(controller$tasks), 0L)
 testthat::expect_equal(sum(controller$launcher$workers$assigned), n_tasks)
 testthat::expect_equal(sum(controller$launcher$workers$complete), n_tasks)

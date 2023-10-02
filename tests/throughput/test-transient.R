@@ -36,8 +36,8 @@ message(time["elapsed"])
 # Call wait() on the controller to cycle through the rest of the tasks.
 # Watch htop to see it complete.
 x$wait(mode = "all")
-testthat::expect_equal(x$schedule$summary()$pushed, 0L)
-testthat::expect_equal(x$schedule$summary()$collected, 200L)
+testthat::expect_equal(x$unresolved(), 0L)
+testthat::expect_equal(length(x$tasks), 200L)
 
 # All results should now be available.
 results <- list()

@@ -1,8 +1,10 @@
-# crew 0.5.0.9002
+# crew 0.5.0.9003
 
 * Migrate checks to enforce features in version 0.5.0 for reverse dependencies.
 * Drop check of backlogged workers, c.f. https://github.com/shikokuchuo/mirai/discussions/63#discussioncomment-7051889 (#79, #124, @shikokuchuo).
 * Deprecate `seconds_exit` because `exitlinger` in `mirai` is now obsolete (#125, @shikokuchuo).
+* Use `mirai::nextget("cv")` to count unresolved tasks instead of looping through all the task objects (#131).
+* Remove throttling and `collect()` in auto-scaling. Simplifies much of the code. Made possible by the efficiency gains in #131.
 
 # crew 0.5.0
 

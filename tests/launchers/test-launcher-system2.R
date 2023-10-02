@@ -45,7 +45,6 @@ crew_controller_system2 <- function(
   )
   launcher <- system2_launcher_class$new(
     name = name,
-    seconds_interval = seconds_interval,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,

@@ -47,7 +47,7 @@ Use `push()` to submit a new task and `pop()` to return a completed task.
 controller$push(name = "get pid", command = ps::ps_pid())
 ```
 
-Behind the scenes, `push()` and `pop()` also launch workers to run the tasks. If your controller uses transient workers and has a backlog of tasks, you may need to call `pop()` multiple times.
+As a side effect, methods `push()`, `pop()`, and `scale()` also launch workers to run the tasks. If your controller uses transient workers and has a backlog of tasks, you may need to loop over `pop()` or `scale()` multiple times to make sure enough workers are always available.
 
 ```{r}
 controller$pop() # No workers started yet and the task is not done.
@@ -147,16 +147,6 @@ controller$summary()
 #>   <chr>       <int> <int>   <dbl>  <int>    <int>
 #> 1 example         1     2   0.001      0        0
 #> 2 example         2     1   0          0        0
-```
-
-The schedule summary counts "pushed" tasks which may not be complete and "collected" tasks which `pop()` can return.
-
-```{r}
-controller$schedule$summary()
-#> # A tibble: 1 × 2
-#>   pushed collected
-#>    <int>     <int>
-#> 1      0         0
 ```
 
 The launcher summary counts the number of times each worker was launched, and it shows the total number of assigned and completed tasks from all past terminated instances of each worker. In addition, it shows whether the current worker instance was actively connected ("online") or had connected at some point during its life cycle ("discovered") as of the last call to `controller$launcher$tally()`.

@@ -1,6 +1,6 @@
 test_that("mirai client can start using custom credentials", {
   skip_on_os("windows")
-  on.exit(unlink(c("fd.key", "fd.csr", "fd.crt")))
+  on.exit(unlink(c("fd.key", "fd.csr", "fd.crt")), add = TRUE)
   system(
     paste(
       "openssl genpkey -out fd.key -algorithm RSA -outform PEM",
@@ -39,7 +39,7 @@ test_that("mirai client can start using custom credentials", {
 
 test_that("crew_tls() custom works on real credentials", {
   skip_on_os("windows")
-  on.exit(unlink(c("fd.key", "fd.csr", "fd.crt")))
+  on.exit(unlink(c("fd.key", "fd.csr", "fd.crt")), add = TRUE)
   system(
     paste(
       "openssl genpkey -out fd.key -algorithm RSA",
@@ -59,7 +59,7 @@ test_that("crew_tls() custom works on real credentials", {
 
 test_that("crew_tls() custom works on real credentials with custom password", {
   skip_on_os("windows")
-  on.exit(unlink(c("fd.key", "fd.csr", "fd.crt")))
+  on.exit(unlink(c("fd.key", "fd.csr", "fd.crt")), add = TRUE)
   system(
     paste(
       "openssl genpkey -out fd.key -algorithm RSA -outform PEM",
@@ -86,7 +86,7 @@ test_that("crew_tls() custom works on real credentials with custom password", {
   )
   expect_silent(tls$validate())
   x <- crew_controller_local(tls = tls)
-  on.exit(x$terminate())
+  on.exit(x$terminate(), add = TRUE)
   x$start()
   x$push("57")
   x$wait()
@@ -95,7 +95,7 @@ test_that("crew_tls() custom works on real credentials with custom password", {
 
 test_that("crew_tls() automatic", {
   x <- crew_controller_local(tls = crew_tls(mode = "automatic"))
-  on.exit(x$terminate())
+  on.exit(x$terminate(), add = TRUE)
   x$start()
   x$push("57")
   x$wait()

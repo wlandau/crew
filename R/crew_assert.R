@@ -51,6 +51,10 @@ crew_assert <- function(
 #' @param alternative Message about an alternative.
 #' @param condition Either "warning" or "message" to indicate the type
 #'   of condition thrown on deprecation.
+#' @param value Value of the object. Deprecation is skipped
+#'   if `value` is `NULL`.
+#' @param skip_cran Logical of length 1, whether to skip the deprecation
+#'   warning or message on CRAN.
 #' @examples
 #' suppressWarnings(
 #'   crew_deprecate(
@@ -65,8 +69,14 @@ crew_deprecate <- function(
   date,
   version,
   alternative,
-  condition = "warning"
+  condition = "warning",
+  value = "x",
+  skip_cran = FALSE
 ) {
+  on_cran <- !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false")))
+  if (is.null(value) || (skip_cran && on_cran)) {
+    return(invisible())
+  }
   message <- sprintf(
     "%s was deprecated on %s (crew version %s). Alternative: %s.",
     name,
@@ -85,6 +95,7 @@ crew_deprecate <- function(
       class = c("crew_deprecate", "crew_message", "crew")
     )
   )
+  invisible()
 }
 
 crew_error <- function(message = NULL) {

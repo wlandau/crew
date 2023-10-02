@@ -37,15 +37,14 @@ crew_controller_local <- function(
   garbage_collection = FALSE,
   launch_max = 5L
 ) {
-  if (!is.null(seconds_exit)) {
-    crew_deprecate(
-      name = "seconds_exit",
-      date = "2023-09-21",
-      version = "0.5.0.9002",
-      alternative = "none (no longer necessary)",
-      condition = "message"
-    )
-  }
+  crew_deprecate(
+    name = "seconds_exit",
+    date = "2023-09-21",
+    version = "0.5.0.9002",
+    alternative = "none (no longer necessary)",
+    condition = "message",
+    value = seconds_exit
+  )
   client <- crew_client(
     name = name,
     workers = workers,

@@ -25,14 +25,13 @@ crew_controller <- function(
   launcher,
   auto_scale = NULL
 ) {
-  if (!is.null(auto_scale)) {
-    crew_deprecate(
-      name = "auto_scale",
-      date = "2023-05-18",
-      version = "0.2.0",
-      alternative = "use the scale argument of push(), pop(), and wait()"
-    )
-  }
+ crew_deprecate(
+    name = "auto_scale",
+    date = "2023-05-18",
+    version = "0.2.0",
+    alternative = "use the scale argument of push(), pop(), and wait()",
+    value = auto_scale
+  )
   controller <- crew_class_controller$new(client = client, launcher = launcher)
   controller$launcher$name <- controller$client$name
   controller$validate()

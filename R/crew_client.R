@@ -39,22 +39,20 @@ crew_client <- function(
   seconds_interval = 0.25,
   seconds_timeout = 10
 ) {
-  if (!is.null(tls_enable)) {
-    crew_deprecate(
-      name = "tls_enable",
-      date = "2023-09-15",
-      version = "0.4.1",
-      alternative = "argument tls and function crew_tls()"
-    )
-  }
-  if (!is.null(tls_config)) {
-    crew_deprecate(
-      name = "tls_config",
-      date = "2023-09-15",
-      version = "0.4.1",
-      alternative = "argument tls and function crew_tls()"
-    )
-  }
+  crew_deprecate(
+    name = "tls_enable",
+    date = "2023-09-15",
+    version = "0.4.1",
+    alternative = "argument tls and function crew_tls()",
+    value = tls_enable
+  )
+  crew_deprecate(
+    name = "tls_config",
+    date = "2023-09-15",
+    version = "0.4.1",
+    alternative = "argument tls and function crew_tls()",
+    value = tls_config
+  )
   name <- as.character(name %|||% crew_random_name())
   workers <- as.integer(workers)
   host <- as.character(host %|||% getip::getip(type = "local"))

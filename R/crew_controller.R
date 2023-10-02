@@ -921,20 +921,6 @@ crew_class_controller <- R6::R6Class(
               self$unresolved() < 1L,
               self$resolved() > 0L
             )
-            tasks <- .subset2(self, "tasks")
-            n_tasks <- length(tasks)
-            if (envir$result && n_tasks > 0L) {
-              envir$result <- FALSE
-              task <- NULL
-              for (index in seq(n_tasks)) {
-                object <- .subset2(tasks, index)
-                if (!nanonext::.unresolved(object)) {
-                  envir$result <- TRUE
-                  break
-                }
-              }
-            }
-            envir$result
           },
           seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout

@@ -45,7 +45,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   expect_equal(launcher$workers$launches, c(0L, 1L, 0L, 0L))
   m <- mirai::mirai(ps::ps_pid(), .compute = client$name)
   crew_retry(
-    ~!.unresolved(m),
+    ~!unresolved(m),
     seconds_interval = 0.5,
     seconds_timeout = 10
   )
@@ -100,7 +100,7 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   )
   m <- mirai::mirai(ps::ps_pid(), .compute = client$name)
   crew::crew_retry(
-    ~!.unresolved(m),
+    ~!unresolved(m),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )

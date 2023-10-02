@@ -156,7 +156,7 @@ crew_class_controller <- R6::R6Class(
     #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    saturated = function(controller = NULL, collect = NULL, throttle = NULL) {
+    saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
       .subset2(self, "unresolved")() >=
         .subset2(.subset2(self, "client"), "workers")
     },

@@ -47,7 +47,7 @@ Use `push()` to submit a new task and `pop()` to return a completed task.
 controller$push(name = "get pid", command = ps::ps_pid())
 ```
 
-Behind the scenes, `push()` and `pop()` also launch workers to run the tasks. This process is expensive, so `crew` uses [throttling](https://css-tricks.com/debouncing-throttling-explained-examples/). That means not every call to `push()` or `pop()` launches any workers. To ensure enough workers get launched, keep calling `pop()`.
+Behind the scenes, `push()` and `pop()` also launch workers to run the tasks. If your controller uses transient workers and has a backlog of tasks, you may need to call `pop()` multiple times.
 
 ```{r}
 controller$pop() # No workers started yet and the task is not done.

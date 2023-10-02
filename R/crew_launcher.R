@@ -579,7 +579,7 @@ crew_class_launcher <- R6::R6Class(
         version = "0.5.0.9003",
         alternative = "none (no longer necessary)",
         condition = "message",
-        value = "throttle",
+        value = throttle,
         skip_cran = TRUE,
         frequency = "once"
       )

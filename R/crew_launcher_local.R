@@ -17,7 +17,7 @@
 #' }
 crew_launcher_local <- function(
   name = NULL,
-  seconds_interval = 0.25,
+  seconds_interval = NULL,
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
@@ -32,6 +32,14 @@ crew_launcher_local <- function(
   tls = crew::crew_tls()
 ) {
   crew_deprecate(
+    name = "seconds_interval",
+    date = "2023-10-02",
+    version = "0.5.0.9003",
+    alternative = "none (no longer necessary)",
+    condition = "message",
+    value = seconds_interval
+  )
+  crew_deprecate(
     name = "seconds_exit",
     date = "2023-09-21",
     version = "0.5.0.9002",
@@ -42,7 +50,6 @@ crew_launcher_local <- function(
   name <- as.character(name %|||% crew_random_name())
   launcher <- crew_class_launcher_local$new(
     name = name,
-    seconds_interval = seconds_interval,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,

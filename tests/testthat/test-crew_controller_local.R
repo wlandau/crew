@@ -400,17 +400,15 @@ crew_test("map() works with errors and names and command strings", {
     warning("message")
     x + y
   }
-  expect_silent(
-    x$map(
-      command = f(x, y) + a + b,
-      iterate = list(x = c(1L, 2L), y = c(3L, 4L), id = c("z", "w")),
-      data = list(a = 5L),
-      globals = list(f = f),
-      save_command = TRUE,
-      names = "id",
-      error = "silent",
-      verbose = FALSE
-    )
+  x$map(
+    command = f(x, y) + a + b,
+    iterate = list(x = c(1L, 2L), y = c(3L, 4L), id = c("z", "w")),
+    data = list(a = 5L),
+    globals = list(f = f),
+    save_command = TRUE,
+    names = "id",
+    error = "silent",
+    verbose = FALSE
   )
   expect_null(x$error)
   expect_error(

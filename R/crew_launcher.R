@@ -7,7 +7,8 @@
 #'   [crew_launcher_local()].
 #' @inheritParams crew_client
 #' @param name Name of the launcher.
-#' @param seconds_interval Seconds to wait between asynchronous operations.
+#' @param seconds_interval Deprecated in version 0.5.0.9003 (2023-10-02)
+#'   no longer used.
 #' @param seconds_launch Seconds of startup time to allow.
 #'   A worker is unconditionally assumed to be alive
 #'   from the moment of its launch until `seconds_launch` seconds later.
@@ -69,7 +70,7 @@
 #' }
 crew_launcher <- function(
   name = NULL,
-  seconds_interval = 0.25,
+  seconds_interval = NULL,
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
@@ -91,6 +92,14 @@ crew_launcher <- function(
     condition = "message",
     value = seconds_exit
   )
+  crew_deprecate(
+    name = "seconds_interval",
+    date = "2023-10-02",
+    version = "0.5.0.9003",
+    alternative = "none (no longer necessary)",
+    condition = "message",
+    value = seconds_interval
+  )
   name <- as.character(name %|||% crew_random_name())
   crew_assert(
     inherits(tls, "crew_class_tls"),
@@ -98,7 +107,6 @@ crew_launcher <- function(
   )
   crew_class_launcher$new(
     name = name,
-    seconds_interval = seconds_interval,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
@@ -254,7 +262,6 @@ crew_class_launcher <- R6::R6Class(
         nzchar(.)
       )
       fields <- c(
-        "seconds_interval",
         "seconds_launch",
         "seconds_idle",
         "seconds_wall",
@@ -551,12 +558,30 @@ crew_class_launcher <- R6::R6Class(
     #' @description Deprecated in version 0.5.0.9000 (2023-10-02). Not used.
     #' @return `NULL`
     throttle = function() {
+      crew_deprecate(
+        name = "throttle()",
+        date = "2023-10-02",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = "throttle",
+        skip_cran = TRUE
+      )
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return `NULL` (invisibly)
     #' @param demand Number of unresolved tasks.
     #' @param throttle Deprecated in version 0.5.0.9000 (2023-10-02).
     scale = function(demand, throttle = NULL) {
+      crew_deprecate(
+        name = "throttle",
+        date = "2023-10-02",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = "throttle",
+        skip_cran = TRUE
+      )
       self$tally()
       self$rotate()
       unlaunched <- self$unlaunched(n = Inf)

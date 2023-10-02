@@ -25,7 +25,7 @@ crew_controller <- function(
   launcher,
   auto_scale = NULL
 ) {
- crew_deprecate(
+  crew_deprecate(
     name = "auto_scale",
     date = "2023-05-18",
     version = "0.2.0",
@@ -158,6 +158,24 @@ crew_class_controller <- R6::R6Class(
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
+      crew_deprecate(
+        name = "collect",
+        date = "2023-10-02",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = collect,
+        skip_cran = TRUE
+      )
+      crew_deprecate(
+        name = "throttle",
+        date = "2023-10-02",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = throttle,
+        skip_cran = TRUE
+      )
       .subset2(self, "unresolved")() >=
         .subset2(.subset2(self, "client"), "workers")
     },
@@ -216,6 +234,15 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(throttle = NULL, controllers = NULL) {
+      crew_deprecate(
+        name = "throttle",
+        date = "2023-10-02",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = throttle,
+        skip_cran = TRUE
+      )
       self$launcher$scale(demand = self$unresolved())
       invisible()
     },
@@ -288,6 +315,15 @@ crew_class_controller <- R6::R6Class(
       save_command = FALSE,
       controller = NULL
     ) {
+      crew_deprecate(
+        name = "throttle",
+        date = "2023-10-02",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = throttle,
+        skip_cran = TRUE
+      )
       .subset2(self, "start")()
       if (substitute) {
         command <- substitute(command)
@@ -703,6 +739,15 @@ crew_class_controller <- R6::R6Class(
     #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
     #' @param controllers Deprecated in version 0.5.0.9003 (2023-10-02).
     collect = function(throttle = NULL, controllers = NULL) {
+      crew_deprecate(
+        name = "collect()",
+        date = "2023-10-02",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = "collect",
+        skip_cran = TRUE
+      )
     },
     #' @description Pop a completed task from the results data frame.
     #' @details If not task is currently completed, `pop()`
@@ -748,6 +793,24 @@ crew_class_controller <- R6::R6Class(
       throttle = NULL,
       controllers = NULL
     ) {
+      crew_deprecate(
+        name = "collect",
+        date = "2023-10-02",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = collect,
+        skip_cran = TRUE
+      )
+      crew_deprecate(
+        name = "throttle",
+        date = "2023-10-02",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = throttle,
+        skip_cran = TRUE
+      )
       if (scale) {
         .subset2(self, "scale")()
       }
@@ -827,6 +890,15 @@ crew_class_controller <- R6::R6Class(
       throttle = NULL,
       controllers = NULL
     ) {
+      crew_deprecate(
+        name = "throttle",
+        date = "2023-10-02",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = throttle,
+        skip_cran = TRUE
+      )
       crew_assert(mode, identical(., "all") || identical(., "one"))
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE

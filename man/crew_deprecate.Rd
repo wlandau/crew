@@ -11,7 +11,8 @@ crew_deprecate(
   alternative,
   condition = "warning",
   value = "x",
-  skip_cran = FALSE
+  skip_cran = FALSE,
+  frequency = "always"
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ if \code{value} is \code{NULL}.}
 
 \item{skip_cran}{Logical of length 1, whether to skip the deprecation
 warning or message on CRAN.}
+
+\item{frequency}{Character of length 1, passed to the \code{.frequency}
+argument of \code{rlang::warn()}.}
 }
 \value{
 \code{NULL} (invisibly). Throws a warning if a feature is deprecated.

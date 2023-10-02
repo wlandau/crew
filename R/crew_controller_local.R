@@ -43,7 +43,8 @@ crew_controller_local <- function(
     version = "0.5.0.9002",
     alternative = "none (no longer necessary)",
     condition = "message",
-    value = seconds_exit
+    value = seconds_exit,
+    frequency = "once"
   )
   client <- crew_client(
     name = name,

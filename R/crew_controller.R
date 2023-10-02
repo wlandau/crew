@@ -30,7 +30,8 @@ crew_controller <- function(
     date = "2023-05-18",
     version = "0.2.0",
     alternative = "use the scale argument of push(), pop(), and wait()",
-    value = auto_scale
+    value = auto_scale,
+    frequency = "once"
   )
   controller <- crew_class_controller$new(client = client, launcher = launcher)
   controller$launcher$name <- controller$client$name
@@ -165,7 +166,8 @@ crew_class_controller <- R6::R6Class(
         alternative = "none (no longer necessary)",
         condition = "message",
         value = collect,
-        skip_cran = TRUE
+        skip_cran = TRUE,
+        frequency = "once"
       )
       crew_deprecate(
         name = "throttle",
@@ -174,7 +176,8 @@ crew_class_controller <- R6::R6Class(
         alternative = "none (no longer necessary)",
         condition = "message",
         value = throttle,
-        skip_cran = TRUE
+        skip_cran = TRUE,
+        frequency = "once"
       )
       .subset2(self, "unresolved")() >=
         .subset2(.subset2(self, "client"), "workers")
@@ -241,7 +244,8 @@ crew_class_controller <- R6::R6Class(
         alternative = "none (no longer necessary)",
         condition = "message",
         value = throttle,
-        skip_cran = TRUE
+        skip_cran = TRUE,
+        frequency = "once"
       )
       self$launcher$scale(demand = self$unresolved())
       invisible()
@@ -322,7 +326,8 @@ crew_class_controller <- R6::R6Class(
         alternative = "none (no longer necessary)",
         condition = "message",
         value = throttle,
-        skip_cran = TRUE
+        skip_cran = TRUE,
+        frequency = "once"
       )
       .subset2(self, "start")()
       if (substitute) {
@@ -746,7 +751,8 @@ crew_class_controller <- R6::R6Class(
         alternative = "none (no longer necessary)",
         condition = "message",
         value = "collect",
-        skip_cran = TRUE
+        skip_cran = TRUE,
+        frequency = "once"
       )
     },
     #' @description Pop a completed task from the results data frame.
@@ -800,7 +806,8 @@ crew_class_controller <- R6::R6Class(
         alternative = "none (no longer necessary)",
         condition = "message",
         value = collect,
-        skip_cran = TRUE
+        skip_cran = TRUE,
+        frequency = "once"
       )
       crew_deprecate(
         name = "throttle",
@@ -809,7 +816,8 @@ crew_class_controller <- R6::R6Class(
         alternative = "none (no longer necessary)",
         condition = "message",
         value = throttle,
-        skip_cran = TRUE
+        skip_cran = TRUE,
+        frequency = "once"
       )
       if (scale) {
         .subset2(self, "scale")()
@@ -897,7 +905,8 @@ crew_class_controller <- R6::R6Class(
         alternative = "none (no longer necessary)",
         condition = "message",
         value = throttle,
-        skip_cran = TRUE
+        skip_cran = TRUE,
+        frequency = "once"
       )
       crew_assert(mode, identical(., "all") || identical(., "one"))
       envir <- new.env(parent = emptyenv())

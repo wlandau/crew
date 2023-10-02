@@ -55,6 +55,8 @@ crew_assert <- function(
 #'   if `value` is `NULL`.
 #' @param skip_cran Logical of length 1, whether to skip the deprecation
 #'   warning or message on CRAN.
+#' @param frequency Character of length 1, passed to the `.frequency`
+#'   argument of `rlang::warn()`.
 #' @examples
 #' suppressWarnings(
 #'   crew_deprecate(
@@ -71,7 +73,8 @@ crew_deprecate <- function(
   alternative,
   condition = "warning",
   value = "x",
-  skip_cran = FALSE
+  skip_cran = FALSE,
+  frequency = "always"
 ) {
   on_cran <- !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false")))
   if (is.null(value) || (skip_cran && on_cran)) {
@@ -86,13 +89,17 @@ crew_deprecate <- function(
   )
   if_any(
     condition == "warning",
-    crew_warn(
+    rlang::warn(
       message = message,
-      class = c("crew_deprecate", "crew_warning", "crew")
+      class = c("crew_deprecate", "crew_warning", "crew"),
+      .frequency = frequency,
+      .frequency_id = name
     ),
     rlang::inform(
       message = message,
-      class = c("crew_deprecate", "crew_message", "crew")
+      class = c("crew_deprecate", "crew_message", "crew"),
+      .frequency = frequency,
+      .frequency_id = name
     )
   )
   invisible()
@@ -126,18 +133,28 @@ crew_stop <- function(message, class) {
   rlang::abort(message = message, class = class, call = emptyenv())
 }
 
-crew_warn <- function(message, class) {
+crew_warn <- function(message, class, frequency = "always", id = NULL) {
   old <- getOption("rlang_backtrace_on_error")
   on.exit(options(rlang_backtrace_on_error = old))
   options(rlang_backtrace_on_error = "none")
-  rlang::warn(message = message, class = class)
+  rlang::warn(
+    message = message,
+    class = class,
+    .frequency = frequency,
+    .frequency_id = id
+  )
 }
 
-crew_message <- function(message) {
+crew_message <- function(message, frequency = "always", id = NULL) {
   old <- getOption("rlang_backtrace_on_error")
   on.exit(options(rlang_backtrace_on_error = old))
   options(rlang_backtrace_on_error = "none")
-  rlang::inform(message = message, class = c("crew_message", "crew"))
+  rlang::inform(
+    message = message,
+    class = c("crew_message", "crew"),
+    .frequency = frequency,
+    .frequency_id = id
+  )
 }
 
 crew_condition_false <- function(condition) {

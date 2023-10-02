@@ -37,7 +37,8 @@ crew_launcher_local <- function(
     version = "0.5.0.9003",
     alternative = "none (no longer necessary)",
     condition = "message",
-    value = seconds_interval
+    value = seconds_interval,
+    frequency = "once"
   )
   crew_deprecate(
     name = "seconds_exit",
@@ -45,7 +46,8 @@ crew_launcher_local <- function(
     version = "0.5.0.9002",
     alternative = "none (no longer necessary)",
     condition = "message",
-    value = seconds_exit
+    value = seconds_exit,
+    frequency = "once"
   )
   name <- as.character(name %|||% crew_random_name())
   launcher <- crew_class_launcher_local$new(

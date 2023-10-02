@@ -90,7 +90,8 @@ crew_launcher <- function(
     version = "0.5.0.9002",
     alternative = "none (no longer necessary)",
     condition = "message",
-    value = seconds_exit
+    value = seconds_exit,
+    frequency = "once"
   )
   crew_deprecate(
     name = "seconds_interval",
@@ -98,7 +99,8 @@ crew_launcher <- function(
     version = "0.5.0.9003",
     alternative = "none (no longer necessary)",
     condition = "message",
-    value = seconds_interval
+    value = seconds_interval,
+    frequency = "once"
   )
   name <- as.character(name %|||% crew_random_name())
   crew_assert(
@@ -565,7 +567,8 @@ crew_class_launcher <- R6::R6Class(
         alternative = "none (no longer necessary)",
         condition = "message",
         value = "throttle",
-        skip_cran = TRUE
+        skip_cran = TRUE,
+        frequency = "once"
       )
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
@@ -580,7 +583,8 @@ crew_class_launcher <- R6::R6Class(
         alternative = "none (no longer necessary)",
         condition = "message",
         value = "throttle",
-        skip_cran = TRUE
+        skip_cran = TRUE,
+        frequency = "once"
       )
       self$tally()
       self$rotate()

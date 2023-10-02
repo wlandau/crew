@@ -236,21 +236,21 @@ number of unresolved \code{mirai()} tasks.
 Check if the controller is saturated.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$saturated(
-  controller = NULL,
   collect = NULL,
-  throttle = NULL
+  throttle = NULL,
+  controller = NULL
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{controller}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
-
 \item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
 \item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+
+\item{\code{controller}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }

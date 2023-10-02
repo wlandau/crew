@@ -329,7 +329,8 @@ crew_class_controller <- R6::R6Class(
         packages = packages,
         library = library,
         .timeout = .timeout,
-        .compute = self$client$name
+        .compute = self$client$name,
+        .signal = TRUE
       )
       .subset2(.subset2(self, "schedule"), "push")(task = task)
       if (scale) {
@@ -410,7 +411,8 @@ crew_class_controller <- R6::R6Class(
         packages = packages,
         library = library,
         .timeout = .timeout,
-        .compute = self$client$name
+        .compute = self$client$name,
+        .signal = TRUE
       )
       .subset2(.subset2(self, "schedule"), "push")(task = task)
       invisible()

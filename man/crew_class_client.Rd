@@ -66,6 +66,7 @@ Other class:
 \item \href{#method-crew_class_client-validate}{\code{crew_class_client$validate()}}
 \item \href{#method-crew_class_client-start}{\code{crew_class_client$start()}}
 \item \href{#method-crew_class_client-condition}{\code{crew_class_client$condition()}}
+\item \href{#method-crew_class_client-condition_value}{\code{crew_class_client$condition_value()}}
 \item \href{#method-crew_class_client-summary}{\code{crew_class_client$summary()}}
 \item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
 }
@@ -162,6 +163,23 @@ Get the \code{nanonext} condition variable.
 The \code{nanonext} condition variable which tasks signal
 on resolution. The return value is \code{NULL} if the client
 is not running.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_client-condition_value"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-condition_value}{}}}
+\subsection{Method \code{condition_value()}}{
+Get the true value of the \code{nanonext} condition variable.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$condition_value()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Subtracts a safety offset which was padded on start.
+}
+
+\subsection{Returns}{
+The value of the \code{nanonext} condition variable.
 }
 }
 \if{html}{\out{<hr>}}

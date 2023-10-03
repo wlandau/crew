@@ -39,8 +39,8 @@ if the wait times out.}
 \item{envir}{Environment to evaluate \code{fun}.}
 
 \item{condition}{Optional \code{nanonext} condition variable to wait on.
-If not \code{NULL}, then \code{crew_retry()} calls
-\code{nanonext::until(cv = condition, msec = 1000 * seconds_interval)}
+If not \code{NULL}, then \code{crew_retry()} iteratively calls
+\code{crew:::crew_until(condition, seconds_timeout = seconds_interval)}
 instead of \code{nanonext::msleep(1000 * seconds_interval)}
 so that the wait may exit early if the condition variable is signaled.}
 }

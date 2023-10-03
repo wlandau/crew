@@ -146,9 +146,7 @@ crew_class_controller <- R6::R6Class(
     #'   The return value is 0 if the condition variable does not exist
     #'   (i.e. if the client is not running).
     resolved = function() {
-      client <- .subset2(self, "client")
-      condition <- .subset2(client, "condition")()
-      if_any(is.null(condition), 0L, nanonext::cv_value(condition))
+      .subset2(.subset2(self, "client"), "condition_value")()
     },
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
@@ -693,7 +691,8 @@ crew_class_controller <- R6::R6Class(
           unresolved < 1L
         },
         seconds_interval = seconds_interval,
-        seconds_timeout = Inf
+        seconds_timeout = Inf,
+        condition = self$client$condition()
       )
       controller_map_message_complete(length(names), start, verbose)
       if_any(verbose, message(), NULL)
@@ -900,7 +899,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     wait = function(
       mode = "all",
-      seconds_interval = 0.01,
+      seconds_interval = 0.25,
       seconds_timeout = Inf,
       scale = TRUE,
       throttle = NULL,
@@ -931,7 +930,8 @@ crew_class_controller <- R6::R6Class(
             )
           },
           seconds_interval = seconds_interval,
-          seconds_timeout = seconds_timeout
+          seconds_timeout = seconds_timeout,
+          condition = self$client$condition()
         ),
         crew_expire = function(condition) NULL
       )

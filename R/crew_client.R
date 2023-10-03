@@ -224,6 +224,10 @@ crew_class_client <- R6::R6Class(
       # Begin dispatcher code.
       self$dispatcher <- mirai::nextget("pid", .compute = self$name)
       # End dispatcher code.
+      condition <- self$condition()
+      for (index in seq_len(condition_offset)) {
+        nanonext::cv_signal(condition)
+      }
       self$started <- TRUE
       invisible()
     },
@@ -233,6 +237,17 @@ crew_class_client <- R6::R6Class(
     #'   is not running.
     condition = function() {
       mirai::nextget(x = "cv", .compute = .subset2(self, "name"))
+    },
+    #' @description Get the true value of the `nanonext` condition variable.
+    #' @details Subtracts a safety offset which was padded on start.
+    #' @return The value of the `nanonext` condition variable.
+    condition_value = function() {
+      condition <- .subset2(self, "condition")()
+      if_any(
+        is.null(condition),
+        0L,
+        nanonext::cv_value(condition) - condition_offset
+      )
     },
     #' @description Show an informative worker log.
     #' @return A `tibble` with information on the workers, or `NULL`

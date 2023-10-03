@@ -18,8 +18,8 @@
 #'   if the wait times out.
 #' @param envir Environment to evaluate `fun`.
 #' @param condition Optional `nanonext` condition variable to wait on.
-#'   If not `NULL`, then `crew_retry()` calls
-#'   `nanonext::until(cv = condition, msec = 1000 * seconds_interval)`
+#'   If not `NULL`, then `crew_retry()` iteratively calls
+#'   `crew:::crew_until(condition, seconds_timeout = seconds_interval)`
 #'   instead of `nanonext::msleep(1000 * seconds_interval)`
 #'   so that the wait may exit early if the condition variable is signaled.
 #' @examples
@@ -66,7 +66,6 @@ crew_retry <- function(
   )
   crew_assert(error, isTRUE(.) || isFALSE(.))
   crew_assert(condition, is.null(.) || inherits(., "conditionVariable"))
-  milli_interval <- 1000 * seconds_interval
   milli_timeout <- 1000 * seconds_timeout
   tries <- 0L
   start <- nanonext::mclock()
@@ -100,8 +99,8 @@ crew_retry <- function(
     }
     if_any(
       is.null(condition),
-      nanonext::msleep(time = milli_interval),
-      nanonext::until(cv = condition, msec = milli_interval)
+      nanonext::msleep(time = 1000 * seconds_interval),
+      crew_until(condition = condition, seconds_timeout = seconds_interval)
     )
   }
   invisible()

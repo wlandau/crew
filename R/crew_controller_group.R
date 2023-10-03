@@ -396,6 +396,16 @@ crew_class_controller_group <- R6::R6Class(
     #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
     #' @param controllers Deprecated in version 0.5.0.9003 (2023-10-02).
     collect = function(throttle = NULL, controllers = NULL) {
+      crew_deprecate(
+        name = "collect()",
+        date = "2023-10-02",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = "collect",
+        skip_cran = TRUE,
+        frequency = "once"
+      )
     },
     #' @description Pop a completed task from the results data frame.
     #' @return If there is no task to collect, return `NULL`. Otherwise,
@@ -466,6 +476,9 @@ crew_class_controller_group <- R6::R6Class(
           seconds_timeout = seconds_timeout,
           scale = scale
         )
+        if (all(mode == "one") && results[[index]]) {
+          return(invisible(TRUE))
+        }
       }
       invisible(if_any(mode == "all", all(results), any(results)))
     },

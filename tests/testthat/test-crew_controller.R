@@ -19,3 +19,11 @@ crew_test("controller_map_message_complete()", {
   expect_silent(controller_map_message_complete(100, 10, FALSE))
   expect_message(controller_map_message_complete(100, 10, TRUE))
 })
+
+crew_test("crew_controller() deprecate collect()", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(seconds_idle = 360)
+  suppressWarnings(x$collect())
+  expect_true(TRUE)
+})

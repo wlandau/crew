@@ -357,3 +357,11 @@ crew_test("deprecate seconds_exit", {
   suppressWarnings(crew_launcher(seconds_exit = 1))
   expect_true(TRUE)
 })
+
+crew_test("deprecate throttle()", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_launcher()
+  suppressWarnings(x$throttle())
+  expect_true(TRUE)
+})

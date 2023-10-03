@@ -224,10 +224,6 @@ crew_class_client <- R6::R6Class(
       # Begin dispatcher code.
       self$dispatcher <- mirai::nextget("pid", .compute = self$name)
       # End dispatcher code.
-      condition <- self$condition()
-      for (index in seq_len(condition_offset)) {
-        nanonext::cv_signal(condition)
-      }
       self$started <- TRUE
       invisible()
     },
@@ -246,7 +242,7 @@ crew_class_client <- R6::R6Class(
       if_any(
         is.null(condition),
         0L,
-        nanonext::cv_value(condition) - condition_offset
+        nanonext::cv_value(condition)
       )
     },
     #' @description Show an informative worker log.

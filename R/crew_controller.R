@@ -691,8 +691,7 @@ crew_class_controller <- R6::R6Class(
           unresolved < 1L
         },
         seconds_interval = seconds_interval,
-        seconds_timeout = Inf,
-        condition = self$client$condition()
+        seconds_timeout = Inf
       )
       controller_map_message_complete(length(names), start, verbose)
       if_any(verbose, message(), NULL)
@@ -899,7 +898,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     wait = function(
       mode = "all",
-      seconds_interval = 0.25,
+      seconds_interval = 0.01,
       seconds_timeout = Inf,
       scale = TRUE,
       throttle = NULL,
@@ -930,8 +929,7 @@ crew_class_controller <- R6::R6Class(
             )
           },
           seconds_interval = seconds_interval,
-          seconds_timeout = seconds_timeout,
-          condition = self$client$condition()
+          seconds_timeout = seconds_timeout
         ),
         crew_expire = function(condition) NULL
       )

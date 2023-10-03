@@ -140,6 +140,16 @@ crew_class_controller <- R6::R6Class(
     resolved = function() {
       nanonext::cv_value(.subset2(self, "condition")())
     },
+    #' @description Does the controller have a resolved task?
+    #' @return `TRUE` if the controller has a resolved task, `FALSE` otherwise.
+    exists_resolved = function() {
+      for (task in .subset2(self, "tasks")) {
+        if (!nanonext::.unresolved(task)) {
+          return(TRUE)
+        }
+      }
+      FALSE
+    },
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
     #'   number of unresolved `mirai()` tasks.
@@ -919,7 +929,7 @@ crew_class_controller <- R6::R6Class(
             envir$result <- if_any(
               mode == "all",
               self$unresolved() < 1L,
-              self$resolved() > 0L
+              self$exists_resolved()
             )
           },
           seconds_interval = seconds_interval,

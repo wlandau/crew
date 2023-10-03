@@ -71,6 +71,7 @@ from the last call to \verb{map(error = "stop)}.}
 \item \href{#method-crew_class_controller-nonempty}{\code{crew_class_controller$nonempty()}}
 \item \href{#method-crew_class_controller-condition}{\code{crew_class_controller$condition()}}
 \item \href{#method-crew_class_controller-resolved}{\code{crew_class_controller$resolved()}}
+\item \href{#method-crew_class_controller-exists_resolved}{\code{crew_class_controller$exists_resolved()}}
 \item \href{#method-crew_class_controller-unresolved}{\code{crew_class_controller$unresolved()}}
 \item \href{#method-crew_class_controller-saturated}{\code{crew_class_controller$saturated()}}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
@@ -215,6 +216,19 @@ Number of resolved \code{mirai()} tasks.
 \subsection{Returns}{
 Non-negative integer of length 1,
 number of resolved \code{mirai()} tasks.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-exists_resolved"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-exists_resolved}{}}}
+\subsection{Method \code{exists_resolved()}}{
+Does the controller have a resolved task?
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$exists_resolved()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} if the controller has a resolved task, \code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}

@@ -326,8 +326,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
     #' @param seconds_interval Number of seconds to wait between intervals
-    #'   polling the tasks for completion. Defaults to the `seconds_interval`
-    #'   field of the client object.
+    #'   polling the tasks for completion.
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param names Optional character of length 1, name of the element of
@@ -361,7 +360,7 @@ crew_class_controller_group <- R6::R6Class(
       algorithm = NULL,
       packages = character(0),
       library = NULL,
-      seconds_interval = NULL,
+      seconds_interval = 0.25,
       seconds_timeout = NULL,
       names = NULL,
       save_command = FALSE,

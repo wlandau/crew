@@ -69,9 +69,8 @@ from the last call to \verb{map(error = "stop)}.}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
 \item \href{#method-crew_class_controller-empty}{\code{crew_class_controller$empty()}}
 \item \href{#method-crew_class_controller-nonempty}{\code{crew_class_controller$nonempty()}}
-\item \href{#method-crew_class_controller-condition}{\code{crew_class_controller$condition()}}
-\item \href{#method-crew_class_controller-resolved}{\code{crew_class_controller$resolved()}}
 \item \href{#method-crew_class_controller-exists_resolved}{\code{crew_class_controller$exists_resolved()}}
+\item \href{#method-crew_class_controller-resolved}{\code{crew_class_controller$resolved()}}
 \item \href{#method-crew_class_controller-unresolved}{\code{crew_class_controller$unresolved()}}
 \item \href{#method-crew_class_controller-saturated}{\code{crew_class_controller$saturated()}}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
@@ -192,16 +191,16 @@ or completed tasks waiting to be retrieved with \code{push()}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-condition"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-condition}{}}}
-\subsection{Method \code{condition()}}{
-Get the condition variable signaled when a task completes.
+\if{html}{\out{<a id="method-crew_class_controller-exists_resolved"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-exists_resolved}{}}}
+\subsection{Method \code{exists_resolved()}}{
+Does the controller have a resolved task?
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$condition()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$exists_resolved()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-The condition variable signaled when a task completes.
+\code{TRUE} if the controller has a resolved task, \code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}
@@ -213,22 +212,16 @@ Number of resolved \code{mirai()} tasks.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$resolved()}\if{html}{\out{</div>}}
 }
 
-\subsection{Returns}{
-Non-negative integer of length 1,
-number of resolved \code{mirai()} tasks.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-exists_resolved"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-exists_resolved}{}}}
-\subsection{Method \code{exists_resolved()}}{
-Does the controller have a resolved task?
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$exists_resolved()}\if{html}{\out{</div>}}
+\subsection{Details}{
+\code{resolved()} is cumulative: it counts all the resolved
+tasks over the entire lifetime of the controller session.
 }
 
 \subsection{Returns}{
-\code{TRUE} if the controller has a resolved task, \code{FALSE} otherwise.
+Non-negative integer of length 1,
+number of resolved \code{mirai()} tasks.
+The return value is 0 if the condition variable does not exist
+(i.e. if the client is not running).
 }
 }
 \if{html}{\out{<hr>}}
@@ -570,7 +563,7 @@ Apply a single command to multiple inputs.
   algorithm = NULL,
   packages = character(0),
   library = NULL,
-  seconds_interval = NULL,
+  seconds_interval = 0.25,
   seconds_timeout = NULL,
   names = NULL,
   save_command = FALSE,
@@ -644,8 +637,7 @@ See \code{vignette("parallel", package = "parallel")} for details.}
 argument of \code{require()}.}
 
 \item{\code{seconds_interval}}{Number of seconds to wait between intervals
-polling the tasks for completion. Defaults to the \code{seconds_interval}
-field in the client object}
+polling the tasks for completion.}
 
 \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}

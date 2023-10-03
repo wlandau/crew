@@ -128,18 +128,6 @@ crew_class_controller <- R6::R6Class(
     nonempty = function(controllers = NULL) {
       length(.subset2(self, "tasks")) > 0L
     },
-    #' @description Get the condition variable signaled when a task completes.
-    #' @return The condition variable signaled when a task completes.
-    condition = function() {
-      name <- .subset2(.subset2(self, "client"), "name")
-      mirai::nextget(x = "cv", .compute = name)
-    },
-    #' @description Number of resolved `mirai()` tasks.
-    #' @return Non-negative integer of length 1,
-    #'   number of resolved `mirai()` tasks.
-    resolved = function() {
-      nanonext::cv_value(.subset2(self, "condition")())
-    },
     #' @description Does the controller have a resolved task?
     #' @return `TRUE` if the controller has a resolved task, `FALSE` otherwise.
     exists_resolved = function() {
@@ -149,6 +137,18 @@ crew_class_controller <- R6::R6Class(
         }
       }
       FALSE
+    },
+    #' @description Number of resolved `mirai()` tasks.
+    #' @details `resolved()` is cumulative: it counts all the resolved
+    #'   tasks over the entire lifetime of the controller session.
+    #' @return Non-negative integer of length 1,
+    #'   number of resolved `mirai()` tasks.
+    #'   The return value is 0 if the condition variable does not exist
+    #'   (i.e. if the client is not running).
+    resolved = function() {
+      client <- .subset2(self, "client")
+      condition <- .subset2(client, "condition")()
+      if_any(is.null(condition), 0L, nanonext::cv_value(condition))
     },
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
@@ -505,8 +505,7 @@ crew_class_controller <- R6::R6Class(
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
     #' @param seconds_interval Number of seconds to wait between intervals
-    #'   polling the tasks for completion. Defaults to the `seconds_interval`
-    #'   field in the client object
+    #'   polling the tasks for completion.
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param names Optional character of length 1, name of the element of
@@ -538,7 +537,7 @@ crew_class_controller <- R6::R6Class(
       algorithm = NULL,
       packages = character(0),
       library = NULL,
-      seconds_interval = NULL,
+      seconds_interval = 0.25,
       seconds_timeout = NULL,
       names = NULL,
       save_command = FALSE,
@@ -547,7 +546,6 @@ crew_class_controller <- R6::R6Class(
       controller = NULL
     ) {
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
-      seconds_interval <- seconds_interval %|||% self$client$seconds_interval
       if (substitute) {
         command <- substitute(command)
       }

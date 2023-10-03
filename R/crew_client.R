@@ -227,6 +227,13 @@ crew_class_client <- R6::R6Class(
       self$started <- TRUE
       invisible()
     },
+    #' @description Get the `nanonext` condition variable.
+    #' @return The `nanonext` condition variable which tasks signal
+    #'   on resolution. The return value is `NULL` if the client
+    #'   is not running.
+    condition = function() {
+      mirai::nextget(x = "cv", .compute = .subset2(self, "name"))
+    },
     #' @description Show an informative worker log.
     #' @return A `tibble` with information on the workers, or `NULL`
     #'   if the client is not started. The `tibble` has 1 row

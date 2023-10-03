@@ -5,6 +5,8 @@
 * Deprecate `seconds_exit` because `exitlinger` in `mirai` is now obsolete (#125, @shikokuchuo).
 * Use `mirai::nextget("cv")` to count unresolved tasks instead of looping through all the task objects (#131).
 * Remove throttling and `collect()` in auto-scaling. Simplifies much of the code. Made possible by the efficiency gains in #131.
+* Simplify `wait()`.
+* `seconds_interval` in `map()` no longer defaults to `controller$client$seconds_interval`.
 
 # crew 0.5.0
 

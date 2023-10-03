@@ -381,7 +381,7 @@ Apply a single command to multiple inputs.
   algorithm = NULL,
   packages = character(0),
   library = NULL,
-  seconds_interval = NULL,
+  seconds_interval = 0.25,
   seconds_timeout = NULL,
   names = NULL,
   save_command = FALSE,
@@ -455,8 +455,7 @@ See \code{vignette("parallel", package = "parallel")} for details.}
 argument of \code{require()}.}
 
 \item{\code{seconds_interval}}{Number of seconds to wait between intervals
-polling the tasks for completion. Defaults to the \code{seconds_interval}
-field of the client object.}
+polling the tasks for completion.}
 
 \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}

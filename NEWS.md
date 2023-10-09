@@ -7,6 +7,7 @@
 * Remove throttling and `collect()` in auto-scaling. Simplifies much of the code. Made possible by the efficiency gains in #131.
 * Simplify `wait()`.
 * `seconds_interval` in `map()` no longer defaults to `controller$client$seconds_interval`.
+* `launcher$terminate_workers()` terminates one or more workers, and `launcher$terminate` terminates the whole launcher.
 
 # crew 0.5.0
 

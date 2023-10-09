@@ -591,11 +591,22 @@ crew_class_launcher <- R6::R6Class(
       walk(x = head(x = unlaunched, n = deficit), f = self$launch)
       invisible()
     },
+    #' @description Abstract method.
+    #' @details Does not actually terminate a worker. This method is a
+    #'   placeholder, and its presence allows manual worker termination
+    #'   to be optional.
+    #' @return `NULL` (invisibly).
+    #' @param handle A handle object previously
+    #'   returned by `launch_worker()` which allows the termination
+    #'   of the worker.
+    terminate_worker = function(handle) {
+      invisible()
+    },
     #' @description Terminate one or more workers.
     #' @return `NULL` (invisibly).
     #' @param index Integer vector of the indexes of the workers
     #'   to terminate. If `NULL`, all current workers are terminated.
-    terminate = function(index = NULL) {
+    terminate_workers = function(index = NULL) {
       if (is.null(self$workers)) {
         return(invisible())
       }
@@ -611,16 +622,10 @@ crew_class_launcher <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Abstract method.
-    #' @details Does not actually terminate a worker. This method is a
-    #'   placeholder, and its presence allows manual worker termination
-    #'   to be optional.
+    #' @description Terminate the whole launcher, including all workers.
     #' @return `NULL` (invisibly).
-    #' @param handle A handle object previously
-    #'   returned by `launch_worker()` which allows the termination
-    #'   of the worker.
-    terminate_worker = function(handle) {
-      invisible()
+    terminate = function() {
+      self$terminate_workers()
     }
   )
 )

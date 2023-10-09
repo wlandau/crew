@@ -117,7 +117,7 @@ returned by \code{launch_worker()}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{NULL} (invisibly).
+A list with the process ID of the worker.
 }
 }
 }

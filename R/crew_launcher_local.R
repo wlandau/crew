@@ -118,12 +118,12 @@ crew_class_launcher_local <- R6::R6Class(
       )
     },
     #' @description Terminate a local process worker.
-    #' @return `NULL` (invisibly).
+    #' @return A list with the process ID of the worker.
     #' @param handle A process handle object previously
     #'   returned by `launch_worker()`.
     terminate_worker = function(handle) {
       handle$kill()
-      invisible()
+      list(pid = handle$get_pid())
     }
   )
 )

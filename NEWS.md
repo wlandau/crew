@@ -1,4 +1,4 @@
-# crew 0.5.0.9003
+# crew 0.5.0.9004 (development)
 
 * Migrate checks to enforce features in version 0.5.0 for reverse dependencies.
 * Drop check of backlogged workers, c.f. https://github.com/shikokuchuo/mirai/discussions/63#discussioncomment-7051889 (#79, #124, @shikokuchuo).
@@ -13,6 +13,7 @@
     * `launcher$start()` starts launcher processes on a special ad hoc compute profile to run local asynchronous tasks (such as worker launches). Only activated if `!is.null(launcher$processes)`.
     * `launcher$terminate()` shuts down these local processes, if they exist.
     * A new `async()` method of the launcher runs an asynchronous task on the local processes. Also loads any required packages.
+    * A new `termination` column of `launcher$workers` to store the most recent output from `launcher$terminate_worker()`
 
 # crew 0.5.0
 

@@ -165,12 +165,13 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   )
   crew::crew_retry(
     ~{
-      handle <- launcher$workers$handle[[1]]
+      handle <- launcher$workers$handle[[1L]]
       !is_crew_null(handle) && handle$is_alive()
     },
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
+  pid <- launcher$workers$handle[[1L]]$get_pid()
   expect_silent(launcher$terminate())
   crew::crew_retry(
     ~{
@@ -192,6 +193,7 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
+  expect_equal(launcher$workers$termination[[1L]]$pid, pid)
 })
 
 crew_test("deprecate seconds_exit", {

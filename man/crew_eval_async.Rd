@@ -8,8 +8,7 @@ crew_eval_async(
   command,
   args = list(),
   packages = character(0L),
-  library = NULL,
-  url = NULL
+  library = NULL
 )
 }
 \arguments{
@@ -20,8 +19,6 @@ crew_eval_async(
 \item{packages}{Character vector of packages to load.}
 
 \item{library}{Character vector of library paths to load the packages from.}
-
-\item{url}{Local URL for error detection.}
 }
 \value{
 The result of running \code{command}.

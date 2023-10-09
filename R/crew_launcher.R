@@ -535,7 +535,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param index Positive integer of length 1, index of the worker
     #'   to launch.
     launch = function(index) {
-      self$errors()
+      self$async$errors()
       socket <- self$workers$socket[index]
       instance <- parse_instance(socket)
       call <- self$call(
@@ -567,6 +567,7 @@ crew_class_launcher <- R6::R6Class(
           "why {crew} workers are not booting up or connecting."
         )
       )
+      mirai::call_mirai(aio = self$workers$handle[[index]])
       handle <- self$launch_worker(
         call = as.character(call),
         name = as.character(name),
@@ -584,33 +585,15 @@ crew_class_launcher <- R6::R6Class(
       self$workers$history[index] <- complete
       invisible()
     },
-    #' @description Check and report errors from local asynchronous tasks.
-    #' @return `NULL` (invisibly) if there are no errors. Throws an error
-    #'   in the main process if any async errors were detected.
-    errors = function() {
-      count <- self$async$errors()
-      if (count < 1L) {
-        return(invisible())
-      }
-      message <- paste(
-        "Errors occurred in local asynchronous launcher tasks.",
-        "Usually this means an internal crew launcher command failed",
-        "when it tried to launch or terminate a worker. See below for",
-        "specific error messages:\n"
-      )
-      for (object in c(self$workers$handle, self$workers$termination)) {
-        if (mirai::is_mirai_error(object$data)) {
-          message <- paste0(message, "\n", as.character(object$data))
-        }
-      }
-      crew_error(message = message)
-    },
-    #' @description Wait until all local asynchronous tasks have completed,
-    #'   such as worker launches and terminations.
+    #' @description Wait for any local asynchronous launch or termination
+    #'   tasks to complete.
+    #' @details Only relevant if `processes` is a positive integer.
     #' @return `NULL` (invisibly).
     wait = function() {
-      lapply(self$workers$handle, mirai::call_mirai)
-      lapply(self$workers$termination, mirai::call_mirai)
+      if (!is.null(self$async) && !is.null(self$processes)) {
+        lapply(X = self$workers$handle, FUN = mirai::call_mirai)
+        lapply(X = self$workers$termination, FUN = mirai::call_mirai)
+      }
       invisible()
     },
     #' @description Deprecated in version 0.5.0.9000 (2023-10-02). Not used.
@@ -718,9 +701,10 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     terminate = function() {
       self$terminate_workers()
-      self$wait()
       if (!is.null(self$async)) {
+        self$wait()
         self$async$terminate()
+        self$async$errors()
       }
     }
   )

@@ -25,11 +25,7 @@ Other class:
 
 \item{\code{instance}}{Character of length 1, name of the current instance.}
 
-\item{\code{url}}{Local URL of the socket for error detection.}
-
-\item{\code{socket}}{\code{nanonext} socket for error detection.}
-
-\item{\code{condition}}{\code{nanonext} condition variable for error detection.}
+\item{\code{tasks}}{Integer of length 1, number of tasks submitted so far.}
 }
 \if{html}{\out{</div>}}
 }
@@ -39,8 +35,6 @@ Other class:
 \item \href{#method-crew_class_async-new}{\code{crew_class_async$new()}}
 \item \href{#method-crew_class_async-validate}{\code{crew_class_async$validate()}}
 \item \href{#method-crew_class_async-start}{\code{crew_class_async$start()}}
-\item \href{#method-crew_class_async-errors}{\code{crew_class_async$errors()}}
-\item \href{#method-crew_class_async-reset}{\code{crew_class_async$reset()}}
 \item \href{#method-crew_class_async-eval}{\code{crew_class_async$eval()}}
 \item \href{#method-crew_class_async-terminate}{\code{crew_class_async$terminate()}}
 }
@@ -90,36 +84,6 @@ Start the local workers and error handling socket.
 \subsection{Details}{
 Does not create workers or an error handling socket
 if \code{workers} is \code{NULL} or the object is already started.
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_async-errors"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_async-errors}{}}}
-\subsection{Method \code{errors()}}{
-Report the number of task errors signaled.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_async$errors()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Integer of length 1, number of task errors signaled.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_async-reset"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_async-reset}{}}}
-\subsection{Method \code{reset()}}{
-Reset the number of task errors signaled.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_async$reset()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Re-creates the condition variable.
 }
 
 \subsection{Returns}{
@@ -185,8 +149,7 @@ Start the local workers and error handling socket.
 }
 
 \subsection{Details}{
-Does not terminate workers or an error handling socket
-if \code{workers} is \code{NULL} or the object is already terminated.
+Waits for existing tasks to complete first.
 }
 
 \subsection{Returns}{

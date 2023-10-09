@@ -38,12 +38,8 @@ crew_class_async <- R6::R6Class(
     workers = NULL,
     #' @field instance Character of length 1, name of the current instance.
     instance = NULL,
-    #' @field url Local URL of the socket for error detection.
-    url = NULL,
-    #' @field socket `nanonext` socket for error detection.
-    socket = NULL,
-    #' @field condition `nanonext` condition variable for error detection.
-    condition = NULL,
+    #' @field tasks Integer of length 1, number of tasks submitted so far.
+    tasks = NULL,
     #' @description TLS configuration constructor.
     #' @return An `R6` object with TLS configuration.
     #' @param workers Argument passed from [crew_async()].
@@ -59,21 +55,13 @@ crew_class_async <- R6::R6Class(
         length(.) == 1L,
         !anyNA(.)
       )
-      for (field in c("instance", "url")) {
-        crew_assert(
-          self[[field]] %|||% "x",
-          is.character(.),
-          length(.) == 1L,
-          !anyNA(.),
-          nzchar(.)
-        )
-      }
-      if (!is.null(self$socket)) {
-        crew_assert(inherits(self$socket, "nanoSocket"))
-      }
-      if (!is.null(self$condition)) {
-        crew_assert(inherits(self$condition, "conditionVariable"))
-      }
+      crew_assert(
+        self$instance %|||% "x",
+        is.character(.),
+        length(.) == 1L,
+        !anyNA(.),
+        nzchar(.)
+      )
       invisible()
     },
     #' @description Start the local workers and error handling socket.
@@ -85,36 +73,13 @@ crew_class_async <- R6::R6Class(
         return(invisible())
       }
       self$instance <- crew::crew_random_name()
+      self$tasks <- 0L
       mirai::daemons(
         n = self$workers,
         dispatcher = FALSE,
         .compute = self$instance
       )
-      self$url <- gsub(
-        pattern = "/[^/]*$",
-        paste0("/", nanonext::random(n = 12)),
-        mirai::status(.compute = self$instance)$daemons[1L],
-      )
-      self$socket <- nanonext::socket(protocol = "req", listen = self$url)
-      self$reset()
       invisible()
-    },
-    #' @description Report the number of task errors signaled.
-    #' @return Integer of length 1, number of task errors signaled.
-    errors = function() {
-      events <- if_any(
-        is.null(self$condition),
-        0L,
-        nanonext::cv_value(self$condition)
-      )
-      as.integer((events / 2L) + (events %% 2L))
-    },
-    #' @description Reset the number of task errors signaled.
-    #' @details Re-creates the condition variable.
-    #' @return `NULL` (invisibly).
-    reset = function() {
-      self$condition <- nanonext::cv()
-      nanonext::pipe_notify(socket = self$socket, cv = self$condition)
     },
     #' @description Run a local asynchronous task using a local
     #'   compute profile.
@@ -143,8 +108,7 @@ crew_class_async <- R6::R6Class(
       library = NULL
     ) {
       command <- if_any(substitute, substitute(command), command)
-      if_any(
-        is.null(self$workers),
+      if (is.null(self$workers)) {
         list(
           data = crew_eval_async(
             command = command,
@@ -152,7 +116,9 @@ crew_class_async <- R6::R6Class(
             packages = packages,
             library = library
           )
-        ),
+        )
+      } else {
+        self$tasks <- self$tasks + 1L
         mirai::mirai(
           .expr = expr_crew_eval_async,
           command = command,
@@ -162,19 +128,18 @@ crew_class_async <- R6::R6Class(
           url = self$url,
           .compute = self$instance
         )
-      )
+      }
     },
     #' @description Start the local workers and error handling socket.
-    #' @details Does not terminate workers or an error handling socket
-    #'   if `workers` is `NULL` or the object is already terminated.
+    #' @details Waits for existing tasks to complete first.
     #' @return `NULL` (invisibly).
     terminate = function() {
       if (is.null(self$workers) || is.null(self$instance)) {
         return(invisible())
       }
       mirai::daemons(n = 0L, .compute = self$instance)
-      close(self$socket)
       self$instance <- NULL
+      self$tasks <- 0L
       invisible()
     }
   )
@@ -190,26 +155,14 @@ crew_class_async <- R6::R6Class(
 #' @param args Named list of objects that `command` depends on.
 #' @param packages Character vector of packages to load.
 #' @param library Character vector of library paths to load the packages from.
-#' @param url Local URL for error detection.
 crew_eval_async <- function(
   command,
   args = list(),
   packages = character(0L),
-  library = NULL,
-  url = NULL
+  library = NULL
 ) {
-  withCallingHandlers(
-    {
-      load_packages(packages = packages, library = library)
-      eval(expr = command, envir = list2env(args, parent = globalenv()))
-    },
-    error = function(condition) {
-      if (!is.null(url)) {
-        socket <- nanonext::socket(protocol = "rep", dial = url)
-        close(socket)
-      }
-    }
-  )
+  load_packages(packages = packages, library = library)
+  eval(expr = command, envir = list2env(args, parent = globalenv()))
 }
 
 expr_crew_eval_async <- quote(
@@ -217,7 +170,6 @@ expr_crew_eval_async <- quote(
     command = command,
     args = args,
     packages = packages,
-    library = library,
-    url = url
+    library = library
   )
 )

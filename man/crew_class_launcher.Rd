@@ -505,10 +505,14 @@ in the main process if any async errors were detected.
 \if{html}{\out{<a id="method-crew_class_launcher-wait"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-wait}{}}}
 \subsection{Method \code{wait()}}{
-Wait until all local asynchronous tasks have completed,
-such as worker launches and terminations.
+Wait for any local asynchronous launch or termination
+tasks to complete.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$wait()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Only relevant if \code{processes} is a positive integer.
 }
 
 \subsection{Returns}{

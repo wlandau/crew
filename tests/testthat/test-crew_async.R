@@ -42,7 +42,6 @@ crew_test("async task with 1 process", {
     crew_test_sleep()
   })
   x$start()
-  expect_equal(x$errors(), 0L)
   out <- x$eval(
     command = list(pid = ps::ps_pid(), x = x),
     args = list(x = "value"),
@@ -51,86 +50,9 @@ crew_test("async task with 1 process", {
   crew_retry(
     fun = ~!nanonext::unresolved(out),
     seconds_interval = 0.01,
-    seconds_timeout = 30
+    seconds_timeout = 10
   )
   expect_true(is.numeric(out$data$pid))
   expect_false(any(out$data$pid == ps::ps_pid()))
   expect_equal(out$data$x, "value")
-  expect_equal(x$errors(), 0L)
-})
-
-crew_test("async object error handling utils", {
-  skip_on_cran()
-  skip_on_os("windows")
-  x <- crew_async(workers = 1L)
-  on.exit({
-    x$terminate()
-    rm(x)
-    gc()
-    crew_test_sleep()
-  })
-  x$start()
-  crew_retry(
-    ~all(x$socket$state == "opened"),
-    seconds_interval = 0.01,
-    seconds_timeout = 10
-  )
-  expect_error(
-    crew_eval_async(
-      command = quote(stop("error message")),
-      args = list(),
-      url = x$url
-    )
-  )
-  crew_retry(
-    fun = ~all(x$errors(), 1L),
-    seconds_interval = 0.01,
-    seconds_timeout = 10
-  )
-})
-
-crew_test("async object errors in task", {
-  skip_on_cran()
-  skip_on_os("windows")
-  x <- crew_async(workers = 1L)
-  on.exit({
-    x$terminate()
-    rm(x)
-    gc()
-    crew_test_sleep()
-  })
-  x$start()
-  expect_equal(x$errors(), 0L)
-  task1 <- x$eval(
-    command = stop("error message"),
-    args = list(x = "value"),
-    packages = "rlang"
-  )
-  crew_retry(
-    fun = ~!nanonext::unresolved(task1),
-    seconds_interval = 0.01,
-    seconds_timeout = 30
-  )
-  crew_retry(
-    fun = ~all(x$errors(), 1L),
-    seconds_interval = 0.01,
-    seconds_timeout = 5
-  )
-  task2 <- x$eval(
-    command = "good answer",
-    args = list(x = "value"),
-    packages = "this package does not exist"
-  )
-  crew_retry(
-    fun = ~!nanonext::unresolved(task2),
-    seconds_interval = 0.01,
-    seconds_timeout = 30
-  )
-  crew_retry(
-    fun = ~all(x$errors(), 2L),
-    seconds_interval = 0.01,
-    seconds_timeout = 5
-  )
-  x$reset()
-  expect_equal(x$errors(), 0L)
 })

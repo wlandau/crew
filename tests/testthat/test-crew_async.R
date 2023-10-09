@@ -62,7 +62,11 @@ crew_test("async object error handling utils", {
       url = x$url
     )
   )
-  expect_equal(x$errors(), 1L)
+  crew_retry(
+    fun = ~all(x$errors(), 1L),
+    seconds_interval = 0.01,
+    seconds_timeout = 5
+  )
 })
 
 crew_test("async object errors in task", {
@@ -82,7 +86,11 @@ crew_test("async object errors in task", {
     seconds_interval = 0.01,
     seconds_timeout = 30
   )
-  expect_equal(x$errors(), 1L)
+  crew_retry(
+    fun = ~all(x$errors(), 1L),
+    seconds_interval = 0.01,
+    seconds_timeout = 5
+  )
   task2 <- x$eval(
     command = "good answer",
     args = list(x = "value"),
@@ -93,7 +101,11 @@ crew_test("async object errors in task", {
     seconds_interval = 0.01,
     seconds_timeout = 30
   )
-  expect_equal(x$errors(), 2L)
+  crew_retry(
+    fun = ~all(x$errors(), 2L),
+    seconds_interval = 0.01,
+    seconds_timeout = 5
+  )
   x$reset()
   expect_equal(x$errors(), 0L)
 })

@@ -593,17 +593,25 @@ crew_class_launcher <- R6::R6Class(
         return(invisible())
       }
       message <- paste(
-        "Errors occurred in local asynchronous launcher tasks. ",
-        "Usually this means an internal crew launcher command failed ",
-        "when it tried to launch or terminate a worker. See below for ",
-        "specific error messages:\n\n"
+        "Errors occurred in local asynchronous launcher tasks.",
+        "Usually this means an internal crew launcher command failed",
+        "when it tried to launch or terminate a worker. See below for",
+        "specific error messages:\n"
       )
       for (object in c(self$workers$handle, self$workers$termination)) {
-        if (mirai::is_mirai_error(object)) {
-          message <- c(message, as.character(object$data))
+        if (mirai::is_mirai_error(object$data)) {
+          message <- paste0(message, "\n", as.character(object$data))
         }
       }
-      crew::crew_error(message = message)
+      crew_error(message = message)
+    },
+    #' @description Wait until all local asynchronous tasks have completed,
+    #'   such as worker launches and terminations.
+    #' @return `NULL` (invisibly).
+    wait = function() {
+      lapply(self$workers$handle, mirai::call_mirai)
+      lapply(self$workers$termination, mirai::call_mirai)
+      invisible()
     },
     #' @description Deprecated in version 0.5.0.9000 (2023-10-02). Not used.
     #' @return `NULL`
@@ -710,8 +718,7 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     terminate = function() {
       self$terminate_workers()
-      lapply(self$workers$handle, mirai::call_mirai)
-      lapply(self$workers$termination, mirai::call_mirai)
+      self$wait()
       if (!is.null(self$async)) {
         self$async$terminate()
       }

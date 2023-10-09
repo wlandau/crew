@@ -109,7 +109,6 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-done}{\code{crew_class_launcher$done()}}
 \item \href{#method-crew_class_launcher-rotate}{\code{crew_class_launcher$rotate()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
-\item \href{#method-crew_class_launcher-errors}{\code{crew_class_launcher$errors()}}
 \item \href{#method-crew_class_launcher-wait}{\code{crew_class_launcher$wait()}}
 \item \href{#method-crew_class_launcher-throttle}{\code{crew_class_launcher$throttle()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
@@ -485,20 +484,6 @@ to launch.}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-errors"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-errors}{}}}
-\subsection{Method \code{errors()}}{
-Check and report errors from local asynchronous tasks.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$errors()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly) if there are no errors. Throws an error
-in the main process if any async errors were detected.
 }
 }
 \if{html}{\out{<hr>}}

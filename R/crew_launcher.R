@@ -655,7 +655,7 @@ crew_class_launcher <- R6::R6Class(
     async = function(
       command,
       substitute = TRUE,
-      args,
+      args = list(),
       packages = character(0L),
       library = NULL
     ) {

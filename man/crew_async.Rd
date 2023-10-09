@@ -4,7 +4,7 @@
 \alias{crew_async}
 \title{Run an asynchronous task in the crew launcher.}
 \usage{
-crew_async(command, args, packages = character(0L), library = NULL)
+crew_async(command, args = list(), packages = character(0L), library = NULL)
 }
 \arguments{
 \item{command}{Language object with R code to run.}

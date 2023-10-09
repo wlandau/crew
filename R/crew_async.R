@@ -10,7 +10,7 @@
 #' @param library Character vector of library paths to load the packages from.
 crew_async <- function(
   command,
-  args,
+  args = list(),
   packages = character(0L),
   library = NULL
 ) {

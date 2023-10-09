@@ -530,7 +530,7 @@ compute profile of the launcher.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$async(
   command,
   substitute = TRUE,
-  args,
+  args = list(),
   packages = character(0L),
   library = NULL
 )}\if{html}{\out{</div>}}

@@ -189,6 +189,11 @@ crew_test("custom launcher with local async errors", {
   })
   controller$launch(n = 1L)
   controller$launcher$wait()
+  crew_retry(
+    ~all(controller$launcher$async$errors() > 0L),
+    seconds_interval = 0.01,
+    seconds_timeout = 5
+  )
   condition <- tryCatch(
     controller$launcher$launch(index = 1L),
     error = function(condition) {
@@ -199,8 +204,18 @@ crew_test("custom launcher with local async errors", {
   message <- conditionMessage(condition)
   expect_true(any(grepl("this package does not exist", message)))
   controller$launcher$async$reset()
+  crew_retry(
+    ~all(controller$launcher$async$errors() == 0L),
+    seconds_interval = 0.01,
+    seconds_timeout = 5
+  )
   controller$launcher$terminate_workers()
   controller$launcher$wait()
+  crew_retry(
+    ~all(controller$launcher$async$errors() > 0L),
+    seconds_interval = 0.01,
+    seconds_timeout = 5
+  )
   condition <- tryCatch(
     controller$launcher$launch(index = 1L),
     error = function(condition) {

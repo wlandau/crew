@@ -419,6 +419,7 @@ crew_class_launcher <- R6::R6Class(
         complete = rep(0L, n)
       )
       self$async <- crew_async(workers = self$processes)
+      self$async$start()
       invisible()
     },
     #' @description Summarize the workers.
@@ -694,8 +695,10 @@ crew_class_launcher <- R6::R6Class(
       index <- index %|||% seq_len(nrow(workers))
       for (worker in index) {
         if (!workers$terminated[worker]) {
+          handle <- workers$handle[[worker]]
+          mirai::call_mirai(aio = handle)
           self$workers$termination[[worker]] <-
-            self$terminate_worker(workers$handle[[worker]]) %|||% crew_null
+            self$terminate_worker(handle = handle) %|||% crew_null
         }
         self$workers$socket[worker] <- NA_character_
         self$workers$start[worker] <- NA_real_
@@ -706,10 +709,12 @@ crew_class_launcher <- R6::R6Class(
     #' @description Terminate the whole launcher, including all workers.
     #' @return `NULL` (invisibly).
     terminate = function() {
+      self$terminate_workers()
+      lapply(self$workers$handle, mirai::call_mirai)
+      lapply(self$workers$termination, mirai::call_mirai)
       if (!is.null(self$async)) {
         self$async$terminate()
       }
-      self$terminate_workers()
     }
   )
 )

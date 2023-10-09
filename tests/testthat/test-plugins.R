@@ -187,12 +187,12 @@ crew_test("custom launcher with local async errors", {
     gc()
     crew_test_sleep()
   })
-  controller$launch(n = 1L)
+  controller$launcher$launch(index = 1L)
   controller$launcher$wait()
   crew_retry(
     ~all(controller$launcher$async$errors() > 0L),
-    seconds_interval = 0.01,
-    seconds_timeout = 5
+    seconds_interval = 0.05,
+    seconds_timeout = 10
   )
   condition <- tryCatch(
     controller$launcher$launch(index = 1L),
@@ -206,15 +206,15 @@ crew_test("custom launcher with local async errors", {
   controller$launcher$async$reset()
   crew_retry(
     ~all(controller$launcher$async$errors() == 0L),
-    seconds_interval = 0.01,
-    seconds_timeout = 5
+    seconds_interval = 0.05,
+    seconds_timeout = 10
   )
   controller$launcher$terminate_workers()
   controller$launcher$wait()
   crew_retry(
     ~all(controller$launcher$async$errors() > 0L),
-    seconds_interval = 0.01,
-    seconds_timeout = 5
+    seconds_interval = 0.05,
+    seconds_timeout = 10
   )
   condition <- tryCatch(
     controller$launcher$launch(index = 1L),

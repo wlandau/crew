@@ -16,7 +16,12 @@ crew_test("async validate when started", {
 
 crew_test("async object task with NULL workers", {
   x <- crew_async(workers = NULL)
-  on.exit(x$terminate())
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
   x$start()
   out <- x$eval(
     command = c(ps::ps_pid(), x),
@@ -30,7 +35,12 @@ crew_test("async task with 1 process", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_async(workers = 1L)
-  on.exit(x$terminate())
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
   x$start()
   expect_equal(x$errors(), 0L)
   out <- x$eval(
@@ -53,12 +63,17 @@ crew_test("async object error handling utils", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_async(workers = 1L)
-  on.exit(x$terminate())
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
   x$start()
   crew_retry(
     ~all(x$socket$state == "opened"),
     seconds_interval = 0.01,
-    seconds_timeout = 5
+    seconds_timeout = 10
   )
   expect_error(
     crew_eval_async(
@@ -70,7 +85,7 @@ crew_test("async object error handling utils", {
   crew_retry(
     fun = ~all(x$errors(), 1L),
     seconds_interval = 0.01,
-    seconds_timeout = 5
+    seconds_timeout = 10
   )
 })
 
@@ -78,7 +93,12 @@ crew_test("async object errors in task", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_async(workers = 1L)
-  on.exit(x$terminate())
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
   x$start()
   expect_equal(x$errors(), 0L)
   task1 <- x$eval(

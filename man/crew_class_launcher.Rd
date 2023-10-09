@@ -89,6 +89,8 @@ Other class:
 
 \item{\code{profile}}{\code{mirai} compute profile of the local processes,
 if applicable.}
+
+\item{\code{socket}}{\code{mirai} socket of the first local process, if applicable.}
 }
 \if{html}{\out{</div>}}
 }

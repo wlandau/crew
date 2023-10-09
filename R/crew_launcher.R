@@ -186,6 +186,8 @@ crew_class_launcher <- R6::R6Class(
     #' @field profile `mirai` compute profile of the local processes,
     #'   if applicable.
     profile = NULL,
+    #' @field socket `mirai` socket of the first local process, if applicable.
+    socket = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
     #' @param name See [crew_launcher()].
@@ -415,6 +417,15 @@ crew_class_launcher <- R6::R6Class(
           n = self$processes,
           dispatcher = FALSE,
           .compute = self$profile
+        )
+        url <- gsub(
+          pattern = "/[^/]*$",
+          paste0("/", nanonext::random(n = 12)),
+          mirai::status(.compute = self$profile)$daemons[1L],
+        )
+        self$socket <- self$socket %|||% nanonext::socket(
+          protocol = "req",
+          listen = url
         )
       }
       n <- length(sockets)

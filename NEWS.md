@@ -8,6 +8,8 @@
 * Simplify `wait()`.
 * `seconds_interval` in `map()` no longer defaults to `controller$client$seconds_interval`.
 * `launcher$terminate_workers()` terminates one or more workers, and `launcher$terminate` terminates the whole launcher.
+* Add infrastructure to let plugins run asynchronous calls (#133). This includes:
+  * A new `processes` member of the launcher class with the number of local `mirai` daemons to launch in `start()` and terminate in `terminate()`.
 
 # crew 0.5.0
 

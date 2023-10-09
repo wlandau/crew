@@ -30,8 +30,6 @@ crew_async <- function(workers = NULL) {
 #' @family class
 #' @description `R6` class for async configuration.
 #' @details See [crew_async()].
-#' @examples
-#' crew_async(mode = "automatic")
 crew_class_async <- R6::R6Class(
   classname = "crew_class_async",
   cloneable = FALSE,

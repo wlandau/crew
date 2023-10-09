@@ -9,9 +9,6 @@
 \details{
 See \code{\link[=crew_async]{crew_async()}}.
 }
-\examples{
-crew_async(mode = "automatic")
-}
 \seealso{
 Other class: 
 \code{\link{crew_class_client}},

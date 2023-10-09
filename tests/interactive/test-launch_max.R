@@ -19,7 +19,7 @@ x$launcher$seconds_idle <- Inf
 x$push(TRUE)
 x$wait()
 expect_equal(x$launcher$workers$futile, 2L)
-x$launcher$terminate(1L)
+x$launcher$terminate_workers(index = 1L)
 # Pause until worker exits.
 x$launcher$seconds_idle <- 1e-9
 x$launch(n = 1L)

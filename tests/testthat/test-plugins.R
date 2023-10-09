@@ -191,14 +191,16 @@ crew_test("custom launcher with local async errors", {
   controller$launcher$wait()
   expect_error(
     controller$launcher$launch(index = 1L),
-    class = "crew_error"
+    class = "crew_error",
+    regexp = "this package does not exist"
   )
   controller$launcher$async$reset()
   controller$launcher$terminate_workers()
   controller$launcher$wait()
   expect_error(
     controller$launcher$launch(index = 1L),
-    class = "crew_error"
+    class = "crew_error",
+    regexp = "termination error"
   )
 })
 

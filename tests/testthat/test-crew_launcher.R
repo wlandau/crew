@@ -143,6 +143,7 @@ crew_test("launcher start()", {
     colnames(workers),
     cols <- c(
       "handle",
+      "termination",
       "socket",
       "start",
       "launches",

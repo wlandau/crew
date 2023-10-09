@@ -322,6 +322,7 @@ crew_class_launcher <- R6::R6Class(
         crew_assert(self$workers, is.data.frame(.))
         cols <- c(
           "handle",
+          "termination",
           "socket",
           "start",
           "launches",
@@ -418,6 +419,7 @@ crew_class_launcher <- R6::R6Class(
       n <- length(sockets)
       self$workers <- tibble::tibble(
         handle = replicate(n, crew_null, simplify = FALSE),
+        termination = replicate(n, crew_null, simplify = FALSE),
         socket = sockets,
         start = rep(NA_real_, n),
         launches = rep(0L, n),
@@ -699,7 +701,8 @@ crew_class_launcher <- R6::R6Class(
       for (worker in index) {
         handle <- self$workers$handle[[worker]]
         if (!is_crew_null(handle)) {
-          self$terminate_worker(handle)
+          self$workers$termination[[worker]] <-
+            self$terminate_worker(handle) %|||% crew_null
         }
         self$workers$handle[[worker]] <- crew_null
         self$workers$socket[worker] <- NA_character_

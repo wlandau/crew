@@ -55,6 +55,11 @@ crew_test("async object error handling utils", {
   x <- crew_async(workers = 1L)
   on.exit(x$terminate())
   x$start()
+  crew_retry(
+    ~all(x$socket$state == "opened"),
+    seconds_interval = 0.01,
+    seconds_timeout = 5
+  )
   expect_error(
     crew_eval_async(
       command = quote(stop("error message")),

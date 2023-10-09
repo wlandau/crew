@@ -252,41 +252,6 @@ crew_test("launcher summary", {
   }
 })
 
-crew_test("launcher async() with NULL processes", {
-  skip_on_cran()
-  skip_on_os("windows")
-  x <- crew_launcher(processes = NULL)
-  on.exit(x$terminate())
-  x$start()
-  out <- x$async(
-    command = c(ps::ps_pid(), x),
-    args = list(x = "value"),
-    packages = "rlang"
-  )
-  expect_equal(out$data, c(ps::ps_pid(), "value"))
-})
-
-crew_test("launcher async() with 1 process", {
-  skip_on_cran()
-  skip_on_os("windows")
-  x <- crew_launcher(processes = 1L)
-  on.exit(x$terminate())
-  x$start()
-  out <- x$async(
-    command = list(pid = ps::ps_pid(), x = x),
-    args = list(x = "value"),
-    packages = "rlang"
-  )
-  crew_retry(
-    fun = ~!nanonext::unresolved(out),
-    seconds_interval = 0.01,
-    seconds_timeout = 30
-  )
-  expect_true(is.numeric(out$data$pid))
-  expect_false(any(out$data$pid == ps::ps_pid()))
-  expect_equal(out$data$x, "value")
-})
-
 crew_test("custom launcher", {
   skip_on_cran()
   skip_on_os("windows")

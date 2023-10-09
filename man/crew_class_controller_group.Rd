@@ -44,6 +44,7 @@ group$terminate()
 }
 \seealso{
 Other class: 
+\code{\link{crew_class_async}},
 \code{\link{crew_class_client}},
 \code{\link{crew_class_controller}},
 \code{\link{crew_class_launcher}},

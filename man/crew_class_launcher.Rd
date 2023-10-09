@@ -50,6 +50,7 @@ launcher$call(
 }
 \seealso{
 Other class: 
+\code{\link{crew_class_async}},
 \code{\link{crew_class_client}},
 \code{\link{crew_class_controller_group}},
 \code{\link{crew_class_controller}},
@@ -87,10 +88,8 @@ Other class:
 
 \item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{profile}}{\code{mirai} compute profile of the local processes,
-if applicable.}
-
-\item{\code{socket}}{\code{mirai} socket of the first local process, if applicable.}
+\item{\code{async}}{A \code{\link[=crew_async]{crew_async()}} object to run low-level launcher tasks
+asynchronously.}
 }
 \if{html}{\out{</div>}}
 }
@@ -112,7 +111,6 @@ if applicable.}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-throttle}{\code{crew_class_launcher$throttle()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
-\item \href{#method-crew_class_launcher-async}{\code{crew_class_launcher$async()}}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
@@ -520,55 +518,6 @@ Auto-scale workers out to meet the demand of tasks.
 }
 \subsection{Returns}{
 \code{NULL} (invisibly)
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-async"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-async}{}}}
-\subsection{Method \code{async()}}{
-Run a local asynchronous task using the local
-compute profile of the launcher.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$async(
-  command,
-  substitute = TRUE,
-  args = list(),
-  packages = character(0L),
-  library = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{command}}{R code to run.}
-
-\item{\code{substitute}}{Logical of length 1, whether to substitute \code{command}.
-If \code{FALSE}, then \code{command} must be an expression object
-or language object.}
-
-\item{\code{args}}{Named list of data objects required to run \code{command}.}
-
-\item{\code{packages}}{Character vector of packages to load.}
-
-\item{\code{library}}{Character vector of library paths to load the packages
-from.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Used for launcher plugins with asynchronous launches and
-terminations. If \code{processes} is \code{NULL}, the task will run locally.
-Otherwise, the task will run on a local process in the local
-\code{mirai} compute profile.
-}
-
-\subsection{Returns}{
-If the \code{processes} field is \code{NULL}, a list with an object named
-\code{data} containing the result of evaluating \code{expr} synchronously.
-Otherwise, the task is evaluated asynchronously, and the result
-is a \code{mirai} task object. Either way, the \code{data} element
-of the return value will contain the result of the task.
 }
 }
 \if{html}{\out{<hr>}}

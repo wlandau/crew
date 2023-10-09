@@ -34,6 +34,7 @@ controller$terminate()
 }
 \seealso{
 Other developer: 
+\code{\link{crew_async}()},
 \code{\link{crew_client}()},
 \code{\link{crew_launcher}()}
 }

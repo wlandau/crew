@@ -2,33 +2,41 @@
 % Please edit documentation in R/crew_async.R
 \name{crew_async}
 \alias{crew_async}
-\title{Run an asynchronous task in the crew launcher.}
+\title{Local asynchronous client object.}
 \usage{
-crew_async(command, args = list(), packages = character(0L), library = NULL)
+crew_async(workers = NULL)
 }
 \arguments{
-\item{command}{Language object with R code to run.}
-
-\item{args}{Named list of objects that \code{command} depends on.}
-
-\item{packages}{Character vector of packages to load.}
-
-\item{library}{Character vector of library paths to load the packages from.}
+\item{workers}{Number of local \code{mirai} daemons to run asynchronous tasks.
+If \code{NULL}, then tasks will be evaluated synchronously.}
 }
 \value{
-The result of running \code{command}.
+An \code{R6} async client object.
 }
 \description{
-Called internally, not for users.
+Create an \code{R6} object to manage local asynchronous quick
+tasks with error detection.
+}
+\details{
+\code{\link[=crew_async]{crew_async()}} objects are created inside launchers to allow
+launcher plugins to run local tasks asynchronously, such as
+calls to cloud APIs to launch serious remote workers.
+}
+\examples{
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+x <- crew_async()
+x$start()
+out <- x$eval(1 + 1)
+mirai::call_mirai(out)
+out$data # 2
+x$errors() # 0
+x$terminate()
+}
 }
 \seealso{
-Other utilities: 
-\code{\link{crew_assert}()},
-\code{\link{crew_deprecate}()},
-\code{\link{crew_eval}()},
-\code{\link{crew_random_name}()},
-\code{\link{crew_retry}()},
-\code{\link{crew_worker}()}
+Other developer: 
+\code{\link{crew_client}()},
+\code{\link{crew_controller}()},
+\code{\link{crew_launcher}()}
 }
-\concept{utilities}
-\keyword{internal}
+\concept{developer}

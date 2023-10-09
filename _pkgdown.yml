@@ -19,6 +19,7 @@ reference:
   - '`crew_tls`'
 - title: Launcher plugin development
   contents:
+  - '`crew_async`'
   - '`crew_client`'
   - '`crew_controller`'
   - '`crew_class_launcher`'
@@ -32,6 +33,7 @@ reference:
   - '`crew_launcher_local`'
 - title: Classes
   contents:
+  - '`crew_class_async`'
   - '`crew_class_client`'
   - '`crew_class_controller`'
   - '`crew_class_controller_group`'

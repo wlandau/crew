@@ -94,7 +94,7 @@ launch to allow worker launches to happen asynchronously. If \code{NULL},
 then no local processes are launched. If 1 or greater, then the launcher
 starts the processes on \code{start()} and ends them on \code{terminate()}.
 Plugins that may use these processes should run asynchronous calls
-using the \code{async()} launcher method and expect a \code{mirai} task object
+using \code{launcher$async$eval()} and expect a \code{mirai} task object
 as the return value.}
 }
 \description{
@@ -118,6 +118,7 @@ client$terminate()
 }
 \seealso{
 Other developer: 
+\code{\link{crew_async}()},
 \code{\link{crew_client}()},
 \code{\link{crew_controller}()}
 }

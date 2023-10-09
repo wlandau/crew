@@ -62,7 +62,7 @@
 #'   then no local processes are launched. If 1 or greater, then the launcher
 #'   starts the processes on `start()` and ends them on `terminate()`.
 #'   Plugins that may use these processes should run asynchronous calls
-#'   using the `async()` launcher method and expect a `mirai` task object
+#'   using `launcher$async$eval()` and expect a `mirai` task object
 #'   as the return value.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -183,11 +183,9 @@ crew_class_launcher <- R6::R6Class(
     tls = NULL,
     #' @field processes See [crew_launcher()].
     processes = NULL,
-    #' @field profile `mirai` compute profile of the local processes,
-    #'   if applicable.
-    profile = NULL,
-    #' @field socket `mirai` socket of the first local process, if applicable.
-    socket = NULL,
+    #' @field async A [crew_async()] object to run low-level launcher tasks
+    #'   asynchronously.
+    async = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
     #' @param name See [crew_launcher()].
@@ -275,13 +273,6 @@ crew_class_launcher <- R6::R6Class(
       }
       crew_assert(
         self$name,
-        is.character(.),
-        length(.) == 1L,
-        !anyNA(.),
-        nzchar(.)
-      )
-      crew_assert(
-        self$profile %|||% "x",
         is.character(.),
         length(.) == 1L,
         !anyNA(.),
@@ -411,23 +402,6 @@ crew_class_launcher <- R6::R6Class(
     #' @param sockets For testing purposes only.
     start = function(sockets = NULL) {
       sockets <- sockets %|||% mirai::nextget("urls", .compute = self$name)
-      if (!is.null(self$processes)) {
-        self$profile <- self$profile %|||% crew_random_name()
-        mirai::daemons(
-          n = self$processes,
-          dispatcher = FALSE,
-          .compute = self$profile
-        )
-        url <- gsub(
-          pattern = "/[^/]*$",
-          paste0("/", nanonext::random(n = 12)),
-          mirai::status(.compute = self$profile)$daemons[1L],
-        )
-        self$socket <- self$socket %|||% nanonext::socket(
-          protocol = "req",
-          listen = url
-        )
-      }
       n <- length(sockets)
       self$workers <- tibble::tibble(
         handle = replicate(n, crew_null, simplify = FALSE),
@@ -444,6 +418,7 @@ crew_class_launcher <- R6::R6Class(
         assigned = rep(0L, n),
         complete = rep(0L, n)
       )
+      self$async <- crew_async(workers = self$processes)
       invisible()
     },
     #' @description Summarize the workers.
@@ -644,53 +619,6 @@ crew_class_launcher <- R6::R6Class(
       walk(x = head(x = unlaunched, n = deficit), f = self$launch)
       invisible()
     },
-    #' @description Run a local asynchronous task using the local
-    #'   compute profile of the launcher.
-    #' @details Used for launcher plugins with asynchronous launches and
-    #'   terminations. If `processes` is `NULL`, the task will run locally.
-    #'   Otherwise, the task will run on a local process in the local
-    #'   `mirai` compute profile.
-    #' @return If the `processes` field is `NULL`, a list with an object named
-    #'   `data` containing the result of evaluating `expr` synchronously.
-    #'   Otherwise, the task is evaluated asynchronously, and the result
-    #'   is a `mirai` task object. Either way, the `data` element
-    #'   of the return value will contain the result of the task.
-    #' @param command R code to run.
-    #' @param substitute Logical of length 1, whether to substitute `command`.
-    #'   If `FALSE`, then `command` must be an expression object
-    #'   or language object.
-    #' @param args Named list of data objects required to run `command`.
-    #' @param packages Character vector of packages to load.
-    #' @param library Character vector of library paths to load the packages
-    #'   from.
-    async = function(
-      command,
-      substitute = TRUE,
-      args = list(),
-      packages = character(0L),
-      library = NULL
-    ) {
-      command <- if_any(substitute, substitute(command), command)
-      if_any(
-        is.null(self$processes),
-        list(
-          data = crew_async(
-            command = command,
-            args = args,
-            packages = packages,
-            library = library
-          )
-        ),
-        mirai::mirai(
-          .expr = expr_crew_async,
-          command = command,
-          args = args,
-          packages = packages,
-          library = library,
-          .compute = self$profile
-        )
-      )
-    },
     #' @description Abstract worker launch method.
     #' @details Launcher plugins will overwrite this method.
     #' @return A handle to mock the worker launch.
@@ -756,8 +684,8 @@ crew_class_launcher <- R6::R6Class(
     #' @description Terminate the whole launcher, including all workers.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      if (!is.null(self$processes)) {
-        mirai::daemons(n = 0L, .compute = self$profile)
+      if (!is.null(self$async)) {
+        self$async$terminate()
       }
       self$terminate_workers()
     }

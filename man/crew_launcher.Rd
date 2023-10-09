@@ -18,7 +18,8 @@ crew_launcher(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
-  tls = crew::crew_tls()
+  tls = crew::crew_tls(),
+  processes = NULL
 )
 }
 \arguments{
@@ -86,6 +87,15 @@ circumstances. But \code{launch_max} should still be small enough
 to detect errors in the underlying platform.}
 
 \item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
+
+\item{processes}{\code{NULL} or positive integer of length 1,
+number of local processes to
+launch to allow worker launches to happen asynchronously. If \code{NULL},
+then no local processes are launched. If 1 or greater, then the launcher
+starts the processes on \code{start()} and ends them on \code{terminate()}.
+Plugins that may use these processes should run asynchronous calls
+using the \code{async()} launcher method and expect a \code{mirai} task object
+as the return value.}
 }
 \description{
 This function is useful for inheriting argument documentation

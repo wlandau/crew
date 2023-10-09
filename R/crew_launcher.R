@@ -56,6 +56,14 @@
 #'   because sometimes workers are unproductive under perfectly ordinary
 #'   circumstances. But `launch_max` should still be small enough
 #'   to detect errors in the underlying platform.
+#' @param processes `NULL` or positive integer of length 1,
+#'   number of local processes to
+#'   launch to allow worker launches to happen asynchronously. If `NULL`,
+#'   then no local processes are launched. If 1 or greater, then the launcher
+#'   starts the processes on `start()` and ends them on `terminate()`.
+#'   Plugins that may use these processes should run asynchronous calls
+#'   using the `async()` launcher method and expect a `mirai` task object
+#'   as the return value.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -82,7 +90,8 @@ crew_launcher <- function(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
-  tls = crew::crew_tls()
+  tls = crew::crew_tls(),
+  processes = NULL
 ) {
   crew_deprecate(
     name = "seconds_exit",
@@ -119,7 +128,8 @@ crew_launcher <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection,
     launch_max = launch_max,
-    tls = tls
+    tls = tls,
+    processes = processes
   )
 }
 
@@ -171,6 +181,8 @@ crew_class_launcher <- R6::R6Class(
     launch_max = NULL,
     #' @field tls See [crew_launcher()].
     tls = NULL,
+    #' @field processes See [crew_launcher()].
+    processes = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
     #' @param name See [crew_launcher()].
@@ -186,7 +198,8 @@ crew_class_launcher <- R6::R6Class(
     #' @param reset_options See [crew_launcher()].
     #' @param garbage_collection See [crew_launcher()].
     #' @param launch_max See [crew_launcher()].
-    #' @param tls See [crew_launcher()]
+    #' @param tls See [crew_launcher()].
+    #' @param processes See [crew_launcher()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
@@ -213,7 +226,8 @@ crew_class_launcher <- R6::R6Class(
       reset_options = NULL,
       garbage_collection = NULL,
       launch_max = NULL,
-      tls = NULL
+      tls = NULL,
+      processes = NULL
     ) {
       self$name <- name
       self$seconds_launch <- seconds_launch
@@ -227,6 +241,7 @@ crew_class_launcher <- R6::R6Class(
       self$garbage_collection <- garbage_collection
       self$launch_max <- launch_max
       self$tls <- tls
+      self$processes <- processes
     },
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
@@ -277,6 +292,13 @@ crew_class_launcher <- R6::R6Class(
           !anyNA(.)
         )
       }
+      crew_assert(
+        self$processes %|||% 1L,
+        is.numeric(.),
+        . > 0L,
+        length(.) == 1L,
+        !anyNA(.)
+      )
       fields <- c(
         "reset_globals",
         "reset_packages",

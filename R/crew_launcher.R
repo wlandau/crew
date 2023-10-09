@@ -401,6 +401,8 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param sockets For testing purposes only.
     start = function(sockets = NULL) {
+      self$async <- crew_async(workers = self$processes)
+      self$async$start()
       sockets <- sockets %|||% mirai::nextget("urls", .compute = self$name)
       n <- length(sockets)
       self$workers <- tibble::tibble(
@@ -418,8 +420,6 @@ crew_class_launcher <- R6::R6Class(
         assigned = rep(0L, n),
         complete = rep(0L, n)
       )
-      self$async <- crew_async(workers = self$processes)
-      self$async$start()
       invisible()
     },
     #' @description Summarize the workers.

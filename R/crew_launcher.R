@@ -580,7 +580,29 @@ crew_class_launcher <- R6::R6Class(
       self$workers$launched[index] <- TRUE
       self$workers$terminated[index] <- FALSE
       self$workers$history[index] <- complete
+      self$errors()
       invisible()
+    },
+    #' @description Check and report errors from local asynchronous tasks.
+    #' @return `NULL` (invisibly) if there are no errors. Throws an error
+    #'   in the main process if any async errors were detected.
+    errors = function() {
+      count <- self$async$errors()
+      if (count < 1L) {
+        return(invisible())
+      }
+      message <- paste(
+        "Errors occurred in local asynchronous launcher tasks. ",
+        "Usually this means an internal crew launcher command failed ",
+        "when it tried to launch or terminate a worker. See below for ",
+        "specific error messages:\n\n"
+      )
+      for (object in c(self$workers$handle, self$workers$termination)) {
+        if (mirai::is_mirai_error(object)) {
+          message <- c(message, as.character(object$data))
+        }
+      }
+      crew::crew_error(message = message)
     },
     #' @description Deprecated in version 0.5.0.9000 (2023-10-02). Not used.
     #' @return `NULL`

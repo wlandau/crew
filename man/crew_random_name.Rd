@@ -28,6 +28,7 @@ crew_random_name()
 \seealso{
 Other utilities: 
 \code{\link{crew_assert}()},
+\code{\link{crew_async}()},
 \code{\link{crew_deprecate}()},
 \code{\link{crew_eval}()},
 \code{\link{crew_retry}()},

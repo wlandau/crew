@@ -86,6 +86,9 @@ Other class:
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{profile}}{\code{mirai} compute profile of the local processes,
+if applicable.}
 }
 \if{html}{\out{</div>}}
 }
@@ -107,6 +110,7 @@ Other class:
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-throttle}{\code{crew_class_launcher$throttle()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
+\item \href{#method-crew_class_launcher-async}{\code{crew_class_launcher$async()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
@@ -516,10 +520,59 @@ Auto-scale workers out to meet the demand of tasks.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-async"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-async}{}}}
+\subsection{Method \code{async()}}{
+Run a local asynchronous task using the local
+compute profile of the launcher.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$async(
+  command,
+  substitute = TRUE,
+  args,
+  packages = character(0L),
+  library = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{command}}{R code to run.}
+
+\item{\code{substitute}}{Logical of length 1, whether to substitute \code{command}.
+If \code{FALSE}, then \code{command} must be an expression object
+or language object.}
+
+\item{\code{args}}{Named list of data objects required to run \code{command}.}
+
+\item{\code{packages}}{Character vector of packages to load.}
+
+\item{\code{library}}{Character vector of library paths to load the packages
+from.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Used for launcher plugins with asynchronous launches and
+terminations. If \code{processes} is \code{NULL}, the task will run locally.
+Otherwise, the task will run on a local process in the local
+\code{mirai} compute profile.
+}
+
+\subsection{Returns}{
+If the \code{processes} field is \code{NULL}, a list with an object named
+\code{data} containing the result of evaluating \code{expr} synchronously.
+Otherwise, the task is evaluated asynchronously, and the result
+is a \code{mirai} task object. Either way, the \code{data} element
+of the return value will contain the result of the task.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-terminate_worker"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate_worker}{}}}
 \subsection{Method \code{terminate_worker()}}{
-Abstract method.
+Abstract method to terminate a single worker.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate_worker(handle)}\if{html}{\out{</div>}}
 }
@@ -534,9 +587,7 @@ of the worker.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-Does not actually terminate a worker. This method is a
-placeholder, and its presence allows manual worker termination
-to be optional.
+Launcher plugins will overwrite this method.
 }
 
 \subsection{Returns}{

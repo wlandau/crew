@@ -168,6 +168,7 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   pid <- launcher$workers$handle[[1L]]$get_pid()
   expect_s3_class(launcher$workers$handle[[1L]], "process")
   expect_silent(launcher$terminate())
+  expect_s3_class(launcher$workers$handle[[1L]], "process")
   expect_true(launcher$workers$terminated[1L])
   crew::crew_retry(
     ~{

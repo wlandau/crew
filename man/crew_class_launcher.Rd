@@ -111,6 +111,7 @@ if applicable.}
 \item \href{#method-crew_class_launcher-throttle}{\code{crew_class_launcher$throttle()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-async}{\code{crew_class_launcher$async()}}
+\item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
@@ -569,10 +570,47 @@ of the return value will contain the result of the task.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-launch_worker"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-launch_worker}{}}}
+\subsection{Method \code{launch_worker()}}{
+Abstract worker launch method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_worker(call, name, launcher, worker, instance)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{call}}{Character of length 1 with a namespaced call to
+\code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
+
+\item{\code{name}}{Character of length 1 with an informative worker name.}
+
+\item{\code{launcher}}{Character of length 1, name of the launcher.}
+
+\item{\code{worker}}{Positive integer of length 1, index of the worker.
+This worker index remains the same even when the current instance
+of the worker exits and a new instance launches.
+It is always between 1 and the maximum number of concurrent workers.}
+
+\item{\code{instance}}{Character of length 1 to uniquely identify
+the current instance of the worker a the index in the launcher.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Launcher plugins will overwrite this method.
+}
+
+\subsection{Returns}{
+A handle to mock the worker launch.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-terminate_worker"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate_worker}{}}}
 \subsection{Method \code{terminate_worker()}}{
-Abstract method to terminate a single worker.
+Abstract worker termination method.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate_worker(handle)}\if{html}{\out{</div>}}
 }
@@ -591,7 +629,7 @@ Launcher plugins will overwrite this method.
 }
 
 \subsection{Returns}{
-\code{NULL} (invisibly).
+A handle to mock worker termination.
 }
 }
 \if{html}{\out{<hr>}}

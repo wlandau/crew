@@ -3,20 +3,21 @@ crew_test("abstract launcher class", {
   expect_crew_error(out$validate())
 })
 
-crew_test("default terminate_launcher() method", {
-  launcher <- crew_class_launcher$new(
-    name = "my_launcher_name",
-    seconds_launch = 1,
-    seconds_idle = 2,
-    seconds_wall = 3,
-    tasks_max = 7,
-    tasks_timers = 8,
-    reset_globals = TRUE,
-    reset_packages = FALSE,
-    reset_options = FALSE,
-    garbage_collection = FALSE
+crew_test("default launch_launcher() method", {
+  launcher <- crew_class_launcher$new()
+  out <- launcher$launch_worker(
+    call = "a",
+    name = "b",
+    launcher = "c",
+    worker = 57L,
+    instance = "d"
   )
-  expect_null(launcher$terminate_worker())
+  expect_equal(out$abstract, TRUE)
+})
+
+crew_test("default terminate_launcher() method", {
+  launcher <- crew_class_launcher$new()
+  expect_equal(launcher$terminate_worker(handle = crew_null)$abstract, TRUE)
 })
 
 crew_test("launcher settings", {

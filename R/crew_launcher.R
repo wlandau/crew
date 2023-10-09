@@ -680,14 +680,46 @@ crew_class_launcher <- R6::R6Class(
         )
       )
     },
-    #' @description Abstract method to terminate a single worker.
+    #' @description Abstract worker launch method.
     #' @details Launcher plugins will overwrite this method.
-    #' @return `NULL` (invisibly).
+    #' @return A handle to mock the worker launch.
+    #' @param call Character of length 1 with a namespaced call to
+    #'   [crew_worker()] which will run in the worker and accept tasks.
+    #' @param name Character of length 1 with an informative worker name.
+    #' @param launcher Character of length 1, name of the launcher.
+    #' @param worker Positive integer of length 1, index of the worker.
+    #'   This worker index remains the same even when the current instance
+    #'   of the worker exits and a new instance launches.
+    #'   It is always between 1 and the maximum number of concurrent workers.
+    #' @param instance Character of length 1 to uniquely identify
+    #'   the current instance of the worker a the index in the launcher.
+    launch_worker = function(call, name, launcher, worker, instance) {
+      for (field in list(call, name, launcher, instance)) {
+        crew_assert(
+          field,
+          is.character(.),
+          length(.) == 1L,
+          !anyNA(.),
+          nzchar(.)
+        )
+      }
+      crew_assert(
+        worker,
+        is.numeric(.),
+        length(.) == 1L,
+        !anyNA(.),
+        . > 0L
+      )
+      list(abstract = TRUE)
+    },
+    #' @description Abstract worker termination method.
+    #' @details Launcher plugins will overwrite this method.
+    #' @return A handle to mock worker termination.
     #' @param handle A handle object previously
     #'   returned by `launch_worker()` which allows the termination
     #'   of the worker.
     terminate_worker = function(handle) {
-      invisible()
+      list(abstract = TRUE)
     },
     #' @description Terminate one or more workers.
     #' @return `NULL` (invisibly).

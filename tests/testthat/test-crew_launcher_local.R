@@ -53,10 +53,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   client$terminate()
   tryCatch(
     crew::crew_retry(
-      ~{
-        handle <- launcher$workers$handle[[2L]]
-        is_crew_null(handle) || !handle$is_alive()
-      },
+      ~!launcher$workers$handle[[2L]]$is_alive(),
       seconds_interval = 0.1,
       seconds_timeout = 5
     ),
@@ -106,10 +103,7 @@ crew_test("crew_launcher_local() can run a task and time out a worker", {
   )
   expect_equal(m$data, launcher$workers$handle[[1]]$get_pid())
   crew::crew_retry(
-    ~{
-      handle <- launcher$workers$handle[[1]]
-      is_crew_null(handle) || !handle$is_alive()
-    },
+    ~!launcher$workers$handle[[1]]$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
@@ -150,7 +144,9 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   client$start()
   socket <- rownames(client$daemons)
   launcher$start()
+  expect_true(launcher$workers$terminated[1L])
   launcher$launch(index = 1L)
+  expect_false(launcher$workers$terminated[1L])
   crew::crew_retry(
     ~{
       daemons <- rlang::duplicate(
@@ -164,15 +160,15 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
     seconds_timeout = 10
   )
   crew::crew_retry(
-    ~{
-      handle <- launcher$workers$handle[[1L]]
-      !is_crew_null(handle) && handle$is_alive()
-    },
+    ~launcher$workers$handle[[1L]]$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
+  expect_false(launcher$workers$terminated[1L])
   pid <- launcher$workers$handle[[1L]]$get_pid()
+  expect_s3_class(launcher$workers$handle[[1L]], "process")
   expect_silent(launcher$terminate())
+  expect_true(launcher$workers$terminated[1L])
   crew::crew_retry(
     ~{
       daemons <- rlang::duplicate(
@@ -186,14 +182,13 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
     seconds_timeout = 10
   )
   crew::crew_retry(
-    ~{
-      handle <- launcher$workers$handle[[1]]
-      is_crew_null(handle) || !handle$is_alive()
-    },
+    ~!launcher$workers$handle[[1]]$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
   expect_equal(launcher$workers$termination[[1L]]$pid, pid)
+  expect_silent(launcher$terminate())
+  expect_true(launcher$workers$terminated[1L])
 })
 
 crew_test("deprecate seconds_exit", {

@@ -149,6 +149,7 @@ crew_test("launcher start()", {
       "launches",
       "futile",
       "launched",
+      "terminated",
       "history",
       "online",
       "discovered",

@@ -328,6 +328,7 @@ crew_class_launcher <- R6::R6Class(
           "launches",
           "futile",
           "launched",
+          "terminated",
           "history",
           "online",
           "discovered",
@@ -425,6 +426,7 @@ crew_class_launcher <- R6::R6Class(
         launches = rep(0L, n),
         futile = rep(0L, n),
         launched = rep(FALSE, n),
+        terminated = rep(TRUE, n),
         history = rep(-1L, n),
         online = rep(FALSE, n),
         discovered = rep(FALSE, n),
@@ -535,10 +537,7 @@ crew_class_launcher <- R6::R6Class(
       for (index in which_done) {
         socket <- mirai::saisei(i = index, force = FALSE, .compute = self$name)
         if (!is.null(socket)) {
-          handle <- self$workers$handle[[index]]
-          if (!is_crew_null(handle)) {
-            self$terminate_worker(handle)
-          }
+          self$terminate_workers(index = index)
           self$workers$socket[index] <- socket
           self$workers$launched[index] <- FALSE
         }
@@ -593,6 +592,7 @@ crew_class_launcher <- R6::R6Class(
       self$workers$launches[index] <- self$workers$launches[index] + 1L
       self$workers$futile[index] <- futile
       self$workers$launched[index] <- TRUE
+      self$workers$terminated[index] <- FALSE
       self$workers$history[index] <- complete
       invisible()
     },
@@ -694,19 +694,19 @@ crew_class_launcher <- R6::R6Class(
     #' @param index Integer vector of the indexes of the workers
     #'   to terminate. If `NULL`, all current workers are terminated.
     terminate_workers = function(index = NULL) {
-      if (is.null(self$workers)) {
+      workers <- .subset2(self, "workers")
+      if (is.null(workers)) {
         return(invisible())
       }
-      index <- index %|||% seq_len(nrow(self$workers))
+      index <- index %|||% seq_len(nrow(workers))
       for (worker in index) {
-        handle <- self$workers$handle[[worker]]
-        if (!is_crew_null(handle)) {
+        if (!workers$terminated[worker]) {
           self$workers$termination[[worker]] <-
-            self$terminate_worker(handle) %|||% crew_null
+            self$terminate_worker(workers$handle[[worker]]) %|||% crew_null
         }
-        self$workers$handle[[worker]] <- crew_null
         self$workers$socket[worker] <- NA_character_
         self$workers$start[worker] <- NA_real_
+        self$workers$terminated[worker] <- TRUE
       }
       invisible()
     },

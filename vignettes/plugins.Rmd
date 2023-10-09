@@ -53,7 +53,12 @@ If you implement a custom [`terminate_worker()`](https://wlandau.github.io/crew/
 
 # Asynchrony
 
-`crew` unavoidably launches and terminates workers one at a time. Sometimes, these operations are not instantaneous. For example, in AWS Batch, the HTTP API call to launch a worker takes about a second to run. This overhead becomes burdensome for pipelines with hundreds of parallel workers.
+`crew` unavoidably launches and terminates workers one at a time. Sometimes, these operations are not instantaneous. For example, in AWS Batch, the HTTP API call to launch a worker takes about a second to run. This latency becomes burdensome when it compounds over hundreds of workers.
+
+Fortunately, `crew` launchers can run quick local commands asynchronously. As a launcher plugin developer, all you need to do is:
+
+1. Expose the `processes` argument of `launcher$new()`. The `processes` field sets how many `mirai` daemons run locally and churn through quick requests.
+2. Execute launches and terminations inside `self$async$eval()`.
 
 # Example
 

@@ -96,11 +96,6 @@ crew_class_async <- R6::R6Class(
         mirai::status(.compute = self$instance)$daemons[1L],
       )
       self$socket <- nanonext::socket(protocol = "req", listen = self$url)
-      crew_retry(
-        fun = ~all(self$socket$state == "opened"),
-        seconds_interval = 0.01,
-        seconds_timeout = 5
-      )
       self$reset()
       invisible()
     },

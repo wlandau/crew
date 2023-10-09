@@ -535,6 +535,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param index Positive integer of length 1, index of the worker
     #'   to launch.
     launch = function(index) {
+      self$errors()
       socket <- self$workers$socket[index]
       instance <- parse_instance(socket)
       call <- self$call(
@@ -581,7 +582,6 @@ crew_class_launcher <- R6::R6Class(
       self$workers$launched[index] <- TRUE
       self$workers$terminated[index] <- FALSE
       self$workers$history[index] <- complete
-      self$errors()
       invisible()
     },
     #' @description Check and report errors from local asynchronous tasks.

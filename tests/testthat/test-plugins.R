@@ -189,17 +189,28 @@ crew_test("custom launcher with local async errors", {
   })
   controller$launch(n = 1L)
   controller$launcher$wait()
-  expect_error(
+  condition <- tryCatch(
     controller$launcher$launch(index = 1L),
-    class = "crew_error"
+    error = function(condition) {
+      condition
+    }
   )
+  expect_s3_class(condition, "crew_error")
+  message <- conditionMessage(condition)
+  expect_true(any(grepl("this package does not exist", message)))
   controller$launcher$async$reset()
   controller$launcher$terminate_workers()
   controller$launcher$wait()
-  expect_error(
+  condition <- tryCatch(
     controller$launcher$launch(index = 1L),
-    class = "crew_error"
+    error = function(condition) {
+      condition
+    }
   )
+  expect_s3_class(condition, "crew_error")
+  message <- conditionMessage(condition)
+  expect_true(any(grepl("this package does not exist", message)))
+  expect_true(any(grepl("termination error", message)))
 })
 
 crew_test("custom launcher with async internal launcher tasks", {

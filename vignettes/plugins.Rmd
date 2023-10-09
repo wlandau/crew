@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 # 📣 Request for community contributions 📣
 
-<span style="color: blue">**The launcher plugin framework aims to extend `crew` to modern platforms and services like [AWS Batch](https://aws.amazon.com/batch/), [Google Cloud Run](https://cloud.google.com/run/), [Kubernetes](https://kubernetes.io/), and beyond. At the time of writing, plugins for cloud computing do not yet exist. So if you have access to these services and know how to use them, please consider contributing a package with plugins of your own. The maintainer of `crew` would love to work with you!**</span>
+<span style="color: blue">**The launcher plugin framework aims to extend `crew` to modern platforms and services like [Google Cloud Run](https://cloud.google.com/run/), [Kubernetes](https://kubernetes.io/), and beyond. At the time of writing, plugins for cloud computing do not yet exist. So if you have access to these services and know how to use them, please consider contributing a package with plugins of your own. The maintainer of `crew` would love to work with you!**</span>
 
 # How it works
 
@@ -50,6 +50,10 @@ By default, `host` is the local IP address. `crew` assumes the local network is 
 We recommend you implement an optional [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-) method. Although `mirai` has its own way of terminating workers, it only works if the worker already connected, and it cannot reach workers that fail to connect and hang in a crashed state. An optional [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-) method in your `crew` launcher plugin is extra assurance that these workers will exit.
 
 If you implement a custom [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-) method, it must not throw an error (and should not throw a warning or message) if the worker is already terminated. In addition, it must accept a handle that identifies the worker, and this handle must be the return value of the previous call to [`launch_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-launch-worker-). A handle can be any kind of R object: a process ID, a job name, an `R6` object returned by `callr::r_bg()`, etc.
+
+# Asynchrony
+
+`crew` unavoidably launches and terminates workers one at a time. Sometimes, these operations are not instantaneous. For example, in AWS Batch, the HTTP API call to launch a worker takes about a second to run. This overhead becomes burdensome for pipelines with hundreds of parallel workers.
 
 # Example
 

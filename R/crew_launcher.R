@@ -763,6 +763,11 @@ crew_class_launcher <- R6::R6Class(
       if (!is.null(self$async)) {
         self$wait()
         self$async$terminate()
+        lapply(
+          X = seq_len(nrow(self$workers)),
+          FUN = self$forward,
+          condition = "error"
+        )
       }
     }
   )

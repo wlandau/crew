@@ -182,7 +182,7 @@ crew_test("custom launcher with local async errors", {
   controller <- crew_controller_custom(processes = 1L)
   controller$start()
   on.exit({
-    suppressWarnings(controller$terminate())
+    try(suppressWarnings(controller$terminate()), silent = TRUE)
     rm(controller)
     gc()
     crew_test_sleep()
@@ -207,7 +207,9 @@ crew_test("custom launcher with local async errors", {
   expect_equal(length(out), 1L)
   expect_true(any(grepl("Worker 1 launch", out)))
   suppressWarnings(
-    expect_warning(controller$terminate(), class = "crew_warning")
+    expect_crew_error(
+      expect_warning(controller$terminate(), class = "crew_warning")
+    )
   )
   out <- controller$launcher$forward(index = 1L, condition = "character")
   expect_equal(out, controller$launcher$errors())

@@ -1,4 +1,4 @@
-# crew 0.5.0.9003
+# crew 0.5.0.9004 (development)
 
 * Migrate checks to enforce features in version 0.5.0 for reverse dependencies.
 * Drop check of backlogged workers, c.f. https://github.com/shikokuchuo/mirai/discussions/63#discussioncomment-7051889 (#79, #124, @shikokuchuo).
@@ -8,6 +8,7 @@
 * Simplify `wait()`.
 * `seconds_interval` in `map()` no longer defaults to `controller$client$seconds_interval`.
 * `launcher$terminate_workers()` terminates one or more workers, and `launcher$terminate` terminates the whole launcher.
+* Add infrastructure to let custom launcher plugins launch and terminate workers asynchronously (#133). Launchers can set a positive number in the `processes` field to set the number of local `mirai` daemons for asynchronous requests to launch and terminate the serious workers. Then, `launch_worker()` and `terminate_worker()` can optionally make use of `launcher$async$eval()` to send these asynchronous calls.
 
 # crew 0.5.0
 

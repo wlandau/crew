@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 # 📣 Request for community contributions 📣
 
-<span style="color: blue">**The launcher plugin framework aims to extend `crew` to modern platforms and services like [AWS Batch](https://aws.amazon.com/batch/), [Google Cloud Run](https://cloud.google.com/run/), [Kubernetes](https://kubernetes.io/), and beyond. At the time of writing, plugins for cloud computing do not yet exist. So if you have access to these services and know how to use them, please consider contributing a package with plugins of your own. The maintainer of `crew` would love to work with you!**</span>
+<span style="color: blue">**The launcher plugin framework aims to extend `crew` to modern platforms and services like [Google Cloud Run](https://cloud.google.com/run/), [Kubernetes](https://kubernetes.io/), and beyond. At the time of writing, plugins for cloud computing do not yet exist. So if you have access to these services and know how to use them, please consider contributing a package with plugins of your own. The maintainer of `crew` would love to work with you!**</span>
 
 # How it works
 
@@ -283,8 +283,100 @@ controller$terminate()
 # and crew workers successfully terminated.
 ```
 
-# Tips
+# Asynchrony
 
-* The [source code of the built-in local process launcher](https://github.com/wlandau/crew/blob/main/R/crew_launcher_local.R) is a helpful reference for writing your own launcher plugins.
-* For efficiency, every launch can happen asynchronously. There is no need to wait for the worker to start. When it starts, it will connect back to the `mirai` dispatcher  over the local network and start accepting tasks.
-* If you implement a [`terminate_worker()`](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-) method, each worker termination may also happen asynchronously. In rare cases when you do not trust the platform to terminate the worker on the first request, you can use [`crew_retry()`](https://wlandau.github.io/crew/reference/crew_retry.html) to wait for the job to exit, but this may reduce efficiency.
+Depending on the launcher plugin, worker launches and terminations can be time-consuming. For example, each HTTP request to AWS Batch can take a couple seconds, and this latency becomes burdensome when it there are hundreds of workers. Fortunately, `crew` launchers can run launches and terminations asynchronously. As a launcher plugin developer, all you need to do is:
+
+1. Expose the `processes` argument of `launcher$new()`. The `processes` field sets how many `mirai` daemons run locally and churn through quick requests.
+2. Execute launches and terminations inside `self$async$eval()`, and return the resulting value from `launch_worker()` and `terminate_worker()`.
+
+Let's demonstrate on the simple `processx` example. The use case itself may silly because the workers are local `processx` processes, but the same principles apply if you replace `processx` with a cloud computing service like AWS Batch and you replace the process IDs with AWS Batch job IDs.
+
+Here is what the launcher class looks like. We work with `processx` PIDs directly because they are light and easy to send to local async `mirai` daemons. The `self$async$eval()` function accepts R code, data, and packages to run a quick local asynchronous task, and it returns a `mirai::mirai()` task object as the handle. `handle$data` returns the results if available, and `crew` uses `mirai::call_mirai()` to make sure any tasks submitted by `launch_worker()` have resolved before they are used by `terminate_worker()`.
+
+```{r}
+async_launcher_class <- R6::R6Class(
+  classname = "custom_launcher_class",
+  inherit = crew::crew_class_launcher,
+  public = list(
+    launch_worker = function(call, name, launcher, worker, instance) {
+      self$async$eval(
+        command = list(pid = process$new(bin, args = c("-e", call))$get_pid()),
+        data = list(bin = file.path(R.home("bin"), "R"), call = call),
+        packages = "processx"
+      )
+    },
+    terminate_worker = function(handle) {
+      self$async$eval(
+        command = ps::ps_kill(p = ps::ps_handle(pid = pid)),
+        data = list(pid = handle$data$pid)
+      )
+    }
+  )
+)
+```
+
+The controller helper includes a `processes` argument which sets how many asynchronous `mirai` daemons to create. Set `processes` to `NULL` to disable async and use it like an ordinary synchronous controller.
+
+```{r}
+crew_controller_async <- function(
+  name = "async controller name",
+  workers = 1L,
+  host = "127.0.0.1",
+  port = NULL,
+  tls = crew::crew_tls(mode = "none"),
+  seconds_interval = 0.5,
+  seconds_timeout = 5,
+  seconds_launch = 30,
+  seconds_idle = Inf,
+  seconds_wall = Inf,
+  tasks_max = Inf,
+  tasks_timers = 0L,
+  reset_globals = TRUE,
+  reset_packages = FALSE,
+  reset_options = FALSE,
+  garbage_collection = FALSE,
+  launch_max = 5L,
+  processes = NULL # Number of local async daemons for worker launches etc.
+) {
+  client <- crew::crew_client(
+    name = name,
+    workers = workers,
+    host = host,
+    port = port,
+    tls = tls,
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout
+  )
+  launcher <- async_launcher_class$new(
+    name = name,
+    seconds_interval = seconds_interval,
+    seconds_launch = seconds_launch,
+    seconds_idle = seconds_idle,
+    seconds_wall = seconds_wall,
+    tasks_max = tasks_max,
+    tasks_timers = tasks_timers,
+    reset_globals = reset_globals,
+    reset_packages = reset_packages,
+    reset_options = reset_options,
+    garbage_collection = garbage_collection,
+    launch_max = launch_max,
+    tls = tls,
+    processes = processes
+  )
+  controller <- crew::crew_controller(
+    client = client,
+    launcher = launcher
+  )
+  controller$validate()
+  controller
+}
+```
+
+Creating a controller is the same as before, except the user sets both the `workers` and `processes` arguments. Remember, these are two different things: `workers` is the number of serious workers that run serious tasks from `push()`, whereas `processes` is the number of `mirai` daemons that asynchronously launch and terminate those serious workers. Workers may or may not be local, but `processes` are always local.
+
+```{r}
+async_controller <- crew_controller_async(workers = 12, processes = 4)
+```
+
+`async_controller$start()` automatically launches 4 local processes to asynchronously auto-scale the workers, and `async_controller$terminate()` automatically shuts down those 4 processes. Beyond that, usage is the exactly same as before.

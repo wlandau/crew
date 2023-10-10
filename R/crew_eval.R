@@ -137,3 +137,17 @@ crew_eval_text_substring <- function(message, prefix = character(0)) {
 
 crew_eval_max_nchar <- 2048L
 crew_eval_max_warnings <- 51L
+
+expr_crew_eval <- quote(
+  crew::crew_eval(
+    name = name,
+    command = command,
+    string = string,
+    data = data,
+    globals = globals,
+    seed = seed,
+    algorithm = algorithm,
+    packages = packages,
+    library = library
+  )
+)

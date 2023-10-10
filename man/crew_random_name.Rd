@@ -29,6 +29,7 @@ crew_random_name()
 Other utilities: 
 \code{\link{crew_assert}()},
 \code{\link{crew_deprecate}()},
+\code{\link{crew_eval_async}()},
 \code{\link{crew_eval}()},
 \code{\link{crew_retry}()},
 \code{\link{crew_worker}()}

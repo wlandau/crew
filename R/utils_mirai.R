@@ -45,3 +45,11 @@ daemons_error <- function(daemons, name) {
   )
   crew_error(paste(message, info))
 }
+
+mirai_error <- function(task) {
+  if_any(
+    mirai::is_mirai(task) && mirai::is_mirai_error(task$data),
+    as.character(task$data),
+    NULL
+  )
+}

@@ -38,6 +38,7 @@ controller$terminate()
 }
 \seealso{
 Other class: 
+\code{\link{crew_class_async}},
 \code{\link{crew_class_client}},
 \code{\link{crew_class_controller_group}},
 \code{\link{crew_class_launcher}},

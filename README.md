@@ -25,8 +25,7 @@ packages [`future`](https://future.futureverse.org/),
 
 **The [launcher plugin
 framework](https://wlandau.github.io/crew/articles/plugins.html) aims to
-extend `crew` to modern platforms and services like [AWS
-Batch](https://aws.amazon.com/batch/), [Google Cloud
+extend `crew` to modern platforms and services like [Google Cloud
 Run](https://cloud.google.com/run/),
 [Kubernetes](https://kubernetes.io/), and beyond. At the time of
 writing, plugins for cloud computing do not yet exist. So if you have
@@ -58,8 +57,8 @@ tutorial vignettes linked below.
     Shiny](https://wlandau.github.io/crew/articles/shiny.html)
 4.  [How to write launcher
     plugins](https://wlandau.github.io/crew/articles/plugins.html)
-5.  [Known risks and how to manage
-    them](https://wlandau.github.io/crew/articles/risks.html)
+5.  [Known risks of
+    `crew`](https://wlandau.github.io/crew/articles/risks.html)
 
 # Risks
 

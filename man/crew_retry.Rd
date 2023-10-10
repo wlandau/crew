@@ -39,10 +39,7 @@ if the wait times out.}
 \item{envir}{Environment to evaluate \code{fun}.}
 
 \item{condition}{Optional \code{nanonext} condition variable to wait on.
-If not \code{NULL}, then \code{crew_retry()} iteratively calls
-\code{crew:::crew_until(condition, seconds_timeout = seconds_interval)}
-instead of \code{nanonext::msleep(1000 * seconds_interval)}
-so that the wait may exit early if the condition variable is signaled.}
+Functionality using condition variables is not implemented yet.}
 }
 \value{
 \code{NULL} (invisibly).
@@ -58,6 +55,7 @@ crew_retry(fun = function() TRUE)
 Other utilities: 
 \code{\link{crew_assert}()},
 \code{\link{crew_deprecate}()},
+\code{\link{crew_eval_async}()},
 \code{\link{crew_eval}()},
 \code{\link{crew_random_name}()},
 \code{\link{crew_worker}()}

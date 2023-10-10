@@ -56,6 +56,14 @@
 #'   because sometimes workers are unproductive under perfectly ordinary
 #'   circumstances. But `launch_max` should still be small enough
 #'   to detect errors in the underlying platform.
+#' @param processes `NULL` or positive integer of length 1,
+#'   number of local processes to
+#'   launch to allow worker launches to happen asynchronously. If `NULL`,
+#'   then no local processes are launched. If 1 or greater, then the launcher
+#'   starts the processes on `start()` and ends them on `terminate()`.
+#'   Plugins that may use these processes should run asynchronous calls
+#'   using `launcher$async$eval()` and expect a `mirai` task object
+#'   as the return value.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -82,7 +90,8 @@ crew_launcher <- function(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
-  tls = crew::crew_tls()
+  tls = crew::crew_tls(),
+  processes = NULL
 ) {
   crew_deprecate(
     name = "seconds_exit",
@@ -119,7 +128,8 @@ crew_launcher <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection,
     launch_max = launch_max,
-    tls = tls
+    tls = tls,
+    processes = processes
   )
 }
 
@@ -171,6 +181,11 @@ crew_class_launcher <- R6::R6Class(
     launch_max = NULL,
     #' @field tls See [crew_launcher()].
     tls = NULL,
+    #' @field processes See [crew_launcher()].
+    processes = NULL,
+    #' @field async A [crew_async()] object to run low-level launcher tasks
+    #'   asynchronously.
+    async = NULL,
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
     #' @param name See [crew_launcher()].
@@ -186,7 +201,8 @@ crew_class_launcher <- R6::R6Class(
     #' @param reset_options See [crew_launcher()].
     #' @param garbage_collection See [crew_launcher()].
     #' @param launch_max See [crew_launcher()].
-    #' @param tls See [crew_launcher()]
+    #' @param tls See [crew_launcher()].
+    #' @param processes See [crew_launcher()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
@@ -213,7 +229,8 @@ crew_class_launcher <- R6::R6Class(
       reset_options = NULL,
       garbage_collection = NULL,
       launch_max = NULL,
-      tls = NULL
+      tls = NULL,
+      processes = NULL
     ) {
       self$name <- name
       self$seconds_launch <- seconds_launch
@@ -227,6 +244,7 @@ crew_class_launcher <- R6::R6Class(
       self$garbage_collection <- garbage_collection
       self$launch_max <- launch_max
       self$tls <- tls
+      self$processes <- processes
     },
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
@@ -277,6 +295,13 @@ crew_class_launcher <- R6::R6Class(
           !anyNA(.)
         )
       }
+      crew_assert(
+        self$processes %|||% 1L,
+        is.numeric(.),
+        . > 0L,
+        length(.) == 1L,
+        !anyNA(.)
+      )
       fields <- c(
         "reset_globals",
         "reset_packages",
@@ -290,11 +315,13 @@ crew_class_launcher <- R6::R6Class(
         crew_assert(self$workers, is.data.frame(.))
         cols <- c(
           "handle",
+          "termination",
           "socket",
           "start",
           "launches",
           "futile",
           "launched",
+          "terminated",
           "history",
           "online",
           "discovered",
@@ -374,15 +401,19 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param sockets For testing purposes only.
     start = function(sockets = NULL) {
+      self$async <- crew_async(workers = self$processes)
+      self$async$start()
       sockets <- sockets %|||% mirai::nextget("urls", .compute = self$name)
       n <- length(sockets)
       self$workers <- tibble::tibble(
         handle = replicate(n, crew_null, simplify = FALSE),
+        termination = replicate(n, crew_null, simplify = FALSE),
         socket = sockets,
         start = rep(NA_real_, n),
         launches = rep(0L, n),
         futile = rep(0L, n),
         launched = rep(FALSE, n),
+        terminated = rep(TRUE, n),
         history = rep(-1L, n),
         online = rep(FALSE, n),
         discovered = rep(FALSE, n),
@@ -493,10 +524,7 @@ crew_class_launcher <- R6::R6Class(
       for (index in which_done) {
         socket <- mirai::saisei(i = index, force = FALSE, .compute = self$name)
         if (!is.null(socket)) {
-          handle <- self$workers$handle[[index]]
-          if (!is_crew_null(handle)) {
-            self$terminate_worker(handle)
-          }
+          self$terminate_workers(index = index)
           self$workers$socket[index] <- socket
           self$workers$launched[index] <- FALSE
         }
@@ -507,6 +535,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param index Positive integer of length 1, index of the worker
     #'   to launch.
     launch = function(index) {
+      self$forward(index = index, condition = "error")
       socket <- self$workers$socket[index]
       instance <- parse_instance(socket)
       call <- self$call(
@@ -538,6 +567,7 @@ crew_class_launcher <- R6::R6Class(
           "why {crew} workers are not booting up or connecting."
         )
       )
+      mirai::call_mirai(aio = self$workers$handle[[index]])
       handle <- self$launch_worker(
         call = as.character(call),
         name = as.character(name),
@@ -551,7 +581,77 @@ crew_class_launcher <- R6::R6Class(
       self$workers$launches[index] <- self$workers$launches[index] + 1L
       self$workers$futile[index] <- futile
       self$workers$launched[index] <- TRUE
+      self$workers$terminated[index] <- FALSE
       self$workers$history[index] <- complete
+      invisible()
+    },
+    #' @description Forward an asynchronous launch/termination error condition
+    #'   of a worker.
+    #' @return Throw an error, throw a warning, or return a character string,
+    #'   depending on the `condition` argument.
+    #' @param index Integer of length 1, index of the worker to inspect.
+    #' @param condition Character of length 1 indicating what to do
+    #'   with an error if found. `"error"` to throw an error,
+    #'   `"warning"` to throw a warning,
+    #'   `"message"` to print a message,
+    #'   and `"character"` to return a character vector of specific
+    #'   task-level error messages.
+    #'   The return value is `NULL` if no error is found.
+    forward = function(index, condition = "error") {
+      launch <- mirai_error(self$workers$handle[[index]])
+      termination <- mirai_error(self$workers$termination[[index]])
+      if (is.null(launch) && is.null(termination)) {
+        return(NULL)
+      }
+      message_launch <- if_any(
+        is.null(launch),
+        NULL,
+        sprintf("Worker %s launch: %s", index, launch)
+      )
+      message_termination <- if_any(
+        is.null(termination),
+        NULL,
+        sprintf("Worker %s termination: %s", index, termination)
+      )
+      message <- paste0(
+        "Error asynchronously launching and/or terminating a worker. ",
+        "Run the errors() method of the launcher ",
+        "to see all the error messages. ",
+        "To troubleshoot, it may be helpful to rerun with async disabled ",
+        "using processes = NULL in the launcher.\n",
+        paste(c(message_launch, message_termination), collapse = "\n")
+      )
+      switch(
+        condition,
+        error = crew_error(message = message),
+        warning = crew_warning(message = message),
+        message = crew_message(message = message),
+        character = return(c(message_launch, message_termination))
+      )
+      invisible()
+    },
+    #' @description Collect and return the most recent error messages
+    #'   from asynchronous worker launching and termination.
+    #' @return Character vector of all the most recent error messages
+    #'   from asynchronous worker launching and termination. `NULL`
+    #'   if there are no errors.
+    errors = function() {
+      out <- lapply(
+        X = seq_len(nrow(self$workers)),
+        FUN = self$forward,
+        condition = "character"
+      )
+      unlist(out) %||% NULL
+    },
+    #' @description Wait for any local asynchronous launch or termination
+    #'   tasks to complete.
+    #' @details Only relevant if `processes` is a positive integer.
+    #' @return `NULL` (invisibly).
+    wait = function() {
+      if (!is.null(self$async) && !is.null(self$processes)) {
+        lapply(X = self$workers$handle, FUN = mirai::call_mirai)
+        lapply(X = self$workers$termination, FUN = mirai::call_mirai)
+      }
       invisible()
     },
     #' @description Deprecated in version 0.5.0.9000 (2023-10-02). Not used.
@@ -591,34 +691,68 @@ crew_class_launcher <- R6::R6Class(
       walk(x = head(x = unlaunched, n = deficit), f = self$launch)
       invisible()
     },
-    #' @description Abstract method.
-    #' @details Does not actually terminate a worker. This method is a
-    #'   placeholder, and its presence allows manual worker termination
-    #'   to be optional.
-    #' @return `NULL` (invisibly).
+    #' @description Abstract worker launch method.
+    #' @details Launcher plugins will overwrite this method.
+    #' @return A handle to mock the worker launch.
+    #' @param call Character of length 1 with a namespaced call to
+    #'   [crew_worker()] which will run in the worker and accept tasks.
+    #' @param name Character of length 1 with an informative worker name.
+    #' @param launcher Character of length 1, name of the launcher.
+    #' @param worker Positive integer of length 1, index of the worker.
+    #'   This worker index remains the same even when the current instance
+    #'   of the worker exits and a new instance launches.
+    #'   It is always between 1 and the maximum number of concurrent workers.
+    #' @param instance Character of length 1 to uniquely identify
+    #'   the current instance of the worker a the index in the launcher.
+    launch_worker = function(call, name, launcher, worker, instance) {
+      for (field in list(call, name, launcher, instance)) {
+        crew_assert(
+          field,
+          is.character(.),
+          length(.) == 1L,
+          !anyNA(.),
+          nzchar(.)
+        )
+      }
+      crew_assert(
+        worker,
+        is.numeric(.),
+        length(.) == 1L,
+        !anyNA(.),
+        . > 0L
+      )
+      list(abstract = TRUE)
+    },
+    #' @description Abstract worker termination method.
+    #' @details Launcher plugins will overwrite this method.
+    #' @return A handle to mock worker termination.
     #' @param handle A handle object previously
     #'   returned by `launch_worker()` which allows the termination
     #'   of the worker.
     terminate_worker = function(handle) {
-      invisible()
+      list(abstract = TRUE)
     },
     #' @description Terminate one or more workers.
     #' @return `NULL` (invisibly).
     #' @param index Integer vector of the indexes of the workers
     #'   to terminate. If `NULL`, all current workers are terminated.
     terminate_workers = function(index = NULL) {
-      if (is.null(self$workers)) {
+      workers <- .subset2(self, "workers")
+      if (is.null(workers)) {
         return(invisible())
       }
-      index <- index %|||% seq_len(nrow(self$workers))
+      index <- index %|||% seq_len(nrow(workers))
       for (worker in index) {
-        handle <- self$workers$handle[[worker]]
-        if (!is_crew_null(handle)) {
-          self$terminate_worker(handle)
+        if (!workers$terminated[worker]) {
+          handle <- workers$handle[[worker]]
+          mirai::call_mirai(aio = handle)
+          self$workers$termination[[worker]] <-
+            self$terminate_worker(handle = handle) %|||% crew_null
         }
-        self$workers$handle[[worker]] <- crew_null
         self$workers$socket[worker] <- NA_character_
         self$workers$start[worker] <- NA_real_
+        self$workers$terminated[worker] <- TRUE
+        self$forward(index = worker, condition = "warning")
       }
       invisible()
     },
@@ -626,6 +760,15 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     terminate = function() {
       self$terminate_workers()
+      if (!is.null(self$async)) {
+        self$wait()
+        self$async$terminate()
+        lapply(
+          X = seq_len(nrow(self$workers)),
+          FUN = self$forward,
+          condition = "error"
+        )
+      }
     }
   )
 )

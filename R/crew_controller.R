@@ -987,20 +987,6 @@ crew_class_controller <- R6::R6Class(
   )
 )
 
-expr_crew_eval <- quote(
-  crew::crew_eval(
-    name = name,
-    command = command,
-    string = string,
-    data = data,
-    globals = globals,
-    seed = seed,
-    algorithm = algorithm,
-    packages = packages,
-    library = library
-  )
-)
-
 controller_map_message_progress <- function(total, resolved, verbose) {
   if (!verbose) {
     return()

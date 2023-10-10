@@ -109,6 +109,8 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-done}{\code{crew_class_launcher$done()}}
 \item \href{#method-crew_class_launcher-rotate}{\code{crew_class_launcher$rotate()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
+\item \href{#method-crew_class_launcher-forward}{\code{crew_class_launcher$forward()}}
+\item \href{#method-crew_class_launcher-errors}{\code{crew_class_launcher$errors()}}
 \item \href{#method-crew_class_launcher-wait}{\code{crew_class_launcher$wait()}}
 \item \href{#method-crew_class_launcher-throttle}{\code{crew_class_launcher$throttle()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
@@ -484,6 +486,52 @@ to launch.}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-forward"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-forward}{}}}
+\subsection{Method \code{forward()}}{
+Forward an asynchronous launch/termination error condition
+of a worker.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$forward(index, condition = "error")}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{index}}{Integer of length 1, index of the worker to inspect.}
+
+\item{\code{condition}}{Character of length 1 indicating what to do
+with an error if found. \code{"error"} to throw an error,
+\code{"warning"} to throw a warning,
+\code{"message"} to print a message,
+and \code{"character"} to return a character vector of specific
+task-level error messages.
+The return value is \code{NULL} if no error is found.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Throw an error, throw a warning, or return a character string,
+depending on the \code{condition} argument.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-errors"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-errors}{}}}
+\subsection{Method \code{errors()}}{
+Collect and return the most recent error messages
+from asynchronous worker launching and termination.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$errors()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character vector of all the most recent error messages
+from asynchronous worker launching and termination. \code{NULL}
+if there are no errors.
 }
 }
 \if{html}{\out{<hr>}}

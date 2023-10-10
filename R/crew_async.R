@@ -38,8 +38,6 @@ crew_class_async <- R6::R6Class(
     workers = NULL,
     #' @field instance Character of length 1, name of the current instance.
     instance = NULL,
-    #' @field tasks Integer of length 1, number of tasks submitted so far.
-    tasks = NULL,
     #' @description TLS configuration constructor.
     #' @return An `R6` object with TLS configuration.
     #' @param workers Argument passed from [crew_async()].
@@ -73,7 +71,6 @@ crew_class_async <- R6::R6Class(
         return(invisible())
       }
       self$instance <- crew::crew_random_name()
-      self$tasks <- 0L
       mirai::daemons(
         n = self$workers,
         dispatcher = FALSE,
@@ -96,39 +93,38 @@ crew_class_async <- R6::R6Class(
     #' @param substitute Logical of length 1, whether to substitute `command`.
     #'   If `FALSE`, then `command` must be an expression object
     #'   or language object.
-    #' @param args Named list of data objects required to run `command`.
+    #' @param data Named list of data objects required to run `command`.
     #' @param packages Character vector of packages to load.
     #' @param library Character vector of library paths to load the packages
     #'   from.
     eval = function(
       command,
       substitute = TRUE,
-      args = list(),
+      data = list(),
       packages = character(0L),
       library = NULL
     ) {
       command <- if_any(substitute, substitute(command), command)
-      if (is.null(self$workers)) {
+      if_any(
+        is.null(self$workers),
         list(
           data = crew_eval_async(
             command = command,
-            args = args,
+            data = data,
             packages = packages,
             library = library
           )
-        )
-      } else {
-        self$tasks <- self$tasks + 1L
+        ),
         mirai::mirai(
           .expr = expr_crew_eval_async,
           command = command,
-          args = args,
+          data = data,
           packages = packages,
           library = library,
           url = self$url,
           .compute = self$instance
         )
-      }
+      )
     },
     #' @description Start the local workers and error handling socket.
     #' @details Waits for existing tasks to complete first.
@@ -139,7 +135,6 @@ crew_class_async <- R6::R6Class(
       }
       mirai::daemons(n = 0L, .compute = self$instance)
       self$instance <- NULL
-      self$tasks <- 0L
       invisible()
     }
   )
@@ -152,23 +147,23 @@ crew_class_async <- R6::R6Class(
 #' @keywords internal
 #' @return The result of running `command`.
 #' @param command Language object with R code to run.
-#' @param args Named list of objects that `command` depends on.
+#' @param data Named list of objects that `command` depends on.
 #' @param packages Character vector of packages to load.
 #' @param library Character vector of library paths to load the packages from.
 crew_eval_async <- function(
   command,
-  args = list(),
+  data = list(),
   packages = character(0L),
   library = NULL
 ) {
   load_packages(packages = packages, library = library)
-  eval(expr = command, envir = list2env(args, parent = globalenv()))
+  eval(expr = command, envir = list2env(data, parent = globalenv()))
 }
 
 expr_crew_eval_async <- quote(
   crew::crew_eval_async(
     command = command,
-    args = args,
+    data = data,
     packages = packages,
     library = library
   )

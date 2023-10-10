@@ -6,7 +6,7 @@
 \usage{
 crew_eval_async(
   command,
-  args = list(),
+  data = list(),
   packages = character(0L),
   library = NULL
 )
@@ -14,7 +14,7 @@ crew_eval_async(
 \arguments{
 \item{command}{Language object with R code to run.}
 
-\item{args}{Named list of objects that \code{command} depends on.}
+\item{data}{Named list of objects that \code{command} depends on.}
 
 \item{packages}{Character vector of packages to load.}
 

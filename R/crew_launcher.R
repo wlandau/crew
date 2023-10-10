@@ -535,7 +535,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param index Positive integer of length 1, index of the worker
     #'   to launch.
     launch = function(index) {
-      self$async$errors()
+      self$forward(index = index, condition = "error")
       socket <- self$workers$socket[index]
       instance <- parse_instance(socket)
       call <- self$call(
@@ -584,6 +584,64 @@ crew_class_launcher <- R6::R6Class(
       self$workers$terminated[index] <- FALSE
       self$workers$history[index] <- complete
       invisible()
+    },
+    #' @description Forward an asynchronous launch/termination error condition
+    #'   of a worker.
+    #' @return Throw an error, throw a warning, or return a character string,
+    #'   depending on the `condition` argument.
+    #' @param index Integer of length 1, index of the worker to inspect.
+    #' @param condition Character of length 1 indicating what to do
+    #'   with an error if found. `"error"` to throw an error,
+    #'   `"warning"` to throw a warning,
+    #'   `"message"` to print a message,
+    #'   and `"character"` to return a character vector of specific
+    #'   task-level error messages.
+    #'   The return value is `NULL` if no error is found.
+    forward = function(index, condition = "error") {
+      launch <- mirai_error(self$workers$handle[[index]])
+      termination <- mirai_error(self$workers$termination[[index]])
+      if (is.null(launch) && is.null(termination)) {
+        return(NULL)
+      }
+      message_launch <- if_any(
+        is.null(launch),
+        NULL,
+        sprintf("Worker %s launch: %s", index, launch)
+      )
+      message_termination <- if_any(
+        is.null(termination),
+        NULL,
+        sprintf("Worker %s termination: %s", index, termination)
+      )
+      message <- paste0(
+        "Error asynchronously launching and/or terminating a worker. ",
+        "Run the errors() method of the launcher ",
+        "to see all the error messages. ",
+        "To troubleshoot, it may be helpful to rerun with async disabled ",
+        "using processes = NULL in the launcher.\n",
+        paste(c(message_launch, message_termination), collapse = "\n")
+      )
+      switch(
+        condition,
+        error = crew_error(message = message),
+        warning = crew_warning(message = message),
+        message = crew_message(message = message),
+        character = return(c(message_launch, message_termination))
+      )
+      invisible()
+    },
+    #' @description Collect and return the most recent error messages
+    #'   from asynchronous worker launching and termination.
+    #' @return Character vector of all the most recent error messages
+    #'   from asynchronous worker launching and termination. `NULL`
+    #'   if there are no errors.
+    errors = function() {
+      out <- lapply(
+        X = seq_len(nrow(self$workers)),
+        FUN = self$forward,
+        condition = "character"
+      )
+      unlist(out) %||% NULL
     },
     #' @description Wait for any local asynchronous launch or termination
     #'   tasks to complete.
@@ -694,6 +752,7 @@ crew_class_launcher <- R6::R6Class(
         self$workers$socket[worker] <- NA_character_
         self$workers$start[worker] <- NA_real_
         self$workers$terminated[worker] <- TRUE
+        self$forward(index = worker, condition = "warning")
       }
       invisible()
     },
@@ -704,7 +763,6 @@ crew_class_launcher <- R6::R6Class(
       if (!is.null(self$async)) {
         self$wait()
         self$async$terminate()
-        self$async$errors()
       }
     }
   )

@@ -24,8 +24,6 @@ Other class:
 \item{\code{workers}}{See \code{\link[=crew_async]{crew_async()}}.}
 
 \item{\code{instance}}{Character of length 1, name of the current instance.}
-
-\item{\code{tasks}}{Integer of length 1, number of tasks submitted so far.}
 }
 \if{html}{\out{</div>}}
 }
@@ -100,7 +98,7 @@ compute profile.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_async$eval(
   command,
   substitute = TRUE,
-  args = list(),
+  data = list(),
   packages = character(0L),
   library = NULL
 )}\if{html}{\out{</div>}}
@@ -115,7 +113,7 @@ compute profile.
 If \code{FALSE}, then \code{command} must be an expression object
 or language object.}
 
-\item{\code{args}}{Named list of data objects required to run \code{command}.}
+\item{\code{data}}{Named list of data objects required to run \code{command}.}
 
 \item{\code{packages}}{Character vector of packages to load.}
 

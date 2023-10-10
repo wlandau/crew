@@ -182,50 +182,38 @@ crew_test("custom launcher with local async errors", {
   controller <- crew_controller_custom(processes = 1L)
   controller$start()
   on.exit({
-    controller$terminate()
+    suppressWarnings(controller$terminate())
     rm(controller)
     gc()
     crew_test_sleep()
   })
+  expect_equal(controller$launcher$errors(), NULL)
   controller$launcher$launch(index = 1L)
   controller$launcher$wait()
-  crew_retry(
-    ~all(controller$launcher$async$errors() > 0L),
-    seconds_interval = 0.05,
-    seconds_timeout = 10
+  expect_crew_error(controller$launcher$launch(index = 1L))
+  expect_crew_error(
+    controller$launcher$forward(index = 1L, condition = "error")
   )
-  condition <- tryCatch(
-    controller$launcher$launch(index = 1L),
-    error = function(condition) {
-      condition
-    }
+  expect_warning(
+    controller$launcher$forward(index = 1L, condition = "warning"),
+    class = "crew_warning"
   )
-  expect_s3_class(condition, "crew_error")
-  message <- conditionMessage(condition)
-  expect_true(any(grepl("this package does not exist", message)))
-  controller$launcher$async$reset()
-  crew_retry(
-    ~all(controller$launcher$async$errors() == 0L),
-    seconds_interval = 0.05,
-    seconds_timeout = 10
+  expect_message(
+    controller$launcher$forward(index = 1L, condition = "message"),
+    class = "crew_message"
   )
-  controller$launcher$terminate_workers()
-  controller$launcher$wait()
-  crew_retry(
-    ~all(controller$launcher$async$errors() > 0L),
-    seconds_interval = 0.05,
-    seconds_timeout = 10
+  out <- controller$launcher$forward(index = 1L, condition = "character")
+  expect_equal(out, controller$launcher$errors())
+  expect_equal(length(out), 1L)
+  expect_true(any(grepl("Worker 1 launch", out)))
+  suppressWarnings(
+    expect_warning(controller$terminate(), class = "crew_warning")
   )
-  condition <- tryCatch(
-    controller$launcher$launch(index = 1L),
-    error = function(condition) {
-      condition
-    }
-  )
-  expect_s3_class(condition, "crew_error")
-  message <- conditionMessage(condition)
-  expect_true(any(grepl("this package does not exist", message)))
-  expect_true(any(grepl("termination error", message)))
+  out <- controller$launcher$forward(index = 1L, condition = "character")
+  expect_equal(out, controller$launcher$errors())
+  expect_equal(length(out), 2L)
+  expect_true(any(grepl("Worker 1 launch", out)))
+  expect_true(any(grepl("Worker 1 termination", out)))
 })
 
 crew_test("custom launcher with async internal launcher tasks", {
@@ -254,7 +242,7 @@ crew_test("custom launcher with async internal launcher tasks", {
             }
             list(pid = handle$get_pid(), status = "started")
           },
-          args = list(
+          data = list(
             path = path,
             call = call
           ),
@@ -268,7 +256,7 @@ crew_test("custom launcher with async internal launcher tasks", {
             ps::ps_kill(p = ps::ps_handle(pid = pid))
             list(pid = pid, status = "terminated")
           },
-          args = list(pid = pid)
+          data = list(pid = pid)
         )
       }
     )

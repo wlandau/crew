@@ -25,7 +25,7 @@ crew_test("async object task with NULL workers", {
   x$start()
   out <- x$eval(
     command = c(ps::ps_pid(), x),
-    args = list(x = "value"),
+    data = list(x = "value"),
     packages = "rlang"
   )
   expect_equal(out$data, c(ps::ps_pid(), "value"))
@@ -44,7 +44,7 @@ crew_test("async task with 1 process", {
   x$start()
   out <- x$eval(
     command = list(pid = ps::ps_pid(), x = x),
-    args = list(x = "value"),
+    data = list(x = "value"),
     packages = "rlang"
   )
   crew_retry(

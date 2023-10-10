@@ -292,7 +292,7 @@ Depending on the launcher plugin, worker launches and terminations can be time-c
 
 Let's demonstrate on the simple `processx` example. The use case itself may silly because the workers are local `processx` processes, but the same principles apply if you replace `processx` with a cloud computing service like AWS Batch and you replace the process IDs with AWS Batch job IDs.
 
-Here is what the launcher class looks like. We work with `processx` PIDs directly because they are light and easy to send to local async `mirai` daemons.
+Here is what the launcher class looks like. We work with `processx` PIDs directly because they are light and easy to send to local async `mirai` daemons. The `self$async$eval()` function accepts R code, data, and packages to run a quick local asynchronous task, and it returns a `mirai::mirai()` task object as the handle. `handle$data` returns the results if available, and `crew` uses `mirai::call_mirai()` to make sure any tasks submitted by `launch_worker()` have resolved before they are used by `terminate_worker()`.
 
 ```{r}
 async_launcher_class <- R6::R6Class(

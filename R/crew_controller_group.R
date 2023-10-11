@@ -202,7 +202,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   `seed` argument of `set.seed()` if not `NULL`.
     #'   If `algorithm` and `seed` are both `NULL`,
     #'   then the random number generator defaults to the
-    #'   recommended widely spaced worker-specific
+    #'   widely spaced worker-specific
     #'   L'Ecuyer streams as supported by `mirai::nextstream()`.
     #'   See `vignette("parallel", package = "parallel")` for details.
     #' @param algorithm Integer of length 1 with the pseudo-random number

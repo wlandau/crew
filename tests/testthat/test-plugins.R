@@ -222,6 +222,9 @@ crew_test("custom launcher with async internal launcher tasks", {
   skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("processx")
+  # TODO: remove this part when crew.cluster is updated on CRAN:
+  Sys.setenv(TESTTHAT = "false")
+  on.exit(Sys.setenv(TESTTHAT = "true"))
   if (isTRUE(as.logical(Sys.getenv("CI", "false")))) {
     skip_on_os("mac")
   }

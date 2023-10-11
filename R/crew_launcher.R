@@ -743,7 +743,11 @@ crew_class_launcher <- R6::R6Class(
       }
       index <- index %|||% seq_len(nrow(workers))
       for (worker in index) {
-        if (!workers$terminated[worker]) {
+        should_terminate <- !workers$terminated[worker] ||
+          # TODO: remove this part when crew.cluster updates on cran:
+          (identical(Sys.getenv("TESTTHAT"), "true") &&
+             !is_crew_null(workers$handle[[worker]]))
+        if (should_terminate) {
           handle <- workers$handle[[worker]]
           mirai::call_mirai(aio = handle)
           self$workers$termination[[worker]] <-

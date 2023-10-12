@@ -422,7 +422,7 @@ seed to set for the evaluation of the task. Passed to the
 \code{seed} argument of \code{set.seed()} if not \code{NULL}.
 If \code{algorithm} and \code{seed} are both \code{NULL},
 then the random number generator defaults to the
-recommended widely spaced worker-specific
+widely spaced worker-specific
 L'Ecuyer streams as supported by \code{mirai::nextstream()}.
 See \code{vignette("parallel", package = "parallel")} for details.}
 

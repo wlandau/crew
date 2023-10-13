@@ -74,7 +74,7 @@ crew_class_async <- R6::R6Class(
       mirai::daemons(
         n = self$workers,
         dispatcher = FALSE,
-        asyncdial = FALSE,
+        autoexit = TRUE,
         .compute = self$instance
       )
       invisible()

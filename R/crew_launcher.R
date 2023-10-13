@@ -348,7 +348,7 @@ crew_class_launcher <- R6::R6Class(
         (8L * as.integer(isTRUE(self$garbage_collection)))
       list(
         url = socket,
-        asyncdial = FALSE,
+        autoexit = TRUE,
         maxtasks = self$tasks_max,
         idletime = self$seconds_idle * 1000,
         walltime = self$seconds_wall * 1000,

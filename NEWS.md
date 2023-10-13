@@ -1,6 +1,6 @@
 # crew 0.6.0.9000 (development)
 
-
+* Migrate from `asyncdial` to `autoexit`.
 
 # crew 0.6.0
 

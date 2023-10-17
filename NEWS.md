@@ -1,6 +1,7 @@
 # crew 0.6.0.9000 (development)
 
 * Migrate from `asyncdial` to `autoexit`.
+* Use `Sys.info()[["user"]]` to get the user in `crew_clean()` (#135, @luwidmer).
 
 # crew 0.6.0
 

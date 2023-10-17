@@ -769,6 +769,7 @@ crew_class_launcher <- R6::R6Class(
           condition = "error"
         )
       }
+      invisible()
     }
   )
 )

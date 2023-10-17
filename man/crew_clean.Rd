@@ -7,7 +7,7 @@
 crew_clean(
   dispatchers = TRUE,
   workers = TRUE,
-  user = Sys.getenv("USER"),
+  user = Sys.info()[["user"]],
   seconds_interval = 0.1,
   seconds_timeout = 10,
   verbose = TRUE

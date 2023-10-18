@@ -136,7 +136,7 @@ At the bottom of `server()` is the crux of the app: the event loop that scans fo
     invalidateLater(millis = 100)
     result <- controller$pop()$result
     if (!is.null(result)) reactive_result(result[[1]])
-    reactive_status(status_message(n = sum(controller$schedule$summary())))
+    reactive_status(status_message(n = length(controller$tasks)))
     reactive_poll(controller$nonempty())
   })
 }
@@ -212,7 +212,7 @@ server <- function(input, output, session) {
     invalidateLater(millis = 100)
     result <- controller$pop()$result
     if (!is.null(result)) reactive_result(result[[1]])
-    reactive_status(status_message(n = sum(controller$schedule$summary())))
+    reactive_status(status_message(n = length(controller$tasks)))
     reactive_poll(controller$nonempty())
   })
 }

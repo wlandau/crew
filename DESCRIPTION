@@ -42,8 +42,8 @@ Depends:
 Imports:
   data.table,
   getip,
-  mirai (>= 0.11.0),
-  nanonext (>= 0.10.2),
+  mirai (>= 0.11.2),
+  nanonext (>= 0.10.4),
   processx,
   ps,
   R6,

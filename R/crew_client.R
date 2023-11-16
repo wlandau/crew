@@ -227,7 +227,8 @@ crew_class_client <- R6::R6Class(
       self$started <- TRUE
       invisible()
     },
-    #' @description Get the `nanonext` condition variable.
+    #' @description Get the `nanonext` condition variable which tasks signal
+    #'   on resolution.
     #' @return The `nanonext` condition variable which tasks signal
     #'   on resolution. The return value is `NULL` if the client
     #'   is not running.
@@ -237,7 +238,7 @@ crew_class_client <- R6::R6Class(
     #' @description Get the true value of the `nanonext` condition variable.
     #' @details Subtracts a safety offset which was padded on start.
     #' @return The value of the `nanonext` condition variable.
-    condition_value = function() {
+    resolved = function() {
       condition <- .subset2(self, "condition")()
       if_any(
         is.null(condition),

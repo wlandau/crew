@@ -67,7 +67,7 @@ Other class:
 \item \href{#method-crew_class_client-validate}{\code{crew_class_client$validate()}}
 \item \href{#method-crew_class_client-start}{\code{crew_class_client$start()}}
 \item \href{#method-crew_class_client-condition}{\code{crew_class_client$condition()}}
-\item \href{#method-crew_class_client-condition_value}{\code{crew_class_client$condition_value()}}
+\item \href{#method-crew_class_client-resolved}{\code{crew_class_client$resolved()}}
 \item \href{#method-crew_class_client-summary}{\code{crew_class_client$summary()}}
 \item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
 }
@@ -155,7 +155,8 @@ Start listening for workers on the available sockets.
 \if{html}{\out{<a id="method-crew_class_client-condition"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-condition}{}}}
 \subsection{Method \code{condition()}}{
-Get the \code{nanonext} condition variable.
+Get the \code{nanonext} condition variable which tasks signal
+on resolution.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_client$condition()}\if{html}{\out{</div>}}
 }
@@ -167,12 +168,12 @@ is not running.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-condition_value"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-condition_value}{}}}
-\subsection{Method \code{condition_value()}}{
+\if{html}{\out{<a id="method-crew_class_client-resolved"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-resolved}{}}}
+\subsection{Method \code{resolved()}}{
 Get the true value of the \code{nanonext} condition variable.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$condition_value()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$resolved()}\if{html}{\out{</div>}}
 }
 
 \subsection{Details}{

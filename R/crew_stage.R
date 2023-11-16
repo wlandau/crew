@@ -100,12 +100,13 @@ crew_class_stage <- R6::R6Class(
       while (.subset2(self, "unpopped")() < 1L) {
         self$wait_unobserved(seconds_timeout = seconds_interval)
       }
+      invisible()
     },
-    
     wait_total = function(seconds_interval = 0.25, total = 1L) {
       while (.subset2(self, "total")() < total) {
         self$wait_unobserved(seconds_timeout = seconds_interval)
       }
+      invisible()
     }
   )
 )

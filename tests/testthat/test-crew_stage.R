@@ -1,10 +1,11 @@
 crew_test("stage validate", {
   x <- crew_stage()
+  expect_silent(x$validate())
   expect_null(x$condition)
   expect_null(x$unpopped)
   expect_null(x$popped)
-  expect_silent(x$validate())
   x$start()
+  expect_silent(x$validate())
   expect_true(inherits(x$condition, "conditionVariable"))
   expect_equal(x$unpopped, 0L)
   expect_equal(x$popped, 0L)
@@ -28,6 +29,7 @@ crew_test("stage inherit", {
   cv <- nanonext::cv()
   x$inherit(cv)
   nanonext::cv_signal(cv)
+  nanonext::msleep(250)
   expect_equal(nanonext::cv_value(x$condition), 1L)
 })
 
@@ -38,6 +40,7 @@ crew_test("stage resolved()", {
   cv <- nanonext::cv()
   x$inherit(cv)
   nanonext::cv_signal(cv)
+  nanonext::msleep(250)
   expect_equal(x$resolved(), 1L)
   x$unpopped <- 40L
   x$popped <- 700L
@@ -52,6 +55,7 @@ crew_test("stage pop()", {
     x$inherit(cv)
     expect_equal(nanonext::cv_value(x$condition), 0L)
     replicate(3L, nanonext::cv_signal(cv))
+    nanonext::msleep(250)
     x$unpopped <- unpopped
     for (index in seq_len(3L) - 1L) {
       expect_equal(nanonext::cv_value(x$condition), 3L - index)
@@ -80,6 +84,7 @@ crew_test("stage wait_unobserved()", {
   expect_equal(x$unpopped, 0L)
   expect_equal(x$popped, 0L)
   nanonext::cv_signal(x$condition)
+  nanonext::msleep(250)
   expect_equal(nanonext::cv_value(x$condition), 1L)
   x$wait_unobserved(seconds_timeout = 0.001)
   expect_equal(nanonext::cv_value(x$condition), 0L)
@@ -97,6 +102,7 @@ crew_test("stage wait_resolved()", {
   expect_equal(x$unpopped, 0L)
   expect_equal(x$popped, 0L)
   nanonext::cv_signal(x$condition)
+  nanonext::msleep(250)
   expect_equal(nanonext::cv_value(x$condition), 1L)
   x$wait_unobserved(seconds_timeout = 0.001)
   expect_equal(nanonext::cv_value(x$condition), 0L)
@@ -110,6 +116,7 @@ crew_test("stage wait_unpopped()", {
   cv <- nanonext::cv()
   x$inherit(cv)
   nanonext::cv_signal(x$condition)
+  nanonext::msleep(250)
   expect_equal(nanonext::cv_value(x$condition), 1L)
   x$wait_unpopped(seconds_timeout = 1)
   expect_equal(nanonext::cv_value(x$condition), 0L)
@@ -124,6 +131,7 @@ crew_test("stage wait_resolved()", {
   x$inherit(cv)
   x$wait_resolved(seconds_timeout = 1, resolved = 0L)
   nanonext::cv_signal(x$condition)
+  nanonext::msleep(250)
   expect_equal(nanonext::cv_value(x$condition), 1L)
   x$wait_resolved(seconds_timeout = 1, resolved = 1L)
   expect_equal(nanonext::cv_value(x$condition), 1L)

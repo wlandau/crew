@@ -73,7 +73,7 @@ crew_class_stage <- R6::R6Class(
     #' @description Register a popped task.
     #' @return `NULL` (invisibly).
     pop = function() {
-      .subset2(self, "wait_unobserved")(milliseconds_timeout = 0)
+      .subset2(self, "wait_unobserved")(seconds_timeout = 0)
       if (.subset2(self, "unpopped") < 1L) {
         crew_error(
           message = paste(
@@ -92,37 +92,34 @@ crew_class_stage <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param seconds_timeout Positive numeric of length 1,
     #'   Number of seconds to wait before timing out.
-    wait_unobserved = function(seconds_timeout = 250) {
+    wait_unobserved = function(seconds_timeout = Inf) {
       result <- nanonext::until(
         cv = .subset2(self, "condition"),
-        msec = milliseconds_timeout
+        msec = seconds_timeout * 1000
       )
       self$unpopped <- .subset2(self, "unpopped") + as.integer(result)
       invisible()
     },
-    #' @description Wait for periods of `seconds_interval` until at least one
-    #'   task is available to be popped.
+    #' @description Wait until at least one task is available to be popped.
     #' @return `NULL` (invisibly).
     #' @param seconds_timeout Positive numeric of length 1,
-    #'   Number of seconds to wait during each waiting period.
-    wait_unpopped = function(seconds_timeout = 0.25) {
-      milliseconds_timeout <- 1000 * seconds_interval
+    #'   Number of seconds to wait before timing out.
+    wait_unpopped = function(seconds_timeout = Inf) {
       while (.subset2(self, "unpopped") < 1L) {
-        self$wait_unobserved(milliseconds_timeout = milliseconds_timeout)
+        self$wait_unobserved(seconds_timeout = seconds_timeout)
       }
       invisible()
     },
-    #' @description Wait for periods of `seconds_interval` until the number of
-    #'   resolved tasks reaches a specified level.
+    #' @description Wait for until the number of
+    #'   resolved tasks reaches a specified number.
     #' @return `NULL` (invisibly).
     #' @param seconds_timeout Positive numeric of length 1,
-    #'   Number of seconds to wait during each waiting period.
+    #'   Number of seconds to wait before timing out.
     #' @param resolved Positive integer of length 1. This method waits
     #'   until the number of resolved tasks reaches this value or above.
     wait_resolved = function(seconds_timeout = 0.25, resolved = 1L) {
-      milliseconds_timeout <- 1000 * seconds_timeout
       while (.subset2(self, "resolved")() < resolved) {
-        self$wait_unobserved(milliseconds_timeout = milliseconds_timeout)
+        self$wait_unobserved(seconds_timeout = seconds_timeout)
       }
       invisible()
     }

@@ -127,7 +127,7 @@ Register a popped task.
 Wait until an unobserved task resolves or the timeout
 is reached.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_unobserved(seconds_timeout = 250)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_unobserved(seconds_timeout = Inf)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -146,17 +146,16 @@ Number of seconds to wait before timing out.}
 \if{html}{\out{<a id="method-crew_class_stage-wait_unpopped"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_stage-wait_unpopped}{}}}
 \subsection{Method \code{wait_unpopped()}}{
-Wait for periods of \code{seconds_interval} until at least one
-task is available to be popped.
+Wait until at least one task is available to be popped.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_unpopped(seconds_timeout = 0.25)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_unpopped(seconds_timeout = Inf)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{seconds_interval}}{Positive numeric of length 1,
-Number of seconds to wait during each waiting period.}
+\item{\code{seconds_timeout}}{Positive numeric of length 1,
+Number of seconds to wait before timing out.}
 }
 \if{html}{\out{</div>}}
 }
@@ -168,17 +167,17 @@ Number of seconds to wait during each waiting period.}
 \if{html}{\out{<a id="method-crew_class_stage-wait_resolved"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_stage-wait_resolved}{}}}
 \subsection{Method \code{wait_resolved()}}{
-Wait for periods of \code{seconds_interval} until the number of
-resolved tasks reaches a specified level.
+Wait for until the number of
+resolved tasks reaches a specified number.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_resolved(seconds_interval = 0.25, resolved = 1L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_resolved(seconds_timeout = 0.25, resolved = 1L)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{seconds_interval}}{Positive numeric of length 1,
-Number of seconds to wait during each waiting period.}
+\item{\code{seconds_timeout}}{Positive numeric of length 1,
+Number of seconds to wait before timing out.}
 
 \item{\code{resolved}}{Positive integer of length 1. This method waits
 until the number of resolved tasks reaches this value or above.}

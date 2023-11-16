@@ -60,6 +60,7 @@ client$terminate()
 Other developer: 
 \code{\link{crew_async}()},
 \code{\link{crew_controller}()},
-\code{\link{crew_launcher}()}
+\code{\link{crew_launcher}()},
+\code{\link{crew_stage}()}
 }
 \concept{developer}

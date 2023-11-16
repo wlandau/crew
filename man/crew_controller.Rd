@@ -36,6 +36,7 @@ controller$terminate()
 Other developer: 
 \code{\link{crew_async}()},
 \code{\link{crew_client}()},
-\code{\link{crew_launcher}()}
+\code{\link{crew_launcher}()},
+\code{\link{crew_stage}()}
 }
 \concept{developer}

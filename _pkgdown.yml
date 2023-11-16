@@ -39,6 +39,7 @@ reference:
   - '`crew_class_controller_group`'
   - '`crew_class_launcher`'
   - '`crew_class_launcher_local`'
+  - '`crew_class_stage`'
   - '`crew_class_tls`'
 - title: Utilities
   contents:

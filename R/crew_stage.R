@@ -58,27 +58,28 @@ crew_class_stage <- R6::R6Class(
     },
     #' @description Inherit signals from a different condition variable.
     #' @return `NULL` (invisibly).
+    #' @param condition A `nanonext` condition variable which will forward
+    #'  signals to `self$condition`.
     inherit = function(condition) {
       nanonext::`%~>%`(cv = condition, cv2 = self$condition)
       invisible()
     },
-    total = function() {
+    #' @description Count the total count of resolved tasks.
+    #' @return Positive integer of length 1, total number of resolved tasks.
+    resolved = function() {
       unobserved <- nanonext::cv_value(.subset2(self, "condition"))
       unobserved + .subset2(self, "unpopped") + .subset2(self, "popped")
     },
-    #' @description Decrement the total count of resolved but not
-    #'   yet popped tasks.
-    #' @details Calls `self$observe()` and then tries to decrement the count.
-    #'   Throws an error if the count is already zero.
+    #' @description Register a popped task.
     #' @return `NULL` (invisibly).
     pop = function() {
-      result <- nanonext::until(cv = .subset2(self, "condition"), msec = 0)
-      self$unpopped <- .subset2(self, "unpopped") + as.integer(result)
+      .subset2(self, "wait_unobserved")(milliseconds_timeout = 0)
       if (.subset2(self, "unpopped") < 1L) {
         crew_error(
           message = paste(
-            "Trying to pop but task resolution count is 0.",
-            "Please send a bug report."
+            "Trying to pop but the unpopped task resolution count is 0.",
+            "Please send a bug report with a reprex to",
+            "https://github.com/wlandau/crew/issues"
           )
         )
       }
@@ -88,23 +89,40 @@ crew_class_stage <- R6::R6Class(
     },
     #' @description Wait until an unobserved task resolves or the timeout
     #'   is reached.
-    wait_unobserved = function(seconds_timeout = 0.25) {
-      time <- 1000 * seconds_timeout
-      result <- nanonext::until(cv = .subset2(self, "condition"), msec = time)
+    #' @return `NULL` (invisibly).
+    #' @param milliseconds_timeout Positive numeric of length 1,
+    #'   Number of milliseconds to wait before timing out.
+    wait_unobserved = function(milliseconds_timeout = 250) {
+      result <- nanonext::until(
+        cv = .subset2(self, "condition"),
+        msec = milliseconds_timeout
+      )
       self$unpopped <- .subset2(self, "unpopped") + as.integer(result)
       invisible()
     },
     #' @description Wait for periods of `seconds_interval` until at least one
-    #'   task arrives.
+    #'   task is available to be popped.
+    #' @return `NULL` (invisibly).
+    #' @param seconds_interval Positive numeric of length 1,
+    #'   Number of seconds to wait during each waiting period.
     wait_unpopped = function(seconds_interval = 0.25) {
-      while (.subset2(self, "unpopped")() < 1L) {
-        self$wait_unobserved(seconds_timeout = seconds_interval)
+      milliseconds_timeout <- 1000 * seconds_interval
+      while (.subset2(self, "unpopped") < 1L) {
+        self$wait_unobserved(milliseconds_timeout = milliseconds_timeout)
       }
       invisible()
     },
-    wait_total = function(seconds_interval = 0.25, total = 1L) {
-      while (.subset2(self, "total")() < total) {
-        self$wait_unobserved(seconds_timeout = seconds_interval)
+    #' @description Wait for periods of `seconds_interval` until the number of
+    #'   resolved tasks reaches a specified level.
+    #' @return `NULL` (invisibly).
+    #' @param seconds_interval Positive numeric of length 1,
+    #'   Number of seconds to wait during each waiting period.
+    #' @param resolved Positive integer of length 1. This method waits
+    #'   until the number of resolved tasks reaches this value or above.
+    wait_resolved = function(seconds_interval = 0.25, resolved = 1L) {
+      milliseconds_timeout <- 1000 * seconds_interval
+      while (.subset2(self, "resolved")() < resolved) {
+        self$wait_unobserved(milliseconds_timeout = milliseconds_timeout)
       }
       invisible()
     }

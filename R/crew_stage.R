@@ -73,7 +73,10 @@ crew_class_stage <- R6::R6Class(
     #' @description Register a popped task.
     #' @return `NULL` (invisibly).
     pop = function() {
-      .subset2(self, "wait_condition")(seconds_timeout = 0)
+      .subset2(self, "wait_condition")(
+        seconds_timeout = 0,
+        seconds_interval = 0
+      )
       if (.subset2(self, "unpopped") < 1L) {
         crew_error(
           message = paste(
@@ -92,21 +95,40 @@ crew_class_stage <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param seconds_timeout Positive numeric of length 1,
     #'   Number of seconds to wait before timing out.
-    wait_condition = function(seconds_timeout = Inf) {
-      result <- nanonext::until(
-        cv = .subset2(self, "condition"),
-        msec = seconds_timeout * 1000
-      )
-      self$unpopped <- .subset2(self, "unpopped") + as.integer(result)
+    #' @param seconds_interval Positive numeric of length 1. Waiting
+    #'   is chopped into intervals which can be interrupted by task
+    #'   resolution signals but not by CTRL-C. `seconds_interval`
+    #'   is the length of each interval. Long intervals are kind to the CPU
+    #'   but may delay the effect of CTRL-C by at most `seconds_interval`.
+    wait_condition = function(seconds_timeout = Inf, seconds_interval = 0.5) {
+      timeout <- seconds_timeout * 1000
+      interval <- seconds_interval * 1000
+      now <- nanonext::mclock()
+      result <- FALSE
+      on.exit(self$unpopped <- .subset2(self, "unpopped") + as.integer(result))
+      while ((!result) && (nanonext::mclock() - now < timeout)) {
+        result <- nanonext::until(
+          cv = .subset2(self, "condition"),
+          msec = seconds_timeout * 1000
+        )
+      }
       invisible()
     },
     #' @description Wait until at least one task is available to be popped.
     #' @return `NULL` (invisibly).
     #' @param seconds_timeout Positive numeric of length 1,
     #'   Number of seconds to wait before timing out.
-    wait_unpopped = function(seconds_timeout = Inf) {
+    #' @param seconds_interval Positive numeric of length 1. Waiting
+    #'   is chopped into intervals which can be interrupted by task resolution
+    #'   signals but not by CTRL-C. `seconds_interval`
+    #'   is the length of each interval. Long intervals are kind to the CPU
+    #'   but may delay the effect of CTRL-C by at most `seconds_interval`.
+    wait_unpopped = function(seconds_timeout = Inf, seconds_interval = 0.5) {
       if (.subset2(self, "unpopped") < 1L) {
-        self$wait_condition(seconds_timeout = seconds_timeout)
+        self$wait_condition(
+          seconds_timeout = seconds_timeout,
+          seconds_interval = seconds_interval
+        )
       }
       invisible()
     },
@@ -115,11 +137,23 @@ crew_class_stage <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param seconds_timeout Positive numeric of length 1,
     #'   Number of seconds to wait before timing out.
+    #' @param seconds_interval Positive numeric of length 1. Waiting
+    #'   is chopped into intervals which can be interrupted by task resolution
+    #'   signals but not by CTRL-C. `seconds_interval`
+    #'   is the length of each interval. Long intervals are kind to the CPU
+    #'   but may delay the effect of CTRL-C by at most `seconds_interval`.
     #' @param resolved Positive integer of length 1. This method waits
     #'   until the number of resolved tasks reaches this value or above.
-    wait_resolved = function(seconds_timeout = Inf, resolved = 1L) {
+    wait_resolved = function(
+      seconds_timeout = Inf,
+      seconds_interval = 0.5,
+      resolved = 1L
+    ) {
       if (.subset2(self, "resolved")() < resolved) {
-        self$wait_condition(seconds_timeout = seconds_timeout)
+        self$wait_condition(
+          seconds_timeout = seconds_timeout,
+          seconds_interval = seconds_interval
+        )
       }
       invisible()
     }

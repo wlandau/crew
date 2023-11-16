@@ -23,8 +23,8 @@
 #' @importFrom getip getip
 #' @importFrom mirai call_mirai daemon daemons is_mirai is_mirai_error
 #'   mirai nextget nextstream saisei status
-#' @importFrom nanonext %~>% cv_value mclock msleep nng_error random
-#'   .unresolved unresolved tls_config
+#' @importFrom nanonext %~>% cv cv_value mclock msleep nng_error random
+#'   .unresolved unresolved until tls_config
 #' @importFrom processx process
 #' @importFrom ps ps_cmdline ps_handle ps_is_running ps_kill ps_status
 #' @importFrom R6 R6Class

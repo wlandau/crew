@@ -103,14 +103,12 @@ crew_class_stage <- R6::R6Class(
     wait_condition = function(seconds_timeout = Inf, seconds_interval = 0.5) {
       timeout <- seconds_timeout * 1000
       interval <- seconds_interval * 1000
-      now <- nanonext::mclock()
+      condition <- .subset2(self, "condition")
       result <- FALSE
       on.exit(self$unpopped <- .subset2(self, "unpopped") + as.integer(result))
-      while ((!result) && (nanonext::mclock() - now < timeout)) {
-        result <- nanonext::until(
-          cv = .subset2(self, "condition"),
-          msec = seconds_timeout * 1000
-        )
+      now <- nanonext::mclock()
+      while (!(result || (nanonext::mclock() - now > timeout))) {
+        result <- nanonext::until(cv = condition, msec = interval)
       }
       invisible()
     },

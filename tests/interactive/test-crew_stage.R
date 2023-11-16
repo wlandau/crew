@@ -16,3 +16,14 @@ crew_test("stage wait_unobserved() with timeouts", {
   expect_equal(x$unpopped, 1L)
   expect_equal(x$popped, 0L)
 })
+
+crew_test("stage wait_unpopped() timeout", {
+  x <- crew_stage()
+  x$start()
+  cv <- nanonext::cv()
+  x$inherit(cv)
+  x$wait_unpopped(seconds_interval = 1000)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 1L)
+  expect_equal(x$popped, 0L)
+})

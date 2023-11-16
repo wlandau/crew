@@ -12,8 +12,7 @@ crew_retry(
   max_tries = Inf,
   error = TRUE,
   message = character(0),
-  envir = parent.frame(),
-  condition = NULL
+  envir = parent.frame()
 )
 }
 \arguments{
@@ -37,9 +36,6 @@ before giving up.}
 if the wait times out.}
 
 \item{envir}{Environment to evaluate \code{fun}.}
-
-\item{condition}{Optional \code{nanonext} condition variable to wait on.
-Functionality using condition variables is not implemented yet.}
 }
 \value{
 \code{NULL} (invisibly).

@@ -127,14 +127,14 @@ Register a popped task.
 Wait until an unobserved task resolves or the timeout
 is reached.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_unobserved(milliseconds_timeout = 250)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_unobserved(seconds_timeout = 250)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{milliseconds_timeout}}{Positive numeric of length 1,
-Number of milliseconds to wait before timing out.}
+\item{\code{seconds_timeout}}{Positive numeric of length 1,
+Number of seconds to wait before timing out.}
 }
 \if{html}{\out{</div>}}
 }
@@ -149,7 +149,7 @@ Number of milliseconds to wait before timing out.}
 Wait for periods of \code{seconds_interval} until at least one
 task is available to be popped.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_unpopped(seconds_interval = 0.25)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_unpopped(seconds_timeout = 0.25)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

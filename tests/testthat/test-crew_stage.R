@@ -1,0 +1,11 @@
+test_that("crew_stage() validate", {
+  x <- crew_stage()
+  expect_null(x$condition)
+  expect_null(x$unpopped)
+  expect_null(x$popped)
+  expect_silent(x$validate())
+  x$start()
+  expect_true(inherits(x$condition, "conditionVariable"))
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 0L)
+})

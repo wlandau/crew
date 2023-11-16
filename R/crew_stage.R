@@ -117,7 +117,7 @@ crew_class_stage <- R6::R6Class(
     #'   Number of seconds to wait before timing out.
     #' @param resolved Positive integer of length 1. This method waits
     #'   until the number of resolved tasks reaches this value or above.
-    wait_resolved = function(seconds_timeout = 0.25, resolved = 1L) {
+    wait_resolved = function(seconds_timeout = Inf, resolved = 1L) {
       while (.subset2(self, "resolved")() < resolved) {
         self$wait_unobserved(seconds_timeout = seconds_timeout)
       }

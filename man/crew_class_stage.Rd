@@ -170,7 +170,7 @@ Number of seconds to wait before timing out.}
 Wait for until the number of
 resolved tasks reaches a specified number.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_resolved(seconds_timeout = 0.25, resolved = 1L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_resolved(seconds_timeout = Inf, resolved = 1L)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

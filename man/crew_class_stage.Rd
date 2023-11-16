@@ -42,7 +42,7 @@ signals from \code{mirai::nextget("cv")}.}
 \item \href{#method-crew_class_stage-inherit}{\code{crew_class_stage$inherit()}}
 \item \href{#method-crew_class_stage-resolved}{\code{crew_class_stage$resolved()}}
 \item \href{#method-crew_class_stage-pop}{\code{crew_class_stage$pop()}}
-\item \href{#method-crew_class_stage-wait_unobserved}{\code{crew_class_stage$wait_unobserved()}}
+\item \href{#method-crew_class_stage-wait_condition}{\code{crew_class_stage$wait_condition()}}
 \item \href{#method-crew_class_stage-wait_unpopped}{\code{crew_class_stage$wait_unpopped()}}
 \item \href{#method-crew_class_stage-wait_resolved}{\code{crew_class_stage$wait_resolved()}}
 }
@@ -121,13 +121,13 @@ Register a popped task.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_stage-wait_unobserved"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_stage-wait_unobserved}{}}}
-\subsection{Method \code{wait_unobserved()}}{
+\if{html}{\out{<a id="method-crew_class_stage-wait_condition"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_stage-wait_condition}{}}}
+\subsection{Method \code{wait_condition()}}{
 Wait until an unobserved task resolves or the timeout
 is reached.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_unobserved(seconds_timeout = Inf)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_stage$wait_condition(seconds_timeout = Inf)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

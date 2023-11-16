@@ -57,4 +57,3 @@ crew_test("stage wait_resolved() timeout", {
   expect_equal(x$unpopped, 1L)
   expect_equal(x$popped, 0L)
 })
-

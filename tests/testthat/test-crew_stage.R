@@ -1,4 +1,4 @@
-test_that("crew_stage() validate", {
+crew_test("crew_stage() validate", {
   x <- crew_stage()
   expect_null(x$condition)
   expect_null(x$unpopped)
@@ -8,4 +8,25 @@ test_that("crew_stage() validate", {
   expect_true(inherits(x$condition, "conditionVariable"))
   expect_equal(x$unpopped, 0L)
   expect_equal(x$popped, 0L)
+})
+
+crew_test("crew_stage() validate", {
+  x <- crew_stage()
+  expect_null(x$condition)
+  expect_null(x$unpopped)
+  expect_null(x$popped)
+  expect_silent(x$validate())
+  x$start()
+  expect_true(inherits(x$condition, "conditionVariable"))
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 0L)
+})
+
+crew_test("crew_stage() inherit", {
+  x <- crew_stage()
+  x$start()
+  cv <- nanonext::cv()
+  x$inherit(cv)
+  nanonext::cv_signal(cv)
+  expect_equal(nanonext::cv_value(x$condition), 1L)
 })

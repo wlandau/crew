@@ -1,4 +1,4 @@
-crew_test("crew_stage() validate", {
+crew_test("stage validate", {
   x <- crew_stage()
   expect_null(x$condition)
   expect_null(x$unpopped)
@@ -10,7 +10,7 @@ crew_test("crew_stage() validate", {
   expect_equal(x$popped, 0L)
 })
 
-crew_test("crew_stage() validate", {
+crew_test("stage validate", {
   x <- crew_stage()
   expect_null(x$condition)
   expect_null(x$unpopped)
@@ -22,7 +22,7 @@ crew_test("crew_stage() validate", {
   expect_equal(x$popped, 0L)
 })
 
-crew_test("crew_stage() inherit", {
+crew_test("stage inherit", {
   x <- crew_stage()
   x$start()
   cv <- nanonext::cv()
@@ -31,7 +31,7 @@ crew_test("crew_stage() inherit", {
   expect_equal(nanonext::cv_value(x$condition), 1L)
 })
 
-crew_test("crew_stage() resolved()", {
+crew_test("stage resolved()", {
   x <- crew_stage()
   x$start()
   expect_equal(x$resolved(), 0L)
@@ -44,7 +44,7 @@ crew_test("crew_stage() resolved()", {
   expect_equal(x$resolved(), 741L)
 })
 
-crew_test("crew_stage() pop()", {
+crew_test("stage pop()", {
   for (unpopped in c(0L, 7L)) {
     x <- crew_stage()
     x$start()
@@ -68,4 +68,21 @@ crew_test("crew_stage() pop()", {
       expect_equal(x$popped, 4L)
     }
   }
+})
+
+crew_test("stage wait_unobserved()", {
+  x <- crew_stage()
+  x$start()
+  cv <- nanonext::cv()
+  x$inherit(cv)
+  x$wait_unobserved(milliseconds_timeout = 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 0L)
+  nanonext::cv_signal(x$condition)
+  expect_equal(nanonext::cv_value(x$condition), 1L)
+  x$wait_unobserved(milliseconds_timeout = 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 1L)
+  expect_equal(x$popped, 0L)
 })

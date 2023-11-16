@@ -1,4 +1,4 @@
-crew_test("stage wait_condition() with timeouts", {
+crew_test("stage wait_condition() timeout condition", {
   x <- crew_stage()
   x$start()
   cv <- nanonext::cv()
@@ -18,7 +18,39 @@ crew_test("stage wait_condition() with timeouts", {
   expect_equal(x$popped, 0L)
 })
 
-crew_test("stage wait_unpopped() timeout", {
+crew_test("stage wait_condition() timeout unpopped", {
+  x <- crew_stage()
+  x$start()
+  time <- system.time(x$wait_condition(seconds_timeout = 2))
+  expect_gt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 0L)
+  x$unpopped <- 1L
+  time <- system.time(x$wait_condition(seconds_timeout = 2))
+  expect_gt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 1L)
+  expect_equal(x$popped, 0L)
+})
+
+crew_test("stage wait_condition() timeout popped", {
+  x <- crew_stage()
+  x$start()
+  time <- system.time(x$wait_condition(seconds_timeout = 2))
+  expect_gt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 0L)
+  x$popped <- 1L
+  time <- system.time(x$wait_condition(seconds_timeout = 2))
+  expect_gt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 1L)
+})
+
+crew_test("stage wait_unpopped() timeout condition", {
   x <- crew_stage()
   x$start()
   cv <- nanonext::cv()
@@ -38,12 +70,44 @@ crew_test("stage wait_unpopped() timeout", {
   expect_equal(x$popped, 0L)
 })
 
-crew_test("stage wait_resolved() timeout", {
+crew_test("stage wait_unpopped() timeout unpopped", {
+  x <- crew_stage()
+  x$start()
+  time <- system.time(x$wait_unpopped(seconds_timeout = 2))
+  expect_gt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 0L)
+  x$unpopped <- 1L
+  time <- system.time(x$wait_unpopped(seconds_timeout = 2))
+  expect_lt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 1L)
+  expect_equal(x$popped, 0L)
+})
+
+crew_test("stage wait_unpopped() timeout popped", {
+  x <- crew_stage()
+  x$start()
+  time <- system.time(x$wait_unpopped(seconds_timeout = 2))
+  expect_gt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 0L)
+  x$popped <- 1L
+  time <- system.time(x$wait_unpopped(seconds_timeout = 2))
+  expect_gt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 1L)
+})
+
+crew_test("stage wait_resolved() timeout condition", {
   x <- crew_stage()
   x$start()
   cv <- nanonext::cv()
   x$inherit(cv)
-  time <- system.time(x$wait_resolved(seconds_timeout = 2))
+  time <- system.time(x$wait_resolved(seconds_timeout = 2, resolved = 1L))
   expect_gt(time["elapsed"], 1)
   expect_equal(nanonext::cv_value(x$condition), 0L)
   expect_equal(x$unpopped, 0L)
@@ -51,9 +115,41 @@ crew_test("stage wait_resolved() timeout", {
   nanonext::cv_signal(x$condition)
   nanonext::msleep(250)
   expect_equal(nanonext::cv_value(x$condition), 1L)
-  time <- system.time(x$wait_resolved(seconds_timeout = 2))
+  time <- system.time(x$wait_resolved(seconds_timeout = 2, resolved = 1L))
+  expect_lt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 1L)
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 0L)
+})
+
+crew_test("stage wait_resolved() timeout unpopped", {
+  x <- crew_stage()
+  x$start()
+  time <- system.time(x$wait_resolved(seconds_timeout = 2, resolved = 1L))
+  expect_gt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 0L)
+  x$unpopped <- 1L
+  time <- system.time(x$wait_resolved(seconds_timeout = 2, resolved = 1L))
   expect_lt(time["elapsed"], 1)
   expect_equal(nanonext::cv_value(x$condition), 0L)
   expect_equal(x$unpopped, 1L)
   expect_equal(x$popped, 0L)
+})
+
+crew_test("stage wait_resolved() timeout popped", {
+  x <- crew_stage()
+  x$start()
+  time <- system.time(x$wait_resolved(seconds_timeout = 2, resolved = 1L))
+  expect_gt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 0L)
+  x$popped <- 1L
+  time <- system.time(x$wait_resolved(seconds_timeout = 2, resolved = 1L))
+  expect_lt(time["elapsed"], 1)
+  expect_equal(nanonext::cv_value(x$condition), 0L)
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 1L)
 })

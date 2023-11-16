@@ -92,24 +92,6 @@ crew_test("stage wait_condition()", {
   expect_equal(x$popped, 0L)
 })
 
-crew_test("stage wait_resolved()", {
-  x <- crew_stage()
-  x$start()
-  cv <- nanonext::cv()
-  x$inherit(cv)
-  x$wait_condition(seconds_timeout = 0.001)
-  expect_equal(nanonext::cv_value(x$condition), 0L)
-  expect_equal(x$unpopped, 0L)
-  expect_equal(x$popped, 0L)
-  nanonext::cv_signal(x$condition)
-  nanonext::msleep(250)
-  expect_equal(nanonext::cv_value(x$condition), 1L)
-  x$wait_condition(seconds_timeout = 0.001)
-  expect_equal(nanonext::cv_value(x$condition), 0L)
-  expect_equal(x$unpopped, 1L)
-  expect_equal(x$popped, 0L)
-})
-
 crew_test("stage wait_unpopped()", {
   x <- crew_stage()
   x$start()

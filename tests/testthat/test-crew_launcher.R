@@ -252,6 +252,60 @@ crew_test("launcher summary", {
   }
 })
 
+crew_test("launcher forward", {
+  x <- crew_launcher()
+  on.exit({
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start(sockets = "url")
+  x$workers$handle[[1L]] <- mirai::mirai(stop("message"))
+  crew_retry(
+    fun = ~!mirai::unresolved(x$workers$handle[[1L]]),
+    seconds_interval = 0.01
+  )
+  expect_crew_error(x$forward(index = 1L))
+  expect_warning(
+    x$forward(index = 1L, condition = "warning"),
+    class = "crew_warning"
+  )
+  expect_message(
+    x$forward(index = 1L, condition = "message"),
+    class = "crew_message"
+  )
+  out <- x$forward(index = 1L, condition = "character")
+  expect_true(nzchar(out))
+})
+
+crew_test("launcher errors", {
+  x <- crew_launcher()
+  on.exit({
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start(sockets = "url")
+  expect_null(x$errors())
+  x$workers$handle[[1L]] <- mirai::mirai(stop("message"))
+  crew_retry(
+    fun = ~!mirai::unresolved(x$workers$handle[[1L]]),
+    seconds_interval = 0.01
+  )
+  expect_true(nzchar(x$errors()))
+})
+
+crew_test("launcher errors", {
+  x <- crew_launcher()
+  on.exit({
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start(sockets = "url")
+  expect_null(x$wait())
+})
+
 crew_test("deprecate seconds_exit", {
   suppressWarnings(crew_launcher(seconds_exit = 1))
   expect_true(TRUE)

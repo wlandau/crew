@@ -48,12 +48,22 @@ crew_class_relay <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Initialize the relay object.
+    #' @description Start the relay object.
     #' @return `NULL` (invisibly).
     start = function() {
-      self$condition <- nanonext::cv()
-      self$unpopped <- 0L
-      self$popped <- 0L
+      if (is.null(self$condition)) {
+        self$condition <- nanonext::cv()
+        self$unpopped <- 0L
+        self$popped <- 0L
+      }
+      invisible()
+    },
+    #' @description Terminate the relay object.
+    #' @return `NULL` (invisibly).
+    terminate = function() {
+      self$condition <- NULL
+      self$unpopped <- NULL
+      self$popped <- NULL
       invisible()
     },
     #' @description Forward signals from a different condition variable.

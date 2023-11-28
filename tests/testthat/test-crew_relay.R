@@ -21,6 +21,22 @@ crew_test("relay validate", {
   expect_true(inherits(x$condition, "conditionVariable"))
   expect_equal(x$unpopped, 0L)
   expect_equal(x$popped, 0L)
+  expect_silent(x$validate())
+})
+
+crew_test("relay terminate", {
+  x <- crew_relay()
+  expect_null(x$condition)
+  expect_null(x$unpopped)
+  expect_null(x$popped)
+  x$start()
+  expect_true(inherits(x$condition, "conditionVariable"))
+  expect_equal(x$unpopped, 0L)
+  expect_equal(x$popped, 0L)
+  x$terminate()
+  expect_null(x$condition)
+  expect_null(x$unpopped)
+  expect_null(x$popped)
 })
 
 crew_test("relay inherit", {

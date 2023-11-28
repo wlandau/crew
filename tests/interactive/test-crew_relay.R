@@ -1,5 +1,5 @@
-crew_test("stage wait_condition() timeout condition", {
-  x <- crew_stage()
+crew_test("relay wait_condition() timeout condition", {
+  x <- crew_relay()
   x$start()
   cv <- nanonext::cv()
   x$inherit(cv)
@@ -18,8 +18,8 @@ crew_test("stage wait_condition() timeout condition", {
   expect_equal(x$popped, 0L)
 })
 
-crew_test("stage wait_condition() timeout unpopped", {
-  x <- crew_stage()
+crew_test("relay wait_condition() timeout unpopped", {
+  x <- crew_relay()
   x$start()
   time <- system.time(x$wait_condition(seconds_timeout = 2))
   expect_gt(time["elapsed"], 1)
@@ -34,8 +34,8 @@ crew_test("stage wait_condition() timeout unpopped", {
   expect_equal(x$popped, 0L)
 })
 
-crew_test("stage wait_condition() timeout popped", {
-  x <- crew_stage()
+crew_test("relay wait_condition() timeout popped", {
+  x <- crew_relay()
   x$start()
   time <- system.time(x$wait_condition(seconds_timeout = 2))
   expect_gt(time["elapsed"], 1)
@@ -50,8 +50,8 @@ crew_test("stage wait_condition() timeout popped", {
   expect_equal(x$popped, 1L)
 })
 
-crew_test("stage wait_unpopped() timeout condition", {
-  x <- crew_stage()
+crew_test("relay wait_unpopped() timeout condition", {
+  x <- crew_relay()
   x$start()
   cv <- nanonext::cv()
   x$inherit(cv)
@@ -70,8 +70,8 @@ crew_test("stage wait_unpopped() timeout condition", {
   expect_equal(x$popped, 0L)
 })
 
-crew_test("stage wait_unpopped() timeout unpopped", {
-  x <- crew_stage()
+crew_test("relay wait_unpopped() timeout unpopped", {
+  x <- crew_relay()
   x$start()
   time <- system.time(x$wait_unpopped(seconds_timeout = 2))
   expect_gt(time["elapsed"], 1)
@@ -86,8 +86,8 @@ crew_test("stage wait_unpopped() timeout unpopped", {
   expect_equal(x$popped, 0L)
 })
 
-crew_test("stage wait_unpopped() timeout popped", {
-  x <- crew_stage()
+crew_test("relay wait_unpopped() timeout popped", {
+  x <- crew_relay()
   x$start()
   time <- system.time(x$wait_unpopped(seconds_timeout = 2))
   expect_gt(time["elapsed"], 1)
@@ -102,8 +102,8 @@ crew_test("stage wait_unpopped() timeout popped", {
   expect_equal(x$popped, 1L)
 })
 
-crew_test("stage wait_resolved() timeout condition", {
-  x <- crew_stage()
+crew_test("relay wait_resolved() timeout condition", {
+  x <- crew_relay()
   x$start()
   cv <- nanonext::cv()
   x$inherit(cv)
@@ -122,8 +122,8 @@ crew_test("stage wait_resolved() timeout condition", {
   expect_equal(x$popped, 0L)
 })
 
-crew_test("stage wait_resolved() timeout unpopped", {
-  x <- crew_stage()
+crew_test("relay wait_resolved() timeout unpopped", {
+  x <- crew_relay()
   x$start()
   time <- system.time(x$wait_resolved(seconds_timeout = 2, resolved = 1L))
   expect_gt(time["elapsed"], 1)
@@ -138,8 +138,8 @@ crew_test("stage wait_resolved() timeout unpopped", {
   expect_equal(x$popped, 0L)
 })
 
-crew_test("stage wait_resolved() timeout popped", {
-  x <- crew_stage()
+crew_test("relay wait_resolved() timeout popped", {
+  x <- crew_relay()
   x$start()
   time <- system.time(x$wait_resolved(seconds_timeout = 2, resolved = 1L))
   expect_gt(time["elapsed"], 1)

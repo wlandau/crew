@@ -38,6 +38,6 @@ Other developer:
 \code{\link{crew_client}()},
 \code{\link{crew_controller}()},
 \code{\link{crew_launcher}()},
-\code{\link{crew_stage}()}
+\code{\link{crew_relay}()}
 }
 \concept{developer}

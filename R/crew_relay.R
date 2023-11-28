@@ -1,27 +1,27 @@
-#' @title Create a `crew` stage object.
+#' @title Create a `crew` relay object.
 #' @export
 #' @family developer
-#' @description Create an `R6` `crew` stage object.
-#' @details A `crew` stage object keeps track of tasks that are resolved
+#' @description Create an `R6` `crew` relay object.
+#' @details A `crew` relay object keeps track of tasks that are resolved
 #'   but not yet popped.
-#' @return An `R6` `crew` stage object.
+#' @return An `R6` `crew` relay object.
 #' @examples
-#' crew_stage()
-crew_stage <- function() {
-  stage <- crew_class_stage$new()
-  stage$validate()
-  stage
+#' crew_relay()
+crew_relay <- function() {
+  relay <- crew_class_relay$new()
+  relay$validate()
+  relay
 }
 
-#' @title `R6` stage class.
+#' @title `R6` relay class.
 #' @export
 #' @family class
-#' @description `R6` class for stage configuration.
-#' @details See [crew_stage()].
+#' @description `R6` class for relay configuration.
+#' @details See [crew_relay()].
 #' @examples
-#' crew_stage()
-crew_class_stage <- R6::R6Class(
-  classname = "crew_class_stage",
+#' crew_relay()
+crew_class_relay <- R6::R6Class(
+  classname = "crew_class_relay",
   cloneable = FALSE,
   public = list(
     #' @field condition `nanonext` condition variable that inherits
@@ -48,7 +48,7 @@ crew_class_stage <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Initialize the stage object.
+    #' @description Initialize the relay object.
     #' @return `NULL` (invisibly).
     start = function() {
       self$condition <- nanonext::cv()

@@ -75,8 +75,10 @@ crew_class_relay <- R6::R6Class(
     pop = function() {
       .subset2(self, "wait_condition")(seconds_timeout = 0)
       crew_relay_assert_unpopped(.subset2(self, "unpopped"))
-      self$unpopped <- .subset2(self, "unpopped") - 1L
-      self$popped <- .subset2(self, "popped") + 1L
+      on.exit({
+        self$unpopped <- .subset2(self, "unpopped") - 1L
+        self$popped <- .subset2(self, "popped") + 1L
+      })
       invisible()
     },
     #' @description Wait until an unobserved task resolves or the timeout

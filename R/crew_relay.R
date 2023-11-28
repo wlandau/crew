@@ -56,11 +56,11 @@ crew_class_relay <- R6::R6Class(
       self$popped <- 0L
       invisible()
     },
-    #' @description Inherit signals from a different condition variable.
+    #' @description Forward signals from a different condition variable.
     #' @return `NULL` (invisibly).
     #' @param condition A `nanonext` condition variable which will forward
     #'  signals to `self$condition`.
-    inherit = function(condition) {
+    from = function(condition) {
       nanonext::`%~>%`(cv = condition, cv2 = self$condition)
       invisible()
     },

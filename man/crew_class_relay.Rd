@@ -39,7 +39,7 @@ signals from \code{mirai::nextget("cv")}.}
 \itemize{
 \item \href{#method-crew_class_relay-validate}{\code{crew_class_relay$validate()}}
 \item \href{#method-crew_class_relay-start}{\code{crew_class_relay$start()}}
-\item \href{#method-crew_class_relay-inherit}{\code{crew_class_relay$inherit()}}
+\item \href{#method-crew_class_relay-from}{\code{crew_class_relay$from()}}
 \item \href{#method-crew_class_relay-resolved}{\code{crew_class_relay$resolved()}}
 \item \href{#method-crew_class_relay-pop}{\code{crew_class_relay$pop()}}
 \item \href{#method-crew_class_relay-wait_condition}{\code{crew_class_relay$wait_condition()}}
@@ -74,12 +74,12 @@ Initialize the relay object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_relay-inherit"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_relay-inherit}{}}}
-\subsection{Method \code{inherit()}}{
-Inherit signals from a different condition variable.
+\if{html}{\out{<a id="method-crew_class_relay-from"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_relay-from}{}}}
+\subsection{Method \code{from()}}{
+Forward signals from a different condition variable.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$inherit(condition)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$from(condition)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

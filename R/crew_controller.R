@@ -702,11 +702,11 @@ crew_class_controller <- R6::R6Class(
         seconds_interval = seconds_interval,
         seconds_timeout = Inf
       )
-      controller_map_message_complete(total, start, verbose)
       on.exit({
         self$tasks <- list()
         .subset2(relay, "pop")(n = total)
       })
+      controller_map_message_complete(total, start, verbose)
       if_any(verbose, message(), NULL)
       results <- map(tasks, ~.subset2(.x, "data"))
       out <- lapply(results, monad_tibble)

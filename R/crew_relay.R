@@ -74,7 +74,7 @@ crew_class_relay <- R6::R6Class(
     #' @return `NULL` (invisibly).
     pop = function() {
       .subset2(self, "wait_condition")(seconds_timeout = 0)
-      crew_relay_assert_none_unpopped(.subset2(self, "unpopped"))
+      crew_relay_assert_unpopped(.subset2(self, "unpopped"))
       self$unpopped <- .subset2(self, "unpopped") - 1L
       self$popped <- .subset2(self, "popped") + 1L
       invisible()
@@ -118,7 +118,7 @@ crew_class_relay <- R6::R6Class(
   )
 )
 
-crew_relay_assert_none_unpopped <- function(unpopped) {
+crew_relay_assert_unpopped <- function(unpopped) {
   if (unpopped < 1L) {
     crew_error(
       message = paste(

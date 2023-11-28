@@ -1,9 +1,9 @@
-# crew 0.6.0.9000 (development)
+# crew 0.6.0.9001 (development)
 
 * Migrate from `asyncdial` to `autoexit`.
 * Use `Sys.info()[["user"]]` to get the user in `crew_clean()` (#135, @luwidmer).
 * Use condition variables to wait for tasks more efficiently (#108).
-* Because of #108, `controller$map()` cannot be used unless all prior tasks are popped first.
+* Because of #108, `controller$map()` can no longer be used if there are tasks waiting to be popped.
 
 # crew 0.6.0
 

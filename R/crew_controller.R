@@ -934,6 +934,16 @@ crew_class_controller <- R6::R6Class(
         skip_cran = TRUE,
         frequency = "once"
       )
+      crew_deprecate(
+        name = "throttle",
+        date = "2023-11-28",
+        version = "0.5.0.9003",
+        alternative = "none (no longer necessary)",
+        condition = "message",
+        value = throttle,
+        skip_cran = TRUE,
+        frequency = "once"
+      )
       crew_assert(mode, identical(., "all") || identical(., "one"))
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE

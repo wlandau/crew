@@ -67,8 +67,8 @@ crew_class_relay <- R6::R6Class(
     #' @description Count the total count of resolved tasks.
     #' @return Positive integer of length 1, total number of resolved tasks.
     resolved = function() {
-      unobserved <- nanonext::cv_value(.subset2(self, "condition"))
-      unobserved + .subset2(self, "unpopped") + .subset2(self, "popped")
+      observed <- .subset2(self, "unpopped") + .subset2(self, "popped")
+      observed + nanonext::cv_value(.subset2(self, "condition"))
     },
     #' @description Register a popped task.
     #' @return `NULL` (invisibly).

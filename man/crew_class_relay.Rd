@@ -127,7 +127,7 @@ Register a popped task.
 Wait until an unobserved task resolves or the timeout
 is reached.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_condition(seconds_timeout = Inf, seconds_interval = 0.5)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_condition(seconds_timeout = Inf)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -135,12 +135,6 @@ is reached.
 \describe{
 \item{\code{seconds_timeout}}{Positive numeric of length 1,
 Number of seconds to wait before timing out.}
-
-\item{\code{seconds_interval}}{Positive numeric of length 1. Waiting
-is chopped into intervals which can be interrupted by task
-resolution signals but not by CTRL-C. \code{seconds_interval}
-is the length of each interval. Long intervals are kind to the CPU
-but may delay the effect of CTRL-C by at most \code{seconds_interval}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -154,7 +148,7 @@ but may delay the effect of CTRL-C by at most \code{seconds_interval}.}
 \subsection{Method \code{wait_unpopped()}}{
 Wait until at least one task is available to be popped.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_unpopped(seconds_timeout = Inf, seconds_interval = 0.5)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_unpopped(seconds_timeout = Inf)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -162,12 +156,6 @@ Wait until at least one task is available to be popped.
 \describe{
 \item{\code{seconds_timeout}}{Positive numeric of length 1,
 Number of seconds to wait before timing out.}
-
-\item{\code{seconds_interval}}{Positive numeric of length 1. Waiting
-is chopped into intervals which can be interrupted by task resolution
-signals but not by CTRL-C. \code{seconds_interval}
-is the length of each interval. Long intervals are kind to the CPU
-but may delay the effect of CTRL-C by at most \code{seconds_interval}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -182,11 +170,7 @@ but may delay the effect of CTRL-C by at most \code{seconds_interval}.}
 Wait for until the number of
 resolved tasks reaches a specified number.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_resolved(
-  seconds_timeout = Inf,
-  seconds_interval = 0.5,
-  resolved = 1L
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_resolved(seconds_timeout = Inf, resolved = 1L)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -194,12 +178,6 @@ resolved tasks reaches a specified number.
 \describe{
 \item{\code{seconds_timeout}}{Positive numeric of length 1,
 Number of seconds to wait before timing out.}
-
-\item{\code{seconds_interval}}{Positive numeric of length 1. Waiting
-is chopped into intervals which can be interrupted by task resolution
-signals but not by CTRL-C. \code{seconds_interval}
-is the length of each interval. Long intervals are kind to the CPU
-but may delay the effect of CTRL-C by at most \code{seconds_interval}.}
 
 \item{\code{resolved}}{Positive integer of length 1. This method waits
 until the number of resolved tasks reaches this value or above.}

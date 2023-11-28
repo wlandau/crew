@@ -82,13 +82,14 @@ crew_class_relay <- R6::R6Class(
     },
     #' @description Register a popped task.
     #' @return `NULL` (invisibly).
-    #' @param n Number of tasks to register as popped
+    #' @param n Number of tasks to register as popped.
     pop = function(n = 1L) {
-      replicate(n, .subset2(self, "wait_condition")(seconds_timeout = 0))
+      wait_condition <- .subset2(self, "wait_condition")
+      replicate(n, wait_condition(seconds_timeout = 0))
       crew_relay_assert_unpopped(.subset2(self, "unpopped"), n = n)
       on.exit({
-        self$unpopped <- .subset2(self, "unpopped") - 1L
-        self$popped <- .subset2(self, "popped") + 1L
+        self$unpopped <- .subset2(self, "unpopped") - n
+        self$popped <- .subset2(self, "popped") + n
       })
       invisible()
     },

@@ -133,7 +133,7 @@ Register a popped task.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{Number of tasks to register as popped}
+\item{\code{n}}{Number of tasks to register as popped.}
 }
 \if{html}{\out{</div>}}
 }

@@ -565,7 +565,7 @@ Apply a single command to multiple inputs.
   algorithm = NULL,
   packages = character(0),
   library = NULL,
-  seconds_interval = 0.25,
+  seconds_interval = 0.5,
   seconds_timeout = NULL,
   names = NULL,
   save_command = FALSE,
@@ -783,7 +783,7 @@ Wait for tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$wait(
   mode = "all",
-  seconds_interval = 0.01,
+  seconds_interval = 0.5,
   seconds_timeout = Inf,
   scale = TRUE,
   throttle = NULL,
@@ -797,9 +797,8 @@ Wait for tasks.
 \item{\code{mode}}{Character of length 1: \code{"all"} to wait for all tasks to
 complete, \code{"one"} to wait for a single task to complete.}
 
-\item{\code{seconds_interval}}{Number of seconds to wait between polling
-intervals waiting for tasks. Defaults to the \code{seconds_interval}
-field of the client object.}
+\item{\code{seconds_interval}}{Number of seconds to interrupt the wait
+in order to scale up workers as needed.}
 
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for tasks.}
 

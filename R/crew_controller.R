@@ -542,7 +542,7 @@ crew_class_controller <- R6::R6Class(
       algorithm = NULL,
       packages = character(0),
       library = NULL,
-      seconds_interval = 0.25,
+      seconds_interval = 0.5,
       seconds_timeout = NULL,
       names = NULL,
       save_command = FALSE,
@@ -692,15 +692,20 @@ crew_class_controller <- R6::R6Class(
       total <- length(tasks)
       relay <- .subset2(.subset2(self, "client"), "relay")
       start <- nanonext::mclock()
+      pushed <- self$pushed
       crew_retry(
         fun = ~{
           .subset2(self, "scale")()
           unresolved <- .subset2(self, "unresolved")()
           controller_map_message_progress(total, total - unresolved, verbose)
-          unresolved < 1L
+          .subset2(relay, "wait_resolved")(
+            seconds_timeout = seconds_interval,
+            resolved = pushed
+          )
         },
-        seconds_interval = seconds_interval,
-        seconds_timeout = Inf
+        seconds_interval = 0,
+        seconds_timeout = Inf,
+        error = FALSE
       )
       controller_map_message_complete(total, start, verbose)
       if_any(verbose, message(), NULL)
@@ -907,9 +912,8 @@ crew_class_controller <- R6::R6Class(
     #'   in `mode` was met, `FALSE` otherwise.
     #' @param mode Character of length 1: `"all"` to wait for all tasks to
     #'   complete, `"one"` to wait for a single task to complete.
-    #' @param seconds_interval Number of seconds to wait between polling
-    #'   intervals waiting for tasks. Defaults to the `seconds_interval`
-    #'   field of the client object.
+    #' @param seconds_interval Number of seconds to interrupt the wait
+    #'   in order to scale up workers as needed.
     #' @param seconds_timeout Timeout length in seconds waiting for tasks.
     #' @param scale Logical, whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
@@ -918,7 +922,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     wait = function(
       mode = "all",
-      seconds_interval = 0.01,
+      seconds_interval = 0.5,
       seconds_timeout = Inf,
       scale = TRUE,
       throttle = NULL,
@@ -934,34 +938,27 @@ crew_class_controller <- R6::R6Class(
         skip_cran = TRUE,
         frequency = "once"
       )
-      crew_deprecate(
-        name = "throttle",
-        date = "2023-11-28",
-        version = "0.5.0.9003",
-        alternative = "none (no longer necessary)",
-        condition = "message",
-        value = throttle,
-        skip_cran = TRUE,
-        frequency = "once"
-      )
       crew_assert(mode, identical(., "all") || identical(., "one"))
+      do_scale <- if_any(scale, self$scale, invisible)
+      relay <- self$client$relay
+      mode_one <- identical(mode, "one")
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
-      do_scale <- if_any(scale, self$scale, invisible)
-      tryCatch(
-        crew_retry(
-          fun = ~{
-            do_scale()
-            envir$result <- if_any(
-              mode == "all",
-              self$unresolved() < 1L,
-              self$exists_resolved()
+      crew_retry(
+        fun = ~{
+          do_scale()
+          envir$result <- if_any(
+            mode_one,
+            relay$wait_unpopped(seconds_timeout = seconds_interval),
+            relay$wait_resolved(
+              seconds_timeout = seconds_interval,
+              resolved = self$pushed
             )
-          },
-          seconds_interval = seconds_interval,
-          seconds_timeout = seconds_timeout
-        ),
-        crew_expire = function(condition) NULL
+          )
+        },
+        seconds_interval = 0,
+        seconds_timeout = seconds_timeout,
+        error = FALSE
       )
       invisible(envir$result)
     },

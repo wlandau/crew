@@ -181,7 +181,8 @@ Number of seconds to wait before timing out.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{NULL} (invisibly).
+\code{TRUE} if at least one task is available after waiting,
+\code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}
@@ -206,7 +207,9 @@ until the number of resolved tasks reaches this value or above.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{NULL} (invisibly).
+\code{TRUE} if the number of
+resolved tasks reaches a specified number after waiting,
+\code{FALSE} otherwise
 }
 }
 }

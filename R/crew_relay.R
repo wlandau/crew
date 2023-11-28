@@ -103,22 +103,25 @@ crew_class_relay <- R6::R6Class(
       condition <- .subset2(self, "condition")
       result <- FALSE
       on.exit(self$unpopped <- .subset2(self, "unpopped") + as.integer(result))
-      result <- nanonext::until_(cv = condition, msec = timeout)
+      result <- nanonext::until(cv = condition, msec = timeout)
       invisible()
     },
     #' @description Wait until at least one task is available to be popped.
-    #' @return `NULL` (invisibly).
+    #' @return `TRUE` if at least one task is available after waiting,
+    #'   `FALSE` otherwise.
     #' @param seconds_timeout Positive numeric of length 1,
     #'   Number of seconds to wait before timing out.
     wait_unpopped = function(seconds_timeout = Inf) {
       if (.subset2(self, "unpopped") < 1L) {
         .subset2(self, "wait_condition")(seconds_timeout = seconds_timeout)
       }
-      invisible()
+      .subset2(self, "unpopped") > 0L
     },
     #' @description Wait for until the number of
     #'   resolved tasks reaches a specified number.
-    #' @return `NULL` (invisibly).
+    #' @return `TRUE` if the number of
+    #'   resolved tasks reaches a specified number after waiting,
+    #'   `FALSE` otherwise
     #' @param seconds_timeout Positive numeric of length 1,
     #'   Number of seconds to wait before timing out.
     #' @param resolved Positive integer of length 1. This method waits
@@ -127,7 +130,7 @@ crew_class_relay <- R6::R6Class(
       if (.subset2(self, "resolved")() < resolved) {
         .subset2(self, "wait_condition")(seconds_timeout = seconds_timeout)
       }
-      invisible()
+      .subset2(self, "resolved")() >= resolved
     }
   )
 )

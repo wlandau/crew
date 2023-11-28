@@ -68,7 +68,8 @@ crew_client <- function(
     port = port,
     tls = tls,
     seconds_interval = seconds_interval,
-    seconds_timeout = seconds_timeout
+    seconds_timeout = seconds_timeout,
+    relay = crew_relay()
   )
   client$validate()
   client
@@ -104,6 +105,9 @@ crew_class_client <- R6::R6Class(
     seconds_interval = NULL,
     #' @field seconds_timeout See [crew_client()].
     seconds_timeout = NULL,
+    #' @field relay Relay object for event-driven programming on a downstream
+    #'   condition variable.
+    relay = NULL,
     #' @field started Whether the client is started.
     started = NULL,
     #' @field dispatcher Process ID of the `mirai` dispatcher
@@ -117,6 +121,7 @@ crew_class_client <- R6::R6Class(
     #' @param tls Argument passed from [crew_client()].
     #' @param seconds_interval Argument passed from [crew_client()].
     #' @param seconds_timeout Argument passed from [crew_client()].
+    #' @param relay Argument passed from [crew_client()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
@@ -131,7 +136,8 @@ crew_class_client <- R6::R6Class(
       port = NULL,
       tls = NULL,
       seconds_interval = NULL,
-      seconds_timeout = NULL
+      seconds_timeout = NULL,
+      relay = NULL
     ) {
       self$name <- name
       self$workers <- workers
@@ -140,6 +146,7 @@ crew_class_client <- R6::R6Class(
       self$tls <- tls
       self$seconds_interval <- seconds_interval
       self$seconds_timeout <- seconds_timeout
+      self$relay <- relay
     },
     #' @description Validate the client.
     #' @return `NULL` (invisibly).
@@ -191,6 +198,8 @@ crew_class_client <- R6::R6Class(
         . >= 0
       )
       crew_assert(self$seconds_timeout >= self$seconds_interval)
+      crew_assert(inherits(self$relay, "crew_class_relay"))
+      self$relay$validate()
       invisible()
     },
     #' @description Start listening for workers on the available sockets.
@@ -224,6 +233,8 @@ crew_class_client <- R6::R6Class(
       # Begin dispatcher code.
       self$dispatcher <- mirai::nextget("pid", .compute = self$name)
       # End dispatcher code.
+      self$relay$start()
+      self$relay$from(self$condition())
       self$started <- TRUE
       invisible()
     },
@@ -294,6 +305,7 @@ crew_class_client <- R6::R6Class(
       )
       # End dispatcher checks block 1/2.
       mirai::daemons(n = 0L, .compute = self$name)
+      self$relay$terminate()
       self$started <- FALSE
       # Begin dispatcher checks block 2/2.
       if (is.null(self$dispatcher) || is.null(handle)) {

@@ -39,6 +39,7 @@ signals from \code{mirai::nextget("cv")}.}
 \itemize{
 \item \href{#method-crew_class_relay-validate}{\code{crew_class_relay$validate()}}
 \item \href{#method-crew_class_relay-start}{\code{crew_class_relay$start()}}
+\item \href{#method-crew_class_relay-terminate}{\code{crew_class_relay$terminate()}}
 \item \href{#method-crew_class_relay-from}{\code{crew_class_relay$from()}}
 \item \href{#method-crew_class_relay-resolved}{\code{crew_class_relay$resolved()}}
 \item \href{#method-crew_class_relay-pop}{\code{crew_class_relay$pop()}}
@@ -64,9 +65,22 @@ Validate the object.
 \if{html}{\out{<a id="method-crew_class_relay-start"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_relay-start}{}}}
 \subsection{Method \code{start()}}{
-Initialize the relay object.
+Start the relay object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$start()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_relay-terminate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_relay-terminate}{}}}
+\subsection{Method \code{terminate()}}{
+Terminate the relay object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$terminate()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

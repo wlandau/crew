@@ -702,10 +702,6 @@ crew_class_controller <- R6::R6Class(
         seconds_interval = seconds_interval,
         seconds_timeout = Inf
       )
-      on.exit({
-        self$tasks <- list()
-        .subset2(relay, "pop")(n = total)
-      })
       controller_map_message_complete(total, start, verbose)
       if_any(verbose, message(), NULL)
       results <- map(tasks, ~.subset2(.x, "data"))
@@ -732,10 +728,14 @@ crew_class_controller <- R6::R6Class(
       )
       index <- as.integer(names(tasks))
       log <- .subset2(self, "log")
-      self$log$tasks[index] <- .subset2(log, "tasks")[index] + tasks
-      self$log$seconds[index] <- .subset2(log, "seconds")[index] + seconds
-      self$log$errors[index] <- .subset2(log, "errors")[index] + errors
-      self$log$warnings[index] <- .subset2(log, "warnings")[index] + warnings
+      on.exit({
+        self$tasks <- list()
+        .subset2(relay, "pop")(n = total)
+        self$log$tasks[index] <- .subset2(log, "tasks")[index] + tasks
+        self$log$seconds[index] <- .subset2(log, "seconds")[index] + seconds
+        self$log$errors[index] <- .subset2(log, "errors")[index] + errors
+        self$log$warnings[index] <- .subset2(log, "warnings")[index] + warnings
+      })
       error_messages <- .subset2(out, "error")
       if (!all(is.na(error_messages)) && !identical(error, "silent")) {
         message <- sprintf(
@@ -859,12 +859,6 @@ crew_class_controller <- R6::R6Class(
       if (is.null(task)) {
         return(NULL)
       }
-      on.exit({
-        if (!is.null(index_delete)) {
-          self$tasks[[index_delete]] <- NULL
-          .subset2(.subset2(.subset2(self, "client"), "relay"), "pop")(n = 1L)
-        }
-      })
       out <- task$data
       # The contents of the if() statement below happen
       # if mirai cannot evaluate the command.
@@ -883,19 +877,25 @@ crew_class_controller <- R6::R6Class(
       out <- monad_tibble(out)
       log <- .subset2(self, "log")
       # Same as above.
+      on.exit({
+        self$tasks[[index_delete]] <- NULL
+        .subset2(.subset2(.subset2(self, "client"), "relay"), "pop")(n = 1L)
+      })
       # nocov start
       if (anyNA(.subset2(out, "launcher"))) {
         return(out)
       }
       # nocov end
-      index <- .subset2(out, "worker")
-      self$log$tasks[index] <- .subset2(log, "tasks")[index] + 1L
-      self$log$seconds[index] <- .subset2(log, "seconds")[index] +
-        .subset2(out, "seconds")
-      self$log$errors[index] <- .subset2(log, "errors")[index] +
-        !anyNA(.subset2(out, "error"))
-      self$log$warnings[index] <- .subset2(log, "warnings")[index] +
-        !anyNA(.subset2(out, "warnings"))
+      on.exit({
+        index <- .subset2(out, "worker")
+        self$log$tasks[index] <- .subset2(log, "tasks")[index] + 1L
+        self$log$seconds[index] <- .subset2(log, "seconds")[index] +
+          .subset2(out, "seconds")
+        self$log$errors[index] <- .subset2(log, "errors")[index] +
+          !anyNA(.subset2(out, "error"))
+        self$log$warnings[index] <- .subset2(log, "warnings")[index] +
+          !anyNA(.subset2(out, "warnings"))
+      }, add = TRUE)
       out
     },
     #' @description Wait for tasks.

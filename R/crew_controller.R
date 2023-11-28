@@ -201,7 +201,7 @@ crew_class_controller <- R6::R6Class(
         self$client$start()
         workers <- self$client$workers
         self$launcher$start()
-        self$tasks <- self$tasks %|||% list()
+        self$tasks <- list()
         self$pushed <- 0L
         self$log <- list(
           controller = rep(self$client$name, workers),
@@ -366,8 +366,10 @@ crew_class_controller <- R6::R6Class(
         .compute = self$client$name,
         .signal = TRUE
       )
-      self$tasks[[length(.subset2(self, "tasks")) + 1L]] <- task
-      self$pushed <- .subset2(self, "pushed") + 1L
+      on.exit({
+        self$tasks[[length(.subset2(self, "tasks")) + 1L]] <- task
+        self$pushed <- .subset2(self, "pushed") + 1L
+      })
       if (scale) {
         .subset2(self, "scale")()
       }
@@ -442,13 +444,18 @@ crew_class_controller <- R6::R6Class(
         .compute = self$client$name,
         .signal = TRUE
       )
-      self$tasks[[length(.subset2(self, "tasks")) + 1L]] <- task
-      self$pushed <- .subset2(self, "pushed") + 1L
+      on.exit({
+        self$tasks[[length(.subset2(self, "tasks")) + 1L]] <- task
+        self$pushed <- .subset2(self, "pushed") + 1L
+      })
       invisible()
     },
     #' @description Apply a single command to multiple inputs.
-    #' @details The idea comes from functional programming: for example,
-    #'   the `map()` function from the `purrr` package.
+    #' @details `map()` cannot be used unless all prior tasks are
+    #'   completed and popped. You may need to wait and then pop them
+    #'   manually. Alternatively, you can start over: either call
+    #'   `terminate()` on the current controller object to reset it, or
+    #'   create a new controller object entirely.
     #' @return A `tibble` of results and metadata: one row per task
     #'   and columns corresponding to the output of `pop()`.
     #' @param command Language object with R code to run.
@@ -552,11 +559,11 @@ crew_class_controller <- R6::R6Class(
         iterate,
         is.list(.),
         rlang::is_named(.),
-        message = "the \"iterate\" argument of map() must be a named list"
+        message = "the 'iterate' arg of map() must be a nonempty named list"
       )
       crew_assert(
         length(iterate) > 0L,
-        message = "the \"iterate\" argument must be a nonempty named list"
+        message = "the \"iterate\" arg of map() must be a nonempty named list"
       )
       crew_assert(
         length(unique(map_dbl(iterate, length))) == 1L,
@@ -634,6 +641,10 @@ crew_class_controller <- R6::R6Class(
         error %in% c("stop", "warn", "silent"),
         message = "error argument must be \"stop\", \"warn\", or \"silent\""
       )
+      crew_assert(
+        length(self$tasks) < 1L,
+        message = "cannot map() until all prior tasks are completed and popped"
+      )
       string <- if_any(save_command, deparse_safe(command), NA_character_)
       .timeout <- if_any(
         is.null(seconds_timeout),
@@ -651,9 +662,6 @@ crew_class_controller <- R6::R6Class(
       )
       names_iterate <- names(iterate)
       self$start()
-      old_tasks <- self$tasks
-      on.exit(self$tasks <- old_tasks)
-      self$tasks <- list()
       sign <- if_any(!is.null(seed) && seed > 0L, 1L, -1L)
       if (!is.null(seed)) {
         seed <- 1L
@@ -681,11 +689,12 @@ crew_class_controller <- R6::R6Class(
         )
       }
       tasks <- self$tasks
+      total <- length(tasks)
+      relay <- .subset2(.subset2(self, "client"), "relay")
       start <- nanonext::mclock()
       crew_retry(
         fun = ~{
           .subset2(self, "scale")()
-          total <- length(tasks)
           unresolved <- .subset2(self, "unresolved")()
           controller_map_message_progress(total, total - unresolved, verbose)
           unresolved < 1L
@@ -693,7 +702,11 @@ crew_class_controller <- R6::R6Class(
         seconds_interval = seconds_interval,
         seconds_timeout = Inf
       )
-      controller_map_message_complete(length(names), start, verbose)
+      controller_map_message_complete(total, start, verbose)
+      on.exit({
+        self$tasks <- list()
+        .subset2(relay, "pop")(n = total)
+      })
       if_any(verbose, message(), NULL)
       results <- map(tasks, ~.subset2(.x, "data"))
       out <- lapply(results, monad_tibble)
@@ -834,17 +847,24 @@ crew_class_controller <- R6::R6Class(
         return(NULL)
       }
       task <- NULL
+      index_delete <- NULL
       for (index in seq(n_tasks)) {
         object <- .subset2(tasks, index)
         if (!nanonext::unresolved(object)) {
           task <- object
-          self$tasks[[index]] <- NULL
+          index_delete <- index
           break
         }
       }
       if (is.null(task)) {
         return(NULL)
       }
+      on.exit({
+        if (!is.null(index_delete)) {
+          self$tasks[[index_delete]] <- NULL
+          .subset2(.subset2(.subset2(self, "client"), "relay"), "pop")(n = 1L)
+        }
+      })
       out <- task$data
       # The contents of the if() statement below happen
       # if mirai cannot evaluate the command.
@@ -980,6 +1000,7 @@ crew_class_controller <- R6::R6Class(
         self$client$terminate()
         self$launcher$terminate()
       }
+      self$tasks <- list()
       self$pushed <- NULL
       # nocov end
       invisible()

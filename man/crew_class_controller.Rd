@@ -673,8 +673,11 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-The idea comes from functional programming: for example,
-the \code{map()} function from the \code{purrr} package.
+\code{map()} cannot be used unless all prior tasks are
+completed and popped. You may need to wait and then pop them
+manually. Alternatively, you can start over: either call
+\code{terminate()} on the current controller object to reset it, or
+create a new controller object entirely.
 }
 
 \subsection{Returns}{

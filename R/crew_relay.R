@@ -82,9 +82,10 @@ crew_class_relay <- R6::R6Class(
     },
     #' @description Register a popped task.
     #' @return `NULL` (invisibly).
-    pop = function() {
-      .subset2(self, "wait_condition")(seconds_timeout = 0)
-      crew_relay_assert_unpopped(.subset2(self, "unpopped"))
+    #' @param n Number of tasks to register as popped
+    pop = function(n = 1L) {
+      replicate(n, .subset2(self, "wait_condition")(seconds_timeout = 0))
+      crew_relay_assert_unpopped(.subset2(self, "unpopped"), n = n)
       on.exit({
         self$unpopped <- .subset2(self, "unpopped") - 1L
         self$popped <- .subset2(self, "popped") + 1L
@@ -130,12 +131,13 @@ crew_class_relay <- R6::R6Class(
   )
 )
 
-crew_relay_assert_unpopped <- function(unpopped) {
-  if (unpopped < 1L) {
+crew_relay_assert_unpopped <- function(unpopped, n) {
+  if (unpopped < n) {
     crew_error(
-      message = paste(
-        "Trying to pop but the unpopped task resolution count is 0.",
-        "Please send a bug report with a reprex to",
+      message = paste0(
+        "Trying to pop but the unpopped task resolution count is less than ",
+        n,
+        ". Please send a bug report with a reprex to ",
         "https://github.com/wlandau/crew/issues"
       )
     )

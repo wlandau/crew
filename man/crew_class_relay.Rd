@@ -127,9 +127,16 @@ Positive integer of length 1, total number of resolved tasks.
 \subsection{Method \code{pop()}}{
 Register a popped task.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$pop()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$pop(n = 1L)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Number of tasks to register as popped}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

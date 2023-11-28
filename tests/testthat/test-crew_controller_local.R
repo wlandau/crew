@@ -500,7 +500,7 @@ crew_test("map() tasks attributed to correct workers", {
   expect_equal(sum$warnings, c(0L, 0L, 1L, 0L))
 })
 
-crew_test("map() does not need an started controller", {
+crew_test("map() does not need a started controller", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
@@ -517,7 +517,7 @@ crew_test("map() does not need an started controller", {
   expect_equal(nrow(results), 2L)
 })
 
-crew_test("map() does not need an empty controller", {
+crew_test("map() needs an empty controller", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
@@ -535,10 +535,7 @@ crew_test("map() does not need an empty controller", {
   x$wait(seconds_timeout = 30)
   expect_equal(x$unresolved(), 0L)
   expect_equal(x$resolved(), 1L)
-  results <- x$map(command = TRUE, iterate = list(x = c(1, 2)))
-  expect_equal(nrow(results), 2L)
-  expect_equal(x$unresolved(), 0L)
-  expect_equal(x$resolved(), 3L)
+  expect_crew_error(x$map(command = TRUE, iterate = list(x = c(1, 2))))
 })
 
 crew_test("deprecate seconds_exit", {

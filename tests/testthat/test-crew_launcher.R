@@ -296,8 +296,9 @@ crew_test("launcher errors", {
 })
 
 crew_test("launcher errors", {
-  x <- crew_launcher()
+  x <- crew_launcher(processes = 1L)
   on.exit({
+    x$terminate()
     rm(x)
     gc()
     crew_test_sleep()

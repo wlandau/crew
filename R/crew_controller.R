@@ -128,16 +128,6 @@ crew_class_controller <- R6::R6Class(
     nonempty = function(controllers = NULL) {
       length(.subset2(self, "tasks")) > 0L
     },
-    #' @description Does the controller have a resolved task?
-    #' @return `TRUE` if the controller has a resolved task, `FALSE` otherwise.
-    exists_resolved = function() {
-      for (task in .subset2(self, "tasks")) {
-        if (!nanonext::.unresolved(task)) {
-          return(TRUE)
-        }
-      }
-      FALSE
-    },
     #' @description Number of resolved `mirai()` tasks.
     #' @details `resolved()` is cumulative: it counts all the resolved
     #'   tasks over the entire lifetime of the controller session.

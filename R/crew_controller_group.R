@@ -93,13 +93,14 @@ crew_class_controller_group <- R6::R6Class(
       # shikokuchuo/nanonext/issues/24 can be fixed.
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
+      small_interval <- seconds_interval / length(controllers)
       crew_retry(
         fun = ~{
           for (controller in controllers) {
             envir$result <- controller$wait(
               mode = "one",
-              seconds_interval = 0,
-              seconds_timeout = 0,
+              seconds_interval = small_interval,
+              seconds_timeout = small_interval,
               scale = scale
             )
             if (envir$result) {
@@ -108,8 +109,9 @@ crew_class_controller_group <- R6::R6Class(
           }
           FALSE
         },
-        seconds_interval = seconds_interval,
+        seconds_interval = 0,
         seconds_timeout = seconds_timeout,
+        error = FALSE
       )
       envir$result
     },

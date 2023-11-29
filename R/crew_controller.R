@@ -941,19 +941,22 @@ crew_class_controller <- R6::R6Class(
       crew_assert(mode, identical(., "all") || identical(., "one"))
       do_scale <- if_any(scale, self$scale, invisible)
       relay <- self$client$relay
-      mode_one <- identical(mode, "one")
+      mode_all <- identical(mode, "all")
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
+      if (length(self$tasks) < 1L) {
+        return(mode_all)
+      }
       crew_retry(
         fun = ~{
           do_scale()
           envir$result <- if_any(
-            mode_one,
-            relay$wait_unpopped(seconds_timeout = seconds_interval),
+            mode_all,
             relay$wait_resolved(
               seconds_timeout = seconds_interval,
               resolved = self$pushed
-            )
+            ),
+            relay$wait_unpopped(seconds_timeout = seconds_interval)
           )
           envir$result
         },

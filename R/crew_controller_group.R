@@ -522,7 +522,6 @@ crew_class_controller_group <- R6::R6Class(
       out <- if_any(
         identical(mode, "one"),
         private$wait_one(
-          group = self,
           controllers = control,
           seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,

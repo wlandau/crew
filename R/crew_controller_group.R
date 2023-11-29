@@ -82,6 +82,60 @@ crew_class_controller_group <- R6::R6Class(
         message = sprintf("controller not found: %s", name)
       )
       self$controllers[[name]]
+    },
+    wait_one = function(
+      controllers,
+      seconds_interval,
+      seconds_timeout,
+      scale
+    ) {
+      relay <- crew_relay()
+      relay$start()
+      for (controller in controllers) {
+        relay$from(controller$client$condition())
+      }
+      do_scale <- if_any(scale, self$scale, invisible)
+      envir <- new.env(parent = emptyenv())
+      envir$result <- FALSE
+      crew_retry(
+        fun = ~{
+          do_scale()
+          result <- FALSE
+          for (controller in controllers) {
+            if (!result) {
+              result <- controller$client$relay$wait_unpopped(0)
+            }
+          }
+          if (!result) {
+            result <- relay$wait_unpopped(seconds_timeout = seconds_interval)
+          }
+          envir$result <- result
+          result
+        },
+        seconds_interval = 0,
+        seconds_timeout = seconds_timeout,
+        error = FALSE
+      )
+      invisible(envir$result)
+    },
+    wait_all = function(
+      controllers,
+      seconds_interval,
+      seconds_timeout,
+      scale
+    ) {
+      for (controller in controllers) {
+        out <- controller$wait(
+          mode = "all",
+          seconds_interval = seconds_interval,
+          seconds_timeout = seconds_timeout,
+          scale = scale
+        )
+        if (!out) {
+          return(FALSE)
+        }
+      }
+      TRUE
     }
   ),
   public = list(
@@ -445,10 +499,8 @@ crew_class_controller_group <- R6::R6Class(
     #'   a single task in a single controller to complete. In this scheme,
     #'   the timeout limit is applied to each controller sequentially,
     #'   and a timeout is treated the same as a completed controller.
-    #' @param seconds_interval Number of seconds to wait between
-    #'   polling intervals while checking for results.
-    #'   Defaults to a fixed value because the internal `seconds_interval`
-    #'   field may be different from controller to controller.
+    #' @param seconds_interval Number of seconds to interrupt the wait
+    #'   in order to scale up workers as needed.
     #' @param seconds_timeout Timeout length in seconds waiting for
     #'   results to become available.
     #' @param scale Logical of length 1, whether to call `scale_later()`
@@ -458,7 +510,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     wait = function(
       mode = "all",
-      seconds_interval = 0.01,
+      seconds_interval = 0.5,
       seconds_timeout = Inf,
       scale = TRUE,
       throttle = NULL,
@@ -467,19 +519,23 @@ crew_class_controller_group <- R6::R6Class(
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
       control <- private$select_controllers(controllers)
-      results <- rep(FALSE, length(control))
-      for (index in seq_along(control)) {
-        results[[index]] <- control[[index]]$wait(
-          mode = mode,
+      out <- if_any(
+        identical(mode, "one"),
+        private$wait_one(
+          group = self,
+          controllers = control,
+          seconds_interval = seconds_interval,
+          seconds_timeout = seconds_timeout,
+          scale = scale
+        ),
+        private$wait_all(
+          controllers = control,
           seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,
           scale = scale
         )
-        if (all(mode == "one") && results[[index]]) {
-          return(invisible(TRUE))
-        }
-      }
-      invisible(if_any(mode == "all", all(results), any(results)))
+      )
+      invisible(out)
     },
     #' @description Summarize the workers of one or more controllers.
     #' @return A data frame of aggregated worker summary statistics

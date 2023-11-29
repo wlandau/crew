@@ -569,7 +569,7 @@ Wait for tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$wait(
   mode = "all",
-  seconds_interval = 0.01,
+  seconds_interval = 0.5,
   seconds_timeout = Inf,
   scale = TRUE,
   throttle = NULL,
@@ -586,10 +586,8 @@ a single task in a single controller to complete. In this scheme,
 the timeout limit is applied to each controller sequentially,
 and a timeout is treated the same as a completed controller.}
 
-\item{\code{seconds_interval}}{Number of seconds to wait between
-polling intervals while checking for results.
-Defaults to a fixed value because the internal \code{seconds_interval}
-field may be different from controller to controller.}
+\item{\code{seconds_interval}}{Number of seconds to interrupt the wait
+in order to scale up workers as needed.}
 
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for
 results to become available.}

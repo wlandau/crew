@@ -955,6 +955,7 @@ crew_class_controller <- R6::R6Class(
               resolved = self$pushed
             )
           )
+          envir$result
         },
         seconds_interval = 0,
         seconds_timeout = seconds_timeout,

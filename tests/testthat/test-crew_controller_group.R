@@ -337,6 +337,34 @@ crew_test("crew_controller_group() wait one", {
   expect_equal(out$result[[1L]], "done")
 })
 
+crew_test("crew_controller_group() wait all timeout", {
+  skip_on_cran()
+  skip_on_os("windows")
+  a <- crew_controller_local(
+    name = "a",
+    seconds_idle = 360
+  )
+  b <- crew_controller_local(
+    name = "b",
+    seconds_idle = 360
+  )
+  x <- crew_controller_group(a, b)
+  expect_null(x$summary())
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(
+    command = Sys.sleep(300),
+    name = "task_a",
+    controller = "b"
+  )
+  expect_false(x$wait(mode = "all", seconds_timeout = 0, seconds_interval = 0))
+})
+
 crew_test("crew_controller_group() deprecate collect()", {
   skip_on_cran()
   skip_on_os("windows")

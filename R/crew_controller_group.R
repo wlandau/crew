@@ -109,22 +109,16 @@ crew_class_controller_group <- R6::R6Class(
       seconds_timeout,
       scale
     ) {
-      # TODO: use a temporary crew_relay() object if
-      # shikokuchuo/nanonext/issues/24 can be fixed.
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
-      small_interval <- seconds_interval / length(controllers)
       crew_retry(
         fun = ~{
-          for (controller in controllers) {
-            envir$result <- controller$wait(
-              mode = "one",
-              seconds_interval = small_interval,
-              seconds_timeout = small_interval,
-              scale = scale
-            )
-            if (envir$result) {
-              return(TRUE)
+          if (self$relay$wait_unpopped(seconds_timeout = seconds_interval)) {
+            for (controller in controllers) {
+              if (controller$client$relay$wait_unpopped(seconds_timeout = 0)) {
+                envir$result <- TRUE
+                return(TRUE)
+              }
             }
           }
           FALSE

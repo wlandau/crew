@@ -9,7 +9,6 @@ time <- system.time({
   for (index in seq_len(n)) {
     name <- paste0("task_", index)
     x$push(name = name, command = ps::ps_pid())
-    message(paste("push", name))
   }
 })
 message(time["elapsed"])
@@ -19,7 +18,6 @@ time <- system.time({
     out <- x$pop()
     if (!is.null(out)) {
       results[[length(results) + 1L]] <- out
-      message(paste("done", out$name, out$result[[1]]))
     }
   }
 })

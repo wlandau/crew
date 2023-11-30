@@ -8,7 +8,6 @@ controller$start()
 for (index in seq_len(100L)) {
   name <- paste0("task_", index)
   controller$push(name = name, command = index, data = list(index = index))
-  message(paste("push", name))
 }
 # Wait for the tasks to complete.
 controller$wait()
@@ -22,7 +21,6 @@ crew_retry(
 for (index in (seq_len(100L) + 100L)) {
   name <- paste0("task_", index)
   controller$push(name = name, command = index, data = list(index = index))
-  message(paste("push", name))
 }
 controller$wait()
 crew_retry(

@@ -13,7 +13,6 @@ time <- system.time({
   for (index in seq_len(n)) {
     name <- paste0("task_", index)
     x$push(name = name, command = Sys.sleep(10))
-    message(paste("push", name))
   }
 })
 print(time["elapsed"])

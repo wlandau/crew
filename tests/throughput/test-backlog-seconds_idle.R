@@ -11,8 +11,7 @@ system.time(
   while (index < n_tasks || !(controller$empty())) {
     if (index < n_tasks) {
       index <- index + 1L
-      cat("submit", index, "\n")
-      cat("submit", index, "\n")
+      # cat("submit", index, "\n") # nolint
       controller$push(
         name = as.character(index),
         command = Sys.sleep(0.005)
@@ -20,7 +19,7 @@ system.time(
     }
     out <- controller$pop()
     if (!is.null(out)) {
-      cat("collect", out$name, "\n")
+      # cat("collect", out$name, "\n") # nolint
       names[[length(names) + 1L]] <- out$name
     }
   }

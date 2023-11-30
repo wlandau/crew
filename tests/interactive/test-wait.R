@@ -7,7 +7,7 @@ crew_test("single controller, no tasks", {
     x <- if_any(group, crew_controller_group(y), y)
     on.exit({
       x$terminate()
-      Sys.sleep(2.5)
+      crew_test_sleep()
     })
     x$start()
     time <- system.time(
@@ -31,7 +31,7 @@ crew_test("single controller, no tasks", {
     )["elapsed"]
     expect_true(time < 1)
     x$terminate()
-    Sys.sleep(2.5)
+    crew_test_sleep()
   }
 })
 
@@ -41,7 +41,7 @@ crew_test("single controller, all tasks already done", {
     x <- if_any(group, crew_controller_group(y), y)
     on.exit({
       x$terminate()
-      Sys.sleep(2.5)
+      crew_test_sleep()
     })
     x$start()
     x$push(TRUE)
@@ -59,7 +59,7 @@ crew_test("single controller, all tasks already done", {
       expect_true(time < 1)
     }
     x$terminate()
-    Sys.sleep(2.5)
+    crew_test_sleep()
   }
 })
 
@@ -69,7 +69,7 @@ crew_test("single controller, one long task, time out", {
     x <- if_any(group, crew_controller_group(y), y)
     on.exit({
       x$terminate()
-      Sys.sleep(2.5)
+      crew_test_sleep()
     })
     x$start()
     x$push(Sys.sleep(10))
@@ -86,7 +86,7 @@ crew_test("single controller, one long task, time out", {
       expect_true(time < 1)
     }
     x$terminate()
-    Sys.sleep(2.5)
+    crew_test_sleep()
   }
 })
 
@@ -97,7 +97,7 @@ crew_test("single controller, one long task, wait all, full wait", {
       x <- if_any(group, crew_controller_group(y), y)
       on.exit({
         x$terminate()
-        Sys.sleep(2.5)
+        crew_test_sleep()
       })
       x$start()
       x$push(Sys.sleep(5))
@@ -112,7 +112,7 @@ crew_test("single controller, one long task, wait all, full wait", {
       )["elapsed"]
       expect_true(time > 4)
       x$terminate()
-      Sys.sleep(2.5)
+      crew_test_sleep()
     }
   }
 })

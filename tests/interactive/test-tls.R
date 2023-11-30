@@ -1,23 +1,29 @@
-test_that("mirai client can start using custom credentials", {
+crew_test("mirai client can start using custom credentials", {
   skip_on_os("windows")
   on.exit(unlink(c("fd.key", "fd.csr", "fd.crt")), add = TRUE)
   system(
     paste(
       "openssl genpkey -out fd.key -algorithm RSA -outform PEM",
       "-pkeyopt rsa_keygen_bits:2048 -des3 -pass pass:crew"
-    )
+    ),
+    ignore.stdout = TRUE,
+    ignore.stderr = TRUE
   )
   system(
     paste(
       "openssl req -new -key fd.key -out fd.csr",
       "-subj \"/CN=127.0.0.1\" -passin pass:crew"
-    )
+    ),
+    ignore.stdout = TRUE,
+    ignore.stderr = TRUE
   )
   system(
     paste(
       "openssl x509 -req -days 365 -in fd.csr -signkey",
       "fd.key -out fd.crt -passin pass:crew"
-    )
+    ),
+    ignore.stdout = TRUE,
+    ignore.stderr = TRUE
   )
   on.exit(mirai::daemons(n = 0L), add = TRUE)
   expect_silent(
@@ -37,17 +43,27 @@ test_that("mirai client can start using custom credentials", {
   )
 })
 
-test_that("crew_tls() custom works on real credentials", {
+crew_test("crew_tls() custom works on real credentials", {
   skip_on_os("windows")
   on.exit(unlink(c("fd.key", "fd.csr", "fd.crt")), add = TRUE)
   system(
     paste(
       "openssl genpkey -out fd.key -algorithm RSA",
       "-outform PEM -pkeyopt rsa_keygen_bits:2048"
-    )
+    ),
+    ignore.stdout = TRUE,
+    ignore.stderr = TRUE
   )
-  system("openssl req -new -key fd.key -out fd.csr -subj \"/CN=127.0.0.1\"")
-  system("openssl x509 -req -days 365 -in fd.csr -signkey fd.key -out fd.crt")
+  system(
+    "openssl req -new -key fd.key -out fd.csr -subj \"/CN=127.0.0.1\"",
+    ignore.stdout = TRUE,
+    ignore.stderr = TRUE
+  )
+  system(
+    "openssl x509 -req -days 365 -in fd.csr -signkey fd.key -out fd.crt",
+    ignore.stdout = TRUE,
+    ignore.stderr = TRUE
+  )
   tls <- crew_tls(mode = "custom", key = "fd.key", certificates = "fd.crt")
   expect_silent(tls$validate())
   x <- crew_controller_local(tls = tls)
@@ -57,26 +73,32 @@ test_that("crew_tls() custom works on real credentials", {
   expect_equal(x$pop()$result[[1L]], "57")
 })
 
-test_that("crew_tls() custom works on real credentials with custom password", {
+crew_test("crew_tls() custom works on real credentials with custom password", {
   skip_on_os("windows")
   on.exit(unlink(c("fd.key", "fd.csr", "fd.crt")), add = TRUE)
   system(
     paste(
       "openssl genpkey -out fd.key -algorithm RSA -outform PEM",
       "-pkeyopt rsa_keygen_bits:2048 -des3 -pass pass:crew"
-    )
+    ),
+    ignore.stdout = TRUE,
+    ignore.stderr = TRUE
   )
   system(
     paste(
       "openssl req -new -key fd.key -out fd.csr",
       "-subj \"/CN=127.0.0.1\" -passin pass:crew"
-    )
+    ),
+    ignore.stdout = TRUE,
+    ignore.stderr = TRUE
   )
   system(
     paste(
       "openssl x509 -req -days 365 -in fd.csr -signkey",
       "fd.key -out fd.crt -passin pass:crew"
-    )
+    ),
+    ignore.stdout = TRUE,
+    ignore.stderr = TRUE
   )
   tls <- crew_tls(
     mode = "custom",
@@ -93,7 +115,7 @@ test_that("crew_tls() custom works on real credentials with custom password", {
   expect_equal(x$pop()$result[[1L]], "57")
 })
 
-test_that("crew_tls() automatic", {
+crew_test("crew_tls() automatic", {
   x <- crew_controller_local(tls = crew_tls(mode = "automatic"))
   on.exit(x$terminate(), add = TRUE)
   x$start()

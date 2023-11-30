@@ -39,22 +39,25 @@ crew_test("relay terminate", {
   expect_null(x$popped)
 })
 
-crew_test("relay inherit", {
+crew_test("relaying signals", {
   x <- crew_relay()
+  x$from <- nanonext::cv()
+  x$to <- nanonext::cv()
   x$start()
-  cv <- nanonext::cv()
-  x$from(cv)
-  nanonext::cv_signal(cv)
+  expect_silent(x$validate())
+  nanonext::cv_signal(x$from)
   nanonext::msleep(250)
+  expect_equal(nanonext::cv_value(x$from), 1L)
   expect_equal(nanonext::cv_value(x$condition), 1L)
+  expect_equal(nanonext::cv_value(x$to), 1L)
 })
 
 crew_test("relay resolved()", {
   x <- crew_relay()
+  cv <- nanonext::cv()
+  x$from <- cv
   x$start()
   expect_equal(x$resolved(), 0L)
-  cv <- nanonext::cv()
-  x$from(cv)
   nanonext::cv_signal(cv)
   nanonext::msleep(250)
   expect_equal(x$resolved(), 1L)
@@ -66,9 +69,9 @@ crew_test("relay resolved()", {
 crew_test("relay pop()", {
   for (unpopped in c(0L, 7L)) {
     x <- crew_relay()
-    x$start()
     cv <- nanonext::cv()
-    x$from(cv)
+    x$from <- cv
+    x$start()
     expect_equal(nanonext::cv_value(x$condition), 0L)
     replicate(3L, nanonext::cv_signal(cv))
     nanonext::msleep(250)
@@ -92,9 +95,9 @@ crew_test("relay pop()", {
 
 crew_test("relay wait_condition()", {
   x <- crew_relay()
-  x$start()
   cv <- nanonext::cv()
-  x$from(cv)
+  x$from <- cv
+  x$start()
   x$wait_condition(seconds_timeout = 0.001)
   expect_equal(nanonext::cv_value(x$condition), 0L)
   expect_equal(x$unpopped, 0L)
@@ -110,9 +113,9 @@ crew_test("relay wait_condition()", {
 
 crew_test("relay wait_unpopped()", {
   x <- crew_relay()
-  x$start()
   cv <- nanonext::cv()
-  x$from(cv)
+  x$from <- cv
+  x$start()
   nanonext::cv_signal(x$condition)
   nanonext::msleep(250)
   expect_equal(nanonext::cv_value(x$condition), 1L)
@@ -124,9 +127,9 @@ crew_test("relay wait_unpopped()", {
 
 crew_test("relay wait_resolved()", {
   x <- crew_relay()
-  x$start()
   cv <- nanonext::cv()
-  x$from(cv)
+  x$from <- cv
+  x$start()
   x$wait_resolved(seconds_timeout = 1, resolved = 0L)
   x$wait_resolved(seconds_timeout = 0, resolved = 1L)
   expect_equal(nanonext::cv_value(x$condition), 0L)

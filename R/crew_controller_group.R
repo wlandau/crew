@@ -36,6 +36,10 @@ crew_controller_group <- function(...) {
     )
   )
   relay <- crew_relay()
+  relay$start()
+  for (controller in controllers) {
+    controller$client$relay$to <- relay$condition
+  }
   out <- crew_class_controller_group$new(
     controllers = controllers,
     relay = relay

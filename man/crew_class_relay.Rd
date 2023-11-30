@@ -25,8 +25,13 @@ Other class:
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{condition}}{\code{nanonext} condition variable that inherits
-signals from \code{mirai::nextget("cv")}.}
+\item{\code{condition}}{Main condition variable.}
+
+\item{\code{from}}{Condition variable that \code{self$condition} receives
+signals from.}
+
+\item{\code{to}}{Condition variable that \code{self$condition} forwards
+signals to.}
 
 \item{\code{unpopped}}{Number of observed unpopped tasks.}
 
@@ -40,7 +45,6 @@ signals from \code{mirai::nextget("cv")}.}
 \item \href{#method-crew_class_relay-validate}{\code{crew_class_relay$validate()}}
 \item \href{#method-crew_class_relay-start}{\code{crew_class_relay$start()}}
 \item \href{#method-crew_class_relay-terminate}{\code{crew_class_relay$terminate()}}
-\item \href{#method-crew_class_relay-from}{\code{crew_class_relay$from()}}
 \item \href{#method-crew_class_relay-resolved}{\code{crew_class_relay$resolved()}}
 \item \href{#method-crew_class_relay-pop}{\code{crew_class_relay$pop()}}
 \item \href{#method-crew_class_relay-wait_condition}{\code{crew_class_relay$wait_condition()}}
@@ -83,27 +87,6 @@ Terminate the relay object.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$terminate()}\if{html}{\out{</div>}}
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_relay-from"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_relay-from}{}}}
-\subsection{Method \code{from()}}{
-Forward signals from a different condition variable.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$from(condition)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{condition}}{A \code{nanonext} condition variable which will forward
-signals to \code{self$condition}.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

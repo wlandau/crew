@@ -1,8 +1,8 @@
 crew_test("relay wait_condition() timeout condition", {
   x <- crew_relay()
-  x$start()
   cv <- nanonext::cv()
-  x$from(cv)
+  x$from <- cv
+  x$start()
   time <- system.time(x$wait_condition(seconds_timeout = 2))
   expect_gt(time["elapsed"], 1)
   expect_equal(nanonext::cv_value(x$condition), 0L)
@@ -52,9 +52,9 @@ crew_test("relay wait_condition() timeout popped", {
 
 crew_test("relay wait_unpopped() timeout condition", {
   x <- crew_relay()
-  x$start()
   cv <- nanonext::cv()
-  x$from(cv)
+  x$from <- cv
+  x$start()
   time <- system.time(x$wait_unpopped(seconds_timeout = 2))
   expect_gt(time["elapsed"], 1)
   expect_equal(nanonext::cv_value(x$condition), 0L)
@@ -104,9 +104,9 @@ crew_test("relay wait_unpopped() timeout popped", {
 
 crew_test("relay wait_resolved() timeout condition", {
   x <- crew_relay()
-  x$start()
   cv <- nanonext::cv()
-  x$from(cv)
+  x$from <- cv
+  x$start()
   time <- system.time(x$wait_resolved(seconds_timeout = 2, resolved = 1L))
   expect_gt(time["elapsed"], 1)
   expect_equal(nanonext::cv_value(x$condition), 0L)

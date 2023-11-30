@@ -24,9 +24,14 @@ crew_class_relay <- R6::R6Class(
   classname = "crew_class_relay",
   cloneable = FALSE,
   public = list(
-    #' @field condition `nanonext` condition variable that inherits
-    #'   signals from `mirai::nextget("cv")`.
+    #' @field condition Main condition variable.
     condition = NULL,
+    #' @field from Condition variable that `self$condition` receives
+    #'   signals from.
+    from = NULL,
+    #' @field to Condition variable that `self$condition` forwards
+    #'   signals to.
+    to = NULL,
     #' @field unpopped Number of observed unpopped tasks.
     unpopped = NULL,
     #' @field popped Number of observed popped tasks.
@@ -43,8 +48,10 @@ crew_class_relay <- R6::R6Class(
           . >= 0L
         )
       }
-      if (!is.null(self$condition)) {
-        crew_assert(inherits(self$condition, "conditionVariable"))
+      for (field in c("condition", "from", "to")) {
+        if (!is.null(self[[field]])) {
+          crew_assert(inherits(self[[field]], "conditionVariable"))
+        }
       }
       invisible()
     },
@@ -53,6 +60,12 @@ crew_class_relay <- R6::R6Class(
     start = function() {
       if (is.null(self$condition)) {
         self$condition <- nanonext::cv()
+        if (!is.null(self$from)) {
+          nanonext::`%~>%`(cv = self$from, cv2 = self$condition)
+        }
+        if (!is.null(self$to)) {
+          nanonext::`%~>%`(cv = self$condition, cv2 = self$to)
+        }
         self$unpopped <- 0L
         self$popped <- 0L
       }
@@ -64,14 +77,6 @@ crew_class_relay <- R6::R6Class(
       self$condition <- NULL
       self$unpopped <- NULL
       self$popped <- NULL
-      invisible()
-    },
-    #' @description Forward signals from a different condition variable.
-    #' @return `NULL` (invisibly).
-    #' @param condition A `nanonext` condition variable which will forward
-    #'  signals to `self$condition`.
-    from = function(condition) {
-      nanonext::`%~>%`(cv = condition, cv2 = self$condition)
       invisible()
     },
     #' @description Count the total count of resolved tasks.

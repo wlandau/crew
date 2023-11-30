@@ -229,8 +229,8 @@ crew_class_client <- R6::R6Class(
       # Begin dispatcher code.
       self$dispatcher <- mirai::nextget("pid", .compute = self$name)
       # End dispatcher code.
+      self$relay$from <- self$condition()
       self$relay$start()
-      self$relay$from(self$condition())
       self$started <- TRUE
       invisible()
     },

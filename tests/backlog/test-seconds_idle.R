@@ -8,11 +8,12 @@ controller$start()
 names <- character(0L)
 index <- 0L
 n_tasks <- 60000L
+spinner <- cli::make_spinner()
 system.time(
   while (index < n_tasks || !(controller$empty())) {
     if (index < n_tasks) {
       index <- index + 1L
-      # cat("submit", index, "\n") # nolint
+      spinner$spin()
       controller$push(
         name = as.character(index),
         command = Sys.sleep(0.005)
@@ -20,11 +21,12 @@ system.time(
     }
     out <- controller$pop()
     if (!is.null(out)) {
-      # cat("collect", out$name, "\n") # nolint
+      spinner$spin()
       names[[length(names) + 1L]] <- out$name
     }
   }
 )
+spinner$finish()
 testthat::expect_equal(sort(as.integer(names)), seq_len(n_tasks))
 controller$launcher$workers$launched <- FALSE
 controller$launcher$tally()

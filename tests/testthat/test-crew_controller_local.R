@@ -18,7 +18,7 @@ crew_test("crew_controller_local()", {
   expect_false(x$saturated())
   crew_retry(
     ~{
-      x$wait(seconds_timeout = 30, seconds_interval = 0.5)
+      x$wait(mode = "all", seconds_timeout = 30, seconds_interval = 0.5)
       TRUE
     },
     seconds_interval = 0.5,
@@ -54,7 +54,7 @@ crew_test("crew_controller_local()", {
   expect_equal(x$popped, 0L)
   expect_false(x$empty())
   expect_true(x$nonempty())
-  x$wait(seconds_timeout = 5)
+  x$wait(mode = "one", seconds_timeout = 5)
   expect_false(x$empty())
   expect_true(x$nonempty())
   envir <- new.env(parent = emptyenv())

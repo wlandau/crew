@@ -51,7 +51,7 @@ crew_test("single controller, all tasks already done", {
         expect_true(
           x$wait(
             mode = mode,
-            seconds_interval = 5,
+            seconds_interval = 0.5,
             seconds_timeout = Inf
           )
         )

@@ -57,6 +57,9 @@ Other class:
 
 \item{\code{pushed}}{Number of tasks pushed since the controller was started.}
 
+\item{\code{popped}}{Number of tasks popped
+since the controller was started.}
+
 \item{\code{log}}{Tibble with per-worker metadata about tasks.}
 
 \item{\code{error}}{Tibble of task results (with one result per row)
@@ -73,6 +76,7 @@ from the last call to \verb{map(error = "stop)}.}
 \item \href{#method-crew_class_controller-nonempty}{\code{crew_class_controller$nonempty()}}
 \item \href{#method-crew_class_controller-resolved}{\code{crew_class_controller$resolved()}}
 \item \href{#method-crew_class_controller-unresolved}{\code{crew_class_controller$unresolved()}}
+\item \href{#method-crew_class_controller-unpopped}{\code{crew_class_controller$unpopped()}}
 \item \href{#method-crew_class_controller-saturated}{\code{crew_class_controller$saturated()}}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
@@ -224,6 +228,20 @@ Number of unresolved \code{mirai()} tasks.
 \subsection{Returns}{
 Non-negative integer of length 1,
 number of unresolved \code{mirai()} tasks.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-unpopped"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-unpopped}{}}}
+\subsection{Method \code{unpopped()}}{
+Number of resolved \code{mirai()} tasks available via \code{pop()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unpopped()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Non-negative integer of length 1,
+number of resolved \code{mirai()} tasks available via \code{pop()}.
 }
 }
 \if{html}{\out{<hr>}}

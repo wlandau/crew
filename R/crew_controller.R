@@ -67,6 +67,9 @@ crew_class_controller <- R6::R6Class(
     tasks = NULL,
     #' @field pushed Number of tasks pushed since the controller was started.
     pushed = NULL,
+    #' @field popped Number of tasks popped
+    #' since the controller was started.
+    popped = NULL,
     #' @field log Tibble with per-worker metadata about tasks.
     log = NULL,
     #' @field error Tibble of task results (with one result per row)
@@ -144,6 +147,12 @@ crew_class_controller <- R6::R6Class(
     unresolved = function() {
       .subset2(self, "pushed") - .subset2(self, "resolved")()
     },
+    #' @description Number of resolved `mirai()` tasks available via `pop()`.
+    #' @return Non-negative integer of length 1,
+    #'   number of resolved `mirai()` tasks available via `pop()`.
+    unpopped = function() {
+      .subset2(self, "resolved")() - .subset2(self, "popped")
+    },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
     #'   is greater than or equal to the maximum number of workers.
@@ -193,6 +202,7 @@ crew_class_controller <- R6::R6Class(
         self$launcher$start()
         self$tasks <- list()
         self$pushed <- 0L
+        self$popped <- 0L
         self$log <- list(
           controller = rep(self$client$name, workers),
           worker = seq_len(workers),
@@ -725,6 +735,7 @@ crew_class_controller <- R6::R6Class(
       log <- .subset2(self, "log")
       on.exit({
         self$tasks <- list()
+        self$popped <- .subset2(self, "popped") + total
         .subset2(relay, "pop")(n = total)
         self$log$tasks[index] <- .subset2(log, "tasks")[index] + tasks
         self$log$seconds[index] <- .subset2(log, "seconds")[index] + seconds
@@ -874,6 +885,7 @@ crew_class_controller <- R6::R6Class(
       # Same as above.
       on.exit({
         self$tasks[[index_delete]] <- NULL
+        self$popped <- .subset2(self, "popped") + 1L
         .subset2(.subset2(.subset2(self, "client"), "relay"), "pop")(n = 1L)
       })
       # nocov start
@@ -1003,6 +1015,7 @@ crew_class_controller <- R6::R6Class(
       }
       self$tasks <- list()
       self$pushed <- NULL
+      self$popped <- NULL
       # nocov end
       invisible()
     }

@@ -43,11 +43,15 @@ crew_test("crew_controller_local()", {
   expect_equal(s$tasks, 0L)
   expect_true(x$client$started)
   # first task
+  expect_equal(x$pushed, 0L)
+  expect_equal(x$popped, 0L)
   x$push(
     command = Sys.getenv("CREW_INSTANCE"),
     name = "task",
     save_command = TRUE
   )
+  expect_equal(x$pushed, 1L)
+  expect_equal(x$popped, 0L)
   expect_false(x$empty())
   expect_true(x$nonempty())
   x$wait(seconds_timeout = 5)
@@ -62,6 +66,8 @@ crew_test("crew_controller_local()", {
     seconds_interval = 0.5,
     seconds_timeout = 10
   )
+  expect_equal(x$pushed, 1L)
+  expect_equal(x$popped, 1L)
   out <- envir$out
   expect_true(x$empty())
   expect_false(x$nonempty())

@@ -121,7 +121,7 @@ crew_class_controller_group <- R6::R6Class(
           }
           if (self$relay$wait_unpopped(seconds_timeout = seconds_interval)) {
             for (controller in controllers) {
-              if (controller$client$relay$wait_unpopped(seconds_timeout = 0)) {
+              if (controller$unpopped() > 0L) {
                 envir$result <- TRUE
                 return(TRUE)
               }

@@ -119,12 +119,11 @@ crew_class_controller_group <- R6::R6Class(
           if (scale) {
             walk(controllers, ~.x$scale())
           }
-          if (self$relay$wait_unpopped(seconds_timeout = seconds_interval)) {
-            for (controller in controllers) {
-              if (controller$unpopped() > 0L) {
-                envir$result <- TRUE
-                return(TRUE)
-              }
+          self$relay$wait_unpopped(seconds_timeout = seconds_interval)
+          for (controller in controllers) {
+            if (controller$unpopped() > 0L) {
+              envir$result <- TRUE
+              return(TRUE)
             }
           }
           FALSE

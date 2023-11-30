@@ -32,10 +32,6 @@ signals from.}
 
 \item{\code{to}}{Condition variable that \code{self$condition} forwards
 signals to.}
-
-\item{\code{unpopped}}{Number of observed unpopped tasks.}
-
-\item{\code{popped}}{Number of observed popped tasks.}
 }
 \if{html}{\out{</div>}}
 }
@@ -45,11 +41,7 @@ signals to.}
 \item \href{#method-crew_class_relay-validate}{\code{crew_class_relay$validate()}}
 \item \href{#method-crew_class_relay-start}{\code{crew_class_relay$start()}}
 \item \href{#method-crew_class_relay-terminate}{\code{crew_class_relay$terminate()}}
-\item \href{#method-crew_class_relay-resolved}{\code{crew_class_relay$resolved()}}
-\item \href{#method-crew_class_relay-pop}{\code{crew_class_relay$pop()}}
-\item \href{#method-crew_class_relay-wait_condition}{\code{crew_class_relay$wait_condition()}}
-\item \href{#method-crew_class_relay-wait_unpopped}{\code{crew_class_relay$wait_unpopped()}}
-\item \href{#method-crew_class_relay-wait_resolved}{\code{crew_class_relay$wait_resolved()}}
+\item \href{#method-crew_class_relay-wait}{\code{crew_class_relay$wait()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -92,46 +84,13 @@ Terminate the relay object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_relay-resolved"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_relay-resolved}{}}}
-\subsection{Method \code{resolved()}}{
-Count the total count of resolved tasks.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$resolved()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Positive integer of length 1, total number of resolved tasks.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_relay-pop"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_relay-pop}{}}}
-\subsection{Method \code{pop()}}{
-Register a popped task.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$pop(n = 1L)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{n}}{Number of tasks to register as popped.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_relay-wait_condition"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_relay-wait_condition}{}}}
-\subsection{Method \code{wait_condition()}}{
+\if{html}{\out{<a id="method-crew_class_relay-wait"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_relay-wait}{}}}
+\subsection{Method \code{wait()}}{
 Wait until an unobserved task resolves or the timeout
 is reached.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_condition(seconds_timeout = 1e+09)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait(seconds_timeout = 1000)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -144,55 +103,6 @@ Number of seconds to wait before timing out.}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_relay-wait_unpopped"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_relay-wait_unpopped}{}}}
-\subsection{Method \code{wait_unpopped()}}{
-Wait until at least one task is available to be popped.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_unpopped(seconds_timeout = 1e+09)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{seconds_timeout}}{Positive numeric of length 1,
-Number of seconds to wait before timing out.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{TRUE} if at least one task is available after waiting,
-\code{FALSE} otherwise.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_relay-wait_resolved"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_relay-wait_resolved}{}}}
-\subsection{Method \code{wait_resolved()}}{
-Wait for until the number of
-resolved tasks reaches a specified number.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_resolved(seconds_timeout = 1e+09, resolved = 1L)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{seconds_timeout}}{Positive numeric of length 1,
-Number of seconds to wait before timing out.}
-
-\item{\code{resolved}}{Positive integer of length 1. This method waits
-until the number of resolved tasks reaches this value or above.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{TRUE} if the number of
-resolved tasks reaches a specified number after waiting,
-\code{FALSE} otherwise
 }
 }
 }

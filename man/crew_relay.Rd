@@ -13,8 +13,8 @@ An \code{R6} \code{crew} relay object.
 Create an \code{R6} \code{crew} relay object.
 }
 \details{
-A \code{crew} relay object keeps track of tasks that are resolved
-but not yet popped.
+A \code{crew} relay object keeps the signaling relationships
+among condition variables.
 }
 \examples{
 crew_relay()

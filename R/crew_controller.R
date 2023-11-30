@@ -60,14 +60,17 @@ crew_class_controller <- R6::R6Class(
   cloneable = FALSE,
   private = list(
     wait_all_once = function(seconds_interval) {
-      self$client$relay$wait_resolved(
-        seconds_timeout = seconds_interval,
-        resolved = self$pushed
-      )
+      if (self$unresolved() < 1L) {
+        return(TRUE)
+      }
+      self$client$relay$wait(seconds_timeout = seconds_interval)
       self$unresolved() < 1L
     },
     wait_one_once = function(seconds_interval) {
-      self$client$relay$wait_unpopped(seconds_timeout = seconds_interval)
+      if (self$unpopped() > 0L) {
+        return(TRUE)
+      }
+      self$client$relay$wait(seconds_timeout = seconds_interval)
       self$unpopped() > 0L
     }
   ),
@@ -710,11 +713,12 @@ crew_class_controller <- R6::R6Class(
         fun = ~{
           .subset2(self, "scale")()
           unresolved <- .subset2(self, "unresolved")()
+          if (unresolved < 1L) {
+            return(TRUE)
+          }
           controller_map_message_progress(total, total - unresolved, verbose)
-          .subset2(relay, "wait_resolved")(
-            seconds_timeout = seconds_interval,
-            resolved = pushed
-          )
+          .subset2(relay, "wait")(seconds_timeout = seconds_interval)
+          .subset2(self, "unresolved")() < 1L
         },
         seconds_interval = 0,
         seconds_timeout = Inf,
@@ -749,7 +753,6 @@ crew_class_controller <- R6::R6Class(
       on.exit({
         self$tasks <- list()
         self$popped <- .subset2(self, "popped") + total
-        .subset2(relay, "pop")(n = total)
         self$log$tasks[index] <- .subset2(log, "tasks")[index] + tasks
         self$log$seconds[index] <- .subset2(log, "seconds")[index] + seconds
         self$log$errors[index] <- .subset2(log, "errors")[index] + errors
@@ -899,7 +902,6 @@ crew_class_controller <- R6::R6Class(
       on.exit({
         self$tasks[[index_delete]] <- NULL
         self$popped <- .subset2(self, "popped") + 1L
-        .subset2(.subset2(.subset2(self, "client"), "relay"), "pop")(n = 1L)
       })
       # nocov start
       if (anyNA(.subset2(out, "launcher"))) {
@@ -963,12 +965,14 @@ crew_class_controller <- R6::R6Class(
       envir$result <- FALSE
       crew_retry(
         fun = ~{
-          do_scale()
           envir$result <- if_any(
             mode_all,
             private$wait_all_once(seconds_interval = seconds_interval),
             private$wait_one_once(seconds_interval = seconds_interval)
           )
+          if (!envir$result) {
+            do_scale()
+          }
           envir$result
         },
         seconds_interval = 0,

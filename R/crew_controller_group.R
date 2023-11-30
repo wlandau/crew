@@ -23,7 +23,10 @@
 crew_controller_group <- function(...) {
   controllers <- unlist(list(...), recursive = TRUE)
   names(controllers) <- map_chr(controllers, ~.x$client$name)
-  out <- crew_class_controller_group$new(controllers = controllers)
+  out <- crew_class_controller_group$new(
+    controllers = controllers,
+    relay = crew_relay()
+  )
   out$validate()
   out
 }
@@ -138,9 +141,14 @@ crew_class_controller_group <- R6::R6Class(
   public = list(
     #' @field controllers List of `R6` controller objects.
     controllers = NULL,
+    #' @field relay Relay object for event-driven programming on a downstream
+    #'   condition variable.
+    relay = NULL,
     #' @description Multi-controller constructor.
     #' @return An `R6` object with the controller group object.
     #' @param controllers List of `R6` controller objects.
+    #' @param relay Relay object for event-driven programming on a downstream
+    #'   condition variable.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' persistent <- crew_controller_local(name = "persistent")
@@ -156,9 +164,11 @@ crew_class_controller_group <- R6::R6Class(
     #' group$terminate()
     #' }
     initialize = function(
-      controllers = NULL
+      controllers = NULL,
+      relay = NULL
     ) {
       self$controllers <- controllers
+      self$relay <- relay
       invisible()
     },
     #' @description Validate the client.
@@ -171,6 +181,8 @@ crew_class_controller_group <- R6::R6Class(
       out <- unname(map_chr(self$controllers, ~.x$client$name))
       exp <- names(self$controllers)
       crew_assert(identical(out, exp), message = "bad controller names")
+      crew_assert(inherits(self$relay, "crew_class_relay"))
+      self$relay$validate()
       invisible()
     },
     #' @description See if the controllers are empty.

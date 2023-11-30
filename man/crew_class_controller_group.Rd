@@ -56,6 +56,9 @@ Other class:
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{controllers}}{List of \code{R6} controller objects.}
+
+\item{\code{relay}}{Relay object for event-driven programming on a downstream
+condition variable.}
 }
 \if{html}{\out{</div>}}
 }
@@ -84,13 +87,16 @@ Other class:
 \subsection{Method \code{new()}}{
 Multi-controller constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$new(controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$new(controllers = NULL, relay = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{controllers}}{List of \code{R6} controller objects.}
+
+\item{\code{relay}}{Relay object for event-driven programming on a downstream
+condition variable.}
 }
 \if{html}{\out{</div>}}
 }

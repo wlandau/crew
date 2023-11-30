@@ -23,9 +23,22 @@
 crew_controller_group <- function(...) {
   controllers <- unlist(list(...), recursive = TRUE)
   names(controllers) <- map_chr(controllers, ~.x$client$name)
+  walk(
+    names(controllers),
+    ~crew_assert(
+      !isTRUE(controllers[[.x]]$client$started),
+      message = paste(
+        "controller",
+        .x,
+        "supplied to crew_controller_group()",
+        "must not already be started."
+      )
+    )
+  )
+  relay <- crew_relay()
   out <- crew_class_controller_group$new(
     controllers = controllers,
-    relay = crew_relay()
+    relay = relay
   )
   out$validate()
   out

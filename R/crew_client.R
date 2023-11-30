@@ -205,11 +205,7 @@ crew_class_client <- R6::R6Class(
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
     start = function() {
-      started <- .subset2(self, "started")
-      if (is.null(started)) {
-        started <- FALSE
-      }
-      if (started) {
+      if (isTRUE(self$started)) {
         return(invisible())
       }
       url <- sprintf(

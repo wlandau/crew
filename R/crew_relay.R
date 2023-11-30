@@ -103,7 +103,7 @@ crew_class_relay <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param seconds_timeout Positive numeric of length 1,
     #'   Number of seconds to wait before timing out.
-    wait_condition = function(seconds_timeout = Inf) {
+    wait_condition = function(seconds_timeout = 1e9) {
       timeout <- seconds_timeout * 1000
       condition <- .subset2(self, "condition")
       result <- FALSE
@@ -116,7 +116,7 @@ crew_class_relay <- R6::R6Class(
     #'   `FALSE` otherwise.
     #' @param seconds_timeout Positive numeric of length 1,
     #'   Number of seconds to wait before timing out.
-    wait_unpopped = function(seconds_timeout = Inf) {
+    wait_unpopped = function(seconds_timeout = 1e9) {
       if (.subset2(self, "unpopped") < 1L) {
         .subset2(self, "wait_condition")(seconds_timeout = seconds_timeout)
       }
@@ -131,7 +131,7 @@ crew_class_relay <- R6::R6Class(
     #'   Number of seconds to wait before timing out.
     #' @param resolved Positive integer of length 1. This method waits
     #'   until the number of resolved tasks reaches this value or above.
-    wait_resolved = function(seconds_timeout = Inf, resolved = 1L) {
+    wait_resolved = function(seconds_timeout = 1e9, resolved = 1L) {
       if (.subset2(self, "resolved")() < resolved) {
         .subset2(self, "wait_condition")(seconds_timeout = seconds_timeout)
       }

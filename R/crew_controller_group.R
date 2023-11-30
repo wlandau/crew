@@ -109,10 +109,16 @@ crew_class_controller_group <- R6::R6Class(
       seconds_timeout,
       scale
     ) {
+      if (sum(map_int(controllers, ~length(.x$tasks))) < 1L) {
+        return(FALSE)
+      }
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
       crew_retry(
         fun = ~{
+          if (scale) {
+            walk(controllers, ~.x$scale())
+          }
           if (self$relay$wait_unpopped(seconds_timeout = seconds_interval)) {
             for (controller in controllers) {
               if (controller$client$relay$wait_unpopped(seconds_timeout = 0)) {

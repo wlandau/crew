@@ -317,6 +317,7 @@ crew_test("crew_controller_group() wait one", {
     crew_test_sleep()
   })
   x$start()
+  expect_false(x$wait(mode = "one", seconds_timeout = 30))
   x$push(
     command = "done",
     name = "task_a",
@@ -332,7 +333,7 @@ crew_test("crew_controller_group() wait one", {
     name = "task_a",
     controller = "b"
   )
-  x$wait(mode = "one", seconds_timeout = 30)
+  expect_true(x$wait(mode = "one", seconds_timeout = 30))
   out <- x$pop()
   expect_equal(out$result[[1L]], "done")
 })
@@ -363,6 +364,27 @@ crew_test("crew_controller_group() wait all timeout", {
     controller = "b"
   )
   expect_false(x$wait(mode = "all", seconds_timeout = 0, seconds_interval = 0))
+})
+
+crew_test("controllers in groups must not already be started", {
+  skip_on_cran()
+  skip_on_os("windows")
+  a <- crew_controller_local(
+    name = "a",
+    seconds_idle = 360
+  )
+  b <- crew_controller_local(
+    name = "b",
+    seconds_idle = 360
+  )
+  on.exit({
+    b$terminate()
+    rm(b)
+    gc()
+    crew_test_sleep()
+  })
+  b$start()
+  expect_crew_error(crew_controller_group(a, b))
 })
 
 crew_test("crew_controller_group() deprecate collect()", {

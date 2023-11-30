@@ -131,7 +131,7 @@ Register a popped task.
 Wait until an unobserved task resolves or the timeout
 is reached.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_condition(seconds_timeout = Inf)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_condition(seconds_timeout = 1e+09)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -152,7 +152,7 @@ Number of seconds to wait before timing out.}
 \subsection{Method \code{wait_unpopped()}}{
 Wait until at least one task is available to be popped.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_unpopped(seconds_timeout = Inf)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_unpopped(seconds_timeout = 1e+09)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -175,7 +175,7 @@ Number of seconds to wait before timing out.}
 Wait for until the number of
 resolved tasks reaches a specified number.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_resolved(seconds_timeout = Inf, resolved = 1L)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait_resolved(seconds_timeout = 1e+09, resolved = 1L)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

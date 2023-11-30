@@ -1,3 +1,6 @@
+library(crew)
+library(testthat)
+
 crew_test("relay wait_condition() timeout condition", {
   x <- crew_relay()
   cv <- nanonext::cv()

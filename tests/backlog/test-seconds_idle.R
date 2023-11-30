@@ -2,7 +2,7 @@ library(crew)
 controller <- crew_controller_local(
   workers = 20L,
   seconds_idle = 1,
-  launch_max = 1000
+  launch_max = 25
 )
 controller$start()
 names <- character(0L)

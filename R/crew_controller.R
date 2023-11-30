@@ -58,6 +58,19 @@ crew_controller <- function(
 crew_class_controller <- R6::R6Class(
   classname = "crew_class_controller",
   cloneable = FALSE,
+  private = list(
+    wait_all_once = function(seconds_interval) {
+      self$client$relay$wait_resolved(
+        seconds_timeout = seconds_interval,
+        resolved = self$pushed
+      )
+      self$unresolved() < 1L
+    },
+    wait_one_once = function(seconds_interval) {
+      self$client$relay$wait_unpopped(seconds_timeout = seconds_interval)
+      self$unpopped() > 0L
+    }
+  ),
   public = list(
     #' @field client Router object.
     client = NULL,
@@ -942,23 +955,19 @@ crew_class_controller <- R6::R6Class(
       )
       crew_assert(mode, identical(., "all") || identical(., "one"))
       do_scale <- if_any(scale, self$scale, invisible)
-      relay <- self$client$relay
       mode_all <- identical(mode, "all")
-      envir <- new.env(parent = emptyenv())
-      envir$result <- FALSE
       if (length(self$tasks) < 1L) {
         return(mode_all)
       }
+      envir <- new.env(parent = emptyenv())
+      envir$result <- FALSE
       crew_retry(
         fun = ~{
           do_scale()
           envir$result <- if_any(
             mode_all,
-            relay$wait_resolved(
-              seconds_timeout = seconds_interval,
-              resolved = self$pushed
-            ),
-            relay$wait_unpopped(seconds_timeout = seconds_interval)
+            private$wait_all_once(seconds_interval = seconds_interval),
+            private$wait_one_once(seconds_interval = seconds_interval)
           )
           envir$result
         },

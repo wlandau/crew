@@ -17,14 +17,15 @@ x$launch(n = 1L)
 # Pause until worker idles out.
 Sys.sleep(5)
 expect_equal(x$launcher$workers$futile, 1L)
-x$launcher$seconds_idle <- Inf
+private <- crew_private(x$launcher)
+private$.seconds_idle <- Inf
 x$push(TRUE)
 x$wait()
 expect_equal(x$launcher$workers$futile, 2L)
 x$launcher$terminate_workers(index = 1L)
 # Pause until worker exits.
 Sys.sleep(5)
-x$launcher$seconds_idle <- 1e-9
+private$.seconds_idle <- 1e-9
 x$launch(n = 1L)
 # Pause until worker exits.
 Sys.sleep(5)

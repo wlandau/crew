@@ -38,7 +38,7 @@ crew_controller_group <- function(...) {
   relay <- crew_relay()
   relay$start()
   for (controller in controllers) {
-    controller$client$relay$to <- relay$condition
+    controller$client$relay$set_to(relay$condition)
   }
   out <- crew_class_controller_group$new(
     controllers = controllers,
@@ -71,9 +71,11 @@ crew_class_controller_group <- R6::R6Class(
   classname = "crew_class_controller_group",
   cloneable = FALSE,
   private = list(
-    select_controllers = function(names) {
+    .controllers = NULL,
+    .relay = NULL,
+    .select_controllers = function(names) {
       if (is.null(names)) {
-        return(self$controllers)
+        return(private$.controllers)
       }
       message <- "'controllers' must be a valid nonempty character vector."
       crew_assert(
@@ -84,7 +86,7 @@ crew_class_controller_group <- R6::R6Class(
         nzchar(.),
         message = message
       )
-      invalid <- setdiff(names, names(self$controllers))
+      invalid <- setdiff(names, names(private$.controllers))
       crew_assert(
         !length(invalid),
         message = sprintf(
@@ -92,18 +94,18 @@ crew_class_controller_group <- R6::R6Class(
           paste(invalid, collapse = ", ")
         )
       )
-      self$controllers[names]
+      private$.controllers[names]
     },
-    select_single_controller = function(name) {
-      names <- names(self$controllers)
+    .select_single_controller = function(name) {
+      names <- names(private$.controllers)
       name <- name %|||% utils::head(names, n = 1L)
       crew_assert(
         name %in% names,
         message = sprintf("controller not found: %s", name)
       )
-      self$controllers[[name]]
+      private$.controllers[[name]]
     },
-    wait_one = function(
+    .wait_one = function(
       controllers,
       seconds_interval,
       seconds_timeout,
@@ -125,7 +127,7 @@ crew_class_controller_group <- R6::R6Class(
           if (scale) {
             walk(controllers, ~.x$scale())
           }
-          self$relay$wait(seconds_timeout = seconds_interval)
+          private$.relay$wait(seconds_timeout = seconds_interval)
           FALSE
         },
         seconds_interval = 0,
@@ -134,7 +136,7 @@ crew_class_controller_group <- R6::R6Class(
       )
       envir$result
     },
-    wait_all = function(
+    .wait_all = function(
       controllers,
       seconds_interval,
       seconds_timeout,
@@ -154,12 +156,18 @@ crew_class_controller_group <- R6::R6Class(
       TRUE
     }
   ),
-  public = list(
+  active = list(
     #' @field controllers List of `R6` controller objects.
-    controllers = NULL,
+    controllers = function() {
+      .subset2(private, ".controllers")
+    },
     #' @field relay Relay object for event-driven programming on a downstream
     #'   condition variable.
-    relay = NULL,
+    relay = function() {
+      .subset2(private, ".relay")
+    }
+  ),
+  public = list(
     #' @description Multi-controller constructor.
     #' @return An `R6` object with the controller group object.
     #' @param controllers List of `R6` controller objects.
@@ -183,22 +191,22 @@ crew_class_controller_group <- R6::R6Class(
       controllers = NULL,
       relay = NULL
     ) {
-      self$controllers <- controllers
-      self$relay <- relay
+      private$.controllers <- controllers
+      private$.relay <- relay
       invisible()
     },
     #' @description Validate the client.
     #' @return `NULL` (invisibly).
     validate = function() {
       crew_assert(
-        map_lgl(self$controllers, ~inherits(.x, "crew_class_controller")),
+        map_lgl(private$.controllers, ~inherits(.x, "crew_class_controller")),
         message = "All objects in a controller group must be controllers."
       )
-      out <- unname(map_chr(self$controllers, ~.x$client$name))
-      exp <- names(self$controllers)
+      out <- unname(map_chr(private$.controllers, ~.x$client$name))
+      exp <- names(private$.controllers)
       crew_assert(identical(out, exp), message = "bad controller names")
-      crew_assert(inherits(self$relay, "crew_class_relay"))
-      self$relay$validate()
+      crew_assert(inherits(private$.relay, "crew_class_relay"))
+      private$.relay$validate()
       invisible()
     },
     #' @description See if the controllers are empty.
@@ -209,7 +217,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     empty = function(controllers = NULL) {
-      control <- private$select_controllers(controllers)
+      control <- private$.select_controllers(controllers)
       all(map_lgl(control, ~.x$empty()))
     },
     #' @description Check if a controller is saturated.
@@ -227,7 +235,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select the default controller that `push()`
     #'   would choose.
     saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
-      control <- private$select_single_controller(name = controller)
+      control <- private$.select_single_controller(name = controller)
       control$saturated()
     },
     #' @description Start one or more controllers.
@@ -235,7 +243,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     start = function(controllers = NULL) {
-      control <- private$select_controllers(controllers)
+      control <- private$.select_controllers(controllers)
       walk(control, ~.x$start())
     },
     #' @description Launch one or more workers on one or more controllers.
@@ -244,7 +252,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     launch = function(n = 1L, controllers = NULL) {
-      control <- private$select_controllers(controllers)
+      control <- private$.select_controllers(controllers)
       walk(control, ~.x$launch(n = n))
     },
     #' @description Automatically scale up the number of workers if needed
@@ -255,7 +263,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     scale = function(throttle = NULL, controllers = NULL) {
-      control <- private$select_controllers(controllers)
+      control <- private$.select_controllers(controllers)
       walk(control, ~.x$scale())
     },
     #' @description Push a task to the head of the task list.
@@ -331,7 +339,7 @@ crew_class_controller_group <- R6::R6Class(
       }
       control <- .subset2(
         private,
-        "select_single_controller"
+        ".select_single_controller"
       )(name = controller)
       .subset2(control, "push")(
         command = command,
@@ -451,7 +459,7 @@ crew_class_controller_group <- R6::R6Class(
       if (substitute) {
         command <- substitute(command)
       }
-      control <- private$select_single_controller(name = controller)
+      control <- private$.select_single_controller(name = controller)
       control$map(
         command = command,
         iterate = iterate,
@@ -503,7 +511,7 @@ crew_class_controller_group <- R6::R6Class(
       throttle = NULL,
       controllers = NULL
     ) {
-      control <- private$select_controllers(controllers)
+      control <- private$.select_controllers(controllers)
       for (controller in control) {
         out <- controller$pop(scale = scale)
         if (!is.null(out)) {
@@ -543,16 +551,16 @@ crew_class_controller_group <- R6::R6Class(
     ) {
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
-      control <- private$select_controllers(controllers)
+      control <- private$.select_controllers(controllers)
       out <- if_any(
         identical(mode, "one"),
-        private$wait_one(
+        private$.wait_one(
           controllers = control,
           seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,
           scale = scale
         ),
-        private$wait_all(
+        private$.wait_all(
           controllers = control,
           seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,
@@ -570,7 +578,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     summary = function(controllers = NULL) {
-      control <- private$select_controllers(controllers)
+      control <- private$.select_controllers(controllers)
       out <- map(control, ~.x$summary())
       if (all(map_lgl(out, is.null))) {
         return(NULL) # nocov
@@ -583,7 +591,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     terminate = function(controllers = NULL) {
-      walk(private$select_controllers(controllers), ~.x$terminate())
+      walk(private$.select_controllers(controllers), ~.x$terminate())
     }
   )
 )

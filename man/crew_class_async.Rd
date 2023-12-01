@@ -19,12 +19,12 @@ Other class:
 \code{\link{crew_class_tls}}
 }
 \concept{class}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{workers}}{See \code{\link[=crew_async]{crew_async()}}.}
 
-\item{\code{instance}}{Character of length 1, name of the current instance.}
+\item{\code{instance}}{Name of the current instance.}
 }
 \if{html}{\out{</div>}}
 }
@@ -34,8 +34,10 @@ Other class:
 \item \href{#method-crew_class_async-new}{\code{crew_class_async$new()}}
 \item \href{#method-crew_class_async-validate}{\code{crew_class_async$validate()}}
 \item \href{#method-crew_class_async-start}{\code{crew_class_async$start()}}
-\item \href{#method-crew_class_async-eval}{\code{crew_class_async$eval()}}
 \item \href{#method-crew_class_async-terminate}{\code{crew_class_async$terminate()}}
+\item \href{#method-crew_class_async-started}{\code{crew_class_async$started()}}
+\item \href{#method-crew_class_async-asynchronous}{\code{crew_class_async$asynchronous()}}
+\item \href{#method-crew_class_async-eval}{\code{crew_class_async$eval()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -90,6 +92,49 @@ if \code{workers} is \code{NULL} or the object is already started.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_async-terminate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_async-terminate}{}}}
+\subsection{Method \code{terminate()}}{
+Start the local workers and error handling socket.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_async$terminate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Waits for existing tasks to complete first.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_async-started"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_async-started}{}}}
+\subsection{Method \code{started()}}{
+Show whether the object is started.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_async$started()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Logical of length 1, whether the object is started.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_async-asynchronous"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_async-asynchronous}{}}}
+\subsection{Method \code{asynchronous()}}{
+Show whether the object is asynchronous (has real workers).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_async$asynchronous()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Logical of length 1, whether the object is asynchronous.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_async-eval"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_async-eval}{}}}
 \subsection{Method \code{eval()}}{
@@ -136,23 +181,6 @@ If the \code{processes} field is \code{NULL}, a list with an object named
 Otherwise, the task is evaluated asynchronously, and the result
 is a \code{mirai} task object. Either way, the \code{data} element
 of the return value will contain the result of the task.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_async-terminate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_async-terminate}{}}}
-\subsection{Method \code{terminate()}}{
-Start the local workers and error handling socket.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_async$terminate()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Waits for existing tasks to complete first.
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
 }
 }
 }

@@ -58,8 +58,8 @@ Other class:
 \code{\link{crew_class_tls}}
 }
 \concept{class}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{workers}}{Data frame of worker information.}
 
@@ -87,7 +87,8 @@ Other class:
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.
+asynchronously.}
 
 \item{\code{async}}{A \code{\link[=crew_async]{crew_async()}} object to run low-level launcher tasks
 asynchronously.}
@@ -99,9 +100,11 @@ asynchronously.}
 \itemize{
 \item \href{#method-crew_class_launcher-new}{\code{crew_class_launcher$new()}}
 \item \href{#method-crew_class_launcher-validate}{\code{crew_class_launcher$validate()}}
+\item \href{#method-crew_class_launcher-set_name}{\code{crew_class_launcher$set_name()}}
 \item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
+\item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 \item \href{#method-crew_class_launcher-summary}{\code{crew_class_launcher$summary()}}
 \item \href{#method-crew_class_launcher-tally}{\code{crew_class_launcher$tally()}}
 \item \href{#method-crew_class_launcher-unlaunched}{\code{crew_class_launcher$unlaunched()}}
@@ -118,7 +121,6 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
-\item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -217,6 +219,26 @@ Validate the launcher.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-set_name"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-set_name}{}}}
+\subsection{Method \code{set_name()}}{
+Set the name of the launcher.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$set_name(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character of length 1, name to set for the launcher.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-settings"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-settings}{}}}
 \subsection{Method \code{settings()}}{
@@ -301,6 +323,19 @@ Start the launcher.
 Creates the workers data frame.
 Meant to be called once at the beginning of the launcher
 life cycle, after the client has started.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-terminate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate}{}}}
+\subsection{Method \code{terminate()}}{
+Terminate the whole launcher, including all workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -668,19 +703,6 @@ to terminate. If \code{NULL}, all current workers are terminated.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-terminate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate}{}}}
-\subsection{Method \code{terminate()}}{
-Terminate the whole launcher, including all workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate()}\if{html}{\out{</div>}}
-}
-
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

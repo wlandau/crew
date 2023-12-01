@@ -52,8 +52,8 @@ Other class:
 \code{\link{crew_class_tls}}
 }
 \concept{class}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{controllers}}{List of \code{R6} controller objects.}
 

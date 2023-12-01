@@ -46,8 +46,8 @@ Other class:
 \code{\link{crew_class_tls}}
 }
 \concept{class}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{client}}{Router object.}
 
@@ -82,7 +82,6 @@ from the last call to \verb{map(error = "stop)}.}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
-\item \href{#method-crew_class_controller-shove}{\code{crew_class_controller$shove()}}
 \item \href{#method-crew_class_controller-map}{\code{crew_class_controller$map()}}
 \item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
@@ -352,7 +351,8 @@ Auto-scale workers out to meet the demand of tasks.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).
+Not used.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -465,90 +465,6 @@ compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-shove"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-shove}{}}}
-\subsection{Method \code{shove()}}{
-Quickly push a task to the head of the task list.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$shove(
-  command,
-  data = list(),
-  globals = list(),
-  seed = NULL,
-  algorithm = NULL,
-  packages = character(0),
-  library = NULL,
-  .timeout = NULL,
-  name = NA_character_,
-  string = NA_character_
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{command}}{Language object with R code to run.}
-
-\item{\code{data}}{Named list of local data objects in the
-evaluation environment.}
-
-\item{\code{globals}}{Named list of objects to temporarily assign to the
-global environment for the task.
-This list should
-include any functions you previously defined in the global
-environment which are required to run tasks.
-See the \code{reset_globals} argument
-of \code{\link[=crew_controller_local]{crew_controller_local()}}.}
-
-\item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
-seed to set for the evaluation of the task. Passed to the
-\code{seed} argument of \code{set.seed()} if not \code{NULL}.
-If \code{algorithm} and \code{seed} are both \code{NULL},
-then the random number generator defaults to the
-recommended widely spaced worker-specific
-L'Ecuyer streams as supported by \code{mirai::nextstream()}.
-See \code{vignette("parallel", package = "parallel")} for details.}
-
-\item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
-generator algorithm to set for the evaluation of the task.
-Passed to the \code{kind} argument of \code{RNGkind()} if not \code{NULL}.
-If \code{algorithm} and \code{seed} are both \code{NULL},
-then the random number generator defaults to the
-recommended widely spaced worker-specific
-L'Ecuyer streams as supported by \code{mirai::nextstream()}.
-See \code{vignette("parallel", package = "parallel")} for details.}
-
-\item{\code{packages}}{Character vector of packages to load for the task.}
-
-\item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
-argument of \code{require()}.}
-
-\item{\code{.timeout}}{Optional task timeout passed to the \code{.timeout}
-argument of \code{mirai::mirai()} (after converting to milliseconds).}
-
-\item{\code{name}}{Optional name of the task.}
-
-\item{\code{string}}{Optional character string with the deparsed command.}
-
-\item{\code{scale}}{Logical, whether to automatically call \code{scale()}
-to auto-scale workers to meet the demand of the task load.}
-
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Exists to support \code{map()}.
-For developers only and not supported for
-controller groups. Relative to \code{push()}, \code{shove()} skips user
-options and guardrails for to aggressively optimize performance.
-}
-
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }
@@ -737,7 +653,8 @@ quickly after doing little work.}
 
 \item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
 
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).
+Not used.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

@@ -22,7 +22,11 @@ crew_test("async object task with NULL workers", {
     gc()
     crew_test_sleep()
   })
+  expect_null(x$workers)
+  expect_null(x$instance)
   x$start()
+  expect_null(x$workers)
+  expect_null(x$instance)
   out <- x$eval(
     command = c(ps::ps_pid(), x),
     data = list(x = "value"),
@@ -41,7 +45,11 @@ crew_test("async task with 1 process", {
     gc()
     crew_test_sleep()
   })
+  expect_equal(x$workers, 1L)
+  expect_null(x$instance)
   x$start()
+  expect_equal(x$workers, 1L)
+  expect_true(nzchar(x$instance))
   out <- x$eval(
     command = list(pid = ps::ps_pid(), x = x),
     data = list(x = "value"),

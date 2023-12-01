@@ -1,8 +1,21 @@
-crew_test("crew_client() validate", {
+crew_test("crew_client() validate on an empty object", {
   client <- crew_client(host = "127.0.0.1")
   expect_silent(client$validate())
-  client$name <- NULL
-  expect_crew_error(client$validate())
+})
+
+crew_test("crew_client() active bindings", {
+  client <- crew_client(
+    host = "127.0.0.1",
+    port = 123L,
+    seconds_interval = 123,
+    seconds_timeout = 456
+  )
+  expect_equal(client$host, "127.0.0.1")
+  expect_equal(client$port, 123L)
+  expect_equal(client$seconds_interval, 123)
+  expect_equal(client$seconds_timeout, 456)
+  expect_true(inherits(client$tls, "crew_class_tls"))
+  expect_silent(client$validate())
 })
 
 crew_test("crew_client() works", {
@@ -35,6 +48,12 @@ crew_test("crew_client() works", {
   expect_true(is.integer(client$dispatcher))
   expect_equal(length(client$dispatcher), 1L)
   expect_false(anyNA(client$dispatcher))
+  handle <- ps::ps_handle(pid = client$dispatcher)
+  crew_retry(
+    ~ps::ps_is_running(handle),
+    seconds_interval = 0.01,
+    seconds_timeout = 30
+  )
   socket <- log$socket
   expect_true(is.character(socket) && length(socket) > 0L)
   expect_true(nzchar(socket) && !anyNA(socket))
@@ -70,12 +89,15 @@ crew_test("crew_client() works", {
   expect_true(client$started)
   expect_true(client$summary()$online)
   expect_silent(client$start())
-  expect_silent(client$terminate())
-  expect_silent(client$terminate())
-  client$started <- TRUE
-  client$dispatcher <- NULL
-  expect_silent(client$terminate())
-  expect_false(client$started)
+  for (index in seq_len(2L)) {
+    expect_silent(client$terminate())
+    expect_false(client$started)
+    crew_retry(
+      ~!ps::ps_is_running(handle),
+      seconds_interval = 0.01,
+      seconds_timeout = 30
+    )
+  }
   px$kill()
   expect_null(client$summary())
 })

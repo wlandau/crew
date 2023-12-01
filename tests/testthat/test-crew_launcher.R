@@ -3,6 +3,21 @@ crew_test("abstract launcher class", {
   expect_crew_error(out$validate())
 })
 
+crew_test("active bindings for covr", {
+  out <- crew_launcher(processes = 1L)
+  expect_equal(out$processes, 1L)
+  expect_null(out$async)
+  expect_true(inherits(out$tls, "crew_class_tls"))
+})
+
+crew_test("preemptive async termination for covr", {
+  out <- crew_launcher(processes = 1L)
+  on.exit(out$terminate())
+  private <- crew_private(out)
+  private$.async <- crew_async()
+  expect_silent(out$start())
+})
+
 crew_test("default launch_launcher() method", {
   launcher <- crew_class_launcher$new()
   out <- launcher$launch_worker(
@@ -168,6 +183,7 @@ crew_test("launcher start()", {
 })
 
 crew_test("launcher done()", {
+  skip_on_cran()
   grid <- expand.grid(
     complete = c(3L, 7L),
     start = c(NA_real_, -Inf, Inf),
@@ -176,13 +192,14 @@ crew_test("launcher done()", {
   )
   launcher <- crew_class_launcher$new(seconds_launch = 9999)
   launcher$start(sockets = rep("x", nrow(grid)))
-  launcher$workers$start <- grid$start
+  private <- crew_private(launcher)
+  private$.workers$start <- grid$start
   socket <- sprintf(
     "ws://127.0.0.1:5000/%s/token",
     seq_len(nrow(grid))
   )
-  launcher$workers$socket <- socket
-  launcher$workers$launched <- rep(TRUE, nrow(grid))
+  private$.workers$socket <- socket
+  private$.workers$launched <- rep(TRUE, nrow(grid))
   daemons <- cbind(
     online = grid$online,
     instance = grid$instance,
@@ -195,16 +212,18 @@ crew_test("launcher done()", {
   out <- which(launcher$done())
   exp <- c(1L, 2L, 3L, 4L, 7L, 8L, 9L, 10L, 11L, 12L)
   expect_equal(out, exp)
-  launcher$workers$launched <- rep(FALSE, nrow(grid))
+  private$.workers$launched <- rep(FALSE, nrow(grid))
   launcher$tally(daemons = daemons)
   expect_equal(which(launcher$done()), integer(0L))
 })
 
 crew_test("launcher tally()", {
+  skip_on_cran()
   grid <- expand.grid(complete = c(3L, 7L), launched = c(TRUE, FALSE))
   launcher <- crew_class_launcher$new(seconds_launch = 9999)
   launcher$start(sockets = rep("x", nrow(grid)))
-  launcher$workers$launched <- grid$launched
+  private <- crew_private(launcher)
+  private$.workers$launched <- grid$launched
   daemons <- cbind(
     online = c(1L, 1L, 0L, 0L),
     instance = c(1L, 0L, 1L, 0L),
@@ -223,9 +242,11 @@ crew_test("launcher tally()", {
 })
 
 crew_test("launcher unlaunched()", {
+  skip_on_cran()
   launcher <- crew_class_launcher$new(seconds_launch = 9999)
   launcher$start(sockets = rep("x", 5L))
-  launcher$workers$launched <- c(TRUE, FALSE, FALSE, FALSE, TRUE)
+  private <- crew_private(launcher)
+  private$.workers$launched <- c(TRUE, FALSE, FALSE, FALSE, TRUE)
   expect_equal(launcher$unlaunched(), c(2L, 3L, 4L))
   expect_equal(launcher$unlaunched(n = 2L), c(2L, 3L))
 })
@@ -253,6 +274,7 @@ crew_test("launcher summary", {
 })
 
 crew_test("launcher forward", {
+  skip_on_cran()
   x <- crew_launcher()
   on.exit({
     rm(x)
@@ -260,7 +282,8 @@ crew_test("launcher forward", {
     crew_test_sleep()
   })
   x$start(sockets = "url")
-  x$workers$handle[[1L]] <- mirai::mirai(stop("message"))
+  private <- crew_private(x)
+  private$.workers$handle[[1L]] <- mirai::mirai(stop("message"))
   crew_retry(
     fun = ~!mirai::unresolved(x$workers$handle[[1L]]),
     seconds_interval = 0.01
@@ -279,6 +302,7 @@ crew_test("launcher forward", {
 })
 
 crew_test("launcher errors", {
+  skip_on_cran()
   x <- crew_launcher()
   on.exit({
     rm(x)
@@ -287,7 +311,8 @@ crew_test("launcher errors", {
   })
   x$start(sockets = "url")
   expect_null(x$errors())
-  x$workers$handle[[1L]] <- mirai::mirai(stop("message"))
+  private <- crew_private(x)
+  private$.workers$handle[[1L]] <- mirai::mirai(stop("message"))
   crew_retry(
     fun = ~!mirai::unresolved(x$workers$handle[[1L]]),
     seconds_interval = 0.01

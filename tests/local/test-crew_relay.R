@@ -1,7 +1,7 @@
 crew_test("relay wait() timeout condition", {
   x <- crew_relay()
   cv <- nanonext::cv()
-  x$from <- cv
+  x$set_from(cv)
   x$start()
   time <- system.time(out <- x$wait(seconds_timeout = 2))
   expect_false(out)

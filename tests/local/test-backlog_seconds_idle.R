@@ -1,8 +1,8 @@
 library(crew)
 controller <- crew_controller_local(
   workers = 20L,
-  tasks_max = 100,
-  tls = crew_tls(mode = "automatic")
+  seconds_idle = 1,
+  launch_max = 25
 )
 controller$start()
 names <- character(0L)
@@ -16,7 +16,7 @@ system.time(
       spinner$spin()
       controller$push(
         name = as.character(index),
-        command = TRUE
+        command = Sys.sleep(0.005)
       )
     }
     out <- controller$pop()
@@ -28,7 +28,8 @@ system.time(
 )
 spinner$finish()
 testthat::expect_equal(sort(as.integer(names)), seq_len(n_tasks))
-controller$launcher$workers$launched <- FALSE
+private <- crew_private(controller$launcher)
+private$.workers$launched <- FALSE
 controller$launcher$tally()
 testthat::expect_equal(controller$unresolved(), 0L)
 controller$terminate()

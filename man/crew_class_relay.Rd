@@ -22,16 +22,14 @@ Other class:
 \code{\link{crew_class_tls}}
 }
 \concept{class}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{condition}}{Main condition variable.}
 
-\item{\code{from}}{Condition variable that \code{self$condition} receives
-signals from.}
+\item{\code{from}}{Condition variable to relay from.}
 
-\item{\code{to}}{Condition variable that \code{self$condition} forwards
-signals to.}
+\item{\code{to}}{Condition variable to relay to.}
 }
 \if{html}{\out{</div>}}
 }
@@ -41,6 +39,8 @@ signals to.}
 \item \href{#method-crew_class_relay-validate}{\code{crew_class_relay$validate()}}
 \item \href{#method-crew_class_relay-start}{\code{crew_class_relay$start()}}
 \item \href{#method-crew_class_relay-terminate}{\code{crew_class_relay$terminate()}}
+\item \href{#method-crew_class_relay-set_from}{\code{crew_class_relay$set_from()}}
+\item \href{#method-crew_class_relay-set_to}{\code{crew_class_relay$set_to()}}
 \item \href{#method-crew_class_relay-wait}{\code{crew_class_relay$wait()}}
 }
 }
@@ -79,6 +79,46 @@ Terminate the relay object.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$terminate()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_relay-set_from"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_relay-set_from}{}}}
+\subsection{Method \code{set_from()}}{
+Set the condition variable to relay from.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$set_from(from)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{from}}{Condition variable to relay from.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_relay-set_to"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_relay-set_to}{}}}
+\subsection{Method \code{set_to()}}{
+Set the condition variable to relay to.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$set_to(to)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{to}}{Condition variable to relay to.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

@@ -70,10 +70,14 @@ crew_class_tls <- R6::R6Class(
   classname = "crew_class_tls",
   cloneable = FALSE,
   private = list(
-    validate_mode_automatic = function() {
-      for (field in c("key", "password", "certificates")) {
+    .mode = NULL,
+    .key = NULL,
+    .password = NULL,
+    .certificates = NULL,
+    .validate_mode_automatic = function() {
+      for (field in c(".key", ".password", ".certificates")) {
         crew_assert(
-          is.null(self[[field]]),
+          is.null(private[[field]]),
           message = paste(
             "If mode is not \"custom\" in crew_tls(), then",
             field,
@@ -83,9 +87,9 @@ crew_class_tls <- R6::R6Class(
       }
       invisible()
     },
-    validate_mode_custom = function() {
+    .validate_mode_custom = function() {
       crew_assert(
-        self$key,
+        private$.key,
         is.character(.),
         length(.) == 1L,
         nzchar(.),
@@ -96,7 +100,7 @@ crew_class_tls <- R6::R6Class(
         )
       )
       crew_assert(
-        self$password %|||% "x",
+        private$.password %|||% "x",
         is.character(.),
         length(.) == 1L,
         nzchar(.),
@@ -107,7 +111,7 @@ crew_class_tls <- R6::R6Class(
         )
       )
       crew_assert(
-        self$certificates,
+        private$.certificates,
         is.character(.),
         length(.) >= 1L,
         nzchar(.),
@@ -117,20 +121,20 @@ crew_class_tls <- R6::R6Class(
           "must a nonempty nonmissing character vector of length >= 1."
         )
       )
-      files <- c(self$key, self$certificates)
+      files <- c(private$.key, private$.certificates)
       for (file in files) {
         crew_assert(
           file.exists(file),
           message = paste("file not found:", file)
         )
       }
-      crew_tls_assert_key(self$key)
-      for (certificate in self$certificates) {
+      crew_tls_assert_key(private$.key)
+      for (certificate in private$.certificates) {
         crew_tls_assert_certificate(certificate)
       }
       invisible()
     },
-    read_files = function(files) {
+    .read_files = function(files) {
       lines <- unlist(
         lapply(
           X = files,
@@ -141,22 +145,32 @@ crew_class_tls <- R6::R6Class(
       )
       paste(lines, collapse = "\n")
     },
-    read_key = function() {
-      private$read_files(files = self$key)
+    .read_key = function() {
+      private$.read_files(files = private$.key)
     },
-    read_certificates = function() {
-      private$read_files(files = self$certificates)
+    .read_certificates = function() {
+      private$.read_files(files = private$.certificates)
+    }
+  ),
+  active = list(
+    #' @field mode See [crew_tls()].
+    mode = function() {
+      .subset2(private, ".mode")
+    },
+    #' @field key See [crew_tls()].
+    key = function() {
+      .subset2(private, ".key")
+    },
+    #' @field password See [crew_tls()].
+    password = function() {
+      .subset2(private, ".password")
+    },
+    #' @field certificates See [crew_tls()].
+    certificates = function() {
+      .subset2(private, ".certificates")
     }
   ),
   public = list(
-    #' @field mode See [crew_tls()].
-    mode = NULL,
-    #' @field key See [crew_tls()].
-    key = NULL,
-    #' @field password See [crew_tls()].
-    password = NULL,
-    #' @field certificates See [crew_tls()].
-    certificates = NULL,
     #' @description TLS configuration constructor.
     #' @return An `R6` object with TLS configuration.
     #' @param mode Argument passed from [crew_tls()].
@@ -171,10 +185,10 @@ crew_class_tls <- R6::R6Class(
       password = NULL,
       certificates = NULL
     ) {
-      self$mode <- mode
-      self$key <- key
-      self$password <- password
-      self$certificates <- certificates
+      private$.mode <- mode
+      private$.key <- key
+      private$.password <- password
+      private$.certificates <- certificates
     },
     #' @description Validate the object.
     #' @return `NULL` (invisibly).
@@ -182,7 +196,7 @@ crew_class_tls <- R6::R6Class(
     #'   with `nanonext::tls_config()`.
     validate = function(test = TRUE) {
       crew_assert(
-        self$mode,
+        private$.mode,
         is.character(.),
         length(.) == 1L,
         nzchar(.),
@@ -194,9 +208,9 @@ crew_class_tls <- R6::R6Class(
         )
       )
       if_any(
-        self$mode %in% c("none", "automatic"),
-        private$validate_mode_automatic(),
-        private$validate_mode_custom()
+        private$.mode %in% c("none", "automatic"),
+        private$.validate_mode_automatic(),
+        private$.validate_mode_custom()
       )
       # Cannot test in unit tests because custom TLS configuration
       # is platform-dependent and low-level.
@@ -205,7 +219,7 @@ crew_class_tls <- R6::R6Class(
         nanonext::tls_config(
           client = self$worker(name = "default"),
           server = self$client(),
-          pass = self$password
+          pass = private$.password
         )
       }
       # nocov end
@@ -214,22 +228,22 @@ crew_class_tls <- R6::R6Class(
     #' @description TLS credentials for the `crew` client.
     #' @return `NULL` or character vector, depending on the mode.
     client = function() {
-      if (self$mode != "custom") {
+      if (private$.mode != "custom") {
         return(NULL)
-      } else if (self$mode == "custom") {
-        return(c(private$read_certificates(), private$read_key()))
+      } else if (private$.mode == "custom") {
+        return(c(private$.read_certificates(), private$.read_key()))
       }
     },
     #' @description TLS credentials for `crew` workers.
     #' @return `NULL` or character vector, depending on the mode.
     #' @param name Character of length 1 with the `mirai` compute profile.
     worker = function(name) {
-      if (self$mode == "none") {
+      if (private$.mode == "none") {
         return(NULL)
-      } else if (self$mode == "automatic") {
+      } else if (private$.mode == "automatic") {
         return(mirai::nextget(x = "tls", .compute = name))
-      } else if (self$mode == "custom") {
-        return(c(private$read_certificates(), ""))
+      } else if (private$.mode == "custom") {
+        return(c(private$.read_certificates(), ""))
       }
     }
   )

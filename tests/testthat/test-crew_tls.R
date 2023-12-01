@@ -42,6 +42,10 @@ test_that("crew_tls() with mock files", {
     certificates = certificates,
     validate = FALSE
   )
+  expect_equal(tls$mode, "custom")
+  expect_equal(tls$key, key)
+  expect_equal(tls$certificates, certificates)
+  expect_null(tls$password)
   expect_silent(tls$validate(test = FALSE))
   expect_equal(
     tls$client(),

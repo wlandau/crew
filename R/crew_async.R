@@ -89,6 +89,17 @@ crew_class_async <- R6::R6Class(
       )
       invisible()
     },
+    #' @description Start the local workers and error handling socket.
+    #' @details Waits for existing tasks to complete first.
+    #' @return `NULL` (invisibly).
+    terminate = function() {
+      if (is.null(private$.workers) || is.null(private$.instance)) {
+        return(invisible())
+      }
+      mirai::daemons(n = 0L, .compute = private$.instance)
+      private$.instance <- NULL
+      invisible()
+    },
     #' @description Run a local asynchronous task using a local
     #'   compute profile.
     #' @details Used for launcher plugins with asynchronous launches and
@@ -136,17 +147,6 @@ crew_class_async <- R6::R6Class(
           .compute = private$.instance
         )
       )
-    },
-    #' @description Start the local workers and error handling socket.
-    #' @details Waits for existing tasks to complete first.
-    #' @return `NULL` (invisibly).
-    terminate = function() {
-      if (is.null(private$.workers) || is.null(private$.instance)) {
-        return(invisible())
-      }
-      mirai::daemons(n = 0L, .compute = private$.instance)
-      private$.instance <- NULL
-      invisible()
     }
   )
 )

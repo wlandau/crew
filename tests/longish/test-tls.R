@@ -106,6 +106,10 @@ crew_test("crew_tls() custom works on real credentials with custom password", {
     password = "crew",
     certificates = "fd.crt"
   )
+  expect_equal(tls$mode, "custom")
+  expect_equal(tls$key, "fd.key")
+  expect_equal(tls$certificates, "fd.crt")
+  expect_equal(tls$password, "crew")
   expect_silent(tls$validate())
   x <- crew_controller_local(tls = tls)
   on.exit(x$terminate(), add = TRUE)

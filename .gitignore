@@ -1,9 +1,7 @@
 *~
 *.out
 *.Rout
-.gittargets
 .DS_Store
-.future
 .Rapp.history
 .RData
 .Rhistory
@@ -15,13 +13,6 @@ vignettes/*.html
 README.html
 paper.html
 .Rproj.user
-_packages.R
-_targets
-_targets.R
-_targets.Rmd
-_targets_r
-_targets.yaml
-skeleton.html
 revdep
 fd.key
 fd.csr

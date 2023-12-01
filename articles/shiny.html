@@ -196,10 +196,10 @@ when the app scans for results.</p>
 and an idle time of 10 seconds. We choose the <a href="https://wlandau.github.io/crew/reference/crew_class_launcher_local.html" class="external-link">local
 process launcher</a> below for this app, but we could have chosen the
 Sun Grid Engine (SGE) launcher from <a href="https://wlandau.github.io/crew.cluster/" class="external-link"><code>crew.cluster</code></a>,
-a <a href="https://wlandau.github.io/crew/articles/controller_groups.html" class="external-link">controller
-group</a> with multiple launchers, or a <a href="https://wlandau.github.io/crew/articles/launcher_plugins.html" class="external-link">custom
+a <a href="https://wlandau.github.io/crew/articles/groups.html" class="external-link">controller
+group</a> with multiple launchers, or a <a href="https://wlandau.github.io/crew/articles/plugins.html" class="external-link">custom
 launcher</a> for e.g. <a href="https://kubernetes.io" class="external-link">Kubernetes</a>.
-With <code>crew</code>, anyone can write a <a href="https://wlandau.github.io/crew/articles/launcher_plugins.html" class="external-link">custom
+With <code>crew</code>, anyone can write a <a href="https://wlandau.github.io/crew/articles/plugins.html" class="external-link">custom
 launcher plugin</a>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">4</span>, seconds_idle <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>

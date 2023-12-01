@@ -70,9 +70,9 @@
 <code><a href="crew_class_relay.html">crew_class_relay</a></code>,
 <code><a href="crew_class_tls.html">crew_class_tls</a></code></p></div>
     </div>
-    <div id="public-fields">
-    <h2>Public fields</h2>
-    <p></p><div class="r6-fields"><dl><dt><code>name</code></dt>
+    <div id="active-bindings">
+    <h2>Active bindings</h2>
+    <p></p><div class="r6-active-bindings"><dl><dt><code>name</code></dt>
 <dd><p>See <code><a href="crew_client.html">crew_client()</a></code>.</p></dd>
 
 
@@ -124,10 +124,10 @@ condition variable.</p></dd>
 <ul><li><p><a href="#method-crew_class_client-new"><code>crew_class_client$new()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-validate"><code>crew_class_client$validate()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-start"><code>crew_class_client$start()</code></a></p></li>
+<li><p><a href="#method-crew_class_client-terminate"><code>crew_class_client$terminate()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-condition"><code>crew_class_client$condition()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-resolved"><code>crew_class_client$resolved()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-summary"><code>crew_class_client$summary()</code></a></p></li>
-<li><p><a href="#method-crew_class_client-terminate"><code>crew_class_client$terminate()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-crew_class_client-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p><code>mirai</code> client constructor.</p><div class="section">
@@ -219,16 +219,29 @@ condition variable.</p></dd>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_client-condition"></a><div class="section">
-<h3 id="method-condition-">Method <code>condition()</code><a class="anchor" aria-label="anchor" href="#method-condition-"></a></h3>
-<p>Get the <code>nanonext</code> condition variable which tasks signal
-on resolution.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_client-terminate"></a><div class="section">
+<h3 id="method-terminate-">Method <code>terminate()</code><a class="anchor" aria-label="anchor" href="#method-terminate-"></a></h3>
+<p>Stop the mirai client and disconnect from the
+worker websockets.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">condition</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
+<p><code>NULL</code> (invisibly).</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_client-condition"></a><div class="section">
+<h3 id="method-condition-">Method <code>condition()</code><a class="anchor" aria-label="anchor" href="#method-condition-"></a></h3>
+<p>Get the <code>nanonext</code> condition variable which tasks signal
+on resolution.</p><div class="section">
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">condition</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
 <p>The <code>nanonext</code> condition variable which tasks signal
 on resolution. The return value is <code>NULL</code> if the client
 is not running.</p>
@@ -237,7 +250,7 @@ is not running.</p>
 </div><p></p><hr><a id="method-crew_class_client-resolved"></a><div class="section">
 <h3 id="method-resolved-">Method <code>resolved()</code><a class="anchor" aria-label="anchor" href="#method-resolved-"></a></h3>
 <p>Get the true value of the <code>nanonext</code> condition variable.</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">resolved</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -247,19 +260,19 @@ is not running.</p>
 </div>
 
 <div class="section">
-<h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
+<h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
 <p>The value of the <code>nanonext</code> condition variable.</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_client-summary"></a><div class="section">
 <h3 id="method-summary-">Method <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code><a class="anchor" aria-label="anchor" href="#method-summary-"></a></h3>
 <p>Show an informative worker log.</p><div class="section">
-<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
+<h4 id="returns-6">Returns<a class="anchor" aria-label="anchor" href="#returns-6"></a></h4>
 <p>A <code>tibble</code> with information on the workers, or <code>NULL</code>
 if the client is not started. The <code>tibble</code> has 1 row
 per worker and the following columns:</p><ul><li><p><code>worker</code>: integer index of the worker.</p></li>
@@ -273,19 +286,6 @@ during the life cycle of the listener.</p></li>
 <li><p><code>socket</code>: websocket URL. <code>crew</code> changes the token at the end of the
 URL path periodically as a safeguard while managing workers.</p></li>
 </ul></div>
-
-</div><p></p><hr><a id="method-crew_class_client-terminate"></a><div class="section">
-<h3 id="method-terminate-">Method <code>terminate()</code><a class="anchor" aria-label="anchor" href="#method-terminate-"></a></h3>
-<p>Stop the mirai client and disconnect from the
-worker websockets.</p><div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="returns-6">Returns<a class="anchor" aria-label="anchor" href="#returns-6"></a></h4>
-<p><code>NULL</code> (invisibly).</p>
-</div>
 
 </div>
 

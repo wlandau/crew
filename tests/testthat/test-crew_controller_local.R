@@ -173,7 +173,8 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
   expect_true(anyNA(out$warnings))
   expect_true(anyNA(out$trace))
   # quick push
-  x$shove(command = command, name = "substitute")
+  private <- crew_private(x)
+  private$.shove(command = command, name = "substitute")
   x$wait(seconds_timeout = 10)
   out <- x$pop(scale = FALSE)
   expect_equal(out$result[[1]], 5L)

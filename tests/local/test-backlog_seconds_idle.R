@@ -28,7 +28,8 @@ system.time(
 )
 spinner$finish()
 testthat::expect_equal(sort(as.integer(names)), seq_len(n_tasks))
-controller$launcher$workers$launched <- FALSE
+private <- crew_private(controller$launcher)
+private$.workers$launched <- FALSE
 controller$launcher$tally()
 testthat::expect_equal(controller$unresolved(), 0L)
 controller$terminate()

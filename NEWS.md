@@ -4,6 +4,7 @@
 * Use `Sys.info()[["user"]]` to get the user in `crew_clean()` (#135, @luwidmer).
 * Use condition variables to wait for tasks more efficiently (#108).
 * Because of #108, `controller$map()` can no longer be used if there are tasks waiting to be popped.
+* Use a `cli` progress bar in `map()`.
 
 # crew 0.6.0
 

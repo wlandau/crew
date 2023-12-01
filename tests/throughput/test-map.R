@@ -1,7 +1,7 @@
 library(crew)
-controller <- crew_controller_local(workers = 20)
+controller <- crew_controller_local(workers = 4)
 controller$start()
-for (index in c(0L, 1L)) {
+for (index in c(0L, 1L, 2L)) {
   out <- controller$map(
     command = {
       if (x <= 1000L) {
@@ -35,28 +35,22 @@ controller$terminate()
 # library(mirai)
 # library(nanonext)
 # library(purrr)
-# 
-# daemons(n = 20, url = "ws://127.0.0.1:5700")
-# walk(rownames(status()$daemons), launch_local)
-# 
+# daemons(n = 4, url = "ws://127.0.0.1:5700")
+# n_tasks <- 20000
+# tasks <- replicate(n_tasks, mirai(TRUE))
 # cv1 <- nextget("cv")
 # cv2 <- cv()
 # cv1 %~>% cv2
-# 
-# n <- 20000
-# 
-# tasks <- replicate(n, mirai(TRUE))
-# while(cv_value(cv1) < n) {
+# walk(rownames(status()$daemons), launch_local)
+# while(cv_value(cv1) < n_tasks) {
 #   until(cv2, msec = 500)
 # }
 # all(!map_lgl(tasks, unresolved))
-# 
-# tasks <- replicate(n, mirai(TRUE))
-# while(cv_value(cv1) < 2 * n) {
+# tasks <- replicate(n_tasks, mirai(TRUE))
+# while(cv_value(cv1) < 2 * n_tasks) {
 #   until(cv2, msec = 500)
 # }
 # all(!map_lgl(tasks, unresolved))
-# 
 # daemons(n = 0)
 #
 # nolint end

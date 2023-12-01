@@ -363,7 +363,8 @@ crew_test("controller map() works", {
     iterate = list(x = c(1L, 2L), y = c(3L, 4L)),
     data = list(a = 5L),
     globals = list(f = f, b = 6L),
-    seed = 0L
+    seed = 0L,
+    verbose = TRUE
   )
   x$terminate()
   expect_null(x$error)
@@ -426,7 +427,8 @@ crew_test("map() works with errors and names and command strings", {
       globals = list(f = f),
       save_command = TRUE,
       names = "id",
-      error = "stop"
+      error = "stop",
+      verbose = TRUE
     ),
     class = "crew_error"
   )
@@ -439,7 +441,8 @@ crew_test("map() works with errors and names and command strings", {
       globals = list(f = f),
       save_command = TRUE,
       names = "id",
-      error = "warn"
+      error = "warn",
+      verbose = TRUE
     ),
     class = "crew_warning"
   )

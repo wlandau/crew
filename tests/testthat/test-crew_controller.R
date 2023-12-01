@@ -10,16 +10,6 @@ crew_test("deprecate auto_scale", {
   expect_true(TRUE)
 })
 
-crew_test("controller_map_message_progress()", {
-  expect_silent(controller_map_message_progress(1, 2, FALSE))
-  expect_message(controller_map_message_progress(1, 2, TRUE))
-})
-
-crew_test("controller_map_message_complete()", {
-  expect_silent(controller_map_message_complete(100, 10, FALSE))
-  expect_message(controller_map_message_complete(100, 10, TRUE))
-})
-
 crew_test("crew_controller() deprecate collect()", {
   skip_on_cran()
   skip_on_os("windows")

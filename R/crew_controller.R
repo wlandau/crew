@@ -707,13 +707,34 @@ crew_class_controller <- R6::R6Class(
       relay <- .subset2(.subset2(self, "client"), "relay")
       start <- nanonext::mclock()
       pushed <- self$pushed
+      this_envir <- environment()
+      progress_envir <- new.env(parent = this_envir)
+      if (verbose) {
+        cli::cli_progress_bar(
+          total = total,
+          type = "custom",
+          format = paste(
+            "{cli::pb_current}/{cli::pb_total}",
+            "{cli::pb_bar}",
+            "{cli::pb_percent}"
+          ),
+          format_done = "{cli::pb_total} tasks in {cli::pb_elapsed}",
+          clear = FALSE,
+          .envir = progress_envir
+        )
+      }
       crew_retry(
         fun = ~{
           .subset2(self, "scale")()
           unresolved <- .subset2(self, "unresolved")()
+          if (verbose) {
+            cli::cli_progress_update(
+              set = total - unresolved,
+              .envir = progress_envir
+            )
+          }
           if (unresolved > 0L) {
-            controller_map_message_progress(total, total - unresolved, verbose)
-           .subset2(relay, "wait")(seconds_timeout = seconds_interval)
+            .subset2(relay, "wait")(seconds_timeout = seconds_interval)
           }
           .subset2(self, "unresolved")() < 1L
         },
@@ -721,8 +742,9 @@ crew_class_controller <- R6::R6Class(
         seconds_timeout = Inf,
         error = FALSE
       )
-      controller_map_message_complete(total, start, verbose)
-      if_any(verbose, message(), NULL)
+      if (verbose) {
+        cli::cli_progress_done(.envir = progress_envir)
+      }
       results <- map(tasks, ~.subset2(.x, "data"))
       out <- lapply(results, monad_tibble)
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
@@ -1031,28 +1053,3 @@ crew_class_controller <- R6::R6Class(
     }
   )
 )
-
-controller_map_message_progress <- function(total, resolved, verbose) {
-  if (!verbose) {
-    return()
-  }
-  symbol <- sample(c("-", "\\", "|", "/"), size = 1L)
-  text <- sprintf(
-    "\r%s of %s tasks done (%s%%) %s",
-    resolved,
-    total,
-    round(100 * resolved / total),
-    symbol
-  )
-  message(text, appendLF = FALSE)
-}
-
-controller_map_message_complete <- function(tasks, start, verbose) {
-  if (!verbose) {
-    return()
-  }
-  seconds <- (nanonext::mclock() - start) / 1000
-  time <- units_time(seconds)
-  text <- sprintf("\r%s tasks done in %s.", tasks, time)
-  message(text)
-}

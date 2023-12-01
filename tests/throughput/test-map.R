@@ -1,7 +1,7 @@
 library(crew)
 controller <- crew_controller_local(workers = 4)
 controller$start()
-for (index in c(0L, 1L, 2L)) {
+for (index in seq_len(3L)) {
   out <- controller$map(
     command = {
       if (x <= 1000L) {
@@ -16,8 +16,8 @@ for (index in c(0L, 1L, 2L)) {
   )
   testthat::expect_equal(length(controller$list), 0L)
   sum <- controller$summary()
-  testthat::expect_equal(sum(sum$errors), 1000L + index * 1000L)
-  testthat::expect_equal(sum(sum$warnings), 3000L + index * 3000L)
+  testthat::expect_equal(sum(sum$errors), index * 1000L)
+  testthat::expect_equal(sum(sum$warnings), index * 3000L)
   name <- as.integer(out$name)
   testthat::expect_equal(name, seq_len(6000L))
   testthat::expect_true(all((name <= 1000L) == !is.na(out$error)))

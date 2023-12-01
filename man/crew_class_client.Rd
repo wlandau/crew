@@ -38,8 +38,8 @@ Other class:
 \code{\link{crew_class_tls}}
 }
 \concept{class}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{name}}{See \code{\link[=crew_client]{crew_client()}}.}
 
@@ -70,10 +70,10 @@ condition variable.}
 \item \href{#method-crew_class_client-new}{\code{crew_class_client$new()}}
 \item \href{#method-crew_class_client-validate}{\code{crew_class_client$validate()}}
 \item \href{#method-crew_class_client-start}{\code{crew_class_client$start()}}
+\item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
 \item \href{#method-crew_class_client-condition}{\code{crew_class_client$condition()}}
 \item \href{#method-crew_class_client-resolved}{\code{crew_class_client$resolved()}}
 \item \href{#method-crew_class_client-summary}{\code{crew_class_client$summary()}}
-\item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -159,6 +159,20 @@ Start listening for workers on the available sockets.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_client-terminate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-terminate}{}}}
+\subsection{Method \code{terminate()}}{
+Stop the mirai client and disconnect from the
+worker websockets.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$terminate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_client-condition"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-condition}{}}}
 \subsection{Method \code{condition()}}{
@@ -216,20 +230,6 @@ during the life cycle of the listener.
 \item \code{socket}: websocket URL. \code{crew} changes the token at the end of the
 URL path periodically as a safeguard while managing workers.
 }
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-terminate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-terminate}{}}}
-\subsection{Method \code{terminate()}}{
-Stop the mirai client and disconnect from the
-worker websockets.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$terminate()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
 }
 }
 }

@@ -24,13 +24,8 @@ crew_class_relay <- R6::R6Class(
   classname = "crew_class_relay",
   cloneable = FALSE,
   private = list(
-    #' @field condition Main condition variable.
     .condition = NULL,
-    #' @field from Condition variable that `private$.condition` receives
-    #'   signals from.
     .from = NULL,
-    #' @field to Condition variable that `private$.condition` forwards
-    #'   signals to.
     .to = NULL
   ),
   active = list(

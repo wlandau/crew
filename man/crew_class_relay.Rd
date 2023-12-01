@@ -22,19 +22,6 @@ Other class:
 \code{\link{crew_class_tls}}
 }
 \concept{class}
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{condition}}{Main condition variable.}
-
-\item{\code{from}}{Condition variable that \code{private$.condition} receives
-signals from.}
-
-\item{\code{to}}{Condition variable that \code{private$.condition} forwards
-signals to.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{

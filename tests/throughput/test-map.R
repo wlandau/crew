@@ -28,3 +28,35 @@ for (index in c(0L, 1L)) {
   )
 }
 controller$terminate()
+
+# In case the above gets stuck again, work on the reprex below.
+# nolint start
+#
+# library(mirai)
+# library(nanonext)
+# library(purrr)
+# 
+# daemons(n = 20, url = "ws://127.0.0.1:5700")
+# walk(rownames(status()$daemons), launch_local)
+# 
+# cv1 <- nextget("cv")
+# cv2 <- cv()
+# cv1 %~>% cv2
+# 
+# n <- 20000
+# 
+# tasks <- replicate(n, mirai(TRUE))
+# while(cv_value(cv1) < n) {
+#   until(cv2, msec = 500)
+# }
+# all(!map_lgl(tasks, unresolved))
+# 
+# tasks <- replicate(n, mirai(TRUE))
+# while(cv_value(cv1) < 2 * n) {
+#   until(cv2, msec = 500)
+# }
+# all(!map_lgl(tasks, unresolved))
+# 
+# daemons(n = 0)
+#
+# nolint end

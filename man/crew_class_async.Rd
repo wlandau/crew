@@ -19,12 +19,12 @@ Other class:
 \code{\link{crew_class_tls}}
 }
 \concept{class}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{workers}}{See \code{\link[=crew_async]{crew_async()}}.}
 
-\item{\code{instance}}{Character of length 1, name of the current instance.}
+\item{\code{instance}}{Name of the current instance.}
 }
 \if{html}{\out{</div>}}
 }

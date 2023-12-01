@@ -33,28 +33,38 @@ crew_async <- function(workers = NULL) {
 crew_class_async <- R6::R6Class(
   classname = "crew_class_async",
   cloneable = FALSE,
-  public = list(
+  private = list(
+    .workers = NULL,
+    .instance = NULL
+  ),
+  active = list(
     #' @field workers See [crew_async()].
-    workers = NULL,
-    #' @field instance Character of length 1, name of the current instance.
-    instance = NULL,
+    workers = function() {
+      .subset2(private, ".workers")
+    },
+    #' @field instance Name of the current instance.
+    instance = function() {
+      .subset2(private, ".instance")
+    }
+  ),
+  public = list(
     #' @description TLS configuration constructor.
     #' @return An `R6` object with TLS configuration.
     #' @param workers Argument passed from [crew_async()].
     initialize = function(workers = NULL) {
-      self$workers <- workers
+      private$.workers <- workers
     },
     #' @description Validate the object.
     #' @return `NULL` (invisibly).
     validate = function() {
       crew_assert(
-        self$workers %|||% 57L,
+        private$.workers %|||% 57L,
         is.numeric(.),
         length(.) == 1L,
         !anyNA(.)
       )
       crew_assert(
-        self$instance %|||% "x",
+        private$.instance %|||% "x",
         is.character(.),
         length(.) == 1L,
         !anyNA(.),
@@ -67,15 +77,15 @@ crew_class_async <- R6::R6Class(
     #'   if `workers` is `NULL` or the object is already started.
     #' @return `NULL` (invisibly).
     start = function() {
-      if (is.null(self$workers) || !is.null(self$instance)) {
+      if (is.null(private$.workers) || !is.null(private$.instance)) {
         return(invisible())
       }
-      self$instance <- crew::crew_random_name()
+      private$.instance <- crew::crew_random_name()
       mirai::daemons(
-        n = self$workers,
+        n = private$.workers,
         dispatcher = FALSE,
         autoexit = TRUE,
-        .compute = self$instance
+        .compute = private$.instance
       )
       invisible()
     },
@@ -107,7 +117,7 @@ crew_class_async <- R6::R6Class(
     ) {
       command <- if_any(substitute, substitute(command), command)
       if_any(
-        is.null(self$workers),
+        is.null(private$.workers),
         list(
           data = crew_eval_async(
             command = command,
@@ -123,7 +133,7 @@ crew_class_async <- R6::R6Class(
           packages = packages,
           library = library,
           url = self$url,
-          .compute = self$instance
+          .compute = private$.instance
         )
       )
     },
@@ -131,11 +141,11 @@ crew_class_async <- R6::R6Class(
     #' @details Waits for existing tasks to complete first.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      if (is.null(self$workers) || is.null(self$instance)) {
+      if (is.null(private$.workers) || is.null(private$.instance)) {
         return(invisible())
       }
-      mirai::daemons(n = 0L, .compute = self$instance)
-      self$instance <- NULL
+      mirai::daemons(n = 0L, .compute = private$.instance)
+      private$.instance <- NULL
       invisible()
     }
   )

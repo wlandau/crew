@@ -3,6 +3,20 @@ crew_test("crew_client() validate on an empty object", {
   expect_silent(client$validate())
 })
 
+crew_test("crew_client() active bindings", {
+  client <- crew_client(
+    host = "127.0.0.1",
+    port = 123L,
+    seconds_interval = 123,
+    seconds_timeout = 456
+  )
+  expect_equal(client$host, "127.0.0.1")
+  expect_equal(client$port, 123L)
+  expect_equal(client$seconds_interval, 123)
+  expect_equal(client$seconds_timeout, 456)
+  expect_silent(client$validate())
+})
+
 crew_test("crew_client() works", {
   skip_on_cran()
   skip_on_os("windows")

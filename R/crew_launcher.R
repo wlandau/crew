@@ -225,6 +225,7 @@ crew_class_launcher <- R6::R6Class(
       .subset2(private, ".tls")
     },
     #' @field processes See [crew_launcher()].
+    #'   asynchronously.
     processes = function() {
       .subset2(private, ".processes")
     },
@@ -457,6 +458,9 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param sockets For testing purposes only.
     start = function(sockets = NULL) {
+      if (!is.null(private$.async)) {
+        private$.async$terminate()
+      }
       private$.async <- crew_async(workers = private$.processes)
       private$.async$start()
       sockets <- sockets %|||% mirai::nextget("urls", .compute = private$.name)
@@ -482,7 +486,10 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     terminate = function() {
       self$terminate_workers()
-      if (!is.null(private$.async)) {
+      using_async <- !is.null(private$.async) &&
+        private$.async$asynchronous() &&
+        private$.async$started()
+      if (using_async) {
         self$wait()
         private$.async$terminate()
         lapply(
@@ -723,7 +730,7 @@ crew_class_launcher <- R6::R6Class(
     #' @details Only relevant if `processes` is a positive integer.
     #' @return `NULL` (invisibly).
     wait = function() {
-      if (!is.null(private$.async) && !is.null(private$.processes)) {
+      if (!is.null(private$.processes)) {
         lapply(X = private$.workers$handle, FUN = mirai::call_mirai_)
         lapply(X = private$.workers$termination, FUN = mirai::call_mirai_)
       }

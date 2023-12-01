@@ -77,7 +77,7 @@ crew_class_async <- R6::R6Class(
     #'   if `workers` is `NULL` or the object is already started.
     #' @return `NULL` (invisibly).
     start = function() {
-      if (is.null(private$.workers) || !is.null(private$.instance)) {
+      if (!self$asynchronous() || self$started()) {
         return(invisible())
       }
       private$.instance <- crew::crew_random_name()
@@ -93,12 +93,22 @@ crew_class_async <- R6::R6Class(
     #' @details Waits for existing tasks to complete first.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      if (is.null(private$.workers) || is.null(private$.instance)) {
+      if (!self$asynchronous() || !self$started()) {
         return(invisible())
       }
       mirai::daemons(n = 0L, .compute = private$.instance)
       private$.instance <- NULL
       invisible()
+    },
+    #' @description Show whether the object is started.
+    #' @return Logical of length 1, whether the object is started.
+    started = function() {
+      !is.null(private$.instance)
+    },
+    #' @description Show whether the object is asynchronous (has real workers).
+    #' @return Logical of length 1, whether the object is asynchronous.
+    asynchronous = function() {
+      !is.null(private$.workers) 
     },
     #' @description Run a local asynchronous task using a local
     #'   compute profile.

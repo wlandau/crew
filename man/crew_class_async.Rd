@@ -35,6 +35,8 @@ Other class:
 \item \href{#method-crew_class_async-validate}{\code{crew_class_async$validate()}}
 \item \href{#method-crew_class_async-start}{\code{crew_class_async$start()}}
 \item \href{#method-crew_class_async-terminate}{\code{crew_class_async$terminate()}}
+\item \href{#method-crew_class_async-started}{\code{crew_class_async$started()}}
+\item \href{#method-crew_class_async-asynchronous}{\code{crew_class_async$asynchronous()}}
 \item \href{#method-crew_class_async-eval}{\code{crew_class_async$eval()}}
 }
 }
@@ -104,6 +106,32 @@ Waits for existing tasks to complete first.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_async-started"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_async-started}{}}}
+\subsection{Method \code{started()}}{
+Show whether the object is started.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_async$started()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Logical of length 1, whether the object is started.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_async-asynchronous"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_async-asynchronous}{}}}
+\subsection{Method \code{asynchronous()}}{
+Show whether the object is asynchronous (has real workers).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_async$asynchronous()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Logical of length 1, whether the object is asynchronous.
 }
 }
 \if{html}{\out{<hr>}}

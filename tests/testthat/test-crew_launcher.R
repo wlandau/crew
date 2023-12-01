@@ -10,6 +10,14 @@ crew_test("active bindings for covr", {
   expect_true(inherits(out$tls, "crew_class_tls"))
 })
 
+crew_test("preemptive async termination for covr", {
+  out <- crew_launcher(processes = 1L)
+  on.exit(out$terminate())
+  private <- crew_private(out)
+  private$.async <- crew_async()
+  expect_silent(out$start())
+})
+
 crew_test("default launch_launcher() method", {
   launcher <- crew_class_launcher$new()
   out <- launcher$launch_worker(

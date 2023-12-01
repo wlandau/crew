@@ -87,7 +87,8 @@ Other class:
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.
+asynchronously.}
 
 \item{\code{async}}{A \code{\link[=crew_async]{crew_async()}} object to run low-level launcher tasks
 asynchronously.}

@@ -60,17 +60,15 @@ crew_class_controller <- R6::R6Class(
   cloneable = FALSE,
   private = list(
     wait_all_once = function(seconds_interval) {
-      if (self$unresolved() < 1L) {
-        return(TRUE)
+      if (self$unresolved() > 0L) {
+        self$client$relay$wait(seconds_timeout = seconds_interval)
       }
-      self$client$relay$wait(seconds_timeout = seconds_interval)
       self$unresolved() < 1L
     },
     wait_one_once = function(seconds_interval) {
-      if (self$unpopped() > 0L) {
-        return(TRUE)
+      if (self$unpopped() < 1L) {
+        self$client$relay$wait(seconds_timeout = seconds_interval)
       }
-      self$client$relay$wait(seconds_timeout = seconds_interval)
       self$unpopped() > 0L
     }
   ),
@@ -713,11 +711,10 @@ crew_class_controller <- R6::R6Class(
         fun = ~{
           .subset2(self, "scale")()
           unresolved <- .subset2(self, "unresolved")()
-          if (unresolved < 1L) {
-            return(TRUE)
+          if (unresolved > 0L) {
+            controller_map_message_progress(total, total - unresolved, verbose)
+           .subset2(relay, "wait")(seconds_timeout = seconds_interval)
           }
-          controller_map_message_progress(total, total - unresolved, verbose)
-          .subset2(relay, "wait")(seconds_timeout = seconds_interval)
           .subset2(self, "unresolved")() < 1L
         },
         seconds_interval = 0,

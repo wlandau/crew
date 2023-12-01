@@ -108,7 +108,7 @@ crew_class_async <- R6::R6Class(
     #' @description Show whether the object is asynchronous (has real workers).
     #' @return Logical of length 1, whether the object is asynchronous.
     asynchronous = function() {
-      !is.null(private$.workers) 
+      !is.null(private$.workers)
     },
     #' @description Run a local asynchronous task using a local
     #'   compute profile.

@@ -12,8 +12,8 @@ crew_test("relay start, terminate, validate", {
 
 crew_test("relay and waiting", {
   x <- crew_relay()
-  x$from <- nanonext::cv()
-  x$to <- nanonext::cv()
+  x$set_from(nanonext::cv())
+  x$set_to(nanonext::cv())
   x$start()
   expect_silent(x$validate())
   nanonext::cv_signal(x$from)

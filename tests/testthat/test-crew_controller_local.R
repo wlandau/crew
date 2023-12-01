@@ -257,7 +257,8 @@ crew_test("crew_controller_local() can terminate a lost worker", {
     gc()
     crew_test_sleep()
   })
-  x$launcher$workers$launches <- 1L
+  private <- crew_private(x$launcher)
+  private$.workers$launches <- 1L
   bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
   path <- file.path(R.home("bin"), bin)
   call <- "Sys.sleep(300)"
@@ -267,12 +268,12 @@ crew_test("crew_controller_local() can terminate a lost worker", {
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
-  x$launcher$workers$handle[[1L]] <- handle
-  x$launcher$workers$socket[1L] <- x$client$summary()$socket
-  x$launcher$workers$start[1L] <- - Inf
-  x$launcher$workers$launches[1L] <- 1L
-  x$launcher$workers$launched[1L] <- TRUE
-  x$launcher$workers$terminated[1L] <- FALSE
+  private$.workers$handle[[1L]] <- handle
+  private$.workers$socket[1L] <- x$client$summary()$socket
+  private$.workers$start[1L] <- - Inf
+  private$.workers$launches[1L] <- 1L
+  private$.workers$launched[1L] <- TRUE
+  private$.workers$terminated[1L] <- FALSE
   expect_true(handle$is_alive())
   x$launcher$rotate()
   crew_retry(

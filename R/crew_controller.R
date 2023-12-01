@@ -34,7 +34,7 @@ crew_controller <- function(
     frequency = "once"
   )
   controller <- crew_class_controller$new(client = client, launcher = launcher)
-  controller$launcher$name <- controller$client$name
+  controller$launcher$set_name(controller$client$name)
   controller$validate()
   controller
 }

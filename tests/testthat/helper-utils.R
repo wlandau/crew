@@ -21,3 +21,7 @@ crew_test_sleep <- function() {
 expect_crew_error <- function(object) {
   testthat::expect_error(object, class = "crew_error")
 }
+
+crew_private <- function(object) {
+  object$.__enclos_env__$private
+}

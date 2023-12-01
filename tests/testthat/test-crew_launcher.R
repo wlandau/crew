@@ -3,6 +3,13 @@ crew_test("abstract launcher class", {
   expect_crew_error(out$validate())
 })
 
+crew_test("active bindings for covr", {
+  out <- crew_launcher(processes = 1L)
+  expect_equal(out$processes, 1L)
+  expect_null(out$async)
+  expect_true(inherits(out$tls, "crew_class_tls"))
+})
+
 crew_test("default launch_launcher() method", {
   launcher <- crew_class_launcher$new()
   out <- launcher$launch_worker(

@@ -95,7 +95,7 @@ crew_class_relay <- R6::R6Class(
     wait = function(seconds_timeout = 1e3) {
       timeout <- seconds_timeout * 1000
       condition <- .subset2(self, "condition")
-      nanonext::until(cv = condition, msec = timeout)
+      nanonext::until_(cv = condition, msec = timeout)
     }
   )
 )

@@ -582,7 +582,7 @@ crew_class_launcher <- R6::R6Class(
           "why {crew} workers are not booting up or connecting."
         )
       )
-      mirai::call_mirai(aio = self$workers$handle[[index]])
+      mirai::call_mirai_(aio = self$workers$handle[[index]])
       handle <- self$launch_worker(
         call = as.character(call),
         name = as.character(name),
@@ -664,8 +664,8 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     wait = function() {
       if (!is.null(self$async) && !is.null(self$processes)) {
-        lapply(X = self$workers$handle, FUN = mirai::call_mirai)
-        lapply(X = self$workers$termination, FUN = mirai::call_mirai)
+        lapply(X = self$workers$handle, FUN = mirai::call_mirai_)
+        lapply(X = self$workers$termination, FUN = mirai::call_mirai_)
       }
       invisible()
     },
@@ -760,7 +760,7 @@ crew_class_launcher <- R6::R6Class(
       for (worker in index) {
         if (!workers$terminated[worker]) {
           handle <- workers$handle[[worker]]
-          mirai::call_mirai(aio = handle)
+          mirai::call_mirai_(aio = handle)
           self$workers$termination[[worker]] <-
             self$terminate_worker(handle = handle) %|||% crew_null
         }

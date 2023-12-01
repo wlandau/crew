@@ -22,10 +22,10 @@
 #' @importFrom cli cli_progress_bar cli_progress_done cli_progress_update
 #' @importFrom data.table rbindlist
 #' @importFrom getip getip
-#' @importFrom mirai call_mirai daemon daemons is_mirai is_mirai_error
+#' @importFrom mirai call_mirai_ daemon daemons is_mirai is_mirai_error
 #'   mirai nextget nextstream saisei status
 #' @importFrom nanonext %~>% cv cv_value mclock msleep nng_error random
-#'   .unresolved unresolved until tls_config
+#'   .unresolved unresolved until_ tls_config
 #' @importFrom processx process
 #' @importFrom ps ps_cmdline ps_handle ps_is_running ps_kill ps_status
 #' @importFrom R6 R6Class

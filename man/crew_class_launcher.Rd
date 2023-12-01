@@ -102,6 +102,7 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
+\item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 \item \href{#method-crew_class_launcher-summary}{\code{crew_class_launcher$summary()}}
 \item \href{#method-crew_class_launcher-tally}{\code{crew_class_launcher$tally()}}
 \item \href{#method-crew_class_launcher-unlaunched}{\code{crew_class_launcher$unlaunched()}}
@@ -118,7 +119,6 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
-\item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -301,6 +301,19 @@ Start the launcher.
 Creates the workers data frame.
 Meant to be called once at the beginning of the launcher
 life cycle, after the client has started.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-terminate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate}{}}}
+\subsection{Method \code{terminate()}}{
+Terminate the whole launcher, including all workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -668,19 +681,6 @@ to terminate. If \code{NULL}, all current workers are terminated.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-terminate"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate}{}}}
-\subsection{Method \code{terminate()}}{
-Terminate the whole launcher, including all workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate()}\if{html}{\out{</div>}}
-}
-
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

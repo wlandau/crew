@@ -422,6 +422,21 @@ crew_class_launcher <- R6::R6Class(
       )
       invisible()
     },
+    #' @description Terminate the whole launcher, including all workers.
+    #' @return `NULL` (invisibly).
+    terminate = function() {
+      self$terminate_workers()
+      if (!is.null(self$async)) {
+        self$wait()
+        self$async$terminate()
+        lapply(
+          X = seq_len(nrow(self$workers)),
+          FUN = self$forward,
+          condition = "error"
+        )
+      }
+      invisible()
+    },
     #' @description Summarize the workers.
     #' @return `NULL` if the launcher is not started. Otherwise, a `tibble`
     #'   with one row per `crew` worker and the following columns:
@@ -753,21 +768,6 @@ crew_class_launcher <- R6::R6Class(
         self$workers$start[worker] <- NA_real_
         self$workers$terminated[worker] <- TRUE
         self$forward(index = worker, condition = "warning")
-      }
-      invisible()
-    },
-    #' @description Terminate the whole launcher, including all workers.
-    #' @return `NULL` (invisibly).
-    terminate = function() {
-      self$terminate_workers()
-      if (!is.null(self$async)) {
-        self$wait()
-        self$async$terminate()
-        lapply(
-          X = seq_len(nrow(self$workers)),
-          FUN = self$forward,
-          condition = "error"
-        )
       }
       invisible()
     }

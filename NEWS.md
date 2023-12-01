@@ -5,6 +5,7 @@
 * Use condition variables to wait for tasks more efficiently (#108).
 * Because of #108, `controller$map()` can no longer be used if there are tasks waiting to be popped.
 * Use a `cli` progress bar in `map()`.
+* Encapsulate non-function `R6` members in the `private` list and add active bindings where interfaces are necessary (#137). Ad hoc tests that absolutely need to modify private objects can use `object$.__enclos_env__$private` trick, but these tests should be skipped on CRAN in case there is a change to `R6` that breaks this.
 
 # crew 0.6.0
 

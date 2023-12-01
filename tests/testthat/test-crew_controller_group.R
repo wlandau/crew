@@ -9,6 +9,12 @@ crew_test("crew_controller_group() method and signature compatibility", {
   }
 })
 
+crew_test("crew_controller_group() active bindings for covr", {
+  x <- crew_controller_local()
+  y <- crew_controller_group(x = x)
+  expect_true(inherits(y$relay, "crew_class_relay"))
+})
+
 crew_test("crew_controller_group()", {
   skip_on_cran()
   skip_on_os("windows")

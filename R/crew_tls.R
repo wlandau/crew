@@ -74,7 +74,7 @@ crew_class_tls <- R6::R6Class(
     .key = NULL,
     .password = NULL,
     .certificates = NULL,
-    validate_mode_automatic = function() {
+    .validate_mode_automatic = function() {
       for (field in c(".key", ".password", ".certificates")) {
         crew_assert(
           is.null(private[[field]]),
@@ -87,7 +87,7 @@ crew_class_tls <- R6::R6Class(
       }
       invisible()
     },
-    validate_mode_custom = function() {
+    .validate_mode_custom = function() {
       crew_assert(
         private$.key,
         is.character(.),
@@ -134,7 +134,7 @@ crew_class_tls <- R6::R6Class(
       }
       invisible()
     },
-    read_files = function(files) {
+    .read_files = function(files) {
       lines <- unlist(
         lapply(
           X = files,
@@ -145,11 +145,11 @@ crew_class_tls <- R6::R6Class(
       )
       paste(lines, collapse = "\n")
     },
-    read_key = function() {
-      private$read_files(files = private$.key)
+    .read_key = function() {
+      private$.read_files(files = private$.key)
     },
-    read_certificates = function() {
-      private$read_files(files = private$.certificates)
+    .read_certificates = function() {
+      private$.read_files(files = private$.certificates)
     }
   ),
   active = list(
@@ -209,8 +209,8 @@ crew_class_tls <- R6::R6Class(
       )
       if_any(
         private$.mode %in% c("none", "automatic"),
-        private$validate_mode_automatic(),
-        private$validate_mode_custom()
+        private$.validate_mode_automatic(),
+        private$.validate_mode_custom()
       )
       # Cannot test in unit tests because custom TLS configuration
       # is platform-dependent and low-level.
@@ -231,7 +231,7 @@ crew_class_tls <- R6::R6Class(
       if (private$.mode != "custom") {
         return(NULL)
       } else if (private$.mode == "custom") {
-        return(c(private$read_certificates(), private$read_key()))
+        return(c(private$.read_certificates(), private$.read_key()))
       }
     },
     #' @description TLS credentials for `crew` workers.
@@ -243,7 +243,7 @@ crew_class_tls <- R6::R6Class(
       } else if (private$.mode == "automatic") {
         return(mirai::nextget(x = "tls", .compute = name))
       } else if (private$.mode == "custom") {
-        return(c(private$read_certificates(), ""))
+        return(c(private$.read_certificates(), ""))
       }
     }
   )

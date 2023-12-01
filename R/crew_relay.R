@@ -29,12 +29,15 @@ crew_class_relay <- R6::R6Class(
     .to = NULL
   ),
   active = list(
+    #' @field condition Main condition variable.
     condition = function() {
       .subset2(private, ".condition")
     },
+    #' @field from Condition variable to relay from.
     from = function() {
       .subset2(private, ".from")
     },
+    #' @field to Condition variable to relay to.
     to = function() {
       .subset2(private, ".to")
     }

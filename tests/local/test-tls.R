@@ -25,7 +25,7 @@ crew_test("mirai client can start using custom credentials", {
     ignore.stdout = TRUE,
     ignore.stderr = TRUE
   )
-  on.exit(mirai::daemons(n = 0L), add = TRUE)
+  on.exit(mirai::daemons(n = 0L, .compute = "name"), add = TRUE)
   expect_silent(
     tmp <- mirai::daemons(
       n = 1L,
@@ -41,6 +41,7 @@ crew_test("mirai client can start using custom credentials", {
       .compute = "name"
     )
   )
+  mirai::daemons(n = 0L, .compute = "name")
 })
 
 crew_test("crew_tls() custom works on real credentials", {
@@ -71,6 +72,7 @@ crew_test("crew_tls() custom works on real credentials", {
   x$push("57")
   x$wait()
   expect_equal(x$pop()$result[[1L]], "57")
+  x$terminate()
 })
 
 crew_test("crew_tls() custom works on real credentials with custom password", {
@@ -117,6 +119,7 @@ crew_test("crew_tls() custom works on real credentials with custom password", {
   x$push("57")
   x$wait()
   expect_equal(x$pop()$result[[1L]], "57")
+  x$terminate()
 })
 
 crew_test("crew_tls() automatic", {
@@ -126,4 +129,5 @@ crew_test("crew_tls() automatic", {
   x$push("57")
   x$wait()
   expect_equal(x$pop()$result[[1L]], "57")
+  x$terminate()
 })

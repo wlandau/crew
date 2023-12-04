@@ -1,5 +1,5 @@
 library(crew)
-controller <- crew_controller_local(workers = 4)
+controller <- crew_controller_local(workers = 20L)
 controller$start()
 for (index in seq_len(3L)) {
   out <- controller$map(

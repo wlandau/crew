@@ -44,7 +44,7 @@ Imports:
   data.table,
   getip,
   mirai (>= 0.11.2.9017),
-  nanonext (>= 0.10.4.9024),
+  nanonext (>= 0.11.0),
   processx,
   ps,
   R6,

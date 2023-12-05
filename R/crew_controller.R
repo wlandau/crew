@@ -179,7 +179,7 @@ crew_class_controller <- R6::R6Class(
         identical(private$.client$name, private$.launcher$name),
         message = "client and launcher must have the same name"
       )
-      crew_assert(private$.log, is.null(.) || is.data.frame(.))
+      crew_assert(private$.log, is.null(.) || is.list(.))
       invisible()
     },
     #' @description Check if the controller is empty.

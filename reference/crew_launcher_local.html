@@ -60,7 +60,8 @@ local process workers.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_launcher_local</span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  seconds_interval <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  seconds_interval <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  seconds_timeout <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>  seconds_launch <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  seconds_idle <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  seconds_wall <span class="op">=</span> <span class="cn">Inf</span>,</span>
@@ -83,8 +84,16 @@ local process workers.</p>
 
 
 <dt>seconds_interval</dt>
-<dd><p>Deprecated in version 0.5.0.9003 (2023-10-02)
-no longer used.</p></dd>
+<dd><p>Number of seconds between
+polling intervals waiting for certain internal
+synchronous operations to complete,
+such as checking <code><a href="https://shikokuchuo.net/mirai/reference/status.html" class="external-link">mirai::status()</a></code></p></dd>
+
+
+<dt>seconds_timeout</dt>
+<dd><p>Number of seconds until timing
+out while waiting for certain synchronous operations to complete,
+such as checking <code><a href="https://shikokuchuo.net/mirai/reference/status.html" class="external-link">mirai::status()</a></code>.</p></dd>
 
 
 <dt>seconds_launch</dt>

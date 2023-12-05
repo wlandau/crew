@@ -274,7 +274,7 @@ workers take a long time to launch.</p>
 <span>  <span class="va">port</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">tls</span> <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_tls.html">crew_tls</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">seconds_interval</span> <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  <span class="va">seconds_timeout</span> <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  <span class="va">seconds_timeout</span> <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  <span class="va">seconds_launch</span> <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  <span class="va">seconds_idle</span> <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  <span class="va">seconds_wall</span> <span class="op">=</span> <span class="cn">Inf</span>,</span>
@@ -297,6 +297,8 @@ workers take a long time to launch.</p>
 <span>  <span class="op">)</span></span>
 <span>  <span class="va">launcher</span> <span class="op">&lt;-</span> <span class="va">custom_launcher_class</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>    name <span class="op">=</span> <span class="va">name</span>,</span>
+<span>    seconds_interval <span class="op">=</span> <span class="va">seconds_interval</span>,</span>
+<span>    seconds_timeout <span class="op">=</span> <span class="va">seconds_timeout</span>,</span>
 <span>    seconds_launch <span class="op">=</span> <span class="va">seconds_launch</span>,</span>
 <span>    seconds_idle <span class="op">=</span> <span class="va">seconds_idle</span>,</span>
 <span>    seconds_wall <span class="op">=</span> <span class="va">seconds_wall</span>,</span>
@@ -507,7 +509,7 @@ it like an ordinary synchronous controller.</p>
 <span>  <span class="va">port</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">tls</span> <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_tls.html">crew_tls</a></span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span>,</span>
 <span>  <span class="va">seconds_interval</span> <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  <span class="va">seconds_timeout</span> <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  <span class="va">seconds_timeout</span> <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  <span class="va">seconds_launch</span> <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  <span class="va">seconds_idle</span> <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  <span class="va">seconds_wall</span> <span class="op">=</span> <span class="cn">Inf</span>,</span>

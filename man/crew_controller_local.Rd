@@ -49,12 +49,12 @@ Use argument \code{tls} instead.}
 
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal
-synchronous operations to complete. If \code{space_poll} is \code{TRUE}, then
-this is also the minimum number of seconds between calls to
-\code{mirai::daemons()} for the purposes of checking worker status.}
+synchronous operations to complete,
+such as checking \code{mirai::status()}}
 
 \item{seconds_timeout}{Number of seconds until timing
-out while waiting for certain synchronous operations to complete.}
+out while waiting for certain synchronous operations to complete,
+such as checking \code{mirai::status()}.}
 
 \item{seconds_launch}{Seconds of startup time to allow.
 A worker is unconditionally assumed to be alive

@@ -16,11 +16,11 @@
 #'   Use argument `tls` instead.
 #' @param seconds_interval Number of seconds between
 #'   polling intervals waiting for certain internal
-#'   synchronous operations to complete. If `space_poll` is `TRUE`, then
-#'   this is also the minimum number of seconds between calls to
-#'   `mirai::daemons()` for the purposes of checking worker status.
+#'   synchronous operations to complete,
+#'   such as checking `mirai::status()`
 #' @param seconds_timeout Number of seconds until timing
-#'   out while waiting for certain synchronous operations to complete.
+#'   out while waiting for certain synchronous operations to complete,
+#'   such as checking `mirai::status()`.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -355,7 +355,11 @@ crew_class_client <- R6::R6Class(
       if (!isTRUE(private$.started)) {
         return(NULL)
       }
-      daemons <- daemons_info(name = private$.name)
+      daemons <- daemons_info(
+        name = private$.name,
+        seconds_interval = private$.seconds_interval,
+        seconds_timeout = private$.seconds_timeout
+      )
       tibble::tibble(
         worker = seq_len(nrow(daemons)),
         online = as.logical(daemons[, "online"] > 0L),

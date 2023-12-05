@@ -54,6 +54,7 @@ crew_test("custom launcher", {
     launcher <- custom_launcher_class$new(
       name = name,
       seconds_interval = seconds_interval,
+      seconds_timeout = seconds_timeout,
       seconds_launch = seconds_launch,
       seconds_idle = seconds_idle,
       seconds_wall = seconds_wall,
@@ -160,6 +161,7 @@ crew_test("custom launcher with local async errors", {
     launcher <- custom_launcher_class$new(
       name = name,
       seconds_interval = seconds_interval,
+      seconds_timeout = seconds_timeout,
       seconds_launch = seconds_launch,
       seconds_idle = seconds_idle,
       seconds_wall = seconds_wall,
@@ -300,6 +302,7 @@ crew_test("custom launcher with async internal launcher tasks", {
     launcher <- custom_launcher_class$new(
       name = name,
       seconds_interval = seconds_interval,
+      seconds_timeout = seconds_timeout,
       seconds_launch = seconds_launch,
       seconds_idle = seconds_idle,
       seconds_wall = seconds_wall,

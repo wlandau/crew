@@ -59,6 +59,8 @@ crew_controller_local <- function(
   )
   launcher <- crew_launcher_local(
     name = name,
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,

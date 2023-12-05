@@ -7,8 +7,13 @@
 #'   [crew_launcher_local()].
 #' @inheritParams crew_client
 #' @param name Name of the launcher.
-#' @param seconds_interval Deprecated in version 0.5.0.9003 (2023-10-02)
-#'   no longer used.
+#' @param seconds_interval Number of seconds between
+#'   polling intervals waiting for certain internal
+#'   synchronous operations to complete,
+#'   such as checking `mirai::status()`
+#' @param seconds_timeout Number of seconds until timing
+#'   out while waiting for certain synchronous operations to complete,
+#'   such as checking `mirai::status()`.
 #' @param seconds_launch Seconds of startup time to allow.
 #'   A worker is unconditionally assumed to be alive
 #'   from the moment of its launch until `seconds_launch` seconds later.
@@ -78,7 +83,8 @@
 #' }
 crew_launcher <- function(
   name = NULL,
-  seconds_interval = NULL,
+  seconds_interval = 0.5,
+  seconds_timeout = 60,
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
@@ -102,15 +108,6 @@ crew_launcher <- function(
     value = seconds_exit,
     frequency = "once"
   )
-  crew_deprecate(
-    name = "seconds_interval",
-    date = "2023-10-02",
-    version = "0.5.0.9003",
-    alternative = "none (no longer necessary)",
-    condition = "message",
-    value = seconds_interval,
-    frequency = "once"
-  )
   name <- as.character(name %|||% crew_random_name())
   crew_assert(
     inherits(tls, "crew_class_tls"),
@@ -118,6 +115,8 @@ crew_launcher <- function(
   )
   crew_class_launcher$new(
     name = name,
+    seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
@@ -157,6 +156,8 @@ crew_class_launcher <- R6::R6Class(
   private = list(
     .workers = NULL,
     .name = NULL,
+    .seconds_interval = NULL,
+    .seconds_timeout = NULL,
     .seconds_launch = NULL,
     .seconds_idle = NULL,
     .seconds_wall = NULL,
@@ -179,6 +180,14 @@ crew_class_launcher <- R6::R6Class(
     #' @field name Name of the launcher.
     name = function() {
       .subset2(private, ".name")
+    },
+    #' @field seconds_interval See [crew_launcher()].
+    seconds_interval = function() {
+      .subset2(private, ".seconds_interval")
+    },
+    #' @field seconds_timeout See [crew_launcher()].
+    seconds_timeout = function() {
+      .subset2(private, ".seconds_timeout")
     },
     #' @field seconds_launch See [crew_launcher()].
     seconds_launch = function() {
@@ -240,6 +249,7 @@ crew_class_launcher <- R6::R6Class(
     #' @return An `R6` object with the launcher.
     #' @param name See [crew_launcher()].
     #' @param seconds_interval See [crew_launcher()].
+    #' @param seconds_timeout See [crew_launcher()].
     #' @param seconds_launch See [crew_launcher()].
     #' @param seconds_idle See [crew_launcher()].
     #' @param seconds_wall See [crew_launcher()].
@@ -268,6 +278,7 @@ crew_class_launcher <- R6::R6Class(
     initialize = function(
       name = NULL,
       seconds_interval = NULL,
+      seconds_timeout = NULL,
       seconds_launch = NULL,
       seconds_idle = NULL,
       seconds_wall = NULL,
@@ -283,6 +294,8 @@ crew_class_launcher <- R6::R6Class(
       processes = NULL
     ) {
       private$.name <- name
+      private$.seconds_interval <- seconds_interval
+      private$.seconds_timeout <- seconds_timeout
       private$.seconds_launch <- seconds_launch
       private$.seconds_idle <- seconds_idle
       private$.seconds_wall <- seconds_wall
@@ -336,13 +349,24 @@ crew_class_launcher <- R6::R6Class(
         "tasks_timers",
         "launch_max"
       )
+      # TODO: remove this when the next crew.cluster is on CRAN.
+      v070 <- utils::compareVersion(
+        as.character(utils::packageVersion("crew")),
+        "0.7.0"
+      ) > -1L
+      fields <- if_any(
+        v070,
+        c(fields, "seconds_interval", "seconds_timeout"),
+        fields
+      )
       for (field in fields) {
         crew_assert(
           self[[field]],
           is.numeric(.),
           . >= 0,
           length(.) == 1L,
-          !anyNA(.)
+          !anyNA(.),
+          message = paste(field, "must be a non-missing numeric of length 1")
         )
       }
       crew_assert(
@@ -359,7 +383,10 @@ crew_class_launcher <- R6::R6Class(
         "garbage_collection"
       )
       for (field in fields) {
-        crew_assert(self[[field]], isTRUE(.) || isFALSE(.))
+        crew_assert(
+          self[[field]], isTRUE(.) || isFALSE(.),
+          message = paste(field, "must be a non-missing logical of length 1")
+        )
       }
       if (!is.null(private$.workers)) {
         crew_assert(private$.workers, is.data.frame(.))
@@ -543,7 +570,11 @@ crew_class_launcher <- R6::R6Class(
     #' @param daemons `mirai` daemons matrix. For testing only. Users
     #'   should not set this.
     tally = function(daemons = NULL) {
-      daemons <- daemons %|||% daemons_info(name = private$.name)
+      daemons <- daemons %|||% daemons_info(
+        name = private$.name,
+        seconds_interval = private$.seconds_interval %|||% 0.5,
+        seconds_timeout = private$.seconds_timeout %|||% 60
+      )
       private$.workers$online <- as.logical(daemons[, "online"])
       private$.workers$discovered <- as.logical(daemons[, "instance"] > 0L)
       private$.workers$assigned <- as.integer(daemons[, "assigned"])

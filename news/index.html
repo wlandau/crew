@@ -60,7 +60,7 @@
 <li>Encapsulate non-function <code>R6</code> members in the <code>private</code> list and add active bindings where interfaces are necessary (<a href="https://github.com/wlandau/crew/issues/137" class="external-link">#137</a>). Ad hoc tests that absolutely need to modify private objects can use <code>object$.__enclos_env__$private</code> trick, but these tests should be skipped on CRAN in case there is a change to <code>R6</code> that breaks this.</li>
 <li>Drop <code>.signal</code> from <code><a href="https://shikokuchuo.net/mirai/reference/mirai.html" class="external-link">mirai::mirai()</a></code> since all <code>mirai</code> tasks signal as of <code>mirai</code> version 0.11.2.9025.</li>
 <li>Implement <code><a href="../reference/crew_throttle.html">crew_throttle()</a></code>, a decoupled mechanism for throttling that can be applied to scaling.</li>
-<li>Retry <code><a href="https://shikokuchuo.net/mirai/reference/status.html" class="external-link">mirai::status()</a></code> again in <code>daemons_info()</code> (<a href="https://github.com/wlandau/crew/issues/128" class="external-link">#128</a>).</li>
+<li>Retry <code><a href="https://shikokuchuo.net/mirai/reference/status.html" class="external-link">mirai::status()</a></code> again in <code>daemons_info()</code> and make it configurable using <code>seconds_interval</code> and <code>seconds_timeout</code> in both the client and the launcher (<a href="https://github.com/wlandau/crew/issues/128" class="external-link">#128</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.6.0" id="crew-060">crew 0.6.0<small>2023-10-12</small><a class="anchor" aria-label="anchor" href="#crew-060"></a></h2>

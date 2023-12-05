@@ -35,8 +35,8 @@ crew_clean <- function(
   dispatchers = TRUE,
   workers = TRUE,
   user = Sys.info()[["user"]],
-  seconds_interval = 0.1,
-  seconds_timeout = 10,
+  seconds_interval = 0.5,
+  seconds_timeout = 60,
   verbose = TRUE
 ) {
   crew_assert(dispatchers, isTRUE(.) || isFALSE(.))

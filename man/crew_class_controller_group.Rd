@@ -391,7 +391,7 @@ Apply a single command to multiple inputs.
   algorithm = NULL,
   packages = character(0),
   library = NULL,
-  seconds_interval = 0.25,
+  seconds_interval = 0.5,
   seconds_timeout = NULL,
   names = NULL,
   save_command = FALSE,

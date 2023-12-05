@@ -448,7 +448,7 @@ crew_class_controller_group <- R6::R6Class(
       algorithm = NULL,
       packages = character(0),
       library = NULL,
-      seconds_interval = 0.25,
+      seconds_interval = 0.5,
       seconds_timeout = NULL,
       names = NULL,
       save_command = FALSE,

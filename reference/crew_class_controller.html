@@ -68,6 +68,7 @@
 <code><a href="crew_class_controller_group.html">crew_class_controller_group</a></code>,
 <code><a href="crew_class_launcher.html">crew_class_launcher</a></code>,
 <code><a href="crew_class_relay.html">crew_class_relay</a></code>,
+<code><a href="crew_class_throttle.html">crew_class_throttle</a></code>,
 <code><a href="crew_class_tls.html">crew_class_tls</a></code></p></div>
     </div>
     <div id="active-bindings">
@@ -512,7 +513,13 @@ argument of <code><a href="https://shikokuchuo.net/mirai/reference/mirai.html" c
 
 <dt><code>scale</code></dt>
 <dd><p>Logical, whether to automatically call <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code>
-to auto-scale workers to meet the demand of the task load.</p></dd>
+to auto-scale workers to meet the demand of the task load.
+Frequent scaling calls can risk overwhelming the <code>mirai</code> dispatcher,
+and you can avoid this with throttling:
+define <code>throttle &lt;- crew_throttle(seconds_interval = 0.5)</code> and then
+set <code>scale = throttle$poll()</code> for each <code>push()</code>. That way,
+even if you call <code>push()</code> hundreds of times per second, scaling
+only happens every 0.5 seconds.</p></dd>
 
 
 <dt><code>throttle</code></dt>
@@ -751,7 +758,13 @@ whether to automatically call <code><a href="https://rdrr.io/r/base/scale.html" 
 to auto-scale workers to meet the demand of the task load.
 Scaling up on <code>pop()</code> may be important
 for transient or nearly transient workers that tend to drop off
-quickly after doing little work.</p></dd>
+quickly after doing little work.
+However, scaling calls can risk overwhelming the <code>mirai</code> dispatcher.
+You can avoid this with throttling:
+define <code>throttle &lt;- crew_throttle(seconds_interval = 0.5)</code> and then
+set <code>scale = throttle$poll()</code> for each <code>pop()</code>. That way,
+even if you call <code>pop()</code> hundreds of times per second, scaling
+only happens every 0.5 seconds.</p></dd>
 
 
 <dt><code>collect</code></dt>
@@ -836,7 +849,13 @@ in order to scale up workers as needed.</p></dd>
 
 <dt><code>scale</code></dt>
 <dd><p>Logical, whether to automatically call <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code>
-to auto-scale workers to meet the demand of the task load.</p></dd>
+to auto-scale workers to meet the demand of the task load.
+Frequent scaling calls can risk overwhelming the <code>mirai</code> dispatcher,
+and you can avoid this with throttling:
+define <code>throttle &lt;- crew_throttle(seconds_interval = 0.5)</code> and then
+set <code>scale = throttle$poll()</code> for each <code>push()</code>. That way,
+even if you call <code>push()</code> hundreds of times per second, scaling
+only happens every 0.5 seconds.</p></dd>
 
 
 <dt><code>throttle</code></dt>

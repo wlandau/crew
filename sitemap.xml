@@ -76,6 +76,9 @@
     <loc>/reference/crew_class_relay.html</loc>
   </url>
   <url>
+    <loc>/reference/crew_class_throttle.html</loc>
+  </url>
+  <url>
     <loc>/reference/crew_class_tls.html</loc>
   </url>
   <url>
@@ -116,6 +119,9 @@
   </url>
   <url>
     <loc>/reference/crew_retry.html</loc>
+  </url>
+  <url>
+    <loc>/reference/crew_throttle.html</loc>
   </url>
   <url>
     <loc>/reference/crew_tls.html</loc>

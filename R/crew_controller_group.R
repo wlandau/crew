@@ -118,14 +118,14 @@ crew_class_controller_group <- R6::R6Class(
       envir$result <- FALSE
       crew_retry(
         fun = ~{
+          if (scale) {
+            walk(controllers, ~.x$scale())
+          }
           for (controller in controllers) {
             if (controller$unpopped() > 0L) {
               envir$result <- TRUE
               return(TRUE)
             }
-          }
-          if (scale) {
-            walk(controllers, ~.x$scale())
           }
           private$.relay$wait(seconds_timeout = seconds_interval)
           FALSE

@@ -974,14 +974,14 @@ crew_class_controller <- R6::R6Class(
       envir$result <- FALSE
       crew_retry(
         fun = ~{
+          if (!envir$result) {
+            do_scale()
+          }
           envir$result <- if_any(
             mode_all,
             private$.wait_all_once(seconds_interval = seconds_interval),
             private$.wait_one_once(seconds_interval = seconds_interval)
           )
-          if (!envir$result) {
-            do_scale()
-          }
           envir$result
         },
         seconds_interval = 0,

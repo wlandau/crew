@@ -25,7 +25,8 @@ Other class:
 \code{\link{crew_class_controller_group}},
 \code{\link{crew_class_controller}},
 \code{\link{crew_class_launcher}},
-\code{\link{crew_class_relay}}
+\code{\link{crew_class_relay}},
+\code{\link{crew_class_throttle}}
 }
 \concept{class}
 \section{Active bindings}{

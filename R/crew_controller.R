@@ -376,6 +376,12 @@ crew_class_controller <- R6::R6Class(
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param scale Logical, whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
+    #'   Frequent scaling calls can risk overwhelming the `mirai` dispatcher,
+    #'   and you can avoid this with throttling:
+    #'   define `throttle <- crew_throttle(seconds_interval = 0.5)` and then
+    #'   set `scale = throttle$poll()` for each `push()`. That way,
+    #'   even if you call `push()` hundreds of times per second, scaling
+    #'   only happens every 0.5 seconds.
     #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
     #' @param name Optional name of the task.
     #' @param save_command Logical of length 1. If `TRUE`, the controller
@@ -836,6 +842,12 @@ crew_class_controller <- R6::R6Class(
     #'   Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
     #'   quickly after doing little work.
+    #'   However, scaling calls can risk overwhelming the `mirai` dispatcher.
+    #'   You can avoid this with throttling:
+    #'   define `throttle <- crew_throttle(seconds_interval = 0.5)` and then
+    #'   set `scale = throttle$poll()` for each `pop()`. That way,
+    #'   even if you call `pop()` hundreds of times per second, scaling
+    #'   only happens every 0.5 seconds.
     #' @param collect Deprecated in version 0.5.0.9003 (2023-10-02).
     #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
     #'   Not used.
@@ -941,6 +953,12 @@ crew_class_controller <- R6::R6Class(
     #' @param seconds_timeout Timeout length in seconds waiting for tasks.
     #' @param scale Logical, whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
+    #'   Frequent scaling calls can risk overwhelming the `mirai` dispatcher,
+    #'   and you can avoid this with throttling:
+    #'   define `throttle <- crew_throttle(seconds_interval = 0.5)` and then
+    #'   set `scale = throttle$poll()` for each `push()`. That way,
+    #'   even if you call `push()` hundreds of times per second, scaling
+    #'   only happens every 0.5 seconds.
     #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.

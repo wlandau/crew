@@ -16,6 +16,7 @@ reference:
   - '`crew_controller_local`'
   - '`crew_controller_group`'
   - '`crew-package`'
+  - '`crew_throttle`'
   - '`crew_tls`'
 - title: Launcher plugin development
   contents:
@@ -41,6 +42,7 @@ reference:
   - '`crew_class_launcher`'
   - '`crew_class_launcher_local`'
   - '`crew_class_relay`'
+  - '`crew_class_throttle`'
   - '`crew_class_tls`'
 - title: Utilities
   contents:

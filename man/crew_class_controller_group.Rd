@@ -49,6 +49,7 @@ Other class:
 \code{\link{crew_class_controller}},
 \code{\link{crew_class_launcher}},
 \code{\link{crew_class_relay}},
+\code{\link{crew_class_throttle}},
 \code{\link{crew_class_tls}}
 }
 \concept{class}
@@ -350,7 +351,8 @@ argument of \code{require()}.}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand.}
+demand. See the \code{scale} argument of the \code{push()} method of
+ordinary single controllers.}
 
 \item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
@@ -548,9 +550,8 @@ Pop a completed task from the results data frame.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
-demand. Scaling up on \code{pop()} may be important
-for transient or nearly transient workers that tend to drop off
-quickly after doing little work.}
+demand. See the \code{scale} argument of the \code{pop()} method of
+ordinary single controllers.}
 
 \item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
@@ -599,7 +600,9 @@ in order to scale up workers as needed.}
 results to become available.}
 
 \item{\code{scale}}{Logical of length 1, whether to call \code{scale_later()}
-on each selected controller to schedule auto-scaling.}
+on each selected controller to schedule auto-scaling.
+See the \code{scale} argument of the \code{wait()} method of
+ordinary single controllers.}
 
 \item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
 

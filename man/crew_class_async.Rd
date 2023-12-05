@@ -16,6 +16,7 @@ Other class:
 \code{\link{crew_class_controller}},
 \code{\link{crew_class_launcher}},
 \code{\link{crew_class_relay}},
+\code{\link{crew_class_throttle}},
 \code{\link{crew_class_tls}}
 }
 \concept{class}

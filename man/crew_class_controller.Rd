@@ -43,6 +43,7 @@ Other class:
 \code{\link{crew_class_controller_group}},
 \code{\link{crew_class_launcher}},
 \code{\link{crew_class_relay}},
+\code{\link{crew_class_throttle}},
 \code{\link{crew_class_tls}}
 }
 \concept{class}
@@ -449,7 +450,13 @@ argument of \code{require()}.}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
 \item{\code{scale}}{Logical, whether to automatically call \code{scale()}
-to auto-scale workers to meet the demand of the task load.}
+to auto-scale workers to meet the demand of the task load.
+Frequent scaling calls can risk overwhelming the \code{mirai} dispatcher,
+and you can avoid this with throttling:
+define \code{throttle <- crew_throttle(seconds_interval = 0.5)} and then
+set \code{scale = throttle$poll()} for each \code{push()}. That way,
+even if you call \code{push()} hundreds of times per second, scaling
+only happens every 0.5 seconds.}
 
 \item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
@@ -649,7 +656,13 @@ whether to automatically call \code{scale()}
 to auto-scale workers to meet the demand of the task load.
 Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off
-quickly after doing little work.}
+quickly after doing little work.
+However, scaling calls can risk overwhelming the \code{mirai} dispatcher.
+You can avoid this with throttling:
+define \code{throttle <- crew_throttle(seconds_interval = 0.5)} and then
+set \code{scale = throttle$poll()} for each \code{pop()}. That way,
+even if you call \code{pop()} hundreds of times per second, scaling
+only happens every 0.5 seconds.}
 
 \item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
 
@@ -724,7 +737,13 @@ in order to scale up workers as needed.}
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for tasks.}
 
 \item{\code{scale}}{Logical, whether to automatically call \code{scale()}
-to auto-scale workers to meet the demand of the task load.}
+to auto-scale workers to meet the demand of the task load.
+Frequent scaling calls can risk overwhelming the \code{mirai} dispatcher,
+and you can avoid this with throttling:
+define \code{throttle <- crew_throttle(seconds_interval = 0.5)} and then
+set \code{scale = throttle$poll()} for each \code{push()}. That way,
+even if you call \code{push()} hundreds of times per second, scaling
+only happens every 0.5 seconds.}
 
 \item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
 

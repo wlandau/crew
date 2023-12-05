@@ -100,6 +100,7 @@ serializable
 shikokuchuo
 shinyapps
 snapshotted
+stateful
 subclass
 subqueue
 taskq

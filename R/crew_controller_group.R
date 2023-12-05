@@ -306,7 +306,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand.
+    #'   demand. See the `scale` argument of the `push()` method of
+    #'   ordinary single controllers.
     #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
     #' @param name Optional name of the task. Replaced with a random name
     #'   if `NULL` or in conflict with an existing name in the task list.
@@ -498,9 +499,8 @@ crew_class_controller_group <- R6::R6Class(
     #'   return a one-row `tibble` with the same columns as `pop()`
     #'   for ordinary controllers.
     #' @param scale Logical, whether to automatically scale workers to meet
-    #'   demand. Scaling up on `pop()` may be important
-    #'   for transient or nearly transient workers that tend to drop off
-    #'   quickly after doing little work.
+    #'   demand. See the `scale` argument of the `pop()` method of
+    #'   ordinary single controllers.
     #' @param collect Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
     #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
     #' @param controllers Character vector of controller names.
@@ -538,6 +538,8 @@ crew_class_controller_group <- R6::R6Class(
     #'   results to become available.
     #' @param scale Logical of length 1, whether to call `scale_later()`
     #'   on each selected controller to schedule auto-scaling.
+    #'   See the `scale` argument of the `wait()` method of
+    #'   ordinary single controllers.
     #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.

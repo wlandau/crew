@@ -71,6 +71,7 @@ Other user:
 \code{\link{crew-package}},
 \code{\link{crew_clean}()},
 \code{\link{crew_controller_group}()},
-\code{\link{crew_controller_local}()}
+\code{\link{crew_controller_local}()},
+\code{\link{crew_throttle}()}
 }
 \concept{user}

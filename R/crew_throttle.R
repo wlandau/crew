@@ -74,9 +74,7 @@ crew_class_throttle <- R6::R6Class(
     },
     #' @description Validate the object.
     #' @return `NULL` (invisibly).
-    #' @param test Logical of length 1, whether to test the throttle configuration
-    #'   with `nanonext::throttle_config()`.
-    validate = function(test = TRUE) {
+    validate = function() {
       crew_assert(
         private$.seconds_interval,
         is.numeric(.),

@@ -90,17 +90,9 @@ throttle$poll()
 \subsection{Method \code{validate()}}{
 Validate the object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$validate(test = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$validate()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{test}}{Logical of length 1, whether to test the throttle configuration
-with \code{nanonext::throttle_config()}.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

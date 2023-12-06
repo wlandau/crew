@@ -109,7 +109,8 @@ crew_class_controller_group <- R6::R6Class(
       controllers,
       seconds_interval,
       seconds_timeout,
-      scale
+      scale,
+      throttle
     ) {
       if (sum(map_int(controllers, ~length(.x$tasks))) < 1L) {
         return(FALSE)
@@ -119,7 +120,7 @@ crew_class_controller_group <- R6::R6Class(
       crew_retry(
         fun = ~{
           if (scale) {
-            walk(controllers, ~.x$scale())
+            walk(controllers, ~.x$scale(throttle = throttle))
           }
           for (controller in controllers) {
             if (controller$unpopped() > 0L) {
@@ -140,14 +141,16 @@ crew_class_controller_group <- R6::R6Class(
       controllers,
       seconds_interval,
       seconds_timeout,
-      scale
+      scale,
+      throttle
     ) {
       for (controller in controllers) {
         out <- controller$wait(
           mode = "all",
           seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,
-          scale = scale
+          scale = scale,
+          throttle = throttle
         )
         if (!out) {
           return(FALSE)
@@ -259,12 +262,15 @@ crew_class_controller_group <- R6::R6Class(
     #'   in one or more controller objects.
     #' @details See the `scale()` method in individual controller classes.
     #' @return `NULL` (invisibly).
-    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
-    scale = function(throttle = NULL, controllers = NULL) {
+    scale = function(throttle = TRUE, controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      walk(control, ~.x$scale())
+      walk(control, ~.x$scale(throttle = throttle))
     },
     #' @description Push a task to the head of the task list.
     #' @return `NULL` (invisibly).
@@ -308,7 +314,10 @@ crew_class_controller_group <- R6::R6Class(
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See the `scale` argument of the `push()` method of
     #'   ordinary single controllers.
-    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
     #' @param name Optional name of the task. Replaced with a random name
     #'   if `NULL` or in conflict with an existing name in the task list.
     #' @param save_command Logical of length 1. If `TRUE`, the controller
@@ -330,7 +339,7 @@ crew_class_controller_group <- R6::R6Class(
       library = NULL,
       seconds_timeout = NULL,
       scale = TRUE,
-      throttle = NULL,
+      throttle = TRUE,
       name = NULL,
       save_command = FALSE,
       controller = NULL
@@ -353,6 +362,7 @@ crew_class_controller_group <- R6::R6Class(
         library = library,
         seconds_timeout = seconds_timeout,
         scale = scale,
+        throttle = throttle,
         name = name,
         save_command = save_command
       )
@@ -434,6 +444,12 @@ crew_class_controller_group <- R6::R6Class(
     #'     all the error messages and tracebacks to be generated.
     #'   * `"silent"`: do nothing special.
     #' @param verbose Logical of length 1, whether to print progress messages.
+    #' @param scale Logical, whether to automatically scale workers to meet
+    #'   demand. See also the `throttle` argument.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controller Character of length 1,
     #'   name of the controller to submit the task.
     #'   If `NULL`, the controller defaults to the
@@ -454,6 +470,8 @@ crew_class_controller_group <- R6::R6Class(
       save_command = FALSE,
       error = "stop",
       verbose = interactive(),
+      scale = TRUE,
+      throttle = TRUE,
       controller = NULL
     ) {
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
@@ -475,7 +493,10 @@ crew_class_controller_group <- R6::R6Class(
         seconds_timeout = seconds_timeout,
         names = names,
         save_command = save_command,
-        error = error
+        error = error,
+        verbose = verbose,
+        scale = scale,
+        throttle = throttle
       )
     },
     #' @description Deprecated in version 0.5.0.9003 (2023-10-02).
@@ -502,18 +523,21 @@ crew_class_controller_group <- R6::R6Class(
     #'   demand. See the `scale` argument of the `pop()` method of
     #'   ordinary single controllers.
     #' @param collect Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
-    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     pop = function(
       scale = TRUE,
       collect = NULL,
-      throttle = NULL,
+      throttle = TRUE,
       controllers = NULL
     ) {
       control <- private$.select_controllers(controllers)
       for (controller in control) {
-        out <- controller$pop(scale = scale)
+        out <- controller$pop(scale = scale, throttle = throttle)
         if (!is.null(out)) {
           return(out)
         }
@@ -540,7 +564,10 @@ crew_class_controller_group <- R6::R6Class(
     #'   on each selected controller to schedule auto-scaling.
     #'   See the `scale` argument of the `wait()` method of
     #'   ordinary single controllers.
-    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     wait = function(
@@ -548,7 +575,7 @@ crew_class_controller_group <- R6::R6Class(
       seconds_interval = 0.5,
       seconds_timeout = Inf,
       scale = TRUE,
-      throttle = NULL,
+      throttle = TRUE,
       controllers = NULL
     ) {
       mode <- as.character(mode)
@@ -560,13 +587,15 @@ crew_class_controller_group <- R6::R6Class(
           controllers = control,
           seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,
-          scale = scale
+          scale = scale,
+          throttle = throttle
         ),
         private$.wait_all(
           controllers = control,
           seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,
-          scale = scale
+          scale = scale,
+          throttle = throttle
         )
       )
       invisible(out)

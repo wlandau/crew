@@ -170,7 +170,8 @@ crew_class_launcher <- R6::R6Class(
     .launch_max = NULL,
     .tls = NULL,
     .processes = NULL,
-    .async = NULL
+    .async = NULL,
+    .throttle = NULL
   ),
   active = list(
     #' @field workers Data frame of worker information.
@@ -242,6 +243,10 @@ crew_class_launcher <- R6::R6Class(
     #'   asynchronously.
     async = function() {
       .subset2(private, ".async")
+    },
+    #' @field throttle A [crew_throttle()] object to throttle scaling.
+    throttle = function() {
+      .subset2(private, ".throttle")
     }
   ),
   public = list(
@@ -410,8 +415,23 @@ crew_class_launcher <- R6::R6Class(
       }
       crew_assert(
         inherits(private$.tls, "crew_class_tls"),
-        message = "field tls must be an object created by crew_tls()"
+        message = "field 'tls' must be an object created by crew_tls()"
       )
+      private$.tls$validate()
+      if (!is.null(private$.async)) {
+        crew_assert(
+          inherits(private$.async, "crew_class_async"),
+          message = "field 'async' must be an object created by crew_async()"
+        )
+        private$.async$validate()
+      }
+      if (!is.null(private$.throttle)) {
+        crew_assert(
+          inherits(private$.throttle, "crew_class_throttle"),
+          message = "field 'throttle' must be an object from crew_throttle()"
+        )
+        private$.throttle$validate()
+      }
       invisible()
     },
     #' @description Set the name of the launcher.
@@ -490,6 +510,9 @@ crew_class_launcher <- R6::R6Class(
       }
       private$.async <- crew_async(workers = private$.processes)
       private$.async$start()
+      private$.throttle <- crew_throttle(
+        seconds_interval = self$seconds_interval
+      )
       sockets <- sockets %|||% mirai::nextget("urls", .compute = private$.name)
       n <- length(sockets)
       private$.workers <- tibble::tibble(
@@ -524,6 +547,9 @@ crew_class_launcher <- R6::R6Class(
           FUN = self$forward,
           condition = "error"
         )
+      }
+      if (!is.null(private$.throttle)) {
+        private$.throttle$reset()
       }
       invisible()
     },
@@ -767,35 +793,17 @@ crew_class_launcher <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Deprecated in version 0.5.0.9000 (2023-10-02). Not used.
-    #' @return `NULL`
-    throttle = function() {
-      crew_deprecate(
-        name = "throttle()",
-        date = "2023-10-02",
-        version = "0.5.0.9003",
-        alternative = "none (no longer necessary)",
-        condition = "message",
-        value = "throttle",
-        skip_cran = TRUE,
-        frequency = "once"
-      )
-    },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return `NULL` (invisibly)
     #' @param demand Number of unresolved tasks.
-    #' @param throttle Deprecated in version 0.5.0.9000 (2023-10-02).
-    scale = function(demand, throttle = NULL) {
-      crew_deprecate(
-        name = "throttle",
-        date = "2023-10-02",
-        version = "0.5.0.9003",
-        alternative = "none (no longer necessary)",
-        condition = "message",
-        value = throttle,
-        skip_cran = TRUE,
-        frequency = "once"
-      )
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
+    scale = function(demand, throttle = TRUE) {
+      if (throttle && !private$.throttle$poll()) {
+        return(invisible())
+      }
       self$tally()
       self$rotate()
       unlaunched <- self$unlaunched(n = Inf)

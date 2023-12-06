@@ -346,14 +346,16 @@ compatible with the analogous method of controller groups.}
 \subsection{Method \code{scale()}}{
 Auto-scale workers out to meet the demand of tasks.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale(throttle = NULL, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$scale(throttle = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).
-Not used.}
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -389,7 +391,7 @@ Push a task to the head of the task list.
   library = NULL,
   seconds_timeout = NULL,
   scale = TRUE,
-  throttle = NULL,
+  throttle = TRUE,
   name = NA_character_,
   save_command = FALSE,
   controller = NULL
@@ -450,15 +452,13 @@ argument of \code{require()}.}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
 \item{\code{scale}}{Logical, whether to automatically call \code{scale()}
-to auto-scale workers to meet the demand of the task load.
-Frequent scaling calls can risk overwhelming the \code{mirai} dispatcher,
-and you can avoid this with throttling:
-define \code{throttle <- crew_throttle(seconds_interval = 0.5)} and then
-set \code{scale = throttle$poll()} for each \code{push()}. That way,
-even if you call \code{push()} hundreds of times per second, scaling
-only happens every 0.5 seconds.}
+to auto-scale workers to meet the demand of the task load. Also
+see the \code{throttle} argument.}
 
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
 
 \item{\code{name}}{Optional name of the task.}
 
@@ -498,6 +498,8 @@ Apply a single command to multiple inputs.
   save_command = FALSE,
   error = "stop",
   verbose = interactive(),
+  scale = TRUE,
+  throttle = TRUE,
   controller = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -594,6 +596,14 @@ all the error messages and tracebacks to be generated.
 
 \item{\code{verbose}}{Logical of length 1, whether to print progress messages.}
 
+\item{\code{scale}}{Logical, whether to automatically scale workers to meet
+demand. See also the \code{throttle} argument.}
+
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
+
 \item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
 }
@@ -643,7 +653,7 @@ Pop a completed task from the results data frame.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop(
   scale = TRUE,
   collect = NULL,
-  throttle = NULL,
+  throttle = TRUE,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -657,17 +667,14 @@ to auto-scale workers to meet the demand of the task load.
 Scaling up on \code{pop()} may be important
 for transient or nearly transient workers that tend to drop off
 quickly after doing little work.
-However, scaling calls can risk overwhelming the \code{mirai} dispatcher.
-You can avoid this with throttling:
-define \code{throttle <- crew_throttle(seconds_interval = 0.5)} and then
-set \code{scale = throttle$poll()} for each \code{pop()}. That way,
-even if you call \code{pop()} hundreds of times per second, scaling
-only happens every 0.5 seconds.}
+See also the \code{throttle} argument.}
 
 \item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
 
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).
-Not used.}
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -720,7 +727,7 @@ Wait for tasks.
   seconds_interval = 0.5,
   seconds_timeout = Inf,
   scale = TRUE,
-  throttle = NULL,
+  throttle = TRUE,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -738,14 +745,12 @@ in order to scale up workers as needed.}
 
 \item{\code{scale}}{Logical, whether to automatically call \code{scale()}
 to auto-scale workers to meet the demand of the task load.
-Frequent scaling calls can risk overwhelming the \code{mirai} dispatcher,
-and you can avoid this with throttling:
-define \code{throttle <- crew_throttle(seconds_interval = 0.5)} and then
-set \code{scale = throttle$poll()} for each \code{push()}. That way,
-even if you call \code{push()} hundreds of times per second, scaling
-only happens every 0.5 seconds.}
+See also the \code{throttle} argument.}
 
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

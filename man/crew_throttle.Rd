@@ -19,17 +19,10 @@ Create an \code{R6} object for throttling.
 }
 \details{
 Throttling is a technique that limits how often a function is
-called in a given period of time. You can use it to help \code{crew}
-be kinder to the \code{mirai} dispatcher. For example,
-if you plan to push a lot of tasks and want to avoid the burden
-of so many scaling operations, set
-\code{throttle <- crew_throttle(seconds_interval = 0.5)} and then call
-\verb{controller$push(..., scale = throttle$poll()} (where \code{...} is
-shorthand for the other arguments you supply to \code{push()}).
-\code{poll()} returns \code{TRUE} if and only if it did not return \code{TRUE}
-in the last \code{seconds_interval} seconds,
-so the overall effect is to scale every
-0.5 seconds even if \code{push()} is called more frequently than that.
+called in a given period of time. \code{\link[=crew_throttle]{crew_throttle()}} objects support
+the \code{throttle} argument of controller methods, which ensures auto-scaling
+only happen every \code{seconds_interval} seconds. This helps avoid
+overburdening the \code{mirai} dispatcher and other resources.
 }
 \examples{
 throttle <- crew_throttle(seconds_interval = 0.5)

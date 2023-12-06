@@ -7,7 +7,14 @@ crew_test("active bindings for covr", {
   out <- crew_launcher(processes = 1L)
   expect_equal(out$processes, 1L)
   expect_null(out$async)
+  expect_null(out$throttle)
   expect_true(inherits(out$tls, "crew_class_tls"))
+  out$start(sockets = "url")
+  expect_s3_class(out$async, "crew_class_async")
+  expect_s3_class(out$throttle, "crew_class_throttle")
+  expect_silent(out$async$validate())
+  expect_silent(out$throttle$validate())
+  expect_silent(out$validate())
 })
 
 crew_test("preemptive async termination for covr", {
@@ -19,7 +26,7 @@ crew_test("preemptive async termination for covr", {
 })
 
 crew_test("default launch_launcher() method", {
-  launcher <- crew_class_launcher$new()
+  launcher <- crew_class_launcher$new(seconds_interval = 0.5)
   out <- launcher$launch_worker(
     call = "a",
     name = "b",
@@ -31,13 +38,14 @@ crew_test("default launch_launcher() method", {
 })
 
 crew_test("default terminate_launcher() method", {
-  launcher <- crew_class_launcher$new()
+  launcher <- crew_class_launcher$new(seconds_interval = 0.5)
   expect_equal(launcher$terminate_worker(handle = crew_null)$abstract, TRUE)
 })
 
 crew_test("launcher settings", {
   launcher <- crew_class_launcher$new(
     name = "my_launcher_name",
+    seconds_interval = 0.5,
     seconds_launch = 1,
     seconds_idle = 2,
     seconds_wall = 3,
@@ -64,6 +72,7 @@ crew_test("launcher settings", {
 crew_test("launcher alternative cleanup", {
   launcher <- crew_class_launcher$new(
     name = "my_launcher_name",
+    seconds_interval = 0.5,
     seconds_launch = 1,
     seconds_idle = 2,
     seconds_wall = 3,
@@ -82,6 +91,7 @@ crew_test("launcher alternative cleanup", {
 crew_test("launcher alternative cleanup 2", {
   launcher <- crew_class_launcher$new(
     name = "my_launcher_name",
+    seconds_interval = 0.5,
     seconds_launch = 1,
     seconds_idle = 2,
     seconds_wall = 3,
@@ -100,6 +110,7 @@ crew_test("launcher alternative cleanup 2", {
 crew_test("launcher alternative cleanup 3", {
   launcher <- crew_class_launcher$new(
     name = "my_launcher_name",
+    seconds_interval = 0.5,
     seconds_launch = 1,
     seconds_idle = 2,
     seconds_wall = 3,
@@ -120,6 +131,7 @@ crew_test("launcher call", {
   skip_on_os("windows")
   launcher <- crew_class_launcher$new(
     name = "my_launcher_name",
+    seconds_interval = 0.5,
     seconds_launch = 1,
     seconds_idle = 0.001,
     seconds_wall = 3,
@@ -149,7 +161,7 @@ crew_test("launcher call", {
 crew_test("launcher start()", {
   skip_on_cran()
   skip_on_os("windows")
-  launcher <- crew_class_launcher$new()
+  launcher <- crew_class_launcher$new(seconds_interval = 1)
   workers <- launcher$workers
   expect_equal(workers, NULL)
   launcher$start(sockets = c("a", "b"))
@@ -190,7 +202,10 @@ crew_test("launcher done()", {
     instance = c(0L, 1L),
     online = c(0L, 1L)
   )
-  launcher <- crew_class_launcher$new(seconds_launch = 9999)
+  launcher <- crew_class_launcher$new(
+    seconds_launch = 9999,
+    seconds_interval = 0.5
+  )
   launcher$start(sockets = rep("x", nrow(grid)))
   private <- crew_private(launcher)
   private$.workers$start <- grid$start
@@ -220,7 +235,10 @@ crew_test("launcher done()", {
 crew_test("launcher tally()", {
   skip_on_cran()
   grid <- expand.grid(complete = c(3L, 7L), launched = c(TRUE, FALSE))
-  launcher <- crew_class_launcher$new(seconds_launch = 9999)
+  launcher <- crew_class_launcher$new(
+    seconds_launch = 9999,
+    seconds_interval = 0.5
+  )
   launcher$start(sockets = rep("x", nrow(grid)))
   private <- crew_private(launcher)
   private$.workers$launched <- grid$launched
@@ -243,7 +261,10 @@ crew_test("launcher tally()", {
 
 crew_test("launcher unlaunched()", {
   skip_on_cran()
-  launcher <- crew_class_launcher$new(seconds_launch = 9999)
+  launcher <- crew_class_launcher$new(
+    seconds_launch = 9999,
+    seconds_interval = 0.5
+  )
   launcher$start(sockets = rep("x", 5L))
   private <- crew_private(launcher)
   private$.workers$launched <- c(TRUE, FALSE, FALSE, FALSE, TRUE)
@@ -334,13 +355,5 @@ crew_test("launcher errors", {
 
 crew_test("deprecate seconds_exit", {
   suppressWarnings(crew_launcher(seconds_exit = 1))
-  expect_true(TRUE)
-})
-
-crew_test("deprecate throttle()", {
-  skip_on_cran()
-  skip_on_os("windows")
-  x <- crew_launcher()
-  suppressWarnings(x$throttle())
   expect_true(TRUE)
 })

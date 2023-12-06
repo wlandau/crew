@@ -256,13 +256,16 @@ Set to \code{NULL} to select all controllers.}
 Automatically scale up the number of workers if needed
 in one or more controller objects.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale(throttle = NULL, controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale(throttle = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
@@ -294,7 +297,7 @@ Push a task to the head of the task list.
   library = NULL,
   seconds_timeout = NULL,
   scale = TRUE,
-  throttle = NULL,
+  throttle = TRUE,
   name = NULL,
   save_command = FALSE,
   controller = NULL
@@ -354,7 +357,10 @@ argument of \code{mirai::mirai()} (after converting to milliseconds).}
 demand. See the \code{scale} argument of the \code{push()} method of
 ordinary single controllers.}
 
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
 
 \item{\code{name}}{Optional name of the task. Replaced with a random name
 if \code{NULL} or in conflict with an existing name in the task list.}
@@ -397,6 +403,8 @@ Apply a single command to multiple inputs.
   save_command = FALSE,
   error = "stop",
   verbose = interactive(),
+  scale = TRUE,
+  throttle = TRUE,
   controller = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -493,6 +501,14 @@ all the error messages and tracebacks to be generated.
 
 \item{\code{verbose}}{Logical of length 1, whether to print progress messages.}
 
+\item{\code{scale}}{Logical, whether to automatically scale workers to meet
+demand. See also the \code{throttle} argument.}
+
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
+
 \item{\code{controller}}{Character of length 1,
 name of the controller to submit the task.
 If \code{NULL}, the controller defaults to the
@@ -541,7 +557,7 @@ Pop a completed task from the results data frame.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop(
   scale = TRUE,
   collect = NULL,
-  throttle = NULL,
+  throttle = TRUE,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -555,7 +571,10 @@ ordinary single controllers.}
 
 \item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
@@ -579,7 +598,7 @@ Wait for tasks.
   seconds_interval = 0.5,
   seconds_timeout = Inf,
   scale = TRUE,
-  throttle = NULL,
+  throttle = TRUE,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -604,7 +623,10 @@ on each selected controller to schedule auto-scaling.
 See the \code{scale} argument of the \code{wait()} method of
 ordinary single controllers.}
 
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}

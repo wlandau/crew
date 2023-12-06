@@ -97,6 +97,8 @@ asynchronously.}
 
 \item{\code{async}}{A \code{\link[=crew_async]{crew_async()}} object to run low-level launcher tasks
 asynchronously.}
+
+\item{\code{throttle}}{A \code{\link[=crew_throttle]{crew_throttle()}} object to throttle scaling.}
 }
 \if{html}{\out{</div>}}
 }
@@ -121,7 +123,6 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-forward}{\code{crew_class_launcher$forward()}}
 \item \href{#method-crew_class_launcher-errors}{\code{crew_class_launcher$errors()}}
 \item \href{#method-crew_class_launcher-wait}{\code{crew_class_launcher$wait()}}
-\item \href{#method-crew_class_launcher-throttle}{\code{crew_class_launcher$throttle()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
@@ -597,25 +598,12 @@ Only relevant if \code{processes} is a positive integer.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-throttle"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-throttle}{}}}
-\subsection{Method \code{throttle()}}{
-Deprecated in version 0.5.0.9000 (2023-10-02). Not used.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$throttle()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{NULL}
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-scale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-scale}{}}}
 \subsection{Method \code{scale()}}{
 Auto-scale workers out to meet the demand of tasks.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$scale(demand, throttle = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$scale(demand, throttle = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -623,7 +611,10 @@ Auto-scale workers out to meet the demand of tasks.
 \describe{
 \item{\code{demand}}{Number of unresolved tasks.}
 
-\item{\code{throttle}}{Deprecated in version 0.5.0.9000 (2023-10-02).}
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
 }
 \if{html}{\out{</div>}}
 }

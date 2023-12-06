@@ -3,17 +3,10 @@
 #' @family user
 #' @description Create an `R6` object for throttling.
 #' @details Throttling is a technique that limits how often a function is
-#'   called in a given period of time. You can use it to help `crew`
-#'   be kinder to the `mirai` dispatcher. For example,
-#'   if you plan to push a lot of tasks and want to avoid the burden
-#'   of so many scaling operations, set
-#'   `throttle <- crew_throttle(seconds_interval = 0.5)` and then call
-#'   `controller$push(..., scale = throttle$poll()` (where `...` is
-#'   shorthand for the other arguments you supply to `push()`).
-#'   `poll()` returns `TRUE` if and only if it did not return `TRUE`
-#'   in the last `seconds_interval` seconds,
-#'   so the overall effect is to scale every
-#'   0.5 seconds even if `push()` is called more frequently than that.
+#'   called in a given period of time. [crew_throttle()] objects support
+#'   the `throttle` argument of controller methods, which ensures auto-scaling
+#'   only happen every `seconds_interval` seconds. This helps avoid
+#'   overburdening the `mirai` dispatcher and other resources.
 #' @return An `R6` object with throttle configuration settings and methods.
 #' @param seconds_interval Positive numeric of length 1, throttling interval.
 #'   The `poll()` method returns `TRUE` if and only if it was not called

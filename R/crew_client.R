@@ -37,7 +37,7 @@ crew_client <- function(
   tls_enable = NULL,
   tls_config = NULL,
   seconds_interval = 0.5,
-  seconds_timeout = 60
+  seconds_timeout = 5
 ) {
   crew_deprecate(
     name = "tls_enable",

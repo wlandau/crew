@@ -313,22 +313,14 @@ crew_class_controller <- R6::R6Class(
     #'   call `launch()` on the controller with the exact desired
     #'   number of workers.
     #' @return `NULL` (invisibly).
-    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
-    #'   Not used.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    scale = function(throttle = NULL, controllers = NULL) {
-      crew_deprecate(
-        name = "throttle",
-        date = "2023-10-02",
-        version = "0.5.0.9003",
-        alternative = "none (no longer necessary)",
-        condition = "message",
-        value = throttle,
-        skip_cran = TRUE,
-        frequency = "once"
-      )
-      private$.launcher$scale(demand = self$unresolved())
+    scale = function(throttle = TRUE, controllers = NULL) {
+      private$.launcher$scale(demand = self$unresolved(), throttle = throttle)
       invisible()
     },
     #' @description Push a task to the head of the task list.
@@ -375,14 +367,12 @@ crew_class_controller <- R6::R6Class(
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param scale Logical, whether to automatically call `scale()`
-    #'   to auto-scale workers to meet the demand of the task load.
-    #'   Frequent scaling calls can risk overwhelming the `mirai` dispatcher,
-    #'   and you can avoid this with throttling:
-    #'   define `throttle <- crew_throttle(seconds_interval = 0.5)` and then
-    #'   set `scale = throttle$poll()` for each `push()`. That way,
-    #'   even if you call `push()` hundreds of times per second, scaling
-    #'   only happens every 0.5 seconds.
-    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
+    #'   to auto-scale workers to meet the demand of the task load. Also
+    #'   see the `throttle` argument.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
     #' @param name Optional name of the task.
     #' @param save_command Logical of length 1. If `TRUE`, the controller
     #'   deparses the command and returns it with the output on `pop()`.
@@ -401,21 +391,11 @@ crew_class_controller <- R6::R6Class(
       library = NULL,
       seconds_timeout = NULL,
       scale = TRUE,
-      throttle = NULL,
+      throttle = TRUE,
       name = NA_character_,
       save_command = FALSE,
       controller = NULL
     ) {
-      crew_deprecate(
-        name = "throttle",
-        date = "2023-10-02",
-        version = "0.5.0.9003",
-        alternative = "none (no longer necessary)",
-        condition = "message",
-        value = throttle,
-        skip_cran = TRUE,
-        frequency = "once"
-      )
       .subset2(self, "start")()
       if (substitute) {
         command <- substitute(command)
@@ -449,7 +429,7 @@ crew_class_controller <- R6::R6Class(
         private$.pushed <- .subset2(self, "pushed") + 1L
       })
       if (scale) {
-        .subset2(self, "scale")()
+        .subset2(self, "scale")(throttle = throttle)
       }
       invisible()
     },
@@ -533,6 +513,12 @@ crew_class_controller <- R6::R6Class(
     #'     all the error messages and tracebacks to be generated.
     #'   * `"silent"`: do nothing special.
     #' @param verbose Logical of length 1, whether to print progress messages.
+    #' @param scale Logical, whether to automatically scale workers to meet
+    #'   demand. See also the `throttle` argument.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     map = function(
@@ -551,6 +537,8 @@ crew_class_controller <- R6::R6Class(
       save_command = FALSE,
       error = "stop",
       verbose = interactive(),
+      scale = TRUE,
+      throttle = TRUE,
       controller = NULL
     ) {
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
@@ -648,6 +636,8 @@ crew_class_controller <- R6::R6Class(
         length(private$.tasks) < 1L,
         message = "cannot map() until all prior tasks are completed and popped"
       )
+      crew_assert(scale, isTRUE(.) || isFALSE(.))
+      crew_assert(throttle, isTRUE(.) || isFALSE(.))
       string <- if_any(save_command, deparse_safe(command), NA_character_)
       .timeout <- if_any(
         is.null(seconds_timeout),
@@ -714,7 +704,9 @@ crew_class_controller <- R6::R6Class(
       }
       crew_retry(
         fun = ~{
-          .subset2(self, "scale")()
+          if (scale) {
+            .subset2(self, "scale")(throttle = throttle)
+          }
           unresolved <- .subset2(self, "unresolved")()
           if (verbose) {
             cli::cli_progress_update(
@@ -842,21 +834,18 @@ crew_class_controller <- R6::R6Class(
     #'   Scaling up on `pop()` may be important
     #'   for transient or nearly transient workers that tend to drop off
     #'   quickly after doing little work.
-    #'   However, scaling calls can risk overwhelming the `mirai` dispatcher.
-    #'   You can avoid this with throttling:
-    #'   define `throttle <- crew_throttle(seconds_interval = 0.5)` and then
-    #'   set `scale = throttle$poll()` for each `pop()`. That way,
-    #'   even if you call `pop()` hundreds of times per second, scaling
-    #'   only happens every 0.5 seconds.
+    #'   See also the `throttle` argument.
     #' @param collect Deprecated in version 0.5.0.9003 (2023-10-02).
-    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
-    #'   Not used.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop = function(
       scale = TRUE,
       collect = NULL,
-      throttle = NULL,
+      throttle = TRUE,
       controllers = NULL
     ) {
       crew_deprecate(
@@ -869,18 +858,8 @@ crew_class_controller <- R6::R6Class(
         skip_cran = TRUE,
         frequency = "once"
       )
-      crew_deprecate(
-        name = "throttle",
-        date = "2023-10-02",
-        version = "0.5.0.9003",
-        alternative = "none (no longer necessary)",
-        condition = "message",
-        value = throttle,
-        skip_cran = TRUE,
-        frequency = "once"
-      )
       if (scale) {
-        .subset2(self, "scale")()
+        .subset2(self, "scale")(throttle = throttle)
       }
       tasks <- .subset2(self, "tasks")
       n_tasks <- length(tasks)
@@ -953,13 +932,11 @@ crew_class_controller <- R6::R6Class(
     #' @param seconds_timeout Timeout length in seconds waiting for tasks.
     #' @param scale Logical, whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
-    #'   Frequent scaling calls can risk overwhelming the `mirai` dispatcher,
-    #'   and you can avoid this with throttling:
-    #'   define `throttle <- crew_throttle(seconds_interval = 0.5)` and then
-    #'   set `scale = throttle$poll()` for each `push()`. That way,
-    #'   even if you call `push()` hundreds of times per second, scaling
-    #'   only happens every 0.5 seconds.
-    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
+    #'   See also the `throttle` argument.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     wait = function(
@@ -967,21 +944,10 @@ crew_class_controller <- R6::R6Class(
       seconds_interval = 0.5,
       seconds_timeout = Inf,
       scale = TRUE,
-      throttle = NULL,
+      throttle = TRUE,
       controllers = NULL
     ) {
-      crew_deprecate(
-        name = "throttle",
-        date = "2023-10-02",
-        version = "0.5.0.9003",
-        alternative = "none (no longer necessary)",
-        condition = "message",
-        value = throttle,
-        skip_cran = TRUE,
-        frequency = "once"
-      )
       crew_assert(mode, identical(., "all") || identical(., "one"))
-      do_scale <- if_any(scale, self$scale, invisible)
       mode_all <- identical(mode, "all")
       if (length(private$.tasks) < 1L) {
         return(mode_all)
@@ -990,8 +956,8 @@ crew_class_controller <- R6::R6Class(
       envir$result <- FALSE
       crew_retry(
         fun = ~{
-          if (!envir$result) {
-            do_scale()
+          if (!envir$result && scale) {
+            self$scale(throttle = throttle)
           }
           envir$result <- if_any(
             mode_all,

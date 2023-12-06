@@ -8,6 +8,7 @@
 * Encapsulate non-function `R6` members in the `private` list and add active bindings where interfaces are necessary (#137). Ad hoc tests that absolutely need to modify private objects can use `object$.__enclos_env__$private` trick, but these tests should be skipped on CRAN in case there is a change to `R6` that breaks this.
 * Drop `.signal` from `mirai::mirai()` since all `mirai` tasks signal as of `mirai` version 0.11.2.9025.
 * Implement `crew_throttle()`, a decoupled mechanism for throttling that can be applied to scaling.
+* Bring back the `throttle` argument, powered by `crew_throttle()`.
 * Retry `mirai::status()` again in `daemons_info()` and make it configurable using `seconds_interval` and `seconds_timeout` in both the client and the launcher (#128).
 
 # crew 0.6.0

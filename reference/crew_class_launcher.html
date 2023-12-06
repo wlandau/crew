@@ -141,6 +141,10 @@ asynchronously.</p></dd>
 asynchronously.</p></dd>
 
 
+<dt><code>throttle</code></dt>
+<dd><p>A <code><a href="crew_throttle.html">crew_throttle()</a></code> object to throttle scaling.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div id="methods">
@@ -167,7 +171,6 @@ asynchronously.</p></dd>
 <li><p><a href="#method-crew_class_launcher-forward"><code>crew_class_launcher$forward()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-errors"><code>crew_class_launcher$errors()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-wait"><code>crew_class_launcher$wait()</code></a></p></li>
-<li><p><a href="#method-crew_class_launcher-throttle"><code>crew_class_launcher$throttle()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-scale"><code>crew_class_launcher$scale()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-launch_worker"><code>crew_class_launcher$launch_worker()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-terminate_worker"><code>crew_class_launcher$terminate_worker()</code></a></p></li>
@@ -668,23 +671,11 @@ tasks to complete.</p><div class="section">
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_launcher-throttle"></a><div class="section">
-<h3 id="method-throttle-">Method <code>throttle()</code><a class="anchor" aria-label="anchor" href="#method-throttle-"></a></h3>
-<p>Deprecated in version 0.5.0.9000 (2023-10-02). Not used.</p><div class="section">
-<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">throttle</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="returns-17">Returns<a class="anchor" aria-label="anchor" href="#returns-17"></a></h4>
-<p><code>NULL</code></p>
-</div>
-
 </div><p></p><hr><a id="method-crew_class_launcher-scale"></a><div class="section">
 <h3 id="method-scale-">Method <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code><a class="anchor" aria-label="anchor" href="#method-scale-"></a></h3>
 <p>Auto-scale workers out to meet the demand of tasks.</p><div class="section">
-<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">scale</span><span class="op">(</span><span class="va">demand</span>, throttle <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">scale</span><span class="op">(</span><span class="va">demand</span>, throttle <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -694,20 +685,23 @@ tasks to complete.</p><div class="section">
 
 
 <dt><code>throttle</code></dt>
-<dd><p>Deprecated in version 0.5.0.9000 (2023-10-02).</p></dd>
+<dd><p><code>TRUE</code> to skip auto-scaling if it already happened
+within the last <code>seconds_interval</code> seconds. <code>FALSE</code> to auto-scale
+every time <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> is called. Throttling avoids
+overburdening the <code>mirai</code> dispatcher and other resources.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-18">Returns<a class="anchor" aria-label="anchor" href="#returns-18"></a></h4>
+<h4 id="returns-17">Returns<a class="anchor" aria-label="anchor" href="#returns-17"></a></h4>
 <p><code>NULL</code> (invisibly)</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-launch_worker"></a><div class="section">
 <h3 id="method-launch-worker-">Method <code>launch_worker()</code><a class="anchor" aria-label="anchor" href="#method-launch-worker-"></a></h3>
 <p>Abstract worker launch method.</p><div class="section">
-<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
+<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">launch_worker</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span>, <span class="va">launcher</span>, <span class="va">worker</span>, <span class="va">instance</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -746,14 +740,14 @@ the current instance of the worker a the index in the launcher.</p></dd>
 </div>
 
 <div class="section">
-<h4 id="returns-19">Returns<a class="anchor" aria-label="anchor" href="#returns-19"></a></h4>
+<h4 id="returns-18">Returns<a class="anchor" aria-label="anchor" href="#returns-18"></a></h4>
 <p>A handle to mock the worker launch.</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-terminate_worker"></a><div class="section">
 <h3 id="method-terminate-worker-">Method <code>terminate_worker()</code><a class="anchor" aria-label="anchor" href="#method-terminate-worker-"></a></h3>
 <p>Abstract worker termination method.</p><div class="section">
-<h4 id="usage-21">Usage<a class="anchor" aria-label="anchor" href="#usage-21"></a></h4>
+<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">terminate_worker</span><span class="op">(</span><span class="va">handle</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -773,14 +767,14 @@ of the worker.</p></dd>
 </div>
 
 <div class="section">
-<h4 id="returns-20">Returns<a class="anchor" aria-label="anchor" href="#returns-20"></a></h4>
+<h4 id="returns-19">Returns<a class="anchor" aria-label="anchor" href="#returns-19"></a></h4>
 <p>A handle to mock worker termination.</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-terminate_workers"></a><div class="section">
 <h3 id="method-terminate-workers-">Method <code>terminate_workers()</code><a class="anchor" aria-label="anchor" href="#method-terminate-workers-"></a></h3>
 <p>Terminate one or more workers.</p><div class="section">
-<h4 id="usage-22">Usage<a class="anchor" aria-label="anchor" href="#usage-22"></a></h4>
+<h4 id="usage-21">Usage<a class="anchor" aria-label="anchor" href="#usage-21"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">terminate_workers</span><span class="op">(</span>index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -794,7 +788,7 @@ to terminate. If <code>NULL</code>, all current workers are terminated.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-21">Returns<a class="anchor" aria-label="anchor" href="#returns-21"></a></h4>
+<h4 id="returns-20">Returns<a class="anchor" aria-label="anchor" href="#returns-20"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 

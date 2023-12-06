@@ -76,17 +76,10 @@ in the last <code>seconds_interval</code> seconds.</p></dd>
     <div id="details">
     <h2>Details</h2>
     <p>Throttling is a technique that limits how often a function is
-called in a given period of time. You can use it to help <code>crew</code>
-be kinder to the <code>mirai</code> dispatcher. For example,
-if you plan to push a lot of tasks and want to avoid the burden
-of so many scaling operations, set
-<code>throttle &lt;- crew_throttle(seconds_interval = 0.5)</code> and then call
-<code>controller$push(..., scale = throttle$poll()</code> (where <code>...</code> is
-shorthand for the other arguments you supply to <code>push()</code>).
-<code>poll()</code> returns <code>TRUE</code> if and only if it did not return <code>TRUE</code>
-in the last <code>seconds_interval</code> seconds,
-so the overall effect is to scale every
-0.5 seconds even if <code>push()</code> is called more frequently than that.</p>
+called in a given period of time. <code>crew_throttle()</code> objects support
+the <code>throttle</code> argument of controller methods, which ensures auto-scaling
+only happen every <code>seconds_interval</code> seconds. This helps avoid
+overburdening the <code>mirai</code> dispatcher and other resources.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

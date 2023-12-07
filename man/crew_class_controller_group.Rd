@@ -43,16 +43,10 @@ group$terminate()
 }
 }
 \seealso{
-Other class: 
-\code{\link{crew_class_async}},
-\code{\link{crew_class_client}},
-\code{\link{crew_class_controller}},
-\code{\link{crew_class_launcher}},
-\code{\link{crew_class_relay}},
-\code{\link{crew_class_throttle}},
-\code{\link{crew_class_tls}}
+Other controller_group: 
+\code{\link{crew_controller_group}()}
 }
-\concept{class}
+\concept{controller_group}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{

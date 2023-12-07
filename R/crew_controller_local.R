@@ -1,6 +1,6 @@
 #' @title Create a controller with a local process launcher.
 #' @export
-#' @family user
+#' @family plugin_local
 #' @description Create an `R6` object to submit tasks and
 #'   launch workers on local processes.
 #' @inheritParams crew_client

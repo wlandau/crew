@@ -20,10 +20,7 @@ among condition variables.
 crew_relay()
 }
 \seealso{
-Other developer: 
-\code{\link{crew_async}()},
-\code{\link{crew_client}()},
-\code{\link{crew_controller}()},
-\code{\link{crew_launcher}()}
+Other relay: 
+\code{\link{crew_class_relay}}
 }
-\concept{developer}
+\concept{relay}

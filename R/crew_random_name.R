@@ -1,6 +1,6 @@
 #' @title Random name
 #' @export
-#' @family utilities
+#' @family utility
 #' @description Generate a random string that can be used as a name
 #'   for a worker or task.
 #' @details The randomness is not reproducible and cannot be set with

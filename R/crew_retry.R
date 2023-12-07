@@ -1,6 +1,6 @@
 #' @title Retry code.
 #' @export
-#' @family utilities
+#' @family utility
 #' @description Repeatedly retry a function while it keeps returning `FALSE`
 #'   and exit the loop when it returns `TRUE`
 #' @return `NULL` (invisibly).

@@ -68,12 +68,12 @@ are restored to their original values on exit.
 crew_eval(quote(1 + 1))
 }
 \seealso{
-Other utilities: 
+Other utility: 
 \code{\link{crew_assert}()},
+\code{\link{crew_clean}()},
 \code{\link{crew_deprecate}()},
-\code{\link{crew_eval_async}()},
 \code{\link{crew_random_name}()},
 \code{\link{crew_retry}()},
 \code{\link{crew_worker}()}
 }
-\concept{utilities}
+\concept{utility}

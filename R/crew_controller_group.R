@@ -1,6 +1,6 @@
 #' @title Create a controller group.
 #' @export
-#' @family user
+#' @family controller_group
 #' @description Create an `R6` object to submit tasks and launch workers
 #'   through multiple `crew` controllers.
 #' @param ... `R6` controller objects or lists of `R6` controller objects.
@@ -50,7 +50,7 @@ crew_controller_group <- function(...) {
 
 #' @title Controller group class
 #' @export
-#' @family class
+#' @family controller_group
 #' @description `R6` class for controller groups.
 #' @details See [crew_controller_group()].
 #' @examples

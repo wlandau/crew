@@ -1,6 +1,6 @@
 #' @title Local asynchronous client object.
 #' @export
-#' @family developer
+#' @family async
 #' @description Create an `R6` object to manage local asynchronous quick
 #'   tasks with error detection.
 #' @details [crew_async()] objects are created inside launchers to allow
@@ -27,7 +27,7 @@ crew_async <- function(workers = NULL) {
 
 #' @title `R6` async class.
 #' @export
-#' @family class
+#' @family async
 #' @description `R6` class for async configuration.
 #' @details See [crew_async()].
 crew_class_async <- R6::R6Class(
@@ -164,7 +164,6 @@ crew_class_async <- R6::R6Class(
 #' @title Run an asynchronous task in the crew launcher.
 #' @description Called internally, not for users.
 #' @export
-#' @family utilities
 #' @keywords internal
 #' @return The result of running `command`.
 #' @param command Language object with R code to run.

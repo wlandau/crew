@@ -1,6 +1,6 @@
 #' @title Create a controller object from a client and launcher.
 #' @export
-#' @family developer
+#' @family controller
 #' @description This function is for developers of `crew` launcher plugins.
 #'   Users should use a specific controller helper such as
 #'   [crew_controller_local()].
@@ -41,7 +41,7 @@ crew_controller <- function(
 
 #' @title Controller class
 #' @export
-#' @family class
+#' @family controller
 #' @description `R6` class for controllers.
 #' @details See [crew_controller()].
 #' @examples

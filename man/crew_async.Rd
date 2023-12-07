@@ -34,10 +34,7 @@ x$terminate()
 }
 }
 \seealso{
-Other developer: 
-\code{\link{crew_client}()},
-\code{\link{crew_controller}()},
-\code{\link{crew_launcher}()},
-\code{\link{crew_relay}()}
+Other async: 
+\code{\link{crew_class_async}}
 }
-\concept{developer}
+\concept{async}

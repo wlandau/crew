@@ -25,12 +25,12 @@ the current instance of the worker.}
 Launch a \code{crew} worker which runs a \code{mirai} daemon.
 }
 \seealso{
-Other utilities: 
+Other utility: 
 \code{\link{crew_assert}()},
+\code{\link{crew_clean}()},
 \code{\link{crew_deprecate}()},
-\code{\link{crew_eval_async}()},
 \code{\link{crew_eval}()},
 \code{\link{crew_random_name}()},
 \code{\link{crew_retry}()}
 }
-\concept{utilities}
+\concept{utility}

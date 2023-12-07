@@ -22,7 +22,12 @@ m$data
 client$terminate()
 }
 }
-\concept{launchers}
+\seealso{
+Other plugin_local: 
+\code{\link{crew_controller_local}()},
+\code{\link{crew_launcher_local}()}
+}
+\concept{plugin_local}
 \section{Super class}{
 \code{\link[crew:crew_class_launcher]{crew::crew_class_launcher}} -> \code{crew_class_launcher_local}
 }

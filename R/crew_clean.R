@@ -1,6 +1,6 @@
 #' @title Terminate dispatchers and/or workers
 #' @export
-#' @family user
+#' @family utility
 #' @description Terminate `mirai` dispatchers and/or `crew` workers
 #'   which may be lingering from previous workloads.
 #' @details Behind the scenes, `mirai` uses an external R process

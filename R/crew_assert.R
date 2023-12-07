@@ -1,6 +1,6 @@
 #' @title Crew assertion
 #' @export
-#' @family utilities
+#' @family utility
 #' @description Assert that a condition is true.
 #' @return `NULL` (invisibly). Throws an error if the condition is not true.
 #' @param value An object or condition.
@@ -41,7 +41,7 @@ crew_assert <- function(
 
 #' @title Deprecate a `crew` feature.
 #' @export
-#' @family utilities
+#' @family utility
 #' @description Show an informative warning when a `crew` feature is
 #'   deprecated.
 #' @return `NULL` (invisibly). Throws a warning if a feature is deprecated.

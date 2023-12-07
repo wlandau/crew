@@ -26,14 +26,4 @@ The result of running \code{command}.
 \description{
 Called internally, not for users.
 }
-\seealso{
-Other utilities: 
-\code{\link{crew_assert}()},
-\code{\link{crew_deprecate}()},
-\code{\link{crew_eval}()},
-\code{\link{crew_random_name}()},
-\code{\link{crew_retry}()},
-\code{\link{crew_worker}()}
-}
-\concept{utilities}
 \keyword{internal}

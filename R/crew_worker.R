@@ -1,6 +1,6 @@
 #' @title Crew worker.
 #' @export
-#' @family utilities
+#' @family utility
 #' @description Launch a `crew` worker which runs a `mirai` daemon.
 #' @return `NULL` (invisibly)
 #' @param settings Named list of arguments to `mirai::daemon()`.

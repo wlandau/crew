@@ -1,6 +1,6 @@
 #' @title Create a `crew` relay object.
 #' @export
-#' @family developer
+#' @family relay
 #' @description Create an `R6` `crew` relay object.
 #' @details A `crew` relay object keeps the signaling relationships
 #'   among condition variables.
@@ -15,7 +15,7 @@ crew_relay <- function() {
 
 #' @title `R6` relay class.
 #' @export
-#' @family class
+#' @family relay
 #' @description `R6` class for relay configuration.
 #' @details See [crew_relay()].
 #' @examples

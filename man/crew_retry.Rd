@@ -48,12 +48,12 @@ and exit the loop when it returns \code{TRUE}
 crew_retry(fun = function() TRUE)
 }
 \seealso{
-Other utilities: 
+Other utility: 
 \code{\link{crew_assert}()},
+\code{\link{crew_clean}()},
 \code{\link{crew_deprecate}()},
-\code{\link{crew_eval_async}()},
 \code{\link{crew_eval}()},
 \code{\link{crew_random_name}()},
 \code{\link{crew_worker}()}
 }
-\concept{utilities}
+\concept{utility}

@@ -57,10 +57,7 @@ client$terminate()
 }
 }
 \seealso{
-Other developer: 
-\code{\link{crew_async}()},
-\code{\link{crew_controller}()},
-\code{\link{crew_launcher}()},
-\code{\link{crew_relay}()}
+Other client: 
+\code{\link{crew_class_client}}
 }
-\concept{developer}
+\concept{client}

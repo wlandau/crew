@@ -26,12 +26,12 @@ e.g. \code{set.seed()} in R.
 crew_random_name()
 }
 \seealso{
-Other utilities: 
+Other utility: 
 \code{\link{crew_assert}()},
+\code{\link{crew_clean}()},
 \code{\link{crew_deprecate}()},
-\code{\link{crew_eval_async}()},
 \code{\link{crew_eval}()},
 \code{\link{crew_retry}()},
 \code{\link{crew_worker}()}
 }
-\concept{utilities}
+\concept{utility}

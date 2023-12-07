@@ -111,3 +111,9 @@ m$data
 client$terminate()
 }
 }
+\seealso{
+Other plugin_local: 
+\code{\link{crew_class_launcher_local}},
+\code{\link{crew_controller_local}()}
+}
+\concept{plugin_local}

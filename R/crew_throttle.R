@@ -1,6 +1,6 @@
 #' @title Create a stateful throttling object.
 #' @export
-#' @family user
+#' @family throttle
 #' @description Create an `R6` object for throttling.
 #' @details Throttling is a technique that limits how often a function is
 #'   called in a given period of time. [crew_throttle()] objects support
@@ -25,7 +25,7 @@ crew_throttle <- function(
 
 #' @title `R6` throttle class.
 #' @export
-#' @family class
+#' @family throttle
 #' @description `R6` class for throttle configuration.
 #' @details See [crew_throttle()].
 #' @examples

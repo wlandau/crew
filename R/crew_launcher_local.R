@@ -1,5 +1,6 @@
 #' @title Create a launcher with local process workers.
 #' @export
+#' @family plugin_local
 #' @description Create an `R6` object to launch and maintain
 #'   local process workers.
 #' @inheritParams crew_launcher
@@ -64,7 +65,7 @@ crew_launcher_local <- function(
 
 #' @title Local process launcher class
 #' @export
-#' @family launchers
+#' @family plugin_local
 #' @description `R6` class to launch and manage local process workers.
 #' @details See [crew_launcher_local()].
 #' @examples

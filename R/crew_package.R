@@ -1,7 +1,7 @@
 #' crew: a distributed worker launcher framework
 #' @docType package
 #' @name crew-package
-#' @family user
+#' @family package_help
 #' @description In computationally demanding analysis projects,
 #'   statisticians and data scientists asynchronously deploy
 #'   long-running tasks to distributed systems, ranging from

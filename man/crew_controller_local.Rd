@@ -129,11 +129,8 @@ controller$terminate()
 }
 }
 \seealso{
-Other user: 
-\code{\link{crew-package}},
-\code{\link{crew_clean}()},
-\code{\link{crew_controller_group}()},
-\code{\link{crew_throttle}()},
-\code{\link{crew_tls}()}
+Other plugin_local: 
+\code{\link{crew_class_launcher_local}},
+\code{\link{crew_launcher_local}()}
 }
-\concept{user}
+\concept{plugin_local}

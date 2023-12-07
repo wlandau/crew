@@ -1,6 +1,6 @@
 #' @title Configure TLS.
 #' @export
-#' @family user
+#' @family tls
 #' @description Create an `R6` object with transport layer security (TLS)
 #'   configuration for `crew`.
 #' @details [crew_tls()] objects are input to the `tls` argument of
@@ -61,7 +61,7 @@ crew_tls <- function(
 
 #' @title `R6` TLS class.
 #' @export
-#' @family class
+#' @family tls
 #' @description `R6` class for TLS configuration.
 #' @details See [crew_tls()].
 #' @examples

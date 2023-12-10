@@ -1,3 +1,7 @@
+# crew 0.7.0.9000 (development)
+
+* Fix `seconds_interval` revdep issues with `crew.cluster`.
+
 # crew 0.7.0
 
 * Migrate from `asyncdial` to `autoexit`.

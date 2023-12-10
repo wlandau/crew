@@ -346,6 +346,8 @@ crew_class_launcher <- R6::R6Class(
         !anyNA(.),
         nzchar(.)
       )
+      # TODO: add seconds_interval and seconds_timeout
+      # when crew.cluster is updated on CRAN.
       fields <- c(
         "seconds_launch",
         "seconds_idle",
@@ -353,16 +355,6 @@ crew_class_launcher <- R6::R6Class(
         "tasks_max",
         "tasks_timers",
         "launch_max"
-      )
-      # TODO: remove this when the next crew.cluster is on CRAN.
-      v070 <- utils::compareVersion(
-        as.character(utils::packageVersion("crew")),
-        "0.7.0"
-      ) > -1L
-      fields <- if_any(
-        v070,
-        c(fields, "seconds_interval", "seconds_timeout"),
-        fields
       )
       for (field in fields) {
         crew_assert(

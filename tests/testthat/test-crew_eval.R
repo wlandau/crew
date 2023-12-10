@@ -67,6 +67,7 @@ crew_test("encoding issue error handling", {
 })
 
 crew_test("crew_eval() seed and algorithm", {
+  skip_on_cran()
   old_algorithm <- RNGkind()[1L]
   old_seed <- .subset2(.GlobalEnv, ".Random.seed")
   out1 <- crew_eval(
@@ -94,6 +95,7 @@ crew_test("crew_eval() seed and algorithm", {
 })
 
 crew_test("crew_eval() just seed", {
+  skip_on_cran()
   old_algorithm <- RNGkind()[1L]
   old_seed <- .subset2(.GlobalEnv, ".Random.seed")
   out1 <- crew_eval(
@@ -121,6 +123,7 @@ crew_test("crew_eval() just seed", {
 })
 
 crew_test("crew_eval() just algorithm", {
+  skip_on_cran()
   old_algorithm <- RNGkind()[1L]
   old_seed <- .subset2(.GlobalEnv, ".Random.seed")
   out1 <- crew_eval(
@@ -143,6 +146,7 @@ crew_test("crew_eval() just algorithm", {
 })
 
 crew_test("crew_eval() RNG state not restored if not set", {
+  skip_on_cran()
   old_algorithm <- RNGkind()[1L]
   old_seed <- .subset2(.GlobalEnv, ".Random.seed")
   out1 <- crew_eval(

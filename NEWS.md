@@ -1,8 +1,3 @@
-# crew 0.7.1
-
-* Fix `seconds_interval` revdep issues with `crew.cluster`.
-* Fix tests for CRAN submission.
-
 # crew 0.7.0
 
 * Migrate from `asyncdial` to `autoexit`.

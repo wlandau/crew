@@ -346,9 +346,9 @@ crew_class_launcher <- R6::R6Class(
         !anyNA(.),
         nzchar(.)
       )
-      # TODO: add seconds_interval and seconds_timeout
-      # when crew.cluster is updated on CRAN.
       fields <- c(
+        "seconds_interval",
+        "seconds_timeout",
         "seconds_launch",
         "seconds_idle",
         "seconds_wall",

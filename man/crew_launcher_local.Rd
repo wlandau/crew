@@ -28,7 +28,7 @@ crew_launcher_local(
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal
 synchronous operations to complete,
-such as checking \code{mirai::status()}}
+such as checking \code{mirai::status()}.}
 
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete,

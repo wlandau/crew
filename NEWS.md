@@ -1,4 +1,4 @@
-# crew 0.7.0.9000 (development)
+# crew 0.7.1
 
 * Fix `seconds_interval` revdep issues with `crew.cluster`.
 * Fix tests for CRAN submission.

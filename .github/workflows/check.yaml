@@ -40,17 +40,6 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - name: Add r-universe to repos
-        run: |
-          repos <- c(
-            shikokuchuo = "https://shikokuchuo.r-universe.dev",
-            wlandau = "https://wlandau.r-universe.dev"
-          )
-          text <- paste(deparse(repos), collapse = "\n")
-          lines <- sprintf("\noptions(repos = %s)\n", text)
-          cat(lines, file = "~/.Rprofile", append = TRUE)
-        shell: Rscript {0}
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck, local::.

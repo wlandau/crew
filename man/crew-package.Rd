@@ -23,4 +23,4 @@ Inspiration also comes from packages
 \href{https://mschubert.github.io/clustermq/}{\code{clustermq}},
 and \href{https://mllg.github.io/batchtools/}{\code{batchtools}}.
 }
-\concept{package_help}
+\concept{help}

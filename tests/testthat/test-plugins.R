@@ -226,12 +226,6 @@ crew_test("custom launcher with async internal launcher tasks", {
   skip_on_covr() # Avoid clashes with NNG and covr child processes.
   skip_on_os("windows")
   skip_if_not_installed("processx")
-  # TODO: remove this part when crew.cluster is updated on CRAN:
-  Sys.setenv(TESTTHAT = "false")
-  on.exit(Sys.setenv(TESTTHAT = "true"))
-  if (isTRUE(as.logical(Sys.getenv("CI", "false")))) {
-    skip_on_os("mac")
-  }
   custom_launcher_class <- R6::R6Class(
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,

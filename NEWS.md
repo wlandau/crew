@@ -1,6 +1,6 @@
 # crew 0.7.0.9001 (development)
 
-* Supply a signal to `autoexit` to make the daemons automatically shut down if the dispatcher exits, even if task are in progress (#141, @psychelzh). Huge thanks to @shikokuchuo for the support through https://github.com/shikokuchuo/mirai/issues/87, https://github.com/shikokuchuo/mirai/pull/88, and https://github.com/shikokuchuo/nanonext/pull/25!
+* Configure workers to send themselves a termination signal if the connection to the dispatcher is broken (#141, @psychelzh). Huge thanks to @shikokuchuo for the support through https://github.com/shikokuchuo/mirai/issues/87, https://github.com/shikokuchuo/mirai/pull/88, and https://github.com/shikokuchuo/nanonext/pull/25!
 
 # crew 0.7.0
 

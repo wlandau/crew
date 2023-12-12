@@ -14,6 +14,14 @@
   }
 }
 
+`%||NA%` <- function(x, y) {
+  if (anyNA(x)) {
+    y
+  } else {
+    x
+  }
+}
+
 if_any <- function(condition, true, false) {
   if (any(condition)) {
     true

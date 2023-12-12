@@ -84,9 +84,6 @@ Other launcher:
 
 \item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{signal}}{See \code{\link[=crew_launcher]{crew_launcher()}}.
-asynchronously.}
-
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.
@@ -147,7 +144,6 @@ Launcher constructor.
   reset_options = NULL,
   garbage_collection = NULL,
   launch_max = NULL,
-  signal = NULL,
   tls = NULL,
   processes = NULL
 )}\if{html}{\out{</div>}}
@@ -183,8 +179,6 @@ Launcher constructor.
 \item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{signal}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 

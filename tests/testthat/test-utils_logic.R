@@ -10,6 +10,13 @@ crew_test("%|||%", {
   expect_equal(NULL %|||% "b", "b")
 })
 
+crew_test("%||NA%", {
+  expect_equal("a" %||NA% "b", "a")
+  expect_equal(list() %||NA% "b", list())
+  expect_null(NULL %||NA% "b")
+  expect_equal(NA %||NA% "b", "b")
+})
+
 crew_test("if_any()", {
   expect_equal(if_any(TRUE, "a", "b"), "a")
   expect_equal(if_any(FALSE, "a", "b"), "b")

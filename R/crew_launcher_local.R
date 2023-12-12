@@ -31,7 +31,6 @@ crew_launcher_local <- function(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
-  signal = tools::SIGKILL,
   tls = crew::crew_tls()
 ) {
   crew_deprecate(
@@ -57,7 +56,6 @@ crew_launcher_local <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection,
     launch_max = launch_max,
-    signal = signal,
     tls = tls
   )
   launcher$validate()

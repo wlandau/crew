@@ -4,11 +4,10 @@ crew_test("abstract launcher class", {
 })
 
 crew_test("active bindings for covr", {
-  out <- crew_launcher(processes = 1L, signal = tools::SIGKILL)
+  out <- crew_launcher(processes = 1L)
   expect_equal(out$processes, 1L)
   expect_null(out$async)
   expect_null(out$throttle)
-  expect_equal(out$signal, tools::SIGKILL)
   expect_true(inherits(out$tls, "crew_class_tls"))
   out$start(sockets = "url")
   expect_s3_class(out$async, "crew_class_async")
@@ -56,7 +55,6 @@ crew_test("launcher settings", {
     reset_packages = TRUE,
     reset_options = TRUE,
     garbage_collection = TRUE,
-    signal = tools::SIGINT,
     tls = crew_tls()
   )
   expect_equal(launcher$name, "my_launcher_name")
@@ -143,7 +141,6 @@ crew_test("launcher call", {
     reset_packages = FALSE,
     reset_options = FALSE,
     garbage_collection = FALSE,
-    signal = tools::SIGKILL,
     tls = crew_tls()
   )
   out <- launcher$call(

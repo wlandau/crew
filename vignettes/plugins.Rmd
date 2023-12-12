@@ -134,8 +134,7 @@ crew_controller_custom <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L,
-  signal = tools::SIGKILL
+  launch_max = 5L
 ) {
   client <- crew::crew_client(
     name = name,
@@ -160,7 +159,6 @@ crew_controller_custom <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection,
     launch_max = launch_max,
-    signal = signal,
     tls = tls
   )
   controller <- crew::crew_controller(client = client, launcher = launcher)
@@ -341,7 +339,6 @@ crew_controller_async <- function(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
-  signal = tools::SIGKILL,
   processes = NULL # Number of local async daemons for worker launches etc.
 ) {
   client <- crew::crew_client(
@@ -366,7 +363,6 @@ crew_controller_async <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection,
     launch_max = launch_max,
-    signal = signal,
     tls = tls,
     processes = processes
   )

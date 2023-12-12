@@ -18,7 +18,7 @@ which launch and manage workers."><meta property="og:image" content="/logo.svg">
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">crew</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9001</span>
       </span>
     </div>
 
@@ -121,6 +121,11 @@ which launch and manage workers.</p>
 <dd><p>See <code><a href="crew_launcher.html">crew_launcher()</a></code>.</p></dd>
 
 
+<dt><code>signal</code></dt>
+<dd><p>See <code><a href="crew_launcher.html">crew_launcher()</a></code>.
+asynchronously.</p></dd>
+
+
 <dt><code>tls</code></dt>
 <dd><p>See <code><a href="crew_launcher.html">crew_launcher()</a></code>.</p></dd>
 
@@ -188,6 +193,7 @@ asynchronously.</p></dd>
 <span>  reset_options <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  garbage_collection <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  launch_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  signal <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tls <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  processes <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
@@ -248,6 +254,10 @@ asynchronously.</p></dd>
 
 
 <dt><code>launch_max</code></dt>
+<dd><p>See <code><a href="crew_launcher.html">crew_launcher()</a></code>.</p></dd>
+
+
+<dt><code>signal</code></dt>
 <dd><p>See <code><a href="crew_launcher.html">crew_launcher()</a></code>.</p></dd>
 
 
@@ -831,7 +841,7 @@ to terminate. If <code>NULL</code>, all current workers are terminated.</p></dd>
 <span class="r-in"><span>  worker <span class="op">=</span> <span class="fl">3L</span>,</span></span>
 <span class="r-in"><span>  instance <span class="op">=</span> <span class="st">"cba033e58"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:5000/3/cba033e58\", autoexit = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, cleanup = 1L, tls = NULL, rs = NULL), launcher = \"launcher_a\", worker = 3L, instance = \"cba033e58\")"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:5000/3/cba033e58\", autoexit = 9L, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, cleanup = 1L, tls = NULL, rs = NULL), launcher = \"launcher_a\", worker = 3L, instance = \"cba033e58\")"</span>
 </code></pre></div>
     </div>
   </div>

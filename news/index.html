@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">crew</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9001</span>
       </span>
     </div>
 
@@ -51,7 +51,11 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.7.0.9000" id="crew-0709000">crew 0.7.0.9000<a class="anchor" aria-label="anchor" href="#crew-0709000"></a></h2>
+<h2 class="page-header" data-toc-text="0.7.0.9001" id="crew-0709001-development">crew 0.7.0.9001 (development)<a class="anchor" aria-label="anchor" href="#crew-0709001-development"></a></h2>
+<ul><li>Supply a signal to <code>autoexit</code> to make the daemons automatically shut down if the dispatcher exits, even if task are in progress (<a href="https://github.com/wlandau/crew/issues/141" class="external-link">#141</a>, <a href="https://github.com/psychelzh" class="external-link">@psychelzh</a>). Huge thanks to <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a> for the support through <a href="https://github.com/shikokuchuo/mirai/issues/87" class="external-link uri">https://github.com/shikokuchuo/mirai/issues/87</a>, <a href="https://github.com/shikokuchuo/mirai/pull/88" class="external-link uri">https://github.com/shikokuchuo/mirai/pull/88</a>, and <a href="https://github.com/shikokuchuo/nanonext/pull/25" class="external-link uri">https://github.com/shikokuchuo/nanonext/pull/25</a>!</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.7.0" id="crew-070">crew 0.7.0<small>2023-12-11</small><a class="anchor" aria-label="anchor" href="#crew-070"></a></h2>
 <ul><li>Migrate from <code>asyncdial</code> to <code>autoexit</code>.</li>
 <li>Use <code>Sys.info()[["user"]]</code> to get the user in <code><a href="../reference/crew_clean.html">crew_clean()</a></code> (<a href="https://github.com/wlandau/crew/issues/135" class="external-link">#135</a>, <a href="https://github.com/luwidmer" class="external-link">@luwidmer</a>).</li>
 <li>Use condition variables to wait for tasks more efficiently (<a href="https://github.com/wlandau/crew/issues/108" class="external-link">#108</a>).</li>

@@ -18,7 +18,7 @@ launch workers on local processes."><meta property="og:image" content="/logo.svg
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">crew</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9001</span>
       </span>
     </div>
 
@@ -78,7 +78,8 @@ launch workers on local processes.</p>
 <span>  reset_packages <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  reset_options <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  garbage_collection <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  launch_max <span class="op">=</span> <span class="fl">5L</span></span>
+<span>  launch_max <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  signal <span class="op">=</span> <span class="fu">tools</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/r/tools/pskill.html" class="external-link">SIGKILL</a></span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -208,6 +209,28 @@ It is recommended to set <code>launch_max</code> above 0
 because sometimes workers are unproductive under perfectly ordinary
 circumstances. But <code>launch_max</code> should still be small enough
 to detect errors in the underlying platform.</p></dd>
+
+
+<dt>signal</dt>
+<dd><p>Positive integer of length 1. If the local controlling
+R process disconnects, then all parallel workers automatically exit.
+The mechanism for these exits is an operating system signal that
+each worker sends to itself. The <code>signal</code> argument controls the type of
+signal used. The default choice is <code><a href="https://rdrr.io/r/tools/pskill.html" class="external-link">tools::SIGKILL</a></code>, which causes an
+abrupt and forceful exit.
+You may also choose the weaker <code><a href="https://rdrr.io/r/tools/pskill.html" class="external-link">tools::SIGINT</a></code>, which
+allows for cleanup routines and other C code to finish running
+before the worker exits. The choice is a careful tradeoff.
+<code><a href="https://rdrr.io/r/tools/pskill.html" class="external-link">tools::SIGKILL</a></code> offers stronger assurance that the workers will
+actually exit even if uninterruptable C code is stuck, but if a worker
+is actively writing an output data file to disk, <code>SIGKILL</code> will leave
+that data file in a corrupted state. On the other hand, <code>SIGINT</code>
+allows workers to finish writing their output files, but it
+may fail to stop other C/C++/Fortran code or system calls
+which could run indefinitely and silently consume large
+quantities of valuable resources.
+The authors of <code>crew</code> think <code><a href="https://rdrr.io/r/tools/pskill.html" class="external-link">tools::SIGKILL</a></code> is the lesser of the two
+evils, but the final choice is yours.</p></dd>
 
 </dl></div>
     <div id="see-also">

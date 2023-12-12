@@ -512,6 +512,8 @@ crew_class_controller <- R6::R6Class(
     #'   * `"warn"`: throw a warning. This allows the return value with
     #'     all the error messages and tracebacks to be generated.
     #'   * `"silent"`: do nothing special.
+    #' @param warnings Logical of length 1, whether to throw a warning in the
+    #'   interactive session if at least one task encounters an error.
     #' @param verbose Logical of length 1, whether to print progress messages.
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
@@ -536,6 +538,7 @@ crew_class_controller <- R6::R6Class(
       names = NULL,
       save_command = FALSE,
       error = "stop",
+      warnings = TRUE,
       verbose = interactive(),
       scale = TRUE,
       throttle = TRUE,
@@ -629,8 +632,13 @@ crew_class_controller <- R6::R6Class(
         message = "names argument must be NULL or an element of names(iterate)"
       )
       crew_assert(
+        warnings,
+        isTRUE(.) || isFALSE(.),
+        message = "'warn' argument must be TRUE or FALSE."
+      )
+      crew_assert(
         error %in% c("stop", "warn", "silent"),
-        message = "error argument must be \"stop\", \"warn\", or \"silent\""
+        message = "'error' argument must be \"stop\", \"warn\", or \"silent\""
       )
       crew_assert(
         length(private$.tasks) < 1L,
@@ -738,12 +746,12 @@ crew_class_controller <- R6::R6Class(
         INDEX = worker,
         FUN = sum
       )
-      errors <- tapply(
+      summary_errors <- tapply(
         X = as.integer(!is.na(.subset2(out, "error"))),
         INDEX = worker,
         FUN = sum
       )
-      warnings <- tapply(
+      summary_warnings <- tapply(
         X = as.integer(!is.na(.subset2(out, "warnings"))),
         INDEX = worker,
         FUN = sum
@@ -758,10 +766,22 @@ crew_class_controller <- R6::R6Class(
         private$.log$seconds[index] <- .subset2(log, "seconds")[index] +
           seconds
         private$.log$errors[index] <- .subset2(log, "errors")[index] +
-          errors
+          summary_errors
         private$.log$warnings[index] <- .subset2(log, "warnings")[index] +
-          warnings
+          summary_warnings
       })
+      warning_messages <- .subset2(out, "warnings")
+      if (!all(is.na(warning_messages)) && isTRUE(warnings)) {
+        message <- sprintf(
+          paste(
+            "%s tasks encountered warnings.",
+            "Warning messages of first such task: \"%s\"."
+          ),
+          sum(!is.na(warning_messages)),
+          warning_messages[min(which(!is.na(warning_messages)))]
+        )
+        crew_warning(message)
+      }
       error_messages <- .subset2(out, "error")
       if (!all(is.na(error_messages)) && !identical(error, "silent")) {
         message <- sprintf(

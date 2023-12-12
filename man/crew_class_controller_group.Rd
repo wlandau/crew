@@ -396,6 +396,7 @@ Apply a single command to multiple inputs.
   names = NULL,
   save_command = FALSE,
   error = "stop",
+  warnings = TRUE,
   verbose = interactive(),
   scale = TRUE,
   throttle = TRUE,
@@ -492,6 +493,9 @@ you are finished troubleshooting.
 all the error messages and tracebacks to be generated.
 \item \code{"silent"}: do nothing special.
 }}
+
+\item{\code{warnings}}{Logical of length 1, whether to throw a warning in the
+interactive session if at least one task encounters an error.}
 
 \item{\code{verbose}}{Logical of length 1, whether to print progress messages.}
 

@@ -418,6 +418,7 @@ crew_test("map() works with errors and names and command strings", {
     save_command = TRUE,
     names = "id",
     error = "silent",
+    warnings = FALSE,
     verbose = FALSE
   )
   expect_null(x$error)
@@ -430,6 +431,7 @@ crew_test("map() works with errors and names and command strings", {
       save_command = TRUE,
       names = "id",
       error = "stop",
+      warnings = FALSE,
       verbose = TRUE
     ),
     class = "crew_error"
@@ -444,6 +446,7 @@ crew_test("map() works with errors and names and command strings", {
       save_command = TRUE,
       names = "id",
       error = "warn",
+      warnings = FALSE,
       verbose = TRUE
     ),
     class = "crew_warning"
@@ -498,7 +501,8 @@ crew_test("map() tasks attributed to correct workers", {
     globals = list(f = f),
     save_command = TRUE,
     names = "id",
-    error = "silent"
+    error = "silent",
+    warnings = FALSE
   )
   sum <- x$summary()
   expect_equal(sum$worker, seq_len(4L))
@@ -547,6 +551,40 @@ crew_test("map() needs an empty controller", {
   expect_equal(x$unresolved(), 0L)
   expect_equal(x$resolved(), 1L)
   expect_crew_error(x$map(command = TRUE, iterate = list(x = c(1, 2))))
+})
+
+crew_test("map() can relay warnings", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  f <- function(x, y) {
+    warning("message")
+    x + y
+  }
+  expect_warning(
+    x$map(
+      command = f(x, y) + a + b,
+      iterate = list(x = c(1L, 2L), y = c(3L, 4L), id = c("z", "w")),
+      data = list(a = 5L),
+      globals = list(f = f),
+      save_command = TRUE,
+      names = "id",
+      error = "silent",
+      warnings = TRUE,
+      verbose = FALSE
+    ),
+    class = "crew_warning"
+  )
 })
 
 crew_test("deprecate seconds_exit", {

@@ -443,6 +443,8 @@ crew_class_controller_group <- R6::R6Class(
     #'   * `"warn"`: throw a warning. This allows the return value with
     #'     all the error messages and tracebacks to be generated.
     #'   * `"silent"`: do nothing special.
+    #' @param warnings Logical of length 1, whether to throw a warning in the
+    #'   interactive session if at least one task encounters an error.
     #' @param verbose Logical of length 1, whether to print progress messages.
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
@@ -469,6 +471,7 @@ crew_class_controller_group <- R6::R6Class(
       names = NULL,
       save_command = FALSE,
       error = "stop",
+      warnings = TRUE,
       verbose = interactive(),
       scale = TRUE,
       throttle = TRUE,
@@ -494,6 +497,7 @@ crew_class_controller_group <- R6::R6Class(
         names = names,
         save_command = save_command,
         error = error,
+        warnings = warnings,
         verbose = verbose,
         scale = scale,
         throttle = throttle

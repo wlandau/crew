@@ -550,7 +550,7 @@ crew_test("map() needs an empty controller", {
 })
 
 crew_test("deprecate seconds_exit", {
-  expect_message(
+  expect_warning(
     x <- crew_controller_local(
       workers = 1L,
       seconds_idle = 360,

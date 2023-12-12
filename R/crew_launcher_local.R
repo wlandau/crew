@@ -38,9 +38,8 @@ crew_launcher_local <- function(
     date = "2023-09-21",
     version = "0.5.0.9002",
     alternative = "none (no longer necessary)",
-    condition = "message",
-    value = seconds_exit,
-    frequency = "once"
+    condition = "warning",
+    value = seconds_exit
   )
   name <- as.character(name %|||% crew_random_name())
   launcher <- crew_class_launcher_local$new(

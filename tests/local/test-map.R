@@ -12,7 +12,8 @@ crew_test("heavy task load for map()", {
         x
       },
       iterate = list(x = seq_len(6000L)),
-      error = "silent"
+      error = "silent",
+      warnings = FALSE
     )
     testthat::expect_equal(length(controller$list), 0L)
     sum <- controller$summary()

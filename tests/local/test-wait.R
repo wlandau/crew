@@ -1,6 +1,3 @@
-library(crew)
-library(testthat)
-
 crew_test("single controller, no tasks", {
   for (group in c(FALSE, TRUE)) {
     y <- crew_controller_local()

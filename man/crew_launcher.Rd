@@ -19,6 +19,7 @@ crew_launcher(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
+  signal = tools::SIGKILL,
   tls = crew::crew_tls(),
   processes = NULL
 )
@@ -92,6 +93,26 @@ It is recommended to set \code{launch_max} above 0
 because sometimes workers are unproductive under perfectly ordinary
 circumstances. But \code{launch_max} should still be small enough
 to detect errors in the underlying platform.}
+
+\item{signal}{Positive integer of length 1. If the local controlling
+R process disconnects, then all parallel workers automatically exit.
+The mechanism for these exits is an operating system signal that
+each worker sends to itself. The \code{signal} argument controls the type of
+signal used. The default choice is \code{tools::SIGKILL}, which causes an
+abrupt and forceful exit.
+You may also choose the weaker \code{tools::SIGINT}, which
+allows for cleanup routines and other C code to finish running
+before the worker exits. The choice is a careful tradeoff.
+\code{tools::SIGKILL} offers stronger assurance that the workers will
+actually exit even if uninterruptable C code is stuck, but if a worker
+is actively writing an output data file to disk, \code{SIGKILL} will leave
+that data file in a corrupted state. On the other hand, \code{SIGINT}
+allows workers to finish writing their output files, but it
+may fail to stop other C/C++/Fortran code or system calls
+which could run indefinitely and silently consume large
+quantities of valuable resources.
+The authors of \code{crew} think \code{tools::SIGKILL} is the lesser of the two
+evils, but the final choice is yours.}
 
 \item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
 

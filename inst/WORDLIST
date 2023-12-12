@@ -3,8 +3,8 @@ Asynchrony
 Bengtsson
 Bischel
 Bitbucket
-CloudWatch
 CTRL
+CloudWatch
 Csárdi
 DVC
 Edmondson
@@ -90,6 +90,7 @@ phyllotaxis
 rOpenSci
 redis
 reproducibly
+revdep
 ropensci
 rrq
 runnable
@@ -106,10 +107,12 @@ subqueue
 taskq
 tibble
 tidyverse
+tls
 traceback
 tracebacks
 transactional
 unencrypted
+uninterruptable
 unlaunched
 unpopped
 useR
@@ -120,5 +123,3 @@ wlandau
 writeable
 www
 ’
-revdep
-tls

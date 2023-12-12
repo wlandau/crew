@@ -115,7 +115,7 @@ crew_test("crew_tls() custom works on real credentials with custom password", {
   expect_silent(tls$validate())
   x <- crew_controller_local(tls = tls)
   on.exit(x$terminate(), add = TRUE)
-  x$start()
+  utils::capture.output(suppressMessages(x$start()))
   x$push("57")
   x$wait()
   expect_equal(x$pop()$result[[1L]], "57")
@@ -125,7 +125,7 @@ crew_test("crew_tls() custom works on real credentials with custom password", {
 crew_test("crew_tls() automatic", {
   x <- crew_controller_local(tls = crew_tls(mode = "automatic"))
   on.exit(x$terminate(), add = TRUE)
-  x$start()
+  utils::capture.output(suppressMessages(x$start()))
   x$push("57")
   x$wait()
   expect_equal(x$pop()$result[[1L]], "57")

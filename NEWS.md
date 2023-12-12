@@ -1,4 +1,8 @@
-# crew 0.7.0.9000
+# crew 0.7.0.9001 (development)
+
+* Supply a signal to `autoexit` to make the daemons automatically shut down if the dispatcher exits, even if task are in progress (#141, @psychelzh). Huge thanks to @shikokuchuo for the support through https://github.com/shikokuchuo/mirai/issues/87, https://github.com/shikokuchuo/mirai/pull/88, and https://github.com/shikokuchuo/nanonext/pull/25!
+
+# crew 0.7.0
 
 * Migrate from `asyncdial` to `autoexit`.
 * Use `Sys.info()[["user"]]` to get the user in `crew_clean()` (#135, @luwidmer).

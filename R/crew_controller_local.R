@@ -35,7 +35,8 @@ crew_controller_local <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L
+  launch_max = 5L,
+  signal = tools::SIGKILL
 ) {
   crew_deprecate(
     name = "seconds_exit",
@@ -70,6 +71,7 @@ crew_controller_local <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection,
     launch_max = launch_max,
+    signal = signal,
     tls = tls
   )
   controller <- crew_controller(client = client, launcher = launcher)

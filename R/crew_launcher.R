@@ -61,6 +61,25 @@
 #'   because sometimes workers are unproductive under perfectly ordinary
 #'   circumstances. But `launch_max` should still be small enough
 #'   to detect errors in the underlying platform.
+#' @param signal Positive integer of length 1. If the local controlling
+#'   R process disconnects, then all parallel workers automatically exit.
+#'   The mechanism for these exits is an operating system signal that
+#'   each worker sends to itself. The `signal` argument controls the type of
+#'   signal used. The default choice is `tools::SIGKILL`, which causes an
+#'   abrupt and forceful exit.
+#'   You may also choose the weaker `tools::SIGINT`, which
+#'   allows for cleanup routines and other C code to finish running
+#'   before the worker exits. The choice is a careful tradeoff.
+#'   `tools::SIGKILL` offers stronger assurance that the workers will
+#'   actually exit even if uninterruptable C code is stuck, but if a worker
+#'   is actively writing an output data file to disk, `SIGKILL` will leave
+#'   that data file in a corrupted state. On the other hand, `SIGINT`
+#'   allows workers to finish writing their output files, but it
+#'   may fail to stop other C/C++/Fortran code or system calls
+#'   which could run indefinitely and silently consume large
+#'   quantities of valuable resources.
+#'   The authors of `crew` think `tools::SIGKILL` is the lesser of the two
+#'   evils, but the final choice is yours.
 #' @param processes `NULL` or positive integer of length 1,
 #'   number of local processes to
 #'   launch to allow worker launches to happen asynchronously. If `NULL`,
@@ -96,6 +115,7 @@ crew_launcher <- function(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
+  signal = tools::SIGKILL,
   tls = crew::crew_tls(),
   processes = NULL
 ) {
@@ -126,6 +146,7 @@ crew_launcher <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection,
     launch_max = launch_max,
+    signal = signal,
     tls = tls,
     processes = processes
   )
@@ -167,6 +188,7 @@ crew_class_launcher <- R6::R6Class(
     .reset_options = NULL,
     .garbage_collection = NULL,
     .launch_max = NULL,
+    .signal = NULL,
     .tls = NULL,
     .processes = NULL,
     .async = NULL,
@@ -229,6 +251,11 @@ crew_class_launcher <- R6::R6Class(
     launch_max = function() {
       .subset2(private, ".launch_max")
     },
+    #' @field signal See [crew_launcher()].
+    #'   asynchronously.
+    signal = function() {
+      .subset2(private, ".signal")
+    },
     #' @field tls See [crew_launcher()].
     tls = function() {
       .subset2(private, ".tls")
@@ -265,6 +292,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param reset_options See [crew_launcher()].
     #' @param garbage_collection See [crew_launcher()].
     #' @param launch_max See [crew_launcher()].
+    #' @param signal See [crew_launcher()].
     #' @param tls See [crew_launcher()].
     #' @param processes See [crew_launcher()].
     #' @examples
@@ -294,6 +322,7 @@ crew_class_launcher <- R6::R6Class(
       reset_options = NULL,
       garbage_collection = NULL,
       launch_max = NULL,
+      signal = NULL,
       tls = NULL,
       processes = NULL
     ) {
@@ -310,6 +339,8 @@ crew_class_launcher <- R6::R6Class(
       private$.reset_options <- reset_options
       private$.garbage_collection <- garbage_collection
       private$.launch_max <- launch_max
+      # TODO: remove `%|||% tools::SIGKILL` #nolint
+      private$.signal <- signal %|||% tools::SIGKILL
       private$.tls <- tls
       private$.processes <- processes
     },
@@ -366,11 +397,20 @@ crew_class_launcher <- R6::R6Class(
         )
       }
       crew_assert(
+        private$.signal,
+        is.numeric(.),
+        . > 0L,
+        length(.) == 1L,
+        !anyNA(.),
+        message = "signal must be a positive integer of length 1"
+      )
+      crew_assert(
         private$.processes %|||% 1L,
         is.numeric(.),
         . > 0L,
         length(.) == 1L,
-        !anyNA(.)
+        !anyNA(.),
+        message = "processes must be NULL or a positive integer of length 1"
       )
       fields <- c(
         "reset_globals",
@@ -443,7 +483,7 @@ crew_class_launcher <- R6::R6Class(
         (8L * as.integer(isTRUE(private$.garbage_collection)))
       list(
         url = socket,
-        autoexit = TRUE,
+        autoexit = private$.signal,
         maxtasks = private$.tasks_max,
         idletime = private$.seconds_idle * 1000,
         walltime = private$.seconds_wall * 1000,

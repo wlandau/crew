@@ -40,7 +40,8 @@ crew_test("custom launcher", {
     reset_packages = FALSE,
     reset_options = FALSE,
     garbage_collection = FALSE,
-    launch_max = 5L
+    launch_max = 5L,
+    signal = tools::SIGKILL
   ) {
     client <- crew::crew_client(
       name = name,
@@ -65,6 +66,7 @@ crew_test("custom launcher", {
       reset_options = reset_options,
       garbage_collection = garbage_collection,
       launch_max = launch_max,
+      signal = tools::SIGKILL,
       tls = tls
     )
     controller <- crew::crew_controller(
@@ -147,6 +149,7 @@ crew_test("custom launcher with local async errors", {
     reset_options = FALSE,
     garbage_collection = FALSE,
     launch_max = 5L,
+    signal = tools::SIGKILL,
     processes = NULL
   ) {
     client <- crew::crew_client(
@@ -172,6 +175,7 @@ crew_test("custom launcher with local async errors", {
       reset_options = reset_options,
       garbage_collection = garbage_collection,
       launch_max = launch_max,
+      signal = signal,
       tls = tls,
       processes = processes
     )
@@ -282,6 +286,7 @@ crew_test("custom launcher with async internal launcher tasks", {
     reset_options = FALSE,
     garbage_collection = FALSE,
     launch_max = 5L,
+    signal = tools::SIGKILL,
     processes = NULL
   ) {
     client <- crew::crew_client(
@@ -307,6 +312,7 @@ crew_test("custom launcher with async internal launcher tasks", {
       reset_options = reset_options,
       garbage_collection = garbage_collection,
       launch_max = launch_max,
+      signal = signal,
       tls = tls,
       processes = processes
     )

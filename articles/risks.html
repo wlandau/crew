@@ -110,7 +110,35 @@ dispatcher process to schedule the tasks. If <code>x</code> is a
 processes may not terminate properly. If that happens, they will
 continue to run, which may strain traditional clusters or incur heavy
 expenses on the cloud. Please monitor the platforms you use and manually
-terminate defunct hanging processes as needed.</p>
+terminate defunct hanging processes as needed. For example, in the case
+of AWS Batch, <a href="https://wlandau.github.io/crew.aws.batch/" class="external-link"><code>crew.aws.batch</code></a>
+supports its own job monitoring utilities: <a href="https://wlandau.github.io/crew.aws.batch/index.html#job-management" class="external-link uri">https://wlandau.github.io/crew.aws.batch/index.html#job-management</a>.</p>
+</div>
+<div class="section level3">
+<h3 id="crashes">Crashes<a class="anchor" aria-label="anchor" href="#crashes"></a>
+</h3>
+<p>In addition, <code>crew</code> worker processes may crash silently at
+runtime, or they may fail to launch or connect at all. The reasons may
+be platform-specific, but here are some common possibilities:</p>
+<ul>
+<li>Memory: if a worker exhausts the available memory limits, it will
+crash, and there is no way to relay an informative error message. Please
+grant your workers more computer memory if you think that might have
+happened. <a href="https://wlandau.github.io/crew.aws.batch/" class="external-link"><code>crew.aws.batch</code></a>
+and <a href="https://wlandau.github.io/crew.cluster/" class="external-link"><code>crew.cluster</code></a>
+expose special platform-specific parameters in the controllers to do
+this.</li>
+<li>Connections: each worker must run on the local network, and it must
+be able to dial into the local controlling R process over TCP. If these
+connections are blocked, please ensure there is no firewall between the
+workers and local process. For AWS Batch, we recommend you run the
+controlling R process and all the workers in a security group that
+points to itself (details: <a href="https://wlandau.github.io/crew.aws.batch/#prerequisites" class="external-link uri">https://wlandau.github.io/crew.aws.batch/#prerequisites</a>).
+You may have to discuss with your system administrator.</li>
+<li>Tasks: R code may crash or segfault the worker and cause it to
+abruptly exit. If that happens, see if you can isolate the problem
+locally, then debug the code that caused the crash.</li>
+</ul>
 </div>
 <div class="section level3">
 <h3 id="ports">Ports<a class="anchor" aria-label="anchor" href="#ports"></a>

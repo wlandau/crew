@@ -686,16 +686,16 @@ crew_class_launcher <- R6::R6Class(
       futile <- if_any(complete > history, 0L, futile + 1L)
       crew_assert(
         futile <= private$.launch_max,
-        message = paste(
-          "{crew} worker",
+        message = paste0(
+          "{crew} worker ",
           index,
-          "launched",
+          " launched ",
           private$.launch_max,
-          "times in a row without completing any tasks. Either raise",
-          "launch_max above",
+          " times in a row without completing any tasks. ",
+          "Either troubleshoot or raise launch_max above ",
           private$.launch_max,
-          "or troubleshoot your platform to figure out",
-          "why {crew} workers are not booting up or connecting."
+          ". Details: ",
+          "https://wlandau.github.io/crew/articles/risks.html#crashes"
         )
       )
       mirai::call_mirai_(aio = private$.workers$handle[[index]])

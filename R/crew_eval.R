@@ -62,12 +62,14 @@ crew_eval <- function(
   list2env(x = globals, envir = globalenv())
   envir <- list2env(x = data, parent = globalenv())
   capture_error <- function(condition) {
+    message(paste("Error:", conditionMessage(condition))) # for log files
     state$error <- crew_eval_message(condition)
     state$error_class <- class(condition)
     state$trace <- paste(as.character(sys.calls()), collapse = "\n")
     NULL
   }
   capture_warning <- function(condition) {
+    message(paste("Warning:", conditionMessage(condition))) # for log files
     state$count_warnings <- (state$count_warnings %||% 0L) + 1L
     should_store_warning <- (state$count_warnings < crew_eval_max_warnings) &&
       (nchar(state$warnings %||% "") < crew_eval_max_nchar)

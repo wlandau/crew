@@ -4,6 +4,17 @@
 #' @description Create an `R6` object to launch and maintain
 #'   local process workers.
 #' @inheritParams crew_launcher
+#' @param local_log_directory Either `NULL` or a character of length 1
+#'   with the file path to a directory to write worker-specific log files
+#'   with standard output and standard error messages.
+#'   Each log file represents a single *instance* of a running worker,
+#'   so there will be more log files
+#'   if a given worker starts and terminates a lot. Set to `NULL` to suppress
+#'   log files (default).
+#' @param local_log_join Logical of length 1. If `TRUE`, `crew` will write
+#'   standard output and standard error to the same log file for
+#'   each worker instance. If `FALSE`, then they these two streams
+#'   will go to different log files with informative suffixes.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -31,7 +42,9 @@ crew_launcher_local <- function(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
-  tls = crew::crew_tls()
+  tls = crew::crew_tls(),
+  local_log_directory = NULL,
+  local_log_join = TRUE
 ) {
   crew_deprecate(
     name = "seconds_exit",
@@ -56,7 +69,9 @@ crew_launcher_local <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection,
     launch_max = launch_max,
-    tls = tls
+    tls = tls,
+    local_log_directory = local_log_directory,
+    local_log_join = local_log_join
   )
   launcher$validate()
   launcher
@@ -83,7 +98,125 @@ crew_class_launcher_local <- R6::R6Class(
   classname = "crew_class_launcher_local",
   inherit = crew_class_launcher,
   cloneable = FALSE,
+  private = list(
+    .local_log_directory = NULL,
+    .local_log_join = NULL,
+    .log_prepare = function() {
+      if (!is.null(private$.local_log_directory)) {
+        dir_create(private$.local_log_directory)
+      }
+    },
+    .log_path = function(name, type) {
+      directory <- private$.local_log_directory
+      if (is.null(directory)) {
+        return(NULL)
+      }
+      suffix <- if_any(private$.local_log_join, "", paste0("-", type))
+      file.path(directory, sprintf("%s%s.log", name, suffix))
+    }
+  ),
+  active = list(
+    #' @field local_log_directory See [crew_launcher_local()].
+    local_log_directory = function() {
+      .subset2(private, ".local_log_directory")
+    },
+    #' @field local_log_join See [crew_launcher_local()].
+    local_log_join = function() {
+      .subset2(private, ".local_log_join")
+    }
+  ),
   public = list(
+    #' @description Local launcher constructor.
+    #' @return An `R6` object with the local launcher.
+    #' @param name See [crew_launcher()].
+    #' @param seconds_interval See [crew_launcher()].
+    #' @param seconds_timeout See [crew_launcher()].
+    #' @param seconds_launch See [crew_launcher()].
+    #' @param seconds_idle See [crew_launcher()].
+    #' @param seconds_wall See [crew_launcher()].
+    #' @param seconds_exit See [crew_launcher()].
+    #' @param tasks_max See [crew_launcher()].
+    #' @param tasks_timers See [crew_launcher()].
+    #' @param reset_globals See [crew_launcher()].
+    #' @param reset_packages See [crew_launcher()].
+    #' @param reset_options See [crew_launcher()].
+    #' @param garbage_collection See [crew_launcher()].
+    #' @param launch_max See [crew_launcher()].
+    #' @param tls See [crew_launcher()].
+    #' @param processes See [crew_launcher()].
+    #' @param local_log_directory See [crew_launcher_local()].
+    #' @param local_log_join See [crew_launcher_local()].
+    #' @examples
+    #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    #' client <- crew_client()
+    #' client$start()
+    #' launcher <- crew_launcher_local(name = client$name)
+    #' launcher$start(workers = client$workers)
+    #' launcher$launch(index = 1L)
+    #' m <- mirai::mirai("result", .compute = client$name)
+    #' Sys.sleep(0.25)
+    #' m$data
+    #' client$terminate()
+    #' }
+    initialize = function(
+      name = NULL,
+      seconds_interval = NULL,
+      seconds_timeout = NULL,
+      seconds_launch = NULL,
+      seconds_idle = NULL,
+      seconds_wall = NULL,
+      seconds_exit = NULL,
+      tasks_max = NULL,
+      tasks_timers = NULL,
+      reset_globals = NULL,
+      reset_packages = NULL,
+      reset_options = NULL,
+      garbage_collection = NULL,
+      launch_max = NULL,
+      tls = NULL,
+      processes = NULL,
+      local_log_directory = NULL,
+      local_log_join = NULL
+    ) {
+      super$initialize(
+        name = name,
+        seconds_interval = seconds_interval,
+        seconds_timeout = seconds_timeout,
+        seconds_launch = seconds_launch,
+        seconds_idle = seconds_idle,
+        seconds_wall = seconds_wall,
+        seconds_exit = seconds_exit,
+        tasks_max = tasks_max,
+        tasks_timers = tasks_timers,
+        reset_globals = reset_globals,
+        reset_packages = reset_packages,
+        reset_options = reset_options,
+        garbage_collection = garbage_collection,
+        launch_max = launch_max,
+        tls = tls,
+        processes = processes
+      )
+      private$.local_log_directory <- local_log_directory
+      private$.local_log_join <- local_log_join
+    },
+    #' @description Validate the local launcher.
+    #' @return `NULL` (invisibly).
+    validate = function() {
+      super$validate()
+      crew_assert(
+        private$.local_log_directory %|||% "x",
+        is.character(.),
+        length(.) == 1L,
+        !anyNA(.),
+        nzchar(.),
+        message = "local_log_directory must be NULL or a valid directory path."
+      )
+      crew_assert(
+        private$.local_log_join,
+        isTRUE(.) || isFALSE(.),
+        message = "local_log_join must be TRUE or FALSE."
+      )
+    },
     #' @description Launch a local process worker which will
     #'   dial into a socket.
     #' @details The `call` argument is R code that will run to
@@ -94,7 +227,9 @@ crew_class_launcher_local <- R6::R6Class(
     #'   later on.
     #' @param call Character of length 1 with a namespaced call to
     #'   [crew_worker()] which will run in the worker and accept tasks.
-    #' @param name Character of length 1 with an informative worker name.
+    #' @param name Character of length 1 with a long informative worker name
+    #'   which contains the `launcher`, `worker`, and `instance` arguments
+    #'   described below.
     #' @param launcher Character of length 1, name of the launcher.
     #' @param worker Positive integer of length 1, index of the worker.
     #'   This worker index remains the same even when the current instance
@@ -105,10 +240,13 @@ crew_class_launcher_local <- R6::R6Class(
     launch_worker = function(call, name, launcher, worker, instance) {
       bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
       path <- file.path(R.home("bin"), bin)
+      private$.log_prepare()
       processx::process$new(
         command = path,
         args = c("-e", call),
-        cleanup = TRUE
+        cleanup = TRUE,
+        stdout = private$.log_path(name = name, type = "stdout"),
+        stderr = private$.log_path(name = name, type = "stderr")
       )
     },
     #' @description Terminate a local process worker.

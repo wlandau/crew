@@ -35,7 +35,9 @@ crew_controller_local <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L
+  launch_max = 5L,
+  local_log_directory = NULL,
+  local_log_join = TRUE
 ) {
   crew_deprecate(
     name = "seconds_exit",
@@ -70,7 +72,9 @@ crew_controller_local <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection,
     launch_max = launch_max,
-    tls = tls
+    tls = tls,
+    local_log_directory = local_log_directory,
+    local_log_join = local_log_join
   )
   controller <- crew_controller(client = client, launcher = launcher)
   controller$validate()

@@ -445,11 +445,12 @@ crew_class_launcher <- R6::R6Class(
       list(
         url = socket,
         autoexit = signal_disconnect,
+        cleanup = cleanup,
+        output = TRUE,
         maxtasks = private$.tasks_max,
         idletime = private$.seconds_idle * 1000,
         walltime = private$.seconds_wall * 1000,
         timerstart = private$.tasks_timers,
-        cleanup = cleanup,
         tls = private$.tls$worker(name = private$.name),
         rs = mirai::nextstream(private$.name)
       )

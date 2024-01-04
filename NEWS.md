@@ -1,7 +1,9 @@
-# crew 0.7.0.9004 (development)
+# crew 0.7.0.9005 (development)
 
 * Configure workers to send themselves a termination signal if the connection to the dispatcher is broken (#141, @psychelzh). Huge thanks to @shikokuchuo for the support through https://github.com/shikokuchuo/mirai/issues/87, https://github.com/shikokuchuo/mirai/pull/88, and https://github.com/shikokuchuo/nanonext/pull/25!
 * Throw a warning from `controller$map()` if at least one task threw one. `warnings = FALSE` suppresses this behavior.
+* Set `output = TRUE` in `daemon()` so `stdout` and `stderr` streams print.
+* Add new arguments `local_log_directory` and `local_log_join` to write to local log files.
 
 # crew 0.7.0
 

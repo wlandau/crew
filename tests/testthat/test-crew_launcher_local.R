@@ -1,3 +1,51 @@
+crew_test("crew_launcher_local() active binding members", {
+  launcher <- crew_launcher_local(
+    name = "x",
+    local_log_directory = "y",
+    local_log_join = FALSE
+  )
+  expect_equal(launcher$local_log_directory, "y")
+  expect_false(launcher$local_log_join)
+})
+
+crew_test("crew_launcher_local() log_prepare()", {
+  skip_on_cran()
+  launcher <- crew_launcher_local(
+    name = "x",
+    local_log_directory = tempfile(),
+    local_log_join = FALSE
+  )
+  on.exit(unlink(launcher$local_log_directory))
+  private <- crew_private(launcher)
+  expect_false(dir.exists(launcher$local_log_directory))
+  private$.log_prepare()
+  expect_true(dir.exists(launcher$local_log_directory))
+})
+
+crew_test("crew_launcher_local() log_path(), joined logs", {
+  skip_on_cran()
+  launcher <- crew_launcher_local(
+    name = "x",
+    local_log_directory = "dir",
+    local_log_join = TRUE
+  )
+  private <- crew_private(launcher)
+  out <- private$.log_path(name = "x", type = "stdout")
+  expect_equal(out, file.path("dir", "x.log"))
+})
+
+crew_test("crew_launcher_local() log_path(), separate logs", {
+  skip_on_cran()
+  launcher <- crew_launcher_local(
+    name = "x",
+    local_log_directory = "dir",
+    local_log_join = FALSE
+  )
+  private <- crew_private(launcher)
+  out <- private$.log_path(name = "x", type = "stdout")
+  expect_equal(out, file.path("dir", "x-stdout.log"))
+})
+
 crew_test("crew_launcher_local() can run a task on a worker", {
   skip_on_cran()
   skip_on_os("windows")
@@ -190,6 +238,74 @@ crew_test("crew_launcher_local() can run a task and end a worker", {
   expect_equal(launcher$workers$termination[[1L]]$pid, pid)
   expect_silent(launcher$terminate())
   expect_true(launcher$workers$terminated[1L])
+})
+
+crew_test("joined logs", {
+  skip_on_cran()
+  skip_on_covr()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 60,
+    local_log_directory = tempfile(),
+    local_log_join = TRUE
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(print("this-print"))
+  x$push(message("this-message"))
+  x$push(warning("this-warning"))
+  x$push(stop("this-stop"))
+  x$wait(mode = "all")
+  Sys.sleep(0.25)
+  dir <- x$launcher$local_log_directory
+  logs <- list.files(dir, full.names = TRUE)
+  expect_equal(length(logs), 1L)
+  lines <- readLines(logs)
+  expect_true(any(grepl("this-print", lines, fixed = TRUE)))
+  expect_true(any(grepl("this-message", lines, fixed = TRUE)))
+  expect_true(any(grepl("Warning: this-warning", lines, fixed = TRUE)))
+  expect_true(any(grepl("Error: this-stop", lines, fixed = TRUE)))
+})
+
+crew_test("separate logs", {
+  skip_on_cran()
+  skip_on_covr()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 60,
+    local_log_directory = tempfile(),
+    local_log_join = FALSE
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  on.exit(x$terminate())
+  x$push(print("this-print"))
+  x$push(message("this-message"))
+  x$push(warning("this-warning"))
+  x$push(stop("this-stop"))
+  x$wait(mode = "all")
+  Sys.sleep(0.25)
+  dir <- x$launcher$local_log_directory
+  logs <- list.files(dir, full.names = TRUE)
+  expect_equal(length(logs), 2L)
+  stderr <- readLines(logs[1L])
+  stdout <- readLines(logs[2L])
+  expect_true(any(grepl("this-print", stdout, fixed = TRUE)))
+  expect_true(any(grepl("this-message", stderr, fixed = TRUE)))
+  expect_true(any(grepl("Warning: this-warning", stderr, fixed = TRUE)))
+  expect_true(any(grepl("Error: this-stop", stderr, fixed = TRUE)))
 })
 
 crew_test("deprecate seconds_exit", {

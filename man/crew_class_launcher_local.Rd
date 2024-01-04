@@ -21,6 +21,22 @@ Sys.sleep(0.25)
 m$data
 client$terminate()
 }
+
+## ------------------------------------------------
+## Method `crew_class_launcher_local$new`
+## ------------------------------------------------
+
+if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+client <- crew_client()
+client$start()
+launcher <- crew_launcher_local(name = client$name)
+launcher$start(workers = client$workers)
+launcher$launch(index = 1L)
+m <- mirai::mirai("result", .compute = client$name)
+Sys.sleep(0.25)
+m$data
+client$terminate()
+}
 }
 \seealso{
 Other plugin_local: 
@@ -31,9 +47,20 @@ Other plugin_local:
 \section{Super class}{
 \code{\link[crew:crew_class_launcher]{crew::crew_class_launcher}} -> \code{crew_class_launcher_local}
 }
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{local_log_directory}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+
+\item{\code{local_log_join}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-crew_class_launcher_local-new}{\code{crew_class_launcher_local$new()}}
+\item \href{#method-crew_class_launcher_local-validate}{\code{crew_class_launcher_local$validate()}}
 \item \href{#method-crew_class_launcher_local-launch_worker}{\code{crew_class_launcher_local$launch_worker()}}
 \item \href{#method-crew_class_launcher_local-terminate_worker}{\code{crew_class_launcher_local$terminate_worker()}}
 }
@@ -47,7 +74,6 @@ Other plugin_local:
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="done"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-done'><code>crew::crew_class_launcher$done()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="errors"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-errors'><code>crew::crew_class_launcher$errors()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="forward"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-forward'><code>crew::crew_class_launcher$forward()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="initialize"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-initialize'><code>crew::crew_class_launcher$initialize()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch'><code>crew::crew_class_launcher$launch()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="rotate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-rotate'><code>crew::crew_class_launcher$rotate()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="scale"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-scale'><code>crew::crew_class_launcher$scale()</code></a></span></li>
@@ -59,11 +85,114 @@ Other plugin_local:
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate'><code>crew::crew_class_launcher$terminate()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate_workers"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate_workers'><code>crew::crew_class_launcher$terminate_workers()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="unlaunched"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-unlaunched'><code>crew::crew_class_launcher$unlaunched()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="validate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-validate'><code>crew::crew_class_launcher$validate()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="wait"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-wait'><code>crew::crew_class_launcher$wait()</code></a></span></li>
 </ul>
 </details>
 }}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher_local-new"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher_local-new}{}}}
+\subsection{Method \code{new()}}{
+Local launcher constructor.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$new(
+  name = NULL,
+  seconds_interval = NULL,
+  seconds_timeout = NULL,
+  seconds_launch = NULL,
+  seconds_idle = NULL,
+  seconds_wall = NULL,
+  seconds_exit = NULL,
+  tasks_max = NULL,
+  tasks_timers = NULL,
+  reset_globals = NULL,
+  reset_packages = NULL,
+  reset_options = NULL,
+  garbage_collection = NULL,
+  launch_max = NULL,
+  tls = NULL,
+  processes = NULL,
+  local_log_directory = NULL,
+  local_log_join = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{seconds_exit}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{reset_globals}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{reset_packages}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{reset_options}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{local_log_directory}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+
+\item{\code{local_log_join}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+An \code{R6} object with the local launcher.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+client <- crew_client()
+client$start()
+launcher <- crew_launcher_local(name = client$name)
+launcher$start(workers = client$workers)
+launcher$launch(index = 1L)
+m <- mirai::mirai("result", .compute = client$name)
+Sys.sleep(0.25)
+m$data
+client$terminate()
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher_local-validate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher_local-validate}{}}}
+\subsection{Method \code{validate()}}{
+Validate the local launcher.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$validate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher_local-launch_worker"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher_local-launch_worker}{}}}
@@ -80,7 +209,9 @@ dial into a socket.
 \item{\code{call}}{Character of length 1 with a namespaced call to
 \code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
 
-\item{\code{name}}{Character of length 1 with an informative worker name.}
+\item{\code{name}}{Character of length 1 with a long informative worker name
+which contains the \code{launcher}, \code{worker}, and \code{instance} arguments
+described below.}
 
 \item{\code{launcher}}{Character of length 1, name of the launcher.}
 

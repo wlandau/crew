@@ -19,7 +19,9 @@ crew_launcher_local(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
-  tls = crew::crew_tls()
+  tls = crew::crew_tls(),
+  local_log_directory = NULL,
+  local_log_join = TRUE
 )
 }
 \arguments{
@@ -93,6 +95,19 @@ circumstances. But \code{launch_max} should still be small enough
 to detect errors in the underlying platform.}
 
 \item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
+
+\item{local_log_directory}{Either \code{NULL} or a character of length 1
+with the file path to a directory to write worker-specific log files
+with standard output and standard error messages.
+Each log file represents a single \emph{instance} of a running worker,
+so there will be more log files
+if a given worker starts and terminates a lot. Set to \code{NULL} to suppress
+log files (default).}
+
+\item{local_log_join}{Logical of length 1. If \code{TRUE}, \code{crew} will write
+standard output and standard error to the same log file for
+each worker instance. If \code{FALSE}, then they these two streams
+will go to different log files with informative suffixes.}
 }
 \description{
 Create an \code{R6} object to launch and maintain

@@ -18,7 +18,7 @@ local process workers."><meta property="og:image" content="/logo.svg"><!-- mathj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">crew</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9004</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9005</span>
       </span>
     </div>
 
@@ -73,7 +73,9 @@ local process workers.</p>
 <span>  reset_options <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  garbage_collection <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  launch_max <span class="op">=</span> <span class="fl">5L</span>,</span>
-<span>  tls <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_tls.html">crew_tls</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  tls <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_tls.html">crew_tls</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  local_log_directory <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  local_log_join <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -178,6 +180,23 @@ to detect errors in the underlying platform.</p></dd>
 
 <dt>tls</dt>
 <dd><p>A TLS configuration object from <code><a href="crew_tls.html">crew_tls()</a></code>.</p></dd>
+
+
+<dt>local_log_directory</dt>
+<dd><p>Either <code>NULL</code> or a character of length 1
+with the file path to a directory to write worker-specific log files
+with standard output and standard error messages.
+Each log file represents a single <em>instance</em> of a running worker,
+so there will be more log files
+if a given worker starts and terminates a lot. Set to <code>NULL</code> to suppress
+log files (default).</p></dd>
+
+
+<dt>local_log_join</dt>
+<dd><p>Logical of length 1. If <code>TRUE</code>, <code>crew</code> will write
+standard output and standard error to the same log file for
+each worker instance. If <code>FALSE</code>, then they these two streams
+will go to different log files with informative suffixes.</p></dd>
 
 </dl></div>
     <div id="see-also">

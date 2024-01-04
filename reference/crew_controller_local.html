@@ -18,7 +18,7 @@ launch workers on local processes."><meta property="og:image" content="/logo.svg
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">crew</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9004</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9005</span>
       </span>
     </div>
 
@@ -78,7 +78,9 @@ launch workers on local processes.</p>
 <span>  reset_packages <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  reset_options <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  garbage_collection <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  launch_max <span class="op">=</span> <span class="fl">5L</span></span>
+<span>  launch_max <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  local_log_directory <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  local_log_join <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -208,6 +210,23 @@ It is recommended to set <code>launch_max</code> above 0
 because sometimes workers are unproductive under perfectly ordinary
 circumstances. But <code>launch_max</code> should still be small enough
 to detect errors in the underlying platform.</p></dd>
+
+
+<dt>local_log_directory</dt>
+<dd><p>Either <code>NULL</code> or a character of length 1
+with the file path to a directory to write worker-specific log files
+with standard output and standard error messages.
+Each log file represents a single <em>instance</em> of a running worker,
+so there will be more log files
+if a given worker starts and terminates a lot. Set to <code>NULL</code> to suppress
+log files (default).</p></dd>
+
+
+<dt>local_log_join</dt>
+<dd><p>Logical of length 1. If <code>TRUE</code>, <code>crew</code> will write
+standard output and standard error to the same log file for
+each worker instance. If <code>FALSE</code>, then they these two streams
+will go to different log files with informative suffixes.</p></dd>
 
 </dl></div>
     <div id="see-also">

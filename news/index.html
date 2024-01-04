@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">crew</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9004</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9005</span>
       </span>
     </div>
 
@@ -51,9 +51,11 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.7.0.9004" id="crew-0709004-development">crew 0.7.0.9004 (development)<a class="anchor" aria-label="anchor" href="#crew-0709004-development"></a></h2>
+<h2 class="page-header" data-toc-text="0.7.0.9005" id="crew-0709005-development">crew 0.7.0.9005 (development)<a class="anchor" aria-label="anchor" href="#crew-0709005-development"></a></h2>
 <ul><li>Configure workers to send themselves a termination signal if the connection to the dispatcher is broken (<a href="https://github.com/wlandau/crew/issues/141" class="external-link">#141</a>, <a href="https://github.com/psychelzh" class="external-link">@psychelzh</a>). Huge thanks to <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a> for the support through <a href="https://github.com/shikokuchuo/mirai/issues/87" class="external-link uri">https://github.com/shikokuchuo/mirai/issues/87</a>, <a href="https://github.com/shikokuchuo/mirai/pull/88" class="external-link uri">https://github.com/shikokuchuo/mirai/pull/88</a>, and <a href="https://github.com/shikokuchuo/nanonext/pull/25" class="external-link uri">https://github.com/shikokuchuo/nanonext/pull/25</a>!</li>
 <li>Throw a warning from <code>controller$map()</code> if at least one task threw one. <code>warnings = FALSE</code> suppresses this behavior.</li>
+<li>Set <code>output = TRUE</code> in <code>daemon()</code> so <code>stdout</code> and <code>stderr</code> streams print.</li>
+<li>Add new arguments <code>local_log_directory</code> and <code>local_log_join</code> to write to local log files.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.7.0" id="crew-070">crew 0.7.0<small>2023-12-11</small><a class="anchor" aria-label="anchor" href="#crew-070"></a></h2>

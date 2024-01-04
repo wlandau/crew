@@ -1,4 +1,4 @@
-# crew 0.7.0.9003 (development)
+# crew 0.7.0.9004 (development)
 
 * Configure workers to send themselves a termination signal if the connection to the dispatcher is broken (#141, @psychelzh). Huge thanks to @shikokuchuo for the support through https://github.com/shikokuchuo/mirai/issues/87, https://github.com/shikokuchuo/mirai/pull/88, and https://github.com/shikokuchuo/nanonext/pull/25!
 * Throw a warning from `controller$map()` if at least one task threw one. `warnings = FALSE` suppresses this behavior.

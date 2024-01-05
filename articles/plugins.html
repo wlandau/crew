@@ -190,7 +190,7 @@ local R processes on Unix-like systems.<a href="#fn1" class="footnote-ref" id="f
 <span>      <span class="op">)</span></span>
 <span>    <span class="op">}</span>,</span>
 <span>    terminate_worker <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">handle</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="va">handle</span><span class="op">$</span><span class="fu">signal</span><span class="op">(</span><span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_signal_terminate.html">crew_signal_terminate</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="va">handle</span><span class="op">$</span><span class="fu">signal</span><span class="op">(</span><span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_terminate_signal.html">crew_terminate_signal</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">}</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -358,7 +358,7 @@ viewing CloudWatch logs.</p>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">pids</span><span class="op">)</span>,</span>
 <span>        <span class="op">~</span><span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_send_signal.html" class="external-link">ps_send_signal</a></span><span class="op">(</span></span>
 <span>          p <span class="op">=</span> <span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_handle.html" class="external-link">ps_handle</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span>,</span>
-<span>          sig <span class="op">=</span> <span class="fu"><a href="../reference/crew_signal_terminate.html">crew_signal_terminate</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>          sig <span class="op">=</span> <span class="fu"><a href="../reference/crew_terminate_signal.html">crew_terminate_signal</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>        <span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
 <span>    <span class="op">}</span></span>
@@ -564,7 +564,7 @@ they are used by <code>terminate_worker()</code>.</p>
 <span>      <span class="va">self</span><span class="op">$</span><span class="va">async</span><span class="op">$</span><span class="fu">eval</span><span class="op">(</span></span>
 <span>        command <span class="op">=</span> <span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_send_signal.html" class="external-link">ps_send_signal</a></span><span class="op">(</span></span>
 <span>          p <span class="op">=</span> <span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_handle.html" class="external-link">ps_handle</a></span><span class="op">(</span>pid <span class="op">=</span> <span class="va">pid</span><span class="op">)</span>,</span>
-<span>          sig <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_signal_terminate.html">crew_signal_terminate</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>          sig <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_terminate_signal.html">crew_terminate_signal</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>        <span class="op">)</span>,</span>
 <span>        data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pid <span class="op">=</span> <span class="va">handle</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">pid</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>

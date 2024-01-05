@@ -13,6 +13,10 @@ reference:
 - title: Package help
   contents:
   - '`crew-package`'
+- title: Local process monitor
+  contents:
+  - '`crew_monitor_local`'
+  - '`crew_class_monitor_local`'
 - title: Local launcher plugin
   contents:
   - '`crew_controller_local`'
@@ -59,4 +63,5 @@ reference:
   - '`crew_random_name`'
   - '`crew_retry`'
   - '`crew_signal_terminate`'
+  - '`crew_user`'
   - '`crew_worker`'

@@ -102,6 +102,14 @@ crew_test("crew_client() works", {
   expect_null(client$summary())
 })
 
+crew_test("crew_client() cover a line", {
+  client <- crew_client(host = "127.0.0.1")
+  private <- crew_private(client)
+  private$.started <- TRUE
+  expect_null(client$terminate())
+})
+
+
 crew_test("crew_client() deprecate tls_enable", {
   expect_warning(
     crew_client(host = "127.0.0.1", tls_enable = TRUE),

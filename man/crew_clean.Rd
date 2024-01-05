@@ -7,7 +7,7 @@
 crew_clean(
   dispatchers = TRUE,
   workers = TRUE,
-  user = Sys.info()[["user"]],
+  user = crew::crew_user(),
   seconds_interval = 0.5,
   seconds_timeout = 60,
   verbose = TRUE
@@ -65,6 +65,7 @@ Other utility:
 \code{\link{crew_random_name}()},
 \code{\link{crew_retry}()},
 \code{\link{crew_signal_terminate}()},
+\code{\link{crew_user}()},
 \code{\link{crew_worker}()}
 }
 \concept{utility}

@@ -34,7 +34,7 @@
 crew_clean <- function(
   dispatchers = TRUE,
   workers = TRUE,
-  user = Sys.info()[["user"]],
+  user = crew::crew_user(),
   seconds_interval = 0.5,
   seconds_timeout = 60,
   verbose = TRUE

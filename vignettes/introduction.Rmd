@@ -186,6 +186,31 @@ crew_clean()
 #> nothing to clean up
 ```
 
+# Monitoring local processes
+
+A `crew` controller creates different types of local processes. These include:
+
+* Dispatchers: every controller has a special local process called a "dispatcher". [`mirai`](https://github.com/shikokuchuo/mirai) needs this process to orchestrate tasks.
+* Workers: the R processes that `crew` launches to run tasks. These may be local processes as in the case of `crew_controller_local()`, or they may be processes on different computers if you are using a third-party [launcher plugin](https://wlandau.github.io/crew/articles/plugins.html) like `crew.cluster` or `crew.aws.batch`. launches processes.
+* Daemons: R processes created by `mirai` outside of `crew` to run tasks. Such processes may spawn automatically if you set the `processes` argument of e.g. `crew.aws.batch::crew_controller_aws_batch()` to a positive integer.
+
+Usually these processes terminate themselves when the parent R session exits or the controller terminates, but under rare circumstances they may continue running. The "local monitor" in `crew` makes it easy to list and terminate any of these processes which may be running on your local computer. Example:
+
+```{r, eval = FALSE}
+monitor <- crew_monitor_local()
+monitor$dispatchers() # List PIDs of all local {mirai} dispatcher processes.
+#> [1] 31215
+monitor$daemons()
+#> integer(0)
+monitor$workers()
+#> [1] 57001 57002
+monitor$terminate(pid = c(57001, 57002))
+monitor$workers()
+#> integer(0)
+```
+
+`crew_monitor_local()` only manages processes running on your local computer. To manage `crew` workers running on different computers, such as SLURM or AWS Batch, please familiarize yourself with the given computing platform, and consider using the monitor objects in the relevant third-party plugin packages such as [`crew.cluster`](https://wlandau.github.io/crew.cluster/) or [`crew.aws.batch`](https://wlandau.github.io/crew.aws.batch/). Example: <https://wlandau.github.io/crew.aws.batch/index.html#job-management>.
+
 # Tuning and auto-scaling
 
 As explained above, `push()`, `pop()`, and `wait()` launch new workers to run tasks. The number of new workers depends on the number of tasks at the time. In addition, workers can shut themselves down as work completes. In other words, `crew` automatically raises and lowers the number of workers in response to fluctuations in the task workload.

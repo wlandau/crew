@@ -24,6 +24,7 @@ Other utility:
 \code{\link{crew_eval}()},
 \code{\link{crew_random_name}()},
 \code{\link{crew_retry}()},
+\code{\link{crew_user}()},
 \code{\link{crew_worker}()}
 }
 \concept{utility}

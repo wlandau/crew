@@ -2,7 +2,7 @@
 
 * Configure workers to send themselves a termination signal if the connection to the dispatcher is broken (#141, @psychelzh). Huge thanks to @shikokuchuo for the support through https://github.com/shikokuchuo/mirai/issues/87, https://github.com/shikokuchuo/mirai/pull/88, and https://github.com/shikokuchuo/nanonext/pull/25! The signal itself is platform-dependent and determined by the new function `crew_terminate_signal()`.
 * Implement `crew_monitor_local()` to help users monitor and terminate local R processes created by `crew` and `mirai`.
-* Implement new utility function `crew_user()` as a safer way to get the user ID.
+* Implement new utility function `crew_terminate_process()` to terminate a process manually without resorting to `SIGKILL` on Windows.
 * Throw a warning from `controller$map()` if at least one task threw one. `warnings = FALSE` suppresses this behavior.
 * Set `output = TRUE` in `daemon()` so `stdout` and `stderr` streams print.
 * Add new arguments `local_log_directory` and `local_log_join` to write to local log files.

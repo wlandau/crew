@@ -30,14 +30,14 @@ Other monitor:
 List the process IDs of the running \code{mirai} dispatcher
 processes.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$dispatchers(user = crew::crew_user())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$dispatchers(user = ps::ps_username())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{user}}{Character of length 1, user ID to filter on. \code{NULL}
-to list all users (not recommended).}
+to list processes of all users (not recommended).}
 }
 \if{html}{\out{</div>}}
 }
@@ -56,14 +56,14 @@ object can launch such processes: for example, when a positive
 integer is supplied to the \code{processes} argument of e.g.
 \code{crew.aws.batch::crew_controller_aws_batch()}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$daemons(user = crew::crew_user())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$daemons(user = ps::ps_username())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{user}}{Character of length 1, user ID to filter on. \code{NULL}
-to list all users (not recommended).}
+to list processes of all users (not recommended).}
 }
 \if{html}{\out{</div>}}
 }
@@ -79,14 +79,14 @@ Integer vector of process IDs of the locally running
 List the process IDs of locally running \code{crew} workers
 launched by the local controller (\code{\link[=crew_controller_local]{crew_controller_local()}}).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$workers(user = crew::crew_user())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$workers(user = ps::ps_username())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{user}}{Character of length 1, user ID to filter on. \code{NULL}
-to list all users (not recommended).}
+to list processes of all users (not recommended).}
 }
 \if{html}{\out{</div>}}
 }

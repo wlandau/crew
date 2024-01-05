@@ -34,7 +34,7 @@
 crew_clean <- function(
   dispatchers = TRUE,
   workers = TRUE,
-  user = crew::crew_user(),
+  user = ps::ps_username(),
   seconds_interval = 0.5,
   seconds_timeout = 60,
   verbose = TRUE
@@ -65,7 +65,7 @@ crew_clean <- function(
   }
   for (index in seq_len(nrow(ps))) {
     handle <- ps$ps_handle[[index]]
-    ps::ps_send_signal(p = handle, sig = crew_terminate_signal())
+    crew_terminate_process(ps::ps_pid(p = handle))
     crew_retry(
       fun = ~!ps::ps_is_running(p = handle),
       seconds_interval = seconds_interval,

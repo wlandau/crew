@@ -27,14 +27,14 @@
 #' @importFrom nanonext %~>% cv cv_value mclock msleep nng_error random
 #'   .unresolved unresolved until_ tls_config
 #' @importFrom processx process
-#' @importFrom ps ps_cmdline ps_handle ps_is_running ps_send_signal ps_status
+#' @importFrom ps ps_cmdline ps_handle ps_is_running ps_status ps_username
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function enquo is_installed is_named quo_squash
 #' @importFrom stats runif
 #' @importFrom tibble as_tibble new_tibble tibble
 #' @importFrom tidyselect all_of any_of contains ends_with eval_select
 #'   everything last_col matches num_range one_of starts_with
-#' @importFrom tools SIGINT SIGQUIT SIGTERM
+#' @importFrom tools pskill SIGINT SIGQUIT SIGTERM
 #' @importFrom utils compareVersion globalVariables head
 NULL
 

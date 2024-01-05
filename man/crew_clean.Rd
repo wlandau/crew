@@ -7,7 +7,7 @@
 crew_clean(
   dispatchers = TRUE,
   workers = TRUE,
-  user = crew::crew_user(),
+  user = ps::ps_username(),
   seconds_interval = 0.5,
   seconds_timeout = 60,
   verbose = TRUE
@@ -64,8 +64,8 @@ Other utility:
 \code{\link{crew_eval}()},
 \code{\link{crew_random_name}()},
 \code{\link{crew_retry}()},
+\code{\link{crew_terminate_process}()},
 \code{\link{crew_terminate_signal}()},
-\code{\link{crew_user}()},
 \code{\link{crew_worker}()}
 }
 \concept{utility}

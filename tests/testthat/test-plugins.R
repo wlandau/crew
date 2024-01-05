@@ -256,10 +256,7 @@ crew_test("custom launcher with async internal launcher tasks", {
         pid <- handle$data$pid
         self$async$eval(
           command = {
-            ps::ps_send_signal(
-              p = ps::ps_handle(pid = pid),
-              sig = crew::crew_terminate_signal()
-            )
+            crew::crew_terminate_process(pid)
             list(pid = pid, status = "terminated")
           },
           data = list(pid = pid)

@@ -21,8 +21,8 @@ crew_class_monitor_local <- R6::R6Class(
     #' @return Integer vector of process IDs of the running `mirai` dispatcher
     #'   processes.
     #' @param user Character of length 1, user ID to filter on. `NULL`
-    #'   to list all users (not recommended).
-    dispatchers = function(user = crew::crew_user()) {
+    #'   to list processes of all users (not recommended).
+    dispatchers = function(user = ps::ps_username()) {
       crew_monitor_pids(pattern = "mirai::dispatcher", user = user)
     },
     #' @description List the process IDs of the locally running `mirai` daemon
@@ -33,8 +33,8 @@ crew_class_monitor_local <- R6::R6Class(
     #' @return Integer vector of process IDs of the locally running
     #'   `mirai` daemon processes which are not `crew` workers.
     #' @param user Character of length 1, user ID to filter on. `NULL`
-    #'   to list all users (not recommended).
-    daemons = function(user = crew::crew_user()) {
+    #'   to list processes of all users (not recommended).
+    daemons = function(user = ps::ps_username()) {
       crew_monitor_pids(pattern = "mirai::daemon", user = user)
     },
     #' @description List the process IDs of locally running `crew` workers
@@ -48,8 +48,8 @@ crew_class_monitor_local <- R6::R6Class(
     #' @return Integer vector of process IDs of locally running `crew` workers
     #'   launched by the local controller ([crew_controller_local()]).
     #' @param user Character of length 1, user ID to filter on. `NULL`
-    #'   to list all users (not recommended).
-    workers = function(user = crew::crew_user()) {
+    #'   to list processes of all users (not recommended).
+    workers = function(user = ps::ps_username()) {
       crew_monitor_pids(pattern = "crew::crew_worker", user = user)
     },
     #' @description Terminate the given process IDs.
@@ -59,18 +59,20 @@ crew_class_monitor_local <- R6::R6Class(
     #' @param pids Integer vector of process IDs of local processes to
     #'   terminate.
     terminate = function(pids) {
-      walk(
-        as.integer(pids),
-        ~ps::ps_send_signal(
-          p = ps::ps_handle(.x),
-          sig = crew_terminate_signal()
-        )
-      )
+      walk(as.integer(pids), crew_terminate_process)
     }
   )
 )
 
 crew_monitor_pids <- function(pattern, user) {
+  crew_assert(
+    user %|||% "unknown",
+    is.character(.),
+    length(.) == 1L,
+    !anyNA(.),
+    nzchar(.),
+    message = "invalid user name"
+  )
   processes <- ps::ps(user = user)
   commands <- map_chr(x = processes$ps_handle, f = process_command)
   filter <- grepl(pattern = pattern, x = as.character(commands), fixed = TRUE)

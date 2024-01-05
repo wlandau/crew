@@ -28,7 +28,7 @@ reference:
   - '`crew_class_controller`'
 - title: Controller groups
   contents:
-  - '`crew_controller_group`' 
+  - '`crew_controller_group`'
   - '`crew_class_controller_group`'
 - title: Launchers
   contents:
@@ -62,6 +62,6 @@ reference:
   - '`crew_eval`'
   - '`crew_random_name`'
   - '`crew_retry`'
+  - '`crew_terminate_process`'
   - '`crew_terminate_signal`'
-  - '`crew_user`'
   - '`crew_worker`'

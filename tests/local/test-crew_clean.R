@@ -1,6 +1,5 @@
 crew_test("crew_clean()", {
   skip_on_cran()
-  skip_on_os("windows")
   x <- crew_controller_local(
     workers = 1L,
     seconds_idle = 360

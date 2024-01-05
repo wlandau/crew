@@ -1,7 +1,8 @@
 crew_test("dir_create()", {
   skip_on_cran()
-  tmp <- file.path(tempfile(), "x", "y")
-  on.exit(unlink(tmp, recursive = TRUE))
+  dir <- tempfile()
+  on.exit(unlink(dir, recursive = TRUE))
+  tmp <- file.path(dir, "x", "y")
   expect_false(dir.exists(tmp))
   expect_false(file.exists(tmp))
   dir_create(tmp)

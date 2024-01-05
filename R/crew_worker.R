@@ -2,7 +2,7 @@
 #' @export
 #' @family utility
 #' @description Launches a `crew` worker which runs a `mirai` daemon.
-#'   Not a user-side funtion. Users should not call [crew_worker()]
+#'   Not a user-side function. Users should not call [crew_worker()]
 #'   directly. See launcher plugins like [crew_launcher_local()]
 #'   for examples.
 #' @return `NULL` (invisibly)

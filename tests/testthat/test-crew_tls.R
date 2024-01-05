@@ -19,7 +19,7 @@ test_that("crew_tls() custom with no files", {
 test_that("crew_tls() with mock files", {
   key <- tempfile()
   certificates <- tempfile()
-  on.exit(unlink(c(key, certificates)))
+  on.exit(unlink(c(key, certificates), recursive = TRUE))
   writeLines(
     c(
       "-----BEGIN PRIVATE KEY-----",
@@ -69,7 +69,7 @@ test_that("crew_tls() bad mode", {
 
 test_that("crew_tls_assert_key()", {
   temp <- tempfile()
-  on.exit(unlink(temp))
+  on.exit(unlink(temp, recursive = TRUE))
   expect_crew_error(crew_tls_assert_key(temp))
   file.create(temp)
   expect_crew_error(crew_tls_assert_key(temp))
@@ -97,7 +97,7 @@ test_that("crew_tls_assert_key()", {
 
 test_that("crew_tls_assert_certificate()", {
   temp <- tempfile()
-  on.exit(unlink(temp))
+  on.exit(unlink(temp, recursive = TRUE))
   expect_crew_error(crew_tls_assert_certificate(temp))
   file.create(temp)
   expect_crew_error(crew_tls_assert_certificate(temp))

@@ -10,16 +10,17 @@ crew_test("crew_launcher_local() active binding members", {
 
 crew_test("crew_launcher_local() log_prepare()", {
   skip_on_cran()
+  dir <- tempfile()
   launcher <- crew_launcher_local(
     name = "x",
-    local_log_directory = tempfile(),
+    local_log_directory = dir,
     local_log_join = FALSE
   )
-  on.exit(unlink(launcher$local_log_directory))
+  on.exit(unlink(dir))
   private <- crew_private(launcher)
-  expect_false(dir.exists(launcher$local_log_directory))
+  expect_false(dir.exists(dir))
   private$.log_prepare()
-  expect_true(dir.exists(launcher$local_log_directory))
+  expect_true(dir.exists(dir))
 })
 
 crew_test("crew_launcher_local() joined log path", {
@@ -248,10 +249,11 @@ crew_test("joined logs", {
   skip_on_cran()
   skip_on_covr()
   skip_on_os("windows")
+  dir <- tempfile()
   x <- crew_controller_local(
     workers = 1L,
     seconds_idle = 60,
-    local_log_directory = tempfile(),
+    local_log_directory = dir,
     local_log_join = TRUE
   )
   on.exit({
@@ -259,6 +261,7 @@ crew_test("joined logs", {
     rm(x)
     gc()
     crew_test_sleep()
+    unlink(dir, recursive = TRUE)
   })
   x$start()
   x$push(print("this-print"))
@@ -281,10 +284,11 @@ crew_test("separate logs", {
   skip_on_cran()
   skip_on_covr()
   skip_on_os("windows")
+  dir <- tempfile()
   x <- crew_controller_local(
     workers = 1L,
     seconds_idle = 60,
-    local_log_directory = tempfile(),
+    local_log_directory = dir,
     local_log_join = FALSE
   )
   on.exit({
@@ -292,6 +296,7 @@ crew_test("separate logs", {
     rm(x)
     gc()
     crew_test_sleep()
+    unlink(dir, recursive = TRUE)
   })
   x$start()
   on.exit(x$terminate())

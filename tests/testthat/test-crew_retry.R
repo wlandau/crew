@@ -28,6 +28,7 @@ crew_test("crew_retry() with argless function and error = FALSE", {
 crew_test("crew_retry() on a file", {
   skip_on_cran()
   tmp <- tempfile()
+  on.exit(unlink(tmp))
   fun <- function(x) file.exists(x)
   args <- list(x = tmp)
   expect_error(
@@ -40,7 +41,6 @@ crew_test("crew_retry() on a file", {
     class = "crew_expire"
   )
   file.create(tmp)
-  on.exit(unlink(tmp))
   expect_silent(crew_retry(fun = fun, args = args))
 })
 

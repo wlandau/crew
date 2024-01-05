@@ -22,7 +22,7 @@ crew_test("crew_launcher_local() log_prepare()", {
   expect_true(dir.exists(launcher$local_log_directory))
 })
 
-crew_test("crew_launcher_local() log_path(), joined logs", {
+crew_test("crew_launcher_local() joined log path", {
   skip_on_cran()
   launcher <- crew_launcher_local(
     name = "x",
@@ -30,11 +30,13 @@ crew_test("crew_launcher_local() log_path(), joined logs", {
     local_log_join = TRUE
   )
   private <- crew_private(launcher)
-  out <- private$.log_path(name = "x", type = "stdout")
-  expect_equal(out, file.path("dir", "x.log"))
+  stdout <- private$.log_stdout(name = "x")
+  stderr <- private$.log_stderr(name = "x")
+  expect_equal(stdout, file.path("dir", "x.log"))
+  expect_equal(stderr, "2>&1")
 })
 
-crew_test("crew_launcher_local() log_path(), separate logs", {
+crew_test("crew_launcher_local() separate log paths", {
   skip_on_cran()
   launcher <- crew_launcher_local(
     name = "x",
@@ -42,8 +44,10 @@ crew_test("crew_launcher_local() log_path(), separate logs", {
     local_log_join = FALSE
   )
   private <- crew_private(launcher)
-  out <- private$.log_path(name = "x", type = "stdout")
-  expect_equal(out, file.path("dir", "x-stdout.log"))
+  stdout <- private$.log_stdout(name = "x")
+  stderr <- private$.log_stderr(name = "x")
+  expect_equal(stdout, file.path("dir", "x-stdout.log"))
+  expect_equal(stderr, file.path("dir", "x-stderr.log"))
 })
 
 crew_test("crew_launcher_local() can run a task on a worker", {

@@ -106,13 +106,26 @@ crew_class_launcher_local <- R6::R6Class(
         dir_create(private$.local_log_directory)
       }
     },
-    .log_path = function(name, type) {
+    .log_stdout = function(name) {
       directory <- private$.local_log_directory
       if (is.null(directory)) {
         return(NULL)
       }
-      suffix <- if_any(private$.local_log_join, "", paste0("-", type))
-      file.path(directory, sprintf("%s%s.log", name, suffix))
+      if (!private$.local_log_join) {
+        name <- paste0(name, "-stdout")
+      }
+      file.path(directory, paste0(name, ".log"))
+    },
+    .log_stderr = function(name) {
+      directory <- private$.local_log_directory
+      if (is.null(directory)) {
+        return(NULL)
+      }
+      if_any(
+        private$.local_log_join,
+        "2>&1",
+        file.path(directory, paste0(name, "-stderr.log"))
+      )
     }
   ),
   active = list(
@@ -245,8 +258,8 @@ crew_class_launcher_local <- R6::R6Class(
         command = path,
         args = c("-e", call),
         cleanup = TRUE,
-        stdout = private$.log_path(name = name, type = "stdout"),
-        stderr = private$.log_path(name = name, type = "stderr")
+        stdout = private$.log_stdout(name = name),
+        stderr = private$.log_stderr(name = name)
       )
     },
     #' @description Terminate a local process worker.

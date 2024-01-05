@@ -295,6 +295,7 @@ crew_test("launcher summary", {
 
 crew_test("launcher forward", {
   skip_on_cran()
+  skip_on_os("windows")
   x <- crew_launcher()
   on.exit({
     rm(x)
@@ -323,6 +324,7 @@ crew_test("launcher forward", {
 
 crew_test("launcher errors", {
   skip_on_cran()
+  skip_on_os("windows")
   x <- crew_launcher()
   on.exit({
     rm(x)

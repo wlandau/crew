@@ -16,7 +16,6 @@
 #' out <- x$eval(1 + 1)
 #' mirai::call_mirai_(out)
 #' out$data # 2
-#' x$errors() # 0
 #' x$terminate()
 #' }
 crew_async <- function(workers = NULL) {

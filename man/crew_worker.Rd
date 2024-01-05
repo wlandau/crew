@@ -22,7 +22,10 @@ the current instance of the worker.}
 \code{NULL} (invisibly)
 }
 \description{
-Launch a \code{crew} worker which runs a \code{mirai} daemon.
+Launches a \code{crew} worker which runs a \code{mirai} daemon.
+Not a user-side funtion. Users should not call \code{\link[=crew_worker]{crew_worker()}}
+directly. See launcher plugins like \code{\link[=crew_launcher_local]{crew_launcher_local()}}
+for examples.
 }
 \seealso{
 Other utility: 

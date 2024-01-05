@@ -20,11 +20,11 @@
 #' client <- crew_client()
 #' client$start()
 #' launcher <- crew_launcher_local(name = client$name)
-#' launcher$start(workers = client$workers)
+#' launcher$start(sockets = client$summary()$socket)
 #' launcher$launch(index = 1L)
-#' m <- mirai::mirai("result", .compute = client$name)
-#' Sys.sleep(0.25)
-#' m$data
+#' task <- mirai::mirai("result", .compute = client$name)
+#' mirai::call_mirai_(task)
+#' task$data
 #' client$terminate()
 #' }
 crew_launcher_local <- function(
@@ -87,11 +87,11 @@ crew_launcher_local <- function(
 #' client <- crew_client()
 #' client$start()
 #' launcher <- crew_launcher_local(name = client$name)
-#' launcher$start(workers = client$workers)
+#' launcher$start(sockets = client$summary()$socket)
 #' launcher$launch(index = 1L)
-#' m <- mirai::mirai("result", .compute = client$name)
-#' Sys.sleep(0.25)
-#' m$data
+#' task <- mirai::mirai("result", .compute = client$name)
+#' mirai::call_mirai_(task)
+#' task$data
 #' client$terminate()
 #' }
 crew_class_launcher_local <- R6::R6Class(
@@ -164,11 +164,11 @@ crew_class_launcher_local <- R6::R6Class(
     #' client <- crew_client()
     #' client$start()
     #' launcher <- crew_launcher_local(name = client$name)
-    #' launcher$start(workers = client$workers)
+    #' launcher$start(sockets = client$summary()$socket)
     #' launcher$launch(index = 1L)
-    #' m <- mirai::mirai("result", .compute = client$name)
-    #' Sys.sleep(0.25)
-    #' m$data
+    #' task <- mirai::mirai("result", .compute = client$name)
+    #' mirai::call_mirai_(task)
+    #' task$data
     #' client$terminate()
     #' }
     initialize = function(

@@ -1,7 +1,10 @@
 #' @title Crew worker.
 #' @export
 #' @family utility
-#' @description Launch a `crew` worker which runs a `mirai` daemon.
+#' @description Launches a `crew` worker which runs a `mirai` daemon.
+#'   Not a user-side funtion. Users should not call [crew_worker()]
+#'   directly. See launcher plugins like [crew_launcher_local()]
+#'   for examples.
 #' @return `NULL` (invisibly)
 #' @param settings Named list of arguments to `mirai::daemon()`.
 #' @param launcher Character of length 1, name of the launcher.

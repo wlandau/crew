@@ -25,7 +25,7 @@
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
 #' client$start()
-#' client$log()
+#' client$summary()
 #' client$terminate()
 #' }
 crew_client <- function(

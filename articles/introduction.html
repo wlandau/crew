@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">crew</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9007</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9008</span>
       </span>
     </div>
 
@@ -301,6 +301,51 @@ previous R sessions.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/crew_clean.html">crew_clean</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; nothing to clean up</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="monitoring-local-processes">Monitoring local processes<a class="anchor" aria-label="anchor" href="#monitoring-local-processes"></a>
+</h2>
+<p>A <code>crew</code> controller creates different types of local
+processes. These include:</p>
+<ul>
+<li>Dispatchers: every controller has a special local process called a
+“dispatcher”. <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a> needs
+this process to orchestrate tasks.</li>
+<li>Workers: the R processes that <code>crew</code> launches to run
+tasks. These may be local processes as in the case of
+<code><a href="../reference/crew_controller_local.html">crew_controller_local()</a></code>, or they may be processes on
+different computers if you are using a third-party <a href="https://wlandau.github.io/crew/articles/plugins.html" class="external-link">launcher
+plugin</a> like <code>crew.cluster</code> or
+<code>crew.aws.batch</code>. launches processes.</li>
+<li>Daemons: R processes created by <code>mirai</code> outside of
+<code>crew</code> to run tasks. Such processes may spawn automatically
+if you set the <code>processes</code> argument of
+e.g. <code>crew.aws.batch::crew_controller_aws_batch()</code> to a
+positive integer.</li>
+</ul>
+<p>Usually these processes terminate themselves when the parent R
+session exits or the controller terminates, but under rare circumstances
+they may continue running. The “local monitor” in <code>crew</code>
+makes it easy to list and terminate any of these processes which may be
+running on your local computer. Example:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">monitor</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_monitor_local.html">crew_monitor_local</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">monitor</span><span class="op">$</span><span class="fu">dispatchers</span><span class="op">(</span><span class="op">)</span> <span class="co"># List PIDs of all local {mirai} dispatcher processes.</span></span>
+<span><span class="co">#&gt; [1] 31215</span></span>
+<span><span class="va">monitor</span><span class="op">$</span><span class="fu">daemons</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; integer(0)</span></span>
+<span><span class="va">monitor</span><span class="op">$</span><span class="fu">workers</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 57001 57002</span></span>
+<span><span class="va">monitor</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span>pid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">57001</span>, <span class="fl">57002</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">monitor</span><span class="op">$</span><span class="fu">workers</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; integer(0)</span></span></code></pre></div>
+<p><code><a href="../reference/crew_monitor_local.html">crew_monitor_local()</a></code> only manages processes running on
+your local computer. To manage <code>crew</code> workers running on
+different computers, such as SLURM or AWS Batch, please familiarize
+yourself with the given computing platform, and consider using the
+monitor objects in the relevant third-party plugin packages such as <a href="https://wlandau.github.io/crew.cluster/" class="external-link"><code>crew.cluster</code></a>
+or <a href="https://wlandau.github.io/crew.aws.batch/" class="external-link"><code>crew.aws.batch</code></a>.
+Example: <a href="https://wlandau.github.io/crew.aws.batch/index.html#job-management" class="external-link uri">https://wlandau.github.io/crew.aws.batch/index.html#job-management</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="tuning-and-auto-scaling">Tuning and auto-scaling<a class="anchor" aria-label="anchor" href="#tuning-and-auto-scaling"></a>

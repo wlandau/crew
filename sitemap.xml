@@ -73,6 +73,9 @@
     <loc>/reference/crew_class_launcher_local.html</loc>
   </url>
   <url>
+    <loc>/reference/crew_class_monitor_local.html</loc>
+  </url>
+  <url>
     <loc>/reference/crew_class_relay.html</loc>
   </url>
   <url>
@@ -112,6 +115,9 @@
     <loc>/reference/crew_launcher_local.html</loc>
   </url>
   <url>
+    <loc>/reference/crew_monitor_local.html</loc>
+  </url>
+  <url>
     <loc>/reference/crew_random_name.html</loc>
   </url>
   <url>
@@ -121,10 +127,16 @@
     <loc>/reference/crew_retry.html</loc>
   </url>
   <url>
+    <loc>/reference/crew_signal_terminate.html</loc>
+  </url>
+  <url>
     <loc>/reference/crew_throttle.html</loc>
   </url>
   <url>
     <loc>/reference/crew_tls.html</loc>
+  </url>
+  <url>
+    <loc>/reference/crew_user.html</loc>
   </url>
   <url>
     <loc>/reference/crew_worker.html</loc>

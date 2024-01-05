@@ -18,7 +18,7 @@ which may be lingering from previous workloads."><meta property="og:image" conte
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">crew</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9007</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9008</span>
       </span>
     </div>
 
@@ -61,7 +61,7 @@ which may be lingering from previous workloads.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_clean</span><span class="op">(</span></span>
 <span>  dispatchers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  workers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  user <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[[</span><span class="st">"user"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>  user <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_user.html">crew_user</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  seconds_interval <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  seconds_timeout <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -128,6 +128,8 @@ launched by a <code>crew.cluster</code> controller.</p>
 <code><a href="crew_eval.html">crew_eval</a>()</code>,
 <code><a href="crew_random_name.html">crew_random_name</a>()</code>,
 <code><a href="crew_retry.html">crew_retry</a>()</code>,
+<code><a href="crew_signal_terminate.html">crew_signal_terminate</a>()</code>,
+<code><a href="crew_user.html">crew_user</a>()</code>,
 <code><a href="crew_worker.html">crew_worker</a>()</code></p></div>
     </div>
 

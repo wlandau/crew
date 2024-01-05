@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">crew</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9007</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9008</span>
       </span>
     </div>
 
@@ -110,9 +110,15 @@ dispatcher process to schedule the tasks. If <code>x</code> is a
 processes may not terminate properly. If that happens, they will
 continue to run, which may strain traditional clusters or incur heavy
 expenses on the cloud. Please monitor the platforms you use and manually
-terminate defunct hanging processes as needed. For example, in the case
-of AWS Batch, <a href="https://wlandau.github.io/crew.aws.batch/" class="external-link"><code>crew.aws.batch</code></a>
-supports its own job monitoring utilities: <a href="https://wlandau.github.io/crew.aws.batch/index.html#job-management" class="external-link uri">https://wlandau.github.io/crew.aws.batch/index.html#job-management</a>.</p>
+terminate defunct hanging processes as needed. To list and terminate
+local processes, please use <code><a href="../reference/crew_monitor_local.html">crew_monitor_local()</a></code> as
+explained in the introduction vignette. To manage and monitor non-local
+high-performance computing workers such as those on SLURM and AWS Batch,
+please familiarize yourself with the given computing platform, and
+consider using the monitor objects in the relevant third-party plugin
+packages such as <a href="https://wlandau.github.io/crew.cluster/" class="external-link"><code>crew.cluster</code></a>
+or <a href="https://wlandau.github.io/crew.aws.batch/" class="external-link"><code>crew.aws.batch</code></a>.
+Example: <a href="https://wlandau.github.io/crew.aws.batch/index.html#job-management" class="external-link uri">https://wlandau.github.io/crew.aws.batch/index.html#job-management</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="crashes">Crashes<a class="anchor" aria-label="anchor" href="#crashes"></a>

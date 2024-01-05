@@ -8,7 +8,7 @@ crew_test("workers signal themselves to exit when connection breaks", {
   x$scale()
   Sys.sleep(2)
   dispatcher <- ps::ps_handle(pid = x$client$dispatcher)
-  ps::ps_kill(dispatcher)
+  ps::ps_send_signal(p = dispatcher, sig = crew_signal_terminate())
   crew_retry(
     ~!ps::ps_is_running(dispatcher),
     seconds_interval = 0.5,
@@ -16,6 +16,6 @@ crew_test("workers signal themselves to exit when connection breaks", {
   )
   Sys.sleep(5)
   worker <- x$launcher$workers$handle[[1L]]
-  on.exit(worker$kill())
+  on.exit(worker$signal(signal = crew_signal_terminate()))
   expect_false(worker$is_alive())
 })

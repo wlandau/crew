@@ -34,6 +34,7 @@ Other utility:
 \code{\link{crew_deprecate}()},
 \code{\link{crew_eval}()},
 \code{\link{crew_random_name}()},
-\code{\link{crew_retry}()}
+\code{\link{crew_retry}()},
+\code{\link{crew_signal_terminate}()}
 }
 \concept{utility}

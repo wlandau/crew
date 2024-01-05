@@ -111,7 +111,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
       seconds_timeout = 5
     ),
     crew_expire = function(condition) {
-      launcher$workers$handle[[2L]]$kill()
+      launcher$workers$handle[[2L]]$signal(signal = crew_signal_terminate())
     }
   )
 })

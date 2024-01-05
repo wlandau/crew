@@ -52,8 +52,3 @@ mirai_error <- function(task) {
     NULL
   )
 }
-
-signal_disconnect <- tools::SIGTERM %||NA%
-  tools::SIGQUIT %||NA%
-  tools::SIGINT %||NA%
-  TRUE

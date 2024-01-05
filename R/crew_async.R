@@ -83,7 +83,7 @@ crew_class_async <- R6::R6Class(
       mirai::daemons(
         n = private$.workers,
         dispatcher = FALSE,
-        autoexit = signal_disconnect,
+        autoexit = crew_signal_terminate(),
         resilience = FALSE,
         idletime = 60000,
         .compute = private$.instance

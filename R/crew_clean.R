@@ -65,7 +65,7 @@ crew_clean <- function(
   }
   for (index in seq_len(nrow(ps))) {
     handle <- ps$ps_handle[[index]]
-    ps::ps_send_signal(p = handle, sig = crew_signal_terminate())
+    ps::ps_send_signal(p = handle, sig = crew_terminate_signal())
     crew_retry(
       fun = ~!ps::ps_is_running(p = handle),
       seconds_interval = seconds_interval,

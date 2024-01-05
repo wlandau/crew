@@ -267,7 +267,7 @@ crew_class_launcher_local <- R6::R6Class(
     #' @param handle A process handle object previously
     #'   returned by `launch_worker()`.
     terminate_worker = function(handle) {
-      handle$signal(signal = crew_signal_terminate())
+      handle$signal(signal = crew_terminate_signal())
       list(pid = handle$get_pid())
     }
   )

@@ -69,7 +69,7 @@ custom_launcher_class <- R6::R6Class(
       )
     },
     terminate_worker = function(handle) {
-      handle$signal(crew::crew_signal_terminate())
+      handle$signal(crew::crew_terminate_signal())
     }
   )
 )
@@ -196,7 +196,7 @@ crew_class_monitor_local <- R6::R6Class(
         as.integer(pids),
         ~ps::ps_send_signal(
           p = ps::ps_handle(.x),
-          sig = crew_signal_terminate()
+          sig = crew_terminate_signal()
         )
       )
     }
@@ -374,7 +374,7 @@ async_launcher_class <- R6::R6Class(
       self$async$eval(
         command = ps::ps_send_signal(
           p = ps::ps_handle(pid = pid),
-          sig = crew::crew_signal_terminate()
+          sig = crew::crew_terminate_signal()
         ),
         data = list(pid = handle$data$pid)
       )

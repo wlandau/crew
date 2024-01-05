@@ -305,7 +305,7 @@ crew_class_client <- R6::R6Class(
       if_any(
         ps::ps_is_running(p = handle),
         try(
-          ps::ps_send_signal(p = handle, sig = crew_signal_terminate()),
+          ps::ps_send_signal(p = handle, sig = crew_terminate_signal()),
           silent = TRUE
         ),
         NULL

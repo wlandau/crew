@@ -19,7 +19,7 @@ crew_test("custom launcher", {
         processx::process$new(command = path, args = c("-e", call))
       },
       terminate_worker = function(handle) {
-        handle$signal(signal = crew::crew_signal_terminate())
+        handle$signal(signal = crew::crew_terminate_signal())
       }
     )
   )
@@ -258,7 +258,7 @@ crew_test("custom launcher with async internal launcher tasks", {
           command = {
             ps::ps_send_signal(
               p = ps::ps_handle(pid = pid),
-              sig = crew::crew_signal_terminate()
+              sig = crew::crew_terminate_signal()
             )
             list(pid = pid, status = "terminated")
           },

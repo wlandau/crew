@@ -98,7 +98,7 @@ crew_test("crew_client() works", {
       seconds_timeout = 30
     )
   }
-  px$signal(signal = crew_signal_terminate())
+  px$signal(signal = crew_terminate_signal())
   expect_null(client$summary())
 })
 

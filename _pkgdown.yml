@@ -62,6 +62,6 @@ reference:
   - '`crew_eval`'
   - '`crew_random_name`'
   - '`crew_retry`'
-  - '`crew_signal_terminate`'
+  - '`crew_terminate_signal`'
   - '`crew_user`'
   - '`crew_worker`'

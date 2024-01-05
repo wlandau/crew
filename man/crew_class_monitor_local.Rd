@@ -123,7 +123,7 @@ terminate.}
 }
 \subsection{Details}{
 Termination happens with the operating system signal
-given by \code{\link[=crew_signal_terminate]{crew_signal_terminate()}}.
+given by \code{\link[=crew_terminate_signal]{crew_terminate_signal()}}.
 }
 
 \subsection{Returns}{

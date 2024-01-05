@@ -32,7 +32,7 @@ Other utility:
 \code{\link{crew_deprecate}()},
 \code{\link{crew_eval}()},
 \code{\link{crew_retry}()},
-\code{\link{crew_signal_terminate}()},
+\code{\link{crew_terminate_signal}()},
 \code{\link{crew_user}()},
 \code{\link{crew_worker}()}
 }

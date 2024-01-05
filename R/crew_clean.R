@@ -39,6 +39,9 @@ crew_clean <- function(
   seconds_timeout = 60,
   verbose = TRUE
 ) {
+  # Tests interfere with other processes.
+  # Tested in tests/local/test-crew_clean.R.
+  # nocov start
   crew_assert(dispatchers, isTRUE(.) || isFALSE(.))
   crew_assert(workers, isTRUE(.) || isFALSE(.))
   crew_assert(user, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))
@@ -78,6 +81,7 @@ crew_clean <- function(
     }
   }
   invisible()
+  # nocov end
 }
 
 process_command <- function(handle) {

@@ -26,6 +26,7 @@ crew_test("preemptive async termination for covr", {
     out$terminate()
   })
   out$start()
+  expect_true(TRUE)
 })
 
 crew_test("default launch_launcher() method", {

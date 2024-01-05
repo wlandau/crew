@@ -80,14 +80,14 @@
 <p>List the process IDs of the running <code>mirai</code> dispatcher
 processes.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_monitor_local</span><span class="op">$</span><span class="fu">dispatchers</span><span class="op">(</span>user <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_user.html">crew_user</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_monitor_local</span><span class="op">$</span><span class="fu">dispatchers</span><span class="op">(</span>user <span class="op">=</span> <span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_username.html" class="external-link">ps_username</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>user</code></dt>
 <dd><p>Character of length 1, user ID to filter on. <code>NULL</code>
-to list all users (not recommended).</p></dd>
+to list processes of all users (not recommended).</p></dd>
 
 
 </dl><p></p></div>
@@ -106,14 +106,14 @@ object can launch such processes: for example, when a positive
 integer is supplied to the <code>processes</code> argument of e.g.
 <code>crew.aws.batch::crew_controller_aws_batch()</code>.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_monitor_local</span><span class="op">$</span><span class="fu">daemons</span><span class="op">(</span>user <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_user.html">crew_user</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_monitor_local</span><span class="op">$</span><span class="fu">daemons</span><span class="op">(</span>user <span class="op">=</span> <span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_username.html" class="external-link">ps_username</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>user</code></dt>
 <dd><p>Character of length 1, user ID to filter on. <code>NULL</code>
-to list all users (not recommended).</p></dd>
+to list processes of all users (not recommended).</p></dd>
 
 
 </dl><p></p></div>
@@ -129,14 +129,14 @@ to list all users (not recommended).</p></dd>
 <p>List the process IDs of locally running <code>crew</code> workers
 launched by the local controller (<code><a href="crew_controller_local.html">crew_controller_local()</a></code>).</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_monitor_local</span><span class="op">$</span><span class="fu">workers</span><span class="op">(</span>user <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_user.html">crew_user</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_monitor_local</span><span class="op">$</span><span class="fu">workers</span><span class="op">(</span>user <span class="op">=</span> <span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_username.html" class="external-link">ps_username</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>user</code></dt>
 <dd><p>Character of length 1, user ID to filter on. <code>NULL</code>
-to list all users (not recommended).</p></dd>
+to list processes of all users (not recommended).</p></dd>
 
 
 </dl><p></p></div>

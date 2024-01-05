@@ -127,6 +127,9 @@
     <loc>/reference/crew_retry.html</loc>
   </url>
   <url>
+    <loc>/reference/crew_terminate_process.html</loc>
+  </url>
+  <url>
     <loc>/reference/crew_terminate_signal.html</loc>
   </url>
   <url>
@@ -134,9 +137,6 @@
   </url>
   <url>
     <loc>/reference/crew_tls.html</loc>
-  </url>
-  <url>
-    <loc>/reference/crew_user.html</loc>
   </url>
   <url>
     <loc>/reference/crew_worker.html</loc>

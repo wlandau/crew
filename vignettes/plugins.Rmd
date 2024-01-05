@@ -167,68 +167,6 @@ crew_controller_custom <- function(
 }
 ```
 
-# Monitor
-
-Usually `crew` workers terminate themselves when the parent R session exits or the controller terminates, but under rare circumstances they may continue running. To help users of your plugin monitor and manually terminate workers, please consider implementing job management utilities to go with your launcher plugin.  As described in the [introduction vignette](https://wlandau.github.io/crew/articles/introduction.html), `crew_monitor_local()` helps manually list and terminate local processes relevant to `crew`. Source code for the local monitor is [on GitHub](https://github.com/wlandau/crew/blob/main/R/crew_monitor_local.R), methods are [documented in the package website](https://wlandau.github.io/crew/reference/crew_class_monitor_local.html), and example usage is in the [introduction vignette](https://wlandau.github.io/crew/articles/introduction.html). In addition, [`crew_monitor_aws_batch()`](https://wlandau.github.io/crew.aws.batch/reference/crew_monitor_aws_batch.html) implements [several methods](https://wlandau.github.io/crew.aws.batch/reference/crew_class_monitor_aws_batch.html) for listing and terminating AWS Batch jobs, as well as viewing CloudWatch logs.
-
-The source code for the local monitor is copied below:
-
-```r
-crew_monitor_local <- function() {
-  crew_class_monitor_local$new()
-}
-
-crew_class_monitor_local <- R6::R6Class(
-  classname = "crew_class_monitor_local",
-  cloneable = FALSE,
-  public = list(
-    dispatchers = function() {
-      crew_monitor_pids(pattern = "mirai::dispatcher")
-    },
-    daemons = function() {
-      crew_monitor_pids(pattern = "mirai::daemon")
-    },
-    workers = function() {
-      crew_monitor_pids(pattern = "crew::crew_worker")
-    },
-    terminate = function(pids) {
-      walk(
-        as.integer(pids),
-        ~ps::ps_send_signal(
-          p = ps::ps_handle(.x),
-          sig = crew_terminate_signal()
-        )
-      )
-    }
-  )
-)
-
-crew_monitor_pids <- function(pattern) {
-  processes <- ps::ps()
-  commands <- map(
-    processes$ps_handle,
-    ~tryCatch(ps::ps_cmdline(.x), error = function(condition) "")
-  )
-  filter <- grepl(pattern = pattern, x = as.character(commands), fixed = TRUE)
-  as.integer(sort(processes$pid[filter]))
-}
-```
-
-Example usage:
-
-```{r, eval = FALSE}
-monitor <- crew_monitor_local()
-monitor$dispatchers() # List PIDs of all local {mirai} dispatcher processes.
-#> [1] 31215
-monitor$daemons()
-#> integer(0)
-monitor$workers()
-#> [1] 57001 57002
-monitor$terminate(pid = c(57001, 57002))
-monitor$workers()
-#> integer(0)
-```
-
 # Informal testing
 
 Before you begin testing, please begin monitoring local processes and remote jobs on your platform. In the case of the above `crew` launcher which only creates local processes, it is sufficient to start [`htop`](https://htop.dev/) and filter for R processes, or launch a new R session to monitor the process table from [`ps::ps()`](https://ps.r-lib.org/reference/ps.html). However, for more ambitious launchers that submit workers to e.g. [AWS Batch](https://aws.amazon.com/batch/), you may need to open the [CloudWatch](https://aws.amazon.com/cloudwatch/) dashboard, then view the AWS billing dashboard after testing.
@@ -372,10 +310,7 @@ async_launcher_class <- R6::R6Class(
     },
     terminate_worker = function(handle) {
       self$async$eval(
-        command = ps::ps_send_signal(
-          p = ps::ps_handle(pid = pid),
-          sig = crew::crew_terminate_signal()
-        ),
+        command = crew::crew_terminate_process(handle$data$pid),
         data = list(pid = handle$data$pid)
       )
     }
@@ -447,3 +382,59 @@ async_controller <- crew_controller_async(workers = 12, processes = 4)
 ```
 
 `async_controller$start()` automatically launches 4 local processes to asynchronously auto-scale the workers, and `async_controller$terminate()` automatically shuts down those 4 processes. Beyond that, usage is the exactly same as before.
+
+# Managing workers
+
+Usually `crew` workers terminate themselves when the parent R session exits or the controller terminates, but under rare circumstances they may continue running. To help users of your plugin monitor and manually terminate workers, please consider implementing job management utilities to go with your launcher plugin.  As described in the [introduction vignette](https://wlandau.github.io/crew/articles/introduction.html), `crew_monitor_local()` helps manually list and terminate local processes relevant to `crew`. Source code for the local monitor is [on GitHub](https://github.com/wlandau/crew/blob/main/R/crew_monitor_local.R), methods are [documented in the package website](https://wlandau.github.io/crew/reference/crew_class_monitor_local.html), and example usage is in the [introduction vignette](https://wlandau.github.io/crew/articles/introduction.html). In addition, [`crew_monitor_aws_batch()`](https://wlandau.github.io/crew.aws.batch/reference/crew_monitor_aws_batch.html) implements [several methods](https://wlandau.github.io/crew.aws.batch/reference/crew_class_monitor_aws_batch.html) for listing and terminating AWS Batch jobs, as well as viewing CloudWatch logs.
+
+The source code for the local monitor is copied below:
+
+```r
+crew_monitor_local <- function() {
+  crew_class_monitor_local$new()
+}
+
+crew_class_monitor_local <- R6::R6Class(
+  classname = "crew_class_monitor_local",
+  cloneable = FALSE,
+  public = list(
+    dispatchers = function() {
+      crew_monitor_pids(pattern = "mirai::dispatcher")
+    },
+    daemons = function() {
+      crew_monitor_pids(pattern = "mirai::daemon")
+    },
+    workers = function() {
+      crew_monitor_pids(pattern = "crew::crew_worker")
+    },
+    terminate = function(pids) {
+      lapply(as.integer(pids), crew::crew_terminate_process)
+    }
+  )
+)
+
+crew_monitor_pids <- function(pattern) {
+  processes <- ps::ps()
+  commands <- map(
+    processes$ps_handle,
+    ~tryCatch(ps::ps_cmdline(.x), error = function(condition) "")
+  )
+  filter <- grepl(pattern = pattern, x = as.character(commands), fixed = TRUE)
+  as.integer(sort(processes$pid[filter]))
+}
+```
+
+Example usage:
+
+```{r, eval = FALSE}
+monitor <- crew_monitor_local()
+monitor$dispatchers() # List PIDs of all local {mirai} dispatcher processes.
+#> [1] 31215
+monitor$daemons()
+#> integer(0)
+monitor$workers()
+#> [1] 57001 57002
+monitor$terminate(pid = c(57001, 57002))
+monitor$workers()
+#> integer(0)
+```

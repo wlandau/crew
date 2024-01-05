@@ -1,10 +1,10 @@
 crew_test("dir_create()", {
   skip_on_cran()
   tmp <- file.path(tempfile(), "x", "y")
+  on.exit(unlink(tmp, recursive = TRUE))
   expect_false(dir.exists(tmp))
   expect_false(file.exists(tmp))
   dir_create(tmp)
-  on.exit(unlink(tmp, recursive = TRUE))
   expect_true(dir.exists(tmp))
   expect_true(file.exists(tmp))
   expect_silent(dir_create(tmp))

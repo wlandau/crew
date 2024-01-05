@@ -16,7 +16,7 @@ crew_test("crew_launcher_local() log_prepare()", {
     local_log_directory = dir,
     local_log_join = FALSE
   )
-  on.exit(unlink(dir))
+  on.exit(unlink(dir, recursive = TRUE))
   private <- crew_private(launcher)
   expect_false(dir.exists(dir))
   private$.log_prepare()

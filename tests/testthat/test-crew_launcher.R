@@ -19,10 +19,13 @@ crew_test("active bindings for covr", {
 
 crew_test("preemptive async termination for covr", {
   out <- crew_launcher(processes = 1L)
-  on.exit(out$terminate())
   private <- crew_private(out)
   private$.async <- crew_async()
-  expect_silent(out$start())
+  on.exit({
+    private$.async$terminate()
+    out$terminate()
+  })
+  out$start()
 })
 
 crew_test("default launch_launcher() method", {

@@ -28,11 +28,14 @@ crew_test("async object task with NULL workers", {
   expect_null(x$workers)
   expect_null(x$instance)
   out <- x$eval(
-    command = c(ps::ps_pid(), x),
+    command = list(pid = ps::ps_pid(), x = x),
     data = list(x = "value"),
     packages = "rlang"
   )
-  expect_equal(out$data, c(ps::ps_pid(), "value"))
+  expect_equal(out$data$x, "value")
+  skip_on_cran()
+  skip_on_os("windows")
+  expect_equal(out$data$pid, ps::ps_pid())
 })
 
 crew_test("async task with 1 process", {

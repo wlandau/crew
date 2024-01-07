@@ -15,6 +15,8 @@ crew_test("async validate when started", {
 })
 
 crew_test("async object task with NULL workers", {
+  skip_on_cran()
+  skip_on_os("windows")
   x <- crew_async(workers = NULL)
   on.exit({
     x$terminate()
@@ -33,12 +35,12 @@ crew_test("async object task with NULL workers", {
     packages = "rlang"
   )
   expect_equal(out$data$x, "value")
-  skip_on_cran()
-  skip_on_os("windows")
   expect_equal(out$data$pid, ps::ps_pid())
 })
 
 crew_test("async task with 1 process", {
+  skip_on_cran()
+  skip_on_os("windows")
   x <- crew_async(workers = 1L)
   on.exit({
     x$terminate()
@@ -63,7 +65,5 @@ crew_test("async task with 1 process", {
   )
   expect_equal(out$data$x, "value")
   expect_true(is.numeric(out$data$pid))
-  skip_on_cran()
-  skip_on_os("windows")
   expect_false(any(out$data$pid == ps::ps_pid()))
 })

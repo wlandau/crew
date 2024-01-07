@@ -36,8 +36,6 @@ crew_test("async object task with NULL workers", {
 })
 
 crew_test("async task with 1 process", {
-  skip_on_cran()
-  skip_on_os("windows")
   x <- crew_async(workers = 1L)
   on.exit({
     x$terminate()
@@ -60,7 +58,9 @@ crew_test("async task with 1 process", {
     seconds_interval = 0.01,
     seconds_timeout = 10
   )
-  expect_true(is.numeric(out$data$pid))
-  expect_false(any(out$data$pid == ps::ps_pid()))
   expect_equal(out$data$x, "value")
+  expect_true(is.numeric(out$data$pid))
+  skip_on_cran()
+  skip_on_os("windows")
+  expect_false(any(out$data$pid == ps::ps_pid()))
 })

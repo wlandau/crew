@@ -18,6 +18,7 @@ crew_test("active bindings for covr", {
 })
 
 crew_test("preemptive async termination for covr", {
+  skip_on_cran()
   out <- crew_launcher(processes = 1L)
   private <- crew_private(out)
   private$.async <- crew_async()
@@ -30,6 +31,7 @@ crew_test("preemptive async termination for covr", {
 })
 
 crew_test("default launch_launcher() method", {
+  skip_on_cran()
   launcher <- crew_class_launcher$new(seconds_interval = 0.5)
   out <- launcher$launch_worker(
     call = "a",

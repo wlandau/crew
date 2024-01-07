@@ -1,9 +1,11 @@
 crew_test("abstract launcher class", {
+  skip_on_cran()
   out <- crew_launcher(reset_options = -1)
   expect_crew_error(out$validate())
 })
 
 crew_test("active bindings for covr", {
+  skip_on_cran()
   out <- crew_launcher(processes = 1L)
   expect_equal(out$processes, 1L)
   expect_null(out$async)

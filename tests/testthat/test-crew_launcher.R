@@ -12,6 +12,7 @@ crew_test("active bindings for covr", {
   expect_null(out$throttle)
   expect_true(inherits(out$tls, "crew_class_tls"))
   out$start(sockets = "url")
+  on.exit(out$terminate())
   expect_s3_class(out$async, "crew_class_async")
   expect_s3_class(out$throttle, "crew_class_throttle")
   expect_silent(out$async$validate())

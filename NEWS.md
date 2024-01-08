@@ -1,3 +1,6 @@
+# crew 0.8.0.9000 (development)
+
+
 # crew 0.8.0
 
 * Configure workers to send themselves a termination signal if the connection to the dispatcher is broken (#141, @psychelzh). Huge thanks to @shikokuchuo for the support through https://github.com/shikokuchuo/mirai/issues/87, https://github.com/shikokuchuo/mirai/pull/88, and https://github.com/shikokuchuo/nanonext/pull/25! The signal itself is platform-dependent and determined by the new function `crew_terminate_signal()`.

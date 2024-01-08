@@ -127,7 +127,7 @@ given by \code{\link[=crew_terminate_signal]{crew_terminate_signal()}}.
 }
 
 \subsection{Returns}{
-\code{NULL} (invisibly)
+\code{NULL} (invisibly).
 }
 }
 }

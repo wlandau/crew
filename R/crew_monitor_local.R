@@ -55,7 +55,7 @@ crew_class_monitor_local <- R6::R6Class(
     #' @description Terminate the given process IDs.
     #' @details Termination happens with the operating system signal
     #'   given by [crew_terminate_signal()].
-    #' @return `NULL` (invisibly)
+    #' @return `NULL` (invisibly).
     #' @param pids Integer vector of process IDs of local processes to
     #'   terminate.
     terminate = function(pids) {

@@ -4,7 +4,7 @@
 \alias{crew_class_monitor_local}
 \title{Local monitor class}
 \description{
-AWS Batch job definition \code{R6} class
+Local monitor \code{R6} class
 }
 \details{
 See \code{\link[=crew_monitor_local]{crew_monitor_local()}}.

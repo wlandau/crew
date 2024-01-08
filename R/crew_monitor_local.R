@@ -10,7 +10,7 @@ crew_monitor_local <- function() {
 #' @title Local monitor class
 #' @export
 #' @family monitor
-#' @description AWS Batch job definition `R6` class
+#' @description Local monitor `R6` class
 #' @details See [crew_monitor_local()].
 crew_class_monitor_local <- R6::R6Class(
   classname = "crew_class_monitor_local",

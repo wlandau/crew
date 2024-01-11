@@ -8,14 +8,14 @@ Please note that the `crew` project is released with a [Contributor Code of Cond
 
 ## Discussions
 
-At <https://github.com/ropensci/crew/discussions>, you can post general questions, brainstorm ideas, and ask for help.
+At <https://github.com/wlandau/crew/discussions>, you can post general questions, brainstorm ideas, and ask for help.
 
 ## Issues
 
-<https://github.com/ropensci/crew/issues> is for bug reports, performance issues, maintenance tasks, and feature requests. When you post, please abide by the following guidelines.
+<https://github.com/wlandau/crew/issues> is for bug reports, performance issues, maintenance tasks, and feature requests. When you post, please abide by the following guidelines.
 
 * Before posting a new issue or discussion topic, please take a moment to search for existing similar threads in order to avoid duplication.
-* For bug reports: if you can, please install the latest GitHub version of `crew` (i.e. `remotes::install_github("ropensci/crew")`) and verify that the issue still persists.
+* For bug reports: if you can, please install the latest GitHub version of `crew` (i.e. `remotes::install_github("wlandau/crew")`) and verify that the issue still persists.
 * Describe your issue in prose as clearly and concisely as possible.
 * For any problem you identify, post a [minimal reproducible example](https://www.tidyverse.org/help/) like [this one](https://github.com/ropensci/targets/issues/256#issuecomment-754229683) so the maintainer can troubleshoot. A reproducible example is:
     * **Runnable**: post enough R code and data so any onlooker can create the error on their own computer.
@@ -40,5 +40,5 @@ Please also follow these additional guidelines.
 * For new features or functionality, add tests in `tests`. Tests that can be automated should go in `tests/testthat/`. Tests that cannot be automated should go in `tests/interactive/`. For features affecting performance, it is good practice to add profiling studies to `tests/performance/`.
 * Check code coverage with `covr::package_coverage()`. Automated tests should cover all the new or changed functionality in your pull request.
 * Run overall package checks with `devtools::check()` and `goodpractice::gp()`
-* Describe your contribution in the project's [`NEWS.md`](https://github.com/ropensci/crew/blob/main/NEWS.md) file. Be sure to mention relevent GitHub issue numbers and your GitHub name as done in existing news entries.
-* If you feel contribution is substantial enough for official author or contributor status, please add yourself to the `Authors@R` field of the [`DESCRIPTION`](https://github.com/ropensci/crew/blob/main/DESCRIPTION) file.
+* Describe your contribution in the project's [`NEWS.md`](https://github.com/wlandau/crew/blob/main/NEWS.md) file. Be sure to mention relevent GitHub issue numbers and your GitHub name as done in existing news entries.
+* If you feel contribution is substantial enough for official author or contributor status, please add yourself to the `Authors@R` field of the [`DESCRIPTION`](https://github.com/wlandau/crew/blob/main/DESCRIPTION) file.

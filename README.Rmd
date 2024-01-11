@@ -16,9 +16,10 @@ knitr::opts_chunk$set(
 
 [![CRAN](https://www.r-pkg.org/badges/version/crew)](https://CRAN.R-project.org/package=crew)
 [![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![check](https://github.com/wlandau/crew/workflows/check/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
+[![check](https://github.com/wlandau/crew/actions/workflows/check.yaml/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
-[![lint](https://github.com/wlandau/crew/workflows/lint/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
+[![lint](https://github.com/wlandau/crew/actions/workflows/lint.yaml/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
+[![pkgdown](https://github.com/wlandau/crew/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Apkgdown)
 
 In computationally demanding analysis projects, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services. The [NNG](https://nng.nanomsg.org)-powered [`mirai`](https://github.com/shikokuchuo/mirai) R package is a sleek and sophisticated scheduler that efficiently processes these intense workloads. The `crew` package extends [`mirai`](https://github.com/shikokuchuo/mirai) with a unifying interface for third-party worker launchers. Inspiration also comes from packages [`future`](https://future.futureverse.org/), [`rrq`](https://mrc-ide.github.io/rrq/), [`clustermq`](https://mschubert.github.io/clustermq/), and [`batchtools`](https://mllg.github.io/batchtools/).
 

@@ -81,7 +81,7 @@ crew_deprecate <- function(
     return(invisible())
   }
   message <- sprintf(
-    "%s was deprecated on %s (crew version %s). Alternative: %s.",
+    "%s was deprecated on %s (version %s). Alternative: %s.",
     name,
     date,
     version,

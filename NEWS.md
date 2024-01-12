@@ -1,5 +1,6 @@
-# crew 0.8.0.9000 (development)
+# crew 0.8.0.9001 (development)
 
+* Require `nanonext` >= 0.12.0 and `mirai` >= 0.12.0.
 
 # crew 0.8.0
 

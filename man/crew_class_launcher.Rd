@@ -427,7 +427,9 @@ until it disconnects and its websocket is rotated with \code{rotate()}.
 }
 
 \subsection{Returns}{
-Integer index of workers available for launch.
+Integer index of workers available for launch. The backlogged
+workers are listed first. A worker is backlogged if it is assigned
+more tasks than it completed.
 }
 }
 \if{html}{\out{<hr>}}

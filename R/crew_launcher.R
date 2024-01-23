@@ -605,10 +605,18 @@ crew_class_launcher <- R6::R6Class(
     #'   to the current instance of its websocket. Once a worker
     #'   launches with the `launch()` method, it is considered "launched"
     #'   until it disconnects and its websocket is rotated with `rotate()`.
-    #' @return Integer index of workers available for launch.
+    #' @return Integer index of workers available for launch. The backlogged
+    #'   workers are listed first. A worker is backlogged if it is assigned
+    #'   more tasks than it completed.
     #' @param n Maximum number of worker indexes to return.
     unlaunched = function(n = Inf) {
-      head(x = which(!private$.workers$launched), n = n)
+      is_unlaunched <- !private$.workers$launched
+      is_backlogged <- private$.workers$assigned > private$.workers$complete
+      unlaunched <- c(
+        which(is_unlaunched & is_backlogged),
+        which(is_unlaunched & !is_backlogged)
+      )
+      head(x = unlaunched, n = n)
     },
     #' @description Get workers that may still be booting up.
     #' @details A worker is "booting" if its launch time is within the last
@@ -799,7 +807,10 @@ crew_class_launcher <- R6::R6Class(
       }
       self$tally()
       self$rotate()
-      unlaunched <- self$unlaunched(n = Inf)
+      is_unlaunched <- !private$.workers$launched
+      is_backlogged <- private$.workers$assigned > private$.workers$complete
+      walk(x = which(is_unlaunched & is_backlogged), f = self$launch)
+      unlaunched <- which(!private$.workers$launched)
       active <- nrow(private$.workers) - length(unlaunched)
       deficit <- min(length(unlaunched), max(0L, demand - active))
       walk(x = head(x = unlaunched, n = deficit), f = self$launch)

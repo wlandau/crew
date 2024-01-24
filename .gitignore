@@ -17,3 +17,6 @@ revdep
 fd.key
 fd.csr
 fd.crt
+_targets
+_targets.R
+_targets.yaml

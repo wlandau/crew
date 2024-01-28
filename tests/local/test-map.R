@@ -1,5 +1,6 @@
 crew_test("heavy task load for map()", {
   controller <- crew_controller_local(workers = 20L)
+  on.exit(controller$terminate())
   controller$start()
   for (index in seq_len(3L)) {
     out <- controller$map(
@@ -28,11 +29,11 @@ crew_test("heavy task load for map()", {
       )
     )
   }
-  controller$terminate()
 })
 
 crew_test("map() auto-scales", {
   controller <- crew_controller_local(workers = 20L, tasks_max = 1L)
+  on.exit(controller$terminate())
   controller$start()
   out <- controller$map(
     command = {
@@ -60,4 +61,15 @@ crew_test("map() auto-scales", {
     )
   )
   controller$terminate()
+})
+
+crew_test("map() under load", {
+  skip("very long test")
+  controller <- crew::crew_controller_local(workers = 25, tasks_max = 100)
+  on.exit(controller$terminate())
+  controller$start()
+  out <- controller$map(
+    command = Sys.sleep(1),
+    iterate = list(x = seq_len(10000))
+  )
 })

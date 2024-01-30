@@ -604,6 +604,9 @@ crew_class_controller_group <- R6::R6Class(
       )
       invisible(out)
     },
+    
+    
+    
     #' @description Summarize the workers of one or more controllers.
     #' @return A data frame of aggregated worker summary statistics
     #'   of all the selected controllers. It has one row per worker,

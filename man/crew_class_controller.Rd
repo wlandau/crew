@@ -783,7 +783,7 @@ in \code{mode} was met, \code{FALSE} otherwise.
 \subsection{Method \code{push_backlog()}}{
 Push the name of a task to the backlog.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$push_backlog(name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$push_backlog(name, controller = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -791,6 +791,9 @@ Push the name of a task to the backlog.
 \describe{
 \item{\code{name}}{Character of length 1 with the task name to push to
 the backlog.}
+
+\item{\code{controller}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }
@@ -810,9 +813,17 @@ without saturating the controller.
 Pop the task names from the head of the backlog which
 can be pushed without saturating the controller.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop_backlog()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop_backlog(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 Character vector of task names which can be pushed to the
 controller without saturating it. If the controller is saturated,

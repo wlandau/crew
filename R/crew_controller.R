@@ -1011,7 +1011,9 @@ crew_class_controller <- R6::R6Class(
     #' @param name Character of length 1 with the task name to push to
     #'   the backlog.
     #' @return `NULL` (invisibly).
-    push_backlog = function(name) {
+    #' @param controller Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    push_backlog = function(name, controller = NULL) {
       crew_assert(
         name,
         is.character(.),
@@ -1029,7 +1031,9 @@ crew_class_controller <- R6::R6Class(
     #' @return Character vector of task names which can be pushed to the
     #'   controller without saturating it. If the controller is saturated,
     #'   `character(0L)` is returned.
-    pop_backlog = function() {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    pop_backlog = function(controllers = NULL) {
       n <- .subset2(.subset2(self, "client"), "workers") -
         .subset2(self, "unresolved")()
       if (n < 1L) {

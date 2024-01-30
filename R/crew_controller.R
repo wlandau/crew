@@ -66,6 +66,7 @@ crew_class_controller <- R6::R6Class(
     .popped = NULL,
     .log = NULL,
     .error = NULL,
+    .backlog = NULL,
     .shove = function(
       command,
       data = list(),
@@ -141,6 +142,10 @@ crew_class_controller <- R6::R6Class(
     #'   from the last call to `map(error = "stop)`.
     error = function() {
       .subset2(private, ".error")
+    },
+    #' @field backlog Character vector of explicitly backlogged tasks.
+    backlog = function() {
+      .subset2(private, ".backlog")
     }
   ),
   public = list(
@@ -180,6 +185,7 @@ crew_class_controller <- R6::R6Class(
         message = "client and launcher must have the same name"
       )
       crew_assert(private$.log, is.null(.) || is.list(.))
+      crew_assert(private$.backlog, is.null(.) || is.character(.))
       invisible()
     },
     #' @description Check if the controller is empty.
@@ -280,6 +286,7 @@ crew_class_controller <- R6::R6Class(
           errors = rep(0L, workers),
           warnings = rep(0L, workers)
         )
+        private$.backlog <- character(0L)
       }
       invisible()
     },
@@ -997,6 +1004,41 @@ crew_class_controller <- R6::R6Class(
         error = FALSE
       )
       invisible(envir$result)
+    },
+    #' @description Push the name of a task to the backlog.
+    #' @details `pop_backlog()` pops the tasks that can be pushed
+    #'   without saturating the controller.
+    #' @param name Character of length 1 with the task name to push to
+    #'   the backlog.
+    #' @return `NULL` (invisibly).
+    push_backlog = function(name) {
+      crew_assert(
+        name,
+        is.character(.),
+        length(.) == 1L,
+        !anyNA(.),
+        nzchar(.),
+        message = "'name' in push_backlog() must be a valid character string"
+      )
+      n <- length(.subset2(private, ".backlog")) + 1L
+      private$.backlog[[n]] <- name
+      invisible()
+    },
+    #' @description Pop the task names from the head of the backlog which
+    #'   can be pushed without saturating the controller.
+    #' @return Character vector of task names which can be pushed to the
+    #'   controller without saturating it. If the controller is saturated,
+    #'   `character(0L)` is returned.
+    pop_backlog = function() {
+      n <- .subset2(.subset2(self, "client"), "workers") -
+        .subset2(self, "unresolved")()
+      if (n < 1L) {
+        return(character(0L))
+      }
+      backlog <- .subset2(private, ".backlog")
+      out <- utils::head(x = backlog, n = n)
+      private$.backlog <- backlog[-seq_len(n)]
+      out
     },
     #' @description Summarize the workers and tasks of the controller.
     #' @return A data frame of summary statistics on the workers and tasks.

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">crew</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.8.0.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.8.0.9003</span>
       </span>
     </div>
 
@@ -97,6 +97,10 @@ since the controller was started.</p></dd>
 from the last call to <code>map(error = "stop)</code>.</p></dd>
 
 
+<dt><code>backlog</code></dt>
+<dd><p>Character vector of explicitly backlogged tasks.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div id="methods">
@@ -121,6 +125,8 @@ from the last call to <code>map(error = "stop)</code>.</p></dd>
 <li><p><a href="#method-crew_class_controller-collect"><code>crew_class_controller$collect()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-pop"><code>crew_class_controller$pop()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-wait"><code>crew_class_controller$wait()</code></a></p></li>
+<li><p><a href="#method-crew_class_controller-push_backlog"><code>crew_class_controller$push_backlog()</code></a></p></li>
+<li><p><a href="#method-crew_class_controller-pop_backlog"><code>crew_class_controller$pop_backlog()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-summary"><code>crew_class_controller$summary()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-terminate"><code>crew_class_controller$terminate()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-crew_class_controller-new"></a><div class="section">
@@ -897,15 +903,48 @@ in <code>mode</code> is met.</p>
 in <code>mode</code> was met, <code>FALSE</code> otherwise.</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_controller-summary"></a><div class="section">
-<h3 id="method-summary-">Method <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code><a class="anchor" aria-label="anchor" href="#method-summary-"></a></h3>
-<p>Summarize the workers and tasks of the controller.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_controller-push_backlog"></a><div class="section">
+<h3 id="method-push-backlog-">Method <code>push_backlog()</code><a class="anchor" aria-label="anchor" href="#method-push-backlog-"></a></h3>
+<p>Push the name of a task to the backlog.</p><div class="section">
 <h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">push_backlog</span><span class="op">(</span><span class="va">name</span>, controller <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>name</code></dt>
+<dd><p>Character of length 1 with the task name to push to
+the backlog.</p></dd>
+
+
+<dt><code>controller</code></dt>
+<dd><p>Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="details-9">Details<a class="anchor" aria-label="anchor" href="#details-9"></a></h4>
+<p><code>pop_backlog()</code> pops the tasks that can be pushed
+without saturating the controller.</p>
+</div>
+
+<div class="section">
+<h4 id="returns-16">Returns<a class="anchor" aria-label="anchor" href="#returns-16"></a></h4>
+<p><code>NULL</code> (invisibly).</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_controller-pop_backlog"></a><div class="section">
+<h3 id="method-pop-backlog-">Method <code>pop_backlog()</code><a class="anchor" aria-label="anchor" href="#method-pop-backlog-"></a></h3>
+<p>Pop the task names from the head of the backlog which
+can be pushed without saturating the controller.</p><div class="section">
+<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">pop_backlog</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>controllers</code></dt>
 <dd><p>Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.</p></dd>
@@ -914,7 +953,30 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-16">Returns<a class="anchor" aria-label="anchor" href="#returns-16"></a></h4>
+<h4 id="returns-17">Returns<a class="anchor" aria-label="anchor" href="#returns-17"></a></h4>
+<p>Character vector of task names which can be pushed to the
+controller without saturating it. If the controller is saturated,
+<code>character(0L)</code> is returned.</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_controller-summary"></a><div class="section">
+<h3 id="method-summary-">Method <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code><a class="anchor" aria-label="anchor" href="#method-summary-"></a></h3>
+<p>Summarize the workers and tasks of the controller.</p><div class="section">
+<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>controllers</code></dt>
+<dd><p>Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-18">Returns<a class="anchor" aria-label="anchor" href="#returns-18"></a></h4>
 <p>A data frame of summary statistics on the workers and tasks.
 It has one row per worker websocket and the following columns:</p><ul><li><p><code>controller</code>: name of the controller.
 .  * <code>worker</code>: integer index of the worker.</p></li>
@@ -938,12 +1000,12 @@ is actually the number of <em>tasks</em>, not the number of warnings.
 </div><p></p><hr><a id="method-crew_class_controller-terminate"></a><div class="section">
 <h3 id="method-terminate-">Method <code>terminate()</code><a class="anchor" aria-label="anchor" href="#method-terminate-"></a></h3>
 <p>Terminate the workers and the <code>mirai</code> client.</p><div class="section">
-<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
+<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
+<h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>controllers</code></dt>
 <dd><p>Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.</p></dd>
@@ -952,7 +1014,7 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-17">Returns<a class="anchor" aria-label="anchor" href="#returns-17"></a></h4>
+<h4 id="returns-19">Returns<a class="anchor" aria-label="anchor" href="#returns-19"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 

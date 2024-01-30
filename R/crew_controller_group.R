@@ -604,9 +604,34 @@ crew_class_controller_group <- R6::R6Class(
       )
       invisible(out)
     },
-    
-    
-    
+    #' @description Push the name of a task to the backlog.
+    #' @details `pop_backlog()` pops the tasks that can be pushed
+    #'   without saturating the controller.
+    #' @param name Character of length 1 with the task name to push to
+    #'   the backlog.
+    #' @return `NULL` (invisibly).
+    #' @param controller Character vector of length 1 with the controller name.
+    #'   Set to `NULL` to select the default controller that `push_backlog()`
+    #'   would choose.
+    push_backlog = function(name, controller = NULL) {
+      control <- .subset2(
+        private,
+        ".select_single_controller"
+      )(name = controller)
+      control$push_backlog(name = name)
+    },
+    #' @description Pop the task names from the head of the backlog which
+    #'   can be pushed without saturating the controller.
+    #' @return Character vector of task names which can be pushed to the
+    #'   controller without saturating it. If the controller is saturated,
+    #'   `character(0L)` is returned.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    pop_backlog = function(controllers = NULL) {
+      control <- private$.select_controllers(controllers)
+      out <- map(control, ~.subset2(.x, "pop_backlog")())
+      unlist(out, use.names = FALSE)
+    },
     #' @description Summarize the workers of one or more controllers.
     #' @return A data frame of aggregated worker summary statistics
     #'   of all the selected controllers. It has one row per worker,

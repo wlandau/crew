@@ -1,7 +1,8 @@
-# crew 0.8.0.9002 (development)
+# crew 0.8.0.9003 (development)
 
 * Require `nanonext` >= 0.12.0 and `mirai` >= 0.12.0.
 * Return to always re-launching backlogged inactive workers (#79, https://github.com/shikokuchuo/mirai/discussions/95).
+* Implement `push_backlog()` and `pop_backlog()` to manage cases when it is not desirable to push to saturated controllers (https://github.com/ropensci/targets/issues/1220).
 
 # crew 0.8.0
 

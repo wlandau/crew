@@ -72,6 +72,8 @@ condition variable.}
 \item \href{#method-crew_class_controller_group-collect}{\code{crew_class_controller_group$collect()}}
 \item \href{#method-crew_class_controller_group-pop}{\code{crew_class_controller_group$pop()}}
 \item \href{#method-crew_class_controller_group-wait}{\code{crew_class_controller_group$wait()}}
+\item \href{#method-crew_class_controller_group-push_backlog}{\code{crew_class_controller_group$push_backlog()}}
+\item \href{#method-crew_class_controller_group-pop_backlog}{\code{crew_class_controller_group$pop_backlog()}}
 \item \href{#method-crew_class_controller_group-summary}{\code{crew_class_controller_group$summary()}}
 \item \href{#method-crew_class_controller_group-terminate}{\code{crew_class_controller_group$terminate()}}
 }
@@ -641,6 +643,60 @@ in \code{mode} is met.
 \subsection{Returns}{
 A logical of length 1, invisibly. \code{TRUE} if the condition
 in \code{mode} was met, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-push_backlog"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-push_backlog}{}}}
+\subsection{Method \code{push_backlog()}}{
+Push the name of a task to the backlog.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$push_backlog(name, controller = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character of length 1 with the task name to push to
+the backlog.}
+
+\item{\code{controller}}{Character vector of length 1 with the controller name.
+Set to \code{NULL} to select the default controller that \code{push_backlog()}
+would choose.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+\code{pop_backlog()} pops the tasks that can be pushed
+without saturating the controller.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-pop_backlog"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-pop_backlog}{}}}
+\subsection{Method \code{pop_backlog()}}{
+Pop the task names from the head of the backlog which
+can be pushed without saturating the controller.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop_backlog(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Character vector of task names which can be pushed to the
+controller without saturating it. If the controller is saturated,
+\code{character(0L)} is returned.
 }
 }
 \if{html}{\out{<hr>}}

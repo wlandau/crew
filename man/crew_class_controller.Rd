@@ -59,6 +59,8 @@ since the controller was started.}
 
 \item{\code{error}}{Tibble of task results (with one result per row)
 from the last call to \verb{map(error = "stop)}.}
+
+\item{\code{backlog}}{Character vector of explicitly backlogged tasks.}
 }
 \if{html}{\out{</div>}}
 }
@@ -81,6 +83,8 @@ from the last call to \verb{map(error = "stop)}.}
 \item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
 \item \href{#method-crew_class_controller-wait}{\code{crew_class_controller$wait()}}
+\item \href{#method-crew_class_controller-push_backlog}{\code{crew_class_controller$push_backlog()}}
+\item \href{#method-crew_class_controller-pop_backlog}{\code{crew_class_controller$pop_backlog()}}
 \item \href{#method-crew_class_controller-summary}{\code{crew_class_controller$summary()}}
 \item \href{#method-crew_class_controller-terminate}{\code{crew_class_controller$terminate()}}
 }
@@ -771,6 +775,59 @@ in \code{mode} is met.
 \subsection{Returns}{
 A logical of length 1, invisibly. \code{TRUE} if the condition
 in \code{mode} was met, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-push_backlog"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-push_backlog}{}}}
+\subsection{Method \code{push_backlog()}}{
+Push the name of a task to the backlog.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$push_backlog(name, controller = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character of length 1 with the task name to push to
+the backlog.}
+
+\item{\code{controller}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+\code{pop_backlog()} pops the tasks that can be pushed
+without saturating the controller.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-pop_backlog"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-pop_backlog}{}}}
+\subsection{Method \code{pop_backlog()}}{
+Pop the task names from the head of the backlog which
+can be pushed without saturating the controller.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pop_backlog(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Character vector of task names which can be pushed to the
+controller without saturating it. If the controller is saturated,
+\code{character(0L)} is returned.
 }
 }
 \if{html}{\out{<hr>}}

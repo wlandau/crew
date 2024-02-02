@@ -337,7 +337,9 @@ crew_class_controller <- R6::R6Class(
       invisible()
     },
     #' @description Push a task to the head of the task list.
-    #' @return `NULL` (invisibly).
+    #' @return Invisibly return the `mirai` object of the pushed task.
+    #'   This allows you to interact with the task directly, e.g.
+    #'   to create a promise object with `promises::as.promise()`.
     #' @param command Language object with R code to run.
     #' @param data Named list of local data objects in the
     #'   evaluation environment.
@@ -444,7 +446,7 @@ crew_class_controller <- R6::R6Class(
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
       }
-      invisible()
+      invisible(task)
     },
     #' @description Apply a single command to multiple inputs.
     #' @details `map()` cannot be used unless all prior tasks are

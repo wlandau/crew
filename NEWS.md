@@ -3,6 +3,7 @@
 * Require `nanonext` >= 0.12.0 and `mirai` >= 0.12.0.
 * Return to always re-launching backlogged inactive workers (#79, https://github.com/shikokuchuo/mirai/discussions/95).
 * Implement `push_backlog()` and `pop_backlog()` to manage cases when it is not desirable to push to saturated controllers (https://github.com/ropensci/targets/issues/1220).
+* Invisibly return the `mirai` object of a task pushed to the controller. This allows users to interact with the task directly, e.g. to create a promise object with `promises::as.promise()` (#146, @jcheng5).
 
 # crew 0.8.0
 

@@ -45,11 +45,12 @@ crew_test("crew_controller_local()", {
   # first task
   expect_equal(x$pushed, 0L)
   expect_equal(x$popped, 0L)
-  x$push(
+  task <- x$push(
     command = Sys.getenv("CREW_INSTANCE"),
     name = "task",
     save_command = TRUE
   )
+  expect_s3_class(task, "mirai")
   expect_equal(x$pushed, 1L)
   expect_equal(x$popped, 0L)
   expect_false(x$empty())

@@ -477,7 +477,9 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{NULL} (invisibly).
+Invisibly return the \code{mirai} object of the pushed task.
+This allows you to interact with the task directly, e.g.
+to create a promise object with \code{promises::as.promise()}.
 }
 }
 \if{html}{\out{<hr>}}

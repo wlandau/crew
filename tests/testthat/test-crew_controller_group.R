@@ -72,12 +72,13 @@ crew_test("crew_controller_group()", {
   )
   expect_null(x$pop())
   # substitute = TRUE # nolint
-  x$push(
+  task <- x$push(
     command = ps::ps_pid(),
     name = "task_pid",
     controller = "b",
     save_command = TRUE
   )
+  expect_s3_class(task, "mirai")
   expect_false(x$empty())
   expect_true(x$empty(controllers = "a"))
   expect_false(x$empty(controllers = "b"))

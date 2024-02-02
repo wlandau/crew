@@ -273,7 +273,9 @@ crew_class_controller_group <- R6::R6Class(
       walk(control, ~.x$scale(throttle = throttle))
     },
     #' @description Push a task to the head of the task list.
-    #' @return `NULL` (invisibly).
+    #' @return Invisibly return the `mirai` object of the pushed task.
+    #'   This allows you to interact with the task directly, e.g.
+    #'   to create a promise object with `promises::as.promise()`.
     #' @param command Language object with R code to run.
     #' @param data Named list of local data objects in the
     #'   evaluation environment.

@@ -1063,6 +1063,111 @@ crew_class_controller <- R6::R6Class(
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
       if_any(nrow(out), out, NULL)
     },
+    #' @description Create a `promises::promise()` object to asynchronously
+    #'   pop or collect one or more tasks.
+    #' @details Please be aware that `pop()` or `collect()` will happen
+    #'   asynchronously at a some unpredictable time after the promise object
+    #'   is created, even if your local R process appears to be doing
+    #'   something completely different. This behavior is highly desirable
+    #'   in a Shiny reactive context, but please be careful as it may be
+    #'   surprising in other situations.
+    #' @return A `promises::promise()` object whose eventual value will
+    #'   be a `tibble` with results from one or more popped tasks.
+    #'   If `mode = "one"`, only one task is popped and returned (one row).
+    #'   If `mode = "all"`, then all the tasks are returned in a `tibble`
+    #'   with one row per task (or `NULL` is returned if there are no
+    #'   tasks to pop).
+    #' @param mode Character of length 1, what kind of promise to create.
+    #'   `mode` must be `"one"` or `"all"`. Details:
+    #'   * If `mode` is `"one"`, then the promise is fulfilled (or rejected)
+    #'     when at least one task is resolved and available to `pop()`.
+    #'     When that happens, `pop()` runs asynchronously, pops a result off
+    #'     the task list, and returns a value.
+    #'     If the task succeeded, then the promise
+    #'     is fulfilled and its value is the result of `pop()` (a one-row
+    #'     `tibble` with the result and metadata). If the task threw an error,
+    #'     the error message of the task is forwarded to any error callbacks
+    #'     registered with the promise.
+    #'   * If `mode` is `"all"`, then the promise is fulfilled (or rejected)
+    #'     when there are no unresolved tasks left in the controller.
+    #'     (Be careful: this condition is trivially met in the moment
+    #'     if the controller is empty and you have not submitted any tasks,
+    #'     so it is best to create this kind of promise only after you
+    #'     submit tasks.)
+    #'     When there are no unresolve tasks left,
+    #'     `collect()` runs asynchronously, pops all available results
+    #'     off the task list, and returns a value.
+    #'     If the task succeeded, then the promise
+    #'     is fulfilled and its value is the result of `collect()`
+    #'     (a `tibble` with one row per task result). If any of the tasks
+    #'     threw an error, then the first error message detected is forwarded
+    #'     to any error callbacks registered with the promise.
+    #' @param seconds_interval Positive numeric of length 1, delay in the
+    #'   `later::later()` polling interval to asynchronously check if
+    #'   the promise can be resolved.
+    #' @param scale Logical of length 1,
+    #'   whether to automatically call `scale()`
+    #'   to auto-scale workers to meet the demand of the task load.
+    #'   Scaling up on `pop()` may be important
+    #'   for transient or nearly transient workers that tend to drop off
+    #'   quickly after doing little work.
+    #'   See also the `throttle` argument.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
+    promise = function(
+      mode = "one",
+      seconds_interval = 0.1,
+      scale = TRUE,
+      throttle = TRUE
+    ) {
+      crew_assert(
+        mode,
+        identical(., "one") || identical(., "all"),
+        message = "'mode' in promise() must be \"one\" or \"all\"."
+      )
+      crew_assert(
+        seconds_interval,
+        is.numeric(.),
+        length(.) == 1L,
+        is.finite(.),
+        . > 0,
+        message = "seconds_interval must be a finite positive number."
+      )
+      crew_assert(
+        scale,
+        isTRUE(.) || isFALSE(.),
+        message = "'scale' must be TRUE or FALSE"
+      )
+      crew_assert(
+        throttle,
+        isTRUE(.) || isFALSE(.),
+        message = "'throttle' must be TRUE or FALSE"
+      )
+      poll <- function() {
+        mode_one <- identical(mode, "one")
+        ready <- if_any(
+          mode_one,
+          .subset2(self, "unpopped")() > 0L,
+          .subset2(self, "unresolved")() < 1L
+        )
+        if (ready) {
+          result <- if_any(mode_one, self$pop(), self$collect())
+          if_any(
+            all(!is.na(result$error)),
+            resolve(result),
+            reject(result$error[1L])
+          )
+        } else {
+          later::later(poll, delay = seconds_interval)
+        }
+      }
+      action <- function(resolve, reject) {
+        poll()
+      }
+      promises::promise(action = action)
+    },
     #' @description Wait for tasks.
     #' @details The `wait()` method blocks the calling R session and
     #'   repeatedly auto-scales workers for tasks that need them.
@@ -1155,72 +1260,6 @@ crew_class_controller <- R6::R6Class(
       out <- utils::head(x = backlog, n = n)
       private$.backlog <- backlog[-seq_len(n)]
       out
-    },
-    #' @description Create a `promises::promise()` object
-    #'   for use in Shiny apps.
-    #' @details The promise resolves (or rejects) when either a single
-    #'   task is available to `pop()` (in the case of `mode = "one"`)
-    #'   or all pushed tasks have resolved (in the case of `mode = "all"`).
-    #'   On resolution, the promise value is the controller object.
-    #'   On rejection, an error message of a failed task is used.
-    #' @param mode Character of length 1, when to resolve (or reject)
-    #'   the promise. `mode = "one"` resolves when there is at least one
-    #'   resolved task retrievable with `pop()`, whereas `mode = "all"`
-    #'   resolves when all tasks complete.
-    #'   `mode = "all"` is not always efficient because it needs to check all
-    #'   the error messages of all completed tasks in order to figure out
-    #'   whether to resolve or reject the promise.
-    #'   So `mode = "one"` is recommended for most situations.
-    #' @param seconds_interval Positive numeric of length 1, delay in the
-    #'   `later::later()` polling interval to asynchronously check if
-    #'   the promise can be resolved.
-    promise = function(mode = "one", seconds_interval = 0.1) {
-      crew_assert(
-        mode,
-        identical(., "one") || identical(., "all"),
-        message = "'mode' in promise() must be \"one\" or \"all\"."
-      )
-      crew_assert(
-        seconds_interval,
-        is.numeric(.),
-        length(.) == 1L,
-        is.finite(.),
-        . > 0,
-        message = "seconds_interval must be a finite positive number."
-      )
-      action <- function(resolve, reject) {
-        poll <- function() {
-          mode_one <- identical(mode, "one")
-          ready <- if_any(
-            mode_one,
-            .subset2(self, "unpopped")() > 0L,
-            .subset2(self, "unresolved")() < 1L
-          )
-          if (ready) {
-            is_error <- FALSE
-            error_message <- NULL
-            for (task in .subset2(self, "tasks")) {
-              if (!mirai::unresolved(task)) {
-                data <- .subset2(task, "data")
-                if (mirai::is_mirai_error(data)) {
-                  is_error <- TRUE
-                  error_message <- data
-                } else {
-                  error_message <- .subset2(data, "error")
-                  is_error <- !anyNA(error_message)
-                }
-                if (mode_one || is_error) {
-                  break
-                }
-              }
-            }
-            if_any(is_error, resolve(self), reject(error_message))
-          } else {
-            later::later(poll, delay = seconds_interval)
-          }
-        }
-      }
-      promises::promise(action = action)
     },
     #' @description Summarize the workers and tasks of the controller.
     #' @return A data frame of summary statistics on the workers and tasks.

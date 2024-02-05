@@ -26,6 +26,7 @@
 #' @importFrom nanonext %~>% cv cv_value mclock msleep nng_error random
 #'   .unresolved unresolved until_ tls_config
 #' @importFrom processx process
+#' @importFrom promises promise
 #' @importFrom ps ps_cmdline ps_handle ps_is_running ps_status ps_username
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function enquo is_installed is_named quo_squash

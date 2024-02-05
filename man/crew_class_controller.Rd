@@ -978,8 +978,8 @@ controller without saturating it. If the controller is saturated,
 \if{html}{\out{<a id="method-crew_class_controller-promise"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-promise}{}}}
 \subsection{Method \code{promise()}}{
-Create a \code{promises::promise()} object
-for use in Shiny apps.
+Create a \code{promises::promise()} object to asynchronously
+pop the next task.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$promise(mode = "one", seconds_interval = 0.1)}\if{html}{\out{</div>}}
 }
@@ -1006,8 +1006,14 @@ the promise can be resolved.}
 The promise resolves (or rejects) when either a single
 task is available to \code{pop()} (in the case of \code{mode = "one"})
 or all pushed tasks have resolved (in the case of \code{mode = "all"}).
-On resolution, the promise value is the controller object.
-On rejection, an error message of a failed task is used.
+Either way, the value of the promise is a popped task (or the
+error message if the task failed).
+Please be aware that the asynchronous operation will automatically
+pop a task at a some unpredictable time after the promise object
+was created, even if your local R process appears to be doing
+something completely different. This behavior is highly desirable
+in a Shiny reactive context, but please be careful as it may be
+surprising in other situations.
 }
 
 }

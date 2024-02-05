@@ -59,6 +59,9 @@ controller_promise <- function(
           reject(result$error[!is.na(result$error)][1L])
         )
       } else {
+        if (scale) {
+          .subset2(controller, "scale")(throttle = throttle)
+        }
         later::later(poll, delay = seconds_interval)
       }
     }

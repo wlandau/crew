@@ -342,7 +342,7 @@ crew_class_controller_group <- R6::R6Class(
       seconds_timeout = NULL,
       scale = TRUE,
       throttle = TRUE,
-      name = NULL,
+      name = NA_character_,
       save_command = FALSE,
       controller = NULL
     ) {

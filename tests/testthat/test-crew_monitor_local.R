@@ -40,6 +40,7 @@ crew_test("monitor daemons", {
 
 crew_test("monitor workers", {
   skip_on_cran()
+  skip_on_covr() # corrupt RDS files on covr
   x <- crew_monitor_local()
   expect_true(is.integer(x$workers()))
   controller <- crew_controller_local()

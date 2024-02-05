@@ -295,7 +295,7 @@ Push a task to the head of the task list.
   seconds_timeout = NULL,
   scale = TRUE,
   throttle = TRUE,
-  name = NULL,
+  name = NA_character_,
   save_command = FALSE,
   controller = NULL
 )}\if{html}{\out{</div>}}

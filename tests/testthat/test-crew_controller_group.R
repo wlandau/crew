@@ -305,15 +305,16 @@ crew_test("controller group collect() with one active controller", {
     crew_test_sleep()
   })
   a <- crew_controller_local(
+    name = "a",
     workers = 1L,
     seconds_idle = 360
   )
   b <- crew_controller_local(
+    name = "b",
     workers = 1L,
     seconds_idle = 360
   )
   x <- crew_controller_group(a, b)
-  x <- crew_controller_local(workers = 1L, seconds_idle = 30L)
   x$push("done", controller = "a")
   x$push("done", controller = "a")
   x$wait(mode = "all")
@@ -334,15 +335,16 @@ crew_test("controller group collect() with two active controllers", {
     crew_test_sleep()
   })
   a <- crew_controller_local(
+    name = "a",
     workers = 1L,
     seconds_idle = 360
   )
   b <- crew_controller_local(
+    name = "b",
     workers = 1L,
     seconds_idle = 360
   )
   x <- crew_controller_group(a, b)
-  x <- crew_controller_local(workers = 1L, seconds_idle = 30L)
   x$push("done", controller = "a")
   x$push("done", controller = "b")
   x$wait(mode = "all")

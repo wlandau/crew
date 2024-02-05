@@ -50,7 +50,11 @@ crew_class_monitor_local <- R6::R6Class(
     #' @param user Character of length 1, user ID to filter on. `NULL`
     #'   to list processes of all users (not recommended).
     workers = function(user = ps::ps_username()) {
+      # Covered in tests/testthat/test-crew_monitor_local.R.
+      # Suppressed in {covr} because of readRDS()-related errors.
+      # nocov start
       crew_monitor_pids(pattern = "crew::crew_worker", user = user)
+      # nocov end
     },
     #' @description Terminate the given process IDs.
     #' @details Termination happens with the operating system signal

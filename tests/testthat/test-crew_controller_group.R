@@ -258,6 +258,43 @@ crew_test("crew_controller_group() scale method", {
   expect_true(TRUE)
 })
 
+crew_test("controller walk() works", {
+  skip_on_cran()
+  skip_on_os("windows")
+  a <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  x <- crew_controller_group(a)
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  f <- function(x, y) x + y
+  out <- x$walk(
+    command = f(x, y) + a + b,
+    iterate = list(x = c(1L, 2L), y = c(3L, 4L)),
+    data = list(a = 5L),
+    globals = list(f = f, b = 6L),
+    seed = 0L
+  )
+  expect_true(is.list(out))
+  expect_s3_class(out[[1L]], "mirai")
+  expect_s3_class(out[[2L]], "mirai")
+  x$wait(mode = "all")
+  task1 <- x$pop()
+  task2 <- x$pop()
+  expect_true(tibble::is_tibble(task1))
+  expect_true(tibble::is_tibble(task2))
+  expect_equal(
+    sort(c(task1$result[[1L]], task2$result[[1L]])),
+    c(15L, 17L)
+  )
+})
+
 crew_test("controller group map() works", {
   skip_on_cran()
   skip_on_os("windows")

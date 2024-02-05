@@ -369,6 +369,121 @@ crew_class_controller_group <- R6::R6Class(
         save_command = save_command
       )
     },
+    #' @description Apply a single command to multiple inputs,
+    #'   and return control to the user without
+    #'   waiting for any task to complete.
+    #' @details In contrast to `walk()`, `map()` blocks the local R session
+    #'   and waits for all tasks to complete.
+    #' @return Invisibly returns a list of `mirai` task objects for the
+    #'   newly created tasks. The order of tasks in the list matches the
+    #'   order of data in the `iterate` argument.
+    #' @param command Language object with R code to run.
+    #' @param iterate Named list of vectors or lists to iterate over.
+    #'   For example, to run function calls
+    #'   `f(x = 1, y = "a")` and `f(x = 2, y = "b")`,
+    #'   set `command` to `f(x, y)`, and set `iterate` to
+    #'   `list(x = c(1, 2), y = c("a", "b"))`. The individual
+    #'   function calls are evaluated as
+    #'   `f(x = iterate$x[[1]], y = iterate$y[[1]])` and
+    #'   `f(x = iterate$x[[2]], y = iterate$y[[2]])`.
+    #'   All the elements of `iterate` must have the same length.
+    #'   If there are any name conflicts between `iterate` and `data`,
+    #'   `iterate` takes precedence.
+    #' @param data Named list of constant local data objects in the
+    #'   evaluation environment. Objects in this list are treated as single
+    #'   values and are held constant for each iteration of the map.
+    #' @param globals Named list of constant objects to temporarily
+    #'   assign to the global environment for each task. This list should
+    #'   include any functions you previously defined in the global
+    #'   environment which are required to run tasks.
+    #'   See the `reset_globals` argument of [crew_controller_local()].
+    #'   Objects in this list are treated as single
+    #'   values and are held constant for each iteration of the map.
+    #' @param substitute Logical of length 1, whether to call
+    #'   `base::substitute()` on the supplied value of the
+    #'   `command` argument. If `TRUE` (default) then `command` is quoted
+    #'   literally as you write it, e.g.
+    #'   `push(command = your_function_call())`. If `FALSE`, then `crew`
+    #'   assumes `command` is a language object and you are passing its
+    #'   value, e.g. `push(command = quote(your_function_call()))`.
+    #'   `substitute = TRUE` is appropriate for interactive use,
+    #'   whereas `substitute = FALSE` is meant for automated R programs
+    #'   that invoke `crew` controllers.
+    #' @param seed Integer of length 1 with the pseudo-random number generator
+    #'   seed to set for the evaluation of the task. Passed to the
+    #'   `seed` argument of `set.seed()` if not `NULL`.
+    #'   If `algorithm` and `seed` are both `NULL`,
+    #'   then the random number generator defaults to the
+    #'   recommended widely spaced worker-specific
+    #'   L'Ecuyer streams as supported by `mirai::nextstream()`.
+    #'   See `vignette("parallel", package = "parallel")` for details.
+    #' @param algorithm Integer of length 1 with the pseudo-random number
+    #'   generator algorithm to set for the evaluation of the task.
+    #'   Passed to the `kind` argument of `RNGkind()` if not `NULL`.
+    #'   If `algorithm` and `seed` are both `NULL`,
+    #'   then the random number generator defaults to the
+    #'   recommended widely spaced worker-specific
+    #'   L'Ecuyer streams as supported by `mirai::nextstream()`.
+    #'   See `vignette("parallel", package = "parallel")` for details.
+    #' @param packages Character vector of packages to load for the task.
+    #' @param library Library path to load the packages. See the `lib.loc`
+    #'   argument of `require()`.
+    #' @param seconds_timeout Optional task timeout passed to the `.timeout`
+    #'   argument of `mirai::mirai()` (after converting to milliseconds).
+    #' @param names Optional character of length 1, name of the element of
+    #'   `iterate` with names for the tasks. If `names` is supplied,
+    #'   then `iterate[[names]]` must be a character vector.
+    #' @param save_command Logical of length 1, whether to store
+    #'   a text string version of the R command in the output.
+    #' @param scale Logical, whether to automatically scale workers to meet
+    #'   demand. See also the `throttle` argument.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
+    #' @param controller Character of length 1,
+    #'   name of the controller to submit the tasks.
+    #'   If `NULL`, the controller defaults to the
+    #'   first controller in the list.
+    walk = function(
+      command,
+      iterate,
+      data = list(),
+      globals = list(),
+      substitute = TRUE,
+      seed = NULL,
+      algorithm = NULL,
+      packages = character(0),
+      library = NULL,
+      seconds_timeout = NULL,
+      names = NULL,
+      save_command = FALSE,
+      scale = TRUE,
+      throttle = TRUE,
+      controller = NULL
+    ) {
+      crew_assert(substitute, isTRUE(.) || isFALSE(.))
+      if (substitute) {
+        command <- substitute(command)
+      }
+      control <- private$.select_single_controller(name = controller)
+      control$walk(
+        command = command,
+        iterate = iterate,
+        data = data,
+        globals = globals,
+        substitute = FALSE,
+        seed = seed,
+        algorithm = algorithm,
+        packages = packages,
+        library = library,
+        seconds_timeout = seconds_timeout,
+        names = names,
+        save_command = save_command,
+        scale = scale,
+        throttle = throttle
+      )
+    },
     #' @description Apply a single command to multiple inputs.
     #' @details The idea comes from functional programming: for example,
     #'   the `map()` function from the `purrr` package.
@@ -425,8 +540,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
-    #' @param seconds_interval Number of seconds to wait between intervals
-    #'   polling the tasks for completion.
+    #' @param seconds_interval Number of seconds to wait between auto-scaling
+    #'   operations while waiting for tasks to complete.
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param names Optional character of length 1, name of the element of
@@ -455,7 +570,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controller Character of length 1,
-    #'   name of the controller to submit the task.
+    #'   name of the controller to submit the tasks.
     #'   If `NULL`, the controller defaults to the
     #'   first controller in the list.
     map = function(

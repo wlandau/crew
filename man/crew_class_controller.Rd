@@ -201,9 +201,17 @@ or completed tasks waiting to be retrieved with \code{push()}.
 \subsection{Method \code{resolved()}}{
 Number of resolved \code{mirai()} tasks.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$resolved()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$resolved(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Details}{
 \code{resolved()} is cumulative: it counts all the resolved
 tasks over the entire lifetime of the controller session.

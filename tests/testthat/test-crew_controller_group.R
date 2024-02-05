@@ -631,3 +631,51 @@ crew_test("backlog with the second controller saturated`", {
   expect_equal(b$backlog, tasks_b)
   expect_equal(x$pop_backlog(), character(0L))
 })
+
+crew_test("group helper methods (non)empty, (un)resolved, unpopped", {
+  skip_on_cran()
+  skip_on_os("windows")
+  a <- crew_controller_local(
+    name = "a",
+    workers = 1L,
+    seconds_idle = 360
+  )
+  b <- crew_controller_local(
+    name = "b",
+    workers = 1L,
+    seconds_idle = 360
+  )
+  x <- crew_controller_group(a, b)
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  expect_true(x$empty())
+  expect_false(x$nonempty())
+  expect_equal(x$resolved(), 0L)
+  expect_equal(x$unresolved(), 0L)
+  expect_equal(x$unpopped(), 0L)
+  x$push(TRUE, controller = "a")
+  x$push(TRUE, controller = "b")
+  x$wait(mode = "all")
+  expect_false(x$empty())
+  expect_true(x$nonempty())
+  expect_equal(x$resolved(), 2L)
+  expect_equal(x$unresolved(), 0L)
+  expect_equal(x$unpopped(), 2L)
+  tasks <- x$collect()
+  expect_true(x$empty())
+  expect_false(x$nonempty())
+  expect_equal(x$unpopped(), 0L)
+  x$push(Sys.sleep(60), controller = "a")
+  x$push(Sys.sleep(60), controller = "b")
+  expect_false(x$empty())
+  expect_true(x$nonempty())
+  expect_equal(x$resolved(), 2L)
+  expect_equal(x$unresolved(), 2L)
+  expect_equal(x$unpopped(), 0L)
+  x$terminate()
+})

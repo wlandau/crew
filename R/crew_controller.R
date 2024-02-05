@@ -213,7 +213,9 @@ crew_class_controller <- R6::R6Class(
     #'   number of resolved `mirai()` tasks.
     #'   The return value is 0 if the condition variable does not exist
     #'   (i.e. if the client is not running).
-    resolved = function() {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    resolved = function(controllers = NULL) {
       .subset2(.subset2(self, "client"), "resolved")()
     },
     #' @description Number of unresolved `mirai()` tasks.

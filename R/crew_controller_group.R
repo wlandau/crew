@@ -223,6 +223,47 @@ crew_class_controller_group <- R6::R6Class(
       control <- private$.select_controllers(controllers)
       all(map_lgl(control, ~.x$empty()))
     },
+    #' @description Check if the controller group is nonempty.
+    #' @details A controller is empty if it has no running tasks
+    #'   or completed tasks waiting to be retrieved with `push()`.
+    #' @return `TRUE` if the controller is empty, `FALSE` otherwise.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    nonempty = function(controllers = NULL) {
+      control <- private$.select_controllers(controllers)
+      any(map_lgl(control, ~.x$nonempty()))
+    },
+    #' @description Number of resolved `mirai()` tasks.
+    #' @details `resolved()` is cumulative: it counts all the resolved
+    #'   tasks over the entire lifetime of the controller session.
+    #' @return Non-negative integer of length 1,
+    #'   number of resolved `mirai()` tasks.
+    #'   The return value is 0 if the condition variable does not exist
+    #'   (i.e. if the client is not running).
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    resolved = function(controllers = NULL) {
+      control <- private$.select_controllers(controllers)
+      sum(map_int(control, ~.x$resolved()))
+    },
+    #' @description Number of unresolved `mirai()` tasks.
+    #' @return Non-negative integer of length 1,
+    #'   number of unresolved `mirai()` tasks.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    unresolved = function(controllers = NULL) {
+      control <- private$.select_controllers(controllers)
+      sum(map_int(control, ~.x$unresolved()))
+    },
+    #' @description Number of resolved `mirai()` tasks available via `pop()`.
+    #' @return Non-negative integer of length 1,
+    #'   number of resolved `mirai()` tasks available via `pop()`.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    unpopped = function(controllers = NULL) {
+      control <- private$.select_controllers(controllers)
+      sum(map_int(control, ~.x$unpopped()))
+    },
     #' @description Check if a controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
     #'   is greater than or equal to the maximum number of workers.

@@ -63,6 +63,10 @@ condition variable.}
 \item \href{#method-crew_class_controller_group-new}{\code{crew_class_controller_group$new()}}
 \item \href{#method-crew_class_controller_group-validate}{\code{crew_class_controller_group$validate()}}
 \item \href{#method-crew_class_controller_group-empty}{\code{crew_class_controller_group$empty()}}
+\item \href{#method-crew_class_controller_group-nonempty}{\code{crew_class_controller_group$nonempty()}}
+\item \href{#method-crew_class_controller_group-resolved}{\code{crew_class_controller_group$resolved()}}
+\item \href{#method-crew_class_controller_group-unresolved}{\code{crew_class_controller_group$unresolved()}}
+\item \href{#method-crew_class_controller_group-unpopped}{\code{crew_class_controller_group$unpopped()}}
 \item \href{#method-crew_class_controller_group-saturated}{\code{crew_class_controller_group$saturated()}}
 \item \href{#method-crew_class_controller_group-start}{\code{crew_class_controller_group$start()}}
 \item \href{#method-crew_class_controller_group-launch}{\code{crew_class_controller_group$launch()}}
@@ -160,6 +164,105 @@ or completed tasks waiting to be retrieved with \code{push()}.
 \subsection{Returns}{
 \code{TRUE} if all the selected controllers are empty,
 \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-nonempty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-nonempty}{}}}
+\subsection{Method \code{nonempty()}}{
+Check if the controller group is nonempty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$nonempty(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+A controller is empty if it has no running tasks
+or completed tasks waiting to be retrieved with \code{push()}.
+}
+
+\subsection{Returns}{
+\code{TRUE} if the controller is empty, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-resolved"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-resolved}{}}}
+\subsection{Method \code{resolved()}}{
+Number of resolved \code{mirai()} tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$resolved(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+\code{resolved()} is cumulative: it counts all the resolved
+tasks over the entire lifetime of the controller session.
+}
+
+\subsection{Returns}{
+Non-negative integer of length 1,
+number of resolved \code{mirai()} tasks.
+The return value is 0 if the condition variable does not exist
+(i.e. if the client is not running).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-unresolved"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-unresolved}{}}}
+\subsection{Method \code{unresolved()}}{
+Number of unresolved \code{mirai()} tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$unresolved(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Non-negative integer of length 1,
+number of unresolved \code{mirai()} tasks.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-unpopped"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-unpopped}{}}}
+\subsection{Method \code{unpopped()}}{
+Number of resolved \code{mirai()} tasks available via \code{pop()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$unpopped(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Non-negative integer of length 1,
+number of resolved \code{mirai()} tasks available via \code{pop()}.
 }
 }
 \if{html}{\out{<hr>}}

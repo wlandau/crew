@@ -86,6 +86,7 @@ from the last call to \verb{map(error = "stop)}.}
 \item \href{#method-crew_class_controller-wait}{\code{crew_class_controller$wait()}}
 \item \href{#method-crew_class_controller-push_backlog}{\code{crew_class_controller$push_backlog()}}
 \item \href{#method-crew_class_controller-pop_backlog}{\code{crew_class_controller$pop_backlog()}}
+\item \href{#method-crew_class_controller-promise}{\code{crew_class_controller$promise()}}
 \item \href{#method-crew_class_controller-summary}{\code{crew_class_controller$summary()}}
 \item \href{#method-crew_class_controller-terminate}{\code{crew_class_controller$terminate()}}
 }
@@ -972,6 +973,43 @@ Character vector of task names which can be pushed to the
 controller without saturating it. If the controller is saturated,
 \code{character(0L)} is returned.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-promise"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-promise}{}}}
+\subsection{Method \code{promise()}}{
+Create a \code{promises::promise()} object
+for use in Shiny apps.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$promise(mode = "one", seconds_interval = 0.1)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mode}}{Character of length 1, when to resolve (or reject)
+the promise. \code{mode = "one"} resolves when there is at least one
+resolved task retrievable with \code{pop()}, whereas \code{mode = "all"}
+resolves when all tasks complete.
+\code{mode = "all"} is not always efficient because it needs to check all
+the error messages of all completed tasks in order to figure out
+whether to resolve or reject the promise.
+So \code{mode = "one"} is recommended for most situations.}
+
+\item{\code{seconds_interval}}{Positive numeric of length 1, delay in the
+\code{later::later()} polling interval to asynchronously check if
+the promise can be resolved.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+The promise resolves (or rejects) when either a single
+task is available to \code{pop()} (in the case of \code{mode = "one"})
+or all pushed tasks have resolved (in the case of \code{mode = "all"}).
+On resolution, the promise value is the controller object.
+On rejection, an error message of a failed task is used.
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-summary"></a>}}

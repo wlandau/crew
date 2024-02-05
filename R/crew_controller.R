@@ -100,16 +100,16 @@ crew_class_controller <- R6::R6Class(
       invisible(task)
     },
     .wait_all_once = function(seconds_interval) {
-      if (self$unresolved() > 0L) {
+      if (.subset2(self, "unresolved")() > 0L) {
         private$.client$relay$wait(seconds_timeout = seconds_interval)
       }
-      self$unresolved() < 1L
+      .subset2(self, "unresolved")() < 1L
     },
     .wait_one_once = function(seconds_interval) {
-      if (self$unpopped() < 1L) {
+      if (.subset2(self, "unpopped")() < 1L) {
         private$.client$relay$wait(seconds_timeout = seconds_interval)
       }
-      self$unpopped() > 0L
+      .subset2(self, "unpopped")() > 0L
     }
   ),
   active = list(
@@ -1155,6 +1155,72 @@ crew_class_controller <- R6::R6Class(
       out <- utils::head(x = backlog, n = n)
       private$.backlog <- backlog[-seq_len(n)]
       out
+    },
+    #' @description Create a `promises::promise()` object
+    #'   for use in Shiny apps.
+    #' @details The promise resolves (or rejects) when either a single
+    #'   task is available to `pop()` (in the case of `mode = "one"`)
+    #'   or all pushed tasks have resolved (in the case of `mode = "all"`).
+    #'   On resolution, the promise value is the controller object.
+    #'   On rejection, an error message of a failed task is used.
+    #' @param mode Character of length 1, when to resolve (or reject)
+    #'   the promise. `mode = "one"` resolves when there is at least one
+    #'   resolved task retrievable with `pop()`, whereas `mode = "all"`
+    #'   resolves when all tasks complete.
+    #'   `mode = "all"` is not always efficient because it needs to check all
+    #'   the error messages of all completed tasks in order to figure out
+    #'   whether to resolve or reject the promise.
+    #'   So `mode = "one"` is recommended for most situations.
+    #' @param seconds_interval Positive numeric of length 1, delay in the
+    #'   `later::later()` polling interval to asynchronously check if
+    #'   the promise can be resolved.
+    promise = function(mode = "one", seconds_interval = 0.1) {
+      crew_assert(
+        mode,
+        identical(., "one") || identical(., "all"),
+        message = "'mode' in promise() must be \"one\" or \"all\"."
+      )
+      crew_assert(
+        seconds_interval,
+        is.numeric(.),
+        length(.) == 1L,
+        is.finite(.),
+        . > 0,
+        message = "seconds_interval must be a finite positive number."
+      )
+      action <- function(resolve, reject) {
+        poll <- function() {
+          mode_one <- identical(mode, "one")
+          ready <- if_any(
+            mode_one,
+            .subset2(self, "unpopped")() > 0L,
+            .subset2(self, "unresolved")() < 1L
+          )
+          if (ready) {
+            is_error <- FALSE
+            error_message <- NULL
+            for (task in .subset2(self, "tasks")) {
+              if (!mirai::unresolved(task)) {
+                data <- .subset2(task, "data")
+                if (mirai::is_mirai_error(data)) {
+                  is_error <- TRUE
+                  error_message <- data
+                } else {
+                  error_message <- .subset2(data, "error")
+                  is_error <- !anyNA(error_message)
+                }
+                if (mode_one || is_error) {
+                  break
+                }
+              }
+            }
+            if_any(is_error, resolve(self), reject(error_message))
+          } else {
+            later::later(poll, delay = seconds_interval)
+          }
+        }
+      }
+      promises::promise(action = action)
     },
     #' @description Summarize the workers and tasks of the controller.
     #' @return A data frame of summary statistics on the workers and tasks.

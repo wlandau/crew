@@ -428,31 +428,3 @@ crew_test("backlog with saturation", {
     x$push(Sys.sleep(30), scale = FALSE)
   }
 })
-
-crew_test("promise(mode = \"one\")", {
-  skip_on_cran()
-  skip_on_os("windows")
-  x <- crew_controller_local(
-    workers = 1L,
-    seconds_idle = 360
-  )
-  on.exit({
-    x$terminate()
-    rm(x)
-    gc()
-    crew_test_sleep()
-  })
-  x$start()
-  envir <- new.env(parent = emptyenv())
-  promise <- promises::then(
-    x$promise(mode = "one"),
-    onFulfilled = function(value) {
-      envir$value <- value
-    },
-    onRejected = function(error) {
-      envir$error <- conditionMessage(error)
-    }
-  )
-  x$push("done")
-  x$wait(mode = "all")
-})

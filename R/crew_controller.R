@@ -1094,7 +1094,7 @@ crew_class_controller <- R6::R6Class(
     #'     if the controller is empty and you have not submitted any tasks,
     #'     so it is best to create this kind of promise only after you
     #'     submit tasks.)
-    #'     When there are no unresolve tasks left,
+    #'     When there are no unresolved tasks left,
     #'     `collect()` runs asynchronously, pops all available results
     #'     off the task list, and returns a value.
     #'     If the task succeeded, then the promise
@@ -1122,6 +1122,8 @@ crew_class_controller <- R6::R6Class(
       scale = TRUE,
       throttle = TRUE
     ) {
+      # Tested in tests/interactive/test-promises.R.
+      # nocov start
       crew_assert(
         mode,
         identical(., "one") || identical(., "all"),
@@ -1156,9 +1158,9 @@ crew_class_controller <- R6::R6Class(
           if (ready) {
             result <- if_any(mode_one, self$pop(), self$collect())
             if_any(
-              all(!is.na(result$error)),
+              all(is.na(result$error)),
               resolve(result),
-              reject(result$error[1L])
+              reject(result$error[!is.na(result$error)][1L])
             )
           } else {
             later::later(poll, delay = seconds_interval)
@@ -1167,6 +1169,7 @@ crew_class_controller <- R6::R6Class(
         poll()
       }
       promises::promise(action = action)
+      # nocov end
     },
     #' @description Wait for tasks.
     #' @details The `wait()` method blocks the calling R session and
@@ -1200,7 +1203,7 @@ crew_class_controller <- R6::R6Class(
       crew_assert(mode, identical(., "all") || identical(., "one"))
       mode_all <- identical(mode, "all")
       if (length(private$.tasks) < 1L) {
-        return(mode_all)
+        return(invisible(mode_all))
       }
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE

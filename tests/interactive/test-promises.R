@@ -9,7 +9,6 @@ crew_test("interactive: promise(mode = \"one\") on basic controllers", {
   envir <- new.env(parent = emptyenv())
   # Test a good task.
   x$push("done")
-  x$wait(mode = "one")
   promise <- promises::then(
     x$promise(mode = "one"),
     onFulfilled = function(value) {
@@ -19,6 +18,7 @@ crew_test("interactive: promise(mode = \"one\") on basic controllers", {
       envir$error <- conditionMessage(error)
     }
   )
+  x$wait(mode = "one")
   expect_true(tibble::is_tibble(envir$value))
   expect_equal(nrow(envir$value), 1L)
   expect_equal(envir$value$result[[1L]], "done")

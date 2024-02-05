@@ -448,7 +448,9 @@ crew_class_controller <- R6::R6Class(
       }
       invisible(task)
     },
-    #' @description Apply a single command to multiple inputs.
+    #' @description Apply a single command to multiple inputs,
+    #'   wait for all tasks to complete,
+    #'   and return the results of all tasks.
     #' @details `map()` cannot be used unless all prior tasks are
     #'   completed and popped. You may need to wait and then pop them
     #'   manually. Alternatively, you can start over: either call

@@ -486,7 +486,9 @@ to create a promise object with \code{promises::as.promise()}.
 \if{html}{\out{<a id="method-crew_class_controller-map"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-map}{}}}
 \subsection{Method \code{map()}}{
-Apply a single command to multiple inputs.
+Apply a single command to multiple inputs,
+wait for all tasks to complete,
+and return the results of all tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$map(
   command,

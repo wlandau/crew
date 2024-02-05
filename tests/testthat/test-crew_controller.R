@@ -10,14 +10,6 @@ crew_test("deprecate auto_scale", {
   expect_true(TRUE)
 })
 
-crew_test("crew_controller() deprecate collect()", {
-  skip_on_cran()
-  skip_on_os("windows")
-  x <- crew_controller_local(seconds_idle = 360)
-  suppressWarnings(x$collect())
-  expect_true(TRUE)
-})
-
 crew_test("task collection and results stack work", {
   skip_on_cran()
   x <- crew_controller_local(seconds_idle = 120)

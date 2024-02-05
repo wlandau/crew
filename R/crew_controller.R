@@ -219,13 +219,17 @@ crew_class_controller <- R6::R6Class(
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
     #'   number of unresolved `mirai()` tasks.
-    unresolved = function() {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    unresolved = function(controllers = NULL) {
       .subset2(self, "pushed") - .subset2(self, "resolved")()
     },
     #' @description Number of resolved `mirai()` tasks available via `pop()`.
     #' @return Non-negative integer of length 1,
     #'   number of resolved `mirai()` tasks available via `pop()`.
-    unpopped = function() {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    unpopped = function(controllers = NULL) {
       .subset2(self, "resolved")() - .subset2(self, "popped")
     },
     #' @description Check if the controller is saturated.
@@ -1116,11 +1120,14 @@ crew_class_controller <- R6::R6Class(
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
     promise = function(
       mode = "one",
       seconds_interval = 0.1,
       scale = TRUE,
-      throttle = TRUE
+      throttle = TRUE,
+      controllers = NULL
     ) {
       # Tested in tests/interactive/test-promises.R.
       # nocov start

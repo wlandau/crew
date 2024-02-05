@@ -222,9 +222,17 @@ The return value is 0 if the condition variable does not exist
 \subsection{Method \code{unresolved()}}{
 Number of unresolved \code{mirai()} tasks.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unresolved()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unresolved(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 Non-negative integer of length 1,
 number of unresolved \code{mirai()} tasks.
@@ -236,9 +244,17 @@ number of unresolved \code{mirai()} tasks.
 \subsection{Method \code{unpopped()}}{
 Number of resolved \code{mirai()} tasks available via \code{pop()}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unpopped()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unpopped(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 Non-negative integer of length 1,
 number of resolved \code{mirai()} tasks available via \code{pop()}.
@@ -879,7 +895,8 @@ pop or collect one or more tasks.
   mode = "one",
   seconds_interval = 0.1,
   scale = TRUE,
-  throttle = TRUE
+  throttle = TRUE,
+  controllers = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -904,7 +921,7 @@ when there are no unresolved tasks left in the controller.
 if the controller is empty and you have not submitted any tasks,
 so it is best to create this kind of promise only after you
 submit tasks.)
-When there are no unresolve tasks left,
+When there are no unresolved tasks left,
 \code{collect()} runs asynchronously, pops all available results
 off the task list, and returns a value.
 If the task succeeded, then the promise
@@ -930,6 +947,9 @@ See also the \code{throttle} argument.}
 within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
+
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
 }

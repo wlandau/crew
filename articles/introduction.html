@@ -199,7 +199,7 @@ recommended widely spaced worker-specific L’Ecuyer streams supported by
 <code><a href="https://cran.rstudio.com/web/packages/parallel/vignettes/parallel.pdf" class="external-link">vignette("parallel", package = "parallel")</a></code> for details.</p>
 </div>
 <div class="section level2">
-<h2 id="functional-programming">Functional programming<a class="anchor" aria-label="anchor" href="#functional-programming"></a>
+<h2 id="synchronous-functional-programming">Synchronous functional programming<a class="anchor" aria-label="anchor" href="#synchronous-functional-programming"></a>
 </h2>
 <p>The <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map" class="external-link"><code>map()</code></a>
 method of the controller supports functional programming similar to <a href="https://purrr.tidyverse.org/reference/map.html" class="external-link"><code>purrr::map()</code></a>
@@ -249,12 +249,59 @@ To conserve memory, consider setting
 troubleshooting.</p>
 </div>
 <div class="section level2">
+<h2 id="asynchronous-functional-programming">Asynchronous functional programming<a class="anchor" aria-label="anchor" href="#asynchronous-functional-programming"></a>
+</h2>
+<p>The <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-walk" class="external-link"><code>walk()</code></a>
+method is just like <code>map()</code>, but it does not wait for any
+tasks to complete. Instead, it returns control to the local R session
+immediately and lets you do other things while the tasks run in the
+background.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">walk</span><span class="op">(</span></span>
+<span>  command <span class="op">=</span> <span class="va">a</span> <span class="op">+</span> <span class="va">b</span> <span class="op">+</span> <span class="va">c</span> <span class="op">+</span> <span class="va">d</span>,</span>
+<span>  iterate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>c <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  globals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>d <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-collect" class="external-link"><code>collect()</code></a>
+pops all completed tasks. Put together, <code>walk()</code>,
+<code>wait(mode = "all")</code>, and <code>collect()</code> have the
+same overall effect as <code>map()</code>.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">controller</span><span class="op">$</span><span class="fu">collect</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 12</span></span>
+<span><span class="co">#&gt;   name  command result    seconds  seed algorithm error trace warnings</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;list&gt;      &lt;dbl&gt; &lt;int&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;</span></span>
+<span><span class="co">#&gt; 1 1     NA      &lt;dbl [1]&gt;       0    NA NA        NA    NA    NA</span></span>
+<span><span class="co">#&gt; 2 2     NA      &lt;dbl [1]&gt;       0    NA NA        NA    NA    NA</span></span>
+<span><span class="co">#&gt; # ℹ 3 more variables: launcher &lt;chr&gt;, worker &lt;int&gt;, instance &lt;chr&gt;</span></span></code></pre></div>
+<p>However, there are subtle differences between the synchronous and
+asynchronous functional programming methods:</p>
+<ol style="list-style-type: decimal">
+<li>
+<code>map()</code> requires an empty controller to start with (no
+prior tasks). But with <code>walk()</code>, the controller can have any
+number of running or unpopped tasks beforehand.</li>
+<li>
+<code>wait()</code> does not show a progress bar because it would be
+misleading if there are a lot of prior tasks. Because <code>map()</code>
+requires the controller to be empty initially (i.e. (1)), it shows a
+progress bar while correctly representing the amount of work left to
+do.</li>
+</ol>
+</div>
+<div class="section level2">
 <h2 id="summaries">Summaries<a class="anchor" aria-label="anchor" href="#summaries"></a>
 </h2>
 <p>The controller summary shows how many tasks each worker ran, how many
 total seconds it spent running tasks, and how many tasks threw warnings
 and errors.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 6</span></span>
 <span><span class="co">#&gt;   controller worker tasks seconds errors warnings</span></span>
@@ -267,7 +314,7 @@ from all past terminated instances of each worker. In addition, it shows
 whether the current worker instance was actively connected (“online”) or
 had connected at some point during its life cycle (“discovered”) as of
 the last call to <code>controller$launcher$tally()</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="va">launcher</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 6</span></span>
 <span><span class="co">#&gt;   worker launches online discovered assigned complete</span></span>
@@ -276,7 +323,7 @@ the last call to <code>controller$launcher$tally()</code>.</p>
 <span><span class="co">#&gt; 2      2        1 TRUE   TRUE              0        0</span></span></code></pre></div>
 <p>Finally, the client summary shows up-to-date worker status from
 <code><a href="https://shikokuchuo.net/mirai/reference/daemons.html" class="external-link">mirai::daemons()</a></code>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="va">client</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 6</span></span>
 <span><span class="co">#&gt;   worker online instances assigned complete socket</span></span>
@@ -291,14 +338,14 @@ the last call to <code>controller$launcher$tally()</code>.</p>
 using it. <code>terminate()</code> tries to close the the <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>
 dispatcher and any workers that may still be running. It is important to
 free up these resources.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>mirai</code> dispatcher process should exit on its own, but
 if not, you can manually terminate the process ID at
 <code>controller$client$dispatcher</code> or call
 <code><a href="../reference/crew_clean.html">crew_clean()</a></code> to terminate any dispatchers from current or
 previous R sessions.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/crew_clean.html">crew_clean</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; nothing to clean up</span></span></code></pre></div>
 </div>
@@ -328,7 +375,7 @@ session exits or the controller terminates, but under rare circumstances
 they may continue running. The “local monitor” in <code>crew</code>
 makes it easy to list and terminate any of these processes which may be
 running on your local computer. Example:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">monitor</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_monitor_local.html">crew_monitor_local</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">monitor</span><span class="op">$</span><span class="fu">dispatchers</span><span class="op">(</span><span class="op">)</span> <span class="co"># List PIDs of all local {mirai} dispatcher processes.</span></span>
 <span><span class="co">#&gt; [1] 31215</span></span>

@@ -83,10 +83,10 @@ from the last call to \verb{map(error = "stop)}.}
 \item \href{#method-crew_class_controller-map}{\code{crew_class_controller$map()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
 \item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
+\item \href{#method-crew_class_controller-promise}{\code{crew_class_controller$promise()}}
 \item \href{#method-crew_class_controller-wait}{\code{crew_class_controller$wait()}}
 \item \href{#method-crew_class_controller-push_backlog}{\code{crew_class_controller$push_backlog()}}
 \item \href{#method-crew_class_controller-pop_backlog}{\code{crew_class_controller$pop_backlog()}}
-\item \href{#method-crew_class_controller-promise}{\code{crew_class_controller$promise()}}
 \item \href{#method-crew_class_controller-summary}{\code{crew_class_controller$summary()}}
 \item \href{#method-crew_class_controller-terminate}{\code{crew_class_controller$terminate()}}
 }
@@ -869,6 +869,89 @@ with one row per task.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-promise"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-promise}{}}}
+\subsection{Method \code{promise()}}{
+Create a \code{promises::promise()} object to asynchronously
+pop or collect one or more tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$promise(
+  mode = "one",
+  seconds_interval = 0.1,
+  scale = TRUE,
+  throttle = TRUE
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mode}}{Character of length 1, what kind of promise to create.
+\code{mode} must be \code{"one"} or \code{"all"}. Details:
+\itemize{
+\item If \code{mode} is \code{"one"}, then the promise is fulfilled (or rejected)
+when at least one task is resolved and available to \code{pop()}.
+When that happens, \code{pop()} runs asynchronously, pops a result off
+the task list, and returns a value.
+If the task succeeded, then the promise
+is fulfilled and its value is the result of \code{pop()} (a one-row
+\code{tibble} with the result and metadata). If the task threw an error,
+the error message of the task is forwarded to any error callbacks
+registered with the promise.
+\item If \code{mode} is \code{"all"}, then the promise is fulfilled (or rejected)
+when there are no unresolved tasks left in the controller.
+(Be careful: this condition is trivially met in the moment
+if the controller is empty and you have not submitted any tasks,
+so it is best to create this kind of promise only after you
+submit tasks.)
+When there are no unresolve tasks left,
+\code{collect()} runs asynchronously, pops all available results
+off the task list, and returns a value.
+If the task succeeded, then the promise
+is fulfilled and its value is the result of \code{collect()}
+(a \code{tibble} with one row per task result). If any of the tasks
+threw an error, then the first error message detected is forwarded
+to any error callbacks registered with the promise.
+}}
+
+\item{\code{seconds_interval}}{Positive numeric of length 1, delay in the
+\code{later::later()} polling interval to asynchronously check if
+the promise can be resolved.}
+
+\item{\code{scale}}{Logical of length 1,
+whether to automatically call \code{scale()}
+to auto-scale workers to meet the demand of the task load.
+Scaling up on \code{pop()} may be important
+for transient or nearly transient workers that tend to drop off
+quickly after doing little work.
+See also the \code{throttle} argument.}
+
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Please be aware that \code{pop()} or \code{collect()} will happen
+asynchronously at a some unpredictable time after the promise object
+is created, even if your local R process appears to be doing
+something completely different. This behavior is highly desirable
+in a Shiny reactive context, but please be careful as it may be
+surprising in other situations.
+}
+
+\subsection{Returns}{
+A \code{promises::promise()} object whose eventual value will
+be a \code{tibble} with results from one or more popped tasks.
+If \code{mode = "one"}, only one task is popped and returned (one row).
+If \code{mode = "all"}, then all the tasks are returned in a \code{tibble}
+with one row per task (or \code{NULL} is returned if there are no
+tasks to pop).
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-wait"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-wait}{}}}
 \subsection{Method \code{wait()}}{
@@ -973,49 +1056,6 @@ Character vector of task names which can be pushed to the
 controller without saturating it. If the controller is saturated,
 \code{character(0L)} is returned.
 }
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-promise"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-promise}{}}}
-\subsection{Method \code{promise()}}{
-Create a \code{promises::promise()} object to asynchronously
-pop the next task.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$promise(mode = "one", seconds_interval = 0.1)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{mode}}{Character of length 1, when to resolve (or reject)
-the promise. \code{mode = "one"} resolves when there is at least one
-resolved task retrievable with \code{pop()}, whereas \code{mode = "all"}
-resolves when all tasks complete.
-\code{mode = "all"} is not always efficient because it needs to check all
-the error messages of all completed tasks in order to figure out
-whether to resolve or reject the promise.
-So \code{mode = "one"} is recommended for most situations.}
-
-\item{\code{seconds_interval}}{Positive numeric of length 1, delay in the
-\code{later::later()} polling interval to asynchronously check if
-the promise can be resolved.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-The promise resolves (or rejects) when either a single
-task is available to \code{pop()} (in the case of \code{mode = "one"})
-or all pushed tasks have resolved (in the case of \code{mode = "all"}).
-Either way, the value of the promise is a popped task (or the
-error message if the task failed).
-Please be aware that the asynchronous operation will automatically
-pop a task at a some unpredictable time after the promise object
-was created, even if your local R process appears to be doing
-something completely different. This behavior is highly desirable
-in a Shiny reactive context, but please be careful as it may be
-surprising in other situations.
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-summary"></a>}}

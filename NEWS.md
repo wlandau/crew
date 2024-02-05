@@ -5,6 +5,7 @@
 * Implement `push_backlog()` and `pop_backlog()` to manage cases when it is not desirable to push to saturated controllers (https://github.com/ropensci/targets/issues/1220).
 * Invisibly return the `mirai` object of a task pushed to the controller. This allows users to interact with the task directly, e.g. to create a promise object with `promises::as.promise()` (#146, @jcheng5).
 * Add a new `walk()` method for controllers and controller groups to submit tasks in batch and return control immediately without waiting for any task to complete (#148, @jcheng5).
+* Revive the `collect()` method for popping multiple tasks at once (#148, @jcheng5).
 
 # crew 0.8.0
 

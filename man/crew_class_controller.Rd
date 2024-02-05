@@ -81,8 +81,8 @@ from the last call to \verb{map(error = "stop)}.}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
 \item \href{#method-crew_class_controller-walk}{\code{crew_class_controller$walk()}}
 \item \href{#method-crew_class_controller-map}{\code{crew_class_controller$map()}}
-\item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
+\item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
 \item \href{#method-crew_class_controller-wait}{\code{crew_class_controller$wait()}}
 \item \href{#method-crew_class_controller-push_backlog}{\code{crew_class_controller$push_backlog()}}
 \item \href{#method-crew_class_controller-pop_backlog}{\code{crew_class_controller$pop_backlog()}}
@@ -760,28 +760,6 @@ and columns corresponding to the output of \code{pop()}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-collect"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-collect}{}}}
-\subsection{Method \code{collect()}}{
-Deprecated in version 0.5.0.9003 (2023-10-02).
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(throttle = NULL, controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
-
-\item{\code{controllers}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL}.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-pop"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-pop}{}}}
 \subsection{Method \code{pop()}}{
@@ -851,6 +829,42 @@ if the task threw an error, \code{NA} otherwise.
 warning messages that the task may have generated, \code{NA} otherwise.
 \item \code{launcher}: name of the \code{crew} launcher where the task ran.
 }
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-collect"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-collect}{}}}
+\subsection{Method \code{collect()}}{
+Pop all available task results and return them in a tidy
+\code{tibble}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(
+  scale = TRUE,
+  throttle = TRUE,
+  controllers = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{scale}}{Logical of length 1,
+whether to automatically call \code{scale()}
+to auto-scale workers to meet the demand of the task load.}
+
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
+
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{tibble} of results and metadata of all resolved tasks,
+with one row per task.
 }
 }
 \if{html}{\out{<hr>}}

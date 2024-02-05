@@ -922,22 +922,6 @@ crew_class_controller <- R6::R6Class(
       }
       out
     },
-    #' @description Deprecated in version 0.5.0.9003 (2023-10-02).
-    #' @return `NULL`.
-    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
-    #' @param controllers Deprecated in version 0.5.0.9003 (2023-10-02).
-    collect = function(throttle = NULL, controllers = NULL) {
-      crew_deprecate(
-        name = "collect()",
-        date = "2023-10-02",
-        version = "0.5.0.9003",
-        alternative = "none (no longer necessary)",
-        condition = "message",
-        value = "collect",
-        skip_cran = TRUE,
-        frequency = "once"
-      )
-    },
     #' @description Pop a completed task from the results data frame.
     #' @details If not task is currently completed, `pop()`
     #'   will attempt to auto-scale workers as needed.
@@ -1055,6 +1039,29 @@ crew_class_controller <- R6::R6Class(
           !anyNA(.subset2(out, "warnings"))
       }, add = TRUE)
       out
+    },
+    #' @description Pop all available task results and return them in a tidy
+    #'   `tibble`.
+    #' @return A `tibble` of results and metadata of all resolved tasks,
+    #'   with one row per task.
+    #' @param scale Logical of length 1,
+    #'   whether to automatically call `scale()`
+    #'   to auto-scale workers to meet the demand of the task load.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    collect = function(scale = TRUE, throttle = TRUE, controllers = NULL) {
+      pop <- .subset2(self, "pop")
+      results <- list()
+      while (!is.null(result <- pop(scale = FALSE))) {
+        results[[length(results) + 1L]] <- result
+      }
+      out <- lapply(results, monad_tibble)
+      out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
+      if_any(nrow(out), out, NULL)
     },
     #' @description Wait for tasks.
     #' @details The `wait()` method blocks the calling R session and

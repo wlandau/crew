@@ -620,22 +620,6 @@ crew_class_controller_group <- R6::R6Class(
         throttle = throttle
       )
     },
-    #' @description Deprecated in version 0.5.0.9003 (2023-10-02).
-    #' @return `NULL`.
-    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02).
-    #' @param controllers Deprecated in version 0.5.0.9003 (2023-10-02).
-    collect = function(throttle = NULL, controllers = NULL) {
-      crew_deprecate(
-        name = "collect()",
-        date = "2023-10-02",
-        version = "0.5.0.9003",
-        alternative = "none (no longer necessary)",
-        condition = "message",
-        value = "collect",
-        skip_cran = TRUE,
-        frequency = "once"
-      )
-    },
     #' @description Pop a completed task from the results data frame.
     #' @return If there is no task to collect, return `NULL`. Otherwise,
     #'   return a one-row `tibble` with the same columns as `pop()`
@@ -664,6 +648,26 @@ crew_class_controller_group <- R6::R6Class(
         }
       }
       NULL
+    },
+    #' @description Pop all available task results and return them in a tidy
+    #'   `tibble`.
+    #' @return A `tibble` of results and metadata of all resolved tasks,
+    #'   with one row per task. Returns `NULL` if there are no available
+    #'   results.
+    #' @param scale Logical of length 1,
+    #'   whether to automatically call `scale()`
+    #'   to auto-scale workers to meet the demand of the task load.
+    #' @param throttle `TRUE` to skip auto-scaling if it already happened
+    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   every time `scale()` is called. Throttling avoids
+    #'   overburdening the `mirai` dispatcher and other resources.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    collect = function(scale = TRUE, throttle = TRUE, controllers = NULL) {
+      control <- private$.select_controllers(controllers)
+      out <- map(control, ~.x$collect(scale = scale, throttle = throttle))
+      out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
+      if_any(nrow(out), out, NULL)
     },
     #' @description Wait for tasks.
     #' @details The `wait()` method blocks the calling R session and

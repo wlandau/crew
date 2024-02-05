@@ -48,7 +48,7 @@ crew_test("task collection and results stack work", {
   x$terminate()
 })
 
-crew_test("controller walk() works", {
+crew_test("controller walk()", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
@@ -82,6 +82,26 @@ crew_test("controller walk() works", {
     sort(c(task1$result[[1L]], task2$result[[1L]])),
     c(15L, 17L)
   )
+})
+
+crew_test("controller collect()", {
+  skip_on_cran()
+  skip_on_os("windows")
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x <- crew_controller_local(workers = 1L, seconds_idle = 30L)
+  x$start()
+  for (index in seq_len(2L)) x$push("done")
+  x$wait(mode = "all")
+  for (index in seq_len(2L)) x$push(Sys.sleep(120))
+  out <- x$collect()
+  expect_equal(nrow(out), 2L)
+  expect_equal(as.character(out$result), rep("done", 2))
+  expect_null(x$collect())
 })
 
 crew_test("controller map() works", {

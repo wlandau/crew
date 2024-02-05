@@ -70,8 +70,8 @@ condition variable.}
 \item \href{#method-crew_class_controller_group-push}{\code{crew_class_controller_group$push()}}
 \item \href{#method-crew_class_controller_group-walk}{\code{crew_class_controller_group$walk()}}
 \item \href{#method-crew_class_controller_group-map}{\code{crew_class_controller_group$map()}}
-\item \href{#method-crew_class_controller_group-collect}{\code{crew_class_controller_group$collect()}}
 \item \href{#method-crew_class_controller_group-pop}{\code{crew_class_controller_group$pop()}}
+\item \href{#method-crew_class_controller_group-collect}{\code{crew_class_controller_group$collect()}}
 \item \href{#method-crew_class_controller_group-wait}{\code{crew_class_controller_group$wait()}}
 \item \href{#method-crew_class_controller_group-push_backlog}{\code{crew_class_controller_group$push_backlog()}}
 \item \href{#method-crew_class_controller_group-pop_backlog}{\code{crew_class_controller_group$pop_backlog()}}
@@ -656,28 +656,6 @@ columns corresponding to the output of \code{pop()}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller_group-collect"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller_group-collect}{}}}
-\subsection{Method \code{collect()}}{
-Deprecated in version 0.5.0.9003 (2023-10-02).
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(throttle = NULL, controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
-
-\item{\code{controllers}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL}.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-pop"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-pop}{}}}
 \subsection{Method \code{pop()}}{
@@ -714,6 +692,43 @@ Set to \code{NULL} to select all controllers.}
 If there is no task to collect, return \code{NULL}. Otherwise,
 return a one-row \code{tibble} with the same columns as \code{pop()}
 for ordinary controllers.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-collect"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-collect}{}}}
+\subsection{Method \code{collect()}}{
+Pop all available task results and return them in a tidy
+\code{tibble}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(
+  scale = TRUE,
+  throttle = TRUE,
+  controllers = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{scale}}{Logical of length 1,
+whether to automatically call \code{scale()}
+to auto-scale workers to meet the demand of the task load.}
+
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
+
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{tibble} of results and metadata of all resolved tasks,
+with one row per task. Returns \code{NULL} if there are no available
+results.
 }
 }
 \if{html}{\out{<hr>}}

@@ -105,7 +105,7 @@ recommended widely spaced worker-specific L'Ecuyer streams
 supported by `mirai::nextstream()`.
 See `vignette("parallel", package = "parallel")` for details.
 
-# Functional programming
+# Synchronous functional programming
 
 The [`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map) method of the controller supports functional programming similar to [`purrr::map()`](https://purrr.tidyverse.org/reference/map.html) and [`clustermq::Q()`](https://mschubert.github.io/clustermq/reference/Q.html). The arguments of [`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map) are mostly the same those of [`push()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-push), but there is a new `iterate` argument to define the inputs of individual tasks. [`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map) submits a whole collection of tasks, auto-scales the workers, waits for all the tasks to finish, and returns the results in a `tibble`.
 
@@ -135,6 +135,41 @@ as.numeric(results$result)
 ```
 
 If at least one task in [`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map) throws an error, the default behavior is to error out in the main session and not return the results, If that happens, the results are available in the `controller$error`. To return the results instead of setting `controller$error`, regardless of error status, set `error = "warn"` or `"silent"` in [`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map). To conserve memory, consider setting `controller$error <- NULL` when you are done troubleshooting.
+
+# Asynchronous functional programming
+
+The [`walk()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-walk) method is just like `map()`, but it does not wait for any tasks to complete. Instead, it returns control to the local R session immediately and lets you do other things while the tasks run in the background.
+
+```{r}
+controller$walk(
+  command = a + b + c + d,
+  iterate = list(
+    a = c(1, 3),
+    b = c(2, 4)
+  ),
+  data = list(c = 5),
+  globals = list(d = 6)
+)
+```
+
+The [`collect()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-collect) pops all completed tasks. Put together, `walk()`, `wait(mode = "all")`, and `collect()` have the same overall effect as `map()`.
+
+```{r}
+controller$wait(mode = "all")
+
+controller$collect()
+#> # A tibble: 2 × 12
+#>   name  command result    seconds  seed algorithm error trace warnings
+#>   <chr> <chr>   <list>      <dbl> <int> <chr>     <chr> <chr> <chr>
+#> 1 1     NA      <dbl [1]>       0    NA NA        NA    NA    NA
+#> 2 2     NA      <dbl [1]>       0    NA NA        NA    NA    NA
+#> # ℹ 3 more variables: launcher <chr>, worker <int>, instance <chr>
+```
+
+However, there are subtle differences between the synchronous and asynchronous functional programming methods:
+
+1. `map()` requires an empty controller to start with (no prior tasks). But with `walk()`, the controller can have any number of running or unpopped tasks beforehand.
+2. `wait()` does not show a progress bar because it would be misleading if there are a lot of prior tasks. Because `map()` requires the controller to be empty initially (i.e. (1)), it shows a progress bar while correctly representing the amount of work left to do.
 
 # Summaries
 

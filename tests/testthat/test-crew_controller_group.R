@@ -258,7 +258,7 @@ crew_test("crew_controller_group() scale method", {
   expect_true(TRUE)
 })
 
-crew_test("controller walk() works", {
+crew_test("controller walk()", {
   skip_on_cran()
   skip_on_os("windows")
   a <- crew_controller_local(
@@ -293,6 +293,64 @@ crew_test("controller walk() works", {
     sort(c(task1$result[[1L]], task2$result[[1L]])),
     c(15L, 17L)
   )
+})
+
+crew_test("controller group collect() with one active controller", {
+  skip_on_cran()
+  skip_on_os("windows")
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  a <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  b <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  x <- crew_controller_group(a, b)
+  x <- crew_controller_local(workers = 1L, seconds_idle = 30L)
+  x$push("done", controller = "a")
+  x$push("done", controller = "a")
+  x$wait(mode = "all")
+  for (index in seq_len(2L)) x$push(Sys.sleep(120))
+  out <- x$collect()
+  expect_equal(nrow(out), 2L)
+  expect_equal(as.character(out$result), rep("done", 2))
+  expect_null(x$collect())
+})
+
+crew_test("controller group collect() with two active controllers", {
+  skip_on_cran()
+  skip_on_os("windows")
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  a <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  b <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  x <- crew_controller_group(a, b)
+  x <- crew_controller_local(workers = 1L, seconds_idle = 30L)
+  x$push("done", controller = "a")
+  x$push("done", controller = "b")
+  x$wait(mode = "all")
+  for (index in seq_len(2L)) x$push(Sys.sleep(120))
+  out <- x$collect()
+  expect_equal(nrow(out), 2L)
+  expect_equal(as.character(out$result), rep("done", 2))
+  expect_null(x$collect())
 })
 
 crew_test("controller group map() works", {

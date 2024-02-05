@@ -450,8 +450,9 @@ crew_test("promise(mode = \"one\")", {
       envir$value <- value
     },
     onRejected = function(error) {
-      envir$error = conditionMessage(error)
+      envir$error <- conditionMessage(error)
     }
   )
   x$push("done")
+  x$wait(mode = "all")
 })

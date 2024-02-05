@@ -1145,25 +1145,25 @@ crew_class_controller <- R6::R6Class(
         isTRUE(.) || isFALSE(.),
         message = "'throttle' must be TRUE or FALSE"
       )
-      poll <- function() {
-        mode_one <- identical(mode, "one")
-        ready <- if_any(
-          mode_one,
-          .subset2(self, "unpopped")() > 0L,
-          .subset2(self, "unresolved")() < 1L
-        )
-        if (ready) {
-          result <- if_any(mode_one, self$pop(), self$collect())
-          if_any(
-            all(!is.na(result$error)),
-            resolve(result),
-            reject(result$error[1L])
-          )
-        } else {
-          later::later(poll, delay = seconds_interval)
-        }
-      }
       action <- function(resolve, reject) {
+        poll <- function() {
+          mode_one <- identical(mode, "one")
+          ready <- if_any(
+            mode_one,
+            .subset2(self, "unpopped")() > 0L,
+            .subset2(self, "unresolved")() < 1L
+          )
+          if (ready) {
+            result <- if_any(mode_one, self$pop(), self$collect())
+            if_any(
+              all(!is.na(result$error)),
+              resolve(result),
+              reject(result$error[1L])
+            )
+          } else {
+            later::later(poll, delay = seconds_interval)
+          }
+        }
         poll()
       }
       promises::promise(action = action)

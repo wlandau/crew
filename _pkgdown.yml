@@ -5,6 +5,7 @@ articles:
   - introduction
   - groups
   - shiny
+  - promises
 - title: Technical details
   contents:
   - plugins

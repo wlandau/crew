@@ -545,10 +545,6 @@ crew_class_controller <- R6::R6Class(
       throttle = TRUE,
       controller = NULL
     ) {
-      crew_assert(
-        length(private$.tasks) < 1L,
-        message = "cannot map() until all prior tasks are completed and popped"
-      )
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
       if (substitute) {
         command <- substitute(command)

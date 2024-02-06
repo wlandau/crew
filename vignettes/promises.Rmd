@@ -1,8 +1,8 @@
 ---
-title: "promises"
+title: "Integration with promises"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{promises}
+  %\VignetteIndexEntry{Integration with promises}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -134,4 +134,47 @@ Two seconds after `walk()` was called, the promise resolves asynchronously and p
 #>   <chr> <chr>                                  <chr>  <chr>  <int>
 #> 1 x     "{\n    Sys.sleep(2)\n    argument\n}" x      NA         1
 #> 2 y     "{\n    Sys.sleep(2)\n    argument\n}" y      NA         2
+```
+
+A couple remarks:
+
+1. You do not need to use `walk()` with multi-task promises. You can push tasks individually and still create a promise which resolves they all finish.
+2. A multi-task promise is rejected if any one of the tasks fail. Due to performance concerns and limitations, the error is not discovered until all tasks resolve.
+
+To demonstrate (1) and (2), let's push a task that will succeed and a task that will throw an error.
+
+```r
+controller$push(
+  name = "success",
+  command = {
+    Sys.sleep(2)
+    "done"
+  },
+  save_command = TRUE
+)
+controller$push(
+  name = "error",
+  command = {
+    Sys.sleep(2)
+    stop("one task's error message")
+  },
+  save_command = TRUE
+)
+```
+
+We create a multi-task promise which prints the error message asynchronously on resolution.
+
+```r
+promise <- then(
+  controller$promise(mode = "all"),
+  onRejected = function(error) {
+    print(conditionMessage(error))
+  }
+)
+```
+
+Two seconds after the tasks were pushed, the error message prints.
+
+```r
+#> [1] "one task's error message"
 ```

@@ -77,6 +77,7 @@ The `crew` package incorporates insightful ideas from the following people.
 * [Adam Banker](https://github.com/adambanker), co-authored [`paws`](https://github.com/paws-r/paws) with [David Kretch](https://github.com/davidkretch).
 * [David Neuzerling](https://github.com/mdneuzerling). David's [`lambdr`](https://github.com/mdneuzerling/lambdr/) package establishes a helpful pattern to submit and collect AWS Lambda jobs from R.
 * [Mark Edmondson](https://github.com/MarkEdmondson1234/). Mark maintains several R packages to interface with Google Cloud Platform such as [`googleCloudStorageR`](https://github.com/cloudyr/googleCloudStorageR) and [`googleCloudRunner`](https://github.com/MarkEdmondson1234/googleCloudRunner), and he [started the conversation](https://github.com/ropensci/targets/issues/720) around helping [`targets`](https://github.com/ropensci/targets) submit jobs to Google Cloud Run.
+* [Joe Cheng](https://github.com/jcheng5) for sparking the integration of `crew` with [`promises`](https://rstudio.github.io/promises/).
 
 # Code of Conduct
 

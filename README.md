@@ -152,6 +152,8 @@ people.
   conversation](https://github.com/ropensci/targets/issues/720) around
   helping [`targets`](https://github.com/ropensci/targets) submit jobs
   to Google Cloud Run.
+- [Joe Cheng](https://github.com/jcheng5) for sparking the integration
+  of `crew` with [`promises`](https://rstudio.github.io/promises/).
 
 # Code of Conduct
 

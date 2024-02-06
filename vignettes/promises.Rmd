@@ -1,0 +1,133 @@
+---
+title: "promises"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{promises}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(crew)
+```
+
+The [Shiny app vignette](https://wlandau.github.io/crew/articles/shiny.html) shows an approach to asynchronous Shiny apps which is straightforward to understand and implement. However, the example app is not actually entirely asynchronous. After each background task finishes, the R code goes out of its way to retrieve the results and render the plot synchronously. What if the app code could submit the task and then forget about it, trusting the plot to take care of itself automatically whenever the R session has a free moment? The [`promises`](https://rstudio.github.io/promises/) package provides this near-magic style of asynchronous programming, which has been battle-tested in JavaScript for years.
+
+# Promises from `crew`
+
+A `crew` controller can generate two types of promise objects for use with the [`promises`](https://rstudio.github.io/promises/):
+
+1. Single-task promises: wait until a single task finishes. The promise is fulfilled if the task succeeded and rejected if the task threw an error. In the former case, the controller asynchronously pops the completed task and returns the `tibble` of results and metadata. On error, task is still asynchronously popped, but the error message of the task is returned instead.
+2. Multi-task promises: wait until there are no pending tasks left in the controller (or controller group). This happens when either all the tasks finish or the controller is empty. The promise is fulfilled if all tasks succeeded and rejected if at least one task threw an error. In the former case, the controller asynchronously pops all completed tasks and returns the `tibble` of all results and metadata (with one row per task). On error, tasks are all still asynchronously popped, but the error message of one of the tasks is returned instead.
+
+# Single-task promises
+
+To dive into single-task promises, let's start a local controller first.
+
+```r
+library(crew)
+library(dplyr)
+library(promises)
+controller <- crew_controller_local(workers = 2L)
+controller$start()
+```
+
+Let's push a single task.
+
+```r
+controller$push(
+  name = "success",
+  command = {
+    Sys.sleep(2)
+    "done"
+  },
+  save_command = TRUE
+)
+```
+
+And now create a promise that prints the value asynchronously if the task succeeds.
+
+```r
+promise <- controller$promise(mode = "one") %...>%
+  mutate(result = as.character(result)) %...>%
+  print()
+```
+
+When you run both steps above, the R interpreter runs it immediately and returns control back to you. But then the following output prints two seconds after the task was pushed.
+
+```r
+#> # A tibble: 1 × 12
+#>   name    command     result seconds  seed algorithm error trace
+#>   <chr>   <chr>       <chr>    <dbl> <int> <chr>     <chr> <chr>
+#> 1 success "{\n    Sy… done      2.00    NA NA        NA    NA   
+#> # ℹ 4 more variables: warnings <chr>, launcher <chr>,
+#> #   worker <int>, instance <chr>
+```
+
+The task below runs in the background for 2 seconds and then throws an error.
+
+```r
+controller$push({
+  Sys.sleep(2)
+  stop("error message")
+})
+```
+
+As before, control returns immediately when you push the task and create the promise.
+
+```r
+promise <- then(
+  controller$promise(mode = "one"),
+  onRejected = function(error) {
+    print(conditionMessage(error))
+  }
+)
+```
+
+But this time, an error message prints two seconds later.
+
+```r
+#> [1] "error message"
+```
+
+# Multi-task promises
+
+To demonstrate multi-task promises, we push multiple tasks at once. The `walk()` method is like `map()`, except that it returns control immediately without waiting for any tasks to complete.
+
+```r
+controller$walk(
+  command = {
+    Sys.sleep(2)
+    argument
+  },
+  iterate = list(argument = c("x", "y")),
+  names = "argument",
+  save_command = TRUE
+)
+```
+
+We create a promise which asynchronously resolves when all the tasks in the controller finish.
+
+```r
+promise <- controller$promise(mode = "all") %...>%
+  mutate(result = as.character(result)) %...>%
+  select(any_of(c("name", "command", "result", "error", "worker"))) %...T>%
+  print()
+```
+
+Two seconds after `walk()` was called, the promise resolves asynchronously and prints the results of all the tasks. Each row in the `tibble` below corresponds to an individual task.
+
+```r
+#> # A tibble: 2 × 5
+#>   name  command                                result error worker
+#>   <chr> <chr>                                  <chr>  <chr>  <int>
+#> 1 x     "{\n    Sys.sleep(2)\n    argument\n}" x      NA         1
+#> 2 y     "{\n    Sys.sleep(2)\n    argument\n}" y      NA         2
+```

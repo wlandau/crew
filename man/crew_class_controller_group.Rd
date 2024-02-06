@@ -63,6 +63,10 @@ condition variable.}
 \item \href{#method-crew_class_controller_group-new}{\code{crew_class_controller_group$new()}}
 \item \href{#method-crew_class_controller_group-validate}{\code{crew_class_controller_group$validate()}}
 \item \href{#method-crew_class_controller_group-empty}{\code{crew_class_controller_group$empty()}}
+\item \href{#method-crew_class_controller_group-nonempty}{\code{crew_class_controller_group$nonempty()}}
+\item \href{#method-crew_class_controller_group-resolved}{\code{crew_class_controller_group$resolved()}}
+\item \href{#method-crew_class_controller_group-unresolved}{\code{crew_class_controller_group$unresolved()}}
+\item \href{#method-crew_class_controller_group-unpopped}{\code{crew_class_controller_group$unpopped()}}
 \item \href{#method-crew_class_controller_group-saturated}{\code{crew_class_controller_group$saturated()}}
 \item \href{#method-crew_class_controller_group-start}{\code{crew_class_controller_group$start()}}
 \item \href{#method-crew_class_controller_group-launch}{\code{crew_class_controller_group$launch()}}
@@ -72,6 +76,7 @@ condition variable.}
 \item \href{#method-crew_class_controller_group-map}{\code{crew_class_controller_group$map()}}
 \item \href{#method-crew_class_controller_group-pop}{\code{crew_class_controller_group$pop()}}
 \item \href{#method-crew_class_controller_group-collect}{\code{crew_class_controller_group$collect()}}
+\item \href{#method-crew_class_controller_group-promise}{\code{crew_class_controller_group$promise()}}
 \item \href{#method-crew_class_controller_group-wait}{\code{crew_class_controller_group$wait()}}
 \item \href{#method-crew_class_controller_group-push_backlog}{\code{crew_class_controller_group$push_backlog()}}
 \item \href{#method-crew_class_controller_group-pop_backlog}{\code{crew_class_controller_group$pop_backlog()}}
@@ -160,6 +165,105 @@ or completed tasks waiting to be retrieved with \code{push()}.
 \subsection{Returns}{
 \code{TRUE} if all the selected controllers are empty,
 \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-nonempty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-nonempty}{}}}
+\subsection{Method \code{nonempty()}}{
+Check if the controller group is nonempty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$nonempty(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+A controller is empty if it has no running tasks
+or completed tasks waiting to be retrieved with \code{push()}.
+}
+
+\subsection{Returns}{
+\code{TRUE} if the controller is empty, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-resolved"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-resolved}{}}}
+\subsection{Method \code{resolved()}}{
+Number of resolved \code{mirai()} tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$resolved(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+\code{resolved()} is cumulative: it counts all the resolved
+tasks over the entire lifetime of the controller session.
+}
+
+\subsection{Returns}{
+Non-negative integer of length 1,
+number of resolved \code{mirai()} tasks.
+The return value is 0 if the condition variable does not exist
+(i.e. if the client is not running).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-unresolved"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-unresolved}{}}}
+\subsection{Method \code{unresolved()}}{
+Number of unresolved \code{mirai()} tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$unresolved(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Non-negative integer of length 1,
+number of unresolved \code{mirai()} tasks.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-unpopped"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-unpopped}{}}}
+\subsection{Method \code{unpopped()}}{
+Number of resolved \code{mirai()} tasks available via \code{pop()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$unpopped(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Non-negative integer of length 1,
+number of resolved \code{mirai()} tasks available via \code{pop()}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -729,6 +833,93 @@ Set to \code{NULL} to select all controllers.}
 A \code{tibble} of results and metadata of all resolved tasks,
 with one row per task. Returns \code{NULL} if there are no available
 results.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-promise"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-promise}{}}}
+\subsection{Method \code{promise()}}{
+Create a \code{promises::promise()} object to asynchronously
+pop or collect one or more tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$promise(
+  mode = "one",
+  seconds_interval = 0.1,
+  scale = TRUE,
+  throttle = TRUE,
+  controllers = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mode}}{Character of length 1, what kind of promise to create.
+\code{mode} must be \code{"one"} or \code{"all"}. Details:
+\itemize{
+\item If \code{mode} is \code{"one"}, then the promise is fulfilled (or rejected)
+when at least one task is resolved and available to \code{pop()}.
+When that happens, \code{pop()} runs asynchronously, pops a result off
+the task list, and returns a value.
+If the task succeeded, then the promise
+is fulfilled and its value is the result of \code{pop()} (a one-row
+\code{tibble} with the result and metadata). If the task threw an error,
+the error message of the task is forwarded to any error callbacks
+registered with the promise.
+\item If \code{mode} is \code{"all"}, then the promise is fulfilled (or rejected)
+when there are no unresolved tasks left in the controller.
+(Be careful: this condition is trivially met in the moment
+if the controller is empty and you have not submitted any tasks,
+so it is best to create this kind of promise only after you
+submit tasks.)
+When there are no unresolved tasks left,
+\code{collect()} runs asynchronously, pops all available results
+off the task list, and returns a value.
+If the task succeeded, then the promise
+is fulfilled and its value is the result of \code{collect()}
+(a \code{tibble} with one row per task result). If any of the tasks
+threw an error, then the first error message detected is forwarded
+to any error callbacks registered with the promise.
+}}
+
+\item{\code{seconds_interval}}{Positive numeric of length 1, delay in the
+\code{later::later()} polling interval to asynchronously check if
+the promise can be resolved.}
+
+\item{\code{scale}}{Logical of length 1,
+whether to automatically call \code{scale()}
+to auto-scale workers to meet the demand of the task load.
+Scaling up on \code{pop()} may be important
+for transient or nearly transient workers that tend to drop off
+quickly after doing little work.
+See also the \code{throttle} argument.}
+
+\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+every time \code{scale()} is called. Throttling avoids
+overburdening the \code{mirai} dispatcher and other resources.}
+
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Please be aware that \code{pop()} or \code{collect()} will happen
+asynchronously at a some unpredictable time after the promise object
+is created, even if your local R process appears to be doing
+something completely different. This behavior is highly desirable
+in a Shiny reactive context, but please be careful as it may be
+surprising in other situations.
+}
+
+\subsection{Returns}{
+A \code{promises::promise()} object whose eventual value will
+be a \code{tibble} with results from one or more popped tasks.
+If \code{mode = "one"}, only one task is popped and returned (one row).
+If \code{mode = "all"}, then all the tasks are returned in a \code{tibble}
+with one row per task (or \code{NULL} is returned if there are no
+tasks to pop).
 }
 }
 \if{html}{\out{<hr>}}

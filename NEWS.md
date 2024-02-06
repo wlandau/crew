@@ -6,6 +6,7 @@
 * Invisibly return the `mirai` object of a task pushed to the controller. This allows users to interact with the task directly, e.g. to create a promise object with `promises::as.promise()` (#146, @jcheng5).
 * Add a new `walk()` method for controllers and controller groups to submit tasks in batch and return control immediately without waiting for any task to complete (#148, @jcheng5).
 * Revive the `collect()` method for popping multiple tasks at once (#148, @jcheng5).
+* Add controller group methods `nonempty()`, `resolved()`, `unresolved()`, and `unpopped()` to help with #148.
 
 # crew 0.8.0
 

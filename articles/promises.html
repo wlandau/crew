@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>promises • crew</title>
+<title>Integration with promises • crew</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="promises">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Integration with promises">
 <meta property="og:description" content="crew">
 <meta property="og:image" content="/logo.svg">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -76,7 +76,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>promises</h1>
+      <h1 data-toc-skip>Integration with promises</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/wlandau/crew/blob/HEAD/vignettes/promises.Rmd" class="external-link"><code>vignettes/promises.Rmd</code></a></small>
@@ -216,6 +216,47 @@ task.</p>
 <span><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;                                  &lt;chr&gt;  &lt;chr&gt;  &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1 x     "{\n    Sys.sleep(2)\n    argument\n}" x      NA         1</span></span>
 <span><span class="co">#&gt; 2 y     "{\n    Sys.sleep(2)\n    argument\n}" y      NA         2</span></span></code></pre></div>
+<p>A couple remarks:</p>
+<ol style="list-style-type: decimal">
+<li>You do not need to use <code>walk()</code> with multi-task promises.
+You can push tasks individually and still create a promise which
+resolves they all finish.</li>
+<li>A multi-task promise is rejected if any one of the tasks fail. Due
+to performance concerns and limitations, the error is not discovered
+until all tasks resolve.</li>
+</ol>
+<p>To demonstrate (1) and (2), let’s push a task that will succeed and a
+task that will throw an error.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span></span>
+<span>  name <span class="op">=</span> <span class="st">"success"</span>,</span>
+<span>  command <span class="op">=</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span>    <span class="st">"done"</span></span>
+<span>  <span class="op">}</span>,</span>
+<span>  save_command <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span></span>
+<span>  name <span class="op">=</span> <span class="st">"error"</span>,</span>
+<span>  command <span class="op">=</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"one task's error message"</span><span class="op">)</span></span>
+<span>  <span class="op">}</span>,</span>
+<span>  save_command <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>We create a multi-task promise which prints the error message
+asynchronously on resolution.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">promise</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/promises/reference/then.html" class="external-link">then</a></span><span class="op">(</span></span>
+<span>  <span class="va">controller</span><span class="op">$</span><span class="fu">promise</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span>,</span>
+<span>  onRejected <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">error</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage</a></span><span class="op">(</span><span class="va">error</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Two seconds after the tasks were pushed, the error message
+prints.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#&gt; [1] "one task's error message"</span></span></code></pre></div>
 </div>
   </div>
 

@@ -28,18 +28,58 @@ daemons_error <- function(daemons, name) {
       try(handle <- ps::ps_handle(pid = pid), silent = TRUE),
       "try-error"
     )
+  lines_common <- c(
+    "Please also try upgrading R packages {nanonext}, {mirai}, and {crew}",
+    "to their latest versions on CRAN. (Likewise with {targets} if you are",
+    "using it.) Upgrading these packages solves many kinds of errors.\n\n",
+    "If that does not help, the {mirai} dispatcher process may have trouble",
+    "starting, either because it cannot find R or the R package library,",
+    "or because there is something strange about your file system or",
+    ".Rprofile/.Renviron files, or you have an {renv} project that",
+    "takes a long time to start. Please make sure R sessions can start",
+    "quickly in your project. For example, for {renv}, try setting",
+    "RENV_CONFIG_SANDBOX_ENABLED=false and",
+    "RENV_CONFIG_SYNCHRONIZED_CHECK=false in your .Renviron file",
+    "in to speed up {renv} project initialization.\n\n",
+    "Another possibility is an out-of-memory error.",
+    "The dispatcher can run out of memory if it is overwhelmed with",
+    "data objects too large or too many to comfortably fit inside a single",
+    "R process. As a workaround, each task could save or load large files",
+    "instead of sending or returning large objects in R.",
+    "Those large files could either live locally on disk or in a cloud",
+    "bucket. If you are using {targets}, you might consider",
+    "storage = \"worker\", retrieval = \"worker\", and/or",
+    "cloud storage as documented at",
+    "https://books.ropensci.org/targets/performance.html and",
+    "https://books.ropensci.org/targets/cloud-storage.html."
+  )
   info <- if_any(
     exists,
     sprintf(
-      "dispatcher running at pid %s with status \"%s\". Connection issue?",
+      paste(
+        c(
+          "A {mirai} dispatcher process is running at pid %s with status",
+          "\"%s\". There may be a network connection issue,",
+          "or the dispatcher is simply busy managing lots of tasks or",
+          "uploading/downloading large datasets. Maybe try increasing",
+          "seconds_timeout in your {crew} controller.\n\n",
+          lines_common
+        ),
+        collapse = " "
+      ),
       pid,
       ps::ps_status(handle)
     ),
     paste(
-      "The mirai dispatcher is not running. Please call the start() method",
-      "of the controller (e.g. your_controller$start()",
-      "before using methods like push(), collect(), and scale().",
-      "If you already did, then the dispatcher may have exited too early."
+      c(
+        "The {mirai} dispatcher is not running. If you are using {crew}",
+        "without {targets}, be sure to call the start() method of the",
+        "controller before doing anything else. If you already did,",
+        "or if you are using {targets}, then the dispatcher process probably",
+        "started and then failed.\n\n",
+        lines_common
+      ),
+      collapse = " "
     )
   )
   crew_error(paste(message, info))

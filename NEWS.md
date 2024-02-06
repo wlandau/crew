@@ -7,6 +7,7 @@
 * Add a new `walk()` method for controllers and controller groups to submit tasks in batch and return control immediately without waiting for any task to complete (#148, @jcheng5).
 * Revive the `collect()` method for popping multiple tasks at once (#148, @jcheng5).
 * Add controller group methods `nonempty()`, `resolved()`, `unresolved()`, and `unpopped()` to help with #148.
+* Make the `mirai` dispatcher error message extremely verbose.
 
 # crew 0.8.0
 

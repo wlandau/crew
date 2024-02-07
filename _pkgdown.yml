@@ -30,7 +30,7 @@ reference:
   - crew_class_launcher_local
 - title: Controllers
   contents:
-  - '`crew_controller
+  - crew_controller
   - crew_class_controller
 - title: Controller groups
   contents:

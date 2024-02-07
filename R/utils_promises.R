@@ -1,3 +1,10 @@
+# The ideas for how to implement the promises below
+# are covered in the documentation of promises::promise() at
+# https://rstudio.github.io/promises/reference/promise.html,
+# a blogpost by Yihui Xie at https://yihui.org/en/2017/10/later-recursion/
+# on the recursive use of later::later(), and conversations with
+# Charlie Gao (Hibiki AI, github.com/shikokuchuo) and
+# Joe Cheng (Posit PBC, github.com/jcheng5).
 # Tested in tests/interactive/test-promises.R.
 # nocov start
 controller_promise <- function(

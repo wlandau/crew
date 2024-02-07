@@ -1,6 +1,10 @@
-destination: docs/
+url: https://wlandau.github.io/crew/
+template:
+  bootstrap: 5
+
 articles:
 - title: How to use `crew`
+  navbar: ~
   contents:
   - introduction
   - groups
@@ -10,59 +14,60 @@ articles:
   contents:
   - plugins
   - risks
+
 reference:
 - title: Package help
   contents:
-  - '`crew-package`'
+  - crew-package
 - title: Local process monitor
   contents:
-  - '`crew_monitor_local`'
-  - '`crew_class_monitor_local`'
+  - crew_monitor_local
+  - crew_class_monitor_local
 - title: Local launcher plugin
   contents:
-  - '`crew_controller_local`'
-  - '`crew_launcher_local`'
-  - '`crew_class_launcher_local`'
+  - crew_controller_local
+  - crew_launcher_local
+  - crew_class_launcher_local
 - title: Controllers
   contents:
-  - '`crew_controller`'
-  - '`crew_class_controller`'
+  - '`crew_controller
+  - crew_class_controller
 - title: Controller groups
   contents:
-  - '`crew_controller_group`'
-  - '`crew_class_controller_group`'
+  - crew_controller_group
+  - crew_class_controller_group
 - title: Launchers
   contents:
-  - '`crew_launcher`'
-  - '`crew_class_launcher`'
+  - crew_launcher
+  - crew_class_launcher
 - title: Clients
   contents:
-  - '`crew_client`'
-  - '`crew_class_client`'
+  - crew_client
+  - crew_class_client
 - title: TLS configuration
   contents:
-  - '`crew_tls`'
-  - '`crew_class_tls`'
+  - crew_tls
+  - crew_class_tls
 - title: Throttles
   contents:
-  - '`crew_throttle`'
-  - '`crew_class_throttle`'
+  - crew_throttle
+  - crew_class_throttle
 - title: Relays
   contents:
-  - '`crew_relay`'
-  - '`crew_class_relay`'
+  - crew_relay
+  - crew_class_relay
 - title: Local asynchronicity
   contents:
-  - '`crew_async`'
-  - '`crew_class_async`'
+  - crew_async
+  - crew_class_async
 - title: Utilities
   contents:
-  - '`crew_assert`'
-  - '`crew_clean`'
-  - '`crew_deprecate`'
-  - '`crew_eval`'
-  - '`crew_random_name`'
-  - '`crew_retry`'
-  - '`crew_terminate_process`'
-  - '`crew_terminate_signal`'
-  - '`crew_worker`'
+  - crew_assert
+  - crew_clean
+  - crew_deprecate
+  - crew_eval
+  - crew_random_name
+  - crew_retry
+  - crew_terminate_process
+  - crew_terminate_signal
+  - crew_worker

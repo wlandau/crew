@@ -1,12 +1,15 @@
 
 # crew: a distributed worker launcher framework <img src='man/figures/logo-readme.png' align="right" height="139"/>
 
+<!-- badges: start --->
+
 [![CRAN](https://www.r-pkg.org/badges/version/crew)](https://CRAN.R-project.org/package=crew)
 [![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![check](https://github.com/wlandau/crew/actions/workflows/check.yaml/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
 [![lint](https://github.com/wlandau/crew/actions/workflows/lint.yaml/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
 [![pkgdown](https://github.com/wlandau/crew/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Apkgdown)
+<!-- badges: end --->
 
 In computationally demanding analysis projects, statisticians and data
 scientists asynchronously deploy long-running tasks to distributed

@@ -1,16 +1,19 @@
 url: https://wlandau.github.io/crew/
 template:
   bootstrap: 5
+  bslib:
+    primary: "#152640"
 
 articles:
 - title: How to use `crew`
-  navbar: ~
+  navbar: How to use `crew`
   contents:
   - introduction
   - groups
   - shiny
   - promises
 - title: Technical details
+  navbar: Technical details
   contents:
   - plugins
   - risks
@@ -30,7 +33,7 @@ reference:
   - crew_class_launcher_local
 - title: Controllers
   contents:
-  - '`crew_controller
+  - crew_controller
   - crew_class_controller
 - title: Controller groups
   contents:

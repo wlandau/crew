@@ -4,7 +4,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="crew">
 <title>Introduction to crew • crew</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
@@ -12,76 +13,84 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to crew">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to crew">
 <meta property="og:description" content="crew">
-<meta property="og:image" content="/logo.svg">
+<meta property="og:image" content="https://wlandau.github.io/crew/logo.svg">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">crew</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.0.9000</span>
-      </span>
-    </div>
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    
+    <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../reference/index.html">Reference</a>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0.9000</small>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../articles/index.html">Articles</a>
+<li class="active nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <h6 class="dropdown-header" data-toc-skip>How to use `crew`</h6>
+    <a class="dropdown-item" href="../articles/introduction.html">Introduction to crew</a>
+    <a class="dropdown-item" href="../articles/groups.html">Controller groups</a>
+    <a class="dropdown-item" href="../articles/shiny.html">Asynchronous Shiny apps</a>
+    <a class="dropdown-item" href="../articles/promises.html">Integration with promises</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Technical details</h6>
+    <a class="dropdown-item" href="../articles/plugins.html">Launcher plugins</a>
+    <a class="dropdown-item" href="../articles/risks.html">Known risks of crew</a>
+  </div>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/wlandau/crew/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/wlandau/crew/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+    
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
+</nav><div class="container template-article">
 
-      
 
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Introduction to crew</h1>
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.svg" class="logo" alt=""><h1>Introduction to crew</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/wlandau/crew/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
-      <div class="hidden name"><code>introduction.Rmd</code></div>
-
+      <div class="d-none name"><code>introduction.Rmd</code></div>
     </div>
 
     
@@ -91,7 +100,7 @@ centralized interface and auto-scaling. A <code>crew</code> controller
 is an object in R which accepts tasks, returns results, and launches
 workers. Workers can be local processes, jobs on traditional clusters
 such as SLURM, or jobs on cloud services such as AWS Batch, depending on
-the <a href="https://wlandau.github.io/crew/articles/plugins.html" class="external-link">launcher
+the <a href="https://wlandau.github.io/crew/articles/plugins.html">launcher
 plugin</a> of the controller.</p>
 <div class="section level2">
 <h2 id="tasks-vs-workers">Tasks vs workers<a class="anchor" aria-label="anchor" href="#tasks-vs-workers"></a>
@@ -100,7 +109,7 @@ plugin</a> of the controller.</p>
 function call. A <em>worker</em> is a <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/interactive.html" class="external-link">non-interactive</a>
 R process that runs one or more tasks. When tasks run on workers, the
 local R session is free and responsive, and work gets done faster. For
-example, <a href="https://wlandau.github.io/crew/articles/shiny.html" class="external-link">this
+example, <a href="https://wlandau.github.io/crew/articles/shiny.html">this
 vignette</a> shows how <code>crew</code> and <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a> work
 together to speed up <a href="https://rstudio.github.io/shiny/" class="external-link">Shiny</a> apps.</p>
 </div>
@@ -109,7 +118,7 @@ together to speed up <a href="https://rstudio.github.io/shiny/" class="external-
 </h2>
 <p>First, create a controller object to manage tasks and workers.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/crew/" class="external-link">crew</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/crew/">crew</a></span><span class="op">)</span></span>
 <span><span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"example"</span>,</span>
 <span>  workers <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -201,17 +210,17 @@ recommended widely spaced worker-specific L’Ecuyer streams supported by
 <div class="section level2">
 <h2 id="synchronous-functional-programming">Synchronous functional programming<a class="anchor" aria-label="anchor" href="#synchronous-functional-programming"></a>
 </h2>
-<p>The <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map" class="external-link"><code>map()</code></a>
+<p>The <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map"><code>map()</code></a>
 method of the controller supports functional programming similar to <a href="https://purrr.tidyverse.org/reference/map.html" class="external-link"><code>purrr::map()</code></a>
 and <a href="https://mschubert.github.io/clustermq/reference/Q.html" class="external-link"><code>clustermq::Q()</code></a>.
-The arguments of <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map" class="external-link"><code>map()</code></a>
-are mostly the same those of <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-push" class="external-link"><code>push()</code></a>,
+The arguments of <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map"><code>map()</code></a>
+are mostly the same those of <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-push"><code>push()</code></a>,
 but there is a new <code>iterate</code> argument to define the inputs of
-individual tasks. <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map" class="external-link"><code>map()</code></a>
+individual tasks. <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map"><code>map()</code></a>
 submits a whole collection of tasks, auto-scales the workers, waits for
 all the tasks to finish, and returns the results in a
 <code>tibble</code>.</p>
-<p>Below, <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map" class="external-link"><code>map()</code></a>
+<p>Below, <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map"><code>map()</code></a>
 submits one task to compute <code>1 + 2 + 5 + 6</code> and another task
 to compute <code>3 + 4 + 5 + 6</code>. The lists and vectors inside
 <code>iterate</code> vary from task to task, while the elements of
@@ -238,12 +247,12 @@ tasks.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 14 18</span></span></code></pre></div>
-<p>If at least one task in <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map" class="external-link"><code>map()</code></a>
+<p>If at least one task in <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map"><code>map()</code></a>
 throws an error, the default behavior is to error out in the main
 session and not return the results, If that happens, the results are
 available in the <code>controller$error</code>. To return the results
 instead of setting <code>controller$error</code>, regardless of error
-status, set <code>error = "warn"</code> or <code>"silent"</code> in <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map" class="external-link"><code>map()</code></a>.
+status, set <code>error = "warn"</code> or <code>"silent"</code> in <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map"><code>map()</code></a>.
 To conserve memory, consider setting
 <code>controller$error &lt;- NULL</code> when you are done
 troubleshooting.</p>
@@ -251,7 +260,7 @@ troubleshooting.</p>
 <div class="section level2">
 <h2 id="asynchronous-functional-programming">Asynchronous functional programming<a class="anchor" aria-label="anchor" href="#asynchronous-functional-programming"></a>
 </h2>
-<p>The <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-walk" class="external-link"><code>walk()</code></a>
+<p>The <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-walk"><code>walk()</code></a>
 method is just like <code>map()</code>, but it does not wait for any
 tasks to complete. Instead, it returns control to the local R session
 immediately and lets you do other things while the tasks run in the
@@ -266,7 +275,7 @@ background.</p>
 <span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>c <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
 <span>  globals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>d <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-collect" class="external-link"><code>collect()</code></a>
+<p>The <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-collect"><code>collect()</code></a>
 pops all completed tasks. Put together, <code>walk()</code>,
 <code>wait(mode = "all")</code>, and <code>collect()</code> have the
 same overall effect as <code>map()</code>.</p>
@@ -361,7 +370,7 @@ this process to orchestrate tasks.</li>
 <li>Workers: the R processes that <code>crew</code> launches to run
 tasks. These may be local processes as in the case of
 <code><a href="../reference/crew_controller_local.html">crew_controller_local()</a></code>, or they may be processes on
-different computers if you are using a third-party <a href="https://wlandau.github.io/crew/articles/plugins.html" class="external-link">launcher
+different computers if you are using a third-party <a href="https://wlandau.github.io/crew/articles/plugins.html">launcher
 plugin</a> like <code>crew.cluster</code> or
 <code>crew.aws.batch</code>. launches processes.</li>
 <li>Daemons: R processes created by <code>mirai</code> outside of
@@ -390,9 +399,9 @@ running on your local computer. Example:</p>
 your local computer. To manage <code>crew</code> workers running on
 different computers, such as SLURM or AWS Batch, please familiarize
 yourself with the given computing platform, and consider using the
-monitor objects in the relevant third-party plugin packages such as <a href="https://wlandau.github.io/crew.cluster/" class="external-link"><code>crew.cluster</code></a>
-or <a href="https://wlandau.github.io/crew.aws.batch/" class="external-link"><code>crew.aws.batch</code></a>.
-Example: <a href="https://wlandau.github.io/crew.aws.batch/index.html#job-management" class="external-link uri">https://wlandau.github.io/crew.aws.batch/index.html#job-management</a>.</p>
+monitor objects in the relevant third-party plugin packages such as <a href="https://wlandau.github.io/crew.cluster/"><code>crew.cluster</code></a>
+or <a href="https://wlandau.github.io/crew.aws.batch/"><code>crew.aws.batch</code></a>.
+Example: <a href="https://wlandau.github.io/crew.aws.batch/index.html#job-management" class="uri">https://wlandau.github.io/crew.aws.batch/index.html#job-management</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="tuning-and-auto-scaling">Tuning and auto-scaling<a class="anchor" aria-label="anchor" href="#tuning-and-auto-scaling"></a>
@@ -448,33 +457,26 @@ argument to specify the number of local R processes to churn through
 worker launches and terminations. Set <code>processes = NULL</code> to
 disable async, which can be helpful for troubleshooting.</p>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
-
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
-      <footer><div class="copyright">
+    <footer><div class="pkgdown-footer-left">
   <p></p>
 <p>Developed by William Michael Landau.</p>
 </div>
 
-<div class="pkgdown">
+<div class="pkgdown-footer-right">
   <p></p>
 <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
 
   
-
 
   
 

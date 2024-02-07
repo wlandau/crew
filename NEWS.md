@@ -1,4 +1,4 @@
-# crew 0.8.0.9004 (development)
+# crew 0.9.0
 
 * Require `nanonext` >= 0.12.0 and `mirai` >= 0.12.0.
 * Return to always re-launching backlogged inactive workers (#79, https://github.com/shikokuchuo/mirai/discussions/95).

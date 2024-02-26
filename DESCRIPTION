@@ -5,7 +5,7 @@ Description: In computationally demanding analysis projects,
   deploy long-running tasks to distributed systems,
   ranging from traditional clusters to cloud services.
   The 'NNG'-powered 'mirai' R package by Gao (2023)
-  <https://CRAN.R-project.org/package=mirai> is a sleek
+  <doi:10.5281/zenodo.7912722> is a sleek
   and sophisticated scheduler that
   efficiently processes these intense workloads.
   The 'crew' package extends 'mirai' with a unifying

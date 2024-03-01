@@ -193,7 +193,7 @@ crew_class_tls <- R6::R6Class(
     #' @description Validate the object.
     #' @return `NULL` (invisibly).
     #' @param test Logical of length 1, whether to test the TLS configuration
-    #'   with `nanonext::tls_config()`.
+    #'   with `mirai::.tls_config()`.
     validate = function(test = TRUE) {
       crew_assert(
         private$.mode,
@@ -216,7 +216,7 @@ crew_class_tls <- R6::R6Class(
       # is platform-dependent and low-level.
       # nocov start
       if (isTRUE(test)) {
-        nanonext::tls_config(
+        mirai::.tls_config(
           client = self$worker(name = "default"),
           server = self$client(),
           pass = private$.password

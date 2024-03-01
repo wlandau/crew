@@ -12,5 +12,5 @@
 #' @examples
 #' crew_random_name()
 crew_random_name <- function(n = 12L) {
-  nanonext::random(n = n)
+  mirai::.random(n = n)
 }

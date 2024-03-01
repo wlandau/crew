@@ -812,7 +812,7 @@ crew_class_controller <- R6::R6Class(
       tasks <- private$.tasks
       total <- length(tasks)
       relay <- .subset2(.subset2(self, "client"), "relay")
-      start <- nanonext::mclock()
+      start <- mirai::.mclock()
       pushed <- private$.pushed
       this_envir <- environment()
       progress_envir <- new.env(parent = this_envir)
@@ -994,7 +994,7 @@ crew_class_controller <- R6::R6Class(
       index_delete <- NULL
       for (index in seq(n_tasks)) {
         object <- .subset2(tasks, index)
-        if (!nanonext::unresolved(object)) {
+        if (!mirai::unresolved(object)) {
           task <- object
           index_delete <- index
           break

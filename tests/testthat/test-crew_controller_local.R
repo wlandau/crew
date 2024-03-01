@@ -112,13 +112,13 @@ crew_test("crew_controller_local()", {
     expect_false(exists(x = ".crew_y", envir = globalenv()))
     # package task
     x$push(
-      command = base64enc(arg),
+      command = rlang::hash(arg),
       data = list(arg = "x"),
-      packages = "nanonext"
+      packages = "rlang"
     )
     x$wait(seconds_timeout = 5)
     out <- x$pop()
-    expect_equal(out$result[[1]], nanonext::base64enc("x"))
+    expect_equal(out$result[[1]], rlang::hash("x"))
   }
   # terminate
   handle <- x$launcher$workers$handle[[1]]

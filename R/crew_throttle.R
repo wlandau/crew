@@ -86,7 +86,7 @@ crew_class_throttle <- R6::R6Class(
     #' @return `TRUE` if `poll()` did not return `TRUE` in the last
     #'   `seconds_interval` seconds, `FALSE` otherwise.
     poll = function() {
-      now <- nanonext::mclock()
+      now <- mirai::.mclock()
       last <- private$.polled %|||% -Inf
       interval <- 1000 * private$.seconds_interval
       out <- (now - last) > interval

@@ -97,7 +97,7 @@ Validate the object.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{test}}{Logical of length 1, whether to test the TLS configuration
-with \code{nanonext::tls_config()}.}
+with \code{mirai::.tls_config()}.}
 }
 \if{html}{\out{</div>}}
 }

@@ -3,7 +3,7 @@ crew_test("workers signal themselves to exit when connection breaks", {
   skip_if_not_installed("nanonext", minimum_version = "0.11.0.9000")
   x <- crew_controller_local(workers = 1L)
   x$start()
-  x$push(nanonext::until(nanonext::cv(), 600 * 1e3))
+  x$push(mirai::.until(mirai::.cv(), 600 * 1e3))
   Sys.sleep(2)
   x$scale()
   Sys.sleep(2)

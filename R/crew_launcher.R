@@ -629,7 +629,7 @@ crew_class_launcher <- R6::R6Class(
     booting = function() {
       bound <- private$.seconds_launch
       start <- private$.workers$start
-      now <- nanonext::mclock() / 1000
+      now <- mirai::.mclock() / 1000
       launching <- !is.na(start) & ((now - start) < bound)
     },
     #' @description Get active workers.
@@ -717,7 +717,7 @@ crew_class_launcher <- R6::R6Class(
       )
       private$.workers$handle[[index]] <- handle
       private$.workers$socket[index] <- socket
-      private$.workers$start[index] <- nanonext::mclock() / 1000
+      private$.workers$start[index] <- mirai::.mclock() / 1000
       private$.workers$launches[index] <- private$.workers$launches[index] + 1L
       private$.workers$futile[index] <- futile
       private$.workers$launched[index] <- TRUE

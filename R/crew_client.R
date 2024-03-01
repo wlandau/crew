@@ -337,7 +337,7 @@ crew_class_client <- R6::R6Class(
       if_any(
         is.null(condition),
         0L,
-        nanonext::cv_value(condition)
+        mirai::.cv_value(condition)
       )
     },
     #' @description Show an informative worker log.

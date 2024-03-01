@@ -57,12 +57,12 @@ crew_class_relay <- R6::R6Class(
     #' @return `NULL` (invisibly).
     start = function() {
       if (is.null(private$.condition)) {
-        private$.condition <- nanonext::cv()
+        private$.condition <- mirai::.cv()
         if (!is.null(private$.from)) {
-          nanonext::`%~>%`(cv = private$.from, cv2 = private$.condition)
+          mirai::`%~>%`(cv = private$.from, cv2 = private$.condition)
         }
         if (!is.null(private$.to)) {
-          nanonext::`%~>%`(cv = private$.condition, cv2 = private$.to)
+          mirai::`%~>%`(cv = private$.condition, cv2 = private$.to)
         }
       }
       invisible()
@@ -95,7 +95,7 @@ crew_class_relay <- R6::R6Class(
     wait = function(seconds_timeout = 1e3) {
       timeout <- seconds_timeout * 1000
       condition <- .subset2(self, "condition")
-      nanonext::until_(cv = condition, msec = timeout)
+      mirai::.until_(cv = condition, msec = timeout)
     }
   )
 )

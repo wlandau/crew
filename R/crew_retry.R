@@ -61,9 +61,9 @@ crew_retry <- function(
   crew_assert(error, isTRUE(.) || isFALSE(.))
   milli_timeout <- 1000 * seconds_timeout
   tries <- 0L
-  start <- nanonext::mclock()
+  start <- mirai::.mclock()
   while (!isTRUE(do.call(what = fun, args = args, envir = envir))) {
-    if ((nanonext::mclock() - start) > milli_timeout) {
+    if ((mirai::.mclock() - start) > milli_timeout) {
       message <- paste(
         "timed out after retrying for",
         seconds_timeout,
@@ -90,7 +90,7 @@ crew_retry <- function(
         return(invisible())
       }
     }
-    nanonext::msleep(time = 1000 * seconds_interval)
+    mirai::.msleep(time = 1000 * seconds_interval)
   }
   invisible()
 }

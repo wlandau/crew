@@ -1,6 +1,6 @@
-# crew 0.9.0.9000 (development)
+# crew 0.9.0.9001 (development)
 
-
+* Require `mirai` >= 0.12.1.2.
 
 # crew 0.9.0
 

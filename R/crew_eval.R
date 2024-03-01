@@ -87,7 +87,7 @@ crew_eval <- function(
     invokeRestart("muffleWarning")
   }
   state <- new.env(hash = FALSE, parent = emptyenv())
-  start <- nanonext::mclock()
+  start <- mirai::.mclock()
   result <- tryCatch(
     expr = withCallingHandlers(
       expr = eval(expr = command, envir = envir),
@@ -96,7 +96,7 @@ crew_eval <- function(
     ),
     error = function(condition) NA
   )
-  seconds <- (nanonext::mclock() - start) / 1000
+  seconds <- (mirai::.mclock() - start) / 1000
   monad_init(
     name = name,
     command = string,

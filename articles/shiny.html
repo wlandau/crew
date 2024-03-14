@@ -232,24 +232,29 @@ scan for results in the <code>observe()</code> block covered next.</p>
 <p>At the bottom of <code>server()</code> is the crux of the app: the
 event loop that scans for results. The leading
 <code>req(reactive_poll())</code> ensures the loop only runs when
-results could come in, and the
-<code>reactive_poll(controller$nonempty())</code> at the end turns off
-polling when everything is all done.
-<code>invalidateLater(millis = 100)</code> says to poll every 0.1
-seconds when polling is activated.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;&lt;code&gt;controller$pop()&lt;/code&gt; is inexpensive, especially
+results could come in, and <code>invalidateLater(millis = 100)</code>
+says to poll every 0.1 seconds when polling is activated.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;&lt;code&gt;controller$pop()&lt;/code&gt; is inexpensive, especially
 when there are no workers to relaunch or results to collect. In
 practice, the polling interval is a balance between responsiveness and
-CPU usage, and it may not be 0.1 seconds for every app.&lt;/p&gt;"><sup>2</sup></a> The other three lines collect a result,
-plot it if available, and update the status message.</p>
+CPU usage, and it may not be 0.1 seconds for every app.&lt;/p&gt;"><sup>2</sup></a> The <code>if()</code>
+statement decides what to do if the task threw an error. If the task
+succeeded, then the app shows the plot, updates the status, and resumes
+polling if needed. If the task failed, then the app reports the error
+message of the task as the status, and polling stops.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>  <span class="fu">observe</span>({</span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>    <span class="fu">req</span>(<span class="fu">reactive_poll</span>())</span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="fu">invalidateLater</span>(<span class="at">millis =</span> <span class="dv">100</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    result <span class="ot">&lt;-</span> controller<span class="sc">$</span><span class="fu">pop</span>()<span class="sc">$</span>result</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(result)) <span class="fu">reactive_result</span>(result[[<span class="dv">1</span>]])</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    <span class="fu">reactive_status</span>(<span class="fu">status_message</span>(<span class="at">n =</span> <span class="fu">length</span>(controller<span class="sc">$</span>tasks)))</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="fu">reactive_poll</span>(controller<span class="sc">$</span><span class="fu">nonempty</span>())</span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  })</span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    output <span class="ot">&lt;-</span> controller<span class="sc">$</span><span class="fu">pop</span>()</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">anyNA</span>(output<span class="sc">$</span>error)) { <span class="co"># Task succeeded.</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>      <span class="fu">reactive_result</span>(output<span class="sc">$</span>result[[<span class="dv">1</span>]])</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>      <span class="fu">reactive_status</span>(<span class="fu">status_message</span>(<span class="at">n =</span> <span class="fu">length</span>(controller<span class="sc">$</span>tasks)))</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>      <span class="fu">reactive_poll</span>(controller<span class="sc">$</span><span class="fu">nonempty</span>())</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(output)) { <span class="co"># Task threw an error.</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>      <span class="fu">reactive_status</span>(<span class="fu">paste</span>(<span class="st">"Task error:"</span>, output<span class="sc">$</span>error))</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>      <span class="fu">reactive_poll</span>(<span class="cn">FALSE</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>    }</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  })</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
 <p>Finally, <code>shinyApp()</code> runs the app with the UI and server
 defined above.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -317,10 +322,15 @@ defined above.</p>
 <span>  <span class="fu">observe</span><span class="op">(</span><span class="op">{</span></span>
 <span>    <span class="fu">req</span><span class="op">(</span><span class="fu">reactive_poll</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="fu">invalidateLater</span><span class="op">(</span>millis <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
-<span>    <span class="va">result</span> <span class="op">&lt;-</span> <span class="va">controller</span><span class="op">$</span><span class="fu">pop</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">result</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span> <span class="fu">reactive_result</span><span class="op">(</span><span class="va">result</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span>    <span class="fu">reactive_status</span><span class="op">(</span><span class="fu">status_message</span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">controller</span><span class="op">$</span><span class="va">tasks</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="fu">reactive_poll</span><span class="op">(</span><span class="va">controller</span><span class="op">$</span><span class="fu">nonempty</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">output</span> <span class="op">&lt;-</span> <span class="va">controller</span><span class="op">$</span><span class="fu">pop</span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">anyNA</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">error</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># Task succeeded.</span></span>
+<span>      <span class="fu">reactive_result</span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">result</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>      <span class="fu">reactive_status</span><span class="op">(</span><span class="fu">status_message</span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">controller</span><span class="op">$</span><span class="va">tasks</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="fu">reactive_poll</span><span class="op">(</span><span class="va">controller</span><span class="op">$</span><span class="fu">nonempty</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># Task threw an error.</span></span>
+<span>      <span class="fu">reactive_status</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Task error:"</span>, <span class="va">output</span><span class="op">$</span><span class="va">error</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="fu">reactive_poll</span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
 <span>  <span class="op">}</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>

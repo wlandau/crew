@@ -877,7 +877,7 @@ a text string version of the R command in the output.</p></dd>
 
 
 <dt><code>error</code></dt>
-<dd><p>Character vector of length 1, choice of action if
+<dd><p>Character of length 1, choice of action if
 a task has an error. Possible values:</p><ul><li><p><code>"stop"</code>: throw an error in the main R session instead of returning
 a value. In case of an error, the results from the last errored
 <code>map()</code> are in the <code>error</code> field
@@ -941,6 +941,7 @@ and columns corresponding to the output of <code>pop()</code>.</p>
 <span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  collect <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  throttle <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  error <span class="op">=</span> <span class="st">"silent"</span>,</span>
 <span>  controllers <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -966,6 +967,15 @@ See also the <code>throttle</code> argument.</p></dd>
 within the last <code>seconds_interval</code> seconds. <code>FALSE</code> to auto-scale
 every time <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> is called. Throttling avoids
 overburdening the <code>mirai</code> dispatcher and other resources.</p></dd>
+
+
+<dt><code>error</code></dt>
+<dd><p>Character of length 1, choice of action if
+the popped task threw an error. Possible values:</p><ul><li><p><code>"stop"</code>: throw an error in the main R session instead of returning
+a value.</p></li>
+<li><p><code>"warn"</code>: throw a warning.</p></li>
+<li><p><code>"silent"</code>: do nothing special.</p></li>
+</ul></dd>
 
 
 <dt><code>controllers</code></dt>

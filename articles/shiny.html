@@ -196,12 +196,12 @@ task.</p>
 with reactive values and outputs for the random <a href="https://en.wikipedia.org/wiki/Phyllotaxis" class="external-link">phyllotaxis</a> plot
 and the task status. In addition, <code>reactive_poll</code> controls
 when the app scans for results.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  reactive_result <span class="ot">&lt;-</span> <span class="fu">reactiveVal</span>(<span class="fu">ggplot</span>())</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  reactive_status <span class="ot">&lt;-</span> <span class="fu">reactiveVal</span>(<span class="st">"No task submitted yet."</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  reactive_poll <span class="ot">&lt;-</span> <span class="fu">reactiveVal</span>(<span class="cn">FALSE</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>result <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>(<span class="fu">reactive_result</span>(), <span class="at">height =</span> <span class="dv">600</span>, <span class="at">width =</span> <span class="dv">600</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>status <span class="ot">&lt;-</span> <span class="fu">renderText</span>(<span class="fu">reactive_status</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  reactive_result <span class="ot">&lt;-</span> <span class="fu">reactiveVal</span>(<span class="fu">ggplot</span>())</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  reactive_status <span class="ot">&lt;-</span> <span class="fu">reactiveVal</span>(<span class="st">"No task submitted yet."</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  reactive_poll <span class="ot">&lt;-</span> <span class="fu">reactiveVal</span>(<span class="cn">FALSE</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  output<span class="sc">$</span>result <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>(<span class="fu">reactive_result</span>(), <span class="at">height =</span> <span class="dv">600</span>, <span class="at">width =</span> <span class="dv">600</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  output<span class="sc">$</span>status <span class="ot">&lt;-</span> <span class="fu">renderText</span>(<span class="fu">reactive_status</span>())</span></code></pre></div>
 <p>Next, we start a <code>crew</code> controller with up to 4 workers
 and an idle time of 10 seconds. We choose the <a href="https://wlandau.github.io/crew/reference/crew_class_launcher_local.html">local
 process launcher</a> below for this app, but we could have chosen the
@@ -241,15 +241,15 @@ when there are no workers to relaunch or results to collect. In
 practice, the polling interval is a balance between responsiveness and
 CPU usage, and it may not be 0.1 seconds for every app.&lt;/p&gt;"><sup>2</sup></a> The other three lines collect a result,
 plot it if available, and update the status message.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">observe</span>({</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req</span>(<span class="fu">reactive_poll</span>())</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">invalidateLater</span>(<span class="at">millis =</span> <span class="dv">100</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    result <span class="ot">&lt;-</span> controller<span class="sc">$</span><span class="fu">pop</span>()<span class="sc">$</span>result</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(result)) <span class="fu">reactive_result</span>(result[[<span class="dv">1</span>]])</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">reactive_status</span>(<span class="fu">status_message</span>(<span class="at">n =</span> <span class="fu">length</span>(controller<span class="sc">$</span>tasks)))</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">reactive_poll</span>(controller<span class="sc">$</span><span class="fu">nonempty</span>())</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>  <span class="fu">observe</span>({</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>    <span class="fu">req</span>(<span class="fu">reactive_poll</span>())</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="fu">invalidateLater</span>(<span class="at">millis =</span> <span class="dv">100</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    result <span class="ot">&lt;-</span> controller<span class="sc">$</span><span class="fu">pop</span>()<span class="sc">$</span>result</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(result)) <span class="fu">reactive_result</span>(result[[<span class="dv">1</span>]])</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    <span class="fu">reactive_status</span>(<span class="fu">status_message</span>(<span class="at">n =</span> <span class="fu">length</span>(controller<span class="sc">$</span>tasks)))</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="fu">reactive_poll</span>(controller<span class="sc">$</span><span class="fu">nonempty</span>())</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  })</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
 <p>Finally, <code>shinyApp()</code> runs the app with the UI and server
 defined above.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">

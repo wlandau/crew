@@ -147,7 +147,7 @@ first.</p>
 <span><span class="va">controller</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Let’s push a single task.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">task</span> <span class="op">&lt;-</span> <span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"success"</span>,</span>
 <span>  command <span class="op">=</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
@@ -155,16 +155,22 @@ first.</p>
 <span>  <span class="op">}</span>,</span>
 <span>  save_command <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>And now create a promise that prints the value asynchronously if the
-task succeeds.</p>
+<p>To create a promise specific to the task above, call
+<code><a href="https://rstudio.github.io/promises/reference/is.promise.html" class="external-link">as.promise()</a></code> on the returned task object.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">promise</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/promises/reference/is.promise.html" class="external-link">as.promise</a></span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span></code></pre></div>
+<p>To create a promise that resolves when <em>any</em> task in the
+controller completes, use the <code><a href="https://rstudio.github.io/promises/reference/promise.html" class="external-link">promise()</a></code> method of the
+controller. The following promise prints the output value asynchronously
+if the task succeeds.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">promise</span> <span class="op">&lt;-</span> <span class="va">controller</span><span class="op">$</span><span class="fu">promise</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"one"</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html" class="external-link">%...&gt;%</a></span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>result <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html" class="external-link">%...&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>When you run both steps above, the R interpreter runs it immediately
 and returns control back to you. But then the following output prints
 two seconds after the task was pushed.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#&gt; # A tibble: 1 × 12</span></span>
 <span><span class="co">#&gt;   name    command     result seconds  seed algorithm error trace</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;    &lt;dbl&gt; &lt;int&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;</span></span>
@@ -173,14 +179,14 @@ two seconds after the task was pushed.</p>
 <span><span class="co">#&gt; #   worker &lt;int&gt;, instance &lt;chr&gt;</span></span></code></pre></div>
 <p>The task below runs in the background for 2 seconds and then throws
 an error.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"error message"</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 <p>As before, control returns immediately when you push the task and
 create the promise.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">promise</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/promises/reference/then.html" class="external-link">then</a></span><span class="op">(</span></span>
 <span>  <span class="va">controller</span><span class="op">$</span><span class="fu">promise</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"one"</span><span class="op">)</span>,</span>
 <span>  onRejected <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">error</span><span class="op">)</span> <span class="op">{</span></span>
@@ -188,7 +194,7 @@ create the promise.</p>
 <span>  <span class="op">}</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>But this time, an error message prints two seconds later.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#&gt; [1] "error message"</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -198,7 +204,7 @@ create the promise.</p>
 The <code>walk()</code> method is like <code>map()</code>, except that
 it returns control immediately without waiting for any tasks to
 complete.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">walk</span><span class="op">(</span></span>
 <span>  command <span class="op">=</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
@@ -210,7 +216,7 @@ complete.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>We create a promise which asynchronously resolves when all the tasks
 in the controller finish.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">promise</span> <span class="op">&lt;-</span> <span class="va">controller</span><span class="op">$</span><span class="fu">promise</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html" class="external-link">%...&gt;%</a></span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>result <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html" class="external-link">%...&gt;%</a></span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html" class="external-link">any_of</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"command"</span>, <span class="st">"result"</span>, <span class="st">"error"</span>, <span class="st">"worker"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html" class="external-link">%...T&gt;%</a></span></span>
@@ -219,7 +225,7 @@ in the controller finish.</p>
 resolves asynchronously and prints the results of all the tasks. Each
 row in the <code>tibble</code> below corresponds to an individual
 task.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#&gt; # A tibble: 2 × 5</span></span>
 <span><span class="co">#&gt;   name  command                                result error worker</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;                                  &lt;chr&gt;  &lt;chr&gt;  &lt;int&gt;</span></span>
@@ -236,7 +242,7 @@ until all tasks resolve.</li>
 </ol>
 <p>To demonstrate (1) and (2), let’s push a task that will succeed and a
 task that will throw an error.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"success"</span>,</span>
 <span>  command <span class="op">=</span> <span class="op">{</span></span>
@@ -255,7 +261,7 @@ task that will throw an error.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>We create a multi-task promise which prints the error message
 asynchronously on resolution.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">promise</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/promises/reference/then.html" class="external-link">then</a></span><span class="op">(</span></span>
 <span>  <span class="va">controller</span><span class="op">$</span><span class="fu">promise</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span>,</span>
 <span>  onRejected <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">error</span><span class="op">)</span> <span class="op">{</span></span>
@@ -264,7 +270,7 @@ asynchronously on resolution.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Two seconds after the tasks were pushed, the error message
 prints.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#&gt; [1] "one task's error message"</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

@@ -46,7 +46,7 @@ controller$start()
 Let's push a single task.
 
 ```r
-controller$push(
+task <- controller$push(
   name = "success",
   command = {
     Sys.sleep(2)
@@ -56,7 +56,13 @@ controller$push(
 )
 ```
 
-And now create a promise that prints the value asynchronously if the task succeeds.
+To create a promise specific to the task above, call `as.promise()` on the returned task object.
+
+```r
+promise <- as.promise(task)
+```
+
+To create a promise that resolves when *any* task in the controller completes, use the `promise()` method of the controller. The following promise prints the output value asynchronously if the task succeeds.
 
 ```r
 promise <- controller$promise(mode = "one") %...>%

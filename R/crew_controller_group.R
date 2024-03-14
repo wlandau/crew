@@ -673,17 +673,28 @@ crew_class_controller_group <- R6::R6Class(
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
+    #' @param error Character of length 1, choice of action if
+    #'   the popped task threw an error. Possible values:
+    #'   * `"stop"`: throw an error in the main R session instead of returning
+    #'     a value.
+    #'   * `"warn"`: throw a warning.
+    #'   * `"silent"`: do nothing special.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     pop = function(
       scale = TRUE,
       collect = NULL,
       throttle = TRUE,
+      error = "silent",
       controllers = NULL
     ) {
       control <- private$.select_controllers(controllers)
       for (controller in control) {
-        out <- controller$pop(scale = scale, throttle = throttle)
+        out <- controller$pop(
+          scale = scale,
+          throttle = throttle,
+          error = error
+        )
         if (!is.null(out)) {
           return(out)
         }

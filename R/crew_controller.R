@@ -737,7 +737,7 @@ crew_class_controller <- R6::R6Class(
     #'   then `iterate[[names]]` must be a character vector.
     #' @param save_command Logical of length 1, whether to store
     #'   a text string version of the R command in the output.
-    #' @param error Character vector of length 1, choice of action if
+    #' @param error Character of length 1, choice of action if
     #'   a task has an error. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
     #'     a value. In case of an error, the results from the last errored
@@ -785,6 +785,7 @@ crew_class_controller <- R6::R6Class(
         message = "cannot map() until all prior tasks are completed and popped"
       )
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
+      crew_assert(error %in% c("stop", "warn", "silent"))
       if (substitute) {
         command <- substitute(command)
       }
@@ -964,12 +965,19 @@ crew_class_controller <- R6::R6Class(
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
+    #' @param error Character of length 1, choice of action if
+    #'   the popped task threw an error. Possible values:
+    #'   * `"stop"`: throw an error in the main R session instead of returning
+    #'     a value.
+    #'   * `"warn"`: throw a warning.
+    #'   * `"silent"`: do nothing special.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop = function(
       scale = TRUE,
       collect = NULL,
       throttle = TRUE,
+      error = "silent",
       controllers = NULL
     ) {
       crew_deprecate(
@@ -1030,16 +1038,24 @@ crew_class_controller <- R6::R6Class(
         return(out)
       }
       # nocov end
+      error_message <- .subset2(out, "error")
       on.exit({
         index <- .subset2(out, "worker")
         private$.log$tasks[index] <- .subset2(log, "tasks")[index] + 1L
         private$.log$seconds[index] <- .subset2(log, "seconds")[index] +
           .subset2(out, "seconds")
         private$.log$errors[index] <- .subset2(log, "errors")[index] +
-          !anyNA(.subset2(out, "error"))
+          !anyNA(error_message)
         private$.log$warnings[index] <- .subset2(log, "warnings")[index] +
           !anyNA(.subset2(out, "warnings"))
       }, add = TRUE)
+      if (!anyNA(error_message)) {
+        if (identical(error, "stop")) {
+          crew_error(message = error_message)
+        } else if (identical(error, "warn")) {
+          crew_warning(message = error_message)
+        }
+      }
       out
     },
     #' @description Pop all available task results and return them in a tidy

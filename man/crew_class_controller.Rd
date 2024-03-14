@@ -739,7 +739,7 @@ then \code{iterate[[names]]} must be a character vector.}
 \item{\code{save_command}}{Logical of length 1, whether to store
 a text string version of the R command in the output.}
 
-\item{\code{error}}{Character vector of length 1, choice of action if
+\item{\code{error}}{Character of length 1, choice of action if
 a task has an error. Possible values:
 \itemize{
 \item \code{"stop"}: throw an error in the main R session instead of returning
@@ -794,6 +794,7 @@ Pop a completed task from the results data frame.
   scale = TRUE,
   collect = NULL,
   throttle = TRUE,
+  error = "silent",
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -815,6 +816,15 @@ See also the \code{throttle} argument.}
 within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
+
+\item{\code{error}}{Character of length 1, choice of action if
+the popped task threw an error. Possible values:
+\itemize{
+\item \code{"stop"}: throw an error in the main R session instead of returning
+a value.
+\item \code{"warn"}: throw a warning.
+\item \code{"silent"}: do nothing special.
+}}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

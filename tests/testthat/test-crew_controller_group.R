@@ -146,6 +146,47 @@ crew_test("crew_controller_group()", {
   }
 })
 
+crew_test("crew_controller_group() can relay task errors as local errors", {
+  skip_on_cran()
+  skip_on_os("windows")
+  a <- crew_controller_local(
+    seconds_idle = 360
+  )
+  x <- crew_controller_group(a)
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(command =  stop("this is an error"), name = "warnings_and_errors")
+  x$wait(seconds_timeout = 5)
+  expect_crew_error(x$pop(scale = FALSE, error = "stop"))
+})
+
+crew_test("crew_controller_group() can relay task errors as local warnings", {
+  skip_on_cran()
+  skip_on_os("windows")
+  a <- crew_controller_local(
+    seconds_idle = 360
+  )
+  x <- crew_controller_group(a)
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(command =  stop("this is an error"), name = "warnings_and_errors")
+  x$wait(seconds_timeout = 5)
+  expect_warning(
+    x$pop(scale = FALSE, error = "warn"),
+    class = "crew_warning"
+  )
+})
+
 crew_test("crew_controller_group() select", {
   skip_on_cran()
   skip_on_os("windows")

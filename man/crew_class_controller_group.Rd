@@ -769,6 +769,7 @@ Pop a completed task from the results data frame.
   scale = TRUE,
   collect = NULL,
   throttle = TRUE,
+  error = "silent",
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -786,6 +787,15 @@ ordinary single controllers.}
 within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
+
+\item{\code{error}}{Character of length 1, choice of action if
+the popped task threw an error. Possible values:
+\itemize{
+\item \code{"stop"}: throw an error in the main R session instead of returning
+a value.
+\item \code{"warn"}: throw a warning.
+\item \code{"silent"}: do nothing special.
+}}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}

@@ -117,9 +117,9 @@ button, a new 5-second task pushes to the <code>crew</code> controller.
 The plot output shows the random visualization returned from latest
 task.</p>
 <p>The text output continuously refreshes to show the current time and
-number of tasks in progress. Watch a 39-second video to see the app in
-action. You will see the time tick away even as tasks run in the
-background. In other words, the tasks run asynchronously and do not
+number of tasks in progress. Watch the short video linked below to see
+the app in action. You will see the time tick away even as tasks run in
+the background. In other words, the tasks run asynchronously and do not
 block the app session.</p>
 <p><a href="https://vimeo.com/927130003" class="external-link"><img src="./figures/app.png"></a></p>
 </div>
@@ -147,9 +147,13 @@ plot.</p>
 <span>  <span class="fu">aRtsy</span><span class="fu">::</span><span class="fu">canvas_squares</span><span class="op">(</span>colors <span class="op">=</span> <span class="fu">aRtsy</span><span class="fu">::</span><span class="fu">colorPalette</span><span class="op">(</span><span class="st">"random-palette"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>The <a href="https://shiny.rstudio.com/articles/basics.html" class="external-link">user
-interface</a> shows the three parts explained previously.</p>
+interface</a> shows the three parts explained previously, along with
+HTML/CSS formatting.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="fu">fluidPage</span><span class="op">(</span></span>
+<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">br</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">style</span><span class="op">(</span><span class="st">"#status,#task{font-size:3em}"</span><span class="op">)</span>,</span>
+<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">style</span><span class="op">(</span><span class="st">"#task{border:3px solid black}"</span><span class="op">)</span>,</span>
 <span>  <span class="fu">actionButton</span><span class="op">(</span><span class="st">"task"</span>, <span class="st">"Submit a task (5 seconds)"</span><span class="op">)</span>,</span>
 <span>  <span class="fu">textOutput</span><span class="op">(</span><span class="st">"status"</span><span class="op">)</span>,</span>
 <span>  <span class="fu">plotOutput</span><span class="op">(</span><span class="st">"result"</span><span class="op">)</span></span>
@@ -193,9 +197,10 @@ time tick away even as tasks and promises operate in the background.</p>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>    input<span class="sc">$</span>task</span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    task<span class="sc">$</span><span class="fu">status</span>()</span>
 <span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>    <span class="fu">invalidateLater</span>(<span class="at">millis =</span> <span class="dv">1000</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    <span class="fu">paste</span>(<span class="fu">format</span>(<span class="fu">Sys.time</span>()), <span class="st">"</span><span class="sc">\n</span><span class="st">Tasks in progress:"</span>, controller<span class="sc">$</span><span class="fu">unresolved</span>())</span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  })</span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    time <span class="ot">&lt;-</span> <span class="fu">format</span>(<span class="fu">Sys.time</span>(), <span class="st">"%H:%M:%S"</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="fu">paste</span>(<span class="st">"Time:"</span>, time, <span class="st">"|"</span>, <span class="st">"Running tasks:"</span>, controller<span class="sc">$</span><span class="fu">unresolved</span>())</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  })</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
 <p>Finally, <code>shinyApp()</code> runs the app with the UI and server
 defined above.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -214,6 +219,9 @@ defined above.</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="fu">fluidPage</span><span class="op">(</span></span>
+<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">br</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">style</span><span class="op">(</span><span class="st">"#status,#task{font-size:3em}"</span><span class="op">)</span>,</span>
+<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">style</span><span class="op">(</span><span class="st">"#task{border:3px solid black}"</span><span class="op">)</span>,</span>
 <span>  <span class="fu">actionButton</span><span class="op">(</span><span class="st">"task"</span>, <span class="st">"Submit a task (5 seconds)"</span><span class="op">)</span>,</span>
 <span>  <span class="fu">textOutput</span><span class="op">(</span><span class="st">"status"</span><span class="op">)</span>,</span>
 <span>  <span class="fu">plotOutput</span><span class="op">(</span><span class="st">"result"</span><span class="op">)</span></span>
@@ -242,7 +250,8 @@ defined above.</p>
 <span>    <span class="va">input</span><span class="op">$</span><span class="va">task</span></span>
 <span>    <span class="va">task</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span></span>
 <span>    <span class="fu">invalidateLater</span><span class="op">(</span>millis <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="st">"\nTasks in progress:"</span>, <span class="va">controller</span><span class="op">$</span><span class="fu">unresolved</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"%H:%M:%S"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Time:"</span>, <span class="va">time</span>, <span class="st">"|"</span>, <span class="st">"Running tasks:"</span>, <span class="va">controller</span><span class="op">$</span><span class="fu">unresolved</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">}</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>

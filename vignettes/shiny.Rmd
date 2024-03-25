@@ -11,138 +11,92 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
 # About
 
-Shiny has revolutionized interactive web apps in R. However, because of the staggering breadth of possibilities it created, the official ecosystem still has unmet needs. In particular, long-running tasks are challenging because they may block the R session and cause the app to lag. Any degree of latency is detrimental because web app users expect instant responses. Long tasks should run asynchronously to free up the main process for user interactions.
-
-The [`promises`](https://rstudio.github.io/promises/) package is a popular solution for asynchronous programming in Shiny. With the help of [`future`](https://future.futureverse.org/), it keeps the main process free and responsive. However, as [its own documentation explains](https://rstudio.github.io/promises/articles/intro.html), the [`promises`](https://rstudio.github.io/promises/) package focuses on apps with only a small number of specific bottlenecks. By design, it does not scale to the prodigious quantities of heavy tasks that industrial enterprise-level apps aim to farm out in production-level pipelines.
-
-By contrast, `crew` scales out easily, and its controller asynchronously manages all the tasks from a single convenient place. This vignette demonstrates scalable asynchronous programming with `crew` in Shiny.
+`crew` is simple to use inside Shiny apps. Not only does `crew` bring parallel computing to a single app session, it elastically auto-scales worker processes to reduce the resource burden on other concurrent user sessions. And because of the [centralized controller interface](https://wlandau.github.io/crew/reference/crew_class_controller.html), there is no need to manually loop through individual tasks, which is convenient for workloads with thousands of tasks.
 
 # Example
 
-We focus on the `crew`-powered Shiny app at <https://wlandau.shinyapps.io/crew-shiny/>. When it launches, it looks like this:
+The simple example below has three interface elements: an action button, a plot output, and a text output. When you click the action button, a new 5-second task pushes to the `crew` controller. The plot output shows the random visualization returned from latest task.
 
-![](./figures/open.png)
+The text output continuously refreshes to show the current time and number of tasks in progress. Watch a 39-second video to see the app in action. You will see the time tick away even as tasks run in the background. In other words, the tasks run asynchronously and do not block the app session.
 
-When you click the "Submit a task (5 seconds)" button, `crew` runs a long task in the background. Here, the task is to wait 5 seconds and then generate a random [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) using the [`aRtsy`](https://koenderks.github.io/aRtsy/) package.^[Machine learning and Bayesian data analysis have plenty of serious examples of long-running tasks.] The app continuously refreshes the current time and the number of tasks in progress.
+[![](./figures/app.png)](https://vimeo.com/927130003)
 
-![](./figures/submitted.png)
+# Prerequisites
 
-As soon as a task completes, the app retrieves the result from the `crew` workers and plots the output.
+The example app uses extended tasks, which are only available in Shiny 1.8.0.9000 or above. If your installed version of Shiny is too low, you can upgrade to the development version with:
 
-![](./figures/completed1.png)
-
-You can submit many more tasks than there are workers currently running. In the following screenshot, the app is only running 4 workers, but the queue has 9 tasks left.
-
-![](./figures/progress.png)
-
-Thanks to the efficient scheduling of [`mirai`](https://github.com/shikokuchuo/mirai) in the backend, `crew` workers successfully complete all remaining 9 tasks. Because the app runs 4 workers, different plots may appear less than 5 seconds apart.
-
-![](./figures/completed2.png)
+```r
+remotes::install_github("rstudio/shiny")
+```
 
 # Tutorial
 
-The app depends on the following packages.
+To begin, the app script loads Shiny.
 
 ```r
-library(crew)
 library(shiny)
-library(ggplot2)
-library(aRtsy)
 ```
 
-Each task waits 5 seconds and then generates a random [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) [`ggplot`](https://ggplot2.tidyverse.org/) using the [`canvas_phyllotaxis()`](https://koenderks.github.io/aRtsy/reference/canvas_phyllotaxis.html) function from [`aRtsy`](https://koenderks.github.io/aRtsy/).
+The `run_task()` function waits 5 seconds and then generates a random [`aRtsy::canvas_squares()`](https://koenderks.github.io/aRtsy/reference/canvas_squares.html) plot.
 
 ```r
 run_task <- function() {
   Sys.sleep(5)
-  canvas_phyllotaxis(
-    colors = colorPalette(name = "random", n = 3),
-    iterations = 1000,
-    angle = runif(n = 1, min = - 2 * pi, max = 2 * pi),
-    size = 1,
-    p = 1
-  )
+  aRtsy::canvas_squares(colors = aRtsy::colorPalette("random-palette"))
 }
 ```
 
-A separate function generates status messages based on the number of tasks in progress.
-
-```r
-status_message <- function(n) {
-  if (n > 0) {
-    paste(format(Sys.time()), "tasks in progress:", n)
-  } else {
-    "All tasks completed."
-  }
-}
-```
-
-The [user interface](https://shiny.rstudio.com/articles/basics.html) has a button to submit a task, a text output with the status, and a plot with the result of the most recently completed task.
+The [user interface](https://shiny.rstudio.com/articles/basics.html) shows the three parts explained previously.
 
 ```r
 ui <- fluidPage(
   actionButton("task", "Submit a task (5 seconds)"),
   textOutput("status"),
-  plotOutput("figure")
+  plotOutput("result")
 )
 ```
 
-The [server](https://shiny.rstudio.com/articles/basics.html) begins with reactive values and outputs for the random [phyllotaxis](https://en.wikipedia.org/wiki/Phyllotaxis) plot and the task status. In addition, `reactive_poll` controls when the app scans for results.
+The [server](https://shiny.rstudio.com/articles/basics.html) sets up a [local process controller](https://wlandau.github.io/crew/reference/crew_controller_local.html). The controller has 4 workers, and each worker automatically shuts down if 10 seconds pass without any task assignments. The `onStop()` statement says to terminate the controller when the app session terminates.
 
 ```r
 server <- function(input, output, session) {
-  reactive_result <- reactiveVal(ggplot())
-  reactive_status <- reactiveVal("No task submitted yet.")
-  reactive_poll <- reactiveVal(FALSE)
-  output$result <- renderPlot(reactive_result(), height = 600, width = 600)
-  output$status <- renderText(reactive_status())
-```
-
-Next, we start a `crew` controller with up to 4 workers and an idle time of 10 seconds. We choose the [local process launcher](https://wlandau.github.io/crew/reference/crew_class_launcher_local.html) below for this app, but we could have chosen the Sun Grid Engine (SGE) launcher from [`crew.cluster`](https://wlandau.github.io/crew.cluster/), a [controller group](https://wlandau.github.io/crew/articles/groups.html) with multiple launchers, or a [custom launcher](https://wlandau.github.io/crew/articles/plugins.html) for e.g. [Kubernetes](https://kubernetes.io). With `crew`, anyone can write a [custom launcher plugin](https://wlandau.github.io/crew/articles/plugins.html).
-
-```r
-  controller <- crew_controller_local(workers = 4, seconds_idle = 10)
+  controller <- crew::crew_controller_local(workers = 4, seconds_idle = 10)
   controller$start()
   onStop(function() controller$terminate())
 ```
 
-Every time the user presses the "Submit a task (5 seconds)" button, the app pushes a new task to the `crew` controller, and the task will start when a worker is available. We set `reactive_poll()` to `TRUE` to tell the app to scan for results in the `observe()` block covered next.
+The `task` object below is a Shiny extended task which accepts a promise object from the controller. The `crew` promise resolves when a task completes, and the `ExtendedTask` object efficiently manages a queue of such promises.^[For more on extended tasks, install the development version of Shiny and call `?shiny::ExtendedTask` to view the help file.]
+^[For more on `crew` promises, visit <https://wlandau.github.io/crew/articles/promises.html>.]
+
+```r
+  task <- ExtendedTask$new(function() controller$promise(mode = "one"))
+```
+
+The "Submit a task (5 seconds)" button pushes a new task to the controller and enqueues a new promise to asynchronously handle the result.
 
 ```r
   observeEvent(input$task, {
-    controller$push(
-      command = run_task(),
-      data = list(run_task = run_task),
-      packages = "aRtsy"
-    )
-    reactive_poll(TRUE)
+    controller$push(command = run_task(), data = list(run_task = run_task))
+    task$invoke()
   })
 ```
 
-At the bottom of `server()` is the crux of the app: the event loop that scans for results. The leading `req(reactive_poll())` ensures the loop only runs when results could come in, and `invalidateLater(millis = 100)` says to poll every 0.1 seconds when polling is activated.^[`controller$pop()` is inexpensive, especially when there are no workers to relaunch or results to collect. In practice, the polling interval is a balance between responsiveness and CPU usage, and it may not be 0.1 seconds for every app.] The `if()` statement decides what to do if the task threw an error. If the task succeeded, then the app shows the plot, updates the status, and resumes polling if needed. If the task failed, then the app reports the error message of the task as the status, and polling stops.
+Because of the Shiny extended task and the `crew` promise, the plot output automatically refreshes almost immediately after the task completes. 
 
 ```r
-  observe({
-    req(reactive_poll())
-    invalidateLater(millis = 100)
-    output <- controller$pop()
-    if (anyNA(output$error)) { # Task succeeded.
-      reactive_result(output$result[[1]])
-      reactive_status(status_message(n = length(controller$tasks)))
-      reactive_poll(controller$nonempty())
-    } else if (!is.null(output)) { # Task threw an error.
-      reactive_status(paste("Task error:", output$error))
-      reactive_poll(FALSE)
-    }
+  output$result <- renderPlot(task$result()$result[[1L]])
+```
+
+The text status periodically refreshes to show the current time and the number of tasks in progress. When you run the app, you will see the time tick away even as tasks and promises operate in the background.
+
+```r
+  output$status <- renderText({
+    input$task
+    task$status()
+    invalidateLater(millis = 1000)
+    paste(format(Sys.time()), "\nTasks in progress:", controller$unresolved())
   })
 }
 ```
@@ -158,28 +112,11 @@ shinyApp(ui = ui, server = server)
 See below for the complete `app.R` file.
 
 ```r
-library(crew)
 library(shiny)
-library(ggplot2)
-library(aRtsy)
 
 run_task <- function() {
   Sys.sleep(5)
-  canvas_phyllotaxis(
-    colors = colorPalette(name = "random", n = 3),
-    iterations = 1000,
-    angle = runif(n = 1, min = - 2 * pi, max = 2 * pi),
-    size = 1,
-    p = 1
-  )
-}
-
-status_message <- function(n) {
-  if (n > 0) {
-    paste(format(Sys.time()), "tasks in progress:", n)
-  } else {
-    "All tasks completed."
-  }
+  aRtsy::canvas_squares(colors = aRtsy::colorPalette("random-palette"))
 }
 
 ui <- fluidPage(
@@ -189,41 +126,29 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  # reactive values and outputs
-  reactive_result <- reactiveVal(ggplot())
-  reactive_status <- reactiveVal("No task submitted yet.")
-  reactive_poll <- reactiveVal(FALSE)
-  output$result <- renderPlot(reactive_result(), height = 600, width = 600)
-  output$status <- renderText(reactive_status())
-  
   # crew controller
-  controller <- crew_controller_local(workers = 4, seconds_idle = 10)
+  controller <- crew::crew_controller_local(workers = 4, seconds_idle = 10)
   controller$start()
   onStop(function() controller$terminate())
+
+  # extended task to get completed results from the controller
+  task <- ExtendedTask$new(function() controller$promise(mode = "one"))
   
-  # button to submit a task
+  # button to submit a crew task
   observeEvent(input$task, {
-    controller$push(
-      command = run_task(),
-      data = list(run_task = run_task),
-      packages = "aRtsy"
-    )
-    reactive_poll(TRUE)
+    controller$push(command = run_task(), data = list(run_task = run_task))
+    task$invoke()
   })
   
-  # event loop to collect finished tasks
-  observe({
-    req(reactive_poll())
-    invalidateLater(millis = 100)
-    output <- controller$pop()
-    if (anyNA(output$error)) { # Task succeeded.
-      reactive_result(output$result[[1]])
-      reactive_status(status_message(n = length(controller$tasks)))
-      reactive_poll(controller$nonempty())
-    } else if (!is.null(output)) { # Task threw an error.
-      reactive_status(paste("Task error:", output$error))
-      reactive_poll(FALSE)
-    }
+  # task result
+  output$result <- renderPlot(task$result()$result[[1L]])
+  
+  # time and task status
+  output$status <- renderText({
+    input$task
+    task$status()
+    invalidateLater(millis = 1000)
+    paste(format(Sys.time()), "\nTasks in progress:", controller$unresolved())
   })
 }
 

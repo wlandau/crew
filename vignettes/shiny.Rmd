@@ -19,7 +19,7 @@ vignette: >
 
 The simple example below has three interface elements: an action button, a plot output, and a text output. When you click the action button, a new 5-second task pushes to the `crew` controller. The plot output shows the random visualization returned from latest task.
 
-The text output continuously refreshes to show the current time and number of tasks in progress. Watch a 39-second video to see the app in action. You will see the time tick away even as tasks run in the background. In other words, the tasks run asynchronously and do not block the app session.
+The text output continuously refreshes to show the current time and number of tasks in progress. Watch the short video linked below to see the app in action. You will see the time tick away even as tasks run in the background. In other words, the tasks run asynchronously and do not block the app session.
 
 [![](./figures/app.png)](https://vimeo.com/927130003)
 
@@ -48,10 +48,13 @@ run_task <- function() {
 }
 ```
 
-The [user interface](https://shiny.rstudio.com/articles/basics.html) shows the three parts explained previously.
+The [user interface](https://shiny.rstudio.com/articles/basics.html) shows the three parts explained previously, along with HTML/CSS formatting.
 
 ```r
 ui <- fluidPage(
+  tags$br(),
+  tags$style("#status,#task{font-size:3em}"),
+  tags$style("#task{border:3px solid black}"),
   actionButton("task", "Submit a task (5 seconds)"),
   textOutput("status"),
   plotOutput("result")
@@ -96,7 +99,8 @@ The text status periodically refreshes to show the current time and the number o
     input$task
     task$status()
     invalidateLater(millis = 1000)
-    paste(format(Sys.time()), "\nTasks in progress:", controller$unresolved())
+    time <- format(Sys.time(), "%H:%M:%S")
+    paste("Time:", time, "|", "Running tasks:", controller$unresolved())
   })
 }
 ```
@@ -120,6 +124,9 @@ run_task <- function() {
 }
 
 ui <- fluidPage(
+  tags$br(),
+  tags$style("#status,#task{font-size:3em}"),
+  tags$style("#task{border:3px solid black}"),
   actionButton("task", "Submit a task (5 seconds)"),
   textOutput("status"),
   plotOutput("result")
@@ -148,7 +155,8 @@ server <- function(input, output, session) {
     input$task
     task$status()
     invalidateLater(millis = 1000)
-    paste(format(Sys.time()), "\nTasks in progress:", controller$unresolved())
+    time <- format(Sys.time(), "%H:%M:%S")
+    paste("Time:", time, "|", "Running tasks:", controller$unresolved())
   })
 }
 

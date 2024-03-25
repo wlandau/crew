@@ -1,5 +1,6 @@
-# crew 0.9.0.9001 (development)
+# crew 0.9.1
 
+* Rewrite the async Shiny vignette with `crew` promises and Shiny extended tasks (#157, @jcheng5).
 * Clarify the intent of `controller$promise(mode = "one")` in the vignette on promises (@jcheng5).
 * Implement an `error` argument in `pop()` which may help with integration with `ExtendedTask` (@jcheng5).
 * Handle task errors in the Shiny vignette (@jcheng5).

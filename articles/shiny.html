@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,193 +100,117 @@ Daniel Woodie</h4>
 <div class="section level2">
 <h2 id="about">About<a class="anchor" aria-label="anchor" href="#about"></a>
 </h2>
-<p>Shiny has revolutionized interactive web apps in R. However, because
-of the staggering breadth of possibilities it created, the official
-ecosystem still has unmet needs. In particular, long-running tasks are
-challenging because they may block the R session and cause the app to
-lag. Any degree of latency is detrimental because web app users expect
-instant responses. Long tasks should run asynchronously to free up the
-main process for user interactions.</p>
-<p>The <a href="https://rstudio.github.io/promises/" class="external-link"><code>promises</code></a>
-package is a popular solution for asynchronous programming in Shiny.
-With the help of <a href="https://future.futureverse.org/" class="external-link"><code>future</code></a>, it keeps
-the main process free and responsive. However, as <a href="https://rstudio.github.io/promises/articles/intro.html" class="external-link">its own
-documentation explains</a>, the <a href="https://rstudio.github.io/promises/" class="external-link"><code>promises</code></a>
-package focuses on apps with only a small number of specific
-bottlenecks. By design, it does not scale to the prodigious quantities
-of heavy tasks that industrial enterprise-level apps aim to farm out in
-production-level pipelines.</p>
-<p>By contrast, <code>crew</code> scales out easily, and its controller
-asynchronously manages all the tasks from a single convenient place.
-This vignette demonstrates scalable asynchronous programming with
-<code>crew</code> in Shiny.</p>
+<p><code>crew</code> is simple to use inside Shiny apps. Not only does
+<code>crew</code> bring parallel computing to a single app session, it
+elastically auto-scales worker processes to reduce the resource burden
+on other concurrent user sessions. And because of the <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html">centralized
+controller interface</a>, there is no need to manually loop through
+individual tasks, which is convenient for workloads with thousands of
+tasks.</p>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>We focus on the <code>crew</code>-powered Shiny app at <a href="https://wlandau.shinyapps.io/crew-shiny/" class="external-link uri">https://wlandau.shinyapps.io/crew-shiny/</a>. When it
-launches, it looks like this:</p>
-<p><img src="figures/open.png"></p>
-<p>When you click the “Submit a task (5 seconds)” button,
-<code>crew</code> runs a long task in the background. Here, the task is
-to wait 5 seconds and then generate a random <a href="https://en.wikipedia.org/wiki/Phyllotaxis" class="external-link">phyllotaxis</a> using
-the <a href="https://koenderks.github.io/aRtsy/" class="external-link"><code>aRtsy</code></a>
-package.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Machine learning and Bayesian data analysis have plenty
-of serious examples of long-running tasks.&lt;/p&gt;"><sup>1</sup></a>
-The app continuously refreshes the current time and the number of tasks
-in progress.</p>
-<p><img src="figures/submitted.png"></p>
-<p>As soon as a task completes, the app retrieves the result from the
-<code>crew</code> workers and plots the output.</p>
-<p><img src="figures/completed1.png"></p>
-<p>You can submit many more tasks than there are workers currently
-running. In the following screenshot, the app is only running 4 workers,
-but the queue has 9 tasks left.</p>
-<p><img src="figures/progress.png"></p>
-<p>Thanks to the efficient scheduling of <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a> in
-the backend, <code>crew</code> workers successfully complete all
-remaining 9 tasks. Because the app runs 4 workers, different plots may
-appear less than 5 seconds apart.</p>
-<p><img src="figures/completed2.png"></p>
+<p>The simple example below has three interface elements: an action
+button, a plot output, and a text output. When you click the action
+button, a new 5-second task pushes to the <code>crew</code> controller.
+The plot output shows the random visualization returned from latest
+task.</p>
+<p>The text output continuously refreshes to show the current time and
+number of tasks in progress. Watch a 39-second video to see the app in
+action. You will see the time tick away even as tasks run in the
+background. In other words, the tasks run asynchronously and do not
+block the app session.</p>
+<p><a href="https://vimeo.com/927130003" class="external-link"><img src="./figures/app.png"></a></p>
+</div>
+<div class="section level2">
+<h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
+</h2>
+<p>The example app uses extended tasks, which are only available in
+Shiny 1.8.0.9000 or above. If your installed version of Shiny is too
+low, you can upgrade to the development version with:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"rstudio/shiny"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="tutorial">Tutorial<a class="anchor" aria-label="anchor" href="#tutorial"></a>
 </h2>
-<p>The app depends on the following packages.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/crew/">crew</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.posit.co/" class="external-link">shiny</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://koenderks.github.io/aRtsy/" class="external-link">aRtsy</a></span><span class="op">)</span></span></code></pre></div>
-<p>Each task waits 5 seconds and then generates a random <a href="https://en.wikipedia.org/wiki/Phyllotaxis" class="external-link">phyllotaxis</a> <a href="https://ggplot2.tidyverse.org/" class="external-link"><code>ggplot</code></a> using the
-<a href="https://koenderks.github.io/aRtsy/reference/canvas_phyllotaxis.html" class="external-link"><code>canvas_phyllotaxis()</code></a>
-function from <a href="https://koenderks.github.io/aRtsy/" class="external-link"><code>aRtsy</code></a>.</p>
+<p>To begin, the app script loads Shiny.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.posit.co/" class="external-link">shiny</a></span><span class="op">)</span></span></code></pre></div>
+<p>The <code>run_task()</code> function waits 5 seconds and then
+generates a random <a href="https://koenderks.github.io/aRtsy/reference/canvas_squares.html" class="external-link"><code>aRtsy::canvas_squares()</code></a>
+plot.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">run_task</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
-<span>  <span class="fu">canvas_phyllotaxis</span><span class="op">(</span></span>
-<span>    colors <span class="op">=</span> <span class="fu">colorPalette</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"random"</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
-<span>    iterations <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>    angle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, min <span class="op">=</span> <span class="op">-</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span>, max <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span><span class="op">)</span>,</span>
-<span>    size <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>    p <span class="op">=</span> <span class="fl">1</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>A separate function generates status messages based on the number of
-tasks in progress.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">status_message</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">n</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="st">"tasks in progress:"</span>, <span class="va">n</span><span class="op">)</span></span>
-<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>    <span class="st">"All tasks completed."</span></span>
-<span>  <span class="op">}</span></span>
+<span>  <span class="fu">aRtsy</span><span class="fu">::</span><span class="fu">canvas_squares</span><span class="op">(</span>colors <span class="op">=</span> <span class="fu">aRtsy</span><span class="fu">::</span><span class="fu">colorPalette</span><span class="op">(</span><span class="st">"random-palette"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>The <a href="https://shiny.rstudio.com/articles/basics.html" class="external-link">user
-interface</a> has a button to submit a task, a text output with the
-status, and a plot with the result of the most recently completed
-task.</p>
+interface</a> shows the three parts explained previously.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="fu">fluidPage</span><span class="op">(</span></span>
 <span>  <span class="fu">actionButton</span><span class="op">(</span><span class="st">"task"</span>, <span class="st">"Submit a task (5 seconds)"</span><span class="op">)</span>,</span>
 <span>  <span class="fu">textOutput</span><span class="op">(</span><span class="st">"status"</span><span class="op">)</span>,</span>
-<span>  <span class="fu">plotOutput</span><span class="op">(</span><span class="st">"figure"</span><span class="op">)</span></span>
+<span>  <span class="fu">plotOutput</span><span class="op">(</span><span class="st">"result"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The <a href="https://shiny.rstudio.com/articles/basics.html" class="external-link">server</a> begins
-with reactive values and outputs for the random <a href="https://en.wikipedia.org/wiki/Phyllotaxis" class="external-link">phyllotaxis</a> plot
-and the task status. In addition, <code>reactive_poll</code> controls
-when the app scans for results.</p>
+<p>The <a href="https://shiny.rstudio.com/articles/basics.html" class="external-link">server</a> sets up
+a <a href="https://wlandau.github.io/crew/reference/crew_controller_local.html">local
+process controller</a>. The controller has 4 workers, and each worker
+automatically shuts down if 10 seconds pass without any task
+assignments. The <code>onStop()</code> statement says to terminate the
+controller when the app session terminates.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  reactive_result <span class="ot">&lt;-</span> <span class="fu">reactiveVal</span>(<span class="fu">ggplot</span>())</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  reactive_status <span class="ot">&lt;-</span> <span class="fu">reactiveVal</span>(<span class="st">"No task submitted yet."</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  reactive_poll <span class="ot">&lt;-</span> <span class="fu">reactiveVal</span>(<span class="cn">FALSE</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  output<span class="sc">$</span>result <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>(<span class="fu">reactive_result</span>(), <span class="at">height =</span> <span class="dv">600</span>, <span class="at">width =</span> <span class="dv">600</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  output<span class="sc">$</span>status <span class="ot">&lt;-</span> <span class="fu">renderText</span>(<span class="fu">reactive_status</span>())</span></code></pre></div>
-<p>Next, we start a <code>crew</code> controller with up to 4 workers
-and an idle time of 10 seconds. We choose the <a href="https://wlandau.github.io/crew/reference/crew_class_launcher_local.html">local
-process launcher</a> below for this app, but we could have chosen the
-Sun Grid Engine (SGE) launcher from <a href="https://wlandau.github.io/crew.cluster/"><code>crew.cluster</code></a>,
-a <a href="https://wlandau.github.io/crew/articles/groups.html">controller
-group</a> with multiple launchers, or a <a href="https://wlandau.github.io/crew/articles/plugins.html">custom
-launcher</a> for e.g. <a href="https://kubernetes.io" class="external-link">Kubernetes</a>.
-With <code>crew</code>, anyone can write a <a href="https://wlandau.github.io/crew/articles/plugins.html">custom
-launcher plugin</a>.</p>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  controller <span class="ot">&lt;-</span> crew<span class="sc">::</span><span class="fu">crew_controller_local</span>(<span class="at">workers =</span> <span class="dv">4</span>, <span class="at">seconds_idle =</span> <span class="dv">10</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  controller<span class="sc">$</span><span class="fu">start</span>()</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="fu">onStop</span>(<span class="cf">function</span>() controller<span class="sc">$</span><span class="fu">terminate</span>())</span></code></pre></div>
+<p>The <code>task</code> object below is a Shiny extended task which
+accepts a promise object from the controller. The <code>crew</code>
+promise resolves when a task completes, and the
+<code>ExtendedTask</code> object efficiently manages a queue of such
+promises.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;For more on extended tasks, install the development
+version of Shiny and call &lt;code&gt;?shiny::ExtendedTask&lt;/code&gt; to view the
+help file.&lt;/p&gt;"><sup>1</sup></a> <a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;For more on &lt;code&gt;crew&lt;/code&gt; promises, visit &lt;a href="https://wlandau.github.io/crew/articles/promises.html" class="uri"&gt;https://wlandau.github.io/crew/articles/promises.html&lt;/a&gt;.&lt;/p&gt;'><sup>2</sup></a></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">4</span>, seconds_idle <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span>  <span class="va">controller</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="fu">onStop</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="va">controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Every time the user presses the “Submit a task (5 seconds)” button,
-the app pushes a new task to the <code>crew</code> controller, and the
-task will start when a worker is available. We set
-<code>reactive_poll()</code> to <code>TRUE</code> to tell the app to
-scan for results in the <code>observe()</code> block covered next.</p>
+<code class="sourceCode R"><span>  <span class="va">task</span> <span class="op">&lt;-</span> <span class="va">ExtendedTask</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="va">controller</span><span class="op">$</span><span class="fu">promise</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"one"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The “Submit a task (5 seconds)” button pushes a new task to the
+controller and enqueues a new promise to asynchronously handle the
+result.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="fu">observeEvent</span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">task</span>, <span class="op">{</span></span>
-<span>    <span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span></span>
-<span>      command <span class="op">=</span> <span class="fu">run_task</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>      data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>run_task <span class="op">=</span> <span class="va">run_task</span><span class="op">)</span>,</span>
-<span>      packages <span class="op">=</span> <span class="st">"aRtsy"</span></span>
-<span>    <span class="op">)</span></span>
-<span>    <span class="fu">reactive_poll</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span>    <span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span>command <span class="op">=</span> <span class="fu">run_task</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>run_task <span class="op">=</span> <span class="va">run_task</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">task</span><span class="op">$</span><span class="fu">invoke</span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">}</span><span class="op">)</span></span></code></pre></div>
-<p>At the bottom of <code>server()</code> is the crux of the app: the
-event loop that scans for results. The leading
-<code>req(reactive_poll())</code> ensures the loop only runs when
-results could come in, and <code>invalidateLater(millis = 100)</code>
-says to poll every 0.1 seconds when polling is activated.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;&lt;code&gt;controller$pop()&lt;/code&gt; is inexpensive, especially
-when there are no workers to relaunch or results to collect. In
-practice, the polling interval is a balance between responsiveness and
-CPU usage, and it may not be 0.1 seconds for every app.&lt;/p&gt;"><sup>2</sup></a> The <code>if()</code>
-statement decides what to do if the task threw an error. If the task
-succeeded, then the app shows the plot, updates the status, and resumes
-polling if needed. If the task failed, then the app reports the error
-message of the task as the status, and polling stops.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>  <span class="fu">observe</span>({</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>    <span class="fu">req</span>(<span class="fu">reactive_poll</span>())</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="fu">invalidateLater</span>(<span class="at">millis =</span> <span class="dv">100</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    output <span class="ot">&lt;-</span> controller<span class="sc">$</span><span class="fu">pop</span>()</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">anyNA</span>(output<span class="sc">$</span>error)) { <span class="co"># Task succeeded.</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>      <span class="fu">reactive_result</span>(output<span class="sc">$</span>result[[<span class="dv">1</span>]])</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>      <span class="fu">reactive_status</span>(<span class="fu">status_message</span>(<span class="at">n =</span> <span class="fu">length</span>(controller<span class="sc">$</span>tasks)))</span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>      <span class="fu">reactive_poll</span>(controller<span class="sc">$</span><span class="fu">nonempty</span>())</span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(output)) { <span class="co"># Task threw an error.</span></span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>      <span class="fu">reactive_status</span>(<span class="fu">paste</span>(<span class="st">"Task error:"</span>, output<span class="sc">$</span>error))</span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>      <span class="fu">reactive_poll</span>(<span class="cn">FALSE</span>)</span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>    }</span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  })</span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+<p>Because of the Shiny extended task and the <code>crew</code> promise,
+the plot output automatically refreshes almost immediately after the
+task completes.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>  <span class="va">output</span><span class="op">$</span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">renderPlot</span><span class="op">(</span><span class="va">task</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">result</span><span class="op">[[</span><span class="fl">1L</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p>The text status periodically refreshes to show the current time and
+the number of tasks in progress. When you run the app, you will see the
+time tick away even as tasks and promises operate in the background.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>  output<span class="sc">$</span>status <span class="ot">&lt;-</span> <span class="fu">renderText</span>({</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>    input<span class="sc">$</span>task</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    task<span class="sc">$</span><span class="fu">status</span>()</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>    <span class="fu">invalidateLater</span>(<span class="at">millis =</span> <span class="dv">1000</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    <span class="fu">paste</span>(<span class="fu">format</span>(<span class="fu">Sys.time</span>()), <span class="st">"</span><span class="sc">\n</span><span class="st">Tasks in progress:"</span>, controller<span class="sc">$</span><span class="fu">unresolved</span>())</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  })</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
 <p>Finally, <code>shinyApp()</code> runs the app with the UI and server
 defined above.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">shinyApp</span><span class="op">(</span>ui <span class="op">=</span> <span class="va">ui</span>, server <span class="op">=</span> <span class="va">server</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="code">Code<a class="anchor" aria-label="anchor" href="#code"></a>
 </h2>
 <p>See below for the complete <code>app.R</code> file.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/crew/">crew</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.posit.co/" class="external-link">shiny</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://koenderks.github.io/aRtsy/" class="external-link">aRtsy</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.posit.co/" class="external-link">shiny</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">run_task</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
-<span>  <span class="fu">canvas_phyllotaxis</span><span class="op">(</span></span>
-<span>    colors <span class="op">=</span> <span class="fu">colorPalette</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"random"</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
-<span>    iterations <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>    angle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, min <span class="op">=</span> <span class="op">-</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span>, max <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span><span class="op">)</span>,</span>
-<span>    size <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>    p <span class="op">=</span> <span class="fl">1</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">status_message</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">n</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="st">"tasks in progress:"</span>, <span class="va">n</span><span class="op">)</span></span>
-<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>    <span class="st">"All tasks completed."</span></span>
-<span>  <span class="op">}</span></span>
+<span>  <span class="fu">aRtsy</span><span class="fu">::</span><span class="fu">canvas_squares</span><span class="op">(</span>colors <span class="op">=</span> <span class="fu">aRtsy</span><span class="fu">::</span><span class="fu">colorPalette</span><span class="op">(</span><span class="st">"random-palette"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="fu">fluidPage</span><span class="op">(</span></span>
@@ -296,41 +220,29 @@ defined above.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># reactive values and outputs</span></span>
-<span>  <span class="va">reactive_result</span> <span class="op">&lt;-</span> <span class="fu">reactiveVal</span><span class="op">(</span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="va">reactive_status</span> <span class="op">&lt;-</span> <span class="fu">reactiveVal</span><span class="op">(</span><span class="st">"No task submitted yet."</span><span class="op">)</span></span>
-<span>  <span class="va">reactive_poll</span> <span class="op">&lt;-</span> <span class="fu">reactiveVal</span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span>  <span class="va">output</span><span class="op">$</span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">renderPlot</span><span class="op">(</span><span class="fu">reactive_result</span><span class="op">(</span><span class="op">)</span>, height <span class="op">=</span> <span class="fl">600</span>, width <span class="op">=</span> <span class="fl">600</span><span class="op">)</span></span>
-<span>  <span class="va">output</span><span class="op">$</span><span class="va">status</span> <span class="op">&lt;-</span> <span class="fu">renderText</span><span class="op">(</span><span class="fu">reactive_status</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span>  </span>
 <span>  <span class="co"># crew controller</span></span>
-<span>  <span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">4</span>, seconds_idle <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span>  <span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">4</span>, seconds_idle <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="va">controller</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="fu">onStop</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="va">controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># extended task to get completed results from the controller</span></span>
+<span>  <span class="va">task</span> <span class="op">&lt;-</span> <span class="va">ExtendedTask</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="va">controller</span><span class="op">$</span><span class="fu">promise</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"one"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="co"># button to submit a task</span></span>
+<span>  <span class="co"># button to submit a crew task</span></span>
 <span>  <span class="fu">observeEvent</span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">task</span>, <span class="op">{</span></span>
-<span>    <span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span></span>
-<span>      command <span class="op">=</span> <span class="fu">run_task</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>      data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>run_task <span class="op">=</span> <span class="va">run_task</span><span class="op">)</span>,</span>
-<span>      packages <span class="op">=</span> <span class="st">"aRtsy"</span></span>
-<span>    <span class="op">)</span></span>
-<span>    <span class="fu">reactive_poll</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span>    <span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span>command <span class="op">=</span> <span class="fu">run_task</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>run_task <span class="op">=</span> <span class="va">run_task</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">task</span><span class="op">$</span><span class="fu">invoke</span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">}</span><span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="co"># event loop to collect finished tasks</span></span>
-<span>  <span class="fu">observe</span><span class="op">(</span><span class="op">{</span></span>
-<span>    <span class="fu">req</span><span class="op">(</span><span class="fu">reactive_poll</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="fu">invalidateLater</span><span class="op">(</span>millis <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
-<span>    <span class="va">output</span> <span class="op">&lt;-</span> <span class="va">controller</span><span class="op">$</span><span class="fu">pop</span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">anyNA</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">error</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># Task succeeded.</span></span>
-<span>      <span class="fu">reactive_result</span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">result</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span>      <span class="fu">reactive_status</span><span class="op">(</span><span class="fu">status_message</span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">controller</span><span class="op">$</span><span class="va">tasks</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>      <span class="fu">reactive_poll</span><span class="op">(</span><span class="va">controller</span><span class="op">$</span><span class="fu">nonempty</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># Task threw an error.</span></span>
-<span>      <span class="fu">reactive_status</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Task error:"</span>, <span class="va">output</span><span class="op">$</span><span class="va">error</span><span class="op">)</span><span class="op">)</span></span>
-<span>      <span class="fu">reactive_poll</span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
+<span>  <span class="co"># task result</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">renderPlot</span><span class="op">(</span><span class="va">task</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">result</span><span class="op">[[</span><span class="fl">1L</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># time and task status</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">status</span> <span class="op">&lt;-</span> <span class="fu">renderText</span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="va">input</span><span class="op">$</span><span class="va">task</span></span>
+<span>    <span class="va">task</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="fu">invalidateLater</span><span class="op">(</span>millis <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="st">"\nTasks in progress:"</span>, <span class="va">controller</span><span class="op">$</span><span class="fu">unresolved</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">}</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>

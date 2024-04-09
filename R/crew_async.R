@@ -150,11 +150,13 @@ crew_class_async <- R6::R6Class(
         ),
         mirai::mirai(
           .expr = expr_crew_eval_async,
-          command = command,
-          data = data,
-          packages = packages,
-          library = library,
-          url = self$url,
+          .args = list(
+            command = command,
+            data = data,
+            packages = packages,
+            library = library,
+            url = self$url
+          ),
           .compute = private$.instance
         )
       )

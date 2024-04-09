@@ -1,3 +1,7 @@
+# crew 0.9.1.9001 (development)
+
+* Use `.args` rather than `...` in `mirai::mirai()` to make sure arguments continue to be passed as local variables in `mirai` >= 0.13.1.9012.
+
 # crew 0.9.1
 
 * Rewrite the async Shiny vignette with `crew` promises and Shiny extended tasks (#157, @jcheng5).

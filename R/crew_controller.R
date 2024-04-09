@@ -81,15 +81,17 @@ crew_class_controller <- R6::R6Class(
     ) {
       task <- mirai::mirai(
         .expr = expr_crew_eval,
-        name = name,
-        command = command,
-        string = string,
-        data = data,
-        globals = globals,
-        seed = seed,
-        algorithm = algorithm,
-        packages = packages,
-        library = library,
+        .args = list(
+          name = name,
+          command = command,
+          string = string,
+          data = data,
+          globals = globals,
+          seed = seed,
+          algorithm = algorithm,
+          packages = packages,
+          library = library
+        ),
         .timeout = .timeout,
         .compute = private$.client$name
       )
@@ -433,15 +435,17 @@ crew_class_controller <- R6::R6Class(
       }
       task <- mirai::mirai(
         .expr = expr_crew_eval,
-        name = name,
-        command = command,
-        string = string,
-        data = data,
-        globals = globals,
-        seed = seed,
-        algorithm = algorithm,
-        packages = packages,
-        library = library,
+        .args = list(
+          name = name,
+          command = command,
+          string = string,
+          data = data,
+          globals = globals,
+          seed = seed,
+          algorithm = algorithm,
+          packages = packages,
+          library = library
+        ),
         .timeout = .timeout,
         .compute = private$.client$name
       )

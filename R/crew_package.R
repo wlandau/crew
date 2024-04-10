@@ -21,7 +21,7 @@
 #' @importFrom cli cli_progress_bar cli_progress_done cli_progress_update
 #' @importFrom data.table rbindlist
 #' @importFrom getip getip
-#' @importFrom later current_loop later
+#' @importFrom later create_loop current_loop destroy_loop exists_loop later
 #' @importFrom mirai call_mirai_ daemon daemons is_mirai is_mirai_error
 #'   mirai nextget nextstream saisei status
 #' @importFrom nanonext %~>% cv cv_value mclock msleep nng_error random

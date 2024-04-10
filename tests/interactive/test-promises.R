@@ -6,6 +6,7 @@ crew_test("interactive: promise(mode = \"one\") on basic controllers", {
     seconds_idle = 360
   )
   x$start()
+  expect_null(x$autoscaling)
   envir <- new.env(parent = emptyenv())
   # Test a good task.
   x$push("done")
@@ -18,6 +19,7 @@ crew_test("interactive: promise(mode = \"one\") on basic controllers", {
       envir$error <- conditionMessage(error)
     }
   )
+  expect_true(x$autoscaling)
   x$wait(mode = "one")
   expect_true(tibble::is_tibble(envir$value))
   expect_equal(nrow(envir$value), 1L)
@@ -39,6 +41,7 @@ crew_test("interactive: promise(mode = \"one\") on basic controllers", {
   expect_equal(envir$error, "error message")
   expect_null(envir$value)
   x$terminate()
+  expect_false(x$autoscaling)
 })
 
 crew_test("interactive: promise(mode = \"all\") on basic controllers", {

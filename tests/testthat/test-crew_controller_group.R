@@ -38,7 +38,9 @@ crew_test("crew_controller_group()", {
   for (index in seq_len(2)) {
     expect_null(x$controllers[[index]]$client$started)
   }
+  expect_false(x$started())
   x$start()
+  expect_true(x$started())
   expect_true(x$empty())
   expect_false(x$saturated())
   expect_true(x$empty(controllers = "a"))
@@ -136,6 +138,7 @@ crew_test("crew_controller_group()", {
   # cleanup
   handle <- x$controllers[[2]]$launcher$workers$handle[[1]]
   x$terminate()
+  expect_false(x$started())
   for (index in seq_len(2)) {
     expect_false(x$controllers[[index]]$client$started)
     crew_retry(

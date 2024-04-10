@@ -61,6 +61,9 @@ since the controller was started.}
 from the last call to \verb{map(error = "stop)}.}
 
 \item{\code{backlog}}{Character vector of explicitly backlogged tasks.}
+
+\item{\code{autoscaling}}{\code{TRUE} or \code{FALSE}, whether async \code{later}-based
+auto-scaling is currently running}
 }
 \if{html}{\out{</div>}}
 }
@@ -76,8 +79,10 @@ from the last call to \verb{map(error = "stop)}.}
 \item \href{#method-crew_class_controller-unpopped}{\code{crew_class_controller$unpopped()}}
 \item \href{#method-crew_class_controller-saturated}{\code{crew_class_controller$saturated()}}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
+\item \href{#method-crew_class_controller-started}{\code{crew_class_controller$started()}}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
+\item \href{#method-crew_class_controller-autoscale}{\code{crew_class_controller$autoscale()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
 \item \href{#method-crew_class_controller-walk}{\code{crew_class_controller$walk()}}
 \item \href{#method-crew_class_controller-map}{\code{crew_class_controller$map()}}
@@ -333,6 +338,31 @@ with the launcher.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-started"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-started}{}}}
+\subsection{Method \code{started()}}{
+Check whether the controller is started.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$started(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Actually checks whether the client is started.
+}
+
+\subsection{Returns}{
+\code{TRUE} if the controller is started, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-launch}{}}}
 \subsection{Method \code{launch()}}{
@@ -400,6 +430,28 @@ call \code{launch()} on the controller with the exact desired
 number of workers.
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-autoscale"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-autoscale}{}}}
+\subsection{Method \code{autoscale()}}{
+Run worker auto-scaling in a private \code{later} loop
+every \code{controller$client$seconds_interval} seconds.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$autoscale(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }
@@ -912,9 +964,8 @@ pop or collect one or more tasks.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$promise(
   mode = "one",
   seconds_interval = 0.1,
-  scale = TRUE,
-  throttle = TRUE,
-  loop = later::current_loop(),
+  scale = NULL,
+  throttle = NULL,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -954,23 +1005,13 @@ to any error callbacks registered with the promise.
 \code{later::later()} polling interval to asynchronously check if
 the promise can be resolved.}
 
-\item{\code{scale}}{Logical of length 1,
-whether to automatically call \code{scale()}
-to auto-scale workers to meet the demand of the task load.
-Scaling up on \code{pop()} may be important
-for transient or nearly transient workers that tend to drop off
-quickly after doing little work.
-See also the \code{throttle} argument.}
+\item{\code{scale}}{Deprecated on 2024-04-10 (version 0.9.1.9003)
+and no longer used. Now, \code{promise()} always turns on auto-scaling
+in a private \code{later} loop (if not already activated).}
 
-\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
-every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
-
-\item{\code{loop}}{A \code{later} event loop to assign the background async
-task that auto-scales workers and polls for resolved tasks.
-Can come from \code{later::current_loop()}, \code{later::global_loop()},
-\code{later::create_loop()}, or similar.}
+\item{\code{throttle}}{Deprecated on 2024-04-10 (version 0.9.1.9003)
+and no longer used. Now, \code{promise()} always turns on auto-scaling
+in a private \code{later} loop (if not already activated).}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

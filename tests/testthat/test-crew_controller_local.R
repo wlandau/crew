@@ -12,7 +12,9 @@ crew_test("crew_controller_local()", {
   })
   expect_silent(x$validate())
   expect_null(x$client$started)
+  expect_false(x$started())
   expect_null(x$summary())
+  expect_null(x$autoscaling)
   x$start()
   expect_true(x$empty())
   expect_false(x$saturated())
@@ -42,6 +44,7 @@ crew_test("crew_controller_local()", {
   )
   expect_equal(s$tasks, 0L)
   expect_true(x$client$started)
+  expect_true(x$started())
   # first task
   expect_equal(x$pushed, 0L)
   expect_equal(x$popped, 0L)
@@ -124,6 +127,7 @@ crew_test("crew_controller_local()", {
   handle <- x$launcher$workers$handle[[1]]
   x$terminate()
   expect_false(x$client$started)
+  expect_false(x$started())
   crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.1,

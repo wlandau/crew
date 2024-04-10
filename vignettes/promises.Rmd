@@ -52,13 +52,14 @@ task <- controller$push(
 )
 ```
 
-To create a promise specific to the task above, call `as.promise()` on the returned task object.
+To create a promise specific to the task above, call `as.promise()` on the returned task object, then call `controller$autoscale()` to tell the main event loop to periodically launch any necessary `crew` workers.
 
 ```r
 promise <- as.promise(task)
+controller$autoscale()
 ```
 
-To create a promise that resolves when *any* task in the controller completes, use the `promise()` method of the controller. The following promise prints the output value asynchronously if the task succeeds.
+To create a promise that resolves when *any* task in the controller completes, use the `promise()` method of the controller. `controller$promise()` always calls `controller$autoscale()` behind the scenes, so there is no need to call it manually in this case. The following promise prints the output value asynchronously if the task succeeds.
 
 ```r
 promise <- controller$promise(mode = "one") %...>%

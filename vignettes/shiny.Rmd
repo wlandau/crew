@@ -15,23 +15,191 @@ vignette: >
 
 `crew` is simple to use inside Shiny apps. Not only does `crew` bring parallel computing to a single app session, it elastically auto-scales worker processes to reduce the resource burden on other concurrent user sessions. And because of the [centralized controller interface](https://wlandau.github.io/crew/reference/crew_class_controller.html), there is no need to manually loop through individual tasks, which is convenient for workloads with thousands of tasks.
 
-# Example
+# Example: coin flips
+
+The example app below has an action button and two text outputs. When you click the action button, the app submits a batch of 20 tasks (simulated coin flips) to the `crew` controller. The text outputs refresh to show the current time, the number of upcoming coin flips, and running totals for heads, tails, and errors. 
+
+![](./figures/coins.png)
+
+## Tutorial
+
+We first load Shiny.
+
+```r
+library(shiny)
+```
+
+Our task is a simulated coin flip: wait a random number of seconds, then return a random `TRUE`/`FALSE` value. After many flips, the user may deduce that the coin is unfair.
+
+```r
+flip_coin <- function() {
+  Sys.sleep(runif(n = 1, min = 0.25, max = 2.5))
+  as.logical(rbinom(n = 1, size = 1, prob = 0.4))
+}
+```
+
+The UI invites the user to simulate multiple coin flips and try to figure out if the coin is fair.
+
+```r
+ui <- fluidPage(
+  div("Is the coin fair?"),
+  actionButton("task", "Flip 20 coins"),
+  textOutput("status"),
+  textOutput("outcomes")
+)
+```
+
+In the server, we start by creating a `crew` controller which will simulate coin flips in parallel across 4 workers.
+
+```r
+server <- function(input, output, session) {
+  controller <- crew::crew_controller_local(workers = 4, seconds_idle = 10)
+  controller$start()
+  onStop(function() controller$terminate())
+```
+
+We keep running totals of heads, tails, and task errors in a list of reactive values. 
+
+```r
+  flips <- reactiveValues(heads = 0, tails = 0, errors = 0)
+```
+
+We create a button to submit a batch of 20 coin flips. Each coin flip is a separate `crew` task.
+
+```r
+  observeEvent(input$task, {
+    controller$walk(
+      command = flip_coin(),
+      iterate = list(index = seq_len(20)),
+      data = list(flip_coin = flip_coin)
+    )
+  })
+```
+
+A text output refreshes every second to show the current time and the number of coin flips submitted but not yet completed.
+
+```r
+  output$status <- renderText({
+    invalidateLater(millis = 1000)
+    time <- format(Sys.time(), "%H:%M:%S")
+    sprintf("%s Flipping %s coins.", time, controller$unresolved())
+  })
+```
+
+Another text output automatically refreshes to show the total number of heads, tails, and errors from completed coin flips.
+
+```r
+  output$outcomes <- renderText({
+    pattern <- "%s heads %s tails %s errors"
+    sprintf(pattern, flips$heads, flips$tails, flips$errors)
+  })
+```
+
+We collect new coin flip results every second and update the totals in the reactive values list.
+
+```r
+  observe({
+    invalidateLater(millis = 1000)
+    results <- controller$collect()
+    req(results)
+    new_flips <- as.logical(results$result)
+    errors <- na.omit(as.character(results$error))
+    flips$heads <- flips$heads + sum(new_flips)
+    flips$tails <- flips$tails + sum(!new_flips)
+    flips$errors <- flips$errors + length(errors)
+  })
+}
+```
+
+Lastly, we run the app.
+
+```r
+shinyApp(ui = ui, server = server)
+```
+
+## Code
+
+See below for the complete `app.R` file.
+
+```r
+library(shiny)
+
+flip_coin <- function() {
+  Sys.sleep(runif(n = 1, min = 0.25, max = 2.5))
+  as.logical(rbinom(n = 1, size = 1, prob = 0.4))
+}
+
+ui <- fluidPage(
+  div("Is the coin fair?"),
+  actionButton("task", "Flip 20 coins"),
+  textOutput("status"),
+  textOutput("outcomes")
+)
+
+server <- function(input, output, session) {
+  # crew controller
+  controller <- crew::crew_controller_local(workers = 4, seconds_idle = 10)
+  controller$start()
+  onStop(function() controller$terminate())
+  
+  # Keep running totals of heads, tails, and task errors.
+  flips <- reactiveValues(heads = 0, tails = 0, errors = 0)
+  
+  # Button to submit a batch of coin flips.
+  observeEvent(input$task, {
+    controller$walk(
+      command = flip_coin(),
+      iterate = list(index = seq_len(20)),
+      data = list(flip_coin = flip_coin)
+    )
+  })
+  
+  # Print time and task status.
+  output$status <- renderText({
+    invalidateLater(millis = 1000)
+    time <- format(Sys.time(), "%H:%M:%S")
+    sprintf("%s Flipping %s coins.", time, controller$unresolved())
+  })
+  
+  # Print number of heads and tails.
+  output$outcomes <- renderText({
+    pattern <- "%s heads %s tails %s errors"
+    sprintf(pattern, flips$heads, flips$tails, flips$errors)
+  })
+  
+  # Collect coin flip results.
+  observe({
+    invalidateLater(millis = 1000)
+    results <- controller$collect()
+    req(results)
+    new_flips <- as.logical(results$result)
+    errors <- na.omit(as.character(results$error))
+    flips$heads <- flips$heads + sum(new_flips)
+    flips$tails <- flips$tails + sum(!new_flips)
+    flips$errors <- flips$errors + length(errors)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+# Example: generative art
 
 The simple example below has three interface elements: an action button, a plot output, and a text output. When you click the action button, a new 5-second task pushes to the `crew` controller. The plot output shows the random visualization returned from latest task.
 
 The text output continuously refreshes to show the current time and number of tasks in progress. Watch the short video linked below to see the app in action. You will see the time tick away even as tasks run in the background. In other words, the tasks run asynchronously and do not block the app session.
 
-[![](./figures/app.png)](https://vimeo.com/927130003)
+[![](./figures/art.png)](https://vimeo.com/927130003)
 
-# Prerequisites
+## Prerequisites
 
-The example app uses extended tasks, which are only available in Shiny 1.8.0.9000 or above. If your installed version of Shiny is too low, you can upgrade to the development version with:
+The example app uses extended tasks, which are only available in Shiny 1.8.1.1 or above. If your installed version of Shiny is too low, you can upgrade to the development version with:
 
 ```r
 remotes::install_github("rstudio/shiny")
 ```
 
-# Tutorial
+## Tutorial
 
 To begin, the app script loads Shiny.
 
@@ -111,7 +279,7 @@ Finally, `shinyApp()` runs the app with the UI and server defined above.
 shinyApp(ui = ui, server = server)
 ```
 
-# Code
+## Code
 
 See below for the complete `app.R` file.
 

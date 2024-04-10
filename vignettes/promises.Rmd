@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 library(crew)
 ```
 
-The [Shiny app vignette](https://wlandau.github.io/crew/articles/shiny.html) shows a simple approach to asynchronous Shiny apps which leverages Shiny extended tasks and `crew` promises. The example app relies on Shiny extended tasks and `crew` promises. This vignette explains how promises work in `crew`.^[For general information on promises in R, please visit <https://rstudio.github.io/promises/>.]
+The generative art example from the [Shiny app vignette](https://wlandau.github.io/crew/articles/shiny.html) shows a simple approach to asynchronous Shiny apps which leverages Shiny extended tasks and `crew` promises. The example app relies on Shiny extended tasks and `crew` promises. This vignette explains how promises work in `crew`.^[For general information on promises in R, please visit <https://rstudio.github.io/promises/>.]
 
 # Promises from `crew`
 

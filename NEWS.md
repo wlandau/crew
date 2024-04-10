@@ -1,6 +1,7 @@
-# crew 0.9.1.9001 (development)
+# crew 0.9.1.9002 (development)
 
 * Use `.args` rather than `...` in `mirai::mirai()` to make sure arguments continue to be passed as local variables in `mirai` >= 0.13.1.9012.
+* Expose the `later` loop in `controller$promise()`.
 
 # crew 0.9.1
 

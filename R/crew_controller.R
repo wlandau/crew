@@ -1138,6 +1138,10 @@ crew_class_controller <- R6::R6Class(
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
+    #' @param loop A `later` event loop to assign the background async
+    #'   task that auto-scales workers and polls for resolved tasks.
+    #'   Can come from `later::current_loop()`, `later::global_loop()`,
+    #'   `later::create_loop()`, or similar.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     promise = function(
@@ -1145,6 +1149,7 @@ crew_class_controller <- R6::R6Class(
       seconds_interval = 0.1,
       scale = TRUE,
       throttle = TRUE,
+      loop = later::current_loop(),
       controllers = NULL
     ) {
       # Tested in tests/interactive/test-promises.R.
@@ -1155,6 +1160,7 @@ crew_class_controller <- R6::R6Class(
         seconds_interval = seconds_interval,
         scale = scale,
         throttle = throttle,
+        loop = loop,
         controllers = controllers
       )
       # nocov end

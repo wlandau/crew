@@ -857,6 +857,7 @@ pop or collect one or more tasks.
   seconds_interval = 0.1,
   scale = TRUE,
   throttle = TRUE,
+  loop = later::current_loop(),
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -908,6 +909,11 @@ See also the \code{throttle} argument.}
 within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
+
+\item{\code{loop}}{A \code{later} event loop to assign the background async
+task that auto-scales workers and polls for resolved tasks.
+Can come from \code{later::current_loop()}, \code{later::global_loop()},
+\code{later::create_loop()}, or similar.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

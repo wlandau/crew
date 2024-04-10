@@ -13,6 +13,7 @@ controller_promise <- function(
   seconds_interval,
   scale,
   throttle,
+  loop,
   controllers
 ) {
   crew_assert(
@@ -69,7 +70,7 @@ controller_promise <- function(
         if (scale) {
           .subset2(controller, "scale")(throttle = throttle)
         }
-        later::later(poll, delay = seconds_interval)
+        later::later(poll, delay = seconds_interval, loop = loop)
       }
     }
     poll()

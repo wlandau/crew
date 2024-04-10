@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1.9003</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -149,13 +149,18 @@ first.</p>
 <span>  save_command <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>To create a promise specific to the task above, call
-<code><a href="https://rstudio.github.io/promises/reference/is.promise.html" class="external-link">as.promise()</a></code> on the returned task object.</p>
+<code><a href="https://rstudio.github.io/promises/reference/is.promise.html" class="external-link">as.promise()</a></code> on the returned task object, then call
+<code>controller$autoscale()</code> to tell the main event loop to
+periodically launch any necessary <code>crew</code> workers.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">promise</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/promises/reference/is.promise.html" class="external-link">as.promise</a></span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">promise</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/promises/reference/is.promise.html" class="external-link">as.promise</a></span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span>
+<span><span class="va">controller</span><span class="op">$</span><span class="fu">autoscale</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>To create a promise that resolves when <em>any</em> task in the
 controller completes, use the <code><a href="https://rstudio.github.io/promises/reference/promise.html" class="external-link">promise()</a></code> method of the
-controller. The following promise prints the output value asynchronously
-if the task succeeds.</p>
+controller. <code>controller$promise()</code> always calls
+<code>controller$autoscale()</code> behind the scenes, so there is no
+need to call it manually in this case. The following promise prints the
+output value asynchronously if the task succeeds.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">promise</span> <span class="op">&lt;-</span> <span class="va">controller</span><span class="op">$</span><span class="fu">promise</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"one"</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html" class="external-link">%...&gt;%</a></span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>result <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html" class="external-link">%...&gt;%</a></span></span>

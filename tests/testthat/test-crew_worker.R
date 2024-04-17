@@ -11,7 +11,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     dispatcher = TRUE,
     token = TRUE
   )
-  on.exit(mirai::daemons(n = NULL), add = TRUE)
+  on.exit(mirai::daemons(n = 0L), add = TRUE)
   on.exit(crew_test_sleep(), add = TRUE)
   m <- mirai::mirai(
     list(

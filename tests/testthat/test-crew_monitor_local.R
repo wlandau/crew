@@ -4,7 +4,7 @@ crew_test("monitor dispatchers", {
   expect_true(is.integer(x$dispatchers()))
   mirai::daemons(n = 1L, dispatcher = TRUE)
   on.exit({
-    mirai::daemons(n = NULL)
+    mirai::daemons(n = 0L)
     gc()
     crew_test_sleep()
   })
@@ -29,7 +29,7 @@ crew_test("monitor daemons", {
   first <- length(x$daemons())
   mirai::daemons(n = 1L)
   on.exit({
-    mirai::daemons(n = NULL)
+    mirai::daemons(n = 0L)
     gc()
     crew_test_sleep()
   })

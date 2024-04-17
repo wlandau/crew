@@ -287,7 +287,7 @@ crew_class_client <- R6::R6Class(
         )
       )
       # End dispatcher checks block 1/2.
-      mirai::daemons(n = NULL, .compute = private$.name)
+      mirai::daemons(n = 0L, .compute = private$.name)
       private$.relay$terminate()
       private$.started <- FALSE
       # Begin dispatcher checks block 2/2.

@@ -97,7 +97,7 @@ crew_class_async <- R6::R6Class(
       if (!self$asynchronous() || !self$started()) {
         return(invisible())
       }
-      mirai::daemons(n = 0L, .compute = private$.instance)
+      mirai::daemons(n = NULL, .compute = private$.instance)
       private$.instance <- NULL
       invisible()
     },

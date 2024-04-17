@@ -64,7 +64,6 @@
 <li>Add new controller methods <code>autoscale()</code> and <code>started()</code> to facilitate different kinds of Shiny apps.</li>
 <li>Deprecate the <code>scale</code> and <code>throttle</code> methods of <code>controller$promise()</code>. <code><a href="https://rstudio.github.io/promises/reference/promise.html" class="external-link">promise()</a></code> now always calls <code>autoscale()</code> to make sure one and only one auto-scaling loop is running asynchronously. Auto-scaling thus continues even after the promise resolves.</li>
 <li>Add a second example vignette that simulates coin flips.</li>
-<li>Use <code>daemons(n = NULL)</code> instead of <code>daemons(n = 0L)</code> to terminate connections to workers. This should avoid temporary file detritus in tests, and it could add extra assurance that workers terminate when the client terminates.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.1" id="crew-091">crew 0.9.1<a class="anchor" aria-label="anchor" href="#crew-091"></a></h2><p class="text-muted">CRAN release: 2024-03-25</p>

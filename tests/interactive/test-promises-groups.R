@@ -1,5 +1,5 @@
 # {later} async has a hard time inside functions that do not relinquish
-# the main event loop, so these tests need to run interactively.
+# the main event loop, so these tests need to run interactively line-by-line.
 crew_test("interactive: promise(mode = \"one\") on controller groups", {
   a <- crew_controller_local(
     name = "a",
@@ -104,5 +104,8 @@ crew_test("interactive: promise(mode = \"all\") on controller groups", {
   x$wait(mode = "all")
   expect_equal(envir$error, "error message")
   expect_null(envir$value)
+  expect_true(a$autoscaling)
+  x$descale()
+  expect_false(a$autoscaling)
   x$terminate()
 })

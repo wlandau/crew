@@ -83,6 +83,7 @@ auto-scaling is currently running}
 \item \href{#method-crew_class_controller-launch}{\code{crew_class_controller$launch()}}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
 \item \href{#method-crew_class_controller-autoscale}{\code{crew_class_controller$autoscale()}}
+\item \href{#method-crew_class_controller-descale}{\code{crew_class_controller$descale()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
 \item \href{#method-crew_class_controller-walk}{\code{crew_class_controller$walk()}}
 \item \href{#method-crew_class_controller-map}{\code{crew_class_controller$map()}}
@@ -442,6 +443,33 @@ Run worker auto-scaling in a private \code{later} loop
 every \code{controller$client$seconds_interval} seconds.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$autoscale(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Call \code{controller$descale()} to terminate the
+auto-scaling loop.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-descale"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-descale}{}}}
+\subsection{Method \code{descale()}}{
+Terminate the auto-scaling loop started by
+\code{controller$autoscale()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$descale(controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

@@ -361,6 +361,8 @@ crew_class_controller <- R6::R6Class(
     },
     #' @description Run worker auto-scaling in a private `later` loop
     #'   every `controller$client$seconds_interval` seconds.
+    #' @details Call `controller$descale()` to terminate the
+    #'   auto-scaling loop.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     #' @return `NULL` (invisibly).
@@ -381,6 +383,15 @@ crew_class_controller <- R6::R6Class(
       poll()
       invisible()
       # nocov end
+    },
+    #' @description Terminate the auto-scaling loop started by
+    #'   `controller$autoscale()`.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    #' @return `NULL` (invisibly).
+    descale = function(controllers = NULL) {
+      private$.autoscaling <- FALSE
+      invisible()
     },
     #' @description Push a task to the head of the task list.
     #' @return Invisibly return the `mirai` object of the pushed task.

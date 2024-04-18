@@ -1,7 +1,7 @@
 # crew 0.9.2
 
 * Use `.args` rather than `...` in `mirai::mirai()` to make sure arguments continue to be passed as local variables in `mirai` >= 0.13.1.9012.
-* Add new controller methods `autoscale()` and `started()` to facilitate different kinds of Shiny apps.
+* Add new controller methods `autoscale()`, `descale()`, and `started()` to facilitate different kinds of Shiny apps.
 * Deprecate the `scale` and `throttle` methods of `controller$promise()`. `promise()` now always calls `autoscale()` to make sure one and only one auto-scaling loop is running asynchronously. Auto-scaling thus continues even after the promise resolves.
 * Add a second example vignette that simulates coin flips.
 

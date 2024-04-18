@@ -342,6 +342,15 @@ crew_class_controller_group <- R6::R6Class(
       walk(control, ~.x$autoscale())
       # nocov end
     },
+    #' @description Terminate the auto-scaling loop started by
+    #'   `controller$autoscale()`.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    #' @return `NULL` (invisibly).
+    descale = function(controllers = NULL) {
+      control <- private$.select_controllers(controllers)
+      walk(control, ~.x$descale())
+    },
     #' @description Push a task to the head of the task list.
     #' @return Invisibly return the `mirai` object of the pushed task.
     #'   This allows you to interact with the task directly, e.g.

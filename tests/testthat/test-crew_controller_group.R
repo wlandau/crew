@@ -723,3 +723,11 @@ crew_test("group helper methods (non)empty, (un)resolved, unpopped", {
   expect_equal(x$unpopped(), 0L)
   x$terminate()
 })
+
+crew_test("descale", {
+  controller <- crew_controller_local()
+  x <- crew_controller_group(controller)
+  expect_null(controller$autoscaling)
+  x$descale()
+  expect_false(controller$autoscaling)
+})

@@ -135,6 +135,7 @@ auto-scaling is currently running</p></dd>
 <li><p><a href="#method-crew_class_controller-launch"><code>crew_class_controller$launch()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-scale"><code>crew_class_controller$scale()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-autoscale"><code>crew_class_controller$autoscale()</code></a></p></li>
+<li><p><a href="#method-crew_class_controller-descale"><code>crew_class_controller$descale()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-push"><code>crew_class_controller$push()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-walk"><code>crew_class_controller$walk()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-map"><code>crew_class_controller$map()</code></a></p></li>
@@ -514,14 +515,42 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
+<h4 id="details-8">Details<a class="anchor" aria-label="anchor" href="#details-8"></a></h4>
+<p>Call <code>controller$descale()</code> to terminate the
+auto-scaling loop.</p>
+</div>
+
+<div class="section">
 <h4 id="returns-12">Returns<a class="anchor" aria-label="anchor" href="#returns-12"></a></h4>
+<p><code>NULL</code> (invisibly).</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_controller-descale"></a><div class="section">
+<h3 id="method-descale-">Method <code>descale()</code><a class="anchor" aria-label="anchor" href="#method-descale-"></a></h3>
+<p>Terminate the auto-scaling loop started by
+<code>controller$autoscale()</code>.</p><div class="section">
+<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">descale</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>controllers</code></dt>
+<dd><p>Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-13">Returns<a class="anchor" aria-label="anchor" href="#returns-13"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_controller-push"></a><div class="section">
 <h3 id="method-push-">Method <code>push()</code><a class="anchor" aria-label="anchor" href="#method-push-"></a></h3>
 <p>Push a task to the head of the task list.</p><div class="section">
-<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
+<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span></span>
 <span>  <span class="va">command</span>,</span>
 <span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -541,7 +570,7 @@ compatible with the analogous method of controller groups.</p></dd>
 </div>
 
 <div class="section">
-<h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
+<h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>command</code></dt>
 <dd><p>Language object with R code to run.</p></dd>
 
@@ -642,7 +671,7 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-13">Returns<a class="anchor" aria-label="anchor" href="#returns-13"></a></h4>
+<h4 id="returns-14">Returns<a class="anchor" aria-label="anchor" href="#returns-14"></a></h4>
 <p>Invisibly return the <code>mirai</code> object of the pushed task.
 This allows you to interact with the task directly, e.g.
 to create a promise object with <code><a href="https://rstudio.github.io/promises/reference/is.promise.html" class="external-link">promises::as.promise()</a></code>.</p>
@@ -653,7 +682,7 @@ to create a promise object with <code><a href="https://rstudio.github.io/promise
 <p>Apply a single command to multiple inputs,
 and return control to the user without
 waiting for any task to complete.</p><div class="section">
-<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
+<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">walk</span><span class="op">(</span></span>
 <span>  <span class="va">command</span>,</span>
 <span>  <span class="va">iterate</span>,</span>
@@ -674,7 +703,7 @@ waiting for any task to complete.</p><div class="section">
 </div>
 
 <div class="section">
-<h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
+<h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>command</code></dt>
 <dd><p>Language object with R code to run.</p></dd>
 
@@ -789,13 +818,13 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="details-8">Details<a class="anchor" aria-label="anchor" href="#details-8"></a></h4>
+<h4 id="details-9">Details<a class="anchor" aria-label="anchor" href="#details-9"></a></h4>
 <p>In contrast to <code>walk()</code>, <code>map()</code> blocks the local R session
 and waits for all tasks to complete.</p>
 </div>
 
 <div class="section">
-<h4 id="returns-14">Returns<a class="anchor" aria-label="anchor" href="#returns-14"></a></h4>
+<h4 id="returns-15">Returns<a class="anchor" aria-label="anchor" href="#returns-15"></a></h4>
 <p>Invisibly returns a list of <code>mirai</code> task objects for the
 newly created tasks. The order of tasks in the list matches the
 order of data in the <code>iterate</code> argument.</p>
@@ -806,7 +835,7 @@ order of data in the <code>iterate</code> argument.</p>
 <p>Apply a single command to multiple inputs,
 wait for all tasks to complete,
 and return the results of all tasks.</p><div class="section">
-<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
+<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">map</span><span class="op">(</span></span>
 <span>  <span class="va">command</span>,</span>
 <span>  <span class="va">iterate</span>,</span>
@@ -831,7 +860,7 @@ and return the results of all tasks.</p><div class="section">
 </div>
 
 <div class="section">
-<h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
+<h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>command</code></dt>
 <dd><p>Language object with R code to run.</p></dd>
 
@@ -974,7 +1003,7 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="details-9">Details<a class="anchor" aria-label="anchor" href="#details-9"></a></h4>
+<h4 id="details-10">Details<a class="anchor" aria-label="anchor" href="#details-10"></a></h4>
 <p><code>map()</code> cannot be used unless all prior tasks are
 completed and popped. You may need to wait and then pop them
 manually. Alternatively, you can start over: either call
@@ -983,7 +1012,7 @@ create a new controller object entirely.</p>
 </div>
 
 <div class="section">
-<h4 id="returns-15">Returns<a class="anchor" aria-label="anchor" href="#returns-15"></a></h4>
+<h4 id="returns-16">Returns<a class="anchor" aria-label="anchor" href="#returns-16"></a></h4>
 <p>A <code>tibble</code> of results and metadata: one row per task
 and columns corresponding to the output of <code>pop()</code>.</p>
 </div>
@@ -991,7 +1020,7 @@ and columns corresponding to the output of <code>pop()</code>.</p>
 </div><p></p><hr><a id="method-crew_class_controller-pop"></a><div class="section">
 <h3 id="method-pop-">Method <code>pop()</code><a class="anchor" aria-label="anchor" href="#method-pop-"></a></h3>
 <p>Pop a completed task from the results data frame.</p><div class="section">
-<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
+<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">pop</span><span class="op">(</span></span>
 <span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  collect <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -1002,7 +1031,7 @@ and columns corresponding to the output of <code>pop()</code>.</p>
 </div>
 
 <div class="section">
-<h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
+<h4 id="arguments-16">Arguments<a class="anchor" aria-label="anchor" href="#arguments-16"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>scale</code></dt>
 <dd><p>Logical of length 1,
 whether to automatically call <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code>
@@ -1041,13 +1070,13 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="details-10">Details<a class="anchor" aria-label="anchor" href="#details-10"></a></h4>
+<h4 id="details-11">Details<a class="anchor" aria-label="anchor" href="#details-11"></a></h4>
 <p>If not task is currently completed, <code>pop()</code>
 will attempt to auto-scale workers as needed.</p>
 </div>
 
 <div class="section">
-<h4 id="returns-16">Returns<a class="anchor" aria-label="anchor" href="#returns-16"></a></h4>
+<h4 id="returns-17">Returns<a class="anchor" aria-label="anchor" href="#returns-17"></a></h4>
 <p>If there is no task to collect, return <code>NULL</code>. Otherwise,
 return a one-row <code>tibble</code> with the following columns.</p><ul><li><p><code>name</code>: the task name if given.</p></li>
 <li><p><code>command</code>: a character string with the R command if <code>save_command</code>
@@ -1078,7 +1107,7 @@ warning messages that the task may have generated, <code>NA</code> otherwise.</p
 <h3 id="method-collect-">Method <code>collect()</code><a class="anchor" aria-label="anchor" href="#method-collect-"></a></h3>
 <p>Pop all available task results and return them in a tidy
 <code>tibble</code>.</p><div class="section">
-<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
+<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">collect</span><span class="op">(</span></span>
 <span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  throttle <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -1087,7 +1116,7 @@ warning messages that the task may have generated, <code>NA</code> otherwise.</p
 </div>
 
 <div class="section">
-<h4 id="arguments-16">Arguments<a class="anchor" aria-label="anchor" href="#arguments-16"></a></h4>
+<h4 id="arguments-17">Arguments<a class="anchor" aria-label="anchor" href="#arguments-17"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>scale</code></dt>
 <dd><p>Logical of length 1,
 whether to automatically call <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code>
@@ -1109,7 +1138,7 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-17">Returns<a class="anchor" aria-label="anchor" href="#returns-17"></a></h4>
+<h4 id="returns-18">Returns<a class="anchor" aria-label="anchor" href="#returns-18"></a></h4>
 <p>A <code>tibble</code> of results and metadata of all resolved tasks,
 with one row per task.</p>
 </div>
@@ -1118,7 +1147,7 @@ with one row per task.</p>
 <h3 id="method-promise-">Method <code>promise()</code><a class="anchor" aria-label="anchor" href="#method-promise-"></a></h3>
 <p>Create a <code><a href="https://rstudio.github.io/promises/reference/promise.html" class="external-link">promises::promise()</a></code> object to asynchronously
 pop or collect one or more tasks.</p><div class="section">
-<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
+<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">promise</span><span class="op">(</span></span>
 <span>  mode <span class="op">=</span> <span class="st">"one"</span>,</span>
 <span>  seconds_interval <span class="op">=</span> <span class="fl">0.1</span>,</span>
@@ -1129,7 +1158,7 @@ pop or collect one or more tasks.</p><div class="section">
 </div>
 
 <div class="section">
-<h4 id="arguments-17">Arguments<a class="anchor" aria-label="anchor" href="#arguments-17"></a></h4>
+<h4 id="arguments-18">Arguments<a class="anchor" aria-label="anchor" href="#arguments-18"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>mode</code></dt>
 <dd><p>Character of length 1, what kind of promise to create.
 <code>mode</code> must be <code>"one"</code> or <code>"all"</code>. Details:</p><ul><li><p>If <code>mode</code> is <code>"one"</code>, then the promise is fulfilled (or rejected)
@@ -1184,7 +1213,7 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="details-11">Details<a class="anchor" aria-label="anchor" href="#details-11"></a></h4>
+<h4 id="details-12">Details<a class="anchor" aria-label="anchor" href="#details-12"></a></h4>
 <p>Please be aware that <code>pop()</code> or <code>collect()</code> will happen
 asynchronously at a some unpredictable time after the promise object
 is created, even if your local R process appears to be doing
@@ -1194,7 +1223,7 @@ surprising in other situations.</p>
 </div>
 
 <div class="section">
-<h4 id="returns-18">Returns<a class="anchor" aria-label="anchor" href="#returns-18"></a></h4>
+<h4 id="returns-19">Returns<a class="anchor" aria-label="anchor" href="#returns-19"></a></h4>
 <p>A <code><a href="https://rstudio.github.io/promises/reference/promise.html" class="external-link">promises::promise()</a></code> object whose eventual value will
 be a <code>tibble</code> with results from one or more popped tasks.
 If <code>mode = "one"</code>, only one task is popped and returned (one row).
@@ -1206,7 +1235,7 @@ tasks to pop).</p>
 </div><p></p><hr><a id="method-crew_class_controller-wait"></a><div class="section">
 <h3 id="method-wait-">Method <code>wait()</code><a class="anchor" aria-label="anchor" href="#method-wait-"></a></h3>
 <p>Wait for tasks.</p><div class="section">
-<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
+<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span></span>
 <span>  mode <span class="op">=</span> <span class="st">"all"</span>,</span>
 <span>  seconds_interval <span class="op">=</span> <span class="fl">0.5</span>,</span>
@@ -1218,7 +1247,7 @@ tasks to pop).</p>
 </div>
 
 <div class="section">
-<h4 id="arguments-18">Arguments<a class="anchor" aria-label="anchor" href="#arguments-18"></a></h4>
+<h4 id="arguments-19">Arguments<a class="anchor" aria-label="anchor" href="#arguments-19"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>mode</code></dt>
 <dd><p>Character of length 1: <code>"all"</code> to wait for all tasks to
 complete, <code>"one"</code> to wait for a single task to complete.</p></dd>
@@ -1254,7 +1283,7 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="details-12">Details<a class="anchor" aria-label="anchor" href="#details-12"></a></h4>
+<h4 id="details-13">Details<a class="anchor" aria-label="anchor" href="#details-13"></a></h4>
 <p>The <code>wait()</code> method blocks the calling R session and
 repeatedly auto-scales workers for tasks that need them.
 The function runs until it either times out or the condition
@@ -1262,7 +1291,7 @@ in <code>mode</code> is met.</p>
 </div>
 
 <div class="section">
-<h4 id="returns-19">Returns<a class="anchor" aria-label="anchor" href="#returns-19"></a></h4>
+<h4 id="returns-20">Returns<a class="anchor" aria-label="anchor" href="#returns-20"></a></h4>
 <p>A logical of length 1, invisibly. <code>TRUE</code> if the condition
 in <code>mode</code> was met, <code>FALSE</code> otherwise.</p>
 </div>
@@ -1270,12 +1299,12 @@ in <code>mode</code> was met, <code>FALSE</code> otherwise.</p>
 </div><p></p><hr><a id="method-crew_class_controller-push_backlog"></a><div class="section">
 <h3 id="method-push-backlog-">Method <code>push_backlog()</code><a class="anchor" aria-label="anchor" href="#method-push-backlog-"></a></h3>
 <p>Push the name of a task to the backlog.</p><div class="section">
-<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
+<h4 id="usage-21">Usage<a class="anchor" aria-label="anchor" href="#usage-21"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">push_backlog</span><span class="op">(</span><span class="va">name</span>, controller <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-19">Arguments<a class="anchor" aria-label="anchor" href="#arguments-19"></a></h4>
+<h4 id="arguments-20">Arguments<a class="anchor" aria-label="anchor" href="#arguments-20"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>Character of length 1 with the task name to push to
 the backlog.</p></dd>
@@ -1289,13 +1318,13 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="details-13">Details<a class="anchor" aria-label="anchor" href="#details-13"></a></h4>
+<h4 id="details-14">Details<a class="anchor" aria-label="anchor" href="#details-14"></a></h4>
 <p><code>pop_backlog()</code> pops the tasks that can be pushed
 without saturating the controller.</p>
 </div>
 
 <div class="section">
-<h4 id="returns-20">Returns<a class="anchor" aria-label="anchor" href="#returns-20"></a></h4>
+<h4 id="returns-21">Returns<a class="anchor" aria-label="anchor" href="#returns-21"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
@@ -1303,31 +1332,8 @@ without saturating the controller.</p>
 <h3 id="method-pop-backlog-">Method <code>pop_backlog()</code><a class="anchor" aria-label="anchor" href="#method-pop-backlog-"></a></h3>
 <p>Pop the task names from the head of the backlog which
 can be pushed without saturating the controller.</p><div class="section">
-<h4 id="usage-21">Usage<a class="anchor" aria-label="anchor" href="#usage-21"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">pop_backlog</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-20">Arguments<a class="anchor" aria-label="anchor" href="#arguments-20"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>controllers</code></dt>
-<dd><p>Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.</p></dd>
-
-
-</dl><p></p></div>
-</div>
-<div class="section">
-<h4 id="returns-21">Returns<a class="anchor" aria-label="anchor" href="#returns-21"></a></h4>
-<p>Character vector of task names which can be pushed to the
-controller without saturating it. If the controller is saturated,
-<code>character(0L)</code> is returned.</p>
-</div>
-
-</div><p></p><hr><a id="method-crew_class_controller-summary"></a><div class="section">
-<h3 id="method-summary-">Method <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code><a class="anchor" aria-label="anchor" href="#method-summary-"></a></h3>
-<p>Summarize the workers and tasks of the controller.</p><div class="section">
 <h4 id="usage-22">Usage<a class="anchor" aria-label="anchor" href="#usage-22"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">pop_backlog</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -1341,6 +1347,29 @@ compatible with the analogous method of controller groups.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-22">Returns<a class="anchor" aria-label="anchor" href="#returns-22"></a></h4>
+<p>Character vector of task names which can be pushed to the
+controller without saturating it. If the controller is saturated,
+<code>character(0L)</code> is returned.</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_controller-summary"></a><div class="section">
+<h3 id="method-summary-">Method <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code><a class="anchor" aria-label="anchor" href="#method-summary-"></a></h3>
+<p>Summarize the workers and tasks of the controller.</p><div class="section">
+<h4 id="usage-23">Usage<a class="anchor" aria-label="anchor" href="#usage-23"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-22">Arguments<a class="anchor" aria-label="anchor" href="#arguments-22"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>controllers</code></dt>
+<dd><p>Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-23">Returns<a class="anchor" aria-label="anchor" href="#returns-23"></a></h4>
 <p>A data frame of summary statistics on the workers and tasks.
 It has one row per worker websocket and the following columns:</p><ul><li><p><code>controller</code>: name of the controller.
 .  * <code>worker</code>: integer index of the worker.</p></li>
@@ -1364,12 +1393,12 @@ is actually the number of <em>tasks</em>, not the number of warnings.
 </div><p></p><hr><a id="method-crew_class_controller-terminate"></a><div class="section">
 <h3 id="method-terminate-">Method <code>terminate()</code><a class="anchor" aria-label="anchor" href="#method-terminate-"></a></h3>
 <p>Terminate the workers and the <code>mirai</code> client.</p><div class="section">
-<h4 id="usage-23">Usage<a class="anchor" aria-label="anchor" href="#usage-23"></a></h4>
+<h4 id="usage-24">Usage<a class="anchor" aria-label="anchor" href="#usage-24"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-22">Arguments<a class="anchor" aria-label="anchor" href="#arguments-22"></a></h4>
+<h4 id="arguments-23">Arguments<a class="anchor" aria-label="anchor" href="#arguments-23"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>controllers</code></dt>
 <dd><p>Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.</p></dd>
@@ -1378,7 +1407,7 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-23">Returns<a class="anchor" aria-label="anchor" href="#returns-23"></a></h4>
+<h4 id="returns-24">Returns<a class="anchor" aria-label="anchor" href="#returns-24"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 

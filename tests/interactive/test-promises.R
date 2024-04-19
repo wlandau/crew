@@ -11,7 +11,7 @@ crew_test("interactive: promise(mode = \"one\") on basic controllers", {
   # Test a good task.
   x$push("done")
   promise <- promises::then(
-    x$promise(mode = "one"),
+    suppressWarnings(x$promise(mode = "one")),
     onFulfilled = function(value) {
       envir$value <- value
     },
@@ -29,7 +29,7 @@ crew_test("interactive: promise(mode = \"one\") on basic controllers", {
   # Test an errored task.
   x$push(stop("error message"))
   promise <- promises::then(
-    x$promise(mode = "one"),
+    suppressWarnings(x$promise(mode = "one")),
     onFulfilled = function(value) {
       envir$value <- value
     },
@@ -56,7 +56,7 @@ crew_test("interactive: promise(mode = \"all\") on basic controllers", {
   envir <- new.env(parent = emptyenv())
   # Test on good tasks.
   promise <- promises::then(
-    x$promise(mode = "all"),
+    suppressWarnings(x$promise(mode = "all")),
     onFulfilled = function(value) {
       envir$value <- value
     },
@@ -77,7 +77,7 @@ crew_test("interactive: promise(mode = \"all\") on basic controllers", {
   x$push("good")
   x$push(stop("error message"))
   promise <- promises::then(
-    x$promise(mode = "all"),
+    suppressWarnings(x$promise(mode = "all")),
     onFulfilled = function(value) {
       envir$value <- value
     },

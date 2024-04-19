@@ -353,7 +353,7 @@ shinyApp(ui = ui, server = server)
 
 # Coin flip alternative: `promises_all()`
 
-The coin flip app spends a lot of effort churning through every single coin flip as soon as it completes. There are workarounds to reduce client-side overhead from thousands of flips. For example, you can use [`promises::promise_all()`](https://rstudio.github.io/promises/reference/promise_all.html) to trigger reactives only when an entire batch of 1000 flips completes. The server only needs a slight modification:
+The coin flip app spends a lot of effort churning through every single coin flip as soon as it completes. There are workarounds to reduce client-side overhead from thousands of flips. For example, you can use [`promises::promise_all()`](https://rstudio.github.io/promises/reference/promise_all.html) to trigger reactive expressions only when an entire batch of 1000 flips completes. The server only needs a slight modification:
 
 ```r
   cue <- ExtendedTask$new(func = promises::promise_all)

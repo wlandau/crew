@@ -76,7 +76,7 @@ crew_test("controller walk()", {
   )
 })
 
-crew_test("controller collect()", {
+crew_test("controller collect() success", {
   skip_on_cran()
   skip_on_os("windows")
   on.exit({
@@ -94,6 +94,64 @@ crew_test("controller collect()", {
   expect_equal(nrow(out), 2L)
   expect_equal(as.character(out$result), rep("done", 2))
   expect_null(x$collect())
+  expect_crew_error(x$collect(error = "bad"))
+})
+
+crew_test("controller collect() silent error", {
+  skip_on_cran()
+  skip_on_os("windows")
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x <- crew_controller_local(workers = 1L, seconds_idle = 30L)
+  x$start()
+  x$push("success")
+  x$push(stop("failure 1"))
+  x$push(stop("failure 2"))
+  x$wait(mode = "all")
+  expect_silent(out <- x$collect(error = "silent"))
+  expect_true("failure 1" %in% out$error)
+})
+
+crew_test("controller collect() error as warning", {
+  skip_on_cran()
+  skip_on_os("windows")
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x <- crew_controller_local(workers = 1L, seconds_idle = 30L)
+  x$start()
+  x$push("success")
+  x$push(stop("failure 1"))
+  x$push(stop("failure 2"))
+  x$wait(mode = "all")
+  suppressWarnings(
+    expect_warning(x$collect(error = "warn"), class = "crew_warning")
+  )
+})
+
+crew_test("controller collect() stop on error", {
+  skip_on_cran()
+  skip_on_os("windows")
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x <- crew_controller_local(workers = 1L, seconds_idle = 30L)
+  x$start()
+  x$push("success")
+  x$push(stop("failure 1"))
+  x$push(stop("failure 2"))
+  x$wait(mode = "all")
+  expect_crew_error(x$collect(error = "stop"))
 })
 
 crew_test("controller map() works", {

@@ -399,6 +399,66 @@ crew_test("controller group collect() with two active controllers", {
   expect_null(x$collect())
 })
 
+crew_test("controller group collect() silent error", {
+  skip_on_cran()
+  skip_on_os("windows")
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  a <- crew_controller_local(workers = 1L, seconds_idle = 30L)
+  x <- crew_controller_group(a)
+  x$start()
+  x$push("success")
+  x$push(stop("failure 1"))
+  x$push(stop("failure 2"))
+  x$wait(mode = "all")
+  expect_silent(out <- x$collect(error = "silent"))
+  expect_true("failure 1" %in% out$error)
+})
+
+crew_test("controller group collect() error as warning", {
+  skip_on_cran()
+  skip_on_os("windows")
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  a <- crew_controller_local(workers = 1L, seconds_idle = 30L)
+  x <- crew_controller_group(a)
+  x$start()
+  x$push("success")
+  x$push(stop("failure 1"))
+  x$push(stop("failure 2"))
+  x$wait(mode = "all")
+  suppressWarnings(
+    expect_warning(x$collect(error = "warn"), class = "crew_warning")
+  )
+})
+
+crew_test("controller group collect() stop on error", {
+  skip_on_cran()
+  skip_on_os("windows")
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  a <- crew_controller_local(workers = 1L, seconds_idle = 30L)
+  x <- crew_controller_group(a)
+  x$start()
+  x$push("success")
+  x$push(stop("failure 1"))
+  x$push(stop("failure 2"))
+  x$wait(mode = "all")
+  expect_crew_error(x$collect(error = "stop"))
+})
+
 crew_test("controller group map() works", {
   skip_on_cran()
   skip_on_os("windows")

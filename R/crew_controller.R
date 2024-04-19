@@ -1018,19 +1018,19 @@ crew_class_controller <- R6::R6Class(
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
-    #' @param error Character of length 1, choice of action if
+    #' @param error `NULL` or character of length 1, choice of action if
     #'   the popped task threw an error. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
     #'     a value.
     #'   * `"warn"`: throw a warning.
-    #'   * `"silent"`: do nothing special.
+    #'   * `NULL` or `"silent"`: do not react to errors.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop = function(
       scale = TRUE,
       collect = NULL,
       throttle = TRUE,
-      error = "silent",
+      error = NULL,
       controllers = NULL
     ) {
       crew_deprecate(
@@ -1043,6 +1043,16 @@ crew_class_controller <- R6::R6Class(
         skip_cran = TRUE,
         frequency = "once"
       )
+      if (!is.null(error)) {
+        crew_assert(
+          error,
+          is.character(.),
+          !anyNA(.),
+          nzchar(.),
+          length(.) == 1L,
+          error %in% c("stop", "warn", "silent")
+        )
+      }
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
       }
@@ -1091,22 +1101,21 @@ crew_class_controller <- R6::R6Class(
         return(out)
       }
       # nocov end
-      error_message <- .subset2(out, "error")
       on.exit({
         index <- .subset2(out, "worker")
         private$.log$tasks[index] <- .subset2(log, "tasks")[index] + 1L
         private$.log$seconds[index] <- .subset2(log, "seconds")[index] +
           .subset2(out, "seconds")
         private$.log$errors[index] <- .subset2(log, "errors")[index] +
-          !anyNA(error_message)
+          !anyNA(.subset2(out, "error"))
         private$.log$warnings[index] <- .subset2(log, "warnings")[index] +
           !anyNA(.subset2(out, "warnings"))
       }, add = TRUE)
-      if (!anyNA(error_message)) {
+      if (!is.null(error) && !anyNA(.subset2(out, "error"))) {
         if (identical(error, "stop")) {
-          crew_error(message = error_message)
+          crew_error(message = .subset2(out, "error"))
         } else if (identical(error, "warn")) {
-          crew_warning(message = error_message)
+          crew_warning(message = .subset2(out, "error"))
         }
       }
       out
@@ -1114,7 +1123,8 @@ crew_class_controller <- R6::R6Class(
     #' @description Pop all available task results and return them in a tidy
     #'   `tibble`.
     #' @return A `tibble` of results and metadata of all resolved tasks,
-    #'   with one row per task.
+    #'   with one row per task. Returns `NULL` if there are no tasks
+    #'   to collect.
     #' @param scale Logical of length 1,
     #'   whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
@@ -1122,12 +1132,23 @@ crew_class_controller <- R6::R6Class(
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
+    #' @param error `NULL` or character of length 1, choice of action if
+    #'   the popped task threw an error. Possible values:
+    #'   * `"stop"`: throw an error in the main R session instead of returning
+    #'     a value.
+    #'   * `"warn"`: throw a warning.
+    #'   * `NULL` or `"silent"`: do not react to errors.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    collect = function(scale = TRUE, throttle = TRUE, controllers = NULL) {
+    collect = function(
+      scale = TRUE,
+      throttle = TRUE,
+      error = NULL,
+      controllers = NULL
+    ) {
       pop <- .subset2(self, "pop")
       results <- list()
-      while (!is.null(result <- pop(scale = FALSE))) {
+      while (!is.null(result <- pop(scale = FALSE, error = error))) {
         results[[length(results) + 1L]] <- result
       }
       out <- lapply(results, monad_tibble)

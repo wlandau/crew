@@ -841,7 +841,7 @@ Pop a completed task from the results data frame.
   scale = TRUE,
   collect = NULL,
   throttle = TRUE,
-  error = "silent",
+  error = NULL,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -860,13 +860,13 @@ within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
-\item{\code{error}}{Character of length 1, choice of action if
+\item{\code{error}}{\code{NULL} or character of length 1, choice of action if
 the popped task threw an error. Possible values:
 \itemize{
 \item \code{"stop"}: throw an error in the main R session instead of returning
 a value.
 \item \code{"warn"}: throw a warning.
-\item \code{"silent"}: do nothing special.
+\item \code{NULL} or \code{"silent"}: do not react to errors.
 }}
 
 \item{\code{controllers}}{Character vector of controller names.
@@ -890,6 +890,7 @@ Pop all available task results and return them in a tidy
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(
   scale = TRUE,
   throttle = TRUE,
+  error = NULL,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -905,6 +906,15 @@ to auto-scale workers to meet the demand of the task load.}
 within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
+
+\item{\code{error}}{\code{NULL} or character of length 1, choice of action if
+the popped task threw an error. Possible values:
+\itemize{
+\item \code{"stop"}: throw an error in the main R session instead of returning
+a value.
+\item \code{"warn"}: throw a warning.
+\item \code{NULL} or \code{"silent"}: do not react to errors.
+}}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}

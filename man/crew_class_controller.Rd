@@ -874,7 +874,7 @@ Pop a completed task from the results data frame.
   scale = TRUE,
   collect = NULL,
   throttle = TRUE,
-  error = "silent",
+  error = NULL,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -897,13 +897,13 @@ within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
-\item{\code{error}}{Character of length 1, choice of action if
+\item{\code{error}}{\code{NULL} or character of length 1, choice of action if
 the popped task threw an error. Possible values:
 \itemize{
 \item \code{"stop"}: throw an error in the main R session instead of returning
 a value.
 \item \code{"warn"}: throw a warning.
-\item \code{"silent"}: do nothing special.
+\item \code{NULL} or \code{"silent"}: do not react to errors.
 }}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
@@ -956,6 +956,7 @@ Pop all available task results and return them in a tidy
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$collect(
   scale = TRUE,
   throttle = TRUE,
+  error = NULL,
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -972,6 +973,15 @@ within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
+\item{\code{error}}{\code{NULL} or character of length 1, choice of action if
+the popped task threw an error. Possible values:
+\itemize{
+\item \code{"stop"}: throw an error in the main R session instead of returning
+a value.
+\item \code{"warn"}: throw a warning.
+\item \code{NULL} or \code{"silent"}: do not react to errors.
+}}
+
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
 }
@@ -979,7 +989,8 @@ compatible with the analogous method of controller groups.}
 }
 \subsection{Returns}{
 A \code{tibble} of results and metadata of all resolved tasks,
-with one row per task.
+with one row per task. Returns \code{NULL} if there are no tasks
+to collect.
 }
 }
 \if{html}{\out{<hr>}}

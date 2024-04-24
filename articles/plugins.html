@@ -184,9 +184,7 @@ A handle can be any kind of R object: a process ID, a job name, an
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p>The following is a custom custom launcher class whose workers are
-local R processes on Unix-like systems.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;See &lt;a href="https://github.com/wlandau/crew/blob/main/tests/local/test-launcher-system2.R" class="external-link"&gt;&lt;code&gt;tests/local/test-launcher-system2.R&lt;/code&gt;&lt;/a&gt;
-for an example launcher without a &lt;code&gt;termiante_worker()&lt;/code&gt;
-method.&lt;/p&gt;'><sup>1</sup></a></p>
+local R processes on Unix-like systems.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">custom_launcher_class</span> <span class="op">&lt;-</span> <span class="fu">R6</span><span class="fu">::</span><span class="kw"><a href="https://r6.r-lib.org/reference/R6Class.html" class="external-link">R6Class</a></span><span class="op">(</span></span>
 <span>  classname <span class="op">=</span> <span class="st">"custom_launcher_class"</span>,</span>
@@ -645,7 +643,6 @@ viewing CloudWatch logs.</p>
 <span><span class="va">monitor</span><span class="op">$</span><span class="fu">workers</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; integer(0)</span></span></code></pre></div>
 </div>
-
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
 </div>

@@ -1,3 +1,8 @@
+# crew 0.9.2.9000
+
+* Deprecate native `crew` promises in favor of native event-driven promises in `mirai` (#162).
+* Update the `shiny.Rmd` and `promises.Rmd` vignette to recommend native event-driven `mirai` promises (#162).
+
 # crew 0.9.2
 
 * Use `.args` rather than `...` in `mirai::mirai()` to make sure arguments continue to be passed as local variables in `mirai` >= 0.13.1.9012.

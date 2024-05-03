@@ -17,13 +17,10 @@ vignette: >
 
 # Prerequisites
 
-The example app requires `shiny >= 1.8.1.1`, `mirai >= 0.13.2.9004`, and `nanonext >= 0.13.6.9004`. Run the following in R to upgrade your versions of these packages.
+The example app requires `shiny >= 1.8.1.1`, `mirai >= 1.0.0`, and `nanonext >= 1.0.0`. Run the following in R to upgrade your versions of these packages.
 
 ```r
-install.packages(
-  pkgs = c("shiny", "mirai", "nanonext"),
-  repos = c("https://shikokuchuo.r-universe.dev", getOption("repos"))
-)
+install.packages(c("shiny", "mirai", "nanonext"))
 ```
 
 # Example: generative art

@@ -837,22 +837,15 @@ crew_class_controller_group <- R6::R6Class(
       # Tested in tests/interactive/test-promises.R.
       # nocov start
       crew_deprecate(
-        name = "scale",
-        date = "2024-04-10",
-        version = "0.9.1.9003",
-        alternative = c(
-          "none. promise() now always makes sure autoscaling is turned on."
+        name = "controller$promise()",
+        date = "2024-04-19",
+        version = "> 0.9.2",
+        alternative = paste(
+          "see https://wlandau.github.io/crew/articles/shiny.html for the",
+          "latest on using {crew} in promise-driven Shiny apps"
         ),
-        value = scale
-      )
-      crew_deprecate(
-        name = "throttle",
-        date = "2024-04-10",
-        version = "0.9.1.9003",
-        alternative = c(
-          "none. promise() now always makes sure autoscaling is turned on."
-        ),
-        value = throttle
+        value = TRUE,
+        frequency = "once"
       )
       self$autoscale(controllers = controllers)
       controller_promise(

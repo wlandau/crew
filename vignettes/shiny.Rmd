@@ -15,6 +15,14 @@ vignette: >
 
 `crew` is simple to use inside Shiny apps. Not only does `crew` bring parallel computing to a single app session, it elastically auto-scales worker processes to reduce the resource burden on other concurrent user sessions. And because of the [centralized controller interface](https://wlandau.github.io/crew/reference/crew_class_controller.html), there is no need to manually loop through individual tasks, which is convenient for workloads with thousands of tasks.
 
+# Prerequisites
+
+The example app requires `shiny >= 1.8.1.1`, `mirai >= 1.0.0`, and `nanonext >= 1.0.0`. Run the following in R to upgrade your versions of these packages.
+
+```r
+install.packages(c("shiny", "mirai", "nanonext"))
+```
+
 # Example: generative art
 
 The simple example below has three interface elements: an action button, a plot output, and a text output. When you click the action button, a new 5-second task pushes to the `crew` controller. The action button can submit new tasks even when existing tasks are running in the background. The plot output shows the random visualization returned from latest task.
@@ -22,14 +30,6 @@ The simple example below has three interface elements: an action button, a plot 
 The text output continuously refreshes to show the current time and number of tasks in progress. Watch the short video linked below to see the app in action. You will see the time tick away even as tasks run in the background. In other words, the tasks run asynchronously and do not block the app session.
 
 [![](./figures/art.png)](https://vimeo.com/927130003)
-
-## Prerequisites
-
-The example app uses extended tasks, which are only available in Shiny 1.8.1.1 or above. If your installed version of Shiny is too low, you can upgrade to the development version with:
-
-```r
-remotes::install_github("rstudio/shiny")
-```
 
 ## Tutorial
 
@@ -61,35 +61,38 @@ ui <- fluidPage(
 )
 ```
 
-The [server](https://shiny.rstudio.com/articles/basics.html) sets up a [local process controller](https://wlandau.github.io/crew/reference/crew_controller_local.html). The controller has 4 workers, and each worker automatically shuts down if 10 seconds pass without any task assignments. The `onStop()` statement says to terminate the controller when the app session terminates.
+The [server](https://shiny.rstudio.com/articles/basics.html) sets up a [local process controller](https://wlandau.github.io/crew/reference/crew_controller_local.html). The controller has 4 workers, and each worker automatically shuts down if 10 seconds pass without any task assignments. `controller$autoscale()` uses a [`later`](https://r-lib.github.io/later) loop to continuously launch workers to respond to the demand of tasks. The `onStop()` statement says to terminate the controller when the app session terminates.
 
 ```r
 server <- function(input, output, session) {
   controller <- crew::crew_controller_local(workers = 4, seconds_idle = 10)
   controller$start()
+  controller$autoscale()
   onStop(function() controller$terminate())
 ```
 
-The `task` object below is a Shiny extended task which accepts a promise object from the controller. The `crew` promise resolves when a task completes, and the `ExtendedTask` object efficiently manages a queue of such promises.^[For more on extended tasks, install the development version of Shiny and call `?shiny::ExtendedTask` to view the help file.]
-^[For more on `crew` promises, visit <https://wlandau.github.io/crew/articles/promises.html>.]
+The `cue` object below is a [Shiny extended task](https://rstudio.github.io/shiny/reference/ExtendedTask.html) which accepts a [`mirai`](https://github.com/shikokuchuo/mirai) task object from `controller$push()`. Through the magic of Shiny, `promises`, and [`mirai`](https://github.com/shikokuchuo/mirai), this extended task can invalidate reactive expressions when a `crew` task completes.
 
 ```r
-  task <- ExtendedTask$new(function() controller$promise(mode = "one"))
+  cue <- ExtendedTask$new(func = identity)
 ```
 
-The "Submit a task (5 seconds)" button pushes a new task to the controller and enqueues a new promise to asynchronously handle the result.
+The "Submit a task (5 seconds)" button pushes a new task to the controller and invokes the extended task.
 
 ```r
-  observeEvent(input$task, {
-    controller$push(command = run_task(), data = list(run_task = run_task))
-    task$invoke()
+  observeEvent(
+    input$task, 
+    cue$invoke(controller$push(run_task(), data = list(run_task = run_task)))
+  )
+```
+
+`cue$result()` triggers a plot update when a task completes, and we get the actual plot from `controller$pop()` to correctly remove the resolved task from the controller. `error = "stop"` relays any errors from the tasks.
+
+```r
+  output$result <- renderPlot({
+    cue$result()
+    controller$pop(error = "stop")$result[[1]]
   })
-```
-
-Because of the Shiny extended task and the `crew` promise, the plot output automatically refreshes almost immediately after the task completes. 
-
-```r
-  output$result <- renderPlot(task$result()$result[[1L]])
 ```
 
 The text status periodically refreshes to show the current time and the number of tasks in progress. When you run the app, you will see the time tick away even as tasks and promises operate in the background.
@@ -97,7 +100,7 @@ The text status periodically refreshes to show the current time and the number o
 ```r
   output$status <- renderText({
     input$task
-    task$status()
+    cue$status()
     invalidateLater(millis = 1000)
     time <- format(Sys.time(), "%H:%M:%S")
     paste("Time:", time, "|", "Running tasks:", controller$unresolved())
@@ -136,24 +139,28 @@ server <- function(input, output, session) {
   # crew controller
   controller <- crew::crew_controller_local(workers = 4, seconds_idle = 10)
   controller$start()
+  controller$autoscale()
   onStop(function() controller$terminate())
 
-  # extended task to get completed results from the controller
-  task <- ExtendedTask$new(function() controller$promise(mode = "one"))
+  # extended task to invalidate the plot
+  cue <- ExtendedTask$new(func = identity)
   
   # button to submit a crew task
-  observeEvent(input$task, {
-    controller$push(command = run_task(), data = list(run_task = run_task))
-    task$invoke()
-  })
+  observeEvent(
+    input$task, 
+    cue$invoke(controller$push(run_task(), data = list(run_task = run_task)))
+  )
   
   # task result
-  output$result <- renderPlot(task$result()$result[[1L]])
+  output$result <- renderPlot({
+    cue$result()
+    controller$pop(error = "stop")$result[[1]]
+  })
   
   # time and task status
   output$status <- renderText({
     input$task
-    task$status()
+    cue$status()
     invalidateLater(millis = 1000)
     time <- format(Sys.time(), "%H:%M:%S")
     paste("Time:", time, "|", "Running tasks:", controller$unresolved())
@@ -165,7 +172,7 @@ shinyApp(ui = ui, server = server)
 
 # Example: coin flips
 
-The example app below demonstrates a high-throughput scenario where there may be too many individual tasks to efficiently manage each one individually. The app has an action button and two text outputs. When you click the action button, the app submits a batch of 20 tasks (simulated coin flips) to the `crew` controller. The action button can submit new tasks even when existing tasks are running in the background. The text outputs refresh to show the current time, the number of upcoming coin flips, and running totals for heads, tails, and errors.
+The example app below demonstrates a high-throughput scenario with thousands of tasks. The app has an action button and two text outputs. When you click the action button, the app submits a batch of 1000 tasks (simulated coin flips) to the `crew` controller. The action button can submit new tasks even when existing tasks are running in the background. The text outputs refresh to show the current time, the number of upcoming coin flips, and running totals for heads, tails, and errors.
 
 ![](./figures/coins.png)
 
@@ -177,12 +184,12 @@ We first load Shiny.
 library(shiny)
 ```
 
-Our task is a simulated coin flip: wait a random number of seconds, then return a random `TRUE`/`FALSE` value. After many flips, the user may deduce that the coin is unfair.
+Our task is a simulated coin flip: wait 0.1 seconds, then randomly return 1 for heads or 0 for tails. After many flips, the user may deduce that the coin is slightly unfair.
 
 ```r
 flip_coin <- function() {
-  Sys.sleep(runif(n = 1, min = 0.25, max = 2.5))
-  as.logical(rbinom(n = 1, size = 1, prob = 0.4))
+  Sys.sleep(0.1)
+  rbinom(n = 1, size = 1, prob = 0.501)
 }
 ```
 
@@ -191,43 +198,54 @@ The UI invites the user to simulate multiple coin flips and try to figure out if
 ```r
 ui <- fluidPage(
   div("Is the coin fair?"),
-  actionButton("task", "Flip 20 coins"),
+  actionButton("task", "Flip 1000 coins"),
   textOutput("status"),
   textOutput("outcomes")
 )
 ```
 
-In the server, we start by creating a `crew` controller which will simulate coin flips in parallel across 4 workers.
+In the server, we start by creating a `crew` controller which will simulate coin flips in parallel across 10 parallel workers.
 
 ```r
 server <- function(input, output, session) {
-  controller <- crew::crew_controller_local(workers = 4, seconds_idle = 10)
+  # crew controller
+  controller <- crew::crew_controller_local(workers = 10, seconds_idle = 10)
   controller$start()
+  controller$autoscale()
   onStop(function() controller$terminate())
 ```
 
 We keep running totals of heads, tails, and task errors in a list of reactive values. 
 
 ```r
-  flips <- reactiveValues(heads = 0, tails = 0, errors = 0)
+  flips <- reactiveValues(heads = 0, tails = 0)
 ```
 
-We create a button to submit a batch of 20 coin flips. Each coin flip is a separate `crew` task.
+As before, we create a [Shiny extended task](https://rstudio.github.io/shiny/reference/ExtendedTask.html) to invalidate reactive expressions when a task completes.
+
+```r
+  cue <- ExtendedTask$new(func = identity)
+```
+
+We create an action button to submit a batch of 1000 coin flips. Each coin flip is a separate `crew` task, and we invoke the [Shiny extended task](https://rstudio.github.io/shiny/reference/ExtendedTask.html) on each one.
 
 ```r
   observeEvent(input$task, {
-    controller$walk(
+    tasks <- controller$walk(
       command = flip_coin(),
-      iterate = list(index = seq_len(20)),
+      iterate = list(index = seq_len(1000)),
       data = list(flip_coin = flip_coin)
     )
+    lapply(tasks, cue$invoke)
   })
 ```
 
-A text output refreshes every second to show the current time and the number of coin flips submitted but not yet completed.
+A text output refreshes to show the current time and the number of coin flips submitted but not yet completed. The refresh happens when a batch of coin flips is submitted, a coin flip completes, or a full second has passed.
 
 ```r
   output$status <- renderText({
+    input$task
+    cue$status()
     invalidateLater(millis = 1000)
     time <- format(Sys.time(), "%H:%M:%S")
     sprintf("%s Flipping %s coins.", time, controller$unresolved())
@@ -237,24 +255,20 @@ A text output refreshes every second to show the current time and the number of 
 Another text output automatically refreshes to show the total number of heads, tails, and errors from completed coin flips.
 
 ```r
-  output$outcomes <- renderText({
-    pattern <- "%s heads %s tails %s errors"
-    sprintf(pattern, flips$heads, flips$tails, flips$errors)
-  })
+  output$outcomes <- renderText(
+    sprintf("%s heads %s tails", flips$heads, flips$tails)
+  )
 ```
 
-We collect new coin flip results every second and update the totals in the reactive values list.
+We collect new coin flip results as they complete.
 
 ```r
   observe({
-    invalidateLater(millis = 1000)
-    results <- controller$collect()
-    req(results)
-    new_flips <- as.logical(results$result)
-    errors <- na.omit(as.character(results$error))
-    flips$heads <- flips$heads + sum(new_flips)
-    flips$tails <- flips$tails + sum(!new_flips)
-    flips$errors <- flips$errors + length(errors)
+    cue$result()
+    new_flip <- controller$pop(error = "stop")$result[[1]]
+    req(new_flip)
+    flips$heads <- flips$heads + new_flip
+    flips$tails <- flips$tails + (1 - new_flip)
   })
 }
 ```
@@ -273,133 +287,185 @@ See below for the complete `app.R` file.
 library(shiny)
 
 flip_coin <- function() {
-  Sys.sleep(runif(n = 1, min = 0.25, max = 2.5))
-  as.logical(rbinom(n = 1, size = 1, prob = 0.4))
+  Sys.sleep(0.1)
+  rbinom(n = 1, size = 1, prob = 0.501)
 }
 
 ui <- fluidPage(
   div("Is the coin fair?"),
-  actionButton("task", "Flip 20 coins"),
+  actionButton("task", "Flip 1000 coins"),
   textOutput("status"),
   textOutput("outcomes")
 )
 
 server <- function(input, output, session) {
   # crew controller
-  controller <- crew::crew_controller_local(workers = 4, seconds_idle = 10)
+  controller <- crew::crew_controller_local(workers = 10, seconds_idle = 10)
   controller$start()
+  controller$autoscale()
   onStop(function() controller$terminate())
   
   # Keep running totals of heads, tails, and task errors.
-  flips <- reactiveValues(heads = 0, tails = 0, errors = 0)
+  flips <- reactiveValues(heads = 0, tails = 0)
+  
+  # Create an extended task to invalidate 
+  cue <- ExtendedTask$new(func = identity)
   
   # Button to submit a batch of coin flips.
   observeEvent(input$task, {
-    controller$walk(
+    tasks <- controller$walk(
       command = flip_coin(),
-      iterate = list(index = seq_len(20)),
+      iterate = list(index = seq_len(1000)),
       data = list(flip_coin = flip_coin)
     )
+    lapply(tasks, cue$invoke)
   })
   
   # Print time and task status.
   output$status <- renderText({
+    input$task
+    cue$status()
     invalidateLater(millis = 1000)
     time <- format(Sys.time(), "%H:%M:%S")
     sprintf("%s Flipping %s coins.", time, controller$unresolved())
   })
-  
+
   # Print number of heads and tails.
-  output$outcomes <- renderText({
-    pattern <- "%s heads %s tails %s errors"
-    sprintf(pattern, flips$heads, flips$tails, flips$errors)
-  })
+  output$outcomes <- renderText(
+    sprintf("%s heads %s tails", flips$heads, flips$tails)
+  )
   
-  # Collect coin flip results.
+  # Observe new flips.
   observe({
-    invalidateLater(millis = 1000)
-    results <- controller$collect()
-    req(results)
-    new_flips <- as.logical(results$result)
-    errors <- na.omit(as.character(results$error))
-    flips$heads <- flips$heads + sum(new_flips)
-    flips$tails <- flips$tails + sum(!new_flips)
-    flips$errors <- flips$errors + length(errors)
+    cue$result()
+    new_flip <- controller$pop(error = "stop")$result[[1]]
+    req(new_flip)
+    flips$heads <- flips$heads + new_flip
+    flips$tails <- flips$tails + (1 - new_flip)
   })
 }
 
 shinyApp(ui = ui, server = server)
 ```
 
-# Modified example: coin flips with extended tasks
+# Coin flip alternative: `promises_all()`
 
-A self-renewing Shiny extended task can make the coin flip app more responsive. However, there may be a performance cost due to post-processing each task individually (as opposed to processing in bulk using `controller$collect()`). These are tradeoffs which may lead to different optimal decisions on a case-by-case basis. Please choose the approach that best fits your own app.
-
-To make the app respond immediately to each completed coin flip, first define an extended task that re-invokes itself whenever a task completes.
+The coin flip app spends a lot of effort churning through every single coin flip as soon as it completes. There are workarounds to reduce client-side overhead from thousands of flips. For example, you can use [`promises::promise_all()`](https://rstudio.github.io/promises/reference/promise_all.html) to trigger reactive expressions only when an entire batch of 1000 flips completes. The server only needs a slight modification:
 
 ```r
-task <- ExtendedTask$new(function() controller$promise(mode = "one"))
-observe(if (task$status() != "running") task$invoke())
+  cue <- ExtendedTask$new(func = promises::promise_all)
+  
+  # Button to submit a batch of coin flips.
+  observeEvent(input$task, {
+    tasks <- controller$walk(
+      command = flip_coin(),
+      iterate = list(index = seq_len(1000)),
+      data = list(flip_coin = flip_coin)
+    )
+    do.call(cue$invoke, tasks)
+  })
 ```
 
-Next, use `task$status()` to invalidate the text status as soon as a task completes.
-
-```r
-output$status <- renderText({
-  invalidateLater(millis = 1000)
-  task$status() # Invalidates the reactive when the task completes.
-  time <- format(Sys.time(), "%H:%M:%S")
-  sprintf("%s Flipping %s coins.", time, controller$unresolved())
-})
-```
-
-Finally, trust `task$result()` to invalidate the reactive expression that collects results.
-
-```r
-observe({
-  new_flip <- task$result()$result[[1]]
-  flips$heads <- flips$heads + sum(new_flip)
-  flips$tails <- flips$tails + sum(!new_flip)
-})
-```
-
-The full app code is below:
+Full app:
 
 ```r
 library(shiny)
 
 flip_coin <- function() {
-  Sys.sleep(runif(n = 1, min = 0.25, max = 2.5))
-  as.logical(rbinom(n = 1, size = 1, prob = 0.4))
+  Sys.sleep(0.1)
+  rbinom(n = 1, size = 1, prob = 0.501)
 }
 
 ui <- fluidPage(
   div("Is the coin fair?"),
-  actionButton("task", "Flip 20 coins"),
+  actionButton("task", "Flip 1000 coins"),
   textOutput("status"),
   textOutput("outcomes")
 )
 
 server <- function(input, output, session) {
   # crew controller
-  controller <- crew::crew_controller_local(workers = 4, seconds_idle = 10)
+  controller <- crew::crew_controller_local(workers = 10, seconds_idle = 10)
   controller$start()
+  controller$autoscale()
   onStop(function() controller$terminate())
   
   # Keep running totals of heads, tails, and task errors.
-  flips <- reactiveValues(heads = 0, tails = 0, errors = 0)
+  flips <- reactiveValues(heads = 0, tails = 0)
   
-  # Create a self-renewing extended task that collects individual
-  # results and invalidates reactive expressions on each one.
-  # Also collects errors.
-  task <- ExtendedTask$new(function() controller$promise(mode = "one"))
-  observe(if (task$status() != "running") task$invoke())
+  # Create an extended task to invalidate 
+  cue <- ExtendedTask$new(func = promises::promise_all)
+  
+  # Button to submit a batch of coin flips.
+  observeEvent(input$task, {
+    tasks <- controller$walk(
+      command = flip_coin(),
+      iterate = list(index = seq_len(1000)),
+      data = list(flip_coin = flip_coin)
+    )
+    do.call(cue$invoke, tasks)
+  })
+  
+  # Print time and task status.
+  output$status <- renderText({
+    input$task
+    cue$status()
+    invalidateLater(millis = 1000)
+    time <- format(Sys.time(), "%H:%M:%S")
+    sprintf("%s Flipping %s coins.", time, controller$unresolved())
+  })
+
+  # Print number of heads and tails.
+  output$outcomes <- renderText(
+    sprintf("%s heads %s tails", flips$heads, flips$tails)
+  )
+  
+  # Observe new flips.
+  observe({
+    cue$result()
+    new_flip <- controller$pop(error = "stop")$result[[1]]
+    req(new_flip)
+    flips$heads <- flips$heads + new_flip
+    flips$tails <- flips$tails + (1 - new_flip)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+# Coin flip alternative: polling
+
+Alternatively, you rely entirely on `invalidateLater()` to poll the controller for tasks every second. The app is not as snappy, but it does reduce client-side overhead, and it does not rely on advanced features of Shiny or `promises`.
+
+```r
+library(shiny)
+
+flip_coin <- function() {
+  Sys.sleep(0.1)
+  rbinom(n = 1, size = 1, prob = 0.501)
+}
+
+ui <- fluidPage(
+  div("Is the coin fair?"),
+  actionButton("task", "Flip 1000 coins"),
+  textOutput("status"),
+  textOutput("outcomes")
+)
+
+server <- function(input, output, session) {
+  # crew controller
+  controller <- crew::crew_controller_local(workers = 10, seconds_idle = 10)
+  controller$start()
+  onStop(function() controller$terminate())
+  
+  # Keep running totals of heads and tails.
+  flips <- reactiveValues(heads = 0, tails = 0)
   
   # Button to submit a batch of coin flips.
   observeEvent(input$task, {
     controller$walk(
       command = flip_coin(),
-      iterate = list(index = seq_len(20)),
+      iterate = list(index = seq_len(1000)),
       data = list(flip_coin = flip_coin)
     )
   })
@@ -407,7 +473,6 @@ server <- function(input, output, session) {
   # Print time and task status.
   output$status <- renderText({
     invalidateLater(millis = 1000)
-    task$status()
     time <- format(Sys.time(), "%H:%M:%S")
     sprintf("%s Flipping %s coins.", time, controller$unresolved())
   })
@@ -420,9 +485,12 @@ server <- function(input, output, session) {
   
   # Collect coin flip results.
   observe({
-    new_flip <- task$result()$result[[1]]
-    flips$heads <- flips$heads + sum(new_flip)
-    flips$tails <- flips$tails + sum(!new_flip)
+    invalidateLater(millis = 1000)
+    results <- controller$collect(error = "stop")
+    req(results)
+    new_flips <- as.logical(results$result)
+    flips$heads <- flips$heads + sum(new_flips)
+    flips$tails <- flips$tails + sum(1 - new_flips)
   })
 }
 

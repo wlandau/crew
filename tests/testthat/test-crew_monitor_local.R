@@ -24,6 +24,7 @@ crew_test("monitor dispatchers", {
 
 crew_test("monitor daemons", {
   skip_on_cran()
+  skip_on_os("windows")
   x <- crew_monitor_local()
   expect_true(is.integer(x$daemons()))
   first <- length(x$daemons())

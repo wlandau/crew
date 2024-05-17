@@ -707,7 +707,7 @@ crew_class_launcher <- R6::R6Class(
           "https://wlandau.github.io/crew/articles/risks.html#crashes"
         )
       )
-      mirai::call_mirai_(aio = private$.workers$handle[[index]])
+      mirai::call_mirai_(private$.workers$handle[[index]])
       handle <- self$launch_worker(
         call = as.character(call),
         name = as.character(name),
@@ -870,7 +870,7 @@ crew_class_launcher <- R6::R6Class(
       for (worker in index) {
         if (!workers$terminated[worker]) {
           handle <- workers$handle[[worker]]
-          mirai::call_mirai_(aio = handle)
+          mirai::call_mirai_(handle)
           private$.workers$termination[[worker]] <-
             self$terminate_worker(handle = handle) %|||% crew_null
         }

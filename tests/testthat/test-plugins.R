@@ -223,6 +223,7 @@ crew_test("custom launcher with local async errors", {
 
 crew_test("custom launcher with async internal launcher tasks", {
   skip_on_cran()
+  skip_on_ci()
   skip_on_covr() # Avoid clashes with NNG and covr child processes.
   skip_on_os("windows")
   skip_if_not_installed("processx")

@@ -1,4 +1,4 @@
-# crew 0.9.2.9000
+# crew 0.9.3
 
 * Deprecate native `crew` promises in favor of native event-driven promises in `mirai` (#162).
 * Update the `shiny.Rmd` and `promises.Rmd` vignette to recommend native event-driven `mirai` promises (#162).

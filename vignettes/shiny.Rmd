@@ -61,7 +61,7 @@ ui <- fluidPage(
 )
 ```
 
-The [server](https://shiny.rstudio.com/articles/basics.html) sets up a [local process controller](https://wlandau.github.io/crew/reference/crew_controller_local.html). The controller has 4 workers, and each worker automatically shuts down if 10 seconds pass without any task assignments. `controller$autoscale()` uses a [`later`](https://r-lib.github.io/later) loop to continuously launch workers to respond to the demand of tasks. The `onStop()` statement says to terminate the controller when the app session terminates.
+The [server](https://shiny.rstudio.com/articles/basics.html) sets up a [local process controller](https://wlandau.github.io/crew/reference/crew_controller_local.html). The controller has 4 workers, and each worker automatically shuts down if 10 seconds pass without any task assignments. `controller$autoscale()` uses a [`later`](https://r-lib.github.io/later/) loop to continuously launch workers to respond to the demand of tasks. The `onStop()` statement says to terminate the controller when the app session terminates.
 
 ```r
 server <- function(input, output, session) {

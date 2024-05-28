@@ -1,5 +1,6 @@
 crew_test("monitor dispatchers", {
   skip_on_cran()
+  skip_on_os("windows")
   x <- crew_monitor_local()
   expect_true(is.integer(x$dispatchers()))
   mirai::daemons(n = 1L, dispatcher = TRUE)
@@ -42,6 +43,7 @@ crew_test("monitor daemons", {
 crew_test("monitor workers", {
   skip_on_cran()
   skip_on_covr() # corrupt RDS files on covr
+  skip_on_os("windows")
   x <- crew_monitor_local()
   expect_true(is.integer(x$workers()))
   controller <- crew_controller_local()

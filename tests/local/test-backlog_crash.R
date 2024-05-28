@@ -2,8 +2,8 @@ test_that("backlogged crashed workers relaunch", {
   controller <- crew_controller_local(workers = 2L, seconds_idle = Inf)
   on.exit(controller$terminate())
   controller$start()
-  controller$push(TRUE)
-  controller$push(Sys.sleep(10))
+  controller$push(name = "task-sleep", command = Sys.sleep(10))
+  controller$push(name = "task-true", command = TRUE)
   controller$scale(throttle = FALSE)
   for (handle in controller$launcher$workers$handle) {
     crew_retry(
@@ -24,4 +24,6 @@ test_that("backlogged crashed workers relaunch", {
     )
   }
   expect_true(controller$wait(seconds_timeout = 20L))
+  tasks <- controller$collect()
+  expect_equal(sort(tasks$name), sort(c("task-sleep", "task-true")))
 })

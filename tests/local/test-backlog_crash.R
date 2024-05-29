@@ -26,4 +26,5 @@ test_that("backlogged crashed workers relaunch", {
   expect_true(controller$wait(seconds_timeout = 20L))
   tasks <- controller$collect()
   expect_equal(sort(tasks$name), sort(c("task-sleep", "task-true")))
+  expect_equal(tasks$error, c(NA_character_, NA_character_))
 })

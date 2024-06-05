@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3.9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -260,12 +260,14 @@ special <a href="https://rstudio.github.io/promises/" class="external-link"><cod
 This <a href="https://rstudio.github.io/promises/" class="external-link"><code>promise</code></a>
 updates the coin flip counts as soon as the flip finishes.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">observeEvent</span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">button</span>, <span class="op">{</span></span>
-<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">task</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<code class="sourceCode R"><span><span class="fu">observeEvent</span><span class="op">(</span></span>
+<span>  <span class="va">input</span><span class="op">$</span><span class="va">button</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span></span>
+<span>    <span class="fl">1000</span>,</span>
 <span>    <span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="fu">flip_coin</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>flip_coin <span class="op">=</span> <span class="va">flip_coin</span><span class="op">)</span><span class="op">)</span> <span class="op">%...&gt;%</span></span>
 <span>      <span class="fu">collect_flips</span><span class="op">(</span><span class="va">controller</span>, <span class="va">flips</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>The <code>collect_flips()</code> function collects all the finished
 flips and updates the flip counts.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -313,12 +315,14 @@ flips and updates the flip counts.</p>
 <span>  <span class="va">flips</span> <span class="op">&lt;-</span> <span class="fu">reactiveValues</span><span class="op">(</span>heads <span class="op">=</span> <span class="fl">0</span>, tails <span class="op">=</span> <span class="fl">0</span>, total <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="co"># Flip a batch of coins when the button is pressed.</span></span>
-<span>  <span class="fu">observeEvent</span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">button</span>, <span class="op">{</span></span>
-<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">task</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">observeEvent</span><span class="op">(</span></span>
+<span>    <span class="va">input</span><span class="op">$</span><span class="va">button</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span></span>
+<span>      <span class="fl">1000</span>,</span>
 <span>      <span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="fu">flip_coin</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>flip_coin <span class="op">=</span> <span class="va">flip_coin</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html" class="external-link">%...&gt;%</a></span></span>
 <span>        <span class="fu">collect_flips</span><span class="op">(</span><span class="va">controller</span>, <span class="va">flips</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
-<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
 <span>  <span class="co"># Print time and flip counts.</span></span>
 <span>  <span class="va">output</span><span class="op">$</span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">renderText</span><span class="op">(</span><span class="op">{</span></span>

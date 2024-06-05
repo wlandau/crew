@@ -19,6 +19,7 @@ vignette: >
 
 This app simulates thousands of coin flips to determine if a coin is fair. Each coin flip is a task, and `crew` runs the tasks in parallel. When you run the app, the clock keeps ticking even while coin flips are running. In other words, parallel tasks run in the background and the app stays interactive. This is easily achieved without relying on [promises](https://rstudio.github.io/promises/) or [Shiny extended tasks](https://shiny.posit.co/r/reference/shiny/latest/extendedtask).
 
+[![](./figures/coins.png)](https://vimeo.com/954101902)
 
 ## Tutorial
 

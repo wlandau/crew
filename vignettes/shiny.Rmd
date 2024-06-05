@@ -15,9 +15,11 @@ vignette: >
 
 `crew` is efficient to use in Shiny apps, and the [centralized controller](https://wlandau.github.io/crew/reference/crew_class_controller.html) makes the programming easy, even if there are thousands of tasks.
 
-# Example: coin flips
+This vignette shows two versions of an example app. The first version is simple to code but choppily. The second version feels snappier because it uses integration between [`promises`](https://rstudio.github.io/promises/) and [`mirai`](https://github.com/shikokuchuo/mirai).
 
-This app simulates thousands of coin flips to determine if a coin is fair. Each coin flip is a task, and `crew` runs the tasks in parallel. When you run the app, the clock keeps ticking even while coin flips are running. In other words, parallel tasks run in the background and the app stays interactive. This is easily achieved without relying on [promises](https://rstudio.github.io/promises/) or [Shiny extended tasks](https://shiny.posit.co/r/reference/shiny/latest/extendedtask).
+# Example: coin flips, no promises
+
+This app simulates thousands of coin flips to determine if a coin is fair. Each coin flip is a task, and `crew` runs the tasks in parallel. When you run the app, the clock keeps ticking even while coin flips are running. In other words, parallel tasks run in the background and the app stays interactive.
 
 [![](./figures/coins.png)](https://vimeo.com/954101902)
 
@@ -111,7 +113,7 @@ library(shiny)
 
 flip_coin <- function() {
   Sys.sleep(0.1)
-  rbinom(n = 1, size = 1, prob = 0.501)
+  rbinom(n = 1, size = 1, prob = 0.55)
 }
 
 ui <- fluidPage(
@@ -161,149 +163,85 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 ```
 
-# Example: generative art
+# Example: coin flips, with promises
 
-The app below demonstrates how `crew` integrates with [extended tasks in Shiny](https://shiny.posit.co/r/reference/shiny/latest/extendedtask). This integration, based on the powerful relationship between [`mirai`](https://github.com/shikokuchuo/mirai) and [`promises`](https://rstudio.github.io/promises/), is currently experimental.
+The previous app feels choppy because it only refreshes every half second. Using the powerful integration between [`promises`](https://rstudio.github.io/promises/) and [`mirai`](https://github.com/shikokuchuo/mirai), we can make the UI respond as soon as a task finishes. Watch the video below to see the difference:
 
-The simple example below has three interface elements: an action button, a plot output, and a text output. When you click the action button, a new 5-second task pushes to the `crew` controller. The action button can submit new tasks even when existing tasks are running in the background. The plot output shows the random visualization returned from latest task.
-
-The text output continuously refreshes to show the current time and number of tasks in progress. Watch the short video linked below to see the app in action. As in the previous example, the clock keeps ticking even as tasks run in the background.
-
-[![](./figures/art.png)](https://vimeo.com/927130003)
-
-## Prerequisites
-
-This example app requires `shiny >= 1.8.1.1`, `mirai >= 1.0.0`, and `nanonext >= 1.0.0`. Run the following in R to upgrade your versions of these packages.
-
-```r
-install.packages(c("shiny", "mirai", "nanonext"))
-```
+[![](./figures/coins.png)](https://vimeo.com/954134172)
 
 ## Tutorial
 
-To begin, we load Shiny.
+The revised app has two changes. First, it takes `mirai` task returned by `controller$push()` and turns it into a special [`promise`](https://rstudio.github.io/promises/). This [`promise`](https://rstudio.github.io/promises/) updates the coin flip counts as soon as the flip finishes.
 
 ```r
-library(shiny)
+observeEvent(input$button, {
+  for (task in seq_len(1000)) {
+    controller$push(flip_coin(), data = list(flip_coin = flip_coin)) %...>%
+      collect_flips(controller, flips)
+  }
+})
 ```
 
-The `run_task()` function waits 5 seconds and then generates a random [`aRtsy::canvas_squares()`](https://koenderks.github.io/aRtsy/reference/canvas_squares.html) plot.
+The `collect_flips()` function collects all the finished flips and updates the flip counts.
 
 ```r
-run_task <- function() {
-  Sys.sleep(5)
-  aRtsy::canvas_squares(colors = aRtsy::colorPalette("random-palette"))
-}
-```
-
-The [user interface](https://shiny.rstudio.com/articles/basics.html) shows the three parts explained previously, along with HTML/CSS formatting.
-
-```r
-ui <- fluidPage(
-  tags$br(),
-  tags$style("#status,#task{font-size:3em}"),
-  tags$style("#task{border:3px solid black}"),
-  actionButton("task", "Submit a task (5 seconds)"),
-  textOutput("status"),
-  plotOutput("result")
-)
-```
-
-The [server](https://shiny.rstudio.com/articles/basics.html) sets up a [local process controller](https://wlandau.github.io/crew/reference/crew_controller_local.html). The controller has 4 workers, and each worker automatically shuts down if 10 seconds pass without any task assignments. `controller$autoscale()` uses a [`later`](https://r-lib.github.io/later/) loop to continuously launch workers to respond to the demand of tasks. The `onStop()` statement says to terminate the controller when the app session terminates.
-
-```r
-server <- function(input, output, session) {
-  controller <- crew::crew_controller_local(workers = 4, seconds_idle = 10)
-  controller$start()
-  controller$autoscale()
-  onStop(function() controller$terminate())
-```
-
-The `cue` object below is a [Shiny extended task](https://rstudio.github.io/shiny/reference/ExtendedTask.html) which accepts a [`mirai`](https://github.com/shikokuchuo/mirai) task object from `controller$push()`. Through the magic of Shiny, `promises`, and [`mirai`](https://github.com/shikokuchuo/mirai), this extended task can invalidate reactive expressions when a `crew` task completes.
-
-```r
-  cue <- ExtendedTask$new(func = identity)
-```
-
-The "Submit a task (5 seconds)" button pushes a new task to the controller and invokes the extended task.
-
-```r
-  observeEvent(
-    input$task, 
-    cue$invoke(controller$push(run_task(), data = list(run_task = run_task)))
-  )
-```
-
-`cue$result()` triggers a plot update when a task completes, and we get the actual plot from `controller$pop()` to correctly remove the resolved task from the controller. `error = "stop"` relays any errors from the tasks.
-
-```r
-  output$result <- renderPlot({
-    cue$result()
-    controller$pop(error = "stop")$result[[1]]
-  })
-```
-
-The text status periodically refreshes to show the current time and the number of tasks in progress. When you run the app, you will see the time tick away even as tasks and promises operate in the background.
-
-```r
-  output$status <- renderText({
-    input$task
-    cue$status()
-    invalidateLater(millis = 1000)
-    time <- format(Sys.time(), "%H:%M:%S")
-    paste("Time:", time, "|", "Running tasks:", controller$unresolved())
-  })
+collect_flips <- function(ignore, controller, flips) {
+  new_flips <- as.integer(controller$collect(error = "stop")$result)
+  if (!length(new_flips)) return()
+  flips$heads <- flips$heads + sum(new_flips)
+  flips$tails <- flips$tails + sum(1 - new_flips)
+  flips$total <- flips$total + length(new_flips)
 }
 ```
 
 ## Full app code
 
 ```r
+library(promises)
 library(shiny)
 
-run_task <- function() {
-  Sys.sleep(5)
-  aRtsy::canvas_squares(colors = aRtsy::colorPalette("random-palette"))
+flip_coin <- function() {
+  Sys.sleep(0.1)
+  rbinom(n = 1, size = 1, prob = 0.55)
+}
+
+collect_flips <- function(ignore, controller, flips) {
+  new_flips <- as.integer(controller$collect(error = "stop")$result)
+  if (!length(new_flips)) return()
+  flips$heads <- flips$heads + sum(new_flips)
+  flips$tails <- flips$tails + sum(1 - new_flips)
+  flips$total <- flips$total + length(new_flips)
 }
 
 ui <- fluidPage(
-  tags$br(),
-  tags$style("#status,#task{font-size:3em}"),
-  tags$style("#task{border:3px solid black}"),
-  actionButton("task", "Submit a task (5 seconds)"),
-  textOutput("status"),
-  plotOutput("result")
+  div("Is the coin fair?"),
+  actionButton("button", "Flip 1000 coins"),
+  textOutput("results")
 )
 
 server <- function(input, output, session) {
   # crew controller
-  controller <- crew::crew_controller_local(workers = 4, seconds_idle = 10)
+  controller <- crew::crew_controller_local(workers = 10, seconds_idle = 10)
   controller$start()
-  controller$autoscale()
   onStop(function() controller$terminate())
-
-  # extended task to invalidate the plot
-  cue <- ExtendedTask$new(func = identity)
   
-  # button to submit a crew task
-  observeEvent(
-    input$task, 
-    cue$invoke(controller$push(run_task(), data = list(run_task = run_task)))
-  )
+  # Keep running totals of heads, tails, and total flips.
+  flips <- reactiveValues(heads = 0, tails = 0, total = 0)
   
-  # task result
-  output$result <- renderPlot({
-    cue$result()
-    controller$pop(error = "stop")$result[[1]]
+  # Flip a batch of coins when the button is pressed.
+  observeEvent(input$button, {
+    for (task in seq_len(1000)) {
+      controller$push(flip_coin(), data = list(flip_coin = flip_coin)) %...>%
+        collect_flips(controller, flips)
+    }
   })
-  
-  # time and task status
-  output$status <- renderText({
-    input$task
-    cue$status()
-    invalidateLater(millis = 1000)
+
+  # Print time and flip counts.
+  output$results <- renderText({
+    invalidateLater(millis = 500)
+    pattern <- "%s | %s heads, %s tails, %s total"
     time <- format(Sys.time(), "%H:%M:%S")
-    paste("Time:", time, "|", "Running tasks:", controller$unresolved())
+    sprintf(pattern, time, flips$heads, flips$tails, flips$total)
   })
 }
 

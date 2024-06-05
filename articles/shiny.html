@@ -103,17 +103,19 @@ Daniel Woodie</h4>
 <p><code>crew</code> is efficient to use in Shiny apps, and the <a href="https://wlandau.github.io/crew/reference/crew_class_controller.html">centralized
 controller</a> makes the programming easy, even if there are thousands
 of tasks.</p>
+<p>This vignette shows two versions of an example app. The first version
+is simple to code but choppily. The second version feels snappier
+because it uses integration between <a href="https://rstudio.github.io/promises/" class="external-link"><code>promises</code></a> and
+<a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>.</p>
 </div>
 <div class="section level2">
-<h2 id="example-coin-flips">Example: coin flips<a class="anchor" aria-label="anchor" href="#example-coin-flips"></a>
+<h2 id="example-coin-flips-no-promises">Example: coin flips, no promises<a class="anchor" aria-label="anchor" href="#example-coin-flips-no-promises"></a>
 </h2>
 <p>This app simulates thousands of coin flips to determine if a coin is
 fair. Each coin flip is a task, and <code>crew</code> runs the tasks in
 parallel. When you run the app, the clock keeps ticking even while coin
 flips are running. In other words, parallel tasks run in the background
-and the app stays interactive. This is easily achieved without relying
-on <a href="https://rstudio.github.io/promises/" class="external-link">promises</a> or <a href="https://shiny.posit.co/r/reference/shiny/latest/extendedtask" class="external-link">Shiny
-extended tasks</a>.</p>
+and the app stays interactive.</p>
 <p><a href="https://vimeo.com/954101902" class="external-link"><img src="figures/coins.png"></a></p>
 <div class="section level3">
 <h3 id="tutorial">Tutorial<a class="anchor" aria-label="anchor" href="#tutorial"></a>
@@ -190,7 +192,7 @@ second has passed.</p>
 <span></span>
 <span><span class="va">flip_coin</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">0.1</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, size <span class="op">=</span> <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.501</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, size <span class="op">=</span> <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.55</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="fu">fluidPage</span><span class="op">(</span></span>
@@ -241,157 +243,89 @@ second has passed.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="example-generative-art">Example: generative art<a class="anchor" aria-label="anchor" href="#example-generative-art"></a>
+<h2 id="example-coin-flips-with-promises">Example: coin flips, with promises<a class="anchor" aria-label="anchor" href="#example-coin-flips-with-promises"></a>
 </h2>
-<p>The app below demonstrates how <code>crew</code> integrates with <a href="https://shiny.posit.co/r/reference/shiny/latest/extendedtask" class="external-link">extended
-tasks in Shiny</a>. This integration, based on the powerful relationship
-between <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a> and
-<a href="https://rstudio.github.io/promises/" class="external-link"><code>promises</code></a>,
-is currently experimental.</p>
-<p>The simple example below has three interface elements: an action
-button, a plot output, and a text output. When you click the action
-button, a new 5-second task pushes to the <code>crew</code> controller.
-The action button can submit new tasks even when existing tasks are
-running in the background. The plot output shows the random
-visualization returned from latest task.</p>
-<p>The text output continuously refreshes to show the current time and
-number of tasks in progress. Watch the short video linked below to see
-the app in action. As in the previous example, the clock keeps ticking
-even as tasks run in the background.</p>
-<p><a href="https://vimeo.com/927130003" class="external-link"><img src="figures/art.png"></a></p>
-<div class="section level3">
-<h3 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
-</h3>
-<p>This example app requires <code>shiny &gt;= 1.8.1.1</code>,
-<code>mirai &gt;= 1.0.0</code>, and <code>nanonext &gt;= 1.0.0</code>.
-Run the following in R to upgrade your versions of these packages.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shiny"</span>, <span class="st">"mirai"</span>, <span class="st">"nanonext"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</div>
+<p>The previous app feels choppy because it only refreshes every half
+second. Using the powerful integration between <a href="https://rstudio.github.io/promises/" class="external-link"><code>promises</code></a> and
+<a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>,
+we can make the UI respond as soon as a task finishes. Watch the video
+below to see the difference:</p>
+<p><a href="https://vimeo.com/954134172" class="external-link"><img src="figures/coins.png"></a></p>
 <div class="section level3">
 <h3 id="tutorial-1">Tutorial<a class="anchor" aria-label="anchor" href="#tutorial-1"></a>
 </h3>
-<p>To begin, we load Shiny.</p>
+<p>The revised app has two changes. First, it takes <code>mirai</code>
+task returned by <code>controller$push()</code> and turns it into a
+special <a href="https://rstudio.github.io/promises/" class="external-link"><code>promise</code></a>.
+This <a href="https://rstudio.github.io/promises/" class="external-link"><code>promise</code></a>
+updates the coin flip counts as soon as the flip finishes.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">observeEvent</span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">button</span>, <span class="op">{</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">task</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="fu">flip_coin</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>flip_coin <span class="op">=</span> <span class="va">flip_coin</span><span class="op">)</span><span class="op">)</span> <span class="op">%...&gt;%</span></span>
+<span>      <span class="fu">collect_flips</span><span class="op">(</span><span class="va">controller</span>, <span class="va">flips</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+<p>The <code>collect_flips()</code> function collects all the finished
+flips and updates the flip counts.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.posit.co/" class="external-link">shiny</a></span><span class="op">)</span></span></code></pre></div>
-<p>The <code>run_task()</code> function waits 5 seconds and then
-generates a random <a href="https://koenderks.github.io/aRtsy/reference/canvas_squares.html" class="external-link"><code>aRtsy::canvas_squares()</code></a>
-plot.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">run_task</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
-<span>  <span class="fu">aRtsy</span><span class="fu">::</span><span class="fu">canvas_squares</span><span class="op">(</span>colors <span class="op">=</span> <span class="fu">aRtsy</span><span class="fu">::</span><span class="fu">colorPalette</span><span class="op">(</span><span class="st">"random-palette"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">collect_flips</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ignore</span>, <span class="va">controller</span>, <span class="va">flips</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">new_flips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">controller</span><span class="op">$</span><span class="fu">collect</span><span class="op">(</span>error <span class="op">=</span> <span class="st">"stop"</span><span class="op">)</span><span class="op">$</span><span class="va">result</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">new_flips</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="va">flips</span><span class="op">$</span><span class="va">heads</span> <span class="op">&lt;-</span> <span class="va">flips</span><span class="op">$</span><span class="va">heads</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">new_flips</span><span class="op">)</span></span>
+<span>  <span class="va">flips</span><span class="op">$</span><span class="va">tails</span> <span class="op">&lt;-</span> <span class="va">flips</span><span class="op">$</span><span class="va">tails</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">new_flips</span><span class="op">)</span></span>
+<span>  <span class="va">flips</span><span class="op">$</span><span class="va">total</span> <span class="op">&lt;-</span> <span class="va">flips</span><span class="op">$</span><span class="va">total</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">new_flips</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>The <a href="https://shiny.rstudio.com/articles/basics.html" class="external-link">user
-interface</a> shows the three parts explained previously, along with
-HTML/CSS formatting.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="fu">fluidPage</span><span class="op">(</span></span>
-<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">br</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">style</span><span class="op">(</span><span class="st">"#status,#task{font-size:3em}"</span><span class="op">)</span>,</span>
-<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">style</span><span class="op">(</span><span class="st">"#task{border:3px solid black}"</span><span class="op">)</span>,</span>
-<span>  <span class="fu">actionButton</span><span class="op">(</span><span class="st">"task"</span>, <span class="st">"Submit a task (5 seconds)"</span><span class="op">)</span>,</span>
-<span>  <span class="fu">textOutput</span><span class="op">(</span><span class="st">"status"</span><span class="op">)</span>,</span>
-<span>  <span class="fu">plotOutput</span><span class="op">(</span><span class="st">"result"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>The <a href="https://shiny.rstudio.com/articles/basics.html" class="external-link">server</a> sets up
-a <a href="https://wlandau.github.io/crew/reference/crew_controller_local.html">local
-process controller</a>. The controller has 4 workers, and each worker
-automatically shuts down if 10 seconds pass without any task
-assignments. <code>controller$autoscale()</code> uses a <a href="https://r-lib.github.io/later/" class="external-link"><code>later</code></a> loop to
-continuously launch workers to respond to the demand of tasks. The
-<code>onStop()</code> statement says to terminate the controller when
-the app session terminates.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  controller <span class="ot">&lt;-</span> crew<span class="sc">::</span><span class="fu">crew_controller_local</span>(<span class="at">workers =</span> <span class="dv">4</span>, <span class="at">seconds_idle =</span> <span class="dv">10</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  controller<span class="sc">$</span><span class="fu">start</span>()</span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  controller<span class="sc">$</span><span class="fu">autoscale</span>()</span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>  <span class="fu">onStop</span>(<span class="cf">function</span>() controller<span class="sc">$</span><span class="fu">terminate</span>())</span></code></pre></div>
-<p>The <code>cue</code> object below is a <a href="https://rstudio.github.io/shiny/reference/ExtendedTask.html" class="external-link">Shiny
-extended task</a> which accepts a <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a> task
-object from <code>controller$push()</code>. Through the magic of Shiny,
-<code>promises</code>, and <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>, this
-extended task can invalidate reactive expressions when a
-<code>crew</code> task completes.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="va">cue</span> <span class="op">&lt;-</span> <span class="va">ExtendedTask</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>func <span class="op">=</span> <span class="va">identity</span><span class="op">)</span></span></code></pre></div>
-<p>The “Submit a task (5 seconds)” button pushes a new task to the
-controller and invokes the extended task.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="fu">observeEvent</span><span class="op">(</span></span>
-<span>    <span class="va">input</span><span class="op">$</span><span class="va">task</span>, </span>
-<span>    <span class="va">cue</span><span class="op">$</span><span class="fu">invoke</span><span class="op">(</span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="fu">run_task</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>run_task <span class="op">=</span> <span class="va">run_task</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><code>cue$result()</code> triggers a plot update when a task
-completes, and we get the actual plot from <code>controller$pop()</code>
-to correctly remove the resolved task from the controller.
-<code>error = "stop"</code> relays any errors from the tasks.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="va">output</span><span class="op">$</span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">renderPlot</span><span class="op">(</span><span class="op">{</span></span>
-<span>    <span class="va">cue</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="va">controller</span><span class="op">$</span><span class="fu">pop</span><span class="op">(</span>error <span class="op">=</span> <span class="st">"stop"</span><span class="op">)</span><span class="op">$</span><span class="va">result</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span>  <span class="op">}</span><span class="op">)</span></span></code></pre></div>
-<p>The text status periodically refreshes to show the current time and
-the number of tasks in progress. When you run the app, you will see the
-time tick away even as tasks and promises operate in the background.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>  output<span class="sc">$</span>status <span class="ot">&lt;-</span> <span class="fu">renderText</span>({</span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>    input<span class="sc">$</span>task</span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>    cue<span class="sc">$</span><span class="fu">status</span>()</span>
-<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>    <span class="fu">invalidateLater</span>(<span class="at">millis =</span> <span class="dv">1000</span>)</span>
-<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>    time <span class="ot">&lt;-</span> <span class="fu">format</span>(<span class="fu">Sys.time</span>(), <span class="st">"%H:%M:%S"</span>)</span>
-<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>    <span class="fu">paste</span>(<span class="st">"Time:"</span>, time, <span class="st">"|"</span>, <span class="st">"Running tasks:"</span>, controller<span class="sc">$</span><span class="fu">unresolved</span>())</span>
-<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>  })</span>
-<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="full-app-code-1">Full app code<a class="anchor" aria-label="anchor" href="#full-app-code-1"></a>
 </h3>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.posit.co/" class="external-link">shiny</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/promises/" class="external-link">promises</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.posit.co/" class="external-link">shiny</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">run_task</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
-<span>  <span class="fu">aRtsy</span><span class="fu">::</span><span class="fu">canvas_squares</span><span class="op">(</span>colors <span class="op">=</span> <span class="fu">aRtsy</span><span class="fu">::</span><span class="fu">colorPalette</span><span class="op">(</span><span class="st">"random-palette"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">flip_coin</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">0.1</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, size <span class="op">=</span> <span class="fl">1</span>, prob <span class="op">=</span> <span class="fl">0.55</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">collect_flips</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ignore</span>, <span class="va">controller</span>, <span class="va">flips</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">new_flips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">controller</span><span class="op">$</span><span class="fu">collect</span><span class="op">(</span>error <span class="op">=</span> <span class="st">"stop"</span><span class="op">)</span><span class="op">$</span><span class="va">result</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">new_flips</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="va">flips</span><span class="op">$</span><span class="va">heads</span> <span class="op">&lt;-</span> <span class="va">flips</span><span class="op">$</span><span class="va">heads</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">new_flips</span><span class="op">)</span></span>
+<span>  <span class="va">flips</span><span class="op">$</span><span class="va">tails</span> <span class="op">&lt;-</span> <span class="va">flips</span><span class="op">$</span><span class="va">tails</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">new_flips</span><span class="op">)</span></span>
+<span>  <span class="va">flips</span><span class="op">$</span><span class="va">total</span> <span class="op">&lt;-</span> <span class="va">flips</span><span class="op">$</span><span class="va">total</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">new_flips</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="fu">fluidPage</span><span class="op">(</span></span>
-<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">br</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">style</span><span class="op">(</span><span class="st">"#status,#task{font-size:3em}"</span><span class="op">)</span>,</span>
-<span>  <span class="va">tags</span><span class="op">$</span><span class="fu">style</span><span class="op">(</span><span class="st">"#task{border:3px solid black}"</span><span class="op">)</span>,</span>
-<span>  <span class="fu">actionButton</span><span class="op">(</span><span class="st">"task"</span>, <span class="st">"Submit a task (5 seconds)"</span><span class="op">)</span>,</span>
-<span>  <span class="fu">textOutput</span><span class="op">(</span><span class="st">"status"</span><span class="op">)</span>,</span>
-<span>  <span class="fu">plotOutput</span><span class="op">(</span><span class="st">"result"</span><span class="op">)</span></span>
+<span>  <span class="fu">div</span><span class="op">(</span><span class="st">"Is the coin fair?"</span><span class="op">)</span>,</span>
+<span>  <span class="fu">actionButton</span><span class="op">(</span><span class="st">"button"</span>, <span class="st">"Flip 1000 coins"</span><span class="op">)</span>,</span>
+<span>  <span class="fu">textOutput</span><span class="op">(</span><span class="st">"results"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># crew controller</span></span>
-<span>  <span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">4</span>, seconds_idle <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span>  <span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">10</span>, seconds_idle <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="va">controller</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">controller</span><span class="op">$</span><span class="fu">autoscale</span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="fu">onStop</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="va">controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># extended task to invalidate the plot</span></span>
-<span>  <span class="va">cue</span> <span class="op">&lt;-</span> <span class="va">ExtendedTask</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>func <span class="op">=</span> <span class="va">identity</span><span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="co"># button to submit a crew task</span></span>
-<span>  <span class="fu">observeEvent</span><span class="op">(</span></span>
-<span>    <span class="va">input</span><span class="op">$</span><span class="va">task</span>, </span>
-<span>    <span class="va">cue</span><span class="op">$</span><span class="fu">invoke</span><span class="op">(</span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="fu">run_task</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>run_task <span class="op">=</span> <span class="va">run_task</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
+<span>  <span class="co"># Keep running totals of heads, tails, and total flips.</span></span>
+<span>  <span class="va">flips</span> <span class="op">&lt;-</span> <span class="fu">reactiveValues</span><span class="op">(</span>heads <span class="op">=</span> <span class="fl">0</span>, tails <span class="op">=</span> <span class="fl">0</span>, total <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="co"># task result</span></span>
-<span>  <span class="va">output</span><span class="op">$</span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">renderPlot</span><span class="op">(</span><span class="op">{</span></span>
-<span>    <span class="va">cue</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="va">controller</span><span class="op">$</span><span class="fu">pop</span><span class="op">(</span>error <span class="op">=</span> <span class="st">"stop"</span><span class="op">)</span><span class="op">$</span><span class="va">result</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="co"># Flip a batch of coins when the button is pressed.</span></span>
+<span>  <span class="fu">observeEvent</span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">button</span>, <span class="op">{</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">task</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="fu">flip_coin</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>flip_coin <span class="op">=</span> <span class="va">flip_coin</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html" class="external-link">%...&gt;%</a></span></span>
+<span>        <span class="fu">collect_flips</span><span class="op">(</span><span class="va">controller</span>, <span class="va">flips</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
 <span>  <span class="op">}</span><span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="co"># time and task status</span></span>
-<span>  <span class="va">output</span><span class="op">$</span><span class="va">status</span> <span class="op">&lt;-</span> <span class="fu">renderText</span><span class="op">(</span><span class="op">{</span></span>
-<span>    <span class="va">input</span><span class="op">$</span><span class="va">task</span></span>
-<span>    <span class="va">cue</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="fu">invalidateLater</span><span class="op">(</span>millis <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># Print time and flip counts.</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">renderText</span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu">invalidateLater</span><span class="op">(</span>millis <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
+<span>    <span class="va">pattern</span> <span class="op">&lt;-</span> <span class="st">"%s | %s heads, %s tails, %s total"</span></span>
 <span>    <span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"%H:%M:%S"</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Time:"</span>, <span class="va">time</span>, <span class="st">"|"</span>, <span class="st">"Running tasks:"</span>, <span class="va">controller</span><span class="op">$</span><span class="fu">unresolved</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="va">pattern</span>, <span class="va">time</span>, <span class="va">flips</span><span class="op">$</span><span class="va">heads</span>, <span class="va">flips</span><span class="op">$</span><span class="va">tails</span>, <span class="va">flips</span><span class="op">$</span><span class="va">total</span><span class="op">)</span></span>
 <span>  <span class="op">}</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>

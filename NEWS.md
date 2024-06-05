@@ -1,6 +1,6 @@
-# crew 0.9.3.9000 (development)
+# crew 0.9.3.9001 (development)
 
-
+* Do not use extended tasks in Shiny vignette.
 
 # crew 0.9.3
 

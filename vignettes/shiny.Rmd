@@ -174,12 +174,14 @@ The previous app feels choppy because it only refreshes every half second. Using
 The revised app has two changes. First, it takes `mirai` task returned by `controller$push()` and turns it into a special [`promise`](https://rstudio.github.io/promises/). This [`promise`](https://rstudio.github.io/promises/) updates the coin flip counts as soon as the flip finishes.
 
 ```r
-observeEvent(input$button, {
-  for (task in seq_len(1000)) {
+observeEvent(
+  input$button,
+  replicate(
+    1000,
     controller$push(flip_coin(), data = list(flip_coin = flip_coin)) %...>%
       collect_flips(controller, flips)
-  }
-})
+  )
+)
 ```
 
 The `collect_flips()` function collects all the finished flips and updates the flip counts.
@@ -229,12 +231,14 @@ server <- function(input, output, session) {
   flips <- reactiveValues(heads = 0, tails = 0, total = 0)
   
   # Flip a batch of coins when the button is pressed.
-  observeEvent(input$button, {
-    for (task in seq_len(1000)) {
+  observeEvent(
+    input$button,
+    replicate(
+      1000,
       controller$push(flip_coin(), data = list(flip_coin = flip_coin)) %...>%
         collect_flips(controller, flips)
-    }
-  })
+    )
+  )
 
   # Print time and flip counts.
   output$results <- renderText({

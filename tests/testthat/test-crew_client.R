@@ -8,12 +8,14 @@ crew_test("crew_client() active bindings", {
     host = "127.0.0.1",
     port = 123L,
     seconds_interval = 123,
-    seconds_timeout = 456
+    seconds_timeout = 456,
+    retry_tasks = FALSE
   )
   expect_equal(client$host, "127.0.0.1")
   expect_equal(client$port, 123L)
   expect_equal(client$seconds_interval, 123)
   expect_equal(client$seconds_timeout, 456)
+  expect_false(client$retry_tasks)
   expect_true(inherits(client$tls, "crew_class_tls"))
   expect_silent(client$validate())
 })

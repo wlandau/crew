@@ -21,6 +21,12 @@
 #' @param seconds_timeout Number of seconds until timing
 #'   out while waiting for certain synchronous operations to complete,
 #'   such as checking `mirai::status()`.
+#' @param retry_tasks `TRUE` to automatically retry a task in the event of
+#'   an unexpected worker exit. `FALSE` to give up on the first exit and
+#'   return a `mirai` error code (code number 19).
+#'   `TRUE` (default) is recommended in most situations.
+#'   Use `FALSE` for debugging purposes, e.g. to confirm that a task
+#'   is causing a worker to run out of memory or crash in some other way.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -37,7 +43,8 @@ crew_client <- function(
   tls_enable = NULL,
   tls_config = NULL,
   seconds_interval = 0.5,
-  seconds_timeout = 5
+  seconds_timeout = 5,
+  retry_tasks = TRUE
 ) {
   crew_deprecate(
     name = "tls_enable",
@@ -69,6 +76,7 @@ crew_client <- function(
     tls = tls,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
+    retry_tasks = retry_tasks,
     relay = crew_relay()
   )
   client$validate()
@@ -98,6 +106,7 @@ crew_class_client <- R6::R6Class(
     .tls = NULL,
     .seconds_interval = NULL,
     .seconds_timeout = NULL,
+    .retry_tasks = NULL,
     .relay = NULL,
     .started = NULL,
     .dispatcher = NULL
@@ -131,6 +140,10 @@ crew_class_client <- R6::R6Class(
     seconds_timeout = function() {
       .subset2(private, ".seconds_timeout")
     },
+    #' @field retry_tasks See [crew_client()]
+    retry_tasks = function() {
+      .subset2(private, ".retry_tasks")
+    },
     #' @field relay Relay object for event-driven programming on a downstream
     #'   condition variable.
     relay = function() {
@@ -155,6 +168,7 @@ crew_class_client <- R6::R6Class(
     #' @param tls Argument passed from [crew_client()].
     #' @param seconds_interval Argument passed from [crew_client()].
     #' @param seconds_timeout Argument passed from [crew_client()].
+    #' @param retry_tasks Argument passed from [crew_client()].
     #' @param relay Argument passed from [crew_client()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -171,6 +185,7 @@ crew_class_client <- R6::R6Class(
       tls = NULL,
       seconds_interval = NULL,
       seconds_timeout = NULL,
+      retry_tasks = NULL,
       relay = NULL
     ) {
       private$.name <- name
@@ -180,6 +195,7 @@ crew_class_client <- R6::R6Class(
       private$.tls <- tls
       private$.seconds_interval <- seconds_interval
       private$.seconds_timeout <- seconds_timeout
+      private$.retry_tasks <- retry_tasks
       private$.relay <- relay
     },
     #' @description Validate the client.
@@ -225,6 +241,11 @@ crew_class_client <- R6::R6Class(
         )
       }
       crew_assert(
+        private$.retry_tasks,
+        isTRUE(.) || isFALSE(.),
+        message = "retry_tasks must be TRUE or FALSE"
+      )
+      crew_assert(
         private$.dispatcher %|||% 0L,
         is.numeric(.),
         length(.) == 1L,
@@ -256,6 +277,7 @@ crew_class_client <- R6::R6Class(
         tls = private$.tls$client(),
         pass = private$.tls$password,
         token = TRUE,
+        retry = private$.retry_tasks,
         .compute = private$.name
       )
       # TODO: remove code that gets the dispatcher PID if the dispatcher

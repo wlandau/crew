@@ -1,6 +1,7 @@
-# crew 0.9.3.9001 (development)
+# crew 0.9.3.9002 (development)
 
 * Do not use extended tasks in Shiny vignette.
+* Add a new `retry_tasks` argument with default `TRUE` (#170).
 
 # crew 0.9.3
 

@@ -13,7 +13,8 @@ crew_client(
   tls_enable = NULL,
   tls_config = NULL,
   seconds_interval = 0.5,
-  seconds_timeout = 5
+  seconds_timeout = 5,
+  retry_tasks = TRUE
 )
 }
 \arguments{
@@ -44,6 +45,13 @@ such as checking \code{mirai::status()}}
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete,
 such as checking \code{mirai::status()}.}
+
+\item{retry_tasks}{\code{TRUE} to automatically retry a task in the event of
+an unexpected worker exit. \code{FALSE} to give up on the first exit and
+return a \code{mirai} error code (code number 19).
+\code{TRUE} (default) is recommended in most situations.
+Use \code{FALSE} for debugging purposes, e.g. to confirm that a task
+is causing a worker to run out of memory or crash in some other way.}
 }
 \description{
 Create an \code{R6} wrapper object to manage the \code{mirai} client.

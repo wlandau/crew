@@ -26,6 +26,7 @@ crew_test("custom launcher plugin based on system2()", {
     seconds_launch = 30,
     seconds_idle = Inf,
     seconds_wall = Inf,
+    retry_tasks = TRUE,
     tasks_max = Inf,
     tasks_timers = 0L,
     reset_globals = TRUE,
@@ -41,7 +42,8 @@ crew_test("custom launcher plugin based on system2()", {
       port = port,
       tls = tls,
       seconds_interval = seconds_interval,
-      seconds_timeout = seconds_timeout
+      seconds_timeout = seconds_timeout,
+      retry_tasks = retry_tasks
     )
     launcher <- system2_launcher_class$new(
       name = name,

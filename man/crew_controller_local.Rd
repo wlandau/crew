@@ -18,6 +18,7 @@ crew_controller_local(
   seconds_idle = Inf,
   seconds_wall = Inf,
   seconds_exit = NULL,
+  retry_tasks = TRUE,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -80,6 +81,13 @@ See the \code{walltime} argument of \code{mirai::daemon()}.}
 
 \item{seconds_exit}{Deprecated on 2023-09-21 in version 0.5.0.9002.
 No longer necessary.}
+
+\item{retry_tasks}{\code{TRUE} to automatically retry a task in the event of
+an unexpected worker exit. \code{FALSE} to give up on the first exit and
+return a \code{mirai} error code (code number 19).
+\code{TRUE} (default) is recommended in most situations.
+Use \code{FALSE} for debugging purposes, e.g. to confirm that a task
+is causing a worker to run out of memory or crash in some other way.}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
 exiting. See the \code{maxtasks} argument of \code{mirai::daemon()}.

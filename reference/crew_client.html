@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3.9002</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +74,8 @@
 <span>  tls_enable <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tls_config <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  seconds_interval <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  seconds_timeout <span class="op">=</span> <span class="fl">5</span></span>
+<span>  seconds_timeout <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  retry_tasks <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -124,6 +125,15 @@ such as checking <code><a href="https://shikokuchuo.net/mirai/reference/status.h
 <dd><p>Number of seconds until timing
 out while waiting for certain synchronous operations to complete,
 such as checking <code><a href="https://shikokuchuo.net/mirai/reference/status.html" class="external-link">mirai::status()</a></code>.</p></dd>
+
+
+<dt>retry_tasks</dt>
+<dd><p><code>TRUE</code> to automatically retry a task in the event of
+an unexpected worker exit. <code>FALSE</code> to give up on the first exit and
+return a <code>mirai</code> error code (code number 19).
+<code>TRUE</code> (default) is recommended in most situations.
+Use <code>FALSE</code> for debugging purposes, e.g. to confirm that a task
+is causing a worker to run out of memory or crash in some other way.</p></dd>
 
 </dl></div>
     <div class="section level2">

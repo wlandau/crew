@@ -60,6 +60,7 @@ Suggests:
   knitr (>= 1.30),
   markdown (>= 1.1),
   rmarkdown (>= 2.4),
+  secretbase (>= 1.0.0),
   testthat (>= 3.0.0)
 Encoding: UTF-8
 Language: en-US

@@ -2,6 +2,7 @@
 
 * Do not use extended tasks in Shiny vignette.
 * Add a new `retry_tasks` argument with default `TRUE` (#170).
+* Avoid Base64 encoding functions from `nanonext`
 
 # crew 0.9.3
 

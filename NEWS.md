@@ -1,3 +1,7 @@
+# crew 0.9.5
+
+* CRAN patch.
+
 # crew 0.9.4
 
 * Do not use extended tasks in Shiny vignette.

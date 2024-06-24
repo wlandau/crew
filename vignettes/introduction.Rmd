@@ -7,15 +7,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = FALSE
-)
-library(crew)
-```
-
 `crew` is a distributed computing framework with a centralized interface and auto-scaling. A `crew` controller is an object in R which accepts tasks, returns results, and launches workers. Workers can be local processes, jobs on traditional clusters such as SLURM, or jobs on cloud services such as AWS Batch, depending on the [launcher plugin](https://wlandau.github.io/crew/articles/plugins.html) of the controller.
 
 # Tasks vs workers
@@ -26,7 +17,7 @@ A *task* is a piece of R code, such as an expression or a function call. A *work
 
 First, create a controller object to manage tasks and workers.
 
-```{r}
+```r
 library(crew)
 controller <- crew_controller_local(
   name = "example",
@@ -37,19 +28,19 @@ controller <- crew_controller_local(
 
 Next, start the controller to create the [`mirai`](https://github.com/shikokuchuo/mirai) client. Later, when you are done with the controller, call `controller$terminate()` to clean up the workers and dispatcher.
 
-```{r}
+```r
 controller$start()
 ```
 
 Use `push()` to submit a new task and `pop()` to return a completed task.
 
-```{r}
+```r
 controller$push(name = "get pid", command = ps::ps_pid())
 ```
 
 As a side effect, methods `push()`, `pop()`, and `scale()` also launch workers to run the tasks. If your controller uses transient workers and has a backlog of tasks, you may need to loop over `pop()` or `scale()` multiple times to make sure enough workers are always available.
 
-```{r}
+```r
 controller$pop() # No workers started yet and the task is not done.
 #> NULL
 
@@ -64,13 +55,13 @@ task
 
 Alternatively, `wait()` is a loop that repeatedly checks tasks and launches workers until all tasks complete.
 
-```{r}
+```r
 controller$wait(mode = "all")
 ```
 
 The return value of the task is in the `result` column.
 
-```{r}
+```r
 task$result[[1]] # return value of the task
 #> [1] 69631
 ```
@@ -111,7 +102,7 @@ The [`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.htm
 
 Below, [`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-map) submits one task to compute `1 + 2 + 5 + 6` and another task to compute `3 + 4 + 5 + 6`. The lists and vectors inside `iterate` vary from task to task, while the elements of `data` and `globals` stay constant across tasks.
 
-```{r}
+```r
 results <- controller$map(
   command = a + b + c + d,
   iterate = list(
@@ -140,7 +131,7 @@ If at least one task in [`map()`](https://wlandau.github.io/crew/reference/crew_
 
 The [`walk()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-walk) method is just like `map()`, but it does not wait for any tasks to complete. Instead, it returns control to the local R session immediately and lets you do other things while the tasks run in the background.
 
-```{r}
+```r
 controller$walk(
   command = a + b + c + d,
   iterate = list(
@@ -154,7 +145,7 @@ controller$walk(
 
 The [`collect()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-collect) pops all completed tasks. Put together, `walk()`, `wait(mode = "all")`, and `collect()` have the same overall effect as `map()`.
 
-```{r}
+```r
 controller$wait(mode = "all")
 
 controller$collect()
@@ -175,7 +166,7 @@ However, there are subtle differences between the synchronous and asynchronous f
 
 The controller summary shows how many tasks each worker ran, how many total seconds it spent running tasks, and how many tasks threw warnings and errors.
 
-```{r}
+```r
 controller$summary()
 #> # A tibble: 2 × 6
 #>   controller worker tasks seconds errors warnings
@@ -186,7 +177,7 @@ controller$summary()
 
 The launcher summary counts the number of times each worker was launched, and it shows the total number of assigned and completed tasks from all past terminated instances of each worker. In addition, it shows whether the current worker instance was actively connected ("online") or had connected at some point during its life cycle ("discovered") as of the last call to `controller$launcher$tally()`.
 
-```{r}
+```r
 controller$launcher$summary()
 #> # A tibble: 2 × 6
 #>   worker launches online discovered assigned complete
@@ -197,7 +188,7 @@ controller$launcher$summary()
 
 Finally, the client summary shows up-to-date worker status from `mirai::daemons()`.
 
-```{r}
+```r
 controller$client$summary()
 #> # A tibble: 2 × 6
 #>   worker online instances assigned complete socket
@@ -210,13 +201,13 @@ controller$client$summary()
 
 Call `terminate()` on the controller after you finish using it. `terminate()` tries to close the the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher and any workers that may still be running. It is important to free up these resources.
 
-```{r}
+```r
 controller$terminate()
 ```
 
 The `mirai` dispatcher process should exit on its own, but if not, you can manually terminate the process ID at `controller$client$dispatcher` or call `crew_clean()` to terminate any dispatchers from current or previous R sessions.
 
-```{r}
+```r
 crew_clean()
 #> nothing to clean up
 ```
@@ -231,7 +222,7 @@ A `crew` controller creates different types of local processes. These include:
 
 Usually these processes terminate themselves when the parent R session exits or the controller terminates, but under rare circumstances they may continue running. The "local monitor" in `crew` makes it easy to list and terminate any of these processes which may be running on your local computer. Example:
 
-```{r, eval = FALSE}
+```r
 monitor <- crew_monitor_local()
 monitor$dispatchers() # List PIDs of all local {mirai} dispatcher processes.
 #> [1] 31215

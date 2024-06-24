@@ -10,14 +10,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-library(crew)
-```
-
 The `crew` package has unavoidable risks, and the user is responsible for safety, security, and computational resources. This vignette describes known risks and safeguards, but is by no means exhaustive. Please read the [software license](https://wlandau.github.io/crew/LICENSE.html).
 
 # Resources

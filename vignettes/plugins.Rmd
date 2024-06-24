@@ -11,12 +11,11 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-library(crew)
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  eval = FALSE
+  comment = "#>"
 )
+library(crew)
 ```
 
 # About
@@ -55,7 +54,7 @@ If you implement a custom [`terminate_worker()`](https://wlandau.github.io/crew/
 
 The following is a custom custom launcher class whose workers are local R processes on Unix-like systems.
 
-```{r}
+```r
 custom_launcher_class <- R6::R6Class(
   classname = "custom_launcher_class",
   inherit = crew::crew_class_launcher,
@@ -88,7 +87,7 @@ Every `launch_worker()` method must accept arguments `call`, `launcher`, `worker
 
 To see what the `call` object looks like, create a new launcher and run the `call()` method.
 
-```{r, eval = TRUE, message = FALSE}
+```{r}
 library(crew)
 launcher <- crew_launcher_local()
 launcher$call(
@@ -111,7 +110,7 @@ It is useful to have a helper function that creates controllers with your custom
 
 Feel free to borrow from the [`crew_controller_local()` source code](https://github.com/wlandau/crew/blob/main/R/crew_controller_local.R). For packages, you can use the `@inheritParams` [`roxygen2`](https://roxygen2.r-lib.org/) tag to inherit the documentation of all the arguments instead of writing it by hand. You may want to adjust the default arguments based on the specifics of your platform, especially `seconds_launch` if workers take a long time to launch.
 
-```{r}
+```r
 #' @title Create a controller with the custom launcher.
 #' @export
 #' @description Create an `R6` object to submit tasks and
@@ -177,7 +176,7 @@ When you are ready to begin testing, try out the example in the [README](https:/
 
 First, create and start a controller. You may wish to monitor local processes on your computer to make sure the `mirai` dispatcher starts.
 
-```{r}
+```r
 library(crew)
 controller <- crew_controller_custom(workers = 2)
 controller$start()
@@ -185,7 +184,7 @@ controller$start()
 
 Try pushing a task that gets the local IP address and process ID of the worker instance.
 
-```{r}
+```r
 controller$push(
   name = "get worker IP address and process ID",
   command = paste(getip::getip(type = "local"), ps::ps_pid())
@@ -194,7 +193,7 @@ controller$push(
 
 Wait for the task to complete and look at the result.
 
-```{r}
+```r
 controller$wait()
 result <- controller$pop()
 result$result[[1]]
@@ -203,7 +202,7 @@ result$result[[1]]
 
 Please use the result to verify that the task really ran on a worker as intended. The process ID above should agree with the one from the handle ([except on Windows](https://github.com/r-lib/processx/issues/364) because the actual R process may be different from the `R.exe` process created first). In addition, if the worker is running on a different computer, the worker IP address should be different than the local IP address. Since our custom launcher creates local processes, the IP addresses are the same in this case, but they should be different for a [SLURM](https://slurm.schedmd.com/) or [AWS Batch](https://aws.amazon.com/batch/) launcher. 
 
-```{r}
+```r
 getip::getip(type = "local")
 #> "192.168.0.2"
 controller$launcher$workers$handle[[1]]$get_pid()
@@ -212,7 +211,7 @@ controller$launcher$workers$handle[[1]]$get_pid()
 
 If you did not set any timeouts or task limits, the worker that ran the task should still be online. The other worker had no tasks, so it did not need to launch.
 
-```{r}
+```r
 controller$client$summary()
 #> # A tibble: 2 × 6
 #>   worker online instances assigned complete socket
@@ -223,7 +222,7 @@ controller$client$summary()
 
 When you are done, terminate the controller. This terminates the `mirai` dispatcher process and the `crew` workers.
 
-```{r}
+```r
 controller$terminate()
 ```
 
@@ -233,7 +232,7 @@ Finally, use the process monitoring interface of your computing platform or oper
 
 If the informal testing succeeded, we recommend you scale up testing to more ambitious scenarios. As one example, you can test that your workers can auto-scale and quickly churn through a large number of tasks.
 
-```{r}
+```r
 library(crew)
 controller <- crew_controller_custom(
   seconds_idle = 2L,
@@ -278,9 +277,8 @@ all(sort(unlist(results$result)) == seq_len(200L))
 #> [1] TRUE
 # View worker and task summaries.
 controller$summary()
-controller$schedule$summary()
+controller$client$summary()
 controller$launcher$summary()
-controller$schedule$summary()
 # Terminate the controller.
 controller$terminate()
 # Now outside crew, verify that the mirai dispatcher
@@ -298,7 +296,7 @@ Let's demonstrate on the simple `processx` example. The use case itself may sill
 
 Here is what the launcher class looks like. We work with `processx` PIDs directly because they are light and easy to send to local async `mirai` daemons. The `self$async$eval()` function accepts R code, data, and packages to run a quick local asynchronous task, and it returns a `mirai::mirai()` task object as the handle. `handle$data` returns the results if available, and `crew` uses `mirai::call_mirai()` to make sure any tasks submitted by `launch_worker()` have resolved before they are used by `terminate_worker()`.
 
-```{r}
+```r
 async_launcher_class <- R6::R6Class(
   classname = "custom_launcher_class",
   inherit = crew::crew_class_launcher,
@@ -322,7 +320,7 @@ async_launcher_class <- R6::R6Class(
 
 The controller helper includes a `processes` argument which sets how many asynchronous `mirai` daemons to create. Set `processes` to `NULL` to disable async and use it like an ordinary synchronous controller.
 
-```{r}
+```r
 crew_controller_async <- function(
   name = "async controller name",
   workers = 1L,
@@ -379,7 +377,7 @@ crew_controller_async <- function(
 
 Creating a controller is the same as before, except the user sets both the `workers` and `processes` arguments. Remember, these are two different things: `workers` is the number of serious workers that run serious tasks from `push()`, whereas `processes` is the number of `mirai` daemons that asynchronously launch and terminate those serious workers. Workers may or may not be local, but `processes` are always local.
 
-```{r}
+```r
 async_controller <- crew_controller_async(workers = 12, processes = 4)
 ```
 
@@ -428,7 +426,7 @@ crew_monitor_pids <- function(pattern) {
 
 Example usage:
 
-```{r, eval = FALSE}
+```r
 monitor <- crew_monitor_local()
 monitor$dispatchers() # List PIDs of all local {mirai} dispatcher processes.
 #> [1] 31215

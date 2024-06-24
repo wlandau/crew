@@ -7,21 +7,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
-set.seed(0)
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  paged.print = FALSE,
-  eval = FALSE
-)
-```
-
 Each controller object only supports only one type of worker configuration which you set in advance. However, different controllers may have different types of workers, and `crew` supports controller groups to coordinate among these different worker types. With third-party launcher subclasses from other packages, this mechanism will allow you to e.g. send some tasks to GPU-capable or high-memory workers while other tasks go to low-spec workers.
 
 We demonstrate with a controller of fully persistent workers which always stay running and a controller of semi-persistent workers which terminate after completing four tasks. We create controller objects with names.
 
-```{r}
+```r
 library(crew)
 persistent <- crew_controller_local(name = "persistent")
 transient <- crew_controller_local(name = "semi-persistent", tasks_max = 4L)
@@ -31,25 +21,25 @@ transient <- crew_controller_local(name = "semi-persistent", tasks_max = 4L)
 
 We put these controller objects into a new controller group object.
 
-```{r}
+```r
 group <- crew_controller_group(persistent, transient)
 ```
 
 This controller group has a global `connect()` method to initialize both controllers.
 
-```{r}
+```r
 group$start()
 ```
 
 You can choose which worker pool to receive tasks.
 
-```{r}
+```r
 group$push(name = "my task", command = sqrt(4), controller = "semi-persistent")
 ```
 
 The controller group also supports global methods for `wait()`, `pop()`, and `terminate()`. These methods operate on all controllers at once by default, but the `controllers` argument allows you to select a subset of controllers to act on. Below in `pop()` the `launcher` column of the output indicates which controller ran the task.
 
-```{r}
+```r
 group$wait(controllers = "semi-persistent")
 group$pop()
 #> # A tibble: 1 × 12
@@ -61,7 +51,7 @@ group$pop()
 
 The [`map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crew_class_controller-group-map) method provides functional programming, and the `controller` argument lets you choose the controller to submit the tasks.
 
-```{r}
+```r
 group$map(
   command = a + b + c + d,
   iterate = list(
@@ -82,7 +72,7 @@ group$map(
 
 The controller group has a `summary()` method which aggregates the summaries of one or more controllers.
 
-```{r}
+```r
 group$summary()
 #> # A tibble: 2 × 6
 #>   controller      worker tasks seconds errors warnings
@@ -93,6 +83,6 @@ group$summary()
 
 When you are finished, please call `terminate()` with no arguments to terminate all controllers in the controller group.
 
-```{r}
+```r
 group$terminate()
 ```

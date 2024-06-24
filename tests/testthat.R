@@ -1,4 +1,6 @@
 library(testthat)
 library(crew)
 
-test_check("crew")
+if (packageVersion("nanonext") > "1.1.0") {
+  test_check("crew")
+}

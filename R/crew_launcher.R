@@ -696,7 +696,9 @@ crew_class_launcher <- R6::R6Class(
       crew_assert(
         futile <= private$.launch_max,
         message = paste0(
-          "{crew} worker ",
+          "{crew} worker with name ",
+          name,
+          " and index ",
           index,
           " launched ",
           private$.launch_max,

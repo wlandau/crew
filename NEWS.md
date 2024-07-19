@@ -1,6 +1,6 @@
-# crew 0.9.5.9000 (development)
+# crew 0.9.5.9001 (development)
 
-
+* Give full worker name in the worker launch error message (@multimeric).
 
 # crew 0.9.5
 

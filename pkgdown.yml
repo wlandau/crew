@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
   groups: groups.html
@@ -8,8 +8,7 @@ articles:
   promises: promises.html
   risks: risks.html
   shiny: shiny.html
-last_built: 2024-06-27T20:20Z
+last_built: 2024-07-19T19:46Z
 urls:
   reference: https://wlandau.github.io/crew/reference
   article: https://wlandau.github.io/crew/articles
-

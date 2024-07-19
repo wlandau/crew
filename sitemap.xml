@@ -1,153 +1,53 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://wlandau.github.io/crew/404.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/PULL_REQUEST_TEMPLATE.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/articles/groups.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/articles/introduction.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/articles/plugins.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/articles/promises.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/articles/risks.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/articles/shiny.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/index.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew-package.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_assert.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_async.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_class_async.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_class_client.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_class_controller.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_class_controller_group.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_class_launcher.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_class_launcher_local.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_class_monitor_local.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_class_relay.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_class_throttle.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_class_tls.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_clean.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_client.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_controller.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_controller_group.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_controller_local.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_deprecate.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_eval.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_eval_async.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_launcher.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_launcher_local.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_monitor_local.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_random_name.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_relay.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_retry.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_terminate_process.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_terminate_signal.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_throttle.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_tls.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/crew_worker.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://wlandau.github.io/crew/reference/reexports.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://wlandau.github.io/crew/404.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/CONTRIBUTING.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/LICENSE-text.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/LICENSE.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/PULL_REQUEST_TEMPLATE.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/articles/groups.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/articles/index.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/articles/introduction.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/articles/plugins.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/articles/promises.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/articles/risks.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/articles/shiny.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/authors.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/index.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/news/index.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew-package.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_assert.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_async.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_class_async.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_class_client.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_class_controller.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_class_controller_group.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_class_launcher.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_class_launcher_local.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_class_monitor_local.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_class_relay.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_class_throttle.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_class_tls.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_clean.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_client.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_controller.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_controller_group.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_controller_local.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_deprecate.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_eval.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_eval_async.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_launcher.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_launcher_local.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_monitor_local.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_random_name.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_relay.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_retry.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_terminate_process.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_terminate_signal.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_throttle.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_tls.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_worker.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/index.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/reexports.html</loc></url>
 </urlset>
+

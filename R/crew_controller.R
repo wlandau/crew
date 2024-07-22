@@ -328,6 +328,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
+      .subset2(self, "start")()
       private$.launcher$tally()
       private$.launcher$rotate()
       walk(
@@ -598,6 +599,7 @@ crew_class_controller <- R6::R6Class(
       throttle = TRUE,
       controller = NULL
     ) {
+      .subset2(self, "start")()
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
       if (substitute) {
         command <- substitute(command)
@@ -833,6 +835,7 @@ crew_class_controller <- R6::R6Class(
       throttle = TRUE,
       controller = NULL
     ) {
+      .subset2(self, "start")()
       crew_assert(
         length(private$.tasks) < 1L,
         message = "cannot map() until all prior tasks are completed and popped"

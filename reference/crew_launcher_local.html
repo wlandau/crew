@@ -9,7 +9,7 @@ local process workers."><meta property="og:image" content="https://wlandau.githu
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,6 +70,7 @@ local process workers.</p>
 <span>  garbage_collection <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  launch_max <span class="op">=</span> <span class="fl">5L</span>,</span>
 <span>  tls <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_tls.html">crew_tls</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  r_arguments <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  local_log_directory <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  local_log_join <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -178,6 +179,12 @@ to detect errors in the underlying platform.</p></dd>
 
 <dt id="arg-tls">tls<a class="anchor" aria-label="anchor" href="#arg-tls"></a></dt>
 <dd><p>A TLS configuration object from <code><a href="crew_tls.html">crew_tls()</a></code>.</p></dd>
+
+
+<dt id="arg-r-arguments">r_arguments<a class="anchor" aria-label="anchor" href="#arg-r-arguments"></a></dt>
+<dd><p>Optional character vector of command line arguments
+to pass to R when starting a worker. Example:
+<code>r_arguments = c("--vanilla", "--max-connections=32")</code>.</p></dd>
 
 
 <dt id="arg-local-log-directory">local_log_directory<a class="anchor" aria-label="anchor" href="#arg-local-log-directory"></a></dt>

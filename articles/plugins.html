@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -178,7 +178,7 @@ local R processes on Unix-like systems.</p>
 <span>      <span class="va">bin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Rhome.html" class="external-link">R.home</a></span><span class="op">(</span><span class="st">"bin"</span><span class="op">)</span>, <span class="st">"R"</span><span class="op">)</span></span>
 <span>      <span class="fu">processx</span><span class="fu">::</span><span class="va"><a href="http://processx.r-lib.org/reference/process.html" class="external-link">process</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>        command <span class="op">=</span> <span class="va">bin</span>,</span>
-<span>        args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-e"</span>, <span class="va">call</span><span class="op">)</span>,</span>
+<span>        args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">self</span><span class="op">$</span><span class="va">r_arguments</span>, <span class="st">"-e"</span>, <span class="va">call</span><span class="op">)</span>,</span>
 <span>        cleanup <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>      <span class="op">)</span></span>
 <span>    <span class="op">}</span>,</span>
@@ -188,17 +188,19 @@ local R processes on Unix-like systems.</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Inside <code>launch_worker()</code>, the
-<code>processx::process$new(command = bin, args = c("-e", call))</code>
+<code>processx::process$new(command = bin, args = c(self$r_arguments, "-e", call))</code>
 line runs the <a href="https://wlandau.github.io/crew/reference/crew_worker.html"><code>crew_worker()</code></a>
-call in an external R process. This process runs in the background,
-connects back to <code>crew</code> and <code>mirai</code> over the local
-network, and accepts the tasks you push to the controller.
-<code>processx::process$new()</code> also returns a handle which the
-<code>terminate_worker()</code> method can use to force-terminate the
-process if appropriate. <code>mirai</code> has its own way to terminate
-workers, so a <code>terminate_worker()</code> method is not strictly
-required, but it is a useful safeguard in case a worker hangs in a
-crashed state before it establishes a connection.</p>
+call in an external R process with the command line arguments from
+<code>r_arguments</code> (supplied when the launcher is created). This
+process runs in the background, connects back to <code>crew</code> and
+<code>mirai</code> over the local network, and accepts the tasks you
+push to the controller. <code>processx::process$new()</code> also
+returns a handle which the <code>terminate_worker()</code> method can
+use to force-terminate the process if appropriate. <code>mirai</code>
+has its own way to terminate workers, so a
+<code>terminate_worker()</code> method is not strictly required, but it
+is a useful safeguard in case a worker hangs in a crashed state before
+it establishes a connection.</p>
 <p>Every <code>launch_worker()</code> method must accept arguments
 <code>call</code>, <code>launcher</code>, <code>worker</code>, and
 <code>instance</code>. The method does not actually need to use all
@@ -278,7 +280,8 @@ workers take a long time to launch.</p>
 <span>  <span class="va">reset_packages</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">reset_options</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">garbage_collection</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">launch_max</span> <span class="op">=</span> <span class="fl">5L</span></span>
+<span>  <span class="va">launch_max</span> <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  <span class="va">r_arguments</span> <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">client</span> <span class="op">&lt;-</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_client.html">crew_client</a></span><span class="op">(</span></span>
 <span>    name <span class="op">=</span> <span class="va">name</span>,</span>
@@ -304,7 +307,8 @@ workers take a long time to launch.</p>
 <span>    reset_options <span class="op">=</span> <span class="va">reset_options</span>,</span>
 <span>    garbage_collection <span class="op">=</span> <span class="va">garbage_collection</span>,</span>
 <span>    launch_max <span class="op">=</span> <span class="va">launch_max</span>,</span>
-<span>    tls <span class="op">=</span> <span class="va">tls</span></span>
+<span>    tls <span class="op">=</span> <span class="va">tls</span>,</span>
+<span>    r_arguments <span class="op">=</span> <span class="va">r_arguments</span></span>
 <span>  <span class="op">)</span></span>
 <span>  <span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_controller.html">crew_controller</a></span><span class="op">(</span>client <span class="op">=</span> <span class="va">client</span>, launcher <span class="op">=</span> <span class="va">launcher</span><span class="op">)</span></span>
 <span>  <span class="va">controller</span><span class="op">$</span><span class="fu">validate</span><span class="op">(</span><span class="op">)</span></span>

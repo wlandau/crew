@@ -112,6 +112,7 @@ Local launcher constructor.
   launch_max = NULL,
   tls = NULL,
   processes = NULL,
+  r_arguments = NULL,
   local_log_directory = NULL,
   local_log_join = NULL
 )}\if{html}{\out{</div>}}
@@ -151,6 +152,8 @@ Local launcher constructor.
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{local_log_directory}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
 

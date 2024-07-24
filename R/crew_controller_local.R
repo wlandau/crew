@@ -37,6 +37,7 @@ crew_controller_local <- function(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
+  r_arguments = NULL,
   local_log_directory = NULL,
   local_log_join = TRUE
 ) {
@@ -75,6 +76,7 @@ crew_controller_local <- function(
     garbage_collection = garbage_collection,
     launch_max = launch_max,
     tls = tls,
+    r_arguments = r_arguments,
     local_log_directory = local_log_directory,
     local_log_join = local_log_join
   )

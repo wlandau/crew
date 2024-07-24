@@ -6,7 +6,7 @@ crew_test("abstract launcher class", {
 
 crew_test("active bindings for covr", {
   skip_on_cran()
-  out <- crew_launcher(processes = 1L)
+  out <- crew_launcher(processes = 1L, r_arguments = "--vanilla")
   expect_equal(out$processes, 1L)
   expect_null(out$async)
   expect_null(out$throttle)
@@ -17,6 +17,7 @@ crew_test("active bindings for covr", {
   expect_s3_class(out$throttle, "crew_class_throttle")
   expect_silent(out$async$validate())
   expect_silent(out$throttle$validate())
+  expect_equal(out$r_arguments, "--vanilla")
   expect_silent(out$validate())
 })
 

@@ -139,7 +139,8 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_controller_local(
-    seconds_idle = 360
+    seconds_idle = 360,
+    r_arguments = c("--no-save", "--no-restore")
   )
   on.exit({
     x$terminate()

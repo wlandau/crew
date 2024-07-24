@@ -20,7 +20,8 @@ crew_launcher(
   garbage_collection = FALSE,
   launch_max = 5L,
   tls = crew::crew_tls(),
-  processes = NULL
+  processes = NULL,
+  r_arguments = NULL
 )
 }
 \arguments{
@@ -103,6 +104,10 @@ starts the processes on \code{start()} and ends them on \code{terminate()}.
 Plugins that may use these processes should run asynchronous calls
 using \code{launcher$async$eval()} and expect a \code{mirai} task object
 as the return value.}
+
+\item{r_arguments}{Optional character vector of command line arguments
+to pass to R when starting a worker. Example:
+\code{r_arguments = c("--vanilla", "--max-connections=32")}.}
 }
 \description{
 This function is useful for inheriting argument documentation

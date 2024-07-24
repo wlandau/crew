@@ -20,6 +20,7 @@ crew_launcher_local(
   garbage_collection = FALSE,
   launch_max = 5L,
   tls = crew::crew_tls(),
+  r_arguments = NULL,
   local_log_directory = NULL,
   local_log_join = TRUE
 )
@@ -95,6 +96,10 @@ circumstances. But \code{launch_max} should still be small enough
 to detect errors in the underlying platform.}
 
 \item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
+
+\item{r_arguments}{Optional character vector of command line arguments
+to pass to R when starting a worker. Example:
+\code{r_arguments = c("--vanilla", "--max-connections=32")}.}
 
 \item{local_log_directory}{Either \code{NULL} or a character of length 1
 with the file path to a directory to write worker-specific log files

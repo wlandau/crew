@@ -69,6 +69,9 @@
 #'   Plugins that may use these processes should run asynchronous calls
 #'   using `launcher$async$eval()` and expect a `mirai` task object
 #'   as the return value.
+#' @param r_arguments Optional character vector of command line arguments
+#'   to pass to R when starting a worker. Example:
+#'   `r_arguments = c("--vanilla", "--max-connections=32")`.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -97,7 +100,8 @@ crew_launcher <- function(
   garbage_collection = FALSE,
   launch_max = 5L,
   tls = crew::crew_tls(),
-  processes = NULL
+  processes = NULL,
+  r_arguments = NULL
 ) {
   crew_deprecate(
     name = "seconds_exit",
@@ -127,7 +131,8 @@ crew_launcher <- function(
     garbage_collection = garbage_collection,
     launch_max = launch_max,
     tls = tls,
-    processes = processes
+    processes = processes,
+    r_arguments = r_arguments
   )
 }
 
@@ -169,6 +174,7 @@ crew_class_launcher <- R6::R6Class(
     .launch_max = NULL,
     .tls = NULL,
     .processes = NULL,
+    .r_arguments = NULL,
     .async = NULL,
     .throttle = NULL
   ),
@@ -238,6 +244,10 @@ crew_class_launcher <- R6::R6Class(
     processes = function() {
       .subset2(private, ".processes")
     },
+    #' @field r_arguments See [crew_launcher()].
+    r_arguments = function() {
+      .subset2(private, ".r_arguments")
+    },
     #' @field async A [crew_async()] object to run low-level launcher tasks
     #'   asynchronously.
     async = function() {
@@ -267,6 +277,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param launch_max See [crew_launcher()].
     #' @param tls See [crew_launcher()].
     #' @param processes See [crew_launcher()].
+    #' @param r_arguments See [crew_launcher()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
@@ -295,7 +306,8 @@ crew_class_launcher <- R6::R6Class(
       garbage_collection = NULL,
       launch_max = NULL,
       tls = NULL,
-      processes = NULL
+      processes = NULL,
+      r_arguments = NULL
     ) {
       private$.name <- name
       private$.seconds_interval <- seconds_interval
@@ -312,6 +324,7 @@ crew_class_launcher <- R6::R6Class(
       private$.launch_max <- launch_max
       private$.tls <- tls
       private$.processes <- processes
+      private$.r_arguments <- r_arguments
     },
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
@@ -404,6 +417,12 @@ crew_class_launcher <- R6::R6Class(
         )
         crew_assert(identical(colnames(private$.workers), cols))
         crew_assert(nrow(private$.workers) > 0L)
+      }
+      if (!is.null(private$.r_arguments)) {
+        crew_assert(
+          is.character(private$.r_arguments),
+          message = "r_arguments must be a character vector."
+        )
       }
       crew_assert(
         inherits(private$.tls, "crew_class_tls"),

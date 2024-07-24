@@ -26,6 +26,7 @@ crew_controller_local(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
+  r_arguments = NULL,
   local_log_directory = NULL,
   local_log_join = TRUE
 )
@@ -123,6 +124,10 @@ It is recommended to set \code{launch_max} above 0
 because sometimes workers are unproductive under perfectly ordinary
 circumstances. But \code{launch_max} should still be small enough
 to detect errors in the underlying platform.}
+
+\item{r_arguments}{Optional character vector of command line arguments
+to pass to R when starting a worker. Example:
+\code{r_arguments = c("--vanilla", "--max-connections=32")}.}
 
 \item{local_log_directory}{Either \code{NULL} or a character of length 1
 with the file path to a directory to write worker-specific log files

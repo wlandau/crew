@@ -43,6 +43,7 @@ crew_launcher_local <- function(
   garbage_collection = FALSE,
   launch_max = 5L,
   tls = crew::crew_tls(),
+  r_arguments = NULL,
   local_log_directory = NULL,
   local_log_join = TRUE
 ) {
@@ -70,6 +71,7 @@ crew_launcher_local <- function(
     garbage_collection = garbage_collection,
     launch_max = launch_max,
     tls = tls,
+    r_arguments = r_arguments,
     local_log_directory = local_log_directory,
     local_log_join = local_log_join
   )
@@ -157,6 +159,7 @@ crew_class_launcher_local <- R6::R6Class(
     #' @param launch_max See [crew_launcher()].
     #' @param tls See [crew_launcher()].
     #' @param processes See [crew_launcher()].
+    #' @param r_arguments See [crew_launcher()].
     #' @param local_log_directory See [crew_launcher_local()].
     #' @param local_log_join See [crew_launcher_local()].
     #' @examples
@@ -188,6 +191,7 @@ crew_class_launcher_local <- R6::R6Class(
       launch_max = NULL,
       tls = NULL,
       processes = NULL,
+      r_arguments = NULL,
       local_log_directory = NULL,
       local_log_join = NULL
     ) {
@@ -207,7 +211,8 @@ crew_class_launcher_local <- R6::R6Class(
         garbage_collection = garbage_collection,
         launch_max = launch_max,
         tls = tls,
-        processes = processes
+        processes = processes,
+        r_arguments = r_arguments
       )
       private$.local_log_directory <- local_log_directory
       private$.local_log_join <- local_log_join
@@ -251,12 +256,16 @@ crew_class_launcher_local <- R6::R6Class(
     #' @param instance Character of length 1 to uniquely identify
     #'   the current instance of the worker a the index in the launcher.
     launch_worker = function(call, name, launcher, worker, instance) {
-      bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
+      bin <- if_any(
+        tolower(Sys.info()[["sysname"]]) == "windows",
+        "R.exe",
+        "R"
+      )
       path <- file.path(R.home("bin"), bin)
       private$.log_prepare()
       processx::process$new(
         command = path,
-        args = c("-e", call),
+        args = c(private$.r_arguments, "-e", call),
         cleanup = TRUE,
         stdout = private$.log_stdout(name = name),
         stderr = private$.log_stderr(name = name)

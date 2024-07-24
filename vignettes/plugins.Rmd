@@ -63,7 +63,7 @@ custom_launcher_class <- R6::R6Class(
       bin <- file.path(R.home("bin"), "R")
       processx::process$new(
         command = bin,
-        args = c("-e", call),
+        args = c(self$r_arguments, "-e", call),
         cleanup = FALSE
       )
     },
@@ -74,7 +74,7 @@ custom_launcher_class <- R6::R6Class(
 )
 ```
 
-Inside `launch_worker()`, the `processx::process$new(command = bin, args = c("-e", call))` line runs the [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html) call in an external R process. This process runs in the background, connects back to `crew` and `mirai` over the local network, and accepts the tasks you push to the controller. `processx::process$new()` also returns a handle which the `terminate_worker()` method can use to force-terminate the process if appropriate. `mirai` has its own way to terminate workers, so a `terminate_worker()` method is not strictly required, but it is a useful safeguard in case a worker hangs in a crashed state before it establishes a connection.
+Inside `launch_worker()`, the `processx::process$new(command = bin, args = c(self$r_arguments, "-e", call))` line runs the [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html) call in an external R process with the command line arguments from `r_arguments` (supplied when the launcher is created). This process runs in the background, connects back to `crew` and `mirai` over the local network, and accepts the tasks you push to the controller. `processx::process$new()` also returns a handle which the `terminate_worker()` method can use to force-terminate the process if appropriate. `mirai` has its own way to terminate workers, so a `terminate_worker()` method is not strictly required, but it is a useful safeguard in case a worker hangs in a crashed state before it establishes a connection.
 
 Every `launch_worker()` method must accept arguments `call`, `launcher`, `worker`, and `instance`. The method does not actually need to use all these arguments, but they must be present in the function signature.
 
@@ -134,7 +134,8 @@ crew_controller_custom <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L
+  launch_max = 5L,
+  r_arguments = NULL
 ) {
   client <- crew::crew_client(
     name = name,
@@ -160,7 +161,8 @@ crew_controller_custom <- function(
     reset_options = reset_options,
     garbage_collection = garbage_collection,
     launch_max = launch_max,
-    tls = tls
+    tls = tls,
+    r_arguments = r_arguments
   )
   controller <- crew::crew_controller(client = client, launcher = launcher)
   controller$validate()

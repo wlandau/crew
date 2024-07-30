@@ -463,7 +463,7 @@ crew_class_launcher <- R6::R6Class(
         (8L * as.integer(isTRUE(private$.garbage_collection)))
       list(
         url = socket,
-        autoexit = crew_terminate_signal(),
+       # autoexit = crew_terminate_signal(),
         cleanup = cleanup,
         output = TRUE,
         maxtasks = private$.tasks_max,

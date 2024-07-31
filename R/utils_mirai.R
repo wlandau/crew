@@ -17,11 +17,7 @@ daemons_info <- function(name, seconds_interval, seconds_timeout) {
 }
 
 daemons_error <- function(daemons, name) {
-  message <- sprintf(
-    "'errorValue' int %d | %s\n",
-    daemons,
-    nanonext::nng_error(daemons)
-  )
+  message <- sprintf("'errorValue' int %s\n", nanonext::nng_error(daemons))
   pid <- mirai::nextget("pid", .compute = name)
   exists <- !is.null(pid) &&
     !inherits(

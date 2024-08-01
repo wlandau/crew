@@ -446,7 +446,8 @@ crew_class_controller <- R6::R6Class(
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
-    #' @param name Optional name of the task.
+    #' @param name Optional name of the task. Must be a character string
+    #'   or `NA`.
     #' @param save_command Logical of length 1. If `TRUE`, the controller
     #'   deparses the command and returns it with the output on `pop()`.
     #'   If `FALSE` (default), the controller skips this step to
@@ -500,7 +501,9 @@ crew_class_controller <- R6::R6Class(
         .compute = private$.client$name
       )
       on.exit({
-        private$.tasks[[length(.subset2(self, "tasks")) + 1L]] <- task
+        n <- length(.subset2(self, "tasks")) + 1L
+        private$.tasks[[n]] <- task
+        names(private$.tasks)[n] <- name
         private$.pushed <- .subset2(self, "pushed") + 1L
       })
       if (scale) {
@@ -1065,11 +1068,13 @@ crew_class_controller <- R6::R6Class(
         return(NULL)
       }
       task <- NULL
+      name <- NULL
       index_delete <- NULL
       for (index in seq(n_tasks)) {
         object <- .subset2(tasks, index)
         if (!nanonext::unresolved(object)) {
           task <- object
+          name <- names(tasks)[index]
           index_delete <- index
           break
         }
@@ -1085,6 +1090,7 @@ crew_class_controller <- R6::R6Class(
       # nocov start
       if (!is.list(out)) {
         out <- monad_init(
+          name = name,
           error = paste(
             utils::capture.output(print(out), type = "output"),
             collapse = "\n"
@@ -1359,14 +1365,43 @@ crew_class_controller <- R6::R6Class(
       }
       out
     },
+    #' @description Cancel one or more tasks.
+    #' @param names Character vector of names of tasks to cancel.
+    #'   Those names must have been manually supplied by `push()`.
+    #' @param all `TRUE` to cancel all tasks, `FALSE` otherwise.
+    #'   `all = TRUE` supersedes the `names` argument.
+    cancel = function(names = character(0L), all = FALSE) {
+      crew_assert(
+        all,
+        isTRUE(.) || isFALSE(.),
+        message = "'all' must be TRUE or FALSE"
+      )
+      crew_assert(
+        names,
+        is.character(.),
+        !anyNA(.),
+        nzchar(.),
+        message = paste(
+          "'names' must be a character vector",
+          "with no missing or empty strings"
+        )
+      )
+      tasks <- .subset2(private, ".tasks")
+      if (!all) {
+        tasks <- tasks[names(tasks) %in% names]
+      }
+      mirai::stop_mirai(tasks)
+      invisible()
+    },
     #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     terminate = function(controllers = NULL) {
-      private$.client$terminate()
-      private$.launcher$terminate()
+      self$cancel(all = TRUE)
       private$.tasks <- list()
+      private$.launcher$terminate()
+      private$.client$terminate()
       private$.pushed <- NULL
       private$.popped <- NULL
       private$.autoscaling <- FALSE

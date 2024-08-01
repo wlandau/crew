@@ -1,3 +1,132 @@
+crew_test("warnings and errors", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  expect_silent(x$validate())
+  expect_null(x$client$started)
+  x$start()
+  expect_equal(x$summary()$tasks, 0L)
+  expect_equal(x$summary()$errors, 0L)
+  expect_equal(x$summary()$warnings, 0L)
+  x$push(command = {
+    warning("this is a warning")
+    stop("this is an error")
+  }, name = "warnings_and_errors")
+  x$wait(seconds_timeout = 5)
+  out <- x$pop(scale = FALSE)
+  expect_equal(x$summary()$tasks, 1L)
+  expect_equal(x$summary()$errors, 1L)
+  expect_equal(x$summary()$warnings, 1L)
+  expect_equal(out$name, "warnings_and_errors")
+  expect_true(is.numeric(out$seconds))
+  expect_false(anyNA(out$seconds))
+  expect_true(out$seconds >= 0)
+  expect_equal(out$error, "this is an error")
+  expect_equal(out$warnings, "this is a warning")
+  expect_false(anyNA(out$trace))
+  handle <- x$launcher$workers$handle[[1]]
+  x$terminate()
+  expect_false(x$client$started)
+  crew_retry(
+    ~!handle$is_alive(),
+    seconds_interval = 0.1,
+    seconds_timeout = 5
+  )
+})
+
+crew_test("can relay task errors as local errors", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(command =  stop("this is an error"), name = "warnings_and_errors")
+  x$wait(seconds_timeout = 5)
+  expect_crew_error(x$pop(scale = FALSE, error = "stop"))
+})
+
+crew_test("can relay task errors as local warnings", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(command =  stop("this is an error"), name = "warnings_and_errors")
+  x$wait(seconds_timeout = 5)
+  expect_warning(
+    x$pop(scale = FALSE, error = "warn"),
+    class = "crew_warning"
+  )
+})
+
+crew_test("can terminate a lost worker", {
+  skip_on_cran()
+  skip_on_os("windows")
+  if (isTRUE(as.logical(Sys.getenv("CI", "false")))) {
+    skip_on_os("mac")
+  }
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360,
+    seconds_launch = 180
+  )
+  x$start()
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  private <- crew_private(x$launcher)
+  private$.workers$launches <- 1L
+  bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
+  path <- file.path(R.home("bin"), bin)
+  call <- "Sys.sleep(300)"
+  handle <- processx::process$new(command = path, args = c("-e", call))
+  crew_retry(
+    ~handle$is_alive(),
+    seconds_interval = 0.1,
+    seconds_timeout = 5
+  )
+  private$.workers$handle[[1L]] <- handle
+  private$.workers$socket[1L] <- x$client$summary()$socket
+  private$.workers$start[1L] <- - Inf
+  private$.workers$launches[1L] <- 1L
+  private$.workers$launched[1L] <- TRUE
+  private$.workers$terminated[1L] <- FALSE
+  expect_true(handle$is_alive())
+  x$launcher$rotate()
+  crew_retry(
+    ~!handle$is_alive(),
+    seconds_interval = 0.1,
+    seconds_timeout = 60
+  )
+  expect_false(handle$is_alive())
+})
+
+
 crew_test("deprecate auto_scale", {
   skip_on_cran()
   suppressWarnings(
@@ -492,4 +621,60 @@ crew_test("descale", {
   expect_null(controller$autoscaling)
   controller$descale()
   expect_false(controller$autoscaling)
+})
+
+crew_test("cancel() all", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  for (index in seq_len(4L)) {
+    x$push(Sys.sleep(1000))
+  }
+  x$cancel(all = TRUE)
+  x$wait(mode = "all", seconds_timeout = 30)
+  tasks <- x$collect()
+  expect_equal(nrow(tasks), 4L)
+  expect_true(all(grepl("operation canceled", tolower(tasks$error))))
+})
+
+crew_test("cancel() named", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  for (index in seq_len(2)) {
+    x$push(Sys.sleep(1000), name = "x")
+  }
+  for (index in seq_len(2)) {
+    x$push(Sys.sleep(1000), name = "z")
+  }
+  x$push(Sys.sleep(1000), name = "y")
+  x$cancel(names = c("x", "z"))
+  for (index in seq_len(4L)) {
+    x$wait(mode = "one", seconds_timeout = 30)
+  }
+  tasks <- x$collect()
+  expect_equal(nrow(tasks), 4L)
+  expect_equal(sort(tasks$name), sort(c("x", "x", "z", "z")))
+  expect_true(all(grepl("operation canceled", tolower(tasks$error))))
+  expect_equal(names(x$tasks), "y")
 })

@@ -94,6 +94,7 @@ auto-scaling is currently running}
 \item \href{#method-crew_class_controller-push_backlog}{\code{crew_class_controller$push_backlog()}}
 \item \href{#method-crew_class_controller-pop_backlog}{\code{crew_class_controller$pop_backlog()}}
 \item \href{#method-crew_class_controller-summary}{\code{crew_class_controller$summary()}}
+\item \href{#method-crew_class_controller-cancel}{\code{crew_class_controller$cancel()}}
 \item \href{#method-crew_class_controller-terminate}{\code{crew_class_controller$terminate()}}
 }
 }
@@ -570,7 +571,8 @@ within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
-\item{\code{name}}{Optional name of the task.}
+\item{\code{name}}{Optional name of the task. Must be a character string
+or \code{NA}.}
 
 \item{\code{save_command}}{Logical of length 1. If \code{TRUE}, the controller
 deparses the command and returns it with the output on \code{pop()}.
@@ -1220,6 +1222,27 @@ and then retrieved with \code{pop()}. Note: \code{warnings}
 is actually the number of \emph{tasks}, not the number of warnings.
 (A task could throw more than one warning.
 }
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-cancel"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-cancel}{}}}
+\subsection{Method \code{cancel()}}{
+Cancel one or more tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$cancel(names = character(0L), all = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{names}}{Character vector of names of tasks to cancel.
+Those names must have been manually supplied by \code{push()}.}
+
+\item{\code{all}}{\code{TRUE} to cancel all tasks, \code{FALSE} otherwise.
+\code{all = TRUE} supersedes the \code{names} argument.}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}

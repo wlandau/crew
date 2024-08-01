@@ -1,8 +1,10 @@
-# crew 0.9.5.9003 (development)
+# crew 0.9.5.9004 (development)
 
 * Give full worker name in the worker launch error message (@multimeric).
 * Start the controller automatically in more methods.
 * Add an `r_arguments` argument to supply command line arguments to R for workers (#175, @rpruim).
+* Add a `cancel()` controller method to cancel one or more tasks.
+* Call `cancel(all = TRUE)` from `terminate()` as a safeguard.
 
 # crew 0.9.5
 

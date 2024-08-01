@@ -23,7 +23,7 @@
 #' @importFrom getip getip
 #' @importFrom later create_loop current_loop destroy_loop exists_loop later
 #' @importFrom mirai call_mirai_ daemon daemons is_mirai is_mirai_error
-#'   mirai nextget nextstream saisei status
+#'   mirai nextget nextstream saisei status stop_mirai
 #' @importFrom nanonext %~>% cv cv_value mclock msleep nng_error random
 #'   unresolved until_ tls_config
 #' @importFrom processx process

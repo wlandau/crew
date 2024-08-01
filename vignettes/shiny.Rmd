@@ -171,7 +171,15 @@ The previous app feels choppy because it only refreshes every half second. Using
 
 ## Tutorial
 
-The revised app has two changes. First, it takes `mirai` task returned by `controller$push()` and turns it into a special [`promise`](https://rstudio.github.io/promises/). This [`promise`](https://rstudio.github.io/promises/) updates the coin flip counts as soon as the flip finishes.
+The revised app has three changes. First, we need an unobtrusive background loop to auto-scale `crew` workers. To enable this, we call `controller$autoscale()` just after `start()`.
+
+```r
+controller$start()
+controller$autoscale()
+onStop(function() controller$terminate())
+```
+
+Second, we take the `mirai` task returned by `controller$push()` and turn it into a special [`promise`](https://rstudio.github.io/promises/). This [`promise`](https://rstudio.github.io/promises/) updates the coin flip counts as soon as the flip finishes.
 
 ```r
 observeEvent(
@@ -184,7 +192,7 @@ observeEvent(
 )
 ```
 
-The `collect_flips()` function collects all the finished flips and updates the flip counts.
+Finally, the `collect_flips()` function collects all the finished flips and updates the flip counts.
 
 ```r
 collect_flips <- function(ignore, controller, flips) {
@@ -225,6 +233,7 @@ server <- function(input, output, session) {
   # crew controller
   controller <- crew::crew_controller_local(workers = 10, seconds_idle = 10)
   controller$start()
+  controller$autoscale()
   onStop(function() controller$terminate())
   
   # Keep running totals of heads, tails, and total flips.

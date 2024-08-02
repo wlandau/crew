@@ -109,6 +109,7 @@ crew_class_client <- R6::R6Class(
     .retry_tasks = NULL,
     .relay = NULL,
     .started = NULL,
+    .client = NULL,
     .dispatcher = NULL
   ),
   active = list(
@@ -152,6 +153,10 @@ crew_class_client <- R6::R6Class(
     #' @field started Whether the client is started.
     started = function() {
       .subset2(private, ".started")
+    },
+    #' @field client Process ID of the local process running the client.
+    client = function() {
+      .subset2(private, ".client")
     },
     #' @field dispatcher Process ID of the `mirai` dispatcher
     dispatcher = function() {
@@ -245,12 +250,15 @@ crew_class_client <- R6::R6Class(
         isTRUE(.) || isFALSE(.),
         message = "retry_tasks must be TRUE or FALSE"
       )
-      crew_assert(
-        private$.dispatcher %|||% 0L,
-        is.numeric(.),
-        length(.) == 1L,
-        !is.na(.),
-        . >= 0
+      if_any(
+        is.null(private$.client),
+        NULL,
+        crew_assert(inherits(private$.client, "ps_handle"))
+      )
+      if_any(
+        is.null(private$.dispatcher),
+        NULL,
+        crew_assert(inherits(private$.dispatcher, "ps_handle"))
       )
       crew_assert(private$.seconds_timeout >= private$.seconds_interval)
       crew_assert(inherits(private$.relay, "crew_class_relay"))
@@ -280,10 +288,14 @@ crew_class_client <- R6::R6Class(
         retry = private$.retry_tasks,
         .compute = private$.name
       )
+      private$.client <- ps::ps_handle()
       # TODO: remove code that gets the dispatcher PID if the dispatcher
       # process becomes a C thread.
       # Begin dispatcher code.
-      private$.dispatcher <- mirai::nextget("pid", .compute = private$.name)
+      pid <- mirai::nextget("pid", .compute = private$.name)
+      if (!is.null(pid)) {
+        private$.dispatcher <- ps::ps_handle(pid = pid)
+      }
       # End dispatcher code.
       private$.relay$set_from(self$condition())
       private$.relay$start()
@@ -297,50 +309,40 @@ crew_class_client <- R6::R6Class(
       if (!isTRUE(private$.started)) {
         return(invisible())
       }
-      # TODO: if the dispatcher process becomes a C thread,
-      # delete these superfluous checks on the dispatcher.
-      # Begin dispatcher checks block 1/2.
-      handle <- if_any(
-        is.null(private$.dispatcher),
-        NULL,
-        tryCatch(
-          ps::ps_handle(pid = private$.dispatcher),
-          error = function(condition) NULL
-        )
-      )
-      # End dispatcher checks block 1/2.
       mirai::daemons(n = 0L, .compute = private$.name)
       private$.relay$terminate()
       private$.started <- FALSE
-      # Begin dispatcher checks block 2/2.
-      if (is.null(private$.dispatcher) || is.null(handle)) {
+      # TODO: if the dispatcher process becomes a C thread,
+      # delete these superfluous checks on the dispatcher.
+      # Begin dispatcher checks.
+      if (is.null(private$.dispatcher)) {
         return(invisible())
       }
       tryCatch(
         crew_retry(
-          fun = ~!ps::ps_is_running(p = handle),
+          fun = ~!ps::ps_is_running(p = private$.dispatcher),
           seconds_interval = private$.seconds_interval,
           seconds_timeout = private$.seconds_timeout
         ),
         error = function(condition) NULL
       )
       if_any(
-        ps::ps_is_running(p = handle),
+        ps::ps_is_running(p = private$.dispatcher),
         try(
-          crew_terminate_process(p = ps::ps_pid(handle)),
+          crew_terminate_process(p = ps::ps_pid(private$.dispatcher)),
           silent = TRUE
         ),
         NULL
       )
       tryCatch(
         crew_retry(
-          fun = ~!ps::ps_is_running(p = handle),
+          fun = ~!ps::ps_is_running(p = ps::ps_pid(private$.dispatcher)),
           seconds_interval = private$.seconds_interval,
           seconds_timeout = private$.seconds_timeout
         ),
         error = function(condition) NULL
       )
-      # End dispatcher checks block 2/2.
+      # End dispatcher checks.
       invisible()
     },
     #' @description Get the `nanonext` condition variable which tasks signal

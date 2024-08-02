@@ -57,6 +57,8 @@ condition variable.}
 
 \item{\code{started}}{Whether the client is started.}
 
+\item{\code{client}}{Process ID of the local process running the client.}
+
 \item{\code{dispatcher}}{Process ID of the \code{mirai} dispatcher}
 }
 \if{html}{\out{</div>}}

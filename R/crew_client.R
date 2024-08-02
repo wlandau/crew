@@ -33,7 +33,7 @@
 #'   If you supply a path, then
 #'   the `log()` method will write memory usage statistics to the file,
 #'   and most controller methods will do the same with throttling
-#'   so resource consumption is recorded throughout the whole lifecycle
+#'   so resource consumption is recorded throughout the whole life cycle
 #'   of the controller.
 #'
 #'   The log file is in comma-separated values

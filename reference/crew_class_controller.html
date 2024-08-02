@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -128,6 +128,7 @@ auto-scaling is currently running</p></dd>
 <li><p><a href="#method-crew_class_controller-push_backlog"><code>crew_class_controller$push_backlog()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-pop_backlog"><code>crew_class_controller$pop_backlog()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-summary"><code>crew_class_controller$summary()</code></a></p></li>
+<li><p><a href="#method-crew_class_controller-log"><code>crew_class_controller$log()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-cancel"><code>crew_class_controller$cancel()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller-terminate"><code>crew_class_controller$terminate()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-crew_class_controller-new"></a><div class="section">
@@ -1385,15 +1386,51 @@ is actually the number of <em>tasks</em>, not the number of warnings.
 (A task could throw more than one warning.</p></li>
 </ul></div>
 
-</div><p></p><hr><a id="method-crew_class_controller-cancel"></a><div class="section">
-<h3 id="method-cancel-">Method <code>cancel()</code><a class="anchor" aria-label="anchor" href="#method-cancel-"></a></h3>
-<p>Cancel one or more tasks.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_controller-log"></a><div class="section">
+<h3 id="method-log-">Method <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code><a class="anchor" aria-label="anchor" href="#method-log-"></a></h3>
+<p>Write resource consumption to
+the <code>log_resources</code> file.</p><div class="section">
 <h4 id="usage-24">Usage<a class="anchor" aria-label="anchor" href="#usage-24"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">cancel</span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0L</span><span class="op">)</span>, all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span>throttle <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-23">Arguments<a class="anchor" aria-label="anchor" href="#arguments-23"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>throttle</code></dt>
+<dd><p><code>TRUE</code> to throttle with interval <code>seconds_interval</code>
+seconds to avoid overburdening the system when writing to the log
+file. <code>FALSE</code> otherwise.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="details-15">Details<a class="anchor" aria-label="anchor" href="#details-15"></a></h4>
+<p>When called from the controller as a side effect,
+logging is throttled so it does not happen more
+frequently than <code>seconds_interval</code> seconds.
+The only exception is the explicit <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> controller method.</p>
+</div>
+
+<div class="section">
+<h4 id="returns-24">Returns<a class="anchor" aria-label="anchor" href="#returns-24"></a></h4>
+<p><code>NULL</code> (invisibly). Writes to the log file if <code>log_resources</code>
+was originally given.
+The log file itself is in comma-separated values
+(CSV) format which can be easily read by <code>readr::read_csv()</code>.
+If <code>log_resources</code> is <code>NULL</code>,
+then <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> has no effect.</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_controller-cancel"></a><div class="section">
+<h3 id="method-cancel-">Method <code>cancel()</code><a class="anchor" aria-label="anchor" href="#method-cancel-"></a></h3>
+<p>Cancel one or more tasks.</p><div class="section">
+<h4 id="usage-25">Usage<a class="anchor" aria-label="anchor" href="#usage-25"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">cancel</span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0L</span><span class="op">)</span>, all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-24">Arguments<a class="anchor" aria-label="anchor" href="#arguments-24"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>names</code></dt>
 <dd><p>Character vector of names of tasks to cancel.
 Those names must have been manually supplied by <code>push()</code>.</p></dd>
@@ -1410,12 +1447,12 @@ Those names must have been manually supplied by <code>push()</code>.</p></dd>
 </div><p></p><hr><a id="method-crew_class_controller-terminate"></a><div class="section">
 <h3 id="method-terminate-">Method <code>terminate()</code><a class="anchor" aria-label="anchor" href="#method-terminate-"></a></h3>
 <p>Terminate the workers and the <code>mirai</code> client.</p><div class="section">
-<h4 id="usage-25">Usage<a class="anchor" aria-label="anchor" href="#usage-25"></a></h4>
+<h4 id="usage-26">Usage<a class="anchor" aria-label="anchor" href="#usage-26"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-24">Arguments<a class="anchor" aria-label="anchor" href="#arguments-24"></a></h4>
+<h4 id="arguments-25">Arguments<a class="anchor" aria-label="anchor" href="#arguments-25"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>controllers</code></dt>
 <dd><p>Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.</p></dd>
@@ -1424,7 +1461,7 @@ compatible with the analogous method of controller groups.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-24">Returns<a class="anchor" aria-label="anchor" href="#returns-24"></a></h4>
+<h4 id="returns-25">Returns<a class="anchor" aria-label="anchor" href="#returns-25"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 

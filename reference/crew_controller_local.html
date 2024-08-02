@@ -9,7 +9,7 @@ launch workers on local processes."><meta property="og:image" content="https://w
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,6 +69,7 @@ launch workers on local processes.</p>
 <span>  seconds_wall <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  seconds_exit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  retry_tasks <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  log_resources <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tasks_max <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  tasks_timers <span class="op">=</span> <span class="fl">0L</span>,</span>
 <span>  reset_globals <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -170,6 +171,20 @@ return a <code>mirai</code> error code (code number 19).
 <code>TRUE</code> (default) is recommended in most situations.
 Use <code>FALSE</code> for debugging purposes, e.g. to confirm that a task
 is causing a worker to run out of memory or crash in some other way.</p></dd>
+
+
+<dt id="arg-log-resources">log_resources<a class="anchor" aria-label="anchor" href="#arg-log-resources"></a></dt>
+<dd><p>Optional character string with a file path to a
+text file to log memory consumption. If you supply a path, then
+the <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> method of the client will append resource consumption
+from <code>resources()</code> to the file, and the controller will automatically
+append to the log file when its methods are invoked.
+The log file is in comma-separated values
+(CSV) format which can be easily read by <code>readr::read_csv()</code>.
+The controller automatically deletes the old log file when it starts
+(when <code>controller$start()</code> is called for the first time, but not
+subsequent times).
+Set <code>log_resources</code> to <code>NULL</code> to avoid writing to a log file.</p></dd>
 
 
 <dt id="arg-tasks-max">tasks_max<a class="anchor" aria-label="anchor" href="#arg-tasks-max"></a></dt>

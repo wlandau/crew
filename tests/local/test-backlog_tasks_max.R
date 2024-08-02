@@ -62,6 +62,6 @@ test_that("backlog of tasks completes with finite tasks_max", {
   testthat::expect_equal(length(controller$tasks), 0L)
   testthat::expect_equal(sum(controller$launcher$workers$assigned), n_tasks)
   testthat::expect_equal(sum(controller$launcher$workers$complete), n_tasks)
-  expect_gt(length(readLines(log), 2 * time["elapsed"]))
+  expect_gt(length(readLines(log)), 2 * time["elapsed"])
   expect_lt(length(readLines(log)), time["elapsed"] * 4 + 2)
 })

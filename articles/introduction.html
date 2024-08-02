@@ -336,8 +336,14 @@ pipeline (as explained <a href="https://books.ropensci.org/targets/crew.html" cl
 <code>tar_option_set()</code> to minimize memory consumption of the
 local processes (see also the <a href="https://books.ropensci.org/targets/performance.html" class="external-link">performance
 chapter</a>).</p>
-<p>As of <code>crew</code> version 0.9.5.9005, you can monitor memory
-usage with the <code>resources()</code> method of the client.</p>
+<p>As of <code>crew</code> version 0.9.5.9007, you monitor resources by
+supplying a log file path to the <code>log_resources</code> argument of
+the controller. That way, normal controller methods write to the log as
+a side effect every <code>seconds_interval</code> seconds. The output
+file is a comma-separated values (CSV) file which can be read into R
+with <code>readr::read_csv()</code>.</p>
+<p>Each new observation in the log file comes from the
+<code>resources()</code> client method:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="va">client</span><span class="op">$</span><span class="fu">resources</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 5</span></span>
@@ -347,7 +353,9 @@ usage with the <code>resources()</code> method of the client.</p>
 <span><span class="co">#&gt; 2 dispatcher 22169 running  24887296    632.</span></span></code></pre></div>
 <p><code>rss</code> stands for “resident set size”, and it is the total
 random access memory (RAM) consumed by the process, including shared
-libraries that may also be in use by different processes.</p>
+libraries that may also be in use by different processes.
+<code>pid</code> is the process ID, and <code>elapsed</code> is the
+elapsed seconds since the current R process started.</p>
 <p>In the output above, <code>"client"</code> refers to the local R
 process running the controller, and <code>"dispatcher"</code> refers to
 the <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>

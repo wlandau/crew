@@ -64,7 +64,7 @@ crew_class_controller <- R6::R6Class(
     .tasks = NULL,
     .pushed = NULL,
     .popped = NULL,
-    .log = NULL,
+    .summary = NULL,
     .error = NULL,
     .backlog = NULL,
     .autoscaling = NULL,
@@ -137,10 +137,6 @@ crew_class_controller <- R6::R6Class(
     popped = function() {
       .subset2(private, ".popped")
     },
-    #' @field log Tibble with per-worker metadata about tasks.
-    log = function() {
-      .subset2(private, ".log")
-    },
     #' @field error Tibble of task results (with one result per row)
     #'   from the last call to `map(error = "stop)`.
     error = function() {
@@ -192,7 +188,7 @@ crew_class_controller <- R6::R6Class(
         identical(private$.client$name, private$.launcher$name),
         message = "client and launcher must have the same name"
       )
-      crew_assert(private$.log, is.null(.) || is.list(.))
+      crew_assert(private$.summary, is.null(.) || is.list(.))
       crew_assert(private$.backlog, is.null(.) || is.character(.))
       crew_assert(private$.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
       invisible()
@@ -293,7 +289,7 @@ crew_class_controller <- R6::R6Class(
         private$.tasks <- list()
         private$.pushed <- 0L
         private$.popped <- 0L
-        private$.log <- list(
+        private$.summary <- list(
           controller = rep(private$.client$name, workers),
           worker = seq_len(workers),
           tasks = rep(0L, workers),
@@ -937,18 +933,20 @@ crew_class_controller <- R6::R6Class(
         FUN = sum
       )
       index <- as.integer(names(tasks))
-      log <- .subset2(self, "log")
+      summary <- .subset2(private, ".summary")
       on.exit({
         private$.tasks <- list()
         private$.popped <- .subset2(self, "popped") + total
-        private$.log$tasks[index] <- .subset2(log, "tasks")[index] +
+        private$.summary$tasks[index] <- .subset2(summary, "tasks")[index] +
           tasks
-        private$.log$seconds[index] <- .subset2(log, "seconds")[index] +
-          seconds
-        private$.log$errors[index] <- .subset2(log, "errors")[index] +
+        private$.summary$seconds[index] <- .subset2(
+          summary, "seconds"
+        )[index] + seconds
+        private$.summary$errors[index] <- .subset2(summary, "errors")[index] +
           summary_errors
-        private$.log$warnings[index] <- .subset2(log, "warnings")[index] +
-          summary_warnings
+        private$.summary$warnings[index] <- .subset2(
+          summary, "warnings"
+        )[index] + summary_warnings
       })
       warning_messages <- .subset2(out, "warnings")
       if (!all(is.na(warning_messages)) && isTRUE(warnings)) {
@@ -1099,7 +1097,7 @@ crew_class_controller <- R6::R6Class(
       }
       # nocov end
       out <- monad_tibble(out)
-      log <- .subset2(self, "log")
+      summary <- .subset2(private, ".summary")
       # Same as above.
       on.exit({
         private$.tasks[[index_delete]] <- NULL
@@ -1112,13 +1110,16 @@ crew_class_controller <- R6::R6Class(
       # nocov end
       on.exit({
         index <- .subset2(out, "worker")
-        private$.log$tasks[index] <- .subset2(log, "tasks")[index] + 1L
-        private$.log$seconds[index] <- .subset2(log, "seconds")[index] +
-          .subset2(out, "seconds")
-        private$.log$errors[index] <- .subset2(log, "errors")[index] +
+        private$.summary$tasks[index] <- .subset2(summary, "tasks")[index] +
+          1L
+        private$.summary$seconds[index] <- .subset2(
+          summary, "seconds"
+        )[index] + .subset2(out, "seconds")
+        private$.summary$errors[index] <- .subset2(summary, "errors")[index] +
           !anyNA(.subset2(out, "error"))
-        private$.log$warnings[index] <- .subset2(log, "warnings")[index] +
-          !anyNA(.subset2(out, "warnings"))
+        private$.summary$warnings[index] <- .subset2(
+          summary, "warnings"
+        )[index] + !anyNA(.subset2(out, "warnings"))
       }, add = TRUE)
       if (!is.null(error) && !anyNA(.subset2(out, "error"))) {
         if (identical(error, "stop")) {
@@ -1359,7 +1360,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     summary = function(controllers = NULL) {
-      out <- .subset2(self, "log")
+      out <- .subset2(private, ".summary")
       if (!is.null(out)) {
         out <- tibble::new_tibble(out)
       }

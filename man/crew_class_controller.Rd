@@ -55,8 +55,6 @@ Other controller:
 \item{\code{popped}}{Number of tasks popped
 since the controller was started.}
 
-\item{\code{log}}{Tibble with per-worker metadata about tasks.}
-
 \item{\code{error}}{Tibble of task results (with one result per row)
 from the last call to \verb{map(error = "stop)}.}
 

@@ -106,13 +106,36 @@ crew_test("crew_client() works", {
   expect_null(client$summary())
 })
 
+crew_test("resources()", {
+  x <- crew_client()
+  on.exit({
+    x$terminate()
+    rm(x)
+    crew_test_sleep()
+  })
+  out <- x$resources()
+  names <- c("type", "pid", "status", "rss", "elapsed")
+  expect_equal(nrow(out), 1L)
+  expect_equal(colnames(out), names)
+  expect_equal(out$type, "client")
+  x$start()
+  out <- x$resources()
+  expect_equal(nrow(out), 2L)
+  expect_equal(colnames(out), names)
+  expect_equal(sort(out$type), sort(c("client", "dispatcher")))
+  x$terminate()
+  out <- x$resources()
+  expect_equal(nrow(out), 1L)
+  expect_equal(colnames(out), names)
+  expect_equal(out$type, "client")
+})
+
 crew_test("crew_client() cover a line", {
   client <- crew_client(host = "127.0.0.1")
   private <- crew_private(client)
   private$.started <- TRUE
   expect_null(client$terminate())
 })
-
 
 crew_test("crew_client() deprecate tls_enable", {
   expect_warning(

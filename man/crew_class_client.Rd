@@ -73,6 +73,7 @@ condition variable.}
 \item \href{#method-crew_class_client-condition}{\code{crew_class_client$condition()}}
 \item \href{#method-crew_class_client-resolved}{\code{crew_class_client$resolved()}}
 \item \href{#method-crew_class_client-summary}{\code{crew_class_client$summary()}}
+\item \href{#method-crew_class_client-resources}{\code{crew_class_client$resources()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -232,6 +233,32 @@ during the life cycle of the listener.
 \item \code{socket}: websocket URL. \code{crew} changes the token at the end of the
 URL path periodically as a safeguard while managing workers.
 }
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_client-resources"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-resources}{}}}
+\subsection{Method \code{resources()}}{
+Get resource usage of local \code{crew} processes.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$resources()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A \code{tibble} with one row per process, including the current
+R process ("client") and the \code{mirai} dispatcher. If the dispatcher
+is not included in the output, it means the dispatcher process
+is not running.
+Columns include:
+* \code{type}: the type of process (client or dispatcher)
+* \code{pid}: the process ID.
+* \code{status}: The process status (from \code{ps::ps_status()}).
+* \code{rss}: resident set size (RSS). RS is the total memory held by
+a process, including shared libraries which may also be
+in use by other processes. RSS is obtained
+from \code{ps::ps_memory_info()} and shown in bytes.
+* \code{elapsed}: number of elapsed seconds since the R process was
+started (from \code{proc.time()["elapsed"]}).
 }
 }
 }

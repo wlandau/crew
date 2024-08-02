@@ -26,7 +26,7 @@ controller <- crew_controller_local(
 )
 ```
 
-Next, start the controller to create the [`mirai`](https://github.com/shikokuchuo/mirai) client. Later, when you are done with the controller, call `controller$terminate()` to clean up the workers and dispatcher.
+Next, start the controller to create the [`mirai`](https://github.com/shikokuchuo/mirai) client. Later, when you are done with the controller, call `controller$terminate()` to clean up your resources.
 
 ```r
 controller$start()
@@ -196,6 +196,27 @@ controller$client$summary()
 #> 1      1 FALSE          1        2        2 ws://10.0.0.32:58685/1/15e07250…
 #> 2      2 FALSE          1        1        1 ws://10.0.0.32:58685/2/cb45b3d4…
 ```
+
+# Resources
+
+`crew` utilizes background processes, and it may consume a lot of memory for big data workloads. A common cause of crashes is running out of computer memory. If you are running `crew` in a [`targets`](https://docs.ropensci.org/targets) pipeline (as explained [here in the `targets` user manual](https://books.ropensci.org/targets/crew.html)), consider setting `storage = "worker"` and `retrieval = "worker` in `tar_option_set()` to minimize memory consumption of the local processes (see also the [performance chapter](https://books.ropensci.org/targets/performance.html)).
+
+As of `crew` version 0.9.5.9005, you can monitor memory usage with the `resources()` method of the client.
+
+```r
+controller$client$resources()
+#> # A tibble: 2 × 5
+#>   type         pid status        rss elapsed
+#> * <chr>      <int> <chr>       <dbl>   <dbl>
+#> 1 client     19680 running 371130368    632.
+#> 2 dispatcher 22169 running  24887296    632.
+```
+
+`rss` stands for "resident set size", and it is the total random access memory (RAM) consumed by the process, including shared libraries that may also be in use by different processes. 
+
+In the output above, `"client"` refers to the local R process running the controller, and `"dispatcher"` refers to the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher process, a special background R process which sends tasks to workers. If the output of `resources()` does not include the dispatcher, it means the dispatcher is not running. (Either there was a crash, possibly due to maxing out memory, or you did not start the controller yet.)
+
+The workers is not included in the output of `resources()` because they may be running on different computers, and monitoring their resource consumption would require case-by-case [plugin](https://wlandau.github.io/crew/articles/plugins.html)-specific approaches.
 
 # Termination
 

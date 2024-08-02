@@ -395,6 +395,55 @@ crew_class_client <- R6::R6Class(
         complete = as.integer(daemons[, "complete"]),
         socket = as.character(rownames(daemons))
       )
+    },
+    #' @description Get resource usage of local `crew` processes.
+    #' @return A `tibble` with one row per process, including the current
+    #'   R process ("client") and the `mirai` dispatcher. If the dispatcher
+    #'   is not included in the output, it means the dispatcher process
+    #'   is not running.
+    #'   Columns include:
+    #'     * `type`: the type of process (client or dispatcher)
+    #'     * `pid`: the process ID.
+    #'     * `status`: The process status (from `ps::ps_status()`).
+    #'     * `rss`: resident set size (RSS). RS is the total memory held by
+    #'       a process, including shared libraries which may also be
+    #'       in use by other processes. RSS is obtained
+    #'       from `ps::ps_memory_info()` and shown in bytes.
+    #'     * `elapsed`: number of elapsed seconds since the R process was
+    #'       started (from `proc.time()["elapsed"]`).
+    resources = function() {
+      client <- .subset2(private, ".client")
+      if (is.null(client)) {
+        client <- ps::ps_handle()
+      }
+      type <- "client"
+      pid <- ps::ps_pid(p = client)
+      status <- ps::ps_status(p = client)
+      rss <- .subset2(ps::ps_memory_info(p = client), "rss")
+      elapsed <- proc.time()["elapsed"]
+      dispatcher <- .subset2(private, ".dispatcher")
+      row_names <- "1"
+      if (!is.null(dispatcher) && ps::ps_is_running(p = dispatcher)) {
+        type[2L] <- "dispatcher"
+        pid[2L] <- ps::ps_pid(p = dispatcher)
+        status[2L] <- ps::ps_status(p = dispatcher)
+        rss[2L] <- .subset2(ps::ps_memory_info(p = dispatcher), "rss")
+        row_names[2L] <- "2"
+        elapsed[2L] <- elapsed
+      }
+      out <- list(
+        type = type,
+        pid = pid,
+        status = status,
+        rss = rss,
+        elapsed = elapsed
+      )
+      attributes(out) <- list(
+        names = names(out),
+        class = c("tbl_df", "tbl", "data.frame"),
+        row.names = row_names
+      )
+      out
     }
   )
 )

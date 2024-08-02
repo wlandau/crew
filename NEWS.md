@@ -1,4 +1,4 @@
-# crew 0.9.5.9004 (development)
+# crew 0.9.5.9005 (development)
 
 * Give full worker name in the worker launch error message (@multimeric).
 * Start the controller automatically in more methods.
@@ -6,6 +6,7 @@
 * Add a `cancel()` controller method to cancel one or more tasks.
 * Call `cancel(all = TRUE)` from `terminate()` as a safeguard.
 * Make `client$dispatcher` a `ps::ps_handle()` handle and add a new `client$client` handle for the current process.
+* Add a `resources()` method to client to track memory usage.
 
 # crew 0.9.5
 

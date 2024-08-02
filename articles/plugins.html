@@ -274,6 +274,7 @@ workers take a long time to launch.</p>
 <span>  <span class="va">seconds_idle</span> <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  <span class="va">seconds_wall</span> <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  <span class="va">retry_tasks</span> <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">log_resources</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">tasks_max</span> <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  <span class="va">tasks_timers</span> <span class="op">=</span> <span class="fl">0L</span>,</span>
 <span>  <span class="va">reset_globals</span> <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -291,7 +292,8 @@ workers take a long time to launch.</p>
 <span>    tls <span class="op">=</span> <span class="va">tls</span>,</span>
 <span>    seconds_interval <span class="op">=</span> <span class="va">seconds_interval</span>,</span>
 <span>    seconds_timeout <span class="op">=</span> <span class="va">seconds_timeout</span>,</span>
-<span>    retry_tasks <span class="op">=</span> <span class="va">retry_tasks</span></span>
+<span>    retry_tasks <span class="op">=</span> <span class="va">retry_tasks</span>,</span>
+<span>    log_resources <span class="op">=</span> <span class="va">log_resources</span></span>
 <span>  <span class="op">)</span></span>
 <span>  <span class="va">launcher</span> <span class="op">&lt;-</span> <span class="va">custom_launcher_class</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>    name <span class="op">=</span> <span class="va">name</span>,</span>

@@ -127,16 +127,33 @@ is causing a worker to run out of memory or crash in some other way.</p></dd>
 
 <dt id="arg-log-resources">log_resources<a class="anchor" aria-label="anchor" href="#arg-log-resources"></a></dt>
 <dd><p>Optional character string with a file path to a
-text file to log memory consumption. If you supply a path, then
-the <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> method of the client will append resource consumption
-from <code>resources()</code> to the file, and the controller will automatically
-append to the log file when its methods are invoked.
-The log file is in comma-separated values
+text file to log memory consumption.
+Set <code>log_resources</code> to <code>NULL</code> to avoid writing to a log file.
+If you supply a path, then
+the <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> method will write memory usage statistics to the file,
+and most controller methods will do the same with throttling
+so resource consumption is recorded throughout the whole life cycle
+of the controller.</p>
+<p>The log file is in comma-separated values
 (CSV) format which can be easily read by <code>readr::read_csv()</code>.
 The controller automatically deletes the old log file when it starts
 (when <code>controller$start()</code> is called for the first time, but not
-subsequent times).
-Set <code>log_resources</code> to <code>NULL</code> to avoid writing to a log file.</p></dd>
+subsequent times).</p>
+<p>The log file has one row per observation of a process,
+including the current
+R process ("client") and the <code>mirai</code> dispatcher. If the dispatcher
+is not included in the output, it means the dispatcher process
+is not running.
+Columns include:
+* <code>type</code>: the type of process (client or dispatcher)
+* <code>pid</code>: the process ID.
+* <code>status</code>: The process status (from <code><a href="https://ps.r-lib.org/reference/ps_status.html" class="external-link">ps::ps_status()</a></code>).
+* <code>rss</code>: resident set size (RSS). RS is the total memory held by
+a process, including shared libraries which may also be
+in use by other processes. RSS is obtained
+from <code><a href="https://ps.r-lib.org/reference/ps_memory_info.html" class="external-link">ps::ps_memory_info()</a></code> and shown in bytes.
+* <code>elapsed</code>: number of elapsed seconds since the R process was
+started (from <code>proc.time()["elapsed"]</code>).</p></dd>
 
 </dl></div>
     <div class="section level2">

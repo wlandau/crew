@@ -1406,10 +1406,21 @@ file. <code>FALSE</code> otherwise.</p></dd>
 </div>
 <div class="section">
 <h4 id="details-15">Details<a class="anchor" aria-label="anchor" href="#details-15"></a></h4>
-<p>When called from the controller as a side effect,
-logging is throttled so it does not happen more
-frequently than <code>seconds_interval</code> seconds.
-The only exception is the explicit <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> controller method.</p>
+<p>The log file has one row per observation of a process,
+including the current
+R process ("client") and the <code>mirai</code> dispatcher. If the dispatcher
+is not included in the output, it means the dispatcher process
+is not running.
+Columns include:
+* <code>type</code>: the type of process (client or dispatcher)
+* <code>pid</code>: the process ID.
+* <code>status</code>: The process status (from <code><a href="https://ps.r-lib.org/reference/ps_status.html" class="external-link">ps::ps_status()</a></code>).
+* <code>rss</code>: resident set size (RSS). RS is the total memory held by
+a process, including shared libraries which may also be
+in use by other processes. RSS is obtained
+from <code><a href="https://ps.r-lib.org/reference/ps_memory_info.html" class="external-link">ps::ps_memory_info()</a></code> and shown in bytes.
+* <code>elapsed</code>: number of elapsed seconds since the R process was
+started (from <code>proc.time()["elapsed"]</code>).</p>
 </div>
 
 <div class="section">

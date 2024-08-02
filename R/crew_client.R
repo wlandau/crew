@@ -28,16 +28,35 @@
 #'   Use `FALSE` for debugging purposes, e.g. to confirm that a task
 #'   is causing a worker to run out of memory or crash in some other way.
 #' @param log_resources Optional character string with a file path to a
-#'   text file to log memory consumption. If you supply a path, then
-#'   the `log()` method of the client will append resource consumption
-#'   from `resources()` to the file, and the controller will automatically
-#'   append to the log file when its methods are invoked.
+#'   text file to log memory consumption.
+#'   Set `log_resources` to `NULL` to avoid writing to a log file.
+#'   If you supply a path, then
+#'   the `log()` method will write memory usage statistics to the file,
+#'   and most controller methods will do the same with throttling
+#'   so resource consumption is recorded throughout the whole lifecycle
+#'   of the controller.
+#'
 #'   The log file is in comma-separated values
 #'   (CSV) format which can be easily read by `readr::read_csv()`.
 #'   The controller automatically deletes the old log file when it starts
 #'   (when `controller$start()` is called for the first time, but not
 #'   subsequent times).
-#'   Set `log_resources` to `NULL` to avoid writing to a log file.
+#'
+#'   The log file has one row per observation of a process,
+#'   including the current
+#'   R process ("client") and the `mirai` dispatcher. If the dispatcher
+#'   is not included in the output, it means the dispatcher process
+#'   is not running.
+#'   Columns include:
+#'     * `type`: the type of process (client or dispatcher)
+#'     * `pid`: the process ID.
+#'     * `status`: The process status (from `ps::ps_status()`).
+#'     * `rss`: resident set size (RSS). RS is the total memory held by
+#'       a process, including shared libraries which may also be
+#'       in use by other processes. RSS is obtained
+#'       from `ps::ps_memory_info()` and shown in bytes.
+#'     * `elapsed`: number of elapsed seconds since the R process was
+#'       started (from `proc.time()["elapsed"]`).
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -495,6 +514,22 @@ crew_class_client <- R6::R6Class(
     #'   logging is throttled so it does not happen more
     #'   frequently than `seconds_interval` seconds.
     #'   The only exception is the explicit `log()` controller method.
+    #'
+    #'   The log file has one row per observation of a process,
+    #'   including the current
+    #'   R process ("client") and the `mirai` dispatcher. If the dispatcher
+    #'   is not included in the output, it means the dispatcher process
+    #'   is not running.
+    #'   Columns include:
+    #'     * `type`: the type of process (client or dispatcher)
+    #'     * `pid`: the process ID.
+    #'     * `status`: The process status (from `ps::ps_status()`).
+    #'     * `rss`: resident set size (RSS). RS is the total memory held by
+    #'       a process, including shared libraries which may also be
+    #'       in use by other processes. RSS is obtained
+    #'       from `ps::ps_memory_info()` and shown in bytes.
+    #'     * `elapsed`: number of elapsed seconds since the R process was
+    #'       started (from `proc.time()["elapsed"]`).
     #' @param throttle `TRUE` to throttle with interval `seconds_interval`
     #'   seconds to avoid overburdening the system when writing to the log
     #'   file. `FALSE` otherwise.

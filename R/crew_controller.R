@@ -1378,10 +1378,21 @@ crew_class_controller <- R6::R6Class(
     },
     #' @description Write resource consumption to
     #'   the `log_resources` file.
-    #' @details When called from the controller as a side effect,
-    #'   logging is throttled so it does not happen more
-    #'   frequently than `seconds_interval` seconds.
-    #'   The only exception is the explicit `log()` controller method.
+    #' @details The log file has one row per observation of a process,
+    #'   including the current
+    #'   R process ("client") and the `mirai` dispatcher. If the dispatcher
+    #'   is not included in the output, it means the dispatcher process
+    #'   is not running.
+    #'   Columns include:
+    #'     * `type`: the type of process (client or dispatcher)
+    #'     * `pid`: the process ID.
+    #'     * `status`: The process status (from `ps::ps_status()`).
+    #'     * `rss`: resident set size (RSS). RS is the total memory held by
+    #'       a process, including shared libraries which may also be
+    #'       in use by other processes. RSS is obtained
+    #'       from `ps::ps_memory_info()` and shown in bytes.
+    #'     * `elapsed`: number of elapsed seconds since the R process was
+    #'       started (from `proc.time()["elapsed"]`).
     #' @param throttle `TRUE` to throttle with interval `seconds_interval`
     #'   seconds to avoid overburdening the system when writing to the log
     #'   file. `FALSE` otherwise.

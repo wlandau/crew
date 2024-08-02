@@ -1243,10 +1243,21 @@ file. \code{FALSE} otherwise.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-When called from the controller as a side effect,
-logging is throttled so it does not happen more
-frequently than \code{seconds_interval} seconds.
-The only exception is the explicit \code{log()} controller method.
+The log file has one row per observation of a process,
+including the current
+R process ("client") and the \code{mirai} dispatcher. If the dispatcher
+is not included in the output, it means the dispatcher process
+is not running.
+Columns include:
+* \code{type}: the type of process (client or dispatcher)
+* \code{pid}: the process ID.
+* \code{status}: The process status (from \code{ps::ps_status()}).
+* \code{rss}: resident set size (RSS). RS is the total memory held by
+a process, including shared libraries which may also be
+in use by other processes. RSS is obtained
+from \code{ps::ps_memory_info()} and shown in bytes.
+* \code{elapsed}: number of elapsed seconds since the R process was
+started (from \code{proc.time()["elapsed"]}).
 }
 
 \subsection{Returns}{

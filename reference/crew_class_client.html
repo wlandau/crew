@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,6 +125,7 @@ condition variable.</p></dd>
 <li><p><a href="#method-crew_class_client-condition"><code>crew_class_client$condition()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-resolved"><code>crew_class_client$resolved()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-summary"><code>crew_class_client$summary()</code></a></p></li>
+<li><p><a href="#method-crew_class_client-resources"><code>crew_class_client$resources()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-crew_class_client-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p><code>mirai</code> client constructor.</p><div class="section">
@@ -288,6 +289,31 @@ during the life cycle of the listener.</p></li>
 <li><p><code>socket</code>: websocket URL. <code>crew</code> changes the token at the end of the
 URL path periodically as a safeguard while managing workers.</p></li>
 </ul></div>
+
+</div><p></p><hr><a id="method-crew_class_client-resources"></a><div class="section">
+<h3 id="method-resources-">Method <code>resources()</code><a class="anchor" aria-label="anchor" href="#method-resources-"></a></h3>
+<p>Get resource usage of local <code>crew</code> processes.</p><div class="section">
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">resources</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="returns-7">Returns<a class="anchor" aria-label="anchor" href="#returns-7"></a></h4>
+<p>A <code>tibble</code> with one row per process, including the current
+R process ("client") and the <code>mirai</code> dispatcher. If the dispatcher
+is not included in the output, it means the dispatcher process
+is not running.
+Columns include:
+* <code>type</code>: the type of process (client or dispatcher)
+* <code>pid</code>: the process ID.
+* <code>status</code>: The process status (from <code><a href="https://ps.r-lib.org/reference/ps_status.html" class="external-link">ps::ps_status()</a></code>).
+* <code>rss</code>: resident set size (RSS). RS is the total memory held by
+a process, including shared libraries which may also be
+in use by other processes. RSS is obtained
+from <code><a href="https://ps.r-lib.org/reference/ps_memory_info.html" class="external-link">ps::ps_memory_info()</a></code> and shown in bytes.
+* <code>elapsed</code>: number of elapsed seconds since the R process was
+started (from <code>proc.time()["elapsed"]</code>).</p>
+</div>
 
 </div>
 

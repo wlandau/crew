@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -110,8 +110,7 @@ together to speed up <a href="https://rstudio.github.io/shiny/" class="external-
 <span><span class="op">)</span></span></code></pre></div>
 <p>Next, start the controller to create the <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>
 client. Later, when you are done with the controller, call
-<code>controller$terminate()</code> to clean up the workers and
-dispatcher.</p>
+<code>controller$terminate()</code> to clean up your resources.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Use <code>push()</code> to submit a new task and <code>pop()</code>
@@ -325,20 +324,58 @@ the last call to <code>controller$launcher$tally()</code>.</p>
 <span><span class="co">#&gt; 2      2 FALSE          1        1        1 ws://10.0.0.32:58685/2/cb45b3d4…</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a>
+</h2>
+<p><code>crew</code> utilizes background processes, and it may consume a
+lot of memory for big data workloads. A common cause of crashes is
+running out of computer memory. If you are running <code>crew</code> in
+a <a href="https://docs.ropensci.org/targets" class="external-link"><code>targets</code></a>
+pipeline (as explained <a href="https://books.ropensci.org/targets/crew.html" class="external-link">here in the
+<code>targets</code> user manual</a>), consider setting
+<code>storage = "worker"</code> and <code>retrieval = "worker</code> in
+<code>tar_option_set()</code> to minimize memory consumption of the
+local processes (see also the <a href="https://books.ropensci.org/targets/performance.html" class="external-link">performance
+chapter</a>).</p>
+<p>As of <code>crew</code> version 0.9.5.9005, you can monitor memory
+usage with the <code>resources()</code> method of the client.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="va">client</span><span class="op">$</span><span class="fu">resources</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 5</span></span>
+<span><span class="co">#&gt;   type         pid status        rss elapsed</span></span>
+<span><span class="co">#&gt; * &lt;chr&gt;      &lt;int&gt; &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 client     19680 running 371130368    632.</span></span>
+<span><span class="co">#&gt; 2 dispatcher 22169 running  24887296    632.</span></span></code></pre></div>
+<p><code>rss</code> stands for “resident set size”, and it is the total
+random access memory (RAM) consumed by the process, including shared
+libraries that may also be in use by different processes.</p>
+<p>In the output above, <code>"client"</code> refers to the local R
+process running the controller, and <code>"dispatcher"</code> refers to
+the <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>
+dispatcher process, a special background R process which sends tasks to
+workers. If the output of <code>resources()</code> does not include the
+dispatcher, it means the dispatcher is not running. (Either there was a
+crash, possibly due to maxing out memory, or you did not start the
+controller yet.)</p>
+<p>The workers is not included in the output of <code>resources()</code>
+because they may be running on different computers, and monitoring their
+resource consumption would require case-by-case <a href="https://wlandau.github.io/crew/articles/plugins.html">plugin</a>-specific
+approaches.</p>
+</div>
+<div class="section level2">
 <h2 id="termination">Termination<a class="anchor" aria-label="anchor" href="#termination"></a>
 </h2>
 <p>Call <code>terminate()</code> on the controller after you finish
 using it. <code>terminate()</code> tries to close the the <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>
 dispatcher and any workers that may still be running. It is important to
 free up these resources.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>mirai</code> dispatcher process should exit on its own, but
 if not, you can manually terminate the process with
 <code>ps::ps_kill(p = controller$client$dispatcher)</code> or call
 <code><a href="../reference/crew_clean.html">crew_clean()</a></code> to terminate any dispatchers from current or
 previous R sessions.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/crew_clean.html">crew_clean</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; nothing to clean up</span></span></code></pre></div>
 </div>
@@ -368,7 +405,7 @@ session exits or the controller terminates, but under rare circumstances
 they may continue running. The “local monitor” in <code>crew</code>
 makes it easy to list and terminate any of these processes which may be
 running on your local computer. Example:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">monitor</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_monitor_local.html">crew_monitor_local</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">monitor</span><span class="op">$</span><span class="fu">dispatchers</span><span class="op">(</span><span class="op">)</span> <span class="co"># List PIDs of all local {mirai} dispatcher processes.</span></span>
 <span><span class="co">#&gt; [1] 31215</span></span>

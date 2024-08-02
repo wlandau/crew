@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,11 +94,11 @@ license</a>.</p>
 <ol style="list-style-type: decimal">
 <li>Worker processes to run tasks, which may include expensive jobs on
 cloud services like AWS Batch or traditional clusters like SLURM.</li>
-<li>A local <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>
-dispatcher process to schedule the tasks. If <code>x</code> is a
-<code>crew</code> controller, a <code><a href="https://ps.r-lib.org/reference/ps_handle.html" class="external-link">ps::ps_handle()</a></code> process
-handle of the dispatcher is retained in
-<code>x$client$dispatcher</code>.</li>
+<li>The <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>
+dispatcher, an R process which send tasks to workers and retrieves
+results back. If <code>x</code> is a <code>crew</code> controller, a
+<code><a href="https://ps.r-lib.org/reference/ps_handle.html" class="external-link">ps::ps_handle()</a></code> process handle of the dispatcher is
+retained in <code>x$client$dispatcher</code>.</li>
 </ol>
 <p>In the event of a poorly-timed crash or network error, these
 processes may not terminate properly. If that happens, they will
@@ -117,6 +117,17 @@ Example: <a href="https://wlandau.github.io/crew.aws.batch/index.html#job-manage
 <div class="section level3">
 <h3 id="crashes">Crashes<a class="anchor" aria-label="anchor" href="#crashes"></a>
 </h3>
+<p>The local process or <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>
+dispatcher process could crash. A common cause of crashes is running out
+of computer memory. The “Resources” section of the <a href="https://wlandau.github.io/crew/articles/introduction.html">introduction</a>
+explains how to monitor memory usage. If you are running
+<code>crew</code> in a <a href="https://docs.ropensci.org/targets" class="external-link"><code>targets</code></a>
+pipeline (as explained <a href="https://books.ropensci.org/targets/crew.html" class="external-link">here in the
+<code>targets</code> user manual</a>), consider setting
+<code>storage = "worker"</code> and <code>retrieval = "worker</code> in
+<code>tar_option_set()</code> to minimize memory consumption of the
+local processes (see also the <a href="https://books.ropensci.org/targets/performance.html" class="external-link">performance
+chapter</a>).</p>
 <p>In addition, <code>crew</code> worker processes may crash silently at
 runtime, or they may fail to launch or connect at all. The reasons may
 be platform-specific, but here are some common possibilities:</p>

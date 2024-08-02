@@ -5,6 +5,7 @@
 * Add an `r_arguments` argument to supply command line arguments to R for workers (#175, @rpruim).
 * Add a `cancel()` controller method to cancel one or more tasks.
 * Call `cancel(all = TRUE)` from `terminate()` as a safeguard.
+* Make `client$dispatcher` a `ps::ps_handle()` handle and add a new `client$client` handle for the current process.
 
 # crew 0.9.5
 

@@ -205,7 +205,7 @@ Call `terminate()` on the controller after you finish using it. `terminate()` tr
 controller$terminate()
 ```
 
-The `mirai` dispatcher process should exit on its own, but if not, you can manually terminate the process ID at `controller$client$dispatcher` or call `crew_clean()` to terminate any dispatchers from current or previous R sessions.
+The `mirai` dispatcher process should exit on its own, but if not, you can manually terminate the process with `ps::ps_kill(p = controller$client$dispatcher)` or call `crew_clean()` to terminate any dispatchers from current or previous R sessions.
 
 ```r
 crew_clean()

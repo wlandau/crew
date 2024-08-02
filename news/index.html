@@ -51,6 +51,7 @@
 <li>Add an <code>r_arguments</code> argument to supply command line arguments to R for workers (<a href="https://github.com/wlandau/crew/issues/175" class="external-link">#175</a>, <a href="https://github.com/rpruim" class="external-link">@rpruim</a>).</li>
 <li>Add a <code>cancel()</code> controller method to cancel one or more tasks.</li>
 <li>Call <code>cancel(all = TRUE)</code> from <code>terminate()</code> as a safeguard.</li>
+<li>Make <code>client$dispatcher</code> a <code><a href="https://ps.r-lib.org/reference/ps_handle.html" class="external-link">ps::ps_handle()</a></code> handle and add a new <code>client$client</code> handle for the current process.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.5" id="crew-095">crew 0.9.5<a class="anchor" aria-label="anchor" href="#crew-095"></a></h2><p class="text-muted">CRAN release: 2024-06-24</p>

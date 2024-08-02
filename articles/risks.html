@@ -96,7 +96,8 @@ license</a>.</p>
 cloud services like AWS Batch or traditional clusters like SLURM.</li>
 <li>A local <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>
 dispatcher process to schedule the tasks. If <code>x</code> is a
-<code>crew</code> controller, the process ID of the dispatcher is
+<code>crew</code> controller, a <code><a href="https://ps.r-lib.org/reference/ps_handle.html" class="external-link">ps::ps_handle()</a></code> process
+handle of the dispatcher is retained in
 <code>x$client$dispatcher</code>.</li>
 </ol>
 <p>In the event of a poorly-timed crash or network error, these

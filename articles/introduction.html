@@ -334,8 +334,8 @@ free up these resources.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>mirai</code> dispatcher process should exit on its own, but
-if not, you can manually terminate the process ID at
-<code>controller$client$dispatcher</code> or call
+if not, you can manually terminate the process with
+<code>ps::ps_kill(p = controller$client$dispatcher)</code> or call
 <code><a href="../reference/crew_clean.html">crew_clean()</a></code> to terminate any dispatchers from current or
 previous R sessions.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">

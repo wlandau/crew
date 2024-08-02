@@ -201,7 +201,9 @@ controller$client$summary()
 
 `crew` utilizes background processes, and it may consume a lot of memory for big data workloads. A common cause of crashes is running out of computer memory. If you are running `crew` in a [`targets`](https://docs.ropensci.org/targets) pipeline (as explained [here in the `targets` user manual](https://books.ropensci.org/targets/crew.html)), consider setting `storage = "worker"` and `retrieval = "worker` in `tar_option_set()` to minimize memory consumption of the local processes (see also the [performance chapter](https://books.ropensci.org/targets/performance.html)).
 
-As of `crew` version 0.9.5.9005, you can monitor memory usage with the `resources()` method of the client.
+As of `crew` version 0.9.5.9007, you monitor resources by supplying a log file path to the `log_resources` argument of the controller. That way, normal controller methods write to the log as a side effect every `seconds_interval` seconds. The output file is a comma-separated values (CSV) file which can be read into R with `readr::read_csv()`.
+
+Each new observation in the log file comes from the `resources()` client method:
 
 ```r
 controller$client$resources()
@@ -212,7 +214,7 @@ controller$client$resources()
 #> 2 dispatcher 22169 running  24887296    632.
 ```
 
-`rss` stands for "resident set size", and it is the total random access memory (RAM) consumed by the process, including shared libraries that may also be in use by different processes. 
+`rss` stands for "resident set size", and it is the total random access memory (RAM) consumed by the process, including shared libraries that may also be in use by different processes. `pid` is the process ID, and `elapsed` is the elapsed seconds since the current R process started.
 
 In the output above, `"client"` refers to the local R process running the controller, and `"dispatcher"` refers to the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher process, a special background R process which sends tasks to workers. If the output of `resources()` does not include the dispatcher, it means the dispatcher is not running. (Either there was a crash, possibly due to maxing out memory, or you did not start the controller yet.)
 

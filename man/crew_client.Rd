@@ -14,7 +14,8 @@ crew_client(
   tls_config = NULL,
   seconds_interval = 0.5,
   seconds_timeout = 5,
-  retry_tasks = TRUE
+  retry_tasks = TRUE,
+  log_resources = NULL
 )
 }
 \arguments{
@@ -52,6 +53,18 @@ return a \code{mirai} error code (code number 19).
 \code{TRUE} (default) is recommended in most situations.
 Use \code{FALSE} for debugging purposes, e.g. to confirm that a task
 is causing a worker to run out of memory or crash in some other way.}
+
+\item{log_resources}{Optional character string with a file path to a
+text file to log memory consumption. If you supply a path, then
+the \code{log()} method of the client will append resource consumption
+from \code{resources()} to the file, and the controller will automatically
+append to the log file when its methods are invoked.
+The log file is in comma-separated values
+(CSV) format which can be easily read by \code{readr::read_csv()}.
+The controller automatically deletes the old log file when it starts
+(when \code{controller$start()} is called for the first time, but not
+subsequent times).
+Set \code{log_resources} to \code{NULL} to avoid writing to a log file.}
 }
 \description{
 Create an \code{R6} wrapper object to manage the \code{mirai} client.

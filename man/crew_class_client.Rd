@@ -52,6 +52,8 @@ Other client:
 
 \item{\code{retry_tasks}}{See \code{\link[=crew_client]{crew_client()}}}
 
+\item{\code{log_resources}}{Process ID of the \code{mirai} dispatcher}
+
 \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
 
@@ -74,6 +76,7 @@ condition variable.}
 \item \href{#method-crew_class_client-resolved}{\code{crew_class_client$resolved()}}
 \item \href{#method-crew_class_client-summary}{\code{crew_class_client$summary()}}
 \item \href{#method-crew_class_client-resources}{\code{crew_class_client$resources()}}
+\item \href{#method-crew_class_client-log}{\code{crew_class_client$log()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -91,6 +94,7 @@ condition variable.}
   seconds_interval = NULL,
   seconds_timeout = NULL,
   retry_tasks = NULL,
+  log_resources = NULL,
   relay = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -113,6 +117,8 @@ condition variable.}
 \item{\code{seconds_timeout}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{retry_tasks}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+
+\item{\code{log_resources}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{relay}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 }
@@ -259,6 +265,25 @@ in use by other processes. RSS is obtained
 from \code{ps::ps_memory_info()} and shown in bytes.
 * \code{elapsed}: number of elapsed seconds since the R process was
 started (from \code{proc.time()["elapsed"]}).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_client-log"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-log}{}}}
+\subsection{Method \code{log()}}{
+Write resource consumption from \code{resources()} to
+the \code{log_resources} file originally supplied to the client.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$log()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly). Writes to the log file if \code{log_resources}
+was originally given.
+The log file itself is in comma-separated values
+(CSV) format which can be easily read by \code{readr::read_csv()}.
+If \code{log_resources} is \code{NULL},
+then \code{log()} has no effect.
 }
 }
 }

@@ -130,6 +130,23 @@ crew_test("resources()", {
   expect_equal(out$type, "client")
 })
 
+crew_test("log()", {
+  x <- crew_client(log_resources = NULL)
+  expect_silent(x$log())
+  log <- file.path(tempfile(), "x", "y", "log.csv")
+  x <- crew_client(log_resources = log)
+  expect_false(file.exists(log))
+  x$log()
+  x$log()
+  expect_true(file.exists(log))
+  out <- utils::read.csv(log)
+  expect_equal(dim(out), c(2L, 5L))
+  expect_equal(
+    colnames(out),
+    c("type", "pid", "status", "rss", "elapsed")
+  )
+})
+
 crew_test("crew_client() cover a line", {
   client <- crew_client(host = "127.0.0.1")
   private <- crew_private(client)

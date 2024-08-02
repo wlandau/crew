@@ -27,6 +27,17 @@
 #'   `TRUE` (default) is recommended in most situations.
 #'   Use `FALSE` for debugging purposes, e.g. to confirm that a task
 #'   is causing a worker to run out of memory or crash in some other way.
+#' @param log_resources Optional character string with a file path to a
+#'   text file to log memory consumption. If you supply a path, then
+#'   the `log()` method of the client will append resource consumption
+#'   from `resources()` to the file, and the controller will automatically
+#'   append to the log file when its methods are invoked.
+#'   The log file is in comma-separated values
+#'   (CSV) format which can be easily read by `readr::read_csv()`.
+#'   The controller automatically deletes the old log file when it starts
+#'   (when `controller$start()` is called for the first time, but not
+#'   subsequent times).
+#'   Set `log_resources` to `NULL` to avoid writing to a log file.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -44,7 +55,8 @@ crew_client <- function(
   tls_config = NULL,
   seconds_interval = 0.5,
   seconds_timeout = 5,
-  retry_tasks = TRUE
+  retry_tasks = TRUE,
+  log_resources = NULL
 ) {
   crew_deprecate(
     name = "tls_enable",
@@ -77,6 +89,7 @@ crew_client <- function(
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
     retry_tasks = retry_tasks,
+    log_resources = log_resources,
     relay = crew_relay()
   )
   client$validate()
@@ -107,6 +120,7 @@ crew_class_client <- R6::R6Class(
     .seconds_interval = NULL,
     .seconds_timeout = NULL,
     .retry_tasks = NULL,
+    .log_resources = NULL,
     .relay = NULL,
     .started = NULL,
     .client = NULL,
@@ -145,6 +159,10 @@ crew_class_client <- R6::R6Class(
     retry_tasks = function() {
       .subset2(private, ".retry_tasks")
     },
+    #' @field log_resources Process ID of the `mirai` dispatcher
+    log_resources = function() {
+      .subset2(private, ".log_resources")
+    },
     #' @field relay Relay object for event-driven programming on a downstream
     #'   condition variable.
     relay = function() {
@@ -174,6 +192,7 @@ crew_class_client <- R6::R6Class(
     #' @param seconds_interval Argument passed from [crew_client()].
     #' @param seconds_timeout Argument passed from [crew_client()].
     #' @param retry_tasks Argument passed from [crew_client()].
+    #' @param log_resources Argument passed from [crew_client()].
     #' @param relay Argument passed from [crew_client()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -191,6 +210,7 @@ crew_class_client <- R6::R6Class(
       seconds_interval = NULL,
       seconds_timeout = NULL,
       retry_tasks = NULL,
+      log_resources = NULL,
       relay = NULL
     ) {
       private$.name <- name
@@ -201,6 +221,7 @@ crew_class_client <- R6::R6Class(
       private$.seconds_interval <- seconds_interval
       private$.seconds_timeout <- seconds_timeout
       private$.retry_tasks <- retry_tasks
+      private$.log_resources <- log_resources
       private$.relay <- relay
     },
     #' @description Validate the client.
@@ -249,6 +270,17 @@ crew_class_client <- R6::R6Class(
         private$.retry_tasks,
         isTRUE(.) || isFALSE(.),
         message = "retry_tasks must be TRUE or FALSE"
+      )
+      if_any(
+        is.null(private$.log_resources),
+        NULL,
+        crew_assert(
+          private$.log_resources,
+          is.character(.),
+          length(.) == 1L,
+          nzchar(.),
+          !anyNA(.)
+        )
       )
       if_any(
         is.null(private$.client),
@@ -444,6 +476,26 @@ crew_class_client <- R6::R6Class(
         row.names = row_names
       )
       out
+    },
+    #' @description Write resource consumption from `resources()` to
+    #'   the `log_resources` file originally supplied to the client.
+    #' @return `NULL` (invisibly). Writes to the log file if `log_resources`
+    #'   was originally given.
+    #'   The log file itself is in comma-separated values
+    #'   (CSV) format which can be easily read by `readr::read_csv()`.
+    #'   If `log_resources` is `NULL`,
+    #'   then `log()` has no effect.
+    log = function() {
+      path <- .subset2(private, ".log_resources")
+      if (is.null(path)) {
+        return(invisible())
+      }
+      if (!file.exists(dirname(path))) {
+        dir.create(dirname(path), recursive = TRUE)
+      }
+      resources <- .subset2(self, "resources")()
+      data.table::fwrite(x = resources, file = path, sep = ",", append = TRUE)
+      invisible()
     }
   )
 )

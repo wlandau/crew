@@ -52,7 +52,9 @@ Other client:
 
 \item{\code{retry_tasks}}{See \code{\link[=crew_client]{crew_client()}}}
 
-\item{\code{log_resources}}{Process ID of the \code{mirai} dispatcher}
+\item{\code{log_resources}}{Path to the log file for logging resources.}
+
+\item{\code{throttle}}{Throttle object for logging resources.}
 
 \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
@@ -274,7 +276,23 @@ started (from \code{proc.time()["elapsed"]}).
 Write resource consumption from \code{resources()} to
 the \code{log_resources} file originally supplied to the client.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$log()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$log(throttle = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{throttle}}{\code{TRUE} to throttle with interval \code{seconds_interval}
+seconds to avoid overburdening the system when writing to the log
+file. \code{FALSE} otherwise.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+When called from the controller as a side effect,
+logging is throttled so it does not happen more
+frequently than \code{seconds_interval} seconds.
+The only exception is the explicit \code{log()} controller method.
 }
 
 \subsection{Returns}{

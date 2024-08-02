@@ -121,6 +121,7 @@ crew_class_client <- R6::R6Class(
     .seconds_timeout = NULL,
     .retry_tasks = NULL,
     .log_resources = NULL,
+    .throttle = NULL,
     .relay = NULL,
     .started = NULL,
     .client = NULL,
@@ -159,9 +160,13 @@ crew_class_client <- R6::R6Class(
     retry_tasks = function() {
       .subset2(private, ".retry_tasks")
     },
-    #' @field log_resources Process ID of the `mirai` dispatcher
+    #' @field log_resources Path to the log file for logging resources.
     log_resources = function() {
       .subset2(private, ".log_resources")
+    },
+    #' @field throttle Throttle object for logging resources.
+    throttle = function() {
+      .subset2(private, ".throttle")
     },
     #' @field relay Relay object for event-driven programming on a downstream
     #'   condition variable.
@@ -282,6 +287,13 @@ crew_class_client <- R6::R6Class(
           !anyNA(.)
         )
       )
+      if (!is.null(private$.throttle)) {
+        crew_assert(
+          inherits(private$.throttle, "crew_class_throttle"),
+          message = "field 'throttle' must be an object from crew_throttle()"
+        )
+        private$.throttle$validate()
+      }
       if_any(
         is.null(private$.client),
         NULL,
@@ -479,13 +491,28 @@ crew_class_client <- R6::R6Class(
     },
     #' @description Write resource consumption from `resources()` to
     #'   the `log_resources` file originally supplied to the client.
+    #' @details When called from the controller as a side effect,
+    #'   logging is throttled so it does not happen more
+    #'   frequently than `seconds_interval` seconds.
+    #'   The only exception is the explicit `log()` controller method.
+    #' @param throttle `TRUE` to throttle with interval `seconds_interval`
+    #'   seconds to avoid overburdening the system when writing to the log
+    #'   file. `FALSE` otherwise.
     #' @return `NULL` (invisibly). Writes to the log file if `log_resources`
     #'   was originally given.
     #'   The log file itself is in comma-separated values
     #'   (CSV) format which can be easily read by `readr::read_csv()`.
     #'   If `log_resources` is `NULL`,
     #'   then `log()` has no effect.
-    log = function() {
+    log = function(throttle = FALSE) {
+      if (is.null(.subset2(private, ".throttle"))) {
+        private$.throttle <- crew_throttle(
+          seconds_interval = private$.seconds_interval
+        )
+      }
+      if (throttle && !.subset2(.subset2(private, ".throttle"), "poll")()) {
+        return(invisible())
+      }
       path <- .subset2(private, ".log_resources")
       if (is.null(path)) {
         return(invisible())

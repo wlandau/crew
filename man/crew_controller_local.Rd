@@ -19,6 +19,7 @@ crew_controller_local(
   seconds_wall = Inf,
   seconds_exit = NULL,
   retry_tasks = TRUE,
+  log_resources = NULL,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -89,6 +90,18 @@ return a \code{mirai} error code (code number 19).
 \code{TRUE} (default) is recommended in most situations.
 Use \code{FALSE} for debugging purposes, e.g. to confirm that a task
 is causing a worker to run out of memory or crash in some other way.}
+
+\item{log_resources}{Optional character string with a file path to a
+text file to log memory consumption. If you supply a path, then
+the \code{log()} method of the client will append resource consumption
+from \code{resources()} to the file, and the controller will automatically
+append to the log file when its methods are invoked.
+The log file is in comma-separated values
+(CSV) format which can be easily read by \code{readr::read_csv()}.
+The controller automatically deletes the old log file when it starts
+(when \code{controller$start()} is called for the first time, but not
+subsequent times).
+Set \code{log_resources} to \code{NULL} to avoid writing to a log file.}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
 exiting. See the \code{maxtasks} argument of \code{mirai::daemon()}.

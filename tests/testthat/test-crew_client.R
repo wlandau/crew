@@ -130,17 +130,59 @@ crew_test("resources()", {
   expect_equal(out$type, "client")
 })
 
-crew_test("log()", {
-  x <- crew_client(log_resources = NULL)
+crew_test("log() without log file", {
+  skip_on_cran()
+  x <- crew_client(
+    log_resources = NULL,
+    seconds_interval = 100,
+    seconds_timeout = 200
+  )
   expect_silent(x$log())
+})
+
+crew_test("log() long throttling", {
+  skip_on_cran()
   log <- file.path(tempfile(), "x", "y", "log.csv")
   x <- crew_client(log_resources = log)
   expect_false(file.exists(log))
-  x$log()
-  x$log()
+  x$log(throttle = TRUE)
+  x$log(throttle = TRUE)
+  expect_true(file.exists(log))
+  out <- utils::read.csv(log)
+  expect_equal(dim(out), c(1L, 5L))
+  expect_equal(
+    colnames(out),
+    c("type", "pid", "status", "rss", "elapsed")
+  )
+})
+
+crew_test("log() long throttling but turned off", {
+  skip_on_cran()
+  log <- file.path(tempfile(), "x", "y", "log.csv")
+  x <- crew_client(log_resources = log)
+  expect_false(file.exists(log))
+  x$log(throttle = FALSE)
+  x$log(throttle = FALSE)
   expect_true(file.exists(log))
   out <- utils::read.csv(log)
   expect_equal(dim(out), c(2L, 5L))
+  expect_equal(
+    colnames(out),
+    c("type", "pid", "status", "rss", "elapsed")
+  )
+})
+
+crew_test("log() short throttling", {
+  skip_on_cran()
+  log <- file.path(tempfile(), "x", "y", "log.csv")
+  x <- crew_client(log_resources = log)
+  expect_false(file.exists(log))
+  x$log(throttle = TRUE)
+  Sys.sleep(0.25)
+  x$log(throttle = TRUE)
+  expect_true(file.exists(log))
+  out <- utils::read.csv(log)
+  expect_equal(dim(out), c(1L, 5L))
   expect_equal(
     colnames(out),
     c("type", "pid", "status", "rss", "elapsed")

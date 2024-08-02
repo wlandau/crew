@@ -19,6 +19,7 @@ crew_test("crew_client() active bindings", {
   expect_false(client$retry_tasks)
   expect_true(inherits(client$tls, "crew_class_tls"))
   expect_null(client$client)
+  expect_null(client$throttle)
   expect_silent(client$validate())
 })
 
@@ -154,6 +155,7 @@ crew_test("log() long throttling", {
     colnames(out),
     c("type", "pid", "status", "rss", "elapsed")
   )
+  expect_silent(x$validate())
 })
 
 crew_test("log() long throttling but turned off", {

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9006</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,6 +93,10 @@
 <dd><p>See <code><a href="crew_client.html">crew_client()</a></code></p></dd>
 
 
+<dt><code>log_resources</code></dt>
+<dd><p>Process ID of the <code>mirai</code> dispatcher</p></dd>
+
+
 <dt><code>relay</code></dt>
 <dd><p>Relay object for event-driven programming on a downstream
 condition variable.</p></dd>
@@ -126,6 +130,7 @@ condition variable.</p></dd>
 <li><p><a href="#method-crew_class_client-resolved"><code>crew_class_client$resolved()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-summary"><code>crew_class_client$summary()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-resources"><code>crew_class_client$resources()</code></a></p></li>
+<li><p><a href="#method-crew_class_client-log"><code>crew_class_client$log()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-crew_class_client-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p><code>mirai</code> client constructor.</p><div class="section">
@@ -139,6 +144,7 @@ condition variable.</p></dd>
 <span>  seconds_interval <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  seconds_timeout <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  retry_tasks <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  log_resources <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  relay <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -174,6 +180,10 @@ condition variable.</p></dd>
 
 
 <dt><code>retry_tasks</code></dt>
+<dd><p>Argument passed from <code><a href="crew_client.html">crew_client()</a></code>.</p></dd>
+
+
+<dt><code>log_resources</code></dt>
 <dd><p>Argument passed from <code><a href="crew_client.html">crew_client()</a></code>.</p></dd>
 
 
@@ -313,6 +323,24 @@ in use by other processes. RSS is obtained
 from <code><a href="https://ps.r-lib.org/reference/ps_memory_info.html" class="external-link">ps::ps_memory_info()</a></code> and shown in bytes.
 * <code>elapsed</code>: number of elapsed seconds since the R process was
 started (from <code>proc.time()["elapsed"]</code>).</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_client-log"></a><div class="section">
+<h3 id="method-log-">Method <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code><a class="anchor" aria-label="anchor" href="#method-log-"></a></h3>
+<p>Write resource consumption from <code>resources()</code> to
+the <code>log_resources</code> file originally supplied to the client.</p><div class="section">
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="returns-8">Returns<a class="anchor" aria-label="anchor" href="#returns-8"></a></h4>
+<p><code>NULL</code> (invisibly). Writes to the log file if <code>log_resources</code>
+was originally given.
+The log file itself is in comma-separated values
+(CSV) format which can be easily read by <code>readr::read_csv()</code>.
+If <code>log_resources</code> is <code>NULL</code>,
+then <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> has no effect.</p>
 </div>
 
 </div>

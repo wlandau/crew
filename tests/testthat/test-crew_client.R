@@ -115,20 +115,20 @@ crew_test("resources()", {
     crew_test_sleep()
   })
   out <- x$resources()
-  names <- c("type", "pid", "status", "rss", "elapsed")
+  names <- c("name", "pid", "status", "rss", "time")
   expect_equal(nrow(out), 1L)
   expect_equal(colnames(out), names)
-  expect_equal(out$type, "client")
+  expect_equal(out$name, "client")
   x$start()
   out <- x$resources()
   expect_equal(nrow(out), 2L)
   expect_equal(colnames(out), names)
-  expect_equal(sort(out$type), sort(c("client", "dispatcher")))
+  expect_equal(sort(out$name), sort(c("client", "dispatcher")))
   x$terminate()
   out <- x$resources()
   expect_equal(nrow(out), 1L)
   expect_equal(colnames(out), names)
-  expect_equal(out$type, "client")
+  expect_equal(out$name, "client")
 })
 
 crew_test("log() without log file", {
@@ -153,7 +153,7 @@ crew_test("log() long throttling", {
   expect_equal(dim(out), c(1L, 5L))
   expect_equal(
     colnames(out),
-    c("type", "pid", "status", "rss", "elapsed")
+    c("name", "pid", "status", "rss", "time")
   )
   expect_silent(x$validate())
 })
@@ -170,7 +170,7 @@ crew_test("log() long throttling but turned off", {
   expect_equal(dim(out), c(2L, 5L))
   expect_equal(
     colnames(out),
-    c("type", "pid", "status", "rss", "elapsed")
+    c("name", "pid", "status", "rss", "time")
   )
 })
 
@@ -187,7 +187,7 @@ crew_test("log() short throttling", {
   expect_equal(dim(out), c(1L, 5L))
   expect_equal(
     colnames(out),
-    c("type", "pid", "status", "rss", "elapsed")
+    c("name", "pid", "status", "rss", "time")
   )
 })
 

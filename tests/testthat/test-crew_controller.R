@@ -701,7 +701,7 @@ crew_test("log() long throttling", {
   expect_equal(dim(out), c(1L, 5L))
   expect_equal(
     colnames(out),
-    c("type", "pid", "status", "rss", "elapsed")
+    c("name", "pid", "status", "rss", "time")
   )
 })
 
@@ -717,7 +717,7 @@ crew_test("log() long throttling but turned off", {
   expect_equal(dim(out), c(2L, 5L))
   expect_equal(
     colnames(out),
-    c("type", "pid", "status", "rss", "elapsed")
+    c("name", "pid", "status", "rss", "time")
   )
 })
 
@@ -734,7 +734,7 @@ crew_test("log() short throttling", {
   expect_equal(dim(out), c(1L, 5L))
   expect_equal(
     colnames(out),
-    c("type", "pid", "status", "rss", "elapsed")
+    c("name", "pid", "status", "rss", "time")
   )
 })
 

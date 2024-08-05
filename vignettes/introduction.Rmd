@@ -208,13 +208,13 @@ Each new observation in the log file comes from the `resources()` client method:
 ```r
 controller$client$resources()
 #> # A tibble: 2 × 5
-#>   type         pid status        rss elapsed
-#> * <chr>      <int> <chr>       <dbl>   <dbl>
-#> 1 client     19680 running 371130368    632.
-#> 2 dispatcher 22169 running  24887296    632.
+#>   name         pid status        rss time                   
+#> * <chr>      <int> <chr>       <dbl> <chr>                  
+#> 1 client      6821 running 319029248 2024-08-05 08:26:28 EDT
+#> 2 dispatcher  7168 running  24985600 2024-08-05 08:26:28 EDT
 ```
 
-`rss` stands for "resident set size", and it is the total random access memory (RAM) consumed by the process, including shared libraries that may also be in use by different processes. `pid` is the process ID, and `elapsed` is the elapsed seconds since the current R process started.
+`rss` stands for "resident set size", and it is the total random access memory (RAM) consumed by the process, including shared libraries that may also be in use by different processes. `pid` is the process ID, and `time` is a character string with the time stamp of when the data was recorded. (Use `as.POSIXct()` to convert `time` to a date type, e.g. for visualization.)
 
 In the output above, `"client"` refers to the local R process running the controller, and `"dispatcher"` refers to the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher process, a special background R process which sends tasks to workers. If the output of `resources()` does not include the dispatcher, it means the dispatcher is not running. (Either there was a crash, possibly due to maxing out memory, or you did not start the controller yet.)
 

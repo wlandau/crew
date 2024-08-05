@@ -347,15 +347,17 @@ with <code>readr::read_csv()</code>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="va">client</span><span class="op">$</span><span class="fu">resources</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 5</span></span>
-<span><span class="co">#&gt;   type         pid status        rss elapsed</span></span>
-<span><span class="co">#&gt; * &lt;chr&gt;      &lt;int&gt; &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 client     19680 running 371130368    632.</span></span>
-<span><span class="co">#&gt; 2 dispatcher 22169 running  24887296    632.</span></span></code></pre></div>
+<span><span class="co">#&gt;   name         pid status        rss time                   </span></span>
+<span><span class="co">#&gt; * &lt;chr&gt;      &lt;int&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;                  </span></span>
+<span><span class="co">#&gt; 1 client      6821 running 319029248 2024-08-05 08:26:28 EDT</span></span>
+<span><span class="co">#&gt; 2 dispatcher  7168 running  24985600 2024-08-05 08:26:28 EDT</span></span></code></pre></div>
 <p><code>rss</code> stands for “resident set size”, and it is the total
 random access memory (RAM) consumed by the process, including shared
 libraries that may also be in use by different processes.
-<code>pid</code> is the process ID, and <code>elapsed</code> is the
-elapsed seconds since the current R process started.</p>
+<code>pid</code> is the process ID, and <code>time</code> is a character
+string with the time stamp of when the data was recorded. (Use
+<code><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct()</a></code> to convert <code>time</code> to a date type,
+e.g. for visualization.)</p>
 <p>In the output above, <code>"client"</code> refers to the local R
 process running the controller, and <code>"dispatcher"</code> refers to
 the <a href="https://github.com/shikokuchuo/mirai" class="external-link"><code>mirai</code></a>

@@ -27,7 +27,7 @@ crew_controller_local(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
-  r_arguments = NULL,
+  r_arguments = c("--no-save", "--no-restore"),
   local_log_directory = NULL,
   local_log_join = TRUE
 )

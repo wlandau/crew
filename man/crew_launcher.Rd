@@ -21,7 +21,7 @@ crew_launcher(
   launch_max = 5L,
   tls = crew::crew_tls(),
   processes = NULL,
-  r_arguments = NULL
+  r_arguments = c("--no-save", "--no-restore")
 )
 }
 \arguments{

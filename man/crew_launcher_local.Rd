@@ -20,7 +20,7 @@ crew_launcher_local(
   garbage_collection = FALSE,
   launch_max = 5L,
   tls = crew::crew_tls(),
-  r_arguments = NULL,
+  r_arguments = c("--no-save", "--no-restore"),
   local_log_directory = NULL,
   local_log_join = TRUE
 )

@@ -55,6 +55,8 @@
 <li>Add a <code>resources()</code> method to client to track memory usage.</li>
 <li>Client <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> method to log memory consumption to a CSV file.</li>
 <li>To passively log memory usage when <code>log_resources</code> is given, the controller now calls <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> as a side effect in most controller methods, with throttling to preserve speed.</li>
+<li>Return a status and status code from <code>pop()</code> etc.</li>
+<li>New internal function <code>as_monad()</code> makes error reporting more consistent.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.5" id="crew-095">crew 0.9.5<a class="anchor" aria-label="anchor" href="#crew-095"></a></h2><p class="text-muted">CRAN release: 2024-06-24</p>

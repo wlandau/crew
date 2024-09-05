@@ -1079,6 +1079,14 @@ originally supplied to <code>push()</code>,
 just prior to the task can be restored using
 <code>set.seed(seed = seed, kind = algorithm)</code>, where <code>seed</code> and
 <code>algorithm</code> are part of this output.</p></li>
+<li><p><code>status</code>: a character string. <code>"success"</code> if the task did not
+throw an error, <code>"cancel"</code> if the task was canceled with
+the <code>cancel()</code> controller method, or <code>"error"</code> if the task
+threw an error.</p></li>
+<li><p><code>code</code>: an integer code denoting the specific exit status:
+<code>0</code> for successful tasks, <code>1</code> for tasks with an error in the R
+command of the task, and another positive integer with an NNG
+status code if there is an error at the NNG/<code>nanonext</code> level.</p></li>
 <li><p><code>error</code>: the first 2048 characters of the error message if
 the task threw an error, <code>NA</code> otherwise.</p></li>
 <li><p><code>trace</code>: the first 2048 characters of the text of the traceback

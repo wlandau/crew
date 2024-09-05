@@ -232,6 +232,36 @@ crew_test("crew_controller_local() launch method", {
   expect_false(handle$is_alive())
 })
 
+crew_test("exit status and code", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local()
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(Sys.sleep(0.01), name = "short")
+  x$wait(mode = "one")
+  task <- x$pop()
+  expect_equal(task$status, "success")
+  expect_equal(task$code, 0L)
+  x$push(stop("message"), name = "broken")
+  x$wait(mode = "one")
+  task <- x$pop()
+  expect_equal(task$status, "error")
+  expect_equal(task$code, 1L)
+  x$push(Sys.sleep(10000), name = "long")
+  x$cancel(names = "long")
+  x$wait()
+  task <- x$pop()
+  expect_equal(task$status, "canceled")
+  expect_equal(task$code, 20L)
+  expect_equal(x$client$resolved(), 3L)
+})
+
 crew_test("deprecate seconds_exit", {
   expect_warning(
     x <- crew_controller_local(

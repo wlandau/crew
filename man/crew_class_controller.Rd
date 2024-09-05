@@ -937,6 +937,14 @@ originally supplied to \code{push()},
 just prior to the task can be restored using
 \code{set.seed(seed = seed, kind = algorithm)}, where \code{seed} and
 \code{algorithm} are part of this output.
+\item \code{status}: a character string. \code{"success"} if the task did not
+throw an error, \code{"cancel"} if the task was canceled with
+the \code{cancel()} controller method, or \code{"error"} if the task
+threw an error.
+\item \code{code}: an integer code denoting the specific exit status:
+\code{0} for successful tasks, \code{1} for tasks with an error in the R
+command of the task, and another positive integer with an NNG
+status code if there is an error at the NNG/\code{nanonext} level.
 \item \code{error}: the first 2048 characters of the error message if
 the task threw an error, \code{NA} otherwise.
 \item \code{trace}: the first 2048 characters of the text of the traceback

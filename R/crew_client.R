@@ -417,7 +417,6 @@ crew_class_client <- R6::R6Class(
       mirai::nextget(x = "cv", .compute = .subset2(self, "name"))
     },
     #' @description Get the true value of the `nanonext` condition variable.
-    #' @details Subtracts a safety offset which was padded on start.
     #' @return The value of the `nanonext` condition variable.
     resolved = function() {
       condition <- .subset2(self, "condition")()

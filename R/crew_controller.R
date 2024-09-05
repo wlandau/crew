@@ -918,8 +918,13 @@ crew_class_controller <- R6::R6Class(
       if (verbose) {
         cli::cli_progress_done(.envir = progress_envir)
       }
-      results <- map(tasks, ~.subset2(.x, "data"))
-      out <- lapply(results, monad_tibble)
+      out <- list()
+      for (index in seq_along(tasks)) {
+        out[[length(out) + 1L]] <- as_monad(
+          task = tasks[[index]],
+          name = names[[index]]
+        )
+      }
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
       out <- out[match(x = names, table = out$name),, drop = FALSE] # nolint
       out <- out[!is.na(out$name),, drop = FALSE] # nolint
@@ -1011,6 +1016,14 @@ crew_class_controller <- R6::R6Class(
     #'      just prior to the task can be restored using
     #'      `set.seed(seed = seed, kind = algorithm)`, where `seed` and
     #'      `algorithm` are part of this output.
+    #'   * `status`: a character string. `"success"` if the task did not
+    #'     throw an error, `"cancel"` if the task was canceled with
+    #'     the `cancel()` controller method, or `"error"` if the task
+    #'     threw an error.
+    #'   * `code`: an integer code denoting the specific exit status:
+    #'     `0` for successful tasks, `1` for tasks with an error in the R
+    #'     command of the task, and another positive integer with an NNG
+    #'     status code if there is an error at the NNG/`nanonext` level.
     #'   * `error`: the first 2048 characters of the error message if
     #'     the task threw an error, `NA` otherwise.
     #'   * `trace`: the first 2048 characters of the text of the traceback
@@ -1089,34 +1102,15 @@ crew_class_controller <- R6::R6Class(
       if (is.null(task)) {
         return(NULL)
       }
-      out <- task$data
-      # The contents of the if() statement below happen
-      # if mirai cannot evaluate the command.
-      # I cannot cover this in automated tests, but
-      # I did test it by hand.
-      # nocov start
-      if (!is.list(out)) {
-        out <- monad_init(
-          name = name,
-          error = paste(
-            utils::capture.output(print(out), type = "output"),
-            collapse = "\n"
-          )
-        )
-      }
-      # nocov end
-      out <- monad_tibble(out)
+      out <- as_monad(task, name = name)
       summary <- .subset2(private, ".summary")
-      # Same as above.
       on.exit({
         private$.tasks[[index_delete]] <- NULL
         private$.popped <- .subset2(self, "popped") + 1L
       })
-      # nocov start
       if (anyNA(.subset2(out, "launcher"))) {
         return(out)
       }
-      # nocov end
       on.exit({
         index <- .subset2(out, "worker")
         private$.summary$tasks[index] <- .subset2(summary, "tasks")[index] +
@@ -1166,11 +1160,10 @@ crew_class_controller <- R6::R6Class(
       controllers = NULL
     ) {
       pop <- .subset2(self, "pop")
-      results <- list()
-      while (!is.null(result <- pop(scale = FALSE, error = error))) {
-        results[[length(results) + 1L]] <- result
+      out <- list()
+      while (!is.null(task <- pop(scale = FALSE, error = error))) {
+        out[[length(out) + 1L]] <- task
       }
-      out <- lapply(results, monad_tibble)
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
       if_any(nrow(out), out, NULL)
     },

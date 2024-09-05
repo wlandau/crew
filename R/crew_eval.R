@@ -104,6 +104,8 @@ crew_eval <- function(
     seconds = seconds,
     seed = seed %|||% NA_integer_,
     algorithm = algorithm %|||% NA_character_,
+    status = if_any(is.null(state$error), "success", "error"),
+    code = as.integer(!is.null(state$error)),
     error = state$error %|||% NA_character_,
     trace = state$trace %|||% NA_character_,
     warnings = state$warnings %|||% NA_character_,

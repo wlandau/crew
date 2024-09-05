@@ -5,6 +5,8 @@ monad_init <- function(
   seconds = NA_real_,
   seed = NA_integer_,
   algorithm = NA_character_,
+  status = NA_character_,
+  code = NA_integer_,
   error = NA_character_,
   trace = NA_character_,
   warnings = NA_character_,
@@ -19,6 +21,8 @@ monad_init <- function(
     seconds = seconds,
     seed = seed,
     algorithm = algorithm,
+    status = status,
+    code = code,
     error = error,
     trace = trace,
     warnings = warnings,
@@ -36,6 +40,8 @@ monad_new <- function(
   seconds = NULL,
   seed = NULL,
   algorithm = NULL,
+  status = NULL,
+  code = NULL,
   error = NULL,
   trace = NULL,
   warnings = NULL,
@@ -50,6 +56,8 @@ monad_new <- function(
     seconds = seconds,
     seed = seed,
     algorithm = algorithm,
+    status = status,
+    code = code,
     error = error,
     trace = trace,
     warnings = warnings,
@@ -66,6 +74,7 @@ monad_validate <- function(monad) {
     "name",
     "command",
     "algorithm",
+    "status",
     "error",
     "trace",
     "warnings",
@@ -78,9 +87,31 @@ monad_validate <- function(monad) {
   for (col in c("seconds", "seed")) {
     crew_assert(monad[[col]], is.numeric(.), length(.) == 1L)
   }
-  crew_assert(monad$worker, is.integer(.), length(.) == 1L)
+  for (col in c("code", "worker")) {
+    crew_assert(monad[[col]], is.integer(.), length(.) == 1L)
+  }
   crew_assert(monad$result, is.list(.), length(.) == 1L)
   invisible()
+}
+
+as_monad <- function(task, name) {
+  out <- .subset2(task, "data")
+  if (!is.list(out)) {
+    out <- monad_init(
+      name = name,
+      status = if_any(
+        identical(as.integer(out), 20L),
+        "canceled",
+        "error"
+      ),
+      code = as.integer(out),
+      error = paste(
+        utils::capture.output(print(out), type = "output"),
+        collapse = "\n"
+      )
+    )
+  }
+  monad_tibble(out)
 }
 
 monad_tibble <- function(monad) {

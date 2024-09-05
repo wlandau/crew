@@ -208,10 +208,6 @@ Get the true value of the \code{nanonext} condition variable.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_client$resolved()}\if{html}{\out{</div>}}
 }
 
-\subsection{Details}{
-Subtracts a safety offset which was padded on start.
-}
-
 \subsection{Returns}{
 The value of the \code{nanonext} condition variable.
 }

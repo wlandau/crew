@@ -9,6 +9,8 @@
 * Add a `resources()` method to client to track memory usage.
 * Client `log()` method to log memory consumption to a CSV file.
 * To passively log memory usage when `log_resources` is given, the controller now calls `log()` as a side effect in most controller methods, with throttling to preserve speed.
+* Return a status and status code from `pop()` etc.
+* New internal function `as_monad()` makes error reporting more consistent.
 
 # crew 0.9.5
 

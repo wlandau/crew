@@ -258,8 +258,8 @@ crew_class_launcher_local <- R6::R6Class(
     launch_worker = function(call, name, launcher, worker, instance) {
       bin <- if_any(
         tolower(Sys.info()[["sysname"]]) == "windows",
-        "R.exe",
-        "R"
+        "Rscript.exe",
+        "Rscript"
       )
       path <- file.path(R.home("bin"), bin)
       private$.log_prepare()

@@ -106,7 +106,8 @@ using \code{launcher$async$eval()} and expect a \code{mirai} task object
 as the return value.}
 
 \item{r_arguments}{Optional character vector of command line arguments
-to pass to R when starting a worker. Example:
+to pass to \code{Rscript} (non-Windows) or \code{Rscript.exe} (Windows)
+when starting a worker. Example:
 \code{r_arguments = c("--vanilla", "--max-connections=32")}.}
 }
 \description{

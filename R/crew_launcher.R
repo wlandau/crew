@@ -70,7 +70,8 @@
 #'   using `launcher$async$eval()` and expect a `mirai` task object
 #'   as the return value.
 #' @param r_arguments Optional character vector of command line arguments
-#'   to pass to R when starting a worker. Example:
+#'   to pass to `Rscript` (non-Windows) or `Rscript.exe` (Windows)
+#'   when starting a worker. Example:
 #'   `r_arguments = c("--vanilla", "--max-connections=32")`.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {

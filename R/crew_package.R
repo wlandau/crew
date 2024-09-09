@@ -37,7 +37,7 @@
 #' @importFrom tidyselect all_of any_of contains ends_with eval_select
 #'   everything last_col matches num_range one_of starts_with
 #' @importFrom tools pskill SIGINT SIGQUIT SIGTERM
-#' @importFrom utils compareVersion globalVariables head
+#' @importFrom utils capture.output compareVersion globalVariables head
 NULL
 
 utils::globalVariables(".")

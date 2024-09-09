@@ -116,7 +116,7 @@ crew_class_launcher_local <- R6::R6Class(
       if (!private$.local_log_join) {
         name <- paste0(name, "-stdout")
       }
-      file.path(directory, paste0(name, ".log"))
+      path.expand(file.path(directory, paste0(name, ".log")))
     },
     .log_stderr = function(name) {
       directory <- private$.local_log_directory
@@ -126,7 +126,7 @@ crew_class_launcher_local <- R6::R6Class(
       if_any(
         private$.local_log_join,
         "2>&1",
-        file.path(directory, paste0(name, "-stderr.log"))
+        path.expand(file.path(directory, paste0(name, "-stderr.log")))
       )
     }
   ),

@@ -11,7 +11,7 @@ crew_test("crew_clean()", {
     crew_test_sleep()
   })
   x$start()
-  handle_dispatcher <- ps::ps_handle(x$client$dispatcher)
+  handle_dispatcher <- x$client$dispatcher
   expect_true(ps::ps_is_running(handle_dispatcher))
   x$launch(n = 1L)
   handle_worker <- x$launcher$workers$handle[[1]]

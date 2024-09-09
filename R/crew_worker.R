@@ -22,6 +22,6 @@ crew_worker <- function(settings, launcher, worker, instance) {
     CREW_WORKER = worker,
     CREW_INSTANCE = instance
   )
-  crew_message(utils::capture.output(print(sessionInfo())))
+  crew_message(utils::capture.output(print(utils::sessionInfo())))
   do.call(what = mirai::daemon, args = settings)
 }

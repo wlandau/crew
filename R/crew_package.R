@@ -38,6 +38,7 @@
 #'   everything last_col matches num_range one_of starts_with
 #' @importFrom tools pskill SIGINT SIGQUIT SIGTERM
 #' @importFrom utils capture.output compareVersion globalVariables head
+#'   sessionInfo
 NULL
 
 utils::globalVariables(".")

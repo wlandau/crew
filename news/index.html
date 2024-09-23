@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9011</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,7 +45,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.9.5.9010" id="crew-0959010-development">crew 0.9.5.9010 (development)<a class="anchor" aria-label="anchor" href="#crew-0959010-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.9.5.9011" id="crew-0959011-development">crew 0.9.5.9011 (development)<a class="anchor" aria-label="anchor" href="#crew-0959011-development"></a></h2>
 <ul><li>Give full worker name in the worker launch error message (<a href="https://github.com/multimeric" class="external-link">@multimeric</a>).</li>
 <li>Start the controller automatically in more methods.</li>
 <li>Add an <code>r_arguments</code> argument to supply command line arguments to R for workers (<a href="https://github.com/wlandau/crew/issues/175" class="external-link">#175</a>, <a href="https://github.com/rpruim" class="external-link">@rpruim</a>).</li>
@@ -60,6 +60,7 @@
 <li>Use <code><a href="https://rdrr.io/r/base/path.expand.html" class="external-link">path.expand()</a></code> on local log files.</li>
 <li>Switch to <code>Rscript</code>.</li>
 <li>Print session info from <code><a href="../reference/crew_worker.html">crew_worker()</a></code> before attempting to dial into <code>mirai</code>.</li>
+<li>Add <code>asyncdial = FALSE</code> back to <code><a href="https://shikokuchuo.net/mirai/reference/daemon.html" class="external-link">mirai::daemon()</a></code> call.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.5" id="crew-095">crew 0.9.5<a class="anchor" aria-label="anchor" href="#crew-095"></a></h2><p class="text-muted">CRAN release: 2024-06-24</p>
@@ -268,7 +269,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer></div>

@@ -1,4 +1,4 @@
-# crew 0.9.5.9010 (development)
+# crew 0.9.5.9011 (development)
 
 * Give full worker name in the worker launch error message (@multimeric).
 * Start the controller automatically in more methods.
@@ -14,6 +14,7 @@
 * Use `path.expand()` on local log files.
 * Switch to `Rscript`.
 * Print session info from `crew_worker()` before attempting to dial into `mirai`.
+* Add `asyncdial = FALSE` back to `mirai::daemon()` call.
 
 # crew 0.9.5
 

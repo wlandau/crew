@@ -9,7 +9,7 @@ crew_test("backlog of tasks for transient workers", {
   time <- system.time({
     for (index in seq_len(n)) {
       name <- paste0("task_", index)
-      x$push(name = name, command = ps::ps_pid())
+      x$push(name = name, command = Sys.getenv("CREW_INSTANCE"))
     }
   })
   message(time["elapsed"])
@@ -17,7 +17,7 @@ crew_test("backlog of tasks for transient workers", {
   time <- system.time({
     for (index in seq_len(n)) {
       name <- paste0("task_", index)
-      x$push(name = name, command = ps::ps_pid())
+      x$push(name = name, command = Sys.getenv("CREW_INSTANCE"))
     }
   })
   message(time["elapsed"])
@@ -38,7 +38,7 @@ crew_test("backlog of tasks for transient workers", {
   message(time["elapsed"])
   testthat::expect_equal(sum(x$launcher$summary()$launches), 2 * n)
   results <- tibble::as_tibble(do.call(rbind, results))
-  results$result <- as.integer(results$result)
+  results$result <- as.character(results$result)
   testthat::expect_equal(length(unique(results$result)), 2 * n)
   x$terminate()
 })

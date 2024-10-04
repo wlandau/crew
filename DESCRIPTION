@@ -35,7 +35,7 @@ Authors@R: c(
   ),
   person(
     family = "Eli Lilly and Company",
-    role = "cph"
+    role = c("cph", "fnd")
   ))
 Depends:
   R (>= 4.0.0)

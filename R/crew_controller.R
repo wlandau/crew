@@ -113,9 +113,6 @@ crew_class_controller <- R6::R6Class(
         private$.client$relay$wait(seconds_timeout = seconds_interval)
       }
       .subset2(self, "unpopped")() > 0L
-    },
-    .log = function(throttle = TRUE) {
-      .subset2(.subset2(private, ".client"), "log")(throttle = throttle)
     }
   ),
   active = list(

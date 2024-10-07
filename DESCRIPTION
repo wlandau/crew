@@ -40,6 +40,7 @@ Authors@R: c(
 Depends:
   R (>= 4.0.0)
 Imports:
+  autometric,
   cli (>= 3.1.0),
   data.table,
   getip,
@@ -61,6 +62,8 @@ Suggests:
   markdown (>= 1.1),
   rmarkdown (>= 2.4),
   testthat (>= 3.0.0)
+Remotes:
+  wlandau/autometric
 Encoding: UTF-8
 Language: en-US
 VignetteBuilder: knitr

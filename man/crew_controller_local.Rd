@@ -19,7 +19,6 @@ crew_controller_local(
   seconds_wall = Inf,
   seconds_exit = NULL,
   retry_tasks = TRUE,
-  log_resources = NULL,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -90,37 +89,6 @@ return a \code{mirai} error code (code number 19).
 \code{TRUE} (default) is recommended in most situations.
 Use \code{FALSE} for debugging purposes, e.g. to confirm that a task
 is causing a worker to run out of memory or crash in some other way.}
-
-\item{log_resources}{Optional character string with a file path to a
-text file to log memory consumption.
-Set \code{log_resources} to \code{NULL} to avoid writing to a log file.
-If you supply a path, then
-the \code{log()} method will write memory usage statistics to the file,
-and most controller methods will do the same with throttling
-so resource consumption is recorded throughout the whole life cycle
-of the controller.
-
-The log file is in comma-separated values
-(CSV) format which can be easily read by \code{readr::read_csv()}.
-The controller automatically deletes the old log file when it starts
-(when \code{controller$start()} is called for the first time, but not
-subsequent times).
-
-The log file has one row per observation of a process,
-including the current
-R process ("client") and the \code{mirai} dispatcher. If the dispatcher
-is not included in the output, it means the dispatcher process
-is not running.
-Columns include:
-* \code{type}: the type of process (client or dispatcher)
-* \code{pid}: the process ID.
-* \code{status}: The process status (from \code{ps::ps_status()}).
-* \code{rss}: resident set size (RSS). RS is the total memory held by
-a process, including shared libraries which may also be
-in use by other processes. RSS is obtained
-from \code{ps::ps_memory_info()} and shown in bytes.
-* \code{elapsed}: number of elapsed seconds since the R process was
-started (from \code{proc.time()["elapsed"]}).}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
 exiting. See the \code{maxtasks} argument of \code{mirai::daemon()}.

@@ -286,9 +286,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     start = function(controllers = NULL) {
       if (!isTRUE(.subset2(.subset2(self, "client"), "started"))) {
-        unlink(private$.client$log_resources)
         private$.client$start()
-        .subset2(private, ".log")()
         workers <- private$.client$workers
         private$.launcher$start()
         private$.tasks <- list()
@@ -330,7 +328,6 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
       .subset2(self, "start")()
-      .subset2(private, ".log")()
       private$.launcher$tally()
       private$.launcher$rotate()
       walk(
@@ -359,7 +356,6 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(throttle = TRUE, controllers = NULL) {
-      .subset2(private, ".log")()
       private$.launcher$scale(demand = self$unresolved(), throttle = throttle)
       invisible()
     },
@@ -474,7 +470,6 @@ crew_class_controller <- R6::R6Class(
       controller = NULL
     ) {
       .subset2(self, "start")()
-      .subset2(private, ".log")()
       if (substitute) {
         command <- substitute(command)
       }
@@ -607,7 +602,6 @@ crew_class_controller <- R6::R6Class(
       controller = NULL
     ) {
       .subset2(self, "start")()
-      .subset2(private, ".log")()
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
       if (substitute) {
         command <- substitute(command)
@@ -1058,7 +1052,6 @@ crew_class_controller <- R6::R6Class(
       error = NULL,
       controllers = NULL
     ) {
-      .subset2(private, ".log")()
       crew_deprecate(
         name = "collect",
         date = "2023-10-02",
@@ -1284,7 +1277,6 @@ crew_class_controller <- R6::R6Class(
       envir$result <- FALSE
       crew_retry(
         fun = ~{
-          .subset2(private, ".log")()
           if (!envir$result && scale) {
             self$scale(throttle = throttle)
           }
@@ -1369,42 +1361,12 @@ crew_class_controller <- R6::R6Class(
       }
       out
     },
-    #' @description Write resource consumption to
-    #'   the `log_resources` file.
-    #' @details The log file has one row per observation of a process,
-    #'   including the current
-    #'   R process ("client") and the `mirai` dispatcher. If the dispatcher
-    #'   is not included in the output, it means the dispatcher process
-    #'   is not running.
-    #'   Columns include:
-    #'     * `type`: the type of process (client or dispatcher)
-    #'     * `pid`: the process ID.
-    #'     * `status`: The process status (from `ps::ps_status()`).
-    #'     * `rss`: resident set size (RSS). RS is the total memory held by
-    #'       a process, including shared libraries which may also be
-    #'       in use by other processes. RSS is obtained
-    #'       from `ps::ps_memory_info()` and shown in bytes.
-    #'     * `elapsed`: number of elapsed seconds since the R process was
-    #'       started (from `proc.time()["elapsed"]`).
-    #' @param throttle `TRUE` to throttle with interval `seconds_interval`
-    #'   seconds to avoid overburdening the system when writing to the log
-    #'   file. `FALSE` otherwise.
-    #' @return `NULL` (invisibly). Writes to the log file if `log_resources`
-    #'   was originally given.
-    #'   The log file itself is in comma-separated values
-    #'   (CSV) format which can be easily read by `readr::read_csv()`.
-    #'   If `log_resources` is `NULL`,
-    #'   then `log()` has no effect.
-    log = function(throttle = FALSE) {
-      .subset2(private, ".log")(throttle = throttle)
-    },
     #' @description Cancel one or more tasks.
     #' @param names Character vector of names of tasks to cancel.
     #'   Those names must have been manually supplied by `push()`.
     #' @param all `TRUE` to cancel all tasks, `FALSE` otherwise.
     #'   `all = TRUE` supersedes the `names` argument.
     cancel = function(names = character(0L), all = FALSE) {
-      .subset2(private, ".log")()
       crew_assert(
         all,
         isTRUE(.) || isFALSE(.),
@@ -1432,7 +1394,6 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     terminate = function(controllers = NULL) {
-      .subset2(private, ".log")()
       self$cancel(all = TRUE)
       private$.tasks <- list()
       private$.launcher$terminate()

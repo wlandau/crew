@@ -30,7 +30,6 @@ crew_controller_local <- function(
   seconds_wall = Inf,
   seconds_exit = NULL,
   retry_tasks = TRUE,
-  log_resources = NULL,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -60,8 +59,7 @@ crew_controller_local <- function(
     tls_config = tls_config,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
-    retry_tasks = retry_tasks,
-    log_resources = log_resources
+    retry_tasks = retry_tasks
   )
   launcher <- crew_launcher_local(
     name = name,

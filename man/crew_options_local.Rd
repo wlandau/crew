@@ -28,6 +28,6 @@ Options for the local \code{crew} launcher.
 }
 \seealso{
 Other options: 
-\code{\link{crew_options_validate}()}
+\code{\link{crew_options_metrics}()}
 }
 \concept{options}

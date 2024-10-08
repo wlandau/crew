@@ -228,7 +228,7 @@ crew_class_launcher_local <- R6::R6Class(
     #' @return `NULL` (invisibly).
     validate = function() {
       super$validate()
-      crew_options_validate(private$.options_local)
+      crew_options_local_validate(private$.options_local)
     },
     #' @description Launch a local process worker which will
     #'   dial into a socket.

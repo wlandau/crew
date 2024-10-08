@@ -26,12 +26,15 @@ crew_options_local = function(
     ),
     class = c("crew_options_local", "crew_options")
   )
-  crew_options_validate(out)
+  crew_options_local_validate(out)
   out
 }
 
-#' @export
-crew_options_validate.crew_options_local <- function(options) {
+crew_options_local_validate <- function(options) {
+  crew_assert(
+    inherits(options, "crew_options_local"),
+    message = "options_local object must come from crew_options_local()."
+  )
   crew_assert(
     options$log_directory %|||% "x",
     is.character(.),

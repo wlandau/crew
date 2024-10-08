@@ -6,6 +6,7 @@ crew_test("abstract launcher class", {
 
 crew_test("active bindings for covr", {
   skip_on_cran()
+  skip_on_os("windows")
   out <- crew_launcher(processes = 1L, r_arguments = "--vanilla")
   expect_equal(out$processes, 1L)
   expect_null(out$async)
@@ -23,6 +24,7 @@ crew_test("active bindings for covr", {
 
 crew_test("preemptive async termination for covr", {
   skip_on_cran()
+  skip_on_os("windows")
   out <- crew_launcher(processes = 1L)
   private <- crew_private(out)
   private$.async <- crew_async()

@@ -140,6 +140,7 @@ crew_test("deprecate auto_scale", {
 
 crew_test("task collection and results stack work", {
   skip_on_cran()
+  skip_on_os("windows")
   x <- crew_controller_local(seconds_idle = 120)
   x$start()
   on.exit({

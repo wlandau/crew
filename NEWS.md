@@ -14,7 +14,7 @@
 * Print session info from `crew_worker()` before attempting to dial into `mirai`.
 * Add `asyncdial = FALSE` back to `mirai::daemon()` call.
 * Deprecate `local_log_directory` and `local_log_join` in favor of `crew_options_local()` and the `options_local` argument.
-# Add `crew_options_metrics()` and the `options_metrics` argument for recording resource metrics (#178).
+* Add `crew_options_metrics()` and the `options_metrics` argument for recording resource metrics (#178).
 * Add a new `logging.Rmd` vignette to explain best practices for logging and resource usage metrics (#178).
 
 # crew 0.9.5

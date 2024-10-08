@@ -117,3 +117,11 @@ crew_options_metrics_validate <- function(options) {
     message = "seconds_workers must be a positive number."
   )
 }
+
+log_metrics_name <- function(path, name) {
+  if_any(
+    is.null(path) || path %in% c("/dev/stdout", "/dev/stderr"),
+    path,
+    file.path(path, name)
+  )
+}

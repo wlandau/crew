@@ -10,6 +10,7 @@ articles:
   contents:
   - introduction
   - groups
+  - logging
   - shiny
   - promises
 - title: Technical details

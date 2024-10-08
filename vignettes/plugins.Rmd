@@ -87,7 +87,7 @@ Every `launch_worker()` method must accept arguments `call`, `launcher`, `worker
 
 To see what the `call` object looks like, create a new launcher and run the `call()` method.
 
-```{r}
+```r
 library(crew)
 launcher <- crew_launcher_local()
 launcher$call(
@@ -96,6 +96,7 @@ launcher$call(
   worker = 3L,
   instance = "aa9c59ea"
 )
+#> [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:5000/3/aa9c59ea\", asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tls = NULL, rs = NULL), launcher = \"my_launcher\", worker = 3L, instance = \"aa9c59ea\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
 ```
 
 # Helper

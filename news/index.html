@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,6 +22,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>How to use `crew`</h6></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to crew</a></li>
     <li><a class="dropdown-item" href="../articles/groups.html">Controller groups</a></li>
+    <li><a class="dropdown-item" href="../articles/logging.html">Logging</a></li>
     <li><a class="dropdown-item" href="../articles/shiny.html">Asynchronous Shiny apps</a></li>
     <li><a class="dropdown-item" href="../articles/promises.html">Integration with promises</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -45,15 +46,13 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.9.5.9011" id="crew-0959011-development">crew 0.9.5.9011 (development)<a class="anchor" aria-label="anchor" href="#crew-0959011-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.9.5.9012" id="crew-0959012-development">crew 0.9.5.9012 (development)<a class="anchor" aria-label="anchor" href="#crew-0959012-development"></a></h2>
 <ul><li>Give full worker name in the worker launch error message (<a href="https://github.com/multimeric" class="external-link">@multimeric</a>).</li>
 <li>Start the controller automatically in more methods.</li>
 <li>Add an <code>r_arguments</code> argument to supply command line arguments to R for workers (<a href="https://github.com/wlandau/crew/issues/175" class="external-link">#175</a>, <a href="https://github.com/rpruim" class="external-link">@rpruim</a>).</li>
 <li>Add a <code>cancel()</code> controller method to cancel one or more tasks.</li>
 <li>Call <code>cancel(all = TRUE)</code> from <code>terminate()</code> as a safeguard.</li>
 <li>Make <code>client$dispatcher</code> a <code><a href="https://ps.r-lib.org/reference/ps_handle.html" class="external-link">ps::ps_handle()</a></code> handle and add a new <code>client$client</code> handle for the current process.</li>
-<li>Add a <code>resources()</code> method to client to track memory usage.</li>
-<li>Client <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> method to log memory consumption to a CSV file.</li>
 <li>To passively log memory usage when <code>log_resources</code> is given, the controller now calls <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> as a side effect in most controller methods, with throttling to preserve speed.</li>
 <li>Return a status and status code from <code>pop()</code> etc.</li>
 <li>New internal function <code>as_monad()</code> makes error reporting more consistent.</li>
@@ -61,6 +60,8 @@
 <li>Switch to <code>Rscript</code>.</li>
 <li>Print session info from <code><a href="../reference/crew_worker.html">crew_worker()</a></code> before attempting to dial into <code>mirai</code>.</li>
 <li>Add <code>asyncdial = FALSE</code> back to <code><a href="https://shikokuchuo.net/mirai/reference/daemon.html" class="external-link">mirai::daemon()</a></code> call.</li>
+<li>Deprecate <code>local_log_directory</code> and <code>local_log_join</code> in favor of <code><a href="../reference/crew_options_local.html">crew_options_local()</a></code> and the <code>options_local</code> argument. # Add <code><a href="../reference/crew_options_metrics.html">crew_options_metrics()</a></code> and the <code>options_metrics</code> argument for recording resource metrics (<a href="https://github.com/wlandau/crew/issues/178" class="external-link">#178</a>).</li>
+<li>Add a new <code>logging.Rmd</code> vignette to explain best practices for logging and resource usage metrics (<a href="https://github.com/wlandau/crew/issues/178" class="external-link">#178</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.5" id="crew-095">crew 0.9.5<a class="anchor" aria-label="anchor" href="#crew-095"></a></h2><p class="text-muted">CRAN release: 2024-06-24</p>

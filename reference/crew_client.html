@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,6 +22,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>How to use `crew`</h6></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to crew</a></li>
     <li><a class="dropdown-item" href="../articles/groups.html">Controller groups</a></li>
+    <li><a class="dropdown-item" href="../articles/logging.html">Logging</a></li>
     <li><a class="dropdown-item" href="../articles/shiny.html">Asynchronous Shiny apps</a></li>
     <li><a class="dropdown-item" href="../articles/promises.html">Integration with promises</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -61,8 +62,7 @@
 <span>  tls_config <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  seconds_interval <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  seconds_timeout <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  retry_tasks <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  log_resources <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  retry_tasks <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -123,37 +123,6 @@ return a <code>mirai</code> error code (code number 19).
 <code>TRUE</code> (default) is recommended in most situations.
 Use <code>FALSE</code> for debugging purposes, e.g. to confirm that a task
 is causing a worker to run out of memory or crash in some other way.</p></dd>
-
-
-<dt id="arg-log-resources">log_resources<a class="anchor" aria-label="anchor" href="#arg-log-resources"></a></dt>
-<dd><p>Optional character string with a file path to a
-text file to log memory consumption.
-Set <code>log_resources</code> to <code>NULL</code> to avoid writing to a log file.
-If you supply a path, then
-the <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> method will write memory usage statistics to the file,
-and most controller methods will do the same with throttling
-so resource consumption is recorded throughout the whole life cycle
-of the controller.</p>
-<p>The log file is in comma-separated values
-(CSV) format which can be easily read by <code>readr::read_csv()</code>.
-The controller automatically deletes the old log file when it starts
-(when <code>controller$start()</code> is called for the first time, but not
-subsequent times).</p>
-<p>The log file has one row per observation of a process,
-including the current
-R process ("client") and the <code>mirai</code> dispatcher. If the dispatcher
-is not included in the output, it means the dispatcher process
-is not running.
-Columns include:
-* <code>type</code>: the type of process (client or dispatcher)
-* <code>pid</code>: the process ID.
-* <code>status</code>: The process status (from <code><a href="https://ps.r-lib.org/reference/ps_status.html" class="external-link">ps::ps_status()</a></code>).
-* <code>rss</code>: resident set size (RSS). RS is the total memory held by
-a process, including shared libraries which may also be
-in use by other processes. RSS is obtained
-from <code><a href="https://ps.r-lib.org/reference/ps_memory_info.html" class="external-link">ps::ps_memory_info()</a></code> and shown in bytes.
-* <code>elapsed</code>: number of elapsed seconds since the R process was
-started (from <code>proc.time()["elapsed"]</code>).</p></dd>
 
 </dl></div>
     <div class="section level2">

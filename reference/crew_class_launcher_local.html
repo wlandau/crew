@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,6 +22,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>How to use `crew`</h6></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to crew</a></li>
     <li><a class="dropdown-item" href="../articles/groups.html">Controller groups</a></li>
+    <li><a class="dropdown-item" href="../articles/logging.html">Logging</a></li>
     <li><a class="dropdown-item" href="../articles/shiny.html">Asynchronous Shiny apps</a></li>
     <li><a class="dropdown-item" href="../articles/promises.html">Integration with promises</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -66,11 +67,7 @@
     </div>
     <div class="section level2">
     <h2 id="active-bindings">Active bindings<a class="anchor" aria-label="anchor" href="#active-bindings"></a></h2>
-    <p></p><div class="r6-active-bindings"><dl><dt><code>local_log_directory</code></dt>
-<dd><p>See <code><a href="crew_launcher_local.html">crew_launcher_local()</a></code>.</p></dd>
-
-
-<dt><code>local_log_join</code></dt>
+    <p></p><div class="r6-active-bindings"><dl><dt><code>options_local</code></dt>
 <dd><p>See <code><a href="crew_launcher_local.html">crew_launcher_local()</a></code>.</p></dd>
 
 
@@ -126,8 +123,8 @@
 <span>  tls <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  processes <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  r_arguments <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  local_log_directory <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  local_log_join <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  options_metrics <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  options_local <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -201,11 +198,11 @@
 <dd><p>See <code><a href="crew_launcher.html">crew_launcher()</a></code>.</p></dd>
 
 
-<dt><code>local_log_directory</code></dt>
+<dt><code>options_metrics</code></dt>
 <dd><p>See <code><a href="crew_launcher_local.html">crew_launcher_local()</a></code>.</p></dd>
 
 
-<dt><code>local_log_join</code></dt>
+<dt><code>options_local</code></dt>
 <dd><p>See <code><a href="crew_launcher_local.html">crew_launcher_local()</a></code>.</p></dd>
 
 

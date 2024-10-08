@@ -8,6 +8,7 @@
 <url><loc>https://wlandau.github.io/crew/articles/groups.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/articles/index.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/articles/introduction.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/articles/logging.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/articles/plugins.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/articles/promises.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/articles/risks.html</loc></url>
@@ -39,6 +40,8 @@
 <url><loc>https://wlandau.github.io/crew/reference/crew_launcher.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_launcher_local.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_monitor_local.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_options_local.html</loc></url>
+<url><loc>https://wlandau.github.io/crew/reference/crew_options_metrics.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_random_name.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_relay.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_retry.html</loc></url>

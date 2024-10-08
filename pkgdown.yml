@@ -4,11 +4,12 @@ pkgdown_sha: ~
 articles:
   groups: groups.html
   introduction: introduction.html
+  logging: logging.html
   plugins: plugins.html
   promises: promises.html
   risks: risks.html
   shiny: shiny.html
-last_built: 2024-10-04T19:16Z
+last_built: 2024-10-08T19:01Z
 urls:
   reference: https://wlandau.github.io/crew/reference
   article: https://wlandau.github.io/crew/articles

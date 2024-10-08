@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>How to use `crew`</h6></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to crew</a></li>
     <li><a class="dropdown-item" href="../articles/groups.html">Controller groups</a></li>
+    <li><a class="dropdown-item" href="../articles/logging.html">Logging</a></li>
     <li><a class="dropdown-item" href="../articles/shiny.html">Asynchronous Shiny apps</a></li>
     <li><a class="dropdown-item" href="../articles/promises.html">Integration with promises</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -121,7 +122,7 @@ Example: <a href="https://wlandau.github.io/crew.aws.batch/index.html#job-manage
 dispatcher process could crash. A common cause of crashes is running out
 of computer memory. The “Resources” section of the <a href="https://wlandau.github.io/crew/articles/introduction.html">introduction</a>
 explains how to monitor memory usage. If you are running
-<code>crew</code> in a <a href="https://docs.ropensci.org/targets" class="external-link"><code>targets</code></a>
+<code>crew</code> in a <a href="https://docs.ropensci.org/targets/" class="external-link"><code>targets</code></a>
 pipeline (as explained <a href="https://books.ropensci.org/targets/crew.html" class="external-link">here in the
 <code>targets</code> user manual</a>), consider setting
 <code>storage = "worker"</code> and <code>retrieval = "worker</code> in
@@ -134,8 +135,9 @@ be platform-specific, but here are some common possibilities:</p>
 <ul>
 <li>Memory: if a worker exhausts the available memory limits, it will
 crash, and there is no way to relay an informative error message. Please
-grant your workers more computer memory if you think that might have
-happened. <a href="https://wlandau.github.io/crew.aws.batch/"><code>crew.aws.batch</code></a>
+read <a href="https://wlandau.github.io/crew/articles/logging.html" class="uri">https://wlandau.github.io/crew/articles/logging.html</a> to
+learn about proactive resource logging, which can generate data to help
+troubleshoot in the event of a crash. If you need more memory, <a href="https://wlandau.github.io/crew.aws.batch/"><code>crew.aws.batch</code></a>
 and <a href="https://wlandau.github.io/crew.cluster/"><code>crew.cluster</code></a>
 expose special platform-specific parameters in the controllers to do
 this.</li>

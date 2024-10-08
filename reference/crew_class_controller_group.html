@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.5.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,6 +22,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>How to use `crew`</h6></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to crew</a></li>
     <li><a class="dropdown-item" href="../articles/groups.html">Controller groups</a></li>
+    <li><a class="dropdown-item" href="../articles/logging.html">Logging</a></li>
     <li><a class="dropdown-item" href="../articles/shiny.html">Asynchronous Shiny apps</a></li>
     <li><a class="dropdown-item" href="../articles/promises.html">Integration with promises</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -102,6 +103,7 @@ condition variable.</p></dd>
 <li><p><a href="#method-crew_class_controller_group-push_backlog"><code>crew_class_controller_group$push_backlog()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller_group-pop_backlog"><code>crew_class_controller_group$pop_backlog()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller_group-summary"><code>crew_class_controller_group$summary()</code></a></p></li>
+<li><p><a href="#method-crew_class_controller_group-pids"><code>crew_class_controller_group$pids()</code></a></p></li>
 <li><p><a href="#method-crew_class_controller_group-terminate"><code>crew_class_controller_group$terminate()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-crew_class_controller_group-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
@@ -1295,12 +1297,12 @@ See the documentation of the <code><a href="https://rdrr.io/r/base/summary.html"
 class for specific information about the columns in the output.</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_controller_group-terminate"></a><div class="section">
-<h3 id="method-terminate-">Method <code>terminate()</code><a class="anchor" aria-label="anchor" href="#method-terminate-"></a></h3>
-<p>Terminate the workers and disconnect the client
-for one or more controllers.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_controller_group-pids"></a><div class="section">
+<h3 id="method-pids-">Method <code>pids()</code><a class="anchor" aria-label="anchor" href="#method-pids-"></a></h3>
+<p>Get the process IDs of the local process and the
+<code>mirai</code> dispatchers (if started).</p><div class="section">
 <h4 id="usage-24">Usage<a class="anchor" aria-label="anchor" href="#usage-24"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller_group</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller_group</span><span class="op">$</span><span class="fu">pids</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -1314,6 +1316,29 @@ Set to <code>NULL</code> to select all controllers.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-24">Returns<a class="anchor" aria-label="anchor" href="#returns-24"></a></h4>
+<p>An integer vector of process IDs of the local process and the
+<code>mirai</code> dispatcher (if started).</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_controller_group-terminate"></a><div class="section">
+<h3 id="method-terminate-">Method <code>terminate()</code><a class="anchor" aria-label="anchor" href="#method-terminate-"></a></h3>
+<p>Terminate the workers and disconnect the client
+for one or more controllers.</p><div class="section">
+<h4 id="usage-25">Usage<a class="anchor" aria-label="anchor" href="#usage-25"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller_group</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span>controllers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-24">Arguments<a class="anchor" aria-label="anchor" href="#arguments-24"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>controllers</code></dt>
+<dd><p>Character vector of controller names.
+Set to <code>NULL</code> to select all controllers.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-25">Returns<a class="anchor" aria-label="anchor" href="#returns-25"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 

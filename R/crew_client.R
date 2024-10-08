@@ -27,9 +27,6 @@
 #'   `TRUE` (default) is recommended in most situations.
 #'   Use `FALSE` for debugging purposes, e.g. to confirm that a task
 #'   is causing a worker to run out of memory or crash in some other way.
-#' @param options_metrics Either `NULL`, or an
-#'   object from [crew_options_metrics()] with
-#'   options for logging resource usage metrics.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -47,8 +44,7 @@ crew_client <- function(
   tls_config = NULL,
   seconds_interval = 0.5,
   seconds_timeout = 5,
-  retry_tasks = TRUE,
-  options_metrics = NULL
+  retry_tasks = TRUE
 ) {
   crew_deprecate(
     name = "tls_enable",
@@ -72,11 +68,6 @@ crew_client <- function(
     inherits(tls, "crew_class_tls"),
     message = "argument tls must be an object created by crew_tls()"
   )
-  if_any(
-    is.null(options_metrics),
-    NULL,
-    crew_options_metrics_validate(options_metrics)
-  )
   client <- crew_class_client$new(
     name = name,
     workers = workers,
@@ -86,8 +77,7 @@ crew_client <- function(
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
     retry_tasks = retry_tasks,
-    relay = crew_relay(),
-    options_metrics = options_metrics
+    relay = crew_relay()
   )
   client$validate()
   client
@@ -118,7 +108,6 @@ crew_class_client <- R6::R6Class(
     .seconds_timeout = NULL,
     .retry_tasks = NULL,
     .relay = NULL,
-    .options_metrics = NULL,
     .started = NULL,
     .client = NULL,
     .dispatcher = NULL
@@ -161,10 +150,6 @@ crew_class_client <- R6::R6Class(
     relay = function() {
       .subset2(private, ".relay")
     },
-    #' @field options_metrics Options for logging resource usage metrics.
-    options_metrics = function() {
-      .subset2(private, ".options_metrics")
-    },
     #' @field started Whether the client is started.
     started = function() {
       .subset2(private, ".started")
@@ -190,7 +175,6 @@ crew_class_client <- R6::R6Class(
     #' @param seconds_timeout Argument passed from [crew_client()].
     #' @param retry_tasks Argument passed from [crew_client()].
     #' @param relay Argument passed from [crew_client()].
-    #' @param options_metrics Argument passed from [crew_client()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
@@ -207,8 +191,7 @@ crew_class_client <- R6::R6Class(
       seconds_interval = NULL,
       seconds_timeout = NULL,
       retry_tasks = NULL,
-      relay = NULL,
-      options_metrics = NULL
+      relay = NULL
     ) {
       private$.name <- name
       private$.workers <- workers
@@ -219,7 +202,6 @@ crew_class_client <- R6::R6Class(
       private$.seconds_timeout <- seconds_timeout
       private$.retry_tasks <- retry_tasks
       private$.relay <- relay
-      private$.options_metrics <- options_metrics
     },
     #' @description Validate the client.
     #' @return `NULL` (invisibly).
@@ -281,11 +263,6 @@ crew_class_client <- R6::R6Class(
       crew_assert(private$.seconds_timeout >= private$.seconds_interval)
       crew_assert(inherits(private$.relay, "crew_class_relay"))
       private$.relay$validate()
-      if_any(
-        is.null(private$.options_metrics),
-        NULL,
-        crew_options_metrics_validate(private$.options_metrics)
-      )
       invisible()
     },
     #' @description Start listening for workers on the available sockets.

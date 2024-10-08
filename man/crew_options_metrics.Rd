@@ -40,6 +40,9 @@ entries written to \code{path_local}.}
 \item{seconds_workers}{Positive number, seconds between resource metric log
 entries written to \code{seconds_workers}.}
 }
+\value{
+A classed list of options for logging resource usage metrics.
+}
 \description{
 If a \code{\link[=crew_options_metrics]{crew_options_metrics()}} object is
 supplied to the \code{options_metrics} argument of a \code{crew}

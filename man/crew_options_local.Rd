@@ -20,6 +20,9 @@ standard output and standard error to the same log file for
 each worker instance. If \code{FALSE}, then they these two streams
 will go to different log files with informative suffixes.}
 }
+\value{
+A classed list of options for the local launcher.
+}
 \description{
 Options for the local \code{crew} launcher.
 }

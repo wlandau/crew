@@ -13,4 +13,8 @@ something wrong with the options list.
 \description{
 Validate a \code{crew} options list.
 }
-\concept{utilities}
+\seealso{
+Other options: 
+\code{\link{crew_options_local}()}
+}
+\concept{options}

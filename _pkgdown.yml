@@ -51,6 +51,7 @@ reference:
   contents:
   - crew_options_local
   - crew_options_metrics
+  - crew_options_validate
 - title: TLS configuration
   contents:
   - crew_tls
@@ -73,7 +74,6 @@ reference:
   - crew_clean
   - crew_deprecate
   - crew_eval
-  - crew_options_validate
   - crew_random_name
   - crew_retry
   - crew_terminate_process

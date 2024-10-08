@@ -2,7 +2,7 @@
 % Please edit documentation in R/crew_options_local.R
 \name{crew_options_local}
 \alias{crew_options_local}
-\title{Local crew controller options.}
+\title{Local \code{crew} launcher options.}
 \usage{
 crew_options_local(log_directory = NULL, log_join = TRUE)
 }
@@ -21,8 +21,13 @@ each worker instance. If \code{FALSE}, then they these two streams
 will go to different log files with informative suffixes.}
 }
 \description{
-Local crew controller options.
+Options for the local \code{crew} launcher.
 }
 \examples{
   crew_options_local()
 }
+\seealso{
+Other options: 
+\code{\link{crew_options_validate}()}
+}
+\concept{options}

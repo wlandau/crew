@@ -1,6 +1,6 @@
 #' @title Validate options.
 #' @export
-#' @family utilities
+#' @family options
 #' @description Validate a `crew` options list.
 #' @return `NULL` (invisibly) on success, throws an error if there is
 #'   something wrong with the options list.

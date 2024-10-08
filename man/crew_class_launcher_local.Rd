@@ -111,6 +111,7 @@ Local launcher constructor.
   tls = NULL,
   processes = NULL,
   r_arguments = NULL,
+  options_metrics = NULL,
   options_local = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -151,6 +152,8 @@ Local launcher constructor.
 \item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{options_metrics}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
 
 \item{\code{options_local}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
 }

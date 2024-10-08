@@ -39,6 +39,7 @@ crew_launcher_local <- function(
   launch_max = 5L,
   tls = crew::crew_tls(),
   r_arguments = c("--no-save", "--no-restore"),
+  options_metrics = crew::crew_options_metrics(),
   options_local = crew::crew_options_local(),
   local_log_directory = NULL,
   local_log_join = NULL
@@ -88,6 +89,7 @@ crew_launcher_local <- function(
     launch_max = launch_max,
     tls = tls,
     r_arguments = r_arguments,
+    options_metrics = options_metrics,
     options_local = options_local
   )
   launcher$validate()
@@ -170,6 +172,7 @@ crew_class_launcher_local <- R6::R6Class(
     #' @param tls See [crew_launcher()].
     #' @param processes See [crew_launcher()].
     #' @param r_arguments See [crew_launcher()].
+    #' @param options_metrics See [crew_launcher_local()].
     #' @param options_local See [crew_launcher_local()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -201,6 +204,7 @@ crew_class_launcher_local <- R6::R6Class(
       tls = NULL,
       processes = NULL,
       r_arguments = NULL,
+      options_metrics = NULL,
       options_local = NULL
     ) {
       super$initialize(
@@ -220,7 +224,8 @@ crew_class_launcher_local <- R6::R6Class(
         launch_max = launch_max,
         tls = tls,
         processes = processes,
-        r_arguments = r_arguments
+        r_arguments = r_arguments,
+        options_metrics = options_metrics
       )
       private$.options_local <- options_local
     },

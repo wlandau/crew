@@ -38,6 +38,7 @@ crew_controller_local <- function(
   garbage_collection = FALSE,
   launch_max = 5L,
   r_arguments = c("--no-save", "--no-restore"),
+  options_metrics = crew::crew_options_metrics(),
   options_local = crew::crew_options_local(),
   local_log_directory = NULL,
   local_log_join = NULL
@@ -98,6 +99,7 @@ crew_controller_local <- function(
     launch_max = launch_max,
     tls = tls,
     r_arguments = r_arguments,
+    options_metrics = options_metrics,
     options_local = options_local,
     local_log_directory = local_log_directory,
     local_log_join = local_log_join

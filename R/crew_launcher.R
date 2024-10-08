@@ -6,6 +6,7 @@
 #'   `@inheritParams crew::crew_launcher` in the source code file of
 #'   [crew_launcher_local()].
 #' @inheritParams crew_client
+#' @inheritParams crew_worker
 #' @param name Name of the launcher.
 #' @param seconds_interval Number of seconds between
 #'   polling intervals waiting for certain internal
@@ -102,7 +103,8 @@ crew_launcher <- function(
   launch_max = 5L,
   tls = crew::crew_tls(),
   processes = NULL,
-  r_arguments = c("--no-save", "--no-restore")
+  r_arguments = c("--no-save", "--no-restore"),
+  options_metrics = crew::crew_options_metrics()
 ) {
   crew_deprecate(
     name = "seconds_exit",
@@ -133,7 +135,8 @@ crew_launcher <- function(
     launch_max = launch_max,
     tls = tls,
     processes = processes,
-    r_arguments = r_arguments
+    r_arguments = r_arguments,
+    options_metrics = options_metrics
   )
 }
 
@@ -176,6 +179,7 @@ crew_class_launcher <- R6::R6Class(
     .tls = NULL,
     .processes = NULL,
     .r_arguments = NULL,
+    .options_metrics = NULL,
     .async = NULL,
     .throttle = NULL
   ),
@@ -249,6 +253,10 @@ crew_class_launcher <- R6::R6Class(
     r_arguments = function() {
       .subset2(private, ".r_arguments")
     },
+    #' @field options_metrics See [crew_launcher()].
+    options_metrics = function() {
+      .subset2(private, ".options_metrics")
+    },
     #' @field async A [crew_async()] object to run low-level launcher tasks
     #'   asynchronously.
     async = function() {
@@ -279,6 +287,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param tls See [crew_launcher()].
     #' @param processes See [crew_launcher()].
     #' @param r_arguments See [crew_launcher()].
+    #' @param options_metrics See [crew_launcher()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
@@ -308,7 +317,8 @@ crew_class_launcher <- R6::R6Class(
       launch_max = NULL,
       tls = NULL,
       processes = NULL,
-      r_arguments = NULL
+      r_arguments = NULL,
+      options_metrics = NULL
     ) {
       private$.name <- name
       private$.seconds_interval <- seconds_interval
@@ -326,6 +336,7 @@ crew_class_launcher <- R6::R6Class(
       private$.tls <- tls
       private$.processes <- processes
       private$.r_arguments <- r_arguments
+      private$.options_metrics <- options_metrics
     },
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
@@ -444,6 +455,9 @@ crew_class_launcher <- R6::R6Class(
         )
         private$.throttle$validate()
       }
+      if (!is.null(private$.options_metrics)) {
+        crew_options_metrics_validate(private$.options_metrics)
+      }
       invisible()
     },
     #' @description Set the name of the launcher.
@@ -500,13 +514,19 @@ crew_class_launcher <- R6::R6Class(
           settings = settings,
           launcher = launcher,
           worker = worker,
-          instance = instance
+          instance = instance,
+          options_metrics = crew::crew_options_metrics(
+            path = path,
+            seconds_interval = seconds_interval
+          )
         ),
         env = list(
           settings = self$settings(socket),
           launcher = launcher,
           worker = worker,
-          instance = instance
+          instance = instance,
+          path = private$.options_metrics$path,
+          seconds_interval = private$.options_metrics$seconds_interval
         )
       )
       out <- deparse_safe(expr = call, collapse = " ")

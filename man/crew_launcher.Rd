@@ -21,7 +21,8 @@ crew_launcher(
   launch_max = 5L,
   tls = crew::crew_tls(),
   processes = NULL,
-  r_arguments = c("--no-save", "--no-restore")
+  r_arguments = c("--no-save", "--no-restore"),
+  options_metrics = crew::crew_options_metrics()
 )
 }
 \arguments{
@@ -109,6 +110,10 @@ as the return value.}
 to pass to \code{Rscript} (non-Windows) or \code{Rscript.exe} (Windows)
 when starting a worker. Example:
 \code{r_arguments = c("--vanilla", "--max-connections=32")}.}
+
+\item{options_metrics}{Either \code{NULL} to opt out of resource metric logging
+for workers, or an object from \code{\link[=crew_options_metrics]{crew_options_metrics()}} to enable
+and configure resource metric logging for workers.}
 }
 \description{
 This function is useful for inheriting argument documentation

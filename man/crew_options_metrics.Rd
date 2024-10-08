@@ -4,41 +4,29 @@
 \alias{crew_options_metrics}
 \title{Options for logging resource usage metrics.}
 \usage{
-crew_options_metrics(
-  path_local = NULL,
-  path_workers = NULL,
-  seconds_local = 5,
-  seconds_workers = 5
-)
+crew_options_metrics(path = NULL, seconds_interval = 5)
 }
 \arguments{
-\item{path_local}{Where to write resource metric log entries for the
-local R session and \code{mirai} dispatcher process.
-If \code{NULL}, resource metric logging is turned off for these processes.
-If \code{"/dev/stdout"} or \code{"/dev/stderr"}, resource usage metrics
-are printed to standard output or standard error,
-respectively. If a different character string, that string is the
-directory path for writing logs to files on disk, and each
-controller instance gets a different log file.
-\code{\link[autometric:log_read]{autometric::log_read()}} and \code{\link[autometric:log_plot]{autometric::log_plot()}} can read and
-visualize data from logs, even if the logs files are mixed
-with other kinds of messages.}
+\item{path}{Where to write resource metric log entries for workers.
+\code{path = NULL} disables logging. \code{path} equal to \code{"/dev/stdout"}
+(or \code{"/dev/stderr"}) sends log messages to the standard output
+(or standard error) streams, which is recommended on Unix-like systems
+because then output will go to the existing log files already
+configured for the
+controller, e.g. through \code{\link[=crew_options_local]{crew_options_local()}} in the case of
+\code{\link[=crew_controller_local]{crew_controller_local()}}. If \code{path} is not \code{NULL}, \code{"/dev/stdout"}, or
+\code{"/dev/stderr"}, it should be a directory path,
+in which case each worker instance will write to a new file in that
+directory.
 
-\item{path_workers}{Like \code{path_local}, but for the \code{crew} worker processes.
-On Unix-like systems, it is recommended to set \code{path_workers}
-equal to \code{"/dev/stdout"} or \code{"/dev/stderr"} to automatically write
-resource log messages to the existing log files generated on your
-platform (for example, the logs configured with
-\code{\link[=crew_options_local]{crew_options_local()}} in the case of \code{\link[=crew_controller_local]{crew_controller_local()}}).
-\code{\link[autometric:log_read]{autometric::log_read()}} and \code{\link[autometric:log_plot]{autometric::log_plot()}} can read and
-visualize data from logs, even if the logs files are mixed
-with other kinds of messages.}
+After running enough tasks in \code{crew}, you can call
+\code{autometric::log_read(path)} to read all the data from all the log
+files in the files or directories at \code{path},
+even if the logs files are mixed with other kinds of messages.
+Pass that data into \code{\link[autometric:log_read]{autometric::log_read()}} to visualize it.}
 
-\item{seconds_local}{Positive number, seconds between resource metric log
-entries written to \code{path_local}.}
-
-\item{seconds_workers}{Positive number, seconds between resource metric log
-entries written to \code{seconds_workers}.}
+\item{seconds_interval}{Positive number, seconds between resource metric
+log entries written to \code{path}.}
 }
 \value{
 A classed list of options for logging resource usage metrics.
@@ -48,17 +36,17 @@ If a \code{\link[=crew_options_metrics]{crew_options_metrics()}} object is
 supplied to the \code{options_metrics} argument of a \code{crew}
 controller function, then the \code{autometric} R package will
 record resource usage metrics (such as CPU and memory usage)
-as the controller and workers are running. Logging happens in
+for each running worker. Logging happens in
 the background (through a detached POSIX) so as not to disrupt
 the R session. On Unix-like systems, \code{\link[=crew_options_metrics]{crew_options_metrics()}}
 can specify \verb{/dev/stdout} or \verb{/dev/stderr} as the log files, which will
-redirect output to existing logs you are already using. Then,
-even if those logs are mixed with other messages, you can use functions
-\code{\link[autometric:log_read]{autometric::log_read()}} and \code{\link[autometric:log_plot]{autometric::log_plot()}} to read and
-visualize resource usage data.
+redirect output to existing logs you are already using.
+\code{\link[autometric:log_read]{autometric::log_read()}} and \code{\link[autometric:log_plot]{autometric::log_plot()}} can read and
+visualize resource usage data from multiple log files, even
+if those files are mixed with other messages.
 }
 \examples{
-  crew_options_metrics()
+  crew_options_metrics(path = "/dev/stdout")
 }
 \seealso{
 Other options: 

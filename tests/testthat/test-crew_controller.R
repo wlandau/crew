@@ -126,7 +126,6 @@ crew_test("can terminate a lost worker", {
   expect_false(handle$is_alive())
 })
 
-
 crew_test("deprecate auto_scale", {
   skip_on_cran()
   suppressWarnings(

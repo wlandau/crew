@@ -956,6 +956,18 @@ crew_class_controller_group <- R6::R6Class(
       }
       tibble::as_tibble(do.call(what = rbind, args = out))
     },
+    #' @description Get the process IDs of the local process and the
+    #'   `mirai` dispatchers (if started).
+    #' @return An integer vector of process IDs of the local process and the
+    #'   `mirai` dispatcher (if started).
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    pids = function(controllers = NULL) {
+      control <- private$.select_controllers(controllers)
+      out <- map(control, ~.x$pids())
+      out <- map(unname(out), ~.x[names(.x) != "local"])
+      c(local = Sys.getpid(), unlist(out))
+    },
     #' @description Terminate the workers and disconnect the client
     #'   for one or more controllers.
     #' @return `NULL` (invisibly).

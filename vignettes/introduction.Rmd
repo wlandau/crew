@@ -199,7 +199,7 @@ controller$client$summary()
 
 # Resources
 
-`crew` utilizes background processes, and it may consume a lot of memory for big data workloads. A common cause of crashes is running out of computer memory. If you are running `crew` in a [`targets`](https://docs.ropensci.org/targets) pipeline (as explained [here in the `targets` user manual](https://books.ropensci.org/targets/crew.html)), consider setting `storage = "worker"` and `retrieval = "worker` in `tar_option_set()` to minimize memory consumption of the local processes (see also the [performance chapter](https://books.ropensci.org/targets/performance.html)).
+`crew` utilizes background processes, and it may consume a lot of memory for big data workloads. A common cause of crashes is running out of computer memory. If you are running `crew` in a [`targets`](https://docs.ropensci.org/targets/) pipeline (as explained [here in the `targets` user manual](https://books.ropensci.org/targets/crew.html)), consider setting `storage = "worker"` and `retrieval = "worker` in `tar_option_set()` to minimize memory consumption of the local processes (see also the [performance chapter](https://books.ropensci.org/targets/performance.html)).
 
 As of `crew` version 0.9.5.9007, you monitor resources by supplying a log file path to the `log_resources` argument of the controller. That way, normal controller methods write to the log as a side effect every `seconds_interval` seconds. The output file is a comma-separated values (CSV) file which can be read into R with `readr::read_csv()`.
 

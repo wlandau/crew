@@ -84,6 +84,7 @@ condition variable.}
 \item \href{#method-crew_class_controller_group-push_backlog}{\code{crew_class_controller_group$push_backlog()}}
 \item \href{#method-crew_class_controller_group-pop_backlog}{\code{crew_class_controller_group$pop_backlog()}}
 \item \href{#method-crew_class_controller_group-summary}{\code{crew_class_controller_group$summary()}}
+\item \href{#method-crew_class_controller_group-pids}{\code{crew_class_controller_group$pids()}}
 \item \href{#method-crew_class_controller_group-terminate}{\code{crew_class_controller_group$terminate()}}
 }
 }
@@ -1144,6 +1145,29 @@ of all the selected controllers. It has one row per worker,
 and the rows are grouped by controller.
 See the documentation of the \code{summary()} method of the controller
 class for specific information about the columns in the output.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-pids"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-pids}{}}}
+\subsection{Method \code{pids()}}{
+Get the process IDs of the local process and the
+\code{mirai} dispatchers (if started).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pids(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+An integer vector of process IDs of the local process and the
+\code{mirai} dispatcher (if started).
 }
 }
 \if{html}{\out{<hr>}}

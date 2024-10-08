@@ -16,7 +16,7 @@
 #'   will go to different log files with informative suffixes.
 #' @examples
 #'   crew_options_local()
-crew_options_local = function(
+crew_options_local <- function(
   log_directory = NULL,
   log_join = TRUE
 ) {

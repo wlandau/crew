@@ -394,6 +394,19 @@ crew_class_client <- R6::R6Class(
         complete = as.integer(daemons[, "complete"]),
         socket = as.character(rownames(daemons))
       )
+    },
+    #' @description Get the process IDs of the local process and the
+    #'   `mirai` dispatcher (if started).
+    #' @return An integer vector of process IDs of the local process and the
+    #'   `mirai` dispatcher (if started).
+    pids = function() {
+      out <- c(local = Sys.getpid())
+      dispatcher <- private$.dispatcher
+      if (!is.null(dispatcher)) {
+        out <- c(out, ps::ps_pid(dispatcher))
+        names(out)[2L] <- paste0("dispatcher-", private$.name)
+      }
+      out
     }
   )
 )

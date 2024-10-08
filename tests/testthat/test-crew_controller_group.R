@@ -39,12 +39,14 @@ crew_test("crew_controller_group()", {
     expect_null(x$controllers[[index]]$client$started)
   }
   expect_false(x$started())
+  expect_equal(length(x$pids()), 1L)
   x$start()
   expect_true(x$started())
   expect_true(x$empty())
   expect_false(x$saturated())
   expect_true(x$empty(controllers = "a"))
   expect_true(x$empty(controllers = "b"))
+  expect_equal(length(x$pids()), 3L)
   for (index in seq_len(2)) {
     expect_true(x$controllers[[index]]$client$started)
   }

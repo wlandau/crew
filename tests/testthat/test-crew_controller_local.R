@@ -15,6 +15,7 @@ crew_test("crew_controller_local()", {
   expect_false(x$started())
   expect_null(x$summary())
   expect_null(x$autoscaling)
+  expect_equal(length(x$pids()), 1L)
   x$start()
   expect_true(x$empty())
   expect_false(x$saturated())
@@ -45,6 +46,7 @@ crew_test("crew_controller_local()", {
   expect_equal(s$tasks, 0L)
   expect_true(x$client$started)
   expect_true(x$started())
+  expect_equal(length(x$pids()), 2L)
   # first task
   expect_equal(x$pushed, 0L)
   expect_equal(x$popped, 0L)

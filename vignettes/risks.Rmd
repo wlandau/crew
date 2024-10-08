@@ -25,7 +25,7 @@ In the event of a poorly-timed crash or network error, these processes may not t
 
 ## Crashes
 
-The local process or [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher process could crash. A common cause of crashes is running out of computer memory. The "Resources" section of the [introduction](https://wlandau.github.io/crew/articles/introduction.html) explains how to monitor memory usage. If you are running `crew` in a [`targets`](https://docs.ropensci.org/targets) pipeline (as explained [here in the `targets` user manual](https://books.ropensci.org/targets/crew.html)), consider setting `storage = "worker"` and `retrieval = "worker` in `tar_option_set()` to minimize memory consumption of the local processes (see also the [performance chapter](https://books.ropensci.org/targets/performance.html)).
+The local process or [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher process could crash. A common cause of crashes is running out of computer memory. The "Resources" section of the [introduction](https://wlandau.github.io/crew/articles/introduction.html) explains how to monitor memory usage. If you are running `crew` in a [`targets`](https://docs.ropensci.org/targets/) pipeline (as explained [here in the `targets` user manual](https://books.ropensci.org/targets/crew.html)), consider setting `storage = "worker"` and `retrieval = "worker` in `tar_option_set()` to minimize memory consumption of the local processes (see also the [performance chapter](https://books.ropensci.org/targets/performance.html)).
 
 In addition, `crew` worker processes may crash silently at runtime, or they may fail to launch or connect at all. The reasons may be platform-specific, but here are some common possibilities:
 

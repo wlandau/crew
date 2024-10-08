@@ -93,6 +93,7 @@ auto-scaling is currently running}
 \item \href{#method-crew_class_controller-pop_backlog}{\code{crew_class_controller$pop_backlog()}}
 \item \href{#method-crew_class_controller-summary}{\code{crew_class_controller$summary()}}
 \item \href{#method-crew_class_controller-cancel}{\code{crew_class_controller$cancel()}}
+\item \href{#method-crew_class_controller-pids}{\code{crew_class_controller$pids()}}
 \item \href{#method-crew_class_controller-terminate}{\code{crew_class_controller$terminate()}}
 }
 }
@@ -1249,6 +1250,29 @@ Those names must have been manually supplied by \code{push()}.}
 \code{all = TRUE} supersedes the \code{names} argument.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-pids"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-pids}{}}}
+\subsection{Method \code{pids()}}{
+Get the process IDs of the local process and the
+\code{mirai} dispatcher (if started).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pids(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+An integer vector of process IDs of the local process and the
+\code{mirai} dispatcher (if started).
 }
 }
 \if{html}{\out{<hr>}}

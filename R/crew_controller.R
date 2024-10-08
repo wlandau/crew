@@ -1386,6 +1386,15 @@ crew_class_controller <- R6::R6Class(
       mirai::stop_mirai(tasks)
       invisible()
     },
+    #' @description Get the process IDs of the local process and the
+    #'   `mirai` dispatcher (if started).
+    #' @return An integer vector of process IDs of the local process and the
+    #'   `mirai` dispatcher (if started).
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    pids = function(controllers = NULL) {
+      private$.client$pids()
+    },
     #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).
     #' @param controllers Not used. Included to ensure the signature is

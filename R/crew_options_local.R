@@ -2,6 +2,7 @@
 #' @export
 #' @family options
 #' @description Options for the local `crew` launcher.
+#' @return A classed list of options for the local launcher.
 #' @param log_directory Either `NULL` or a character of length 1
 #'   with the file path to a directory to write worker-specific log files
 #'   with standard output and standard error messages.

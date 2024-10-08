@@ -13,6 +13,7 @@
 #'   even if those logs are mixed with other messages, you can use functions
 #'   [autometric::log_read()] and [autometric::log_plot()] to read and
 #'   visualize resource usage data.
+#' @return A classed list of options for logging resource usage metrics.
 #' @param path_local Where to write resource metric log entries for the
 #'   local R session and `mirai` dispatcher process.
 #'   If `NULL`, resource metric logging is turned off for these processes.

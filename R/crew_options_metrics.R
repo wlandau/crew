@@ -34,7 +34,7 @@
 #' @param seconds_interval Positive number, seconds between resource metric
 #'   log entries written to `path`.
 #' @examples
-#'   crew_options_metrics(path = "/dev/stdout")
+#'   crew_options_metrics()
 crew_options_metrics <- function(path = NULL, seconds_interval = 5) {
   out <- structure(
     list(path = path, seconds_interval = seconds_interval),

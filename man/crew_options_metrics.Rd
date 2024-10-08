@@ -46,7 +46,7 @@ visualize resource usage data from multiple log files, even
 if those files are mixed with other messages.
 }
 \examples{
-  crew_options_metrics(path = "/dev/stdout")
+  crew_options_metrics()
 }
 \seealso{
 Other options: 

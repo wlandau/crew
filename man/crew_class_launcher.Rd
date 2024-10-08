@@ -91,6 +91,8 @@ asynchronously.}
 
 \item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
+\item{\code{options_metrics}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
 \item{\code{async}}{A \code{\link[=crew_async]{crew_async()}} object to run low-level launcher tasks
 asynchronously.}
 
@@ -148,7 +150,8 @@ Launcher constructor.
   launch_max = NULL,
   tls = NULL,
   processes = NULL,
-  r_arguments = NULL
+  r_arguments = NULL,
+  options_metrics = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -188,6 +191,8 @@ Launcher constructor.
 \item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{options_metrics}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 }
 \if{html}{\out{</div>}}
 }

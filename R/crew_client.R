@@ -27,36 +27,6 @@
 #'   `TRUE` (default) is recommended in most situations.
 #'   Use `FALSE` for debugging purposes, e.g. to confirm that a task
 #'   is causing a worker to run out of memory or crash in some other way.
-#' @param log_resources Optional character string with a file path to a
-#'   text file to log memory consumption.
-#'   Set `log_resources` to `NULL` to avoid writing to a log file.
-#'   If you supply a path, then
-#'   the `log()` method will write memory usage statistics to the file,
-#'   and most controller methods will do the same with throttling
-#'   so resource consumption is recorded throughout the whole life cycle
-#'   of the controller.
-#'
-#'   The log file is in comma-separated values
-#'   (CSV) format which can be easily read by `readr::read_csv()`.
-#'   The controller automatically deletes the old log file when it starts
-#'   (when `controller$start()` is called for the first time, but not
-#'   subsequent times).
-#'
-#'   The log file has one row per observation of a process,
-#'   including the current
-#'   R process ("client") and the `mirai` dispatcher. If the dispatcher
-#'   is not included in the output, it means the dispatcher process
-#'   is not running.
-#'   Columns include:
-#'     * `type`: the type of process (client or dispatcher)
-#'     * `pid`: the process ID.
-#'     * `status`: The process status (from `ps::ps_status()`).
-#'     * `rss`: resident set size (RSS). RS is the total memory held by
-#'       a process, including shared libraries which may also be
-#'       in use by other processes. RSS is obtained
-#'       from `ps::ps_memory_info()` and shown in bytes.
-#'     * `elapsed`: number of elapsed seconds since the R process was
-#'       started (from `proc.time()["elapsed"]`).
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -74,8 +44,7 @@ crew_client <- function(
   tls_config = NULL,
   seconds_interval = 0.5,
   seconds_timeout = 5,
-  retry_tasks = TRUE,
-  log_resources = NULL
+  retry_tasks = TRUE
 ) {
   crew_deprecate(
     name = "tls_enable",
@@ -108,7 +77,6 @@ crew_client <- function(
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
     retry_tasks = retry_tasks,
-    log_resources = log_resources,
     relay = crew_relay()
   )
   client$validate()
@@ -139,8 +107,6 @@ crew_class_client <- R6::R6Class(
     .seconds_interval = NULL,
     .seconds_timeout = NULL,
     .retry_tasks = NULL,
-    .log_resources = NULL,
-    .throttle = NULL,
     .relay = NULL,
     .started = NULL,
     .client = NULL,
@@ -179,14 +145,6 @@ crew_class_client <- R6::R6Class(
     retry_tasks = function() {
       .subset2(private, ".retry_tasks")
     },
-    #' @field log_resources Path to the log file for logging resources.
-    log_resources = function() {
-      .subset2(private, ".log_resources")
-    },
-    #' @field throttle Throttle object for logging resources.
-    throttle = function() {
-      .subset2(private, ".throttle")
-    },
     #' @field relay Relay object for event-driven programming on a downstream
     #'   condition variable.
     relay = function() {
@@ -216,7 +174,6 @@ crew_class_client <- R6::R6Class(
     #' @param seconds_interval Argument passed from [crew_client()].
     #' @param seconds_timeout Argument passed from [crew_client()].
     #' @param retry_tasks Argument passed from [crew_client()].
-    #' @param log_resources Argument passed from [crew_client()].
     #' @param relay Argument passed from [crew_client()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -234,7 +191,6 @@ crew_class_client <- R6::R6Class(
       seconds_interval = NULL,
       seconds_timeout = NULL,
       retry_tasks = NULL,
-      log_resources = NULL,
       relay = NULL
     ) {
       private$.name <- name
@@ -245,7 +201,6 @@ crew_class_client <- R6::R6Class(
       private$.seconds_interval <- seconds_interval
       private$.seconds_timeout <- seconds_timeout
       private$.retry_tasks <- retry_tasks
-      private$.log_resources <- log_resources
       private$.relay <- relay
     },
     #' @description Validate the client.
@@ -295,24 +250,6 @@ crew_class_client <- R6::R6Class(
         isTRUE(.) || isFALSE(.),
         message = "retry_tasks must be TRUE or FALSE"
       )
-      if_any(
-        is.null(private$.log_resources),
-        NULL,
-        crew_assert(
-          private$.log_resources,
-          is.character(.),
-          length(.) == 1L,
-          nzchar(.),
-          !anyNA(.)
-        )
-      )
-      if (!is.null(private$.throttle)) {
-        crew_assert(
-          inherits(private$.throttle, "crew_class_throttle"),
-          message = "field 'throttle' must be an object from crew_throttle()"
-        )
-        private$.throttle$validate()
-      }
       if_any(
         is.null(private$.client),
         NULL,
@@ -458,108 +395,18 @@ crew_class_client <- R6::R6Class(
         socket = as.character(rownames(daemons))
       )
     },
-    #' @description Get resource usage of local `crew` processes.
-    #' @return A `tibble` with one row per process, including the current
-    #'   R process ("client") and the `mirai` dispatcher. If the dispatcher
-    #'   is not included in the output, it means the dispatcher process
-    #'   is not running.
-    #'   Columns include:
-    #'     * `name`: friendly name of process (`"client"` or `"dispatcher"`)
-    #'     * `pid`: the process ID.
-    #'     * `status`: The process status (from `ps::ps_status()`).
-    #'     * `rss`: resident set size (RSS). RS is the total memory held by
-    #'       a process, including shared libraries which may also be
-    #'       in use by other processes. RSS is obtained
-    #'       from `ps::ps_memory_info()` and shown in bytes.
-    #'     * `time`: character string time stamp of when the data was
-    #'       recorded.
-    #'       Generated by `format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z")`.
-    #'       Use `as.POSIXct()` to convert this value to a date,
-    #'       e.g. to plot `rss` vs `time`.
-    resources = function() {
-      client <- .subset2(private, ".client")
-      if (is.null(client)) {
-        client <- ps::ps_handle()
+    #' @description Get the process IDs of the local process and the
+    #'   `mirai` dispatcher (if started).
+    #' @return An integer vector of process IDs of the local process and the
+    #'   `mirai` dispatcher (if started).
+    pids = function() {
+      out <- c(local = Sys.getpid())
+      dispatcher <- private$.dispatcher
+      if (!is.null(dispatcher)) {
+        out <- c(out, ps::ps_pid(dispatcher))
+        names(out)[2L] <- paste0("dispatcher-", private$.name)
       }
-      name <- "client"
-      pid <- ps::ps_pid(p = client)
-      status <- ps::ps_status(p = client)
-      rss <- .subset2(ps::ps_memory_info(p = client), "rss")
-      time <- format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z")
-      dispatcher <- .subset2(private, ".dispatcher")
-      row_names <- "1"
-      if (!is.null(dispatcher) && ps::ps_is_running(p = dispatcher)) {
-        name[2L] <- "dispatcher"
-        pid[2L] <- ps::ps_pid(p = dispatcher)
-        status[2L] <- ps::ps_status(p = dispatcher)
-        rss[2L] <- .subset2(ps::ps_memory_info(p = dispatcher), "rss")
-        row_names[2L] <- "2"
-        time[2L] <- time
-      }
-      out <- list(
-        name = name,
-        pid = pid,
-        status = status,
-        rss = rss,
-        time = time
-      )
-      attributes(out) <- list(
-        names = names(out),
-        class = c("tbl_df", "tbl", "data.frame"),
-        row.names = row_names
-      )
       out
-    },
-    #' @description Write resource consumption from `resources()` to
-    #'   the `log_resources` file originally supplied to the client.
-    #' @details When called from the controller as a side effect,
-    #'   logging is throttled so it does not happen more
-    #'   frequently than `seconds_interval` seconds.
-    #'   The only exception is the explicit `log()` controller method.
-    #'
-    #'   The log file has one row per observation of a process,
-    #'   including the current
-    #'   R process ("client") and the `mirai` dispatcher. If the dispatcher
-    #'   is not included in the output, it means the dispatcher process
-    #'   is not running.
-    #'   Columns include:
-    #'     * `type`: the type of process (client or dispatcher)
-    #'     * `pid`: the process ID.
-    #'     * `status`: The process status (from `ps::ps_status()`).
-    #'     * `rss`: resident set size (RSS). RS is the total memory held by
-    #'       a process, including shared libraries which may also be
-    #'       in use by other processes. RSS is obtained
-    #'       from `ps::ps_memory_info()` and shown in bytes.
-    #'     * `elapsed`: number of elapsed seconds since the R process was
-    #'       started (from `proc.time()["elapsed"]`).
-    #' @param throttle `TRUE` to throttle with interval `seconds_interval`
-    #'   seconds to avoid overburdening the system when writing to the log
-    #'   file. `FALSE` otherwise.
-    #' @return `NULL` (invisibly). Writes to the log file if `log_resources`
-    #'   was originally given.
-    #'   The log file itself is in comma-separated values
-    #'   (CSV) format which can be easily read by `readr::read_csv()`.
-    #'   If `log_resources` is `NULL`,
-    #'   then `log()` has no effect.
-    log = function(throttle = FALSE) {
-      if (is.null(.subset2(private, ".throttle"))) {
-        private$.throttle <- crew_throttle(
-          seconds_interval = private$.seconds_interval
-        )
-      }
-      if (throttle && !.subset2(.subset2(private, ".throttle"), "poll")()) {
-        return(invisible())
-      }
-      path <- .subset2(private, ".log_resources")
-      if (is.null(path)) {
-        return(invisible())
-      }
-      if (!file.exists(dirname(path))) {
-        dir.create(dirname(path), recursive = TRUE)
-      }
-      resources <- .subset2(self, "resources")()
-      data.table::fwrite(x = resources, file = path, sep = ",", append = TRUE)
-      invisible()
     }
   )
 )

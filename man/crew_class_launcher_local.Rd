@@ -50,9 +50,7 @@ Other plugin_local:
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{local_log_directory}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
-
-\item{\code{local_log_join}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+\item{\code{options_local}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -113,8 +111,8 @@ Local launcher constructor.
   tls = NULL,
   processes = NULL,
   r_arguments = NULL,
-  local_log_directory = NULL,
-  local_log_join = NULL
+  options_metrics = NULL,
+  options_local = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -155,9 +153,9 @@ Local launcher constructor.
 
 \item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{local_log_directory}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+\item{\code{options_metrics}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
 
-\item{\code{local_log_join}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+\item{\code{options_local}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
 }
 \if{html}{\out{</div>}}
 }

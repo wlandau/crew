@@ -1,11 +1,13 @@
 crew_test("crew_launcher_local() active binding members", {
   launcher <- crew_launcher_local(
     name = "x",
-    local_log_directory = "y",
-    local_log_join = FALSE
+    options_local = crew_options_local(
+      log_directory = "y",
+      log_join = FALSE
+    )
   )
-  expect_equal(launcher$local_log_directory, "y")
-  expect_false(launcher$local_log_join)
+  expect_equal(launcher$options_local$log_directory, "y")
+  expect_false(launcher$options_local$log_join)
 })
 
 crew_test("crew_launcher_local() log_prepare()", {
@@ -13,8 +15,10 @@ crew_test("crew_launcher_local() log_prepare()", {
   dir <- tempfile()
   launcher <- crew_launcher_local(
     name = "x",
-    local_log_directory = dir,
-    local_log_join = FALSE
+    options_local = crew_options_local(
+      log_directory = dir,
+      log_join = FALSE
+    )
   )
   on.exit(unlink(dir, recursive = TRUE))
   private <- crew_private(launcher)
@@ -27,8 +31,10 @@ crew_test("crew_launcher_local() joined log path", {
   skip_on_cran()
   launcher <- crew_launcher_local(
     name = "x",
-    local_log_directory = "dir",
-    local_log_join = TRUE
+    options_local = crew_options_local(
+      log_directory = "dir",
+      log_join = TRUE
+    )
   )
   private <- crew_private(launcher)
   stdout <- private$.log_stdout(name = "x")
@@ -41,8 +47,10 @@ crew_test("crew_launcher_local() separate log paths", {
   skip_on_cran()
   launcher <- crew_launcher_local(
     name = "x",
-    local_log_directory = "dir",
-    local_log_join = FALSE
+    options_local = crew_options_local(
+      log_directory = "dir",
+      log_join = FALSE
+    )
   )
   private <- crew_private(launcher)
   stdout <- private$.log_stdout(name = "x")
@@ -253,8 +261,10 @@ crew_test("joined logs", {
   x <- crew_controller_local(
     workers = 1L,
     seconds_idle = 60,
-    local_log_directory = dir,
-    local_log_join = TRUE
+    options_local = crew_options_local(
+      log_directory = dir,
+      log_join = TRUE
+    )
   )
   on.exit({
     x$terminate()
@@ -270,7 +280,7 @@ crew_test("joined logs", {
   x$push(stop("this-stop"))
   x$wait(mode = "all")
   Sys.sleep(0.25)
-  dir <- x$launcher$local_log_directory
+  dir <- x$launcher$options_local$log_directory
   logs <- list.files(dir, full.names = TRUE)
   expect_equal(length(logs), 1L)
   lines <- readLines(logs)
@@ -288,8 +298,10 @@ crew_test("separate logs", {
   x <- crew_controller_local(
     workers = 1L,
     seconds_idle = 60,
-    local_log_directory = dir,
-    local_log_join = FALSE
+    options_local = crew_options_local(
+      log_directory = dir,
+      log_join = FALSE
+    )
   )
   on.exit({
     x$terminate()

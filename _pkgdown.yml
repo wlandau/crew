@@ -10,6 +10,7 @@ articles:
   contents:
   - introduction
   - groups
+  - logging
   - shiny
   - promises
 - title: Technical details
@@ -47,6 +48,10 @@ reference:
   contents:
   - crew_client
   - crew_class_client
+- title: Options
+  contents:
+  - crew_options_local
+  - crew_options_metrics
 - title: TLS configuration
   contents:
   - crew_tls

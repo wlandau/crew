@@ -87,7 +87,7 @@ Every `launch_worker()` method must accept arguments `call`, `launcher`, `worker
 
 To see what the `call` object looks like, create a new launcher and run the `call()` method.
 
-```{r}
+```r
 library(crew)
 launcher <- crew_launcher_local()
 launcher$call(
@@ -96,6 +96,7 @@ launcher$call(
   worker = 3L,
   instance = "aa9c59ea"
 )
+#> [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:5000/3/aa9c59ea\", asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tls = NULL, rs = NULL), launcher = \"my_launcher\", worker = 3L, instance = \"aa9c59ea\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
 ```
 
 # Helper
@@ -128,7 +129,6 @@ crew_controller_custom <- function(
   seconds_idle = Inf,
   seconds_wall = Inf,
   retry_tasks = TRUE,
-  log_resources = NULL,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -136,7 +136,8 @@ crew_controller_custom <- function(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
-  r_arguments = NULL
+  r_arguments = NULL,
+  options_metrics = crew::crew_options_metrics()
 ) {
   client <- crew::crew_client(
     name = name,
@@ -146,8 +147,7 @@ crew_controller_custom <- function(
     tls = tls,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
-    retry_tasks = retry_tasks,
-    log_resources = log_resources
+    retry_tasks = retry_tasks
   )
   launcher <- custom_launcher_class$new(
     name = name,
@@ -164,7 +164,8 @@ crew_controller_custom <- function(
     garbage_collection = garbage_collection,
     launch_max = launch_max,
     tls = tls,
-    r_arguments = r_arguments
+    r_arguments = r_arguments,
+    options_metrics = options_metrics
   )
   controller <- crew::crew_controller(client = client, launcher = launcher)
   controller$validate()

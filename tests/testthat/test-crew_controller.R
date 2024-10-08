@@ -126,7 +126,6 @@ crew_test("can terminate a lost worker", {
   expect_false(handle$is_alive())
 })
 
-
 crew_test("deprecate auto_scale", {
   skip_on_cran()
   suppressWarnings(
@@ -677,81 +676,4 @@ crew_test("cancel() named", {
   expect_equal(sort(tasks$name), sort(c("x", "x", "z", "z")))
   expect_true(all(grepl("operation canceled", tolower(tasks$error))))
   expect_equal(names(x$tasks), "y")
-})
-
-crew_test("log() without log file", {
-  skip_on_cran()
-  x <- crew_controller_local(
-    log_resources = NULL,
-    seconds_interval = 100,
-    seconds_timeout = 200
-  )
-  expect_silent(x$log())
-})
-
-crew_test("log() long throttling", {
-  skip_on_cran()
-  log <- file.path(tempfile(), "x", "y", "log.csv")
-  x <- crew_controller_local(log_resources = log)
-  expect_false(file.exists(log))
-  x$log(throttle = TRUE)
-  x$log(throttle = TRUE)
-  expect_true(file.exists(log))
-  out <- utils::read.csv(log)
-  expect_equal(dim(out), c(1L, 5L))
-  expect_equal(
-    colnames(out),
-    c("name", "pid", "status", "rss", "time")
-  )
-})
-
-crew_test("log() long throttling but turned off", {
-  skip_on_cran()
-  log <- file.path(tempfile(), "x", "y", "log.csv")
-  x <- crew_controller_local(log_resources = log)
-  expect_false(file.exists(log))
-  x$log(throttle = FALSE)
-  x$log(throttle = FALSE)
-  expect_true(file.exists(log))
-  out <- utils::read.csv(log)
-  expect_equal(dim(out), c(2L, 5L))
-  expect_equal(
-    colnames(out),
-    c("name", "pid", "status", "rss", "time")
-  )
-})
-
-crew_test("log() short throttling", {
-  skip_on_cran()
-  log <- file.path(tempfile(), "x", "y", "log.csv")
-  x <- crew_controller_local(log_resources = log)
-  expect_false(file.exists(log))
-  x$log(throttle = TRUE)
-  Sys.sleep(0.25)
-  x$log(throttle = TRUE)
-  expect_true(file.exists(log))
-  out <- utils::read.csv(log)
-  expect_equal(dim(out), c(1L, 5L))
-  expect_equal(
-    colnames(out),
-    c("name", "pid", "status", "rss", "time")
-  )
-})
-
-crew_test("passive logging", {
-  skip_on_cran()
-  log <- file.path(tempfile(), "x", "y", "log.csv")
-  x <- crew_controller_local(log_resources = log, seconds_idle = 300)
-  skip_on_os("windows")
-  on.exit({
-    x$terminate()
-    rm(x)
-    gc()
-    crew_test_sleep()
-  })
-  expect_false(file.exists(log))
-  x$start()
-  x$push(TRUE)
-  x$wait()
-  expect_gt(length(readLines(log)), 1L)
 })

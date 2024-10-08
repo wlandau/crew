@@ -1,4 +1,4 @@
-# crew 0.9.5.9011 (development)
+# crew 0.9.5.9012 (development)
 
 * Give full worker name in the worker launch error message (@multimeric).
 * Start the controller automatically in more methods.
@@ -6,8 +6,6 @@
 * Add a `cancel()` controller method to cancel one or more tasks.
 * Call `cancel(all = TRUE)` from `terminate()` as a safeguard.
 * Make `client$dispatcher` a `ps::ps_handle()` handle and add a new `client$client` handle for the current process.
-* Add a `resources()` method to client to track memory usage.
-* Client `log()` method to log memory consumption to a CSV file.
 * To passively log memory usage when `log_resources` is given, the controller now calls `log()` as a side effect in most controller methods, with throttling to preserve speed.
 * Return a status and status code from `pop()` etc.
 * New internal function `as_monad()` makes error reporting more consistent.
@@ -15,6 +13,9 @@
 * Switch to `Rscript`.
 * Print session info from `crew_worker()` before attempting to dial into `mirai`.
 * Add `asyncdial = FALSE` back to `mirai::daemon()` call.
+* Deprecate `local_log_directory` and `local_log_join` in favor of `crew_options_local()` and the `options_local` argument.
+# Add `crew_options_metrics()` and the `options_metrics` argument for recording resource metrics (#178).
+* Add a new `logging.Rmd` vignette to explain best practices for logging and resource usage metrics (#178).
 
 # crew 0.9.5
 

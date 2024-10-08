@@ -15,6 +15,7 @@ crew_test("crew_controller_local()", {
   expect_false(x$started())
   expect_null(x$summary())
   expect_null(x$autoscaling)
+  expect_equal(length(x$pids()), 1L)
   x$start()
   expect_true(x$empty())
   expect_false(x$saturated())
@@ -45,6 +46,7 @@ crew_test("crew_controller_local()", {
   expect_equal(s$tasks, 0L)
   expect_true(x$client$started)
   expect_true(x$started())
+  expect_equal(length(x$pids()), 2L)
   # first task
   expect_equal(x$pushed, 0L)
   expect_equal(x$popped, 0L)
@@ -260,6 +262,65 @@ crew_test("exit status and code", {
   expect_equal(task$status, "canceled")
   expect_equal(task$code, 20L)
   expect_equal(x$client$resolved(), 3L)
+})
+
+crew_test("crew_controller_local() resource usage metric logging", {
+  skip_on_cran()
+  skip_on_os("windows")
+  log <- tempfile()
+  x <- crew_controller_local(
+    seconds_idle = 360,
+    options_metrics = crew_options_metrics(
+      path = log,
+      seconds_interval = 0.25
+    )
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(Sys.sleep(2))
+  x$wait(mode = "all", seconds_timeout = 30)
+  x$terminate()
+  expect_true(dir.exists(log))
+  data <- autometric::log_read(log)
+  expect_true(is.data.frame(data))
+  expect_gt(nrow(data), 0L)
+  expect_equal(unique(data$status), 0L)
+})
+
+crew_test("crew_controller_local() resource usage metrics with stdout", {
+  skip_on_cran()
+  skip_on_os("windows")
+  log <- tempfile()
+  x <- crew_controller_local(
+    seconds_idle = 360,
+    options_metrics = crew_options_metrics(
+      path = "/dev/stdout",
+      seconds_interval = 0.25
+    ),
+    options_local = crew_options_local(
+      log_directory = log
+    )
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(Sys.sleep(2))
+  x$wait(mode = "all", seconds_timeout = 30)
+  x$terminate()
+  expect_true(dir.exists(log))
+  data <- autometric::log_read(log)
+  expect_true(is.data.frame(data))
+  expect_gt(nrow(data), 0L)
+  expect_equal(unique(data$status), 0L)
 })
 
 crew_test("deprecate seconds_exit", {

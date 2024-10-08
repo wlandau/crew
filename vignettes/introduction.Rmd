@@ -197,29 +197,6 @@ controller$client$summary()
 #> 2      2 FALSE          1        1        1 ws://10.0.0.32:58685/2/cb45b3d4…
 ```
 
-# Resources
-
-`crew` utilizes background processes, and it may consume a lot of memory for big data workloads. A common cause of crashes is running out of computer memory. If you are running `crew` in a [`targets`](https://docs.ropensci.org/targets) pipeline (as explained [here in the `targets` user manual](https://books.ropensci.org/targets/crew.html)), consider setting `storage = "worker"` and `retrieval = "worker` in `tar_option_set()` to minimize memory consumption of the local processes (see also the [performance chapter](https://books.ropensci.org/targets/performance.html)).
-
-As of `crew` version 0.9.5.9007, you monitor resources by supplying a log file path to the `log_resources` argument of the controller. That way, normal controller methods write to the log as a side effect every `seconds_interval` seconds. The output file is a comma-separated values (CSV) file which can be read into R with `readr::read_csv()`.
-
-Each new observation in the log file comes from the `resources()` client method:
-
-```r
-controller$client$resources()
-#> # A tibble: 2 × 5
-#>   name         pid status        rss time                   
-#> * <chr>      <int> <chr>       <dbl> <chr>                  
-#> 1 client      6821 running 319029248 2024-08-05 08:26:28 EDT
-#> 2 dispatcher  7168 running  24985600 2024-08-05 08:26:28 EDT
-```
-
-`rss` stands for "resident set size", and it is the total random access memory (RAM) consumed by the process, including shared libraries that may also be in use by different processes. `pid` is the process ID, and `time` is a character string with the time stamp of when the data was recorded. (Use `as.POSIXct()` to convert `time` to a date type, e.g. for visualization.)
-
-In the output above, `"client"` refers to the local R process running the controller, and `"dispatcher"` refers to the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher process, a special background R process which sends tasks to workers. If the output of `resources()` does not include the dispatcher, it means the dispatcher is not running. (Either there was a crash, possibly due to maxing out memory, or you did not start the controller yet.)
-
-The workers is not included in the output of `resources()` because they may be running on different computers, and monitoring their resource consumption would require case-by-case [plugin](https://wlandau.github.io/crew/articles/plugins.html)-specific approaches.
-
 # Termination
 
 Call `terminate()` on the controller after you finish using it. `terminate()` tries to close the the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher and any workers that may still be running. It is important to free up these resources.
@@ -259,6 +236,10 @@ monitor$workers()
 ```
 
 `crew_monitor_local()` only manages processes running on your local computer. To manage `crew` workers running on different computers, such as SLURM or AWS Batch, please familiarize yourself with the given computing platform, and consider using the monitor objects in the relevant third-party plugin packages such as [`crew.cluster`](https://wlandau.github.io/crew.cluster/) or [`crew.aws.batch`](https://wlandau.github.io/crew.aws.batch/). Example: <https://wlandau.github.io/crew.aws.batch/index.html#job-management>.
+
+# Logging
+
+
 
 # Tuning and auto-scaling
 

@@ -92,8 +92,8 @@ auto-scaling is currently running}
 \item \href{#method-crew_class_controller-push_backlog}{\code{crew_class_controller$push_backlog()}}
 \item \href{#method-crew_class_controller-pop_backlog}{\code{crew_class_controller$pop_backlog()}}
 \item \href{#method-crew_class_controller-summary}{\code{crew_class_controller$summary()}}
-\item \href{#method-crew_class_controller-log}{\code{crew_class_controller$log()}}
 \item \href{#method-crew_class_controller-cancel}{\code{crew_class_controller$cancel()}}
+\item \href{#method-crew_class_controller-pids}{\code{crew_class_controller$pids()}}
 \item \href{#method-crew_class_controller-terminate}{\code{crew_class_controller$terminate()}}
 }
 }
@@ -1232,52 +1232,6 @@ is actually the number of \emph{tasks}, not the number of warnings.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-log"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-log}{}}}
-\subsection{Method \code{log()}}{
-Write resource consumption to
-the \code{log_resources} file.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$log(throttle = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{throttle}}{\code{TRUE} to throttle with interval \code{seconds_interval}
-seconds to avoid overburdening the system when writing to the log
-file. \code{FALSE} otherwise.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-The log file has one row per observation of a process,
-including the current
-R process ("client") and the \code{mirai} dispatcher. If the dispatcher
-is not included in the output, it means the dispatcher process
-is not running.
-Columns include:
-* \code{type}: the type of process (client or dispatcher)
-* \code{pid}: the process ID.
-* \code{status}: The process status (from \code{ps::ps_status()}).
-* \code{rss}: resident set size (RSS). RS is the total memory held by
-a process, including shared libraries which may also be
-in use by other processes. RSS is obtained
-from \code{ps::ps_memory_info()} and shown in bytes.
-* \code{elapsed}: number of elapsed seconds since the R process was
-started (from \code{proc.time()["elapsed"]}).
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly). Writes to the log file if \code{log_resources}
-was originally given.
-The log file itself is in comma-separated values
-(CSV) format which can be easily read by \code{readr::read_csv()}.
-If \code{log_resources} is \code{NULL},
-then \code{log()} has no effect.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-cancel"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-cancel}{}}}
 \subsection{Method \code{cancel()}}{
@@ -1296,6 +1250,29 @@ Those names must have been manually supplied by \code{push()}.}
 \code{all = TRUE} supersedes the \code{names} argument.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-pids"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-pids}{}}}
+\subsection{Method \code{pids()}}{
+Get the process IDs of the local process and the
+\code{mirai} dispatcher (if started).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pids(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+An integer vector of process IDs of the local process and the
+\code{mirai} dispatcher (if started).
 }
 }
 \if{html}{\out{<hr>}}

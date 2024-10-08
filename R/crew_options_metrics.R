@@ -63,7 +63,7 @@ crew_options_metrics_validate <- function(options) {
   on_windows <- identical(unname(tolower(Sys.info()[["sysname"]])), "windows")
   streams <- file.path("/dev", c("stdout", "stderr"))
   crew_assert(
-    !(on_windows && options$path %in% streams),
+    !(on_windows && any(options$path %in% streams)),
     message = paste(
       "path cannot be \"/dev/stdout\" or \"/dev/stderr\" on Windows."
     )

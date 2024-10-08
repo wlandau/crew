@@ -136,7 +136,8 @@ crew_controller_custom <- function(
   reset_options = FALSE,
   garbage_collection = FALSE,
   launch_max = 5L,
-  r_arguments = NULL
+  r_arguments = NULL,
+  options_metrics = crew::crew_options_metrics()
 ) {
   client <- crew::crew_client(
     name = name,
@@ -164,7 +165,8 @@ crew_controller_custom <- function(
     garbage_collection = garbage_collection,
     launch_max = launch_max,
     tls = tls,
-    r_arguments = r_arguments
+    r_arguments = r_arguments,
+    options_metrics = options_metrics
   )
   controller <- crew::crew_controller(client = client, launcher = launcher)
   controller$validate()

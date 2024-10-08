@@ -526,7 +526,8 @@ crew_class_launcher <- R6::R6Class(
           worker = worker,
           instance = instance,
           path = private$.options_metrics$path,
-          seconds_interval = private$.options_metrics$seconds_interval
+          seconds_interval = private$.options_metrics$seconds_interval %|||%
+            5
         )
       )
       out <- deparse_safe(expr = call, collapse = " ")

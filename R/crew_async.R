@@ -84,7 +84,6 @@ crew_class_async <- R6::R6Class(
         n = private$.workers,
         dispatcher = FALSE,
         autoexit = crew_terminate_signal(),
-        resilience = FALSE,
         idletime = 60000,
         .compute = private$.instance
       )

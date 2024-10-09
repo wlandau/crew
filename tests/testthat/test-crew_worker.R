@@ -8,7 +8,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   mirai::daemons(
     n = 1L,
     url = "ws://127.0.0.1:0",
-    dispatcher = TRUE,
+    dispatcher = "process",
     token = TRUE
   )
   on.exit(mirai::daemons(n = 0L), add = TRUE)
@@ -70,7 +70,7 @@ crew_test("crew_worker() metrics logging to a directory", {
   mirai::daemons(
     n = 1L,
     url = "ws://127.0.0.1:0",
-    dispatcher = TRUE,
+    dispatcher = "process",
     token = TRUE
   )
   on.exit(mirai::daemons(n = 0L), add = TRUE)

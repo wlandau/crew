@@ -280,7 +280,7 @@ crew_class_client <- R6::R6Class(
       mirai::daemons(
         n = private$.workers,
         url = url,
-        dispatcher = TRUE,
+        dispatcher = "process",
         seed = NULL,
         tls = private$.tls$client(),
         pass = private$.tls$password,

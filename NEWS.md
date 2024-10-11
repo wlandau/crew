@@ -1,4 +1,4 @@
-# crew 0.9.5.9012 (development)
+# crew 0.10.0
 
 * Give full worker name in the worker launch error message (@multimeric).
 * Start the controller automatically in more methods.

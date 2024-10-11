@@ -12,7 +12,7 @@ jobs:
       NOT_CRAN: true
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.2.1
 
       - name: system dependencies
         if: runner.os == 'Linux'

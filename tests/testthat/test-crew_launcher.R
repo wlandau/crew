@@ -20,6 +20,10 @@ crew_test("active bindings for covr", {
   expect_silent(out$throttle$validate())
   expect_equal(out$r_arguments, "--vanilla")
   expect_silent(out$validate())
+  expect_s3_class(
+    out$options_metrics,
+    c("crew_options_metrics", "crew_options")
+  )
 })
 
 crew_test("preemptive async termination for covr", {

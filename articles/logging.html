@@ -294,8 +294,15 @@ isolated <code>callr</code> R process quits.</li>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/" class="external-link">targets</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/tarchetypes/" class="external-link">tarchetypes</a></span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span></span>
+<span>  workers <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  options_metrics <span class="op">=</span> <span class="fu"><a href="../reference/crew_options_metrics.html">crew_options_metrics</a></span><span class="op">(</span></span>
+<span>    path <span class="op">=</span> <span class="st">"worker_log_directory/"</span>,</span>
+<span>    seconds_interval <span class="op">=</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu">tar_active</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span>  <span class="va">controller</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://wlandau.github.io/autometric/reference/log_start.html" class="external-link">log_start</a></span><span class="op">(</span></span>
 <span>    path <span class="op">=</span> <span class="st">"log.txt"</span>,</span>

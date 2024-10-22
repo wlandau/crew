@@ -71,11 +71,14 @@ controller <- crew_controller_local(
   )
 )
 controller$start()
-controller$push({
-  Sys.sleep(2.5)
-  print("task 1")
-  Sys.sleep(2.5)
-})
+controller$push(
+  name = "task1",
+  command = {
+    Sys.sleep(2.5)
+    print("task 1")
+    Sys.sleep(2.5)
+  }
+)
 controller$push({
   Sys.sleep(5)
   print("task 2")
@@ -83,42 +86,47 @@ controller$push({
 controller$wait()
 controller$terminate()
 log_files <- list.files(log_directory, full.names = TRUE)
+```
 
-
+```r
 writeLines(readLines(log_files[1]))
 #> R version 4.4.0 (2024-04-24)
 #> ... # more session info...
-#> __AUTOMETRIC__|0.0.5|43098|crew_worker_a_1_c7839a65097de181ee1b2939|0|1728410013.006|2.100|0.210|116834304|420885200896|__AUTOMETRIC__
-#> __AUTOMETRIC__|0.0.5|43098|crew_worker_a_1_c7839a65097de181ee1b2939|0|1728410014.018|0.000|0.000|116899840|420894638080|__AUTOMETRIC__
+#> __AUTOMETRIC__|0.0.5.9001|61269|crew_worker_a_1_61f738a4efc23071f87a1697|0|1729624627.805|2.500|0.250|113688576|420894687232|task1|__AUTOMETRIC__
+#> __AUTOMETRIC__|0.0.5.9001|61269|crew_worker_a_1_61f738a4efc23071f87a1697|0|1729624628.809|0.000|0.000|113721344|420903075840|task1|__AUTOMETRIC__
 #> [1] "task 1"
-#> __AUTOMETRIC__|0.0.5|43098|crew_worker_a_1_c7839a65097de181ee1b2939|0|1728410015.020|0.000|0.000|116932608|420903026688|__AUTOMETRIC__
-#> __AUTOMETRIC__|0.0.5|43098|crew_worker_a_1_c7839a65097de181ee1b2939|0|1728410016.024|0.000|0.000|116932608|420903026688|__AUTOMETRIC__
+#> __AUTOMETRIC__|0.0.5.9001|61269|crew_worker_a_1_61f738a4efc23071f87a1697|0|1729624629.815|0.000|0.000|113754112|420911464448|task1|__AUTOMETRIC__
+#> __AUTOMETRIC__|0.0.5.9001|61269|crew_worker_a_1_61f738a4efc23071f87a1697|0|1729624630.818|0.000|0.000|113754112|420911464448|task1|__AUTOMETRIC__
+#> __AUTOMETRIC__|0.0.5.9001|61269|crew_worker_a_1_61f738a4efc23071f87a1697|0|1729624631.818|0.000|0.000|113786880|420911464448|__DEFAULT__|__AUTOMETRIC__
+```
 
+```r
 writeLines(readLines(log_files[2]))
 #> R version 4.4.0 (2024-04-24)
 #> ... # more session info...
-#> __AUTOMETRIC__|0.0.5|43099|crew_worker_a_2_3647db437624830b7b0491af|0|1728410013.006|2.100|0.210|115671040|420750983168|__AUTOMETRIC__
-#> __AUTOMETRIC__|0.0.5|43099|crew_worker_a_2_3647db437624830b7b0491af|0|1728410014.014|0.000|0.000|115736576|420760420352|__AUTOMETRIC__
-#> __AUTOMETRIC__|0.0.5|43099|crew_worker_a_2_3647db437624830b7b0491af|0|1728410015.020|0.000|0.000|115736576|420760420352|__AUTOMETRIC__
-#> __AUTOMETRIC__|0.0.5|43099|crew_worker_a_2_3647db437624830b7b0491af|0|1728410016.025|0.000|0.000|115736576|420760420352|__AUTOMETRIC__
+#> __AUTOMETRIC__|0.0.5.9001|61278|crew_worker_a_2_4d762c8805d675b1e1626a0e|0|1729624627.820|1.700|0.170|114835456|420760469504|unnamed_task_ef5ee3df7ae|__AUTOMETRIC__
+#> __AUTOMETRIC__|0.0.5.9001|61278|crew_worker_a_2_4d762c8805d675b1e1626a0e|0|1729624628.821|0.000|0.000|114900992|420769906688|unnamed_task_ef5ee3df7ae|__AUTOMETRIC__
+#> __AUTOMETRIC__|0.0.5.9001|61278|crew_worker_a_2_4d762c8805d675b1e1626a0e|0|1729624629.826|0.000|0.000|114900992|420769906688|unnamed_task_ef5ee3df7ae|__AUTOMETRIC__
+#> __AUTOMETRIC__|0.0.5.9001|61278|crew_worker_a_2_4d762c8805d675b1e1626a0e|0|1729624630.828|0.000|0.000|114900992|420769906688|unnamed_task_ef5ee3df7ae|__AUTOMETRIC__
 #> [1] "task 2"
 ```
 
-The lines with `__AUTOMETRIC__` record resource usage metrics over the life cycle of each worker. Use [`autometric::log_read()`](https://wlandau.github.io/autometric/reference/log_read.html) to read these metrics and [`autometric::log_plot()`](https://wlandau.github.io/autometric/reference/log_plot.html) to visualize them. Below, the `time` column is elapsed time in seconds since logging began, and `resident` is memory usage in megabytes. More details are at [`autometric::log_read()`](https://wlandau.github.io/autometric/reference/log_read.html).
+The lines with `__AUTOMETRIC__` record resource usage metrics over the life cycle of each worker. Use [`autometric::log_read()`](https://wlandau.github.io/autometric/reference/log_read.html) to read these metrics and [`autometric::log_plot()`](https://wlandau.github.io/autometric/reference/log_plot.html) to visualize them. Below, the `time` column is elapsed time in seconds since logging began, and `resident` is memory usage in megabytes. The `phase` column shows which task was running at the time the log was recorded. A phase of `__DEFAULT__` means the worker was idle (not running a task). More details are at [`autometric::log_read()`](https://wlandau.github.io/autometric/reference/log_read.html).
 
 ```r
 data <- autometric::log_read(log_directory)
 data$name <- substr(data$name, 0, 20)
 data
-#>   version   pid                 name status  time core  cpu resident  virtual
-#> 1   0.0.5 43098 crew_worker_a_1_c783      0 0.000  2.1 0.21 116.8343 420885.2
-#> 2   0.0.5 43098 crew_worker_a_1_c783      0 1.012  0.0 0.00 116.8998 420894.6
-#> 3   0.0.5 43098 crew_worker_a_1_c783      0 2.014  0.0 0.00 116.9326 420903.0
-#> 4   0.0.5 43098 crew_worker_a_1_c783      0 3.018  0.0 0.00 116.9326 420903.0
-#> 5   0.0.5 43099 crew_worker_a_2_3647      0 0.000  2.1 0.21 115.6710 420751.0
-#> 6   0.0.5 43099 crew_worker_a_2_3647      0 1.008  0.0 0.00 115.7366 420760.4
-#> 7   0.0.5 43099 crew_worker_a_2_3647      0 2.014  0.0 0.00 115.7366 420760.4
-#> 8   0.0.5 43099 crew_worker_a_2_3647      0 3.019  0.0 0.00 115.7366 420760.4
+#>      version                    phase   pid                 name status  time core  cpu resident  virtual
+#> 1 0.0.5.9001                    task1 61269 crew_worker_a_1_61f7      0 0.000  2.5 0.25 113.6886 420894.7
+#> 2 0.0.5.9001                    task1 61269 crew_worker_a_1_61f7      0 1.004  0.0 0.00 113.7213 420903.1
+#> 3 0.0.5.9001                    task1 61269 crew_worker_a_1_61f7      0 2.010  0.0 0.00 113.7541 420911.5
+#> 4 0.0.5.9001                    task1 61269 crew_worker_a_1_61f7      0 3.013  0.0 0.00 113.7541 420911.5
+#> 5 0.0.5.9001              __DEFAULT__ 61269 crew_worker_a_1_61f7      0 4.013  0.0 0.00 113.7869 420911.5
+#> 6 0.0.5.9001 unnamed_task_ef5ee3df7ae 61278 crew_worker_a_2_4d76      0 0.000  1.7 0.17 114.8355 420760.5
+#> 7 0.0.5.9001 unnamed_task_ef5ee3df7ae 61278 crew_worker_a_2_4d76      0 1.001  0.0 0.00 114.9010 420769.9
+#> 8 0.0.5.9001 unnamed_task_ef5ee3df7ae 61278 crew_worker_a_2_4d76      0 2.006  0.0 0.00 114.9010 420769.9
+#> 9 0.0.5.9001 unnamed_task_ef5ee3df7ae 61278 crew_worker_a_2_4d76      0 3.008  0.0 0.00 114.9010 420769.9
 ```
 
 ```r
@@ -155,23 +163,23 @@ autometric::log_stop()
 controller$terminate()
 ```
 
-Use [`autometric::log_read()`](https://wlandau.github.io/autometric/reference/log_read.html) to read these metrics and [`autometric::log_plot()`](https://wlandau.github.io/autometric/reference/log_plot.html) to visualize them. Below, the `time` column is elapsed time in seconds since logging began, and `resident` is memory usage in megabytes. More details are at [`autometric::log_read()`](https://wlandau.github.io/autometric/reference/log_read.html).
+Use [`autometric::log_read()`](https://wlandau.github.io/autometric/reference/log_read.html) to read these metrics and [`autometric::log_plot()`](https://wlandau.github.io/autometric/reference/log_plot.html) to visualize them. Below, the `time` column is elapsed time in seconds since logging began, and `resident` is memory usage in megabytes. More details are at [`autometric::log_read()`](https://wlandau.github.io/autometric/reference/log_read.html). Note: the `phase` column does not show task information because only the workers know which tasks are running.
 
 ```r
 data <- autometric::log_read(path)
 data$name <- substr(data$name, 0, 10)
 data
-#>    version     pid       name status  time  core   cpu resident   virtual
-#> 1    0.0.1 2104319      local      0 0.000 0.000 0.000 195.1007  9708.073
-#> 2    0.0.1 2104731 dispatcher      0 0.000 0.000 0.000  31.7399  9514.222
-#> 3    0.0.1 2104319      local      0 1.000 4.998 0.078 195.1007  9842.328
-#> 4    0.0.1 2104731 dispatcher      0 1.000 0.000 0.000  31.7399  9849.901
-#> 5    0.0.1 2104319      local      0 2.000 0.000 0.000 195.1007  9909.436
-#> 6    0.0.1 2104731 dispatcher      0 2.000 0.000 0.000  31.7399  9984.119
-#> 7    0.0.1 2104319      local      0 3.001 0.000 0.000 195.1007  9909.436
-#> 8    0.0.1 2104731 dispatcher      0 3.001 0.000 0.000  31.7399 10118.337
-#> 9    0.0.1 2104319      local      0 4.001 0.000 0.000 195.1007  9976.545
-#> 10   0.0.1 2104731 dispatcher      0 4.001 0.000 0.000  31.7399 10185.445
+#>    version       phase     pid       name status  time  core   cpu resident   virtual
+#> 1    0.0.1 __DEFAULT__ 2104319      local      0 0.000 0.000 0.000 195.1007  9708.073
+#> 2    0.0.1 __DEFAULT__ 2104731 dispatcher      0 0.000 0.000 0.000  31.7399  9514.222
+#> 3    0.0.1 __DEFAULT__ 2104319      local      0 1.000 4.998 0.078 195.1007  9842.328
+#> 4    0.0.1 __DEFAULT__ 2104731 dispatcher      0 1.000 0.000 0.000  31.7399  9849.901
+#> 5    0.0.1 __DEFAULT__ 2104319      local      0 2.000 0.000 0.000 195.1007  9909.436
+#> 6    0.0.1 __DEFAULT__ 2104731 dispatcher      0 2.000 0.000 0.000  31.7399  9984.119
+#> 7    0.0.1 __DEFAULT__ 2104319      local      0 3.001 0.000 0.000 195.1007  9909.436
+#> 8    0.0.1 __DEFAULT__ 2104731 dispatcher      0 3.001 0.000 0.000  31.7399 10118.337
+#> 9    0.0.1 __DEFAULT__ 2104319      local      0 4.001 0.000 0.000 195.1007  9976.545
+#> 10   0.0.1 __DEFAULT__ 2104731 dispatcher      0 4.001 0.000 0.000  31.7399 10185.445
 ```
 
 # In `targets`

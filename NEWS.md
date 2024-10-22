@@ -1,6 +1,6 @@
-# crew 0.10.0.9000 (development)
+# crew 0.10.0.9001 (development)
 
-
+* Instrument `crew_eval()` with `autometric::log_phase_set()` and `autometric::log_phase_reset()`.
 
 # crew 0.10.0
 

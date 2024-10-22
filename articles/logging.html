@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -162,57 +162,64 @@ existing log files specified in &lt;code&gt;options_local&lt;/code&gt;.&lt;/p&gt
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">controller</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">2.5</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"task 1"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">2.5</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span></span>
+<span>  name <span class="op">=</span> <span class="st">"task1"</span>,</span>
+<span>  command <span class="op">=</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">2.5</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"task 1"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">2.5</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"task 2"</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">controller</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">log_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">log_directory</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">log_files</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">log_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">log_directory</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">log_files</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.4.0 (2024-04-24)</span></span>
 <span><span class="co">#&gt; ... # more session info...</span></span>
-<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5|43098|crew_worker_a_1_c7839a65097de181ee1b2939|0|1728410013.006|2.100|0.210|116834304|420885200896|__AUTOMETRIC__</span></span>
-<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5|43098|crew_worker_a_1_c7839a65097de181ee1b2939|0|1728410014.018|0.000|0.000|116899840|420894638080|__AUTOMETRIC__</span></span>
+<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5.9001|61269|crew_worker_a_1_61f738a4efc23071f87a1697|0|1729624627.805|2.500|0.250|113688576|420894687232|task1|__AUTOMETRIC__</span></span>
+<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5.9001|61269|crew_worker_a_1_61f738a4efc23071f87a1697|0|1729624628.809|0.000|0.000|113721344|420903075840|task1|__AUTOMETRIC__</span></span>
 <span><span class="co">#&gt; [1] "task 1"</span></span>
-<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5|43098|crew_worker_a_1_c7839a65097de181ee1b2939|0|1728410015.020|0.000|0.000|116932608|420903026688|__AUTOMETRIC__</span></span>
-<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5|43098|crew_worker_a_1_c7839a65097de181ee1b2939|0|1728410016.024|0.000|0.000|116932608|420903026688|__AUTOMETRIC__</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">log_files</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5.9001|61269|crew_worker_a_1_61f738a4efc23071f87a1697|0|1729624629.815|0.000|0.000|113754112|420911464448|task1|__AUTOMETRIC__</span></span>
+<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5.9001|61269|crew_worker_a_1_61f738a4efc23071f87a1697|0|1729624630.818|0.000|0.000|113754112|420911464448|task1|__AUTOMETRIC__</span></span>
+<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5.9001|61269|crew_worker_a_1_61f738a4efc23071f87a1697|0|1729624631.818|0.000|0.000|113786880|420911464448|__DEFAULT__|__AUTOMETRIC__</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">log_files</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.4.0 (2024-04-24)</span></span>
 <span><span class="co">#&gt; ... # more session info...</span></span>
-<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5|43099|crew_worker_a_2_3647db437624830b7b0491af|0|1728410013.006|2.100|0.210|115671040|420750983168|__AUTOMETRIC__</span></span>
-<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5|43099|crew_worker_a_2_3647db437624830b7b0491af|0|1728410014.014|0.000|0.000|115736576|420760420352|__AUTOMETRIC__</span></span>
-<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5|43099|crew_worker_a_2_3647db437624830b7b0491af|0|1728410015.020|0.000|0.000|115736576|420760420352|__AUTOMETRIC__</span></span>
-<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5|43099|crew_worker_a_2_3647db437624830b7b0491af|0|1728410016.025|0.000|0.000|115736576|420760420352|__AUTOMETRIC__</span></span>
+<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5.9001|61278|crew_worker_a_2_4d762c8805d675b1e1626a0e|0|1729624627.820|1.700|0.170|114835456|420760469504|unnamed_task_ef5ee3df7ae|__AUTOMETRIC__</span></span>
+<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5.9001|61278|crew_worker_a_2_4d762c8805d675b1e1626a0e|0|1729624628.821|0.000|0.000|114900992|420769906688|unnamed_task_ef5ee3df7ae|__AUTOMETRIC__</span></span>
+<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5.9001|61278|crew_worker_a_2_4d762c8805d675b1e1626a0e|0|1729624629.826|0.000|0.000|114900992|420769906688|unnamed_task_ef5ee3df7ae|__AUTOMETRIC__</span></span>
+<span><span class="co">#&gt; __AUTOMETRIC__|0.0.5.9001|61278|crew_worker_a_2_4d762c8805d675b1e1626a0e|0|1729624630.828|0.000|0.000|114900992|420769906688|unnamed_task_ef5ee3df7ae|__AUTOMETRIC__</span></span>
 <span><span class="co">#&gt; [1] "task 2"</span></span></code></pre></div>
 <p>The lines with <code>__AUTOMETRIC__</code> record resource usage
 metrics over the life cycle of each worker. Use <a href="https://wlandau.github.io/autometric/reference/log_read.html" class="external-link"><code>autometric::log_read()</code></a>
 to read these metrics and <a href="https://wlandau.github.io/autometric/reference/log_plot.html" class="external-link"><code>autometric::log_plot()</code></a>
 to visualize them. Below, the <code>time</code> column is elapsed time
 in seconds since logging began, and <code>resident</code> is memory
-usage in megabytes. More details are at <a href="https://wlandau.github.io/autometric/reference/log_read.html" class="external-link"><code>autometric::log_read()</code></a>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+usage in megabytes. The <code>phase</code> column shows which task was
+running at the time the log was recorded. A phase of
+<code>__DEFAULT__</code> means the worker was idle (not running a task).
+More details are at <a href="https://wlandau.github.io/autometric/reference/log_read.html" class="external-link"><code>autometric::log_read()</code></a>.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">autometric</span><span class="fu">::</span><span class="fu"><a href="https://wlandau.github.io/autometric/reference/log_read.html" class="external-link">log_read</a></span><span class="op">(</span><span class="va">log_directory</span><span class="op">)</span></span>
 <span><span class="va">data</span><span class="op">$</span><span class="va">name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">name</span>, <span class="fl">0</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="va">data</span></span>
-<span><span class="co">#&gt;   version   pid                 name status  time core  cpu resident  virtual</span></span>
-<span><span class="co">#&gt; 1   0.0.5 43098 crew_worker_a_1_c783      0 0.000  2.1 0.21 116.8343 420885.2</span></span>
-<span><span class="co">#&gt; 2   0.0.5 43098 crew_worker_a_1_c783      0 1.012  0.0 0.00 116.8998 420894.6</span></span>
-<span><span class="co">#&gt; 3   0.0.5 43098 crew_worker_a_1_c783      0 2.014  0.0 0.00 116.9326 420903.0</span></span>
-<span><span class="co">#&gt; 4   0.0.5 43098 crew_worker_a_1_c783      0 3.018  0.0 0.00 116.9326 420903.0</span></span>
-<span><span class="co">#&gt; 5   0.0.5 43099 crew_worker_a_2_3647      0 0.000  2.1 0.21 115.6710 420751.0</span></span>
-<span><span class="co">#&gt; 6   0.0.5 43099 crew_worker_a_2_3647      0 1.008  0.0 0.00 115.7366 420760.4</span></span>
-<span><span class="co">#&gt; 7   0.0.5 43099 crew_worker_a_2_3647      0 2.014  0.0 0.00 115.7366 420760.4</span></span>
-<span><span class="co">#&gt; 8   0.0.5 43099 crew_worker_a_2_3647      0 3.019  0.0 0.00 115.7366 420760.4</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<span><span class="co">#&gt;      version                    phase   pid                 name status  time core  cpu resident  virtual</span></span>
+<span><span class="co">#&gt; 1 0.0.5.9001                    task1 61269 crew_worker_a_1_61f7      0 0.000  2.5 0.25 113.6886 420894.7</span></span>
+<span><span class="co">#&gt; 2 0.0.5.9001                    task1 61269 crew_worker_a_1_61f7      0 1.004  0.0 0.00 113.7213 420903.1</span></span>
+<span><span class="co">#&gt; 3 0.0.5.9001                    task1 61269 crew_worker_a_1_61f7      0 2.010  0.0 0.00 113.7541 420911.5</span></span>
+<span><span class="co">#&gt; 4 0.0.5.9001                    task1 61269 crew_worker_a_1_61f7      0 3.013  0.0 0.00 113.7541 420911.5</span></span>
+<span><span class="co">#&gt; 5 0.0.5.9001              __DEFAULT__ 61269 crew_worker_a_1_61f7      0 4.013  0.0 0.00 113.7869 420911.5</span></span>
+<span><span class="co">#&gt; 6 0.0.5.9001 unnamed_task_ef5ee3df7ae 61278 crew_worker_a_2_4d76      0 0.000  1.7 0.17 114.8355 420760.5</span></span>
+<span><span class="co">#&gt; 7 0.0.5.9001 unnamed_task_ef5ee3df7ae 61278 crew_worker_a_2_4d76      0 1.001  0.0 0.00 114.9010 420769.9</span></span>
+<span><span class="co">#&gt; 8 0.0.5.9001 unnamed_task_ef5ee3df7ae 61278 crew_worker_a_2_4d76      0 2.006  0.0 0.00 114.9010 420769.9</span></span>
+<span><span class="co">#&gt; 9 0.0.5.9001 unnamed_task_ef5ee3df7ae 61278 crew_worker_a_2_4d76      0 3.008  0.0 0.00 114.9010 420769.9</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">autometric</span><span class="fu">::</span><span class="fu"><a href="https://wlandau.github.io/autometric/reference/log_plot.html" class="external-link">log_plot</a></span><span class="op">(</span><span class="va">data</span>, pid <span class="op">=</span> <span class="fl">43098</span>, metric <span class="op">=</span> <span class="st">"resident"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figures%2Fmemory.png"></p>
 </div>
@@ -225,7 +232,7 @@ the <code>mirai</code> dispatcher). To begin, you need the process IDs
 of the local processes. As of <code>crew</code> version
 <code>0.9.5.9012</code>, every controller has a <code>pids()</code>
 method to get the process IDs of all the local processes.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/crew/">crew</a></span><span class="op">)</span></span>
 <span><span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">controller</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span>
@@ -237,7 +244,7 @@ which starts a background thread which logs resource usage metrics to
 the text file of your choice.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;On Mac OS, you may not get usable metrics for the
 dispatcher because of security restrictions on low-level system calls.&lt;/p&gt;"><sup>2</sup></a> Remember to call <a href="https://wlandau.github.io/autometric/reference/log_stop.html" class="external-link"><code>autometric::log_stop()</code></a>
 when you are done (or restart R) to stop logging.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">autometric</span><span class="fu">::</span><span class="fu"><a href="https://wlandau.github.io/autometric/reference/log_start.html" class="external-link">log_start</a></span><span class="op">(</span></span>
 <span>  path <span class="op">=</span> <span class="va">path</span>,</span>
@@ -252,22 +259,24 @@ when you are done (or restart R) to stop logging.</p>
 to read these metrics and <a href="https://wlandau.github.io/autometric/reference/log_plot.html" class="external-link"><code>autometric::log_plot()</code></a>
 to visualize them. Below, the <code>time</code> column is elapsed time
 in seconds since logging began, and <code>resident</code> is memory
-usage in megabytes. More details are at <a href="https://wlandau.github.io/autometric/reference/log_read.html" class="external-link"><code>autometric::log_read()</code></a>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+usage in megabytes. More details are at <a href="https://wlandau.github.io/autometric/reference/log_read.html" class="external-link"><code>autometric::log_read()</code></a>.
+Note: the <code>phase</code> column does not show task information
+because only the workers know which tasks are running.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">autometric</span><span class="fu">::</span><span class="fu"><a href="https://wlandau.github.io/autometric/reference/log_read.html" class="external-link">log_read</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
 <span><span class="va">data</span><span class="op">$</span><span class="va">name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">name</span>, <span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">data</span></span>
-<span><span class="co">#&gt;    version     pid       name status  time  core   cpu resident   virtual</span></span>
-<span><span class="co">#&gt; 1    0.0.1 2104319      local      0 0.000 0.000 0.000 195.1007  9708.073</span></span>
-<span><span class="co">#&gt; 2    0.0.1 2104731 dispatcher      0 0.000 0.000 0.000  31.7399  9514.222</span></span>
-<span><span class="co">#&gt; 3    0.0.1 2104319      local      0 1.000 4.998 0.078 195.1007  9842.328</span></span>
-<span><span class="co">#&gt; 4    0.0.1 2104731 dispatcher      0 1.000 0.000 0.000  31.7399  9849.901</span></span>
-<span><span class="co">#&gt; 5    0.0.1 2104319      local      0 2.000 0.000 0.000 195.1007  9909.436</span></span>
-<span><span class="co">#&gt; 6    0.0.1 2104731 dispatcher      0 2.000 0.000 0.000  31.7399  9984.119</span></span>
-<span><span class="co">#&gt; 7    0.0.1 2104319      local      0 3.001 0.000 0.000 195.1007  9909.436</span></span>
-<span><span class="co">#&gt; 8    0.0.1 2104731 dispatcher      0 3.001 0.000 0.000  31.7399 10118.337</span></span>
-<span><span class="co">#&gt; 9    0.0.1 2104319      local      0 4.001 0.000 0.000 195.1007  9976.545</span></span>
-<span><span class="co">#&gt; 10   0.0.1 2104731 dispatcher      0 4.001 0.000 0.000  31.7399 10185.445</span></span></code></pre></div>
+<span><span class="co">#&gt;    version       phase     pid       name status  time  core   cpu resident   virtual</span></span>
+<span><span class="co">#&gt; 1    0.0.1 __DEFAULT__ 2104319      local      0 0.000 0.000 0.000 195.1007  9708.073</span></span>
+<span><span class="co">#&gt; 2    0.0.1 __DEFAULT__ 2104731 dispatcher      0 0.000 0.000 0.000  31.7399  9514.222</span></span>
+<span><span class="co">#&gt; 3    0.0.1 __DEFAULT__ 2104319      local      0 1.000 4.998 0.078 195.1007  9842.328</span></span>
+<span><span class="co">#&gt; 4    0.0.1 __DEFAULT__ 2104731 dispatcher      0 1.000 0.000 0.000  31.7399  9849.901</span></span>
+<span><span class="co">#&gt; 5    0.0.1 __DEFAULT__ 2104319      local      0 2.000 0.000 0.000 195.1007  9909.436</span></span>
+<span><span class="co">#&gt; 6    0.0.1 __DEFAULT__ 2104731 dispatcher      0 2.000 0.000 0.000  31.7399  9984.119</span></span>
+<span><span class="co">#&gt; 7    0.0.1 __DEFAULT__ 2104319      local      0 3.001 0.000 0.000 195.1007  9909.436</span></span>
+<span><span class="co">#&gt; 8    0.0.1 __DEFAULT__ 2104731 dispatcher      0 3.001 0.000 0.000  31.7399 10118.337</span></span>
+<span><span class="co">#&gt; 9    0.0.1 __DEFAULT__ 2104319      local      0 4.001 0.000 0.000 195.1007  9976.545</span></span>
+<span><span class="co">#&gt; 10   0.0.1 __DEFAULT__ 2104731 dispatcher      0 4.001 0.000 0.000  31.7399 10185.445</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="in-targets">In <code>targets</code><a class="anchor" aria-label="anchor" href="#in-targets"></a>
@@ -288,7 +297,7 @@ quits when the <a href="https://docs.ropensci.org/targets/reference/tar_make.htm
 isolated <code>callr</code> R process quits.</li>
 </ol>
 <p>Example <code>_targets.R</code> file:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/autometric/" class="external-link">autometric</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/crew/">crew</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/" class="external-link">targets</a></span><span class="op">)</span></span>

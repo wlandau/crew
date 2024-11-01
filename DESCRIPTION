@@ -16,7 +16,7 @@ Description: In computationally demanding analysis projects,
   'clustermq' by Schubert (2019) <doi:10.1093/bioinformatics/btz284>),
   and 'batchtools' by Lang, Bischel, and Surmann (2017)
   <doi:10.21105/joss.00135>.
-Version: 0.10.0.9001
+Version: 0.10.1
 License: MIT + file LICENSE
 URL: https://wlandau.github.io/crew/, https://github.com/wlandau/crew
 BugReports: https://github.com/wlandau/crew/issues
@@ -40,7 +40,7 @@ Authors@R: c(
 Depends:
   R (>= 4.0.0)
 Imports:
-  autometric (>= 0.0.5.9001),
+  autometric (>= 0.1.0),
   cli (>= 3.1.0),
   data.table,
   getip,
@@ -62,8 +62,6 @@ Suggests:
   markdown (>= 1.1),
   rmarkdown (>= 2.4),
   testthat (>= 3.0.0)
-Remotes:
-  wlandau/autometric
 Encoding: UTF-8
 Language: en-US
 VignetteBuilder: knitr

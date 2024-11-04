@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -281,7 +281,7 @@ workers take a long time to launch.</p>
 <span>  <span class="va">reset_packages</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">reset_options</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">garbage_collection</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">launch_max</span> <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  <span class="va">crashes_error</span> <span class="op">=</span> <span class="fl">5L</span>,</span>
 <span>  <span class="va">r_arguments</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">options_metrics</span> <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_options_metrics.html">crew_options_metrics</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">{</span></span>
@@ -308,7 +308,7 @@ workers take a long time to launch.</p>
 <span>    reset_packages <span class="op">=</span> <span class="va">reset_packages</span>,</span>
 <span>    reset_options <span class="op">=</span> <span class="va">reset_options</span>,</span>
 <span>    garbage_collection <span class="op">=</span> <span class="va">garbage_collection</span>,</span>
-<span>    launch_max <span class="op">=</span> <span class="va">launch_max</span>,</span>
+<span>    crashes_error <span class="op">=</span> <span class="va">crashes_error</span>,</span>
 <span>    tls <span class="op">=</span> <span class="va">tls</span>,</span>
 <span>    r_arguments <span class="op">=</span> <span class="va">r_arguments</span>,</span>
 <span>    options_metrics <span class="op">=</span> <span class="va">options_metrics</span></span>
@@ -519,7 +519,7 @@ it like an ordinary synchronous controller.</p>
 <span>  <span class="va">reset_packages</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">reset_options</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">garbage_collection</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">launch_max</span> <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  <span class="va">crashes_error</span> <span class="op">=</span> <span class="fl">5L</span>,</span>
 <span>  <span class="va">processes</span> <span class="op">=</span> <span class="cn">NULL</span> <span class="co"># Number of local async daemons for worker launches etc.</span></span>
 <span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">client</span> <span class="op">&lt;-</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_client.html">crew_client</a></span><span class="op">(</span></span>
@@ -543,7 +543,7 @@ it like an ordinary synchronous controller.</p>
 <span>    reset_packages <span class="op">=</span> <span class="va">reset_packages</span>,</span>
 <span>    reset_options <span class="op">=</span> <span class="va">reset_options</span>,</span>
 <span>    garbage_collection <span class="op">=</span> <span class="va">garbage_collection</span>,</span>
-<span>    launch_max <span class="op">=</span> <span class="va">launch_max</span>,</span>
+<span>    crashes_error <span class="op">=</span> <span class="va">crashes_error</span>,</span>
 <span>    tls <span class="op">=</span> <span class="va">tls</span>,</span>
 <span>    processes <span class="op">=</span> <span class="va">processes</span></span>
 <span>  <span class="op">)</span></span>

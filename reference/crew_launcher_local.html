@@ -9,7 +9,7 @@ local process workers."><meta property="og:image" content="https://wlandau.githu
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,8 @@ local process workers.</p>
 <span>  reset_packages <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  reset_options <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  garbage_collection <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  launch_max <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  crashes_error <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  launch_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tls <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_tls.html">crew_tls</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  r_arguments <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"--no-save"</span>, <span class="st">"--no-restore"</span><span class="op">)</span>,</span>
 <span>  options_metrics <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_options_metrics.html">crew_options_metrics</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -168,16 +169,20 @@ because packages sometimes rely on options they set at loading time.</p></dd>
 tasks, <code>FALSE</code> to skip.</p></dd>
 
 
+<dt id="arg-crashes-error">crashes_error<a class="anchor" aria-label="anchor" href="#arg-crashes-error"></a></dt>
+<dd><p>Positive integer scalar. If a worker exits
+<code>crashes_error</code> times in a row without completing all its assigned
+tasks, then the launcher throws an informative error.
+The reason for <code>crashes_error</code>
+is to avoid an infinite loop where a task crashes a worker
+(through a segfault, maxing out memory, etc) but the worker always
+relaunches. To monitor the resources of <code>crew</code> workers,
+please see <a href="https://wlandau.github.io/crew/articles/logging.html">https://wlandau.github.io/crew/articles/logging.html</a>.</p></dd>
+
+
 <dt id="arg-launch-max">launch_max<a class="anchor" aria-label="anchor" href="#arg-launch-max"></a></dt>
-<dd><p>Positive integer of length 1, maximum allowed
-consecutive launch attempts which do not complete any tasks.
-Enforced on a worker-by-worker basis.
-The futile launch count resets to back 0
-for each worker that completes a task.
-It is recommended to set <code>launch_max</code> above 0
-because sometimes workers are unproductive under perfectly ordinary
-circumstances. But <code>launch_max</code> should still be small enough
-to detect errors in the underlying platform.</p></dd>
+<dd><p>Deprecated on 2024-11-04 (version 0.10.1.9000).
+Use <code>crashes_error</code> instead.</p></dd>
 
 
 <dt id="arg-tls">tls<a class="anchor" aria-label="anchor" href="#arg-tls"></a></dt>

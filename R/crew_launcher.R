@@ -774,10 +774,9 @@ crew_class_launcher <- R6::R6Class(
       private$.workers$socket[index] <- socket
       private$.workers$start[index] <- nanonext::mclock() / 1000
       private$.workers$launches[index] <- private$.workers$launches[index] + 1L
-      private$.workers$futile[index] <- futile
+      private$.workers$crashes[index] <- crashes
       private$.workers$launched[index] <- TRUE
       private$.workers$terminated[index] <- FALSE
-      private$.workers$history[index] <- complete
       invisible()
     },
     #' @description Forward an asynchronous launch/termination error condition

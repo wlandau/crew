@@ -55,8 +55,8 @@
 #'   tasks, `FALSE` to skip.
 #' @param crashes_error Positive integer scalar. If a worker exits
 #'   `crashes_error` times in a row without completing all its assigned
-#'   tasks, then the launcher throws an informative error next time
-#'   the worker tries to relaunch. The reason for `crashes_error`
+#'   tasks, then the launcher throws an informative error.
+#'   The reason for `crashes_error`
 #'   is to avoid an infinite loop where a task crashes a worker
 #'   (through a segfault, maxing out memory, etc) but the worker always
 #'   relaunches. To monitor the resources of `crew` workers,
@@ -191,7 +191,34 @@ crew_class_launcher <- R6::R6Class(
     .r_arguments = NULL,
     .options_metrics = NULL,
     .async = NULL,
-    .throttle = NULL
+    .throttle = NULL,
+    .check_crashes = function(index) {
+      workers <- .subset2(private, ".workers")
+      assigned <- .subset2(workers, "assigned")[index]
+      complete <- .subset2(workers, "complete")[index]
+      crashes <- .subset2(workers, "crashes")[index]
+      crashes <- ifelse(assigned > complete, crashes + 1L, 0L)
+      private$.workers$crashes[index] <- crashes
+      crew_assert(
+        crashes < private$.crashes_error,
+        message = paste0(
+          "{crew} launcher ",
+          private$.name,
+          " worker index ",
+          index,
+          " inappropriately terminated ",
+          private$.crashes_error,
+          " times in a row (it exited ",
+          "without completing all its assigned tasks). ",
+          "Either troubleshoot or raise crashes_error above ",
+          private$.crashes_error,
+          ". Details: ",
+          "https://wlandau.github.io/crew/articles/risks.html#crashes. ",
+          "See https://wlandau.github.io/crew/articles/logging.html ",
+          "to learn how to log memory and CPU usage for a worker."
+        )
+      )
+    }
   ),
   active = list(
     #' @field workers Data frame of worker information.
@@ -703,7 +730,9 @@ crew_class_launcher <- R6::R6Class(
     done = function() {
       !self$active() & private$.workers$launched
     },
-    #' @details Rotate websockets at all unlaunched workers.
+    #' @details Rotate websockets at all unlaunched workers and
+    #'   throw an error if a worker launched at least `crashes_error`
+    #'   times in a row without completing all its assigned tasks.
     #' @return `NULL` (invisibly).
     rotate = function() {
       which_done <- which(self$done())
@@ -718,6 +747,7 @@ crew_class_launcher <- R6::R6Class(
           private$.workers$socket[index] <- socket
           private$.workers$launched[index] <- FALSE
         }
+        private$.check_crashes(index)
       }
     },
     #' @description Launch a worker.
@@ -739,29 +769,6 @@ crew_class_launcher <- R6::R6Class(
         worker = index,
         instance = instance
       )
-      assigned <- private$.workers$assigned[index]
-      complete <- private$.workers$complete[index]
-      crashes <- private$.workers$crashes[index]
-      crashes <- if_any(assigned > complete, crashes + 1L, 0L)
-      crew_assert(
-        crashes < private$.crashes_error,
-        message = paste0(
-          "{crew} worker with name ",
-          name,
-          " and index ",
-          index,
-          " inappropriately terminated ",
-          private$.crashes_error,
-          " times in a row (it exited ",
-          "without completing all its assigned tasks). ",
-          "Either troubleshoot or raise crashes_error above ",
-          private$.crashes_error,
-          ". Details: ",
-          "https://wlandau.github.io/crew/articles/risks.html#crashes. ",
-          "See https://wlandau.github.io/crew/articles/logging.html ",
-          "to learn how to log memory and CPU usage for a worker."
-        )
-      )
       mirai::call_mirai_(private$.workers$handle[[index]])
       handle <- self$launch_worker(
         call = as.character(call),
@@ -774,7 +781,6 @@ crew_class_launcher <- R6::R6Class(
       private$.workers$socket[index] <- socket
       private$.workers$start[index] <- nanonext::mclock() / 1000
       private$.workers$launches[index] <- private$.workers$launches[index] + 1L
-      private$.workers$crashes[index] <- crashes
       private$.workers$launched[index] <- TRUE
       private$.workers$terminated[index] <- FALSE
       invisible()

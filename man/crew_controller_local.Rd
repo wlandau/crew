@@ -120,8 +120,8 @@ tasks, \code{FALSE} to skip.}
 
 \item{crashes_error}{Positive integer scalar. If a worker exits
 \code{crashes_error} times in a row without completing all its assigned
-tasks, then the launcher throws an informative error next time
-the worker tries to relaunch. The reason for \code{crashes_error}
+tasks, then the launcher throws an informative error.
+The reason for \code{crashes_error}
 is to avoid an infinite loop where a task crashes a worker
 (through a segfault, maxing out memory, etc) but the worker always
 relaunches. To monitor the resources of \code{crew} workers,

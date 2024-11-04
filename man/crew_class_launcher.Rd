@@ -511,7 +511,9 @@ Integer index of inactive workers.
 }
 
 \subsection{Details}{
-Rotate websockets at all unlaunched workers.
+Rotate websockets at all unlaunched workers and
+throw an error if a worker launched at least \code{crashes_error}
+times in a row without completing all its assigned tasks.
 }
 
 \subsection{Returns}{

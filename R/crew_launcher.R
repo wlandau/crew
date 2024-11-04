@@ -352,6 +352,7 @@ crew_class_launcher <- R6::R6Class(
       reset_options = NULL,
       garbage_collection = NULL,
       crashes_error = NULL,
+      launch_max = NULL, # TODO: remove after deprecation period
       tls = NULL,
       processes = NULL,
       r_arguments = NULL,
@@ -407,6 +408,7 @@ crew_class_launcher <- R6::R6Class(
         !anyNA(.),
         nzchar(.)
       )
+      # TODO: add "crashes_error" when revdeps use this argument.
       fields <- c(
         "seconds_interval",
         "seconds_timeout",
@@ -414,8 +416,7 @@ crew_class_launcher <- R6::R6Class(
         "seconds_idle",
         "seconds_wall",
         "tasks_max",
-        "tasks_timers",
-        "crashes_error"
+        "tasks_timers"
       )
       for (field in fields) {
         crew_assert(

@@ -33,7 +33,7 @@ crew_test("custom launcher plugin based on system2()", {
     reset_packages = FALSE,
     reset_options = FALSE,
     garbage_collection = FALSE,
-    launch_max = 5L
+    crashes_error = 5L
   ) {
     client <- crew::crew_client(
       name = name,
@@ -58,7 +58,7 @@ crew_test("custom launcher plugin based on system2()", {
       reset_packages = reset_packages,
       reset_options = reset_options,
       garbage_collection = garbage_collection,
-      launch_max = launch_max,
+      crashes_error = crashes_error,
       tls = tls
     )
     controller <- crew::crew_controller(client = client, launcher = launcher)

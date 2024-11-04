@@ -183,21 +183,22 @@ crew_test("launcher start()", {
   workers <- launcher$workers
   expect_equal(nrow(workers), 2L)
   expect_equal(
-    colnames(workers),
-    cols <- c(
-      "handle",
-      "termination",
-      "socket",
-      "start",
-      "launches",
-      "futile",
-      "launched",
-      "terminated",
-      "history",
-      "online",
-      "discovered",
-      "assigned",
-      "complete"
+    sort(colnames(workers)),
+    sort(
+      c(
+        "handle",
+        "termination",
+        "socket",
+        "start",
+        "launches",
+        "crashes",
+        "launched",
+        "terminated",
+        "online",
+        "discovered",
+        "assigned",
+        "complete"
+      )
     )
   )
   expect_equal(workers$handle, list(crew_null, crew_null))

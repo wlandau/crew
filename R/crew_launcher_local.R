@@ -36,7 +36,8 @@ crew_launcher_local <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L,
+  crashes_error = 5L,
+  launch_max = NULL,
   tls = crew::crew_tls(),
   r_arguments = c("--no-save", "--no-restore"),
   options_metrics = crew::crew_options_metrics(),
@@ -68,6 +69,14 @@ crew_launcher_local <- function(
     condition = "warning",
     value = local_log_join
   )
+  crew_deprecate(
+    name = "launch_max",
+    date = "2024-11-04",
+    version = "0.10.1.9000",
+    alternative = "crashes_error",
+    condition = "warning",
+    value = launch_max
+  )
   options_local$log_directory <- local_log_directory %|||%
     options_local$log_directory
   options_local$log_join <- local_log_join %|||%
@@ -86,7 +95,7 @@ crew_launcher_local <- function(
     reset_packages = reset_packages,
     reset_options = reset_options,
     garbage_collection = garbage_collection,
-    launch_max = launch_max,
+    crashes_error = crashes_error,
     tls = tls,
     r_arguments = r_arguments,
     options_metrics = options_metrics,
@@ -168,7 +177,7 @@ crew_class_launcher_local <- R6::R6Class(
     #' @param reset_packages See [crew_launcher()].
     #' @param reset_options See [crew_launcher()].
     #' @param garbage_collection See [crew_launcher()].
-    #' @param launch_max See [crew_launcher()].
+    #' @param crashes_error See [crew_launcher()].
     #' @param tls See [crew_launcher()].
     #' @param processes See [crew_launcher()].
     #' @param r_arguments See [crew_launcher()].
@@ -200,7 +209,7 @@ crew_class_launcher_local <- R6::R6Class(
       reset_packages = NULL,
       reset_options = NULL,
       garbage_collection = NULL,
-      launch_max = NULL,
+      crashes_error = NULL,
       tls = NULL,
       processes = NULL,
       r_arguments = NULL,
@@ -221,7 +230,7 @@ crew_class_launcher_local <- R6::R6Class(
         reset_packages = reset_packages,
         reset_options = reset_options,
         garbage_collection = garbage_collection,
-        launch_max = launch_max,
+        crashes_error = crashes_error,
         tls = tls,
         processes = processes,
         r_arguments = r_arguments,

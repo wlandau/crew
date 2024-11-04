@@ -18,7 +18,8 @@ crew_launcher_local(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L,
+  crashes_error = 5L,
+  launch_max = NULL,
   tls = crew::crew_tls(),
   r_arguments = c("--no-save", "--no-restore"),
   options_metrics = crew::crew_options_metrics(),
@@ -87,15 +88,17 @@ because packages sometimes rely on options they set at loading time.}
 \item{garbage_collection}{\code{TRUE} to run garbage collection between
 tasks, \code{FALSE} to skip.}
 
-\item{launch_max}{Positive integer of length 1, maximum allowed
-consecutive launch attempts which do not complete any tasks.
-Enforced on a worker-by-worker basis.
-The futile launch count resets to back 0
-for each worker that completes a task.
-It is recommended to set \code{launch_max} above 0
-because sometimes workers are unproductive under perfectly ordinary
-circumstances. But \code{launch_max} should still be small enough
-to detect errors in the underlying platform.}
+\item{crashes_error}{Positive integer scalar. If a worker exits
+\code{crashes_error} times in a row without completing all its assigned
+tasks, then the launcher throws an informative error.
+The reason for \code{crashes_error}
+is to avoid an infinite loop where a task crashes a worker
+(through a segfault, maxing out memory, etc) but the worker always
+relaunches. To monitor the resources of \code{crew} workers,
+please see \url{https://wlandau.github.io/crew/articles/logging.html}.}
+
+\item{launch_max}{Deprecated on 2024-11-04 (version 0.10.1.9000).
+Use \code{crashes_error} instead.}
 
 \item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
 

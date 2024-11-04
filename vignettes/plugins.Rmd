@@ -135,7 +135,7 @@ crew_controller_custom <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L,
+  crashes_error = 5L,
   r_arguments = NULL,
   options_metrics = crew::crew_options_metrics()
 ) {
@@ -162,7 +162,7 @@ crew_controller_custom <- function(
     reset_packages = reset_packages,
     reset_options = reset_options,
     garbage_collection = garbage_collection,
-    launch_max = launch_max,
+    crashes_error = crashes_error,
     tls = tls,
     r_arguments = r_arguments,
     options_metrics = options_metrics
@@ -343,7 +343,7 @@ crew_controller_async <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L,
+  crashes_error = 5L,
   processes = NULL # Number of local async daemons for worker launches etc.
 ) {
   client <- crew::crew_client(
@@ -367,7 +367,7 @@ crew_controller_async <- function(
     reset_packages = reset_packages,
     reset_options = reset_options,
     garbage_collection = garbage_collection,
-    launch_max = launch_max,
+    crashes_error = crashes_error,
     tls = tls,
     processes = processes
   )

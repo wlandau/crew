@@ -82,7 +82,7 @@ Other launcher:
 
 \item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{crashes_error}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
@@ -147,7 +147,7 @@ Launcher constructor.
   reset_packages = NULL,
   reset_options = NULL,
   garbage_collection = NULL,
-  launch_max = NULL,
+  crashes_error = NULL,
   tls = NULL,
   processes = NULL,
   r_arguments = NULL,
@@ -184,7 +184,7 @@ Launcher constructor.
 
 \item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{crashes_error}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
@@ -511,7 +511,9 @@ Integer index of inactive workers.
 }
 
 \subsection{Details}{
-Rotate websockets at all unlaunched workers.
+Rotate websockets at all unlaunched workers and
+throw an error if a worker launched at least \code{crashes_error}
+times in a row without completing all its assigned tasks.
 }
 
 \subsection{Returns}{

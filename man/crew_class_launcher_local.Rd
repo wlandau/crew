@@ -107,7 +107,7 @@ Local launcher constructor.
   reset_packages = NULL,
   reset_options = NULL,
   garbage_collection = NULL,
-  launch_max = NULL,
+  crashes_error = NULL,
   tls = NULL,
   processes = NULL,
   r_arguments = NULL,
@@ -145,7 +145,7 @@ Local launcher constructor.
 
 \item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{launch_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{crashes_error}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 

@@ -36,7 +36,8 @@ crew_controller_local <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  launch_max = 5L,
+  crashes_error = 5L,
+  launch_max = NULL,
   r_arguments = c("--no-save", "--no-restore"),
   options_metrics = crew::crew_options_metrics(),
   options_local = crew::crew_options_local(),
@@ -67,6 +68,14 @@ crew_controller_local <- function(
     condition = "warning",
     value = local_log_join
   )
+  crew_deprecate(
+    name = "launch_max",
+    date = "2024-11-04",
+    version = "0.10.1.9000",
+    alternative = "crashes_error",
+    condition = "warning",
+    value = launch_max
+  )
   options_local$log_directory <- local_log_directory %|||%
     options_local$log_directory
   options_local$log_join <- local_log_join %|||%
@@ -96,7 +105,7 @@ crew_controller_local <- function(
     reset_packages = reset_packages,
     reset_options = reset_options,
     garbage_collection = garbage_collection,
-    launch_max = launch_max,
+    crashes_error = crashes_error,
     tls = tls,
     r_arguments = r_arguments,
     options_metrics = options_metrics,

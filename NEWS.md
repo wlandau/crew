@@ -1,4 +1,8 @@
-# crew 0.10.1 (development)
+# crew 0.10.2
+
+* Eliminate spurious `launch_max` error from underutilized workers and deprecate `launch_max` in favor of `crashes_error` (#189).
+
+# crew 0.10.1
 
 * Instrument `crew_eval()` with `autometric::log_phase_set()` and `autometric::log_phase_reset()`.
 

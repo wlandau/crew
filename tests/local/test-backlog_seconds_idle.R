@@ -12,8 +12,7 @@ test_that("backlog of tasks completes with finite seconds_idle", {
   on.exit(options(old_options))
   controller <- crew_controller_local(
     workers = 20L,
-    seconds_idle = 1,
-    launch_max = 25
+    seconds_idle = 1
   )
   on.exit(controller$terminate(), add = TRUE)
   controller$start()

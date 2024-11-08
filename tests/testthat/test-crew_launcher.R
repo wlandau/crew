@@ -19,6 +19,7 @@ crew_test("active bindings for covr", {
   expect_silent(out$async$validate())
   expect_silent(out$throttle$validate())
   expect_equal(out$r_arguments, "--vanilla")
+  expect_true(out$crashes_error >= 0L)
   expect_silent(out$validate())
   expect_s3_class(
     out$options_metrics,

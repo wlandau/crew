@@ -171,6 +171,7 @@ asynchronously.</p></dd>
 <li><p><a href="#method-crew_class_launcher-wait"><code>crew_class_launcher$wait()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-scale"><code>crew_class_launcher$scale()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-launch_worker"><code>crew_class_launcher$launch_worker()</code></a></p></li>
+<li><p><a href="#method-crew_class_launcher-crashes"><code>crew_class_launcher$crashes()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-terminate_worker"><code>crew_class_launcher$terminate_worker()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-terminate_workers"><code>crew_class_launcher$terminate_workers()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-crew_class_launcher-new"></a><div class="section">
@@ -256,6 +257,10 @@ asynchronously.</p></dd>
 
 <dt><code>crashes_error</code></dt>
 <dd><p>See <code><a href="crew_launcher.html">crew_launcher()</a></code>.</p></dd>
+
+
+<dt><code>launch_max</code></dt>
+<dd><p>Deprecated.</p></dd>
 
 
 <dt><code>tls</code></dt>
@@ -464,7 +469,8 @@ of the currently running instance of the worker.</p></li>
 <code><a href="https://shikokuchuo.net/mirai/reference/daemons.html" class="external-link">mirai::daemons()</a></code> and summed over all
 completed instances of the worker. Does not reflect the activity
 of the currently running instance of the worker.</p></li>
-<li><p><code>socket</code>: current websocket URL of the worker.</p></li>
+<li><p><code>crashes</code>: number of consecutive times a worker
+launched without completing all its assigned tasks.</p></li>
 </ul></div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-tally"></a><div class="section">
@@ -757,15 +763,39 @@ the current instance of the worker a the index in the launcher.</p></dd>
 <p>A handle to mock the worker launch.</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_launcher-terminate_worker"></a><div class="section">
-<h3 id="method-terminate-worker-">Method <code>terminate_worker()</code><a class="anchor" aria-label="anchor" href="#method-terminate-worker-"></a></h3>
-<p>Abstract worker termination method.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_launcher-crashes"></a><div class="section">
+<h3 id="method-crashes-">Method <code>crashes()</code><a class="anchor" aria-label="anchor" href="#method-crashes-"></a></h3>
+<p>Return the number of consecutive times a worker
+launched without completing all its assigned tasks.</p><div class="section">
 <h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">terminate_worker</span><span class="op">(</span><span class="va">handle</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">crashes</span><span class="op">(</span><span class="va">index</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>index</code></dt>
+<dd><p>Non-negative integer, index of the worker pointing
+to a row of the data frame output of the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> method
+of the launcher.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-19">Returns<a class="anchor" aria-label="anchor" href="#returns-19"></a></h4>
+<p>Non-negative integer, number of consecutive times a worker
+launched without completing all its assigned tasks.</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_launcher-terminate_worker"></a><div class="section">
+<h3 id="method-terminate-worker-">Method <code>terminate_worker()</code><a class="anchor" aria-label="anchor" href="#method-terminate-worker-"></a></h3>
+<p>Abstract worker termination method.</p><div class="section">
+<h4 id="usage-21">Usage<a class="anchor" aria-label="anchor" href="#usage-21"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">terminate_worker</span><span class="op">(</span><span class="va">handle</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>handle</code></dt>
 <dd><p>A handle object previously
 returned by <code>launch_worker()</code> which allows the termination
@@ -780,19 +810,19 @@ of the worker.</p></dd>
 </div>
 
 <div class="section">
-<h4 id="returns-19">Returns<a class="anchor" aria-label="anchor" href="#returns-19"></a></h4>
+<h4 id="returns-20">Returns<a class="anchor" aria-label="anchor" href="#returns-20"></a></h4>
 <p>A handle to mock worker termination.</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-terminate_workers"></a><div class="section">
 <h3 id="method-terminate-workers-">Method <code>terminate_workers()</code><a class="anchor" aria-label="anchor" href="#method-terminate-workers-"></a></h3>
 <p>Terminate one or more workers.</p><div class="section">
-<h4 id="usage-21">Usage<a class="anchor" aria-label="anchor" href="#usage-21"></a></h4>
+<h4 id="usage-22">Usage<a class="anchor" aria-label="anchor" href="#usage-22"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">terminate_workers</span><span class="op">(</span>index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
+<h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>index</code></dt>
 <dd><p>Integer vector of the indexes of the workers
 to terminate. If <code>NULL</code>, all current workers are terminated.</p></dd>
@@ -801,7 +831,7 @@ to terminate. If <code>NULL</code>, all current workers are terminated.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-20">Returns<a class="anchor" aria-label="anchor" href="#returns-20"></a></h4>
+<h4 id="returns-21">Returns<a class="anchor" aria-label="anchor" href="#returns-21"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 

@@ -6,14 +6,24 @@ test_that("crashes_error allows idle workers to exit", {
     x$launch()
     Sys.sleep(5)
   }
+  expect_equal(x$launcher$crashes(index = 1L), 0L)
   expect_equal(index, 10L)
 })
 
 test_that("crashes_error detects when there are too many crashes", {
-  x <- crew_controller_local(name = "name", crashes_error = 2L)
+  x <- crew_controller_local(
+    name = "name",
+    workers = 2L,
+    crashes_error = 2L,
+    tasks_max = 1L,
+    seconds_idle = 1
+  )
   on.exit(x$terminate())
   x$start()
-  x$push(Sys.sleep(1e3), scale = FALSE)
+  x$push(Sys.sleep(4), scale = TRUE)
+  Sys.sleep(5)
+  x$push(Sys.sleep(1e3), scale = TRUE)
+  x$wait(mode = "one")
   for (index in seq_len(10L)) {
     Sys.sleep(5)
     if (index == 3L) {
@@ -22,8 +32,15 @@ test_that("crashes_error detects when there are too many crashes", {
     } else {
       expect_silent(x$scale())
     }
+    expect_equal(x$launcher$crashes(index = 1L), 0L)
+    expect_equal(x$launcher$crashes(index = 2L), index - 1L)
     Sys.sleep(5)
-    x$launcher$workers$handle[[1L]]$kill()
+    client_summary <- x$client$summary()
+    expect_equal(client_summary$online, c(FALSE, TRUE))
+    expect_equal(client_summary$instances, c(1L, index))
+    expect_equal(client_summary$assigned, c(1L, 1L))
+    expect_equal(client_summary$complete, c(1L, 0L))
+    x$launcher$workers$handle[[2L]]$kill()
   }
   expect_equal(index, 3L)
 })

@@ -321,6 +321,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param reset_options See [crew_launcher()].
     #' @param garbage_collection See [crew_launcher()].
     #' @param crashes_error See [crew_launcher()].
+    #' @param launch_max Deprecated.
     #' @param tls See [crew_launcher()].
     #' @param processes See [crew_launcher()].
     #' @param r_arguments See [crew_launcher()].
@@ -646,7 +647,8 @@ crew_class_launcher <- R6::R6Class(
     #'     `mirai::daemons()` and summed over all
     #'     completed instances of the worker. Does not reflect the activity
     #'     of the currently running instance of the worker.
-    #'   * `socket`: current websocket URL of the worker.
+    #'   * `crashes`: number of consecutive times a worker
+    #'     launched without completing all its assigned tasks.
     summary = function() {
       workers <- .subset2(self, "workers")
       if (is.null(workers)) {
@@ -908,6 +910,17 @@ crew_class_launcher <- R6::R6Class(
         . > 0L
       )
       list(abstract = TRUE)
+    },
+    #' @description Return the number of consecutive times a worker
+    #'   launched without completing all its assigned tasks.
+    #' @return Non-negative integer, number of consecutive times a worker
+    #'   launched without completing all its assigned tasks.
+    #' @param index Non-negative integer, index of the worker pointing
+    #'   to a row of the data frame output of the `summary()` method
+    #'   of the launcher.
+    crashes = function(index) {
+      workers <- .subset2(private, ".workers")
+      .subset(.subset2(workers, "crashes"), index)
     },
     #' @description Abstract worker termination method.
     #' @details Launcher plugins will overwrite this method.

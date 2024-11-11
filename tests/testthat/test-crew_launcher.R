@@ -209,6 +209,10 @@ crew_test("launcher start()", {
   expect_equal(workers$launched, rep(FALSE, 2L))
   expect_equal(workers$assigned, rep(0L, 2L))
   expect_equal(workers$complete, rep(0L, 2L))
+  expect_equal(workers$crashes, rep(0L, 2L))
+  for (index in seq_len(2L)) {
+    expect_equal(launcher$crashes(index), 0L)
+  }
 })
 
 crew_test("launcher done()", {

@@ -123,6 +123,7 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-wait}{\code{crew_class_launcher$wait()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
+\item \href{#method-crew_class_launcher-crashes}{\code{crew_class_launcher$crashes()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
 }
@@ -186,6 +187,8 @@ Launcher constructor.
 \item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{crashes_error}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{launch_max}}{Deprecated.}
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
@@ -388,7 +391,8 @@ of the currently running instance of the worker.
 \code{mirai::daemons()} and summed over all
 completed instances of the worker. Does not reflect the activity
 of the currently running instance of the worker.
-\item \code{socket}: current websocket URL of the worker.
+\item \code{crashes}: number of consecutive times a worker
+launched without completing all its assigned tasks.
 }
 }
 }
@@ -666,6 +670,30 @@ Launcher plugins will overwrite this method.
 
 \subsection{Returns}{
 A handle to mock the worker launch.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-crashes"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-crashes}{}}}
+\subsection{Method \code{crashes()}}{
+Return the number of consecutive times a worker
+launched without completing all its assigned tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$crashes(index)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{index}}{Non-negative integer, index of the worker pointing
+to a row of the data frame output of the \code{summary()} method
+of the launcher.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Non-negative integer, number of consecutive times a worker
+launched without completing all its assigned tasks.
 }
 }
 \if{html}{\out{<hr>}}

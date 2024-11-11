@@ -148,6 +148,7 @@ Launcher constructor.
   reset_options = NULL,
   garbage_collection = NULL,
   crashes_error = NULL,
+  launch_max = NULL,
   tls = NULL,
   processes = NULL,
   r_arguments = NULL,

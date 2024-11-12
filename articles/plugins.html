@@ -237,6 +237,26 @@ launcher and run the <code><a href="https://rdrr.io/r/base/call.html" class="ext
 <span><span class="co">#&gt; [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:5000/3/aa9c59ea\", asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tls = NULL, rs = NULL), launcher = \"my_launcher\", worker = 3L, instance = \"aa9c59ea\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="worker-retries">Worker retries<a class="anchor" aria-label="anchor" href="#worker-retries"></a>
+</h2>
+<p>The <code>launch_worker()</code> method can call
+<code>self$crashes(index = worker)</code> to get the number of
+consecutive times the worker has crashed (exited without completing all
+its tasks). You can use the crash count to assign more memory, CPU
+cores, or other resources to a worker launch. Here is a pseudo-code
+sketch which increases available memory by 4 GB each time a worker
+crashes, then resets back to the original 16 GB when the worker
+succeeds:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">launch_worker</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span>, <span class="va">launcher</span>, <span class="va">worker</span>, <span class="va">instance</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">gigabytes_memory</span> <span class="op">&lt;-</span> <span class="fl">16</span> <span class="op">+</span> <span class="fl">4</span> <span class="op">*</span> <span class="va">self</span><span class="op">$</span><span class="fu">crashes</span><span class="op">(</span>index <span class="op">=</span> <span class="va">worker</span><span class="op">)</span></span>
+<span>  <span class="fu">submit_job</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span>, <span class="va">gigabytes_memory</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>This mechanism is similar to <a href="https://wlandau.github.io/crew.cluster/reference/crew_options_slurm.html#retryable-options">retryable
+options in <code>crew.cluster</code></a> and <a href="https://wlandau.github.io/crew.aws.batch/reference/crew_options_aws_batch.html#retryable-options">in
+<code>crew.aws.batch</code></a>.</p>
+</div>
+<div class="section level2">
 <h2 id="helper">Helper<a class="anchor" aria-label="anchor" href="#helper"></a>
 </h2>
 <p>It is useful to have a helper function that creates controllers with
@@ -257,7 +277,7 @@ inherit the documentation of all the arguments instead of writing it by
 hand. You may want to adjust the default arguments based on the
 specifics of your platform, especially <code>seconds_launch</code> if
 workers take a long time to launch.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' @title Create a controller with the custom launcher.</span></span>
 <span><span class="co">#' @export</span></span>
 <span><span class="co">#' @description Create an `R6` object to submit tasks and</span></span>
@@ -335,19 +355,19 @@ use your your custom controller helper instead of <a href="https://wlandau.githu
 <p>First, create and start a controller. You may wish to monitor local
 processes on your computer to make sure the <code>mirai</code>
 dispatcher starts.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/crew/">crew</a></span><span class="op">)</span></span>
 <span><span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu">crew_controller_custom</span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">controller</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Try pushing a task that gets the local IP address and process ID of
 the worker instance.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"get worker IP address and process ID"</span>,</span>
 <span>  command <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu">getip</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/getip/man/getip.html" class="external-link">getip</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"local"</span><span class="op">)</span>, <span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_pid.html" class="external-link">ps_pid</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Wait for the task to complete and look at the result.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="va">controller</span><span class="op">$</span><span class="fu">pop</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">result</span><span class="op">$</span><span class="va">result</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
@@ -361,7 +381,7 @@ worker is running on a different computer, the worker IP address should
 be different than the local IP address. Since our custom launcher
 creates local processes, the IP addresses are the same in this case, but
 they should be different for a <a href="https://slurm.schedmd.com/" class="external-link">SLURM</a> or <a href="https://aws.amazon.com/batch/" class="external-link">AWS Batch</a> launcher.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">getip</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/getip/man/getip.html" class="external-link">getip</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"local"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; "192.168.0.2"</span></span>
 <span><span class="va">controller</span><span class="op">$</span><span class="va">launcher</span><span class="op">$</span><span class="va">workers</span><span class="op">$</span><span class="va">handle</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">get_pid</span><span class="op">(</span><span class="op">)</span></span>
@@ -369,7 +389,7 @@ they should be different for a <a href="https://slurm.schedmd.com/" class="exter
 <p>If you did not set any timeouts or task limits, the worker that ran
 the task should still be online. The other worker had no tasks, so it
 did not need to launch.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="va">client</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 6</span></span>
 <span><span class="co">#&gt;   worker online instances assigned complete socket</span></span>
@@ -379,7 +399,7 @@ did not need to launch.</p>
 <p>When you are done, terminate the controller. This terminates the
 <code>mirai</code> dispatcher process and the <code>crew</code>
 workers.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, use the process monitoring interface of your computing
 platform or operating system to verify that all <code>mirai</code>
@@ -392,7 +412,7 @@ dispatchers and <code>crew</code> workers are terminated.</p>
 to more ambitious scenarios. As one example, you can test that your
 workers can auto-scale and quickly churn through a large number of
 tasks.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/crew/">crew</a></span><span class="op">)</span></span>
 <span><span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu">crew_controller_custom</span><span class="op">(</span></span>
 <span>  seconds_idle <span class="op">=</span> <span class="fl">2L</span>,</span>
@@ -477,7 +497,7 @@ packages to run a quick local asynchronous task, and it returns a
 <code>crew</code> uses <code><a href="https://shikokuchuo.net/mirai/reference/call_mirai.html" class="external-link">mirai::call_mirai()</a></code> to make sure any
 tasks submitted by <code>launch_worker()</code> have resolved before
 they are used by <code>terminate_worker()</code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">async_launcher_class</span> <span class="op">&lt;-</span> <span class="fu">R6</span><span class="fu">::</span><span class="kw"><a href="https://r6.r-lib.org/reference/R6Class.html" class="external-link">R6Class</a></span><span class="op">(</span></span>
 <span>  classname <span class="op">=</span> <span class="st">"custom_launcher_class"</span>,</span>
 <span>  inherit <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="va"><a href="../reference/crew_class_launcher.html">crew_class_launcher</a></span>,</span>
@@ -501,7 +521,7 @@ they are used by <code>terminate_worker()</code>.</p>
 which sets how many asynchronous <code>mirai</code> daemons to create.
 Set <code>processes</code> to <code>NULL</code> to disable async and use
 it like an ordinary synchronous controller.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">crew_controller_async</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
 <span>  <span class="va">name</span> <span class="op">=</span> <span class="st">"async controller name"</span>,</span>
 <span>  <span class="va">workers</span> <span class="op">=</span> <span class="fl">1L</span>,</span>
@@ -562,7 +582,7 @@ number of serious workers that run serious tasks from
 <code>mirai</code> daemons that asynchronously launch and terminate
 those serious workers. Workers may or may not be local, but
 <code>processes</code> are always local.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">async_controller</span> <span class="op">&lt;-</span> <span class="fu">crew_controller_async</span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">12</span>, processes <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 <p><code>async_controller$start()</code> automatically launches 4 local
 processes to asynchronously auto-scale the workers, and
@@ -588,7 +608,7 @@ implements <a href="https://wlandau.github.io/crew.aws.batch/reference/crew_clas
 methods</a> for listing and terminating AWS Batch jobs, as well as
 viewing CloudWatch logs.</p>
 <p>The source code for the local monitor is copied below:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">crew_monitor_local</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va"><a href="../reference/crew_class_monitor_local.html">crew_class_monitor_local</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -622,7 +642,7 @@ viewing CloudWatch logs.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">processes</span><span class="op">$</span><span class="va">pid</span><span class="op">[</span><span class="va">filter</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Example usage:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">monitor</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_monitor_local.html">crew_monitor_local</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">monitor</span><span class="op">$</span><span class="fu">dispatchers</span><span class="op">(</span><span class="op">)</span> <span class="co"># List PIDs of all local {mirai} dispatcher processes.</span></span>
 <span><span class="co">#&gt; [1] 31215</span></span>

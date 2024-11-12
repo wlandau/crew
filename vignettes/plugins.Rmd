@@ -84,7 +84,6 @@ Every `launch_worker()` method must accept arguments `call`, `launcher`, `worker
 * `worker`: positive integer index of the worker. Ranges from 1 to the maximum number of simultaneous workers configured for the controller.
 * `instance`: text string with the instance of the worker in the launcher at the given worker index.
 
-
 To see what the `call` object looks like, create a new launcher and run the `call()` method.
 
 ```r
@@ -98,6 +97,19 @@ launcher$call(
 )
 #> [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:5000/3/aa9c59ea\", asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tls = NULL, rs = NULL), launcher = \"my_launcher\", worker = 3L, instance = \"aa9c59ea\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
 ```
+
+# Worker retries
+
+The `launch_worker()` method can call `self$crashes(index = worker)` to get the number of consecutive times the worker has crashed (exited without completing all its tasks). You can use the crash count to assign more memory, CPU cores, or other resources to a worker launch. Here is a pseudo-code sketch which increases available memory by 4 GB each time a worker crashes, then resets back to the original 16 GB when the worker succeeds:
+
+```r
+launch_worker = function(call, name, launcher, worker, instance) {
+  gigabytes_memory <- 16 + 4 * self$crashes(index = worker)
+  submit_job(call, name, gigabytes_memory)
+}
+```
+
+This mechanism is similar to [retryable options in `crew.cluster`](https://wlandau.github.io/crew.cluster/reference/crew_options_slurm.html#retryable-options) and [in `crew.aws.batch`](https://wlandau.github.io/crew.aws.batch/reference/crew_options_aws_batch.html#retryable-options).
 
 # Helper
 

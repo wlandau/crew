@@ -100,7 +100,9 @@ launcher$call(
 
 # Worker retries
 
-The `launch_worker()` method can call `self$crashes(index = worker)` to get the number of consecutive times the worker has crashed (exited without completing all its tasks). You can use the crash count to assign more memory, CPU cores, or other resources to a worker launch. Here is a pseudo-code sketch which increases available memory by 4 GB each time a worker crashes, then resets back to the original 16 GB when the worker succeeds:
+The `launch_worker()` method can call `self$crashes(index = worker)` to get the number of consecutive times the worker has crashed (exited without completing all its tasks). When a worker crashes, its crash count increments by 1. The next time a worker does not crash (exits only after completing all its tasks) the crash count resets back to zero.
+
+You can use the crash count to assign more memory, CPU cores, or other resources to a worker launch. Here is a pseudo-code sketch which increases available memory by 4 GB each time a worker crashes, then resets back to the original 16 GB when the worker succeeds:
 
 ```r
 launch_worker = function(call, name, launcher, worker, instance) {

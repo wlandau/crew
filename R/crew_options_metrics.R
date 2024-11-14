@@ -1,7 +1,7 @@
 #' @title Options for logging resource usage metrics.
 #' @export
 #' @family options
-#' @description [crew_options_metrics()] configures the 
+#' @description [crew_options_metrics()] configures the
 #'   `crew` to record resource usage metrics (such as CPU and memory usage)
 #'   for each running worker.
 #'   To be activate resource usage logging,

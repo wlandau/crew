@@ -15,7 +15,7 @@ crew_controller_local(
   seconds_interval = 0.5,
   seconds_timeout = 60,
   seconds_launch = 30,
-  seconds_idle = Inf,
+  seconds_idle = 300,
   seconds_wall = Inf,
   seconds_exit = NULL,
   retry_tasks = TRUE,

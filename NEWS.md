@@ -4,6 +4,7 @@
 * Deprecate `launch_max` in favor of `crashes_error` (#189).
 * Look for crashes of all workers in `rotate()` instead of looking for crashes of a specific worker in `launch()` (#189).
 * Add a `crashes()` launcher method to allow plugins to detect and respond to crashes more easily.
+* Change default `seconds_idle` to 300.
 
 # crew 0.10.1
 

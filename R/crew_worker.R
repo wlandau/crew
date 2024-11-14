@@ -26,6 +26,10 @@ crew_worker <- function(
   instance,
   options_metrics = crew::crew_options_metrics()
 ) {
+  installed_autometric <- rlang::is_installed(
+    pkg = "autometric",
+    version = "0.1.0"
+  )
   if (installed_autometric && !is.null(options_metrics$path)) {
     pids <- Sys.getpid()
     names(pids) <- sprintf("crew_worker_%s_%s_%s", launcher, worker, instance)

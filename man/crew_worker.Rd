@@ -26,7 +26,10 @@ the current instance of the worker.}
 
 \item{options_metrics}{Either \code{NULL} to opt out of resource metric logging
 for workers, or an object from \code{\link[=crew_options_metrics]{crew_options_metrics()}} to enable
-and configure resource metric logging for workers.}
+and configure resource metric logging for workers.
+For resource logging to run,
+the \code{autometric} R package version 0.1.0 or higher
+must be installed.}
 }
 \value{
 \code{NULL} (invisibly)

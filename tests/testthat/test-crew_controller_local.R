@@ -267,6 +267,7 @@ crew_test("exit status and code", {
 crew_test("crew_controller_local() resource usage metric logging", {
   skip_on_cran()
   skip_on_os("windows")
+  skip_if_not_installed("autometric", minimum_version = "0.1.0")
   log <- tempfile()
   x <- crew_controller_local(
     seconds_idle = 360,
@@ -296,6 +297,7 @@ crew_test("crew_controller_local() resource usage metric logging", {
 crew_test("crew_controller_local() resource usage metrics with stdout", {
   skip_on_cran()
   skip_on_os("windows")
+  skip_if_not_installed("autometric", minimum_version = "0.1.0")
   log <- tempfile()
   x <- crew_controller_local(
     seconds_idle = 360,

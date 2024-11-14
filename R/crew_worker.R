@@ -16,6 +16,9 @@
 #' @param options_metrics Either `NULL` to opt out of resource metric logging
 #'   for workers, or an object from [crew_options_metrics()] to enable
 #'   and configure resource metric logging for workers.
+#'   For resource logging to run,
+#'   the `autometric` R package version 0.1.0 or higher
+#'   must be installed.
 crew_worker <- function(
   settings,
   launcher,
@@ -23,7 +26,7 @@ crew_worker <- function(
   instance,
   options_metrics = crew::crew_options_metrics()
 ) {
-  if (!is.null(options_metrics$path)) {
+  if (installed_autometric && !is.null(options_metrics$path)) {
     pids <- Sys.getpid()
     names(pids) <- sprintf("crew_worker_%s_%s_%s", launcher, worker, instance)
     autometric::log_start(

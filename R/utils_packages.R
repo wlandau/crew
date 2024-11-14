@@ -17,3 +17,8 @@ load_packages <- function(packages, library) {
   )
   crew_assert(all(out), message = msg)
 }
+
+installed_autometric <- rlang::is_installed(
+  pkg = "autometric",
+  version = "0.1.0"
+)

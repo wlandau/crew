@@ -40,7 +40,6 @@ Authors@R: c(
 Depends:
   R (>= 4.0.0)
 Imports:
-  autometric (>= 0.1.0),
   cli (>= 3.1.0),
   data.table,
   getip,
@@ -58,6 +57,7 @@ Imports:
   tools,
   utils
 Suggests:
+  autometric (>= 0.1.0),
   knitr (>= 1.30),
   markdown (>= 1.1),
   rmarkdown (>= 2.4),

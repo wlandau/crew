@@ -63,6 +63,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
 crew_test("crew_worker() metrics logging to a directory", {
   skip_on_cran()
   skip_on_os("windows")
+  skip_if_not_installed("autometric", minimum_version = "0.1.0")
   envvars <- c("CREW_LAUNCHER", "CREW_WORKER", "CREW_INSTANCE")
   previous <- Sys.getenv(envvars)
   Sys.unsetenv(envvars)

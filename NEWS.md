@@ -5,6 +5,7 @@
 * Look for crashes of all workers in `rotate()` instead of looking for crashes of a specific worker in `launch()` (#189).
 * Add a `crashes()` launcher method to allow plugins to detect and respond to crashes more easily.
 * Change default `seconds_idle` to 300.
+* Move `autometric` to `Suggests:`.
 
 # crew 0.10.1
 

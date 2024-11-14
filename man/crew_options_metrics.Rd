@@ -32,12 +32,15 @@ log entries written to \code{path}.}
 A classed list of options for logging resource usage metrics.
 }
 \description{
-If a \code{\link[=crew_options_metrics]{crew_options_metrics()}} object is
-supplied to the \code{options_metrics} argument of a \code{crew}
-controller function, then the \code{autometric} R package will
-record resource usage metrics (such as CPU and memory usage)
-for each running worker. Logging happens in
-the background (through a detached POSIX) so as not to disrupt
+\code{\link[=crew_options_metrics]{crew_options_metrics()}} configures the
+\code{crew} to record resource usage metrics (such as CPU and memory usage)
+for each running worker.
+To be activate resource usage logging,
+the \code{autometric} R package version 0.1.0 or higher
+must be installed.
+
+Logging happens in the background (through a detached POSIX)
+so as not to disrupt
 the R session. On Unix-like systems, \code{\link[=crew_options_metrics]{crew_options_metrics()}}
 can specify \verb{/dev/stdout} or \verb{/dev/stderr} as the log files, which will
 redirect output to existing logs you are already using.

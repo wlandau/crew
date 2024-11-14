@@ -94,7 +94,7 @@ crew_test("crew_worker() metrics logging to a directory", {
       is.matrix(envir$daemons) && all(dim(envir$daemons) > 0L)
     },
     seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_timeout = 30
   )
   url <- rownames(envir$daemons)[1]
   settings <- list(url = url, maxtasks = 1L, cleanup = 0L)

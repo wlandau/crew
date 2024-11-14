@@ -49,7 +49,7 @@ crew_eval <- function(
   if (anyNA(name)) {
     name <- basename(tempfile(pattern = "unnamed_task_"))
   }
-  if (installed_autometric) {
+  if (package_installed("autometric (>= 0.1.0)")) {
     autometric::log_phase_set(phase = name)
     on.exit(autometric::log_phase_reset())
   }

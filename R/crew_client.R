@@ -329,7 +329,7 @@ crew_class_client <- R6::R6Class(
       if_any(
         ps::ps_is_running(p = private$.dispatcher),
         try(
-          crew_terminate_process(p = ps::ps_pid(private$.dispatcher)),
+          crew_terminate_process(pid = ps::ps_pid(private$.dispatcher)),
           silent = TRUE
         ),
         NULL

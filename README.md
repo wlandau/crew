@@ -40,10 +40,10 @@ maintainer of `crew` would love to work with you!**
 
 # Installation
 
-| Type        | Source     | Command                                                              |
-|-------------|------------|----------------------------------------------------------------------|
-| Release     | CRAN       | `install.packages("crew")`                                           |
-| Development | GitHub     | `remotes::install_github("wlandau/crew")`                            |
+| Type | Source | Command |
+|----|----|----|
+| Release | CRAN | `install.packages("crew")` |
+| Development | GitHub | `remotes::install_github("wlandau/crew")` |
 | Development | R-universe | `install.packages("crew", repos = "https://wlandau.r-universe.dev")` |
 
 # Documentation
@@ -124,11 +124,10 @@ people.
   effort that led directly to the current implementation of `crew`.
   `crew` would not exist without Kirill’s insights about orchestration
   models for R processes.
-- [Henrik Bengtsson](https://github.com/HenrikBengtsson/). Henrik’s
-  [`future`](https://github.com/HenrikBengtsson/future/) package
-  ecosystem demonstrates the incredible power of a consistent R
-  interface on top of a varying collection of high-performance computing
-  technologies.
+- [Henrik Bengtsson](https://github.com/futureverse/). Henrik’s
+  [`future`](https://github.com/futureverse/future/) package ecosystem
+  demonstrates the incredible power of a consistent R interface on top
+  of a varying collection of high-performance computing technologies.
 - [Michael Schubert](https://github.com/mschubert/). Michael’s
   [`clustermq`](https://mschubert.github.io/clustermq/) package supports
   efficient high-performance computing on traditional clusters, and it

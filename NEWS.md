@@ -1,6 +1,6 @@
-# crew 0.10.2.9000 (development)
+# crew 0.10.2.9001 (development)
 
-
+* Avoid partial match in a call to `crew_terminate_process()`.
 
 # crew 0.10.2
 

@@ -14,8 +14,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="A Distributed Worker Launcher Framework">
 <meta name="description" content="In computationally demanding analysis projects, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services. The NNG-powered mirai R package by Gao (2023) &lt;doi:10.5281/zenodo.7912722&gt; is a sleek and sophisticated scheduler that efficiently processes these intense workloads. The crew package extends mirai with a unifying interface for third-party worker launchers. Inspiration also comes from packages. future by Bengtsson (2021) &lt;doi:10.32614/RJ-2021-048&gt;, rrq by FitzJohn and Ashton (2023) &lt;https://github.com/mrc-ide/rrq&gt;, clustermq by Schubert (2019) &lt;doi:10.1093/bioinformatics/btz284&gt;), and batchtools by Lang, Bischel, and Surmann (2017) &lt;doi:10.21105/joss.00135&gt;.">
 <meta property="og:description" content="In computationally demanding analysis projects, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services. The NNG-powered mirai R package by Gao (2023) &lt;doi:10.5281/zenodo.7912722&gt; is a sleek and sophisticated scheduler that efficiently processes these intense workloads. The crew package extends mirai with a unifying interface for third-party worker launchers. Inspiration also comes from packages. future by Bengtsson (2021) &lt;doi:10.32614/RJ-2021-048&gt;, rrq by FitzJohn and Ashton (2023) &lt;https://github.com/mrc-ide/rrq&gt;, clustermq by Schubert (2019) &lt;doi:10.1093/bioinformatics/btz284&gt;), and batchtools by Lang, Bischel, and Surmann (2017) &lt;doi:10.21105/joss.00135&gt;.">
@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,9 +88,9 @@
 </h1>
 <table class="table">
 <colgroup>
-<col width="13%">
-<col width="12%">
-<col width="73%">
+<col width="33%">
+<col width="33%">
+<col width="33%">
 </colgroup>
 <thead><tr class="header">
 <th>Type</th>
@@ -175,7 +175,7 @@
 <li>
 <a href="https://github.com/krlmlr/" class="external-link">Kirill Müller</a> created the <a href="https://github.com/wlandau/workers" class="external-link"><code>workers</code></a> prototype, an initial effort that led directly to the current implementation of <code>crew</code>. <code>crew</code> would not exist without Kirill’s insights about orchestration models for R processes.</li>
 <li>
-<a href="https://github.com/HenrikBengtsson/" class="external-link">Henrik Bengtsson</a>. Henrik’s <a href="https://github.com/HenrikBengtsson/future/" class="external-link"><code>future</code></a> package ecosystem demonstrates the incredible power of a consistent R interface on top of a varying collection of high-performance computing technologies.</li>
+<a href="https://github.com/futureverse/" class="external-link">Henrik Bengtsson</a>. Henrik’s <a href="https://github.com/futureverse/future/" class="external-link"><code>future</code></a> package ecosystem demonstrates the incredible power of a consistent R interface on top of a varying collection of high-performance computing technologies.</li>
 <li>
 <a href="https://github.com/mschubert/" class="external-link">Michael Schubert</a>. Michael’s <a href="https://mschubert.github.io/clustermq/" class="external-link"><code>clustermq</code></a> package supports efficient high-performance computing on traditional clusters, and it demonstrates the value of a central <code>R6</code> object to manage an entire collection of persistent workers.</li>
 <li>

@@ -23,7 +23,7 @@ After running enough tasks in \code{crew}, you can call
 \code{autometric::log_read(path)} to read all the data from all the log
 files in the files or directories at \code{path},
 even if the logs files are mixed with other kinds of messages.
-Pass that data into \code{\link[autometric:log_read]{autometric::log_read()}} to visualize it.}
+Pass that data into \code{\link[autometric:log_plot]{autometric::log_plot()}} to visualize it.}
 
 \item{seconds_interval}{Positive number, seconds between resource metric
 log entries written to \code{path}.}

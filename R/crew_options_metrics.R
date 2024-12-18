@@ -33,7 +33,7 @@
 #'   `autometric::log_read(path)` to read all the data from all the log
 #'   files in the files or directories at `path`,
 #'   even if the logs files are mixed with other kinds of messages.
-#'   Pass that data into [autometric::log_read()] to visualize it.
+#'   Pass that data into [autometric::log_plot()] to visualize it.
 #' @param seconds_interval Positive number, seconds between resource metric
 #'   log entries written to `path`.
 #' @examples

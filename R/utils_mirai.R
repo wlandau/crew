@@ -6,6 +6,7 @@ daemons_info <- function(name, seconds_interval, seconds_timeout) {
       valid <- is.matrix(daemons) && all(dim(daemons) > 0L)
       envir$daemons <- daemons
       envir$valid <- valid
+      valid
     },
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,

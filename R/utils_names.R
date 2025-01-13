@@ -1,5 +1,5 @@
-name_worker <- function(launcher, worker, instance) {
-  paste("crew", launcher, worker, instance, sep = "-")
+name_worker <- function(launcher, worker) {
+  paste("crew", launcher, worker, sep = "-")
 }
 
 is_named <- function(x) {

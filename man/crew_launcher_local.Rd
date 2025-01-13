@@ -5,7 +5,7 @@
 \title{Create a launcher with local process workers.}
 \usage{
 crew_launcher_local(
-  name = NULL,
+  workers = 1L,
   seconds_interval = 0.5,
   seconds_timeout = 60,
   seconds_launch = 30,
@@ -29,7 +29,13 @@ crew_launcher_local(
 )
 }
 \arguments{
-\item{name}{Name of the launcher.}
+\item{workers}{Maximum number of workers to run concurrently
+when auto-scaling, excluding task retries and manual calls to \code{launch()}.
+Special workers allocated for task retries
+do not count towards this limit, so the number of workers running at a
+given time may exceed this maximum.
+A smaller number of workers may run if the number of executing tasks
+is smaller than the supplied value of the \code{workers} argument.}
 
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal
@@ -88,16 +94,9 @@ because packages sometimes rely on options they set at loading time.}
 \item{garbage_collection}{\code{TRUE} to run garbage collection between
 tasks, \code{FALSE} to skip.}
 
-\item{crashes_error}{Positive integer scalar. If a worker exits
-\code{crashes_error} times in a row without completing all its assigned
-tasks, then the launcher throws an informative error.
-The reason for \code{crashes_error}
-is to avoid an infinite loop where a task crashes a worker
-(through a segfault, maxing out memory, etc) but the worker always
-relaunches. To monitor the resources of \code{crew} workers,
-please see \url{https://wlandau.github.io/crew/articles/logging.html}.}
+\item{crashes_error}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
-\item{launch_max}{Deprecated on 2024-11-04 (version 0.10.1.9000).
+\item{launch_max}{Deprecated on 2024-11-04 (\code{crew} version 0.10.2.9002).
 Use \code{crashes_error} instead.}
 
 \item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}

@@ -113,16 +113,9 @@ because packages sometimes rely on options they set at loading time.}
 \item{garbage_collection}{\code{TRUE} to run garbage collection between
 tasks, \code{FALSE} to skip.}
 
-\item{crashes_error}{Positive integer scalar. If a worker exits
-\code{crashes_error} times in a row without completing all its assigned
-tasks, then the launcher throws an informative error.
-The reason for \code{crashes_error}
-is to avoid an infinite loop where a task crashes a worker
-(through a segfault, maxing out memory, etc) but the worker always
-relaunches. To monitor the resources of \code{crew} workers,
-please see \url{https://wlandau.github.io/crew/articles/logging.html}.}
+\item{crashes_error}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
-\item{launch_max}{Deprecated on 2024-11-04 (version 0.10.1.9000).
+\item{launch_max}{Deprecated on 2024-11-04 (\code{crew} version 0.10.2.9002).
 Use \code{crashes_error} instead.}
 
 \item{r_arguments}{Optional character vector of command line arguments

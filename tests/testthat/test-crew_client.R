@@ -33,6 +33,7 @@ crew_test("crew_client() works", {
   })
   expect_null(client$started)
   expect_null(client$dispatcher)
+  expect_null(client$url())
   expect_silent(client$start())
   expect_true(client$started)
   log <- client$summary()
@@ -58,6 +59,7 @@ crew_test("crew_client() works", {
     seconds_timeout = 30
   )
   url <- log$url
+  expect_equal(client$url(), url)
   expect_true(is.character(url) && length(url) > 0L)
   expect_true(nzchar(url) && !anyNA(url))
   expect_equal(length(url), 1L)

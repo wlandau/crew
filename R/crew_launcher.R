@@ -7,7 +7,13 @@
 #'   [crew_launcher_local()].
 #' @inheritParams crew_client
 #' @inheritParams crew_worker
-#' @param name Name of the launcher.
+#' @param workers Maximum number of workers to run concurrently
+#'   when auto-scaling, excluding task retries and manual calls to `launch()`.
+#'   Special workers allocated for task retries
+#'   do not count towards this limit, so the number of workers running at a
+#'   given time may exceed this maximum.
+#'   A smaller number of workers may run if the number of executing tasks
+#'   is smaller than the supplied value of the `workers` argument.
 #' @param seconds_interval Number of seconds between
 #'   polling intervals waiting for certain internal
 #'   synchronous operations to complete,
@@ -53,15 +59,8 @@
 #'   because packages sometimes rely on options they set at loading time.
 #' @param garbage_collection `TRUE` to run garbage collection between
 #'   tasks, `FALSE` to skip.
-#' @param crashes_error Positive integer scalar. If a worker exits
-#'   `crashes_error` times in a row without completing all its assigned
-#'   tasks, then the launcher throws an informative error.
-#'   The reason for `crashes_error`
-#'   is to avoid an infinite loop where a task crashes a worker
-#'   (through a segfault, maxing out memory, etc) but the worker always
-#'   relaunches. To monitor the resources of `crew` workers,
-#'   please see <https://wlandau.github.io/crew/articles/logging.html>.
-#' @param launch_max Deprecated on 2024-11-04 (version 0.10.1.9000).
+#' @param crashes_error Deprecated on 2025-01-13 (`crew` version 0.10.2.9002).
+#' @param launch_max Deprecated on 2024-11-04 (`crew` version 0.10.2.9002).
 #'   Use `crashes_error` instead.
 #' @param processes `NULL` or positive integer of length 1,
 #'   number of local processes to
@@ -79,8 +78,8 @@
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
 #' client$start()
-#' launcher <- crew_launcher_local(name = client$name)
-#' launcher$start(sockets = client$summary()$socket)
+#' launcher <- crew_launcher_local()
+#' launcher$start(url = client$url())
 #' launcher$launch(index = 1L)
 #' task <- mirai::mirai("result", .compute = client$name)
 #' mirai::call_mirai_(task)
@@ -88,7 +87,7 @@
 #' client$terminate()
 #' }
 crew_launcher <- function(
-  name = NULL,
+  workers = 1L,
   seconds_interval = 0.5,
   seconds_timeout = 60,
   seconds_launch = 30,
@@ -101,7 +100,7 @@ crew_launcher <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  crashes_error = 5L,
+  crashes_error = NULL,
   launch_max = NULL,
   tls = crew::crew_tls(),
   processes = NULL,
@@ -116,21 +115,28 @@ crew_launcher <- function(
     condition = "warning",
     value = seconds_exit
   )
-  name <- as.character(name %|||% crew_random_name())
   crew_assert(
     inherits(tls, "crew_class_tls"),
     message = "argument tls must be an object created by crew_tls()"
   )
   crew_deprecate(
+    name = "crashes_error",
+    date = "2025-01-13",
+    version = "0.10.2.9002",
+    alternative = "none",
+    condition = "message",
+    value = crashes_error
+  )
+  crew_deprecate(
     name = "launch_max",
     date = "2024-11-04",
     version = "0.10.1.9000",
-    alternative = "crashes_error",
+    alternative = "none",
     condition = "warning",
     value = launch_max
   )
   crew_class_launcher$new(
-    name = name,
+    workers = as.integer(workers),
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
     seconds_launch = seconds_launch,
@@ -159,9 +165,9 @@ crew_launcher <- function(
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
 #' client$start()
-#' launcher <- crew_launcher_local(name = client$name)
-#' launcher$start(workers = client$workers)
-#' launcher$launch(index = 1L)
+#' launcher <- crew_launcher_local(workers = 1L)
+#' launcher$start(url = client$url())
+#' launcher$launch(n = 1L)
 #' m <- mirai::mirai("result", .compute = client$name)
 #' Sys.sleep(0.25)
 #' m$data
@@ -173,7 +179,6 @@ crew_class_launcher <- R6::R6Class(
   portable = TRUE,
   private = list(
     .workers = NULL,
-    .name = NULL,
     .seconds_interval = NULL,
     .seconds_timeout = NULL,
     .seconds_launch = NULL,
@@ -190,44 +195,19 @@ crew_class_launcher <- R6::R6Class(
     .processes = NULL,
     .r_arguments = NULL,
     .options_metrics = NULL,
+    .url = NULL,
+    .log = NULL,
+    .id = NULL,
     .async = NULL,
     .throttle = NULL,
-    .check_crashes = function(index) {
-      workers <- .subset2(private, ".workers")
-      assigned <- .subset2(workers, "assigned")[index]
-      complete <- .subset2(workers, "complete")[index]
-      crashes <- .subset2(workers, "crashes")[index]
-      crashes <- ifelse(assigned > complete, crashes + 1L, 0L)
-      private$.workers$crashes[index] <- crashes
-      crew_assert(
-        crashes < private$.crashes_error,
-        message = paste0(
-          "{crew} launcher ",
-          private$.name,
-          " worker index ",
-          index,
-          " inappropriately terminated ",
-          private$.crashes_error,
-          " times in a row (it exited ",
-          "without completing all its assigned tasks). ",
-          "Either troubleshoot or raise crashes_error above ",
-          private$.crashes_error,
-          ". Details: ",
-          "https://wlandau.github.io/crew/articles/risks.html#crashes. ",
-          "See https://wlandau.github.io/crew/articles/logging.html ",
-          "to learn how to log memory and CPU usage for a worker."
-        )
-      )
+    .name = function() {
+      basename(private$.url)
     }
   ),
   active = list(
-    #' @field workers Data frame of worker information.
+    #' @field See [crew_launcher()].
     workers = function() {
       .subset2(private, ".workers")
-    },
-    #' @field name Name of the launcher.
-    name = function() {
-      .subset2(private, ".name")
     },
     #' @field seconds_interval See [crew_launcher()].
     seconds_interval = function() {
@@ -273,10 +253,6 @@ crew_class_launcher <- R6::R6Class(
     garbage_collection = function() {
       .subset2(private, ".garbage_collection")
     },
-    #' @field crashes_error See [crew_launcher()].
-    crashes_error = function() {
-      .subset2(private, ".crashes_error")
-    },
     #' @field tls See [crew_launcher()].
     tls = function() {
       .subset2(private, ".tls")
@@ -294,6 +270,18 @@ crew_class_launcher <- R6::R6Class(
     options_metrics = function() {
       .subset2(private, ".options_metrics")
     },
+    #' @field url Websocket URL for worker connections.
+    url = function() {
+      .subset2(private, ".url")
+    },
+    #' @field log Data frame of information on relevant worker launches.
+    log = function() {
+      .subset2(private, ".log")
+    },
+    #' @field id Integer worker ID from the last call to `settings()`.
+    id = function() {
+      .subset2(private, ".id")
+    },
     #' @field async A [crew_async()] object to run low-level launcher tasks
     #'   asynchronously.
     async = function() {
@@ -307,7 +295,7 @@ crew_class_launcher <- R6::R6Class(
   public = list(
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
-    #' @param name See [crew_launcher()].
+    #' @param workers See [crew_launcher()].
     #' @param seconds_interval See [crew_launcher()].
     #' @param seconds_timeout See [crew_launcher()].
     #' @param seconds_launch See [crew_launcher()].
@@ -330,16 +318,16 @@ crew_class_launcher <- R6::R6Class(
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
     #' client$start()
-    #' launcher <- crew_launcher_local(name = client$name)
-    #' launcher$start(workers = client$workers)
-    #' launcher$launch(index = 1L)
+    #' launcher <- crew_launcher_local()
+    #' launcher$start(url = client$url())
+    #' launcher$launch(n = 1L)
     #' m <- mirai::mirai("result", .compute = client$name)
     #' Sys.sleep(0.25)
     #' m$data
     #' client$terminate()
     #' }
     initialize = function(
-      name = NULL,
+      workers = NULL,
       seconds_interval = NULL,
       seconds_timeout = NULL,
       seconds_launch = NULL,
@@ -359,7 +347,7 @@ crew_class_launcher <- R6::R6Class(
       r_arguments = NULL,
       options_metrics = NULL
     ) {
-      private$.name <- name
+      private$.workers <- workers
       private$.seconds_interval <- seconds_interval
       private$.seconds_timeout <- seconds_timeout
       private$.seconds_launch <- seconds_launch
@@ -384,7 +372,7 @@ crew_class_launcher <- R6::R6Class(
         is.function(self$launch_worker),
         message = "launch_worker() must be a function."
       )
-      fields <- c("call", "name", "launcher", "worker", "instance")
+      fields <- c("call", "name", "launcher", "worker")
       crew_assert(
         fields %in% names(formals(self$launch_worker)),
         message = paste(
@@ -402,15 +390,8 @@ crew_class_launcher <- R6::R6Class(
           message = "terminate_worker() must have a \"handle\" argument."
         )
       }
-      crew_assert(
-        private$.name,
-        is.character(.),
-        length(.) == 1L,
-        !anyNA(.),
-        nzchar(.)
-      )
-      # TODO: add "crashes_error" when revdeps use this argument.
       fields <- c(
+        "workers",
         "seconds_interval",
         "seconds_timeout",
         "seconds_launch",
@@ -449,24 +430,20 @@ crew_class_launcher <- R6::R6Class(
           message = paste(field, "must be a non-missing logical of length 1")
         )
       }
-      if (!is.null(private$.workers)) {
-        crew_assert(private$.workers, is.data.frame(.))
-        cols <- c(
-          "handle",
-          "termination",
-          "socket",
-          "start",
-          "launches",
-          "launched",
-          "terminated",
-          "crashes",
-          "online",
-          "discovered",
-          "assigned",
-          "complete"
-        )
-        crew_assert(identical(colnames(private$.workers), cols))
-        crew_assert(nrow(private$.workers) > 0L)
+      # TODO: validate these fields when revdeps catch up.
+      if (FALSE) {
+        if (!is.null(private$.url)) {
+          crew_assert(
+            private$.url,
+            is.character(.),
+            !anyNA(.),
+            length(.) == 1L,
+            nzchar(.)
+          )
+        }
+        if (!is.null(private$.log)) {
+          crew_assert(private$.log, is.data.frame(.))
+        }
       }
       if (!is.null(private$.r_arguments)) {
         crew_assert(
@@ -498,24 +475,16 @@ crew_class_launcher <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Set the name of the launcher.
-    #' @return `NULL` (invisibly).
-    #' @param name Character of length 1, name to set for the launcher.
-    set_name = function(name) {
-      private$.name <- name
-      invisible()
-    },
     #' @description List of arguments for `mirai::daemon()`.
     #' @return List of arguments for `mirai::daemon()`.
-    #' @param socket Character of length 1, websocket address of the worker
-    #'   to launch.
-    settings = function(socket) {
+    settings = function() {
+      private$.id <- private$.id + 1L
       cleanup <- as.integer(isTRUE(private$.reset_globals)) +
         (2L * as.integer(isTRUE(private$.reset_packages))) +
         (4L * as.integer(isTRUE(private$.reset_options))) +
         (8L * as.integer(isTRUE(private$.garbage_collection)))
       list(
-        url = socket,
+        url = private$.url,
         dispatcher = TRUE,
         asyncdial = FALSE,
         autoexit = crew_terminate_signal(),
@@ -525,60 +494,45 @@ crew_class_launcher <- R6::R6Class(
         idletime = private$.seconds_idle * 1000,
         walltime = private$.seconds_wall * 1000,
         timerstart = private$.tasks_timers,
-        tls = private$.tls$worker(name = private$.name),
-        rs = mirai::nextstream(private$.name)
+        id = private$.id,
+        tls = private$.tls$worker(name = private$.name()),
+        rs = mirai::nextstream(.compute = private$.name())
       )
     },
     #' @description Create a call to [crew_worker()] to
     #'   help create custom launchers.
-    #' @return Character of length 1 with a call to [crew_worker()].
-    #' @param socket Socket where the worker will receive tasks.
-    #' @param launcher Character of length 1, name of the launcher.
-    #' @param worker Positive integer of length 1, index of the worker.
-    #'   This worker index remains the same even when the current instance
-    #'   of the worker exits and a new instance launches.
-    #' @param instance Character of length 1 to uniquely identify
-    #'   the instance of the worker.
+    #' @return Character string with a call to [crew_worker()].
+    #' @param worker Character string, name of the worker.
     #' @examples
     #' launcher <- crew_launcher_local()
-    #' launcher$call(
-    #'   socket = "ws://127.0.0.1:5000/3/cba033e58",
-    #'   launcher = "launcher_a",
-    #'   worker = 3L,
-    #'   instance = "cba033e58"
-    #' )
-    call = function(socket, launcher, worker, instance) {
+    #' launcher$start(url = "ws://127.0.0.1:57000")
+    #' launcher$call()
+    call = function(worker) {
       call <- substitute(
         crew::crew_worker(
           settings = settings,
           launcher = launcher,
           worker = worker,
-          instance = instance,
           options_metrics = crew::crew_options_metrics(
             path = path,
             seconds_interval = seconds_interval
           )
         ),
         env = list(
-          settings = self$settings(socket),
-          launcher = launcher,
+          settings = self$settings(),
+          launcher = private$.name(),
           worker = worker,
-          instance = instance,
           path = private$.options_metrics$path,
-          seconds_interval = private$.options_metrics$seconds_interval %|||%
-            5
+          seconds_interval = private$.options_metrics$seconds_interval %|||% 5
         )
       )
       out <- deparse_safe(expr = call, collapse = " ")
       gsub(pattern = "   *", replacement = " ", x = out)
     },
     #' @description Start the launcher.
-    #' @details Creates the workers data frame.
-    #'   Meant to be called once at the beginning of the launcher
-    #'   life cycle, after the client has started.
+    #' @param url Character string, websocket URL for worker connections.
     #' @return `NULL` (invisibly).
-    #' @param sockets For testing purposes only.
-    start = function(sockets = NULL) {
+    start = function(url) {
       if (!is.null(private$.async)) {
         private$.async$terminate()
       }
@@ -587,22 +541,15 @@ crew_class_launcher <- R6::R6Class(
       private$.throttle <- crew_throttle(
         seconds_interval = self$seconds_interval
       )
-      sockets <- sockets %|||% mirai::nextget("urls", .compute = private$.name)
-      n <- length(sockets)
-      private$.workers <- tibble::tibble(
-        handle = replicate(n, crew_null, simplify = FALSE),
-        termination = replicate(n, crew_null, simplify = FALSE),
-        socket = sockets,
-        start = rep(NA_real_, n),
-        launches = rep(0L, n),
-        launched = rep(FALSE, n),
-        terminated = rep(TRUE, n),
-        crashes = rep(0L, n),
-        online = rep(FALSE, n),
-        discovered = rep(FALSE, n),
-        assigned = rep(0L, n),
-        complete = rep(0L, n)
+      private$.url <- url
+      private$.log <- tibble::tibble(
+        handle = list(),
+        id = integer(0L),
+        start = numeric(0L),
+        online = logical(0L),
+        discovered = logical(0L)
       )
+      private$.id <- 0L
       invisible()
     },
     #' @description Terminate the whole launcher, including all workers.
@@ -626,44 +573,6 @@ crew_class_launcher <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Summarize the workers.
-    #' @return `NULL` if the launcher is not started. Otherwise, a `tibble`
-    #'   with one row per `crew` worker and the following columns:
-    #'   * `worker`: integer index of the worker.
-    #'   * `launches`: number of times the worker was launched. Each launch
-    #'     occurs at a different websocket because the token at the end of the
-    #'     URL is rotated before each new launch.
-    #'   * `online`: logical vector, whether the current instance of each
-    #'     worker was actively connected to its NNG socket during the time of
-    #'     the last call to `tally()`.
-    #'   * `discovered`: logical vector, whether the current instance of each
-    #'     worker had connected to its NNG socket at some point
-    #'     (and then possibly disconnected) during the time of
-    #'     the last call to `tally()`.
-    #'   * `assigned`: cumulative number of tasks assigned, reported by
-    #'     `mirai::daemons()` and summed over all
-    #'     completed instances of the worker. Does not reflect the activity
-    #'     of the currently running instance of the worker.
-    #'   * `complete`: cumulative number of tasks completed, reported by
-    #'     `mirai::daemons()` and summed over all
-    #'     completed instances of the worker. Does not reflect the activity
-    #'     of the currently running instance of the worker.
-    #'   * `crashes`: number of consecutive times a worker
-    #'     launched without completing all its assigned tasks.
-    summary = function() {
-      workers <- .subset2(self, "workers")
-      if (is.null(workers)) {
-        return(NULL)
-      }
-      tibble::tibble(
-        worker = seq_len(nrow(workers)),
-        launches = .subset2(workers, "launches"),
-        online = .subset2(workers, "online"),
-        discovered = .subset2(workers, "discovered"),
-        assigned = .subset2(workers, "assigned"),
-        complete = .subset2(workers, "complete")
-      )
-    },
     #' @description Update the `daemons`-related columns of the internal
     #'   `workers` data frame.
     #' @return `NULL` (invisibly).
@@ -680,24 +589,6 @@ crew_class_launcher <- R6::R6Class(
       private$.workers$assigned <- as.integer(daemons[, "assigned"])
       private$.workers$complete <- as.integer(daemons[, "complete"])
       invisible()
-    },
-    #' @description Get indexes of unlaunched workers.
-    #' @details A worker is "unlaunched" if it has never connected
-    #'   to the current instance of its websocket. Once a worker
-    #'   launches with the `launch()` method, it is considered "launched"
-    #'   until it disconnects and its websocket is rotated with `rotate()`.
-    #' @return Integer index of workers available for launch. The backlogged
-    #'   workers are listed first. A worker is backlogged if it is assigned
-    #'   more tasks than it completed.
-    #' @param n Maximum number of worker indexes to return.
-    unlaunched = function(n = Inf) {
-      is_unlaunched <- !private$.workers$launched
-      is_backlogged <- private$.workers$assigned > private$.workers$complete
-      unlaunched <- c(
-        which(is_unlaunched & is_backlogged),
-        which(is_unlaunched & !is_backlogged)
-      )
-      head(x = unlaunched, n = n)
     },
     #' @description Get workers that may still be booting up.
     #' @details A worker is "booting" if its launch time is within the last
@@ -756,37 +647,26 @@ crew_class_launcher <- R6::R6Class(
     },
     #' @description Launch a worker.
     #' @return `NULL` (invisibly).
-    #' @param index Positive integer of length 1, index of the worker
-    #'   to launch.
-    launch = function(index) {
-      self$forward(index = index, condition = "error")
-      socket <- private$.workers$socket[index]
-      instance <- parse_instance(socket)
-      call <- self$call(
-        socket = socket,
-        launcher = private$.name,
-        worker = index,
-        instance = instance
-      )
-      name <- name_worker(
-        launcher = private$.name,
-        worker = index,
-        instance = instance
-      )
-      mirai::call_mirai_(private$.workers$handle[[index]])
+    launch = function() {
+      # self$forward(index = index, condition = "error") # TODO: refactor forwarding and asynchronous launches
+      launcher <- private$.name()
+      worker <- crew_random_name()
+      call <- self$call(worker = worker)
+      name <- name_worker(launcher = launcher, worker = worker)
       handle <- self$launch_worker(
-        call = as.character(call),
-        name = as.character(name),
-        launcher = as.character(private$.name),
-        worker = as.integer(index),
-        instance = as.character(instance)
+        call = call,
+        name = name,
+        launcher = launcher,
+        worker = worker
       )
-      private$.workers$handle[[index]] <- handle
-      private$.workers$socket[index] <- socket
-      private$.workers$start[index] <- nanonext::mclock() / 1000
-      private$.workers$launches[index] <- private$.workers$launches[index] + 1L
-      private$.workers$launched[index] <- TRUE
-      private$.workers$terminated[index] <- FALSE
+      private$.log <- tibble::add_row(
+        private$.log,
+        handle = list(handle),
+        id = private$.id,
+        start = nanonext::mclock() / 1000,
+        online = FALSE,
+        discovered = FALSE
+      )
       invisible()
     },
     #' @description Forward an asynchronous launch/termination error condition

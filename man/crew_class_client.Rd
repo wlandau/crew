@@ -69,6 +69,7 @@ condition variable.}
 \item \href{#method-crew_class_client-condition}{\code{crew_class_client$condition()}}
 \item \href{#method-crew_class_client-resolved}{\code{crew_class_client$resolved()}}
 \item \href{#method-crew_class_client-summary}{\code{crew_class_client$summary()}}
+\item \href{#method-crew_class_client-url}{\code{crew_class_client$url()}}
 \item \href{#method-crew_class_client-pids}{\code{crew_class_client$pids()}}
 }
 }
@@ -212,6 +213,20 @@ A \code{tibble} with one row and the following columns:
 \item \code{connections}: number of workers connected to the client.
 \item \code{url}: websocket URL of the client.
 }
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_client-url"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-url}{}}}
+\subsection{Method \code{url()}}{
+Return the client URL.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$url()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character string, client URL. Returns \code{NULL} if the
+client has not started or has since terminated.
 }
 }
 \if{html}{\out{<hr>}}

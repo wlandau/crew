@@ -366,6 +366,19 @@ crew_class_client <- R6::R6Class(
         url = status$daemons
       )
     },
+    #' @description Return the client URL.
+    #' @return Character string, client URL. Returns `NULL` if the
+    #'   client has not started or has since terminated.
+    url = function() {
+      if (!isTRUE(private$.started)) {
+        return(NULL)
+      }
+      mirai_status(
+        name = private$.name,
+        seconds_interval = private$.seconds_interval,
+        seconds_timeout = private$.seconds_timeout
+      )$daemons
+    },
     #' @description Get the process IDs of the local process and the
     #'   `mirai` dispatcher (if started).
     #' @return An integer vector of process IDs of the local process and the

@@ -38,7 +38,7 @@ crew_controller_local(
 \item{name}{Name of the client object. If \code{NULL}, a name is automatically
 generated.}
 
-\item{workers}{Integer, maximum number of parallel workers to run.}
+\item{workers}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
 \item{host}{IP address of the \code{mirai} client to send and receive tasks.
 If \code{NULL}, the host defaults to the local IP address.}
@@ -86,12 +86,7 @@ See the \code{walltime} argument of \code{mirai::daemon()}.}
 \item{seconds_exit}{Deprecated on 2023-09-21 in version 0.5.0.9002.
 No longer necessary.}
 
-\item{retry_tasks}{\code{TRUE} to automatically retry a task in the event of
-an unexpected worker exit. \code{FALSE} to give up on the first exit and
-return a \code{mirai} error code (code number 19).
-\code{TRUE} (default) is recommended in most situations.
-Use \code{FALSE} for debugging purposes, e.g. to confirm that a task
-is causing a worker to run out of memory or crash in some other way.}
+\item{retry_tasks}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
 exiting. See the \code{maxtasks} argument of \code{mirai::daemon()}.

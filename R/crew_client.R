@@ -4,7 +4,7 @@
 #' @description Create an `R6` wrapper object to manage the `mirai` client.
 #' @param name Name of the client object. If `NULL`, a name is automatically
 #'   generated.
-#' @param workers Integer, maximum number of parallel workers to run.
+#' @param workers Deprecated on 2025-01-13 (`crew` version 0.10.2.9002).
 #' @param host IP address of the `mirai` client to send and receive tasks.
 #'   If `NULL`, the host defaults to the local IP address.
 #' @param port TCP port to listen for the workers. If `NULL`,
@@ -21,12 +21,7 @@
 #' @param seconds_timeout Number of seconds until timing
 #'   out while waiting for certain synchronous operations to complete,
 #'   such as checking `mirai::status()`.
-#' @param retry_tasks `TRUE` to automatically retry a task in the event of
-#'   an unexpected worker exit. `FALSE` to give up on the first exit and
-#'   return a `mirai` error code (code number 19).
-#'   `TRUE` (default) is recommended in most situations.
-#'   Use `FALSE` for debugging purposes, e.g. to confirm that a task
-#'   is causing a worker to run out of memory or crash in some other way.
+#' @param retry_tasks Deprecated on 2025-01-13 (`crew` version 0.10.2.9002).
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -36,7 +31,7 @@
 #' }
 crew_client <- function(
   name = NULL,
-  workers = 1L,
+  workers = NULL,
   host = NULL,
   port = NULL,
   tls = crew::crew_tls(),
@@ -44,8 +39,16 @@ crew_client <- function(
   tls_config = NULL,
   seconds_interval = 0.5,
   seconds_timeout = 60,
-  retry_tasks = TRUE
+  retry_tasks = NULL
 ) {
+  crew_deprecate(
+    name = "workers (in crew_client())",
+    date = "2023-01-13",
+    version = "0.10.2.9002",
+    alternative = "none",
+    value = workers,
+    condition = "message"
+  )
   crew_deprecate(
     name = "tls_enable",
     date = "2023-09-15",
@@ -60,8 +63,15 @@ crew_client <- function(
     alternative = "argument tls and function crew_tls()",
     value = tls_config
   )
+  crew_deprecate(
+    name = "retry_tasks",
+    date = "2023-01-13",
+    version = "0.10.2.9002",
+    alternative = "none",
+    value = retry_tasks,
+    condition = "message"
+  )
   name <- as.character(name %|||% crew_random_name())
-  workers <- as.integer(workers)
   host <- as.character(host %|||% getip::getip(type = "local"))
   port <- as.integer(port %|||% 0L)
   crew_assert(
@@ -70,13 +80,11 @@ crew_client <- function(
   )
   client <- crew_class_client$new(
     name = name,
-    workers = workers,
     host = host,
     port = port,
     tls = tls,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
-    retry_tasks = retry_tasks,
     relay = crew_relay()
   )
   client$validate()
@@ -100,13 +108,11 @@ crew_class_client <- R6::R6Class(
   cloneable = FALSE,
   private = list(
     .name = NULL,
-    .workers = NULL,
     .host = NULL,
     .port = NULL,
     .tls = NULL,
     .seconds_interval = NULL,
     .seconds_timeout = NULL,
-    .retry_tasks = NULL,
     .relay = NULL,
     .started = NULL,
     .client = NULL,
@@ -116,10 +122,6 @@ crew_class_client <- R6::R6Class(
     #' @field name See [crew_client()].
     name = function() {
       .subset2(private, ".name")
-    },
-    #' @field workers See [crew_client()].
-    workers = function() {
-      .subset2(private, ".workers")
     },
     #' @field host See [crew_client()].
     host = function() {
@@ -140,10 +142,6 @@ crew_class_client <- R6::R6Class(
     #' @field seconds_timeout See [crew_client()].
     seconds_timeout = function() {
       .subset2(private, ".seconds_timeout")
-    },
-    #' @field retry_tasks See [crew_client()]
-    retry_tasks = function() {
-      .subset2(private, ".retry_tasks")
     },
     #' @field relay Relay object for event-driven programming on a downstream
     #'   condition variable.
@@ -167,13 +165,11 @@ crew_class_client <- R6::R6Class(
     #' @description `mirai` client constructor.
     #' @return An `R6` object with the client.
     #' @param name Argument passed from [crew_client()].
-    #' @param workers Argument passed from [crew_client()].
     #' @param host Argument passed from [crew_client()].
     #' @param port Argument passed from [crew_client()].
     #' @param tls Argument passed from [crew_client()].
     #' @param seconds_interval Argument passed from [crew_client()].
     #' @param seconds_timeout Argument passed from [crew_client()].
-    #' @param retry_tasks Argument passed from [crew_client()].
     #' @param relay Argument passed from [crew_client()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -184,23 +180,19 @@ crew_class_client <- R6::R6Class(
     #' }
     initialize = function(
       name = NULL,
-      workers = NULL,
       host = NULL,
       port = NULL,
       tls = NULL,
       seconds_interval = NULL,
       seconds_timeout = NULL,
-      retry_tasks = NULL,
       relay = NULL
     ) {
       private$.name <- name
-      private$.workers <- workers
       private$.host <- host
       private$.port <- port
       private$.tls <- tls
       private$.seconds_interval <- seconds_interval
       private$.seconds_timeout <- seconds_timeout
-      private$.retry_tasks <- retry_tasks
       private$.relay <- relay
     },
     #' @description Validate the client.
@@ -212,12 +204,6 @@ crew_class_client <- R6::R6Class(
         length(.) == 1L,
         nzchar(.),
         !anyNA(.)
-      )
-      crew_assert(
-        private$.workers,
-        is.integer(.),
-        length(.) == 1L,
-        !anyNA(.), . > 0L
       )
       crew_assert(
         private$.host,
@@ -245,11 +231,6 @@ crew_class_client <- R6::R6Class(
           . >= 0
         )
       }
-      crew_assert(
-        private$.retry_tasks,
-        isTRUE(.) || isFALSE(.),
-        message = "retry_tasks must be TRUE or FALSE"
-      )
       if_any(
         is.null(private$.client),
         NULL,
@@ -272,20 +253,18 @@ crew_class_client <- R6::R6Class(
         return(invisible())
       }
       url <- sprintf(
-        "%s://%s:%s",
+        "%s://%s:%s/%s",
         if_any(private$.tls$mode == "none", "ws", "wss"),
         private$.host,
-        private$.port
+        private$.port,
+        private$.name
       )
       mirai::daemons(
-        n = private$.workers,
         url = url,
-        dispatcher = "process",
+        dispatcher = TRUE,
         seed = NULL,
         tls = private$.tls$client(),
         pass = private$.tls$password,
-        token = TRUE,
-        retry = private$.retry_tasks,
         .compute = private$.name
       )
       private$.client <- ps::ps_handle()
@@ -351,48 +330,40 @@ crew_class_client <- R6::R6Class(
     #'   on resolution. The return value is `NULL` if the client
     #'   is not running.
     condition = function() {
-      mirai::nextget(x = "cv", .compute = .subset2(self, "name"))
+      mirai::nextget(x = "cv", .compute = .subset2(private, ".name"))
     },
     #' @description Get the true value of the `nanonext` condition variable.
     #' @return The value of the `nanonext` condition variable.
     resolved = function() {
       condition <- .subset2(self, "condition")()
-      if_any(
-        is.null(condition),
-        0L,
+      if (is.null(condition)) {
+        0L
+      } else {
         nanonext::cv_value(condition)
-      )
+      }
     },
     #' @description Show an informative worker log.
-    #' @return A `tibble` with information on the workers, or `NULL`
-    #'   if the client is not started. The `tibble` has 1 row
-    #'   per worker and the following columns:
-    #'   * `worker`: integer index of the worker.
-    #'   * `online`: `TRUE` if the worker is online and connected to the
-    #'     websocket URL, `FALSE` otherwise.
-    #'   * `instances`: integer, number of instances of `mirai` daemons
-    #'     (`crew` workers) that have connected to the websocket URL
-    #'     during the life cycle of the listener.
-    #'   * `assigned`: number of tasks assigned to the current websocket URL.
-    #'   * `complete`: number of tasks completed at the current websocket URL.
-    #'   * `socket`: websocket URL. `crew` changes the token at the end of the
-    #'     URL path periodically as a safeguard while managing workers.
+    #' @return A `tibble` with one row and the following columns:
+    #'   * `awaiting`: number of tasks waiting to start.
+    #'   * `executing`: number of tasks currently running on workers.
+    #'   * `completed`: number of tasks completed.
+    #'   * `connections`: number of workers connected to the client.
+    #'   * `url`: websocket URL of the client.
     summary = function() {
       if (!isTRUE(private$.started)) {
         return(NULL)
       }
-      daemons <- daemons_info(
+      status <- mirai_status(
         name = private$.name,
         seconds_interval = private$.seconds_interval,
         seconds_timeout = private$.seconds_timeout
       )
       tibble::tibble(
-        worker = seq_len(nrow(daemons)),
-        online = as.logical(daemons[, "online"] > 0L),
-        instances = as.integer(abs(daemons[, "instance"])),
-        assigned = as.integer(daemons[, "assigned"]),
-        complete = as.integer(daemons[, "complete"]),
-        socket = as.character(rownames(daemons))
+        awaiting = as.integer(status$mirai["awaiting"]),
+        executing = as.integer(status$mirai["executing"]),
+        completed = as.integer(status$mirai["completed"]),
+        connections = status$connections,
+        url = status$daemons
       )
     },
     #' @description Get the process IDs of the local process and the

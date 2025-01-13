@@ -38,8 +38,6 @@ Other client:
 \describe{
 \item{\code{name}}{See \code{\link[=crew_client]{crew_client()}}.}
 
-\item{\code{workers}}{See \code{\link[=crew_client]{crew_client()}}.}
-
 \item{\code{host}}{See \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{port}}{See \code{\link[=crew_client]{crew_client()}}.}
@@ -49,8 +47,6 @@ Other client:
 \item{\code{seconds_interval}}{See \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{retry_tasks}}{See \code{\link[=crew_client]{crew_client()}}}
 
 \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
@@ -84,13 +80,11 @@ condition variable.}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_client$new(
   name = NULL,
-  workers = NULL,
   host = NULL,
   port = NULL,
   tls = NULL,
   seconds_interval = NULL,
   seconds_timeout = NULL,
-  retry_tasks = NULL,
   relay = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -99,8 +93,6 @@ condition variable.}
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{name}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{workers}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{host}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
@@ -111,8 +103,6 @@ condition variable.}
 \item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{seconds_timeout}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{retry_tasks}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{relay}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 }
@@ -214,20 +204,13 @@ Show an informative worker log.
 }
 
 \subsection{Returns}{
-A \code{tibble} with information on the workers, or \code{NULL}
-if the client is not started. The \code{tibble} has 1 row
-per worker and the following columns:
+A \code{tibble} with one row and the following columns:
 \itemize{
-\item \code{worker}: integer index of the worker.
-\item \code{online}: \code{TRUE} if the worker is online and connected to the
-websocket URL, \code{FALSE} otherwise.
-\item \code{instances}: integer, number of instances of \code{mirai} daemons
-(\code{crew} workers) that have connected to the websocket URL
-during the life cycle of the listener.
-\item \code{assigned}: number of tasks assigned to the current websocket URL.
-\item \code{complete}: number of tasks completed at the current websocket URL.
-\item \code{socket}: websocket URL. \code{crew} changes the token at the end of the
-URL path periodically as a safeguard while managing workers.
+\item \code{awaiting}: number of tasks waiting to start.
+\item \code{executing}: number of tasks currently running on workers.
+\item \code{completed}: number of tasks completed.
+\item \code{connections}: number of workers connected to the client.
+\item \code{url}: websocket URL of the client.
 }
 }
 }

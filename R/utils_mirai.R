@@ -1,24 +1,22 @@
-daemons_info <- function(name, seconds_interval, seconds_timeout) {
+mirai_status <- function(name, seconds_interval, seconds_timeout) {
   envir <- new.env(parent = emptyenv())
   crew_retry(
     fun = ~{
-      daemons <- mirai::status(.compute = name)$daemons
-      valid <- is.matrix(daemons) && all(dim(daemons) > 0L)
-      envir$daemons <- daemons
-      envir$valid <- valid
-      valid
+      envir$status <- mirai::status(.compute = name)
+      envir$valid <- is.list(envir$status)
+      envir$valid
     },
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
     error = FALSE
   )
-  daemons <- .subset2(envir, "daemons")
+  status <- .subset2(envir, "status")
   valid <- .subset2(envir, "valid")
-  if_any(valid, daemons, daemons_error(daemons, name))
+  if_any(valid, status, mirai_status_error(status, name))
 }
 
-daemons_error <- function(daemons, name) {
-  message <- sprintf("'errorValue' int %s\n", nanonext::nng_error(daemons))
+mirai_status_error <- function(status, name) {
+  message <- sprintf("'errorValue' int %s\n", nanonext::nng_error(status))
   pid <- mirai::nextget("pid", .compute = name)
   exists <- !is.null(pid) &&
     !inherits(

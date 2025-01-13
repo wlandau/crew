@@ -11,8 +11,7 @@ monad_init <- function(
   trace = NA_character_,
   warnings = NA_character_,
   launcher = NA_character_,
-  worker = NA_integer_,
-  instance = NA_character_
+  worker = NA_character_
 ) {
   out <- monad_new(
     name = name,
@@ -27,8 +26,7 @@ monad_init <- function(
     trace = trace,
     warnings = warnings,
     launcher = launcher,
-    worker = worker,
-    instance = instance
+    worker = worker
   )
   out
 }
@@ -46,8 +44,7 @@ monad_new <- function(
   trace = NULL,
   warnings = NULL,
   launcher = NULL,
-  worker = NULL,
-  instance = NULL
+  worker = NULL
 ) {
   list(
     name = name,
@@ -62,8 +59,7 @@ monad_new <- function(
     trace = trace,
     warnings = warnings,
     launcher = launcher,
-    worker = worker,
-    instance = instance
+    worker = worker
   )
 }
 
@@ -79,7 +75,7 @@ monad_validate <- function(monad) {
     "trace",
     "warnings",
     "launcher",
-    "instance"
+    "worker"
   )
   for (col in cols) {
     crew_assert(monad[[col]], is.character(.), length(.) == 1L)
@@ -87,7 +83,7 @@ monad_validate <- function(monad) {
   for (col in c("seconds", "seed")) {
     crew_assert(monad[[col]], is.numeric(.), length(.) == 1L)
   }
-  for (col in c("code", "worker")) {
+  for (col in c("code")) {
     crew_assert(monad[[col]], is.integer(.), length(.) == 1L)
   }
   crew_assert(monad$result, is.list(.), length(.) == 1L)

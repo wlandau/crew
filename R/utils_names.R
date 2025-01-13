@@ -2,11 +2,6 @@ name_worker <- function(launcher, worker, instance) {
   paste("crew", launcher, worker, instance, sep = "-")
 }
 
-parse_instance <- function(socket) {
-  split <- strsplit(socket, split = "/", fixed = TRUE)[[1]]
-  split[length(split)]
-}
-
 is_named <- function(x) {
   if (!is.list(x) || length(x) < 1L) {
     return(TRUE)

@@ -40,12 +40,11 @@ crew_test("crew_client() works", {
     sort(colnames(log)),
     sort(
       c(
-        "worker",
-        "online",
-        "instances",
-        "assigned",
-        "complete",
-        "socket"
+        "awaiting",
+        "completed",
+        "connections",
+        "executing",
+        "url"
       )
     )
   )
@@ -58,23 +57,22 @@ crew_test("crew_client() works", {
     seconds_interval = 0.01,
     seconds_timeout = 30
   )
-  socket <- log$socket
-  expect_true(is.character(socket) && length(socket) > 0L)
-  expect_true(nzchar(socket) && !anyNA(socket))
-  expect_equal(length(socket), 1L)
-  expect_false(log$online)
-  expect_equal(log$assigned, 0L)
-  expect_equal(log$complete, 0L)
-  expect_equal(log$instances, 0L)
+  url <- log$url
+  expect_true(is.character(url) && length(url) > 0L)
+  expect_true(nzchar(url) && !anyNA(url))
+  expect_equal(length(url), 1L)
+  expect_equal(log$awaiting, 0L)
+  expect_equal(log$executing, 0L)
+  expect_equal(log$completed, 0L)
+  expect_equal(log$connections, 0L)
   bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
   path <- file.path(R.home("bin"), bin)
-  call <- sprintf("mirai::daemon('%s')", socket)
+  call <- sprintf("mirai::daemon('%s', dispatcher = TRUE)", url)
   px <- processx::process$new(command = path, args = c("-e", call))
   crew_retry(
     ~{
-      daemons <- mirai::status(.compute = client$name)$daemons
       identical(
-        as.integer(unname(daemons[, "online", drop = TRUE])),
+        as.integer(mirai::status(.compute = client$name)$connections),
         1L
       )
     },
@@ -91,7 +89,7 @@ crew_test("crew_client() works", {
   expect_true(is.numeric(m$data))
   expect_true(abs(m$data - ps::ps_pid()) > 0.5)
   expect_true(client$started)
-  expect_true(client$summary()$online)
+  expect_equal(client$summary()$connections, 1L)
   expect_silent(client$start())
   for (index in seq_len(2L)) {
     expect_silent(client$terminate())

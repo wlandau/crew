@@ -38,7 +38,12 @@ crew_worker <- function(
   Sys.setenv(CREW_LAUNCHER = launcher, CREW_WORKER = worker)
   crew_message(utils::capture.output(print(utils::sessionInfo())))
   code <- do.call(what = mirai::daemon, args = settings)
-  crew_message(mirai::nextcode(xc = code))
+  crew_message(
+    paste(
+      "crew worker finished normally with mirai message:",
+      mirai::nextcode(xc = code)
+    )
+  )
 }
 
 log_metrics_path <- function(path, name) {

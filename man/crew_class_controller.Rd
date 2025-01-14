@@ -375,16 +375,7 @@ Launch one or more workers.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{Number of workers to try to launch. The actual
-number launched is capped so that no more than "\code{workers}"
-workers running at a given time, where "\code{workers}"
-is an argument of \code{\link[=crew_controller]{crew_controller()}}. The
-actual cap is the "\code{workers}" argument minus the number of connected
-workers minus the number of starting workers. A "connected"
-worker has an active websocket connection to the \code{mirai} client,
-and "starting" means that the worker was launched at most
-\code{seconds_start} seconds ago, where \code{seconds_start} is
-also an argument of \code{\link[=crew_controller]{crew_controller()}}.}
+\item{\code{n}}{Number of workers to launch.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -1208,26 +1199,16 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A data frame of summary statistics on the workers and tasks.
-It has one row per worker websocket and the following columns:
+A data frame of summary statistics on the tasks
+that ran on a worker and then were returned by \code{pop()} or
+\code{collect()}.
+It has one row and the following columns:
 \itemize{
 \item \code{controller}: name of the controller.
-.  * \code{worker}: integer index of the worker.
-\item \code{tasks}: number of tasks which were completed by
-a worker at the websocket and then returned by calling
-\code{pop()} on the controller object.
-\item \code{seconds}: total number of runtime and seconds of
-all the tasks that ran on a worker connected to this websocket
-and then were retrieved by calling \code{pop()} on the controller
-object.
-\item \code{errors}: total number of tasks which ran on a worker
-at the website, encountered an error in R, and then retrieved
-with \code{pop()}.
-\item \code{warnings}: total number of tasks which ran on a worker
-at the website, encountered one or more warnings in R,
-and then retrieved with \code{pop()}. Note: \code{warnings}
-is actually the number of \emph{tasks}, not the number of warnings.
-(A task could throw more than one warning.
+\item \code{tasks}: number of tasks.
+\item \code{seconds}: total number of runtime in seconds.
+\item \code{errors}: total number of tasks with errors.
+\item \code{warnings}: total number of tasks with one or more warnings.
 }
 }
 }

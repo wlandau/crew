@@ -34,7 +34,6 @@ crew_controller <- function(
     frequency = "once"
   )
   controller <- crew_class_controller$new(client = client, launcher = launcher)
-  controller$launcher$set_name(controller$client$name)
   controller$validate()
   controller
 }
@@ -184,10 +183,6 @@ crew_class_controller <- R6::R6Class(
       private$.client$validate()
       private$.launcher$validate()
       crew_assert(private$.tasks, is.null(.) || is.list(.))
-      crew_assert(
-        identical(private$.client$name, private$.launcher$name),
-        message = "client and launcher must have the same name"
-      )
       crew_assert(private$.summary, is.null(.) || is.list(.))
       crew_assert(private$.backlog, is.null(.) || is.character(.))
       crew_assert(private$.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
@@ -284,18 +279,16 @@ crew_class_controller <- R6::R6Class(
     start = function(controllers = NULL) {
       if (!isTRUE(.subset2(.subset2(self, "client"), "started"))) {
         private$.client$start()
-        workers <- private$.client$workers
-        private$.launcher$start()
+        private$.launcher$start(url = private$.client$url)
         private$.tasks <- list()
         private$.pushed <- 0L
         private$.popped <- 0L
         private$.summary <- list(
-          controller = rep(private$.client$name, workers),
-          worker = seq_len(workers),
-          tasks = rep(0L, workers),
-          seconds = rep(0, workers),
-          errors = rep(0L, workers),
-          warnings = rep(0L, workers)
+          controller = private$.launcher$name,
+          tasks = 0L,
+          seconds = 0,
+          errors = 0L,
+          warnings = 0L
         )
         private$.backlog <- character(0L)
       }
@@ -311,26 +304,12 @@ crew_class_controller <- R6::R6Class(
     },
     #' @description Launch one or more workers.
     #' @return `NULL` (invisibly).
-    #' @param n Number of workers to try to launch. The actual
-    #'   number launched is capped so that no more than "`workers`"
-    #'   workers running at a given time, where "`workers`"
-    #'   is an argument of [crew_controller()]. The
-    #'   actual cap is the "`workers`" argument minus the number of connected
-    #'   workers minus the number of starting workers. A "connected"
-    #'   worker has an active websocket connection to the `mirai` client,
-    #'   and "starting" means that the worker was launched at most
-    #'   `seconds_start` seconds ago, where `seconds_start` is
-    #'   also an argument of [crew_controller()].
+    #' @param n Number of workers to launch.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      .subset2(self, "start")()
-      private$.launcher$tally()
-      private$.launcher$rotate()
-      walk(
-        x = private$.launcher$unlaunched(n = n),
-        f = private$.launcher$launch
-      )
+      self$start()
+      replicate(n, private$.launcher$launch, simplify = FALSE)
       invisible()
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
@@ -353,7 +332,8 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(throttle = TRUE, controllers = NULL) {
-      private$.launcher$scale(demand = self$unresolved(), throttle = throttle)
+      status <- private$.client$status()
+      private$.launcher$scale(status = status, throttle = throttle)
       invisible()
     },
     #' @description Run worker auto-scaling in a private `later` loop
@@ -370,7 +350,7 @@ crew_class_controller <- R6::R6Class(
         return(invisible())
       }
       poll <- function() {
-        if (isTRUE(self$client$started) && isTRUE(private$.autoscaling)) {
+        if (isTRUE(private$.client$started) && isTRUE(private$.autoscaling)) {
           self$scale(throttle = FALSE)
           later::later(func = poll, delay = self$client$seconds_interval)
         }
@@ -919,40 +899,19 @@ crew_class_controller <- R6::R6Class(
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
       out <- out[match(x = names, table = out$name),, drop = FALSE] # nolint
       out <- out[!is.na(out$name),, drop = FALSE] # nolint
-      worker <- .subset2(out, "worker")
-      tasks <- table(worker)
-      seconds <- tapply(
-        X = .subset2(out, "seconds"),
-        INDEX = worker,
-        FUN = sum
-      )
-      summary_errors <- tapply(
-        X = as.integer(!is.na(.subset2(out, "error"))),
-        INDEX = worker,
-        FUN = sum
-      )
-      summary_warnings <- tapply(
-        X = as.integer(!is.na(.subset2(out, "warnings"))),
-        INDEX = worker,
-        FUN = sum
-      )
-      index <- as.integer(names(tasks))
-      summary <- .subset2(private, ".summary")
+      seconds <- sum(out$seconds)
+      summary_errors <- sum(!is.na(out$error))
+      summary_warnings <- sum(!is.na(out$warnings))
+      summary <- private$.summary
       on.exit({
         private$.tasks <- list()
-        private$.popped <- .subset2(self, "popped") + total
-        private$.summary$tasks[index] <- .subset2(summary, "tasks")[index] +
-          tasks
-        private$.summary$seconds[index] <- .subset2(
-          summary, "seconds"
-        )[index] + seconds
-        private$.summary$errors[index] <- .subset2(summary, "errors")[index] +
-          summary_errors
-        private$.summary$warnings[index] <- .subset2(
-          summary, "warnings"
-        )[index] + summary_warnings
+        private$.popped <- private$.popped + total
+        private$.summary$tasks <- summary$tasks + tasks
+        private$.summary$seconds <- summary$seconds + seconds
+        private$.summary$errors <- summary$errors + summary_errors
+        private$.summary$warnings <- summary$warnings + summary_warnings
       })
-      warning_messages <- .subset2(out, "warnings")
+      warning_messages <- out$warnings
       if (!all(is.na(warning_messages)) && isTRUE(warnings)) {
         message <- sprintf(
           paste(
@@ -964,7 +923,7 @@ crew_class_controller <- R6::R6Class(
         )
         crew_warning(message)
       }
-      error_messages <- .subset2(out, "error")
+      error_messages <- out$error
       if (!all(is.na(error_messages)) && !identical(error, "silent")) {
         message <- sprintf(
           "%s tasks encountered errors. First error message: \"%s\".",
@@ -1101,19 +1060,19 @@ crew_class_controller <- R6::R6Class(
       if (anyNA(.subset2(out, "launcher"))) {
         return(out)
       }
-      on.exit({
-        index <- .subset2(out, "worker")
-        private$.summary$tasks[index] <- .subset2(summary, "tasks")[index] +
-          1L
-        private$.summary$seconds[index] <- .subset2(
-          summary, "seconds"
-        )[index] + .subset2(out, "seconds")
-        private$.summary$errors[index] <- .subset2(summary, "errors")[index] +
-          !anyNA(.subset2(out, "error"))
-        private$.summary$warnings[index] <- .subset2(
-          summary, "warnings"
-        )[index] + !anyNA(.subset2(out, "warnings"))
-      }, add = TRUE)
+      on.exit(
+        expr = {
+          index <- .subset2(out, "worker")
+          private$.summary$tasks <- .subset2(summary, "tasks") + 1L
+          private$.summary$seconds <- .subset2(summary, "seconds") +
+            .subset2(out, "seconds")
+          private$.summary$errors <- .subset2(summary, "errors") +
+            !anyNA(.subset2(out, "error"))
+          private$.summary$warnings <- .subset2(summary, "warnings") +
+            !anyNA(.subset2(out, "warnings"))
+        },
+        add = TRUE
+      )
       if (!is.null(error) && !anyNA(.subset2(out, "error"))) {
         if (identical(error, "stop")) {
           crew_error(message = .subset2(out, "error"))
@@ -1330,25 +1289,15 @@ crew_class_controller <- R6::R6Class(
       out
     },
     #' @description Summarize the workers and tasks of the controller.
-    #' @return A data frame of summary statistics on the workers and tasks.
-    #'   It has one row per worker websocket and the following columns:
+    #' @return A data frame of summary statistics on the tasks
+    #'   that ran on a worker and then were returned by `pop()` or
+    #'   `collect()`.
+    #'   It has one row and the following columns:
     #'   * `controller`: name of the controller.
-    #'.  * `worker`: integer index of the worker.
-    #'   * `tasks`: number of tasks which were completed by
-    #'     a worker at the websocket and then returned by calling
-    #'     `pop()` on the controller object.
-    #'   * `seconds`: total number of runtime and seconds of
-    #'     all the tasks that ran on a worker connected to this websocket
-    #'     and then were retrieved by calling `pop()` on the controller
-    #'     object.
-    #'   * `errors`: total number of tasks which ran on a worker
-    #'     at the website, encountered an error in R, and then retrieved
-    #'     with `pop()`.
-    #'   * `warnings`: total number of tasks which ran on a worker
-    #'     at the website, encountered one or more warnings in R,
-    #'     and then retrieved with `pop()`. Note: `warnings`
-    #'     is actually the number of *tasks*, not the number of warnings.
-    #'     (A task could throw more than one warning.
+    #'   * `tasks`: number of tasks.
+    #'   * `seconds`: total number of runtime in seconds.
+    #'   * `errors`: total number of tasks with errors.
+    #'   * `warnings`: total number of tasks with one or more warnings.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     summary = function(controllers = NULL) {
@@ -1381,7 +1330,7 @@ crew_class_controller <- R6::R6Class(
       )
       tasks <- .subset2(private, ".tasks")
       if (!all) {
-        tasks <- tasks[names(tasks) %in% names]
+        tasks <- tasks[intersect(names(tasks), names)]
       }
       mirai::stop_mirai(tasks)
       invisible()
@@ -1401,9 +1350,9 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     terminate = function(controllers = NULL) {
       self$cancel(all = TRUE)
-      private$.tasks <- list()
-      private$.launcher$terminate()
       private$.client$terminate()
+      private$.launcher$terminate()
+      private$.tasks <- list()
       private$.pushed <- NULL
       private$.popped <- NULL
       private$.autoscaling <- FALSE

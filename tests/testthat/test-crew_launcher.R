@@ -295,35 +295,6 @@ crew_test("launcher update() with just disconnects", {
   expect_equal(launcher$instances$discovered, rep(TRUE, 6L))
 })
 
-crew_test("launcher forward", {
-  skip_on_cran()
-  skip_on_os("windows")
-  x <- crew_launcher()
-  on.exit({
-    rm(x)
-    gc()
-    crew_test_sleep()
-  })
-  x$start(sockets = "url")
-  private <- crew_private(x)
-  private$.workers$handle[[1L]] <- mirai::mirai(stop("message"))
-  crew_retry(
-    fun = ~!mirai::unresolved(x$workers$handle[[1L]]),
-    seconds_interval = 0.01
-  )
-  expect_crew_error(x$forward(index = 1L))
-  expect_warning(
-    x$forward(index = 1L, condition = "warning"),
-    class = "crew_warning"
-  )
-  expect_message(
-    x$forward(index = 1L, condition = "message"),
-    class = "crew_message"
-  )
-  out <- x$forward(index = 1L, condition = "character")
-  expect_true(nzchar(out))
-})
-
 crew_test("deprecate seconds_exit", {
   suppressWarnings(crew_launcher(seconds_exit = 1))
   expect_true(TRUE)

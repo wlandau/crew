@@ -611,7 +611,7 @@ crew_class_launcher <- R6::R6Class(
     update = function(status) {
       instances <- private$.instances
       id <- instances$id
-      events <- status$events
+      events <- as.integer(status$events)
       connected <- events[events > 0L]
       disconnected <- -events[events < 0L]
       instances$online[connected] <- TRUE

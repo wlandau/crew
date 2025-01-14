@@ -93,7 +93,7 @@ crew_class_controller <- R6::R6Class(
           library = library
         ),
         .timeout = .timeout,
-        .compute = private$.client$name
+        .compute = .subset2(.subset2(private, ".client"), "profile")
       )
       on.exit({
         private$.tasks[[length(.subset2(self, "tasks")) + 1L]] <- task
@@ -474,7 +474,7 @@ crew_class_controller <- R6::R6Class(
           library = library
         ),
         .timeout = .timeout,
-        .compute = private$.client$name
+        .compute = .subset2(.subset2(private, ".client"), "profile")
       )
       on.exit({
         n <- length(.subset2(self, "tasks")) + 1L

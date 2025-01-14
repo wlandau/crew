@@ -86,17 +86,19 @@ mirai_error <- function(task) {
 mirai_wait <- function(tasks, condition = "error") {
   mirai::call_mirai_(tasks)
   for (task in tasks) {
-    message <- .subset2(task, "data")
-    if (!is.null(message)) {
-      message <- paste(
-        "Error asynchronously launching and/or terminating a worker:",
-        as.character(message)
-      )
-      switch(
-        condition,
-        error = crew_error(message = message),
-        warning = crew_warning(message = message)
-      )
+    if (inherits(task, "mirai")) {
+      message <- .subset2(task, "data")
+      if (!is.null(message)) {
+        message <- paste(
+          "Error asynchronously launching and/or terminating a worker:",
+          as.character(message)
+        )
+        switch(
+          condition,
+          error = crew_error(message = message),
+          warning = crew_warning(message = message)
+        )
+      }
     }
   }
 }

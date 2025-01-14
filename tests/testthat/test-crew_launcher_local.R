@@ -74,11 +74,15 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   })
   expect_silent(launcher$validate())
   client$start()
-  launcher$start()
+  launcher$start(url = client$url)
+  launcher$launch()
+  
+  stop("needs refactoring")
+  
   expect_equal(nrow(launcher$workers), 4L)
   expect_s3_class(launcher$workers$handle[[2L]], "crew_null")
   expect_equal(launcher$workers$launches, rep(0L, 4L))
-  launcher$launch(index = 2L)
+  
   log <- client$summary()
   socket <- log$socket[2L]
   expect_s3_class(launcher$workers$handle[[2L]], "process")

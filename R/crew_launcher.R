@@ -578,13 +578,7 @@ crew_class_launcher <- R6::R6Class(
       private$.name <- private$.name %|||% crew_random_name(n = 4L)
       private$.url <- url
       private$.profile <- basename(url)
-      private$.instances <- tibble::tibble(
-        handle = list(),
-        id = integer(0L),
-        start = numeric(0L),
-        online = logical(0L),
-        discovered = logical(0L)
-      )
+      private$.instances <- launcher_empty_instances
       private$.id <- 0L
       invisible()
     },
@@ -620,8 +614,8 @@ crew_class_launcher <- R6::R6Class(
       online <- instances$online
       discovered <- instances$discovered
       start <- instances$start
-      booting <- (now() - start) < private$.seconds_launch
-      active <- online | (!discovered & booting)
+      awaiting <- (now() - start) < private$.seconds_launch
+      active <- online | (!discovered & awaiting)
       lost <- !active & !discovered
       mirai_wait(lapply(instances$handle[lost], self$terminate_worker))
       private$.instances <- instances[active, ]
@@ -662,7 +656,10 @@ crew_class_launcher <- R6::R6Class(
         return(invisible())
       }
       self$update(status = status)
-      tasks <- replicate(status$mirai$awaiting, self$launch, simplify = FALSE)
+      supply <- nrow(private$.instances)
+      demand <- status$mirai["awaiting"] + status$mirai["executing"]
+      need <- max(0L, demand - supply)
+      tasks <- replicate(need, self$launch, simplify = FALSE)
       mirai_wait(tasks = tasks)
       invisible()
     },

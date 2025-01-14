@@ -139,8 +139,8 @@ crew_launcher <- function(
     value = launch_max
   )
   crew_class_launcher$new(
-    name = as.character(name),
-    workers = as.integer(workers),
+    name = name,
+    workers = workers,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
     seconds_launch = seconds_launch,
@@ -598,7 +598,6 @@ crew_class_launcher <- R6::R6Class(
         private$.async$asynchronous() &&
         private$.async$started()
       if (using_async) {
-        self$wait()
         private$.async$terminate()
       }
       if (!is.null(private$.throttle)) {
@@ -614,7 +613,7 @@ crew_class_launcher <- R6::R6Class(
       id <- instances$id
       events <- status$events
       connected <- events[events > 0L]
-      disconnected <- events[events < 0L]
+      disconnected <- -events[events < 0L]
       instances$online[connected] <- TRUE
       instances$online[disconnected] <- FALSE
       instances$discovered[connected] <- TRUE

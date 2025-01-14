@@ -91,7 +91,7 @@
 crew_launcher <- function(
   name = NULL,
   workers = 1L,
-  seconds_interval = 0.5,
+  seconds_interval = 1,
   seconds_timeout = 60,
   seconds_launch = 30,
   seconds_idle = 300,
@@ -160,6 +160,14 @@ crew_launcher <- function(
   )
 }
 
+launcher_empty_instances <- tibble::tibble(
+  handle = list(),
+  id = integer(0L),
+  start = numeric(0L),
+  online = logical(0L),
+  discovered = logical(0L)
+)
+
 #' @title Launcher abstract class
 #' @export
 #' @family launcher
@@ -202,17 +210,17 @@ crew_class_launcher <- R6::R6Class(
     .options_metrics = NULL,
     .url = NULL,
     .profile = NULL,
-    .instances = NULL,
+    .instances = launcher_empty_instances,
     .id = NULL,
     .async = NULL,
     .throttle = NULL
   ),
   active = list(
-    #' @field See [crew_launcher()].
+    #' @field name See [crew_launcher()].
     name = function() {
       .subset2(private, ".name")
     },
-    #' @field See [crew_launcher()].
+    #' @field workers See [crew_launcher()].
     workers = function() {
       .subset2(private, ".workers")
     },
@@ -281,7 +289,7 @@ crew_class_launcher <- R6::R6Class(
     url = function() {
       .subset2(private, ".url")
     },
-    #' @field url `mirai` compute profile of the launcher.
+    #' @field profile `mirai` compute profile of the launcher.
     profile = function() {
       .subset2(private, ".profile")
     },
@@ -598,82 +606,31 @@ crew_class_launcher <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Update the `daemons`-related columns of the internal
-    #'   `workers` data frame.
+    #' @description Update worker metadata and terminate lost workers.
     #' @return `NULL` (invisibly).
-    #' @param daemons `mirai` daemons matrix. For testing only. Users
-    #'   should not set this.
-    tally = function(daemons = NULL) {
-      daemons <- daemons %|||% daemons_info(
-        name = private$.name,
-        seconds_interval = private$.seconds_interval %|||% 0.5,
-        seconds_timeout = private$.seconds_timeout %|||% 60
-      )
-      private$.workers$online <- as.logical(daemons[, "online"])
-      private$.workers$discovered <- as.logical(daemons[, "instance"] > 0L)
-      private$.workers$assigned <- as.integer(daemons[, "assigned"])
-      private$.workers$complete <- as.integer(daemons[, "complete"])
+    #' @param status A `mirai` status list.
+    update = function(status) {
+      instances <- private$.instances
+      id <- instances$id
+      events <- status$events
+      connected <- events[events > 0L]
+      disconnected <- events[events < 0L]
+      instances$online[connected] <- TRUE
+      instances$online[disconnected] <- FALSE
+      instances$discovered[connected] <- TRUE
+      online <- instances$online
+      discovered <- instances$discovered
+      start <- instances$start
+      booting <- (now() - start) < private$.seconds_launch
+      active <- online | (!discovered & booting)
+      lost <- !active & !discovered
+      mirai_wait(lapply(instances$handle[lost], self$terminate_worker))
+      private$.instances <- instances[active, ]
       invisible()
     },
-    #' @description Get workers that may still be booting up.
-    #' @details A worker is "booting" if its launch time is within the last
-    #'   `seconds_launch` seconds. `seconds_launch` is a configurable grace
-    #'   period when `crew` allows a worker to start up and connect to the
-    #'   `mirai` dispatcher. The `booting()` function does not know about the
-    #'   actual worker connection status, it just knows about launch times,
-    #'   so it may return `TRUE` for workers that have already connected
-    #'   and started doing tasks.
-    booting = function() {
-      bound <- private$.seconds_launch
-      start <- private$.workers$start
-      now <- nanonext::mclock() / 1000
-      launching <- !is.na(start) & ((now - start) < bound)
-    },
-    #' @description Get active workers.
-    #' @details A worker is "active" if its current instance is online and
-    #'   connected, or if it is within its booting time window
-    #'   and has never connected.
-    #'   In other words, "active" means `online | (!discovered & booting)`.
-    #' @return Logical vector with `TRUE` for active workers and `FALSE` for
-    #'   inactive ones.
-    active = function() {
-      booting <- self$booting()
-      online <- private$.workers$online
-      discovered <- private$.workers$discovered
-      online | (!discovered & booting)
-    },
-    #' @description Get done workers.
-    #' @details A worker is "done" if it is launched and inactive.
-    #'   A worker is "launched" if `launch()` was called
-    #'   and the worker websocket has not been rotated since.
-    #' @return Integer index of inactive workers.
-    done = function() {
-      !self$active() & private$.workers$launched
-    },
-    #' @details Rotate websockets at all unlaunched workers and
-    #'   throw an error if a worker launched at least `crashes_error`
-    #'   times in a row without completing all its assigned tasks.
-    #' @return `NULL` (invisibly).
-    rotate = function() {
-      which_done <- which(self$done())
-      for (index in which_done) {
-        socket <- mirai::saisei(
-          i = index,
-          force = FALSE,
-          .compute = private$.name
-        )
-        if (!is.null(socket)) {
-          self$terminate_workers(index = index)
-          private$.workers$socket[index] <- socket
-          private$.workers$launched[index] <- FALSE
-        }
-        private$.check_crashes(index)
-      }
-    },
     #' @description Launch a worker.
-    #' @return `NULL` (invisibly).
+    #' @return Handle of the launched worker.
     launch = function() {
-      # self$forward(index = index, condition = "error") # TODO: refactor forwarding and asynchronous launches
       launcher <- private$.name
       worker <- crew_random_name(n = 4L)
       call <- self$call(worker = worker)
@@ -688,32 +645,26 @@ crew_class_launcher <- R6::R6Class(
         private$.instances,
         handle = list(handle),
         id = private$.id,
-        start = nanonext::mclock() / 1000,
+        start = now(),
         online = FALSE,
         discovered = FALSE
       )
-      invisible()
+      handle
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return `NULL` (invisibly)
-    #' @param demand Number of unresolved tasks.
+    #' @param status A `mirai` status list with worker and task information.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
-    scale = function(demand, throttle = TRUE) {
+    scale = function(status, throttle = TRUE) {
       if (throttle && !private$.throttle$poll()) {
         return(invisible())
       }
-      self$tally()
-      self$rotate()
-      is_unlaunched <- !private$.workers$launched
-      is_backlogged <- private$.workers$assigned > private$.workers$complete
-      walk(x = which(is_unlaunched & is_backlogged), f = self$launch)
-      unlaunched <- which(!private$.workers$launched)
-      active <- nrow(private$.workers) - length(unlaunched)
-      deficit <- min(length(unlaunched), max(0L, demand - active))
-      walk(x = head(x = unlaunched, n = deficit), f = self$launch)
+      self$update(status = status)
+      tasks <- replicate(status$mirai$awaiting, self$launch, simplify = FALSE)
+      mirai_wait(tasks = tasks)
       invisible()
     },
     #' @description Abstract worker launch method.
@@ -747,21 +698,16 @@ crew_class_launcher <- R6::R6Class(
     },
     #' @description Terminate all workers.
     #' @return `NULL` (invisibly).
-    terminate_workers = function(index = NULL) {
+    terminate_workers = function() {
       instances <- .subset2(self, "instances")
+      tasks <- list()
       for (index in seq_len(nrow(instances))) {
-        self$terminate_worker(handle = instances$handle[[index]])
+        handle <- instances$handle[[index]]
+        tasks[[index]] <- self$terminate_worker(handle = handle)
       }
+      mirai_wait(tasks = tasks, condition = "warning")
       private$.instances <- launcher_empty_instances
       invisible()
     }
   )
-)
-
-launcher_empty_instances <- tibble::tibble(
-  handle = list(),
-  id = integer(0L),
-  start = numeric(0L),
-  online = logical(0L),
-  discovered = logical(0L)
 )

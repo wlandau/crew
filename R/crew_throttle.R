@@ -12,11 +12,11 @@
 #'   The `poll()` method returns `TRUE` if and only if it was not called
 #'   in the last `seconds_interval` seconds.
 #' @examples
-#' throttle <- crew_throttle(seconds_interval = 0.5)
+#' throttle <- crew_throttle(seconds_interval = 1)
 #' throttle$poll()
 #' throttle$poll()
 crew_throttle <- function(
-  seconds_interval = 0.5
+  seconds_interval = 1
 ) {
   throttle <- crew_class_throttle$new(seconds_interval = seconds_interval)
   throttle$validate()
@@ -29,7 +29,7 @@ crew_throttle <- function(
 #' @description `R6` class for throttle configuration.
 #' @details See [crew_throttle()].
 #' @examples
-#' throttle <- crew_throttle(seconds_interval = 0.5)
+#' throttle <- crew_throttle(seconds_interval = 1)
 #' throttle$poll()
 #' throttle$poll()
 crew_class_throttle <- R6::R6Class(
@@ -57,7 +57,7 @@ crew_class_throttle <- R6::R6Class(
     #' @return An `R6` object with throttle configuration.
     #' @param seconds_interval Throttling interval in seconds.
     #' @examples
-    #' throttle <- crew_throttle(seconds_interval = 0.5)
+    #' throttle <- crew_throttle(seconds_interval = 1)
     #' throttle$poll()
     #' throttle$poll()
     initialize = function(

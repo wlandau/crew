@@ -10,7 +10,7 @@
 See \code{\link[=crew_throttle]{crew_throttle()}}.
 }
 \examples{
-throttle <- crew_throttle(seconds_interval = 0.5)
+throttle <- crew_throttle(seconds_interval = 1)
 throttle$poll()
 throttle$poll()
 
@@ -18,7 +18,7 @@ throttle$poll()
 ## Method `crew_class_throttle$new`
 ## ------------------------------------------------
 
-throttle <- crew_throttle(seconds_interval = 0.5)
+throttle <- crew_throttle(seconds_interval = 1)
 throttle$poll()
 throttle$poll()
 }
@@ -69,7 +69,7 @@ An \code{R6} object with throttle configuration.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{throttle <- crew_throttle(seconds_interval = 0.5)
+\preformatted{throttle <- crew_throttle(seconds_interval = 1)
 throttle$poll()
 throttle$poll()
 }

@@ -823,7 +823,7 @@ crew_class_controller <- R6::R6Class(
       algorithm = NULL,
       packages = character(0),
       library = NULL,
-      seconds_interval = 0.5,
+      seconds_interval = 1,
       seconds_timeout = NULL,
       names = NULL,
       save_command = FALSE,
@@ -1209,7 +1209,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     promise = function(
       mode = "one",
-      seconds_interval = 0.1,
+      seconds_interval = 1,
       scale = NULL,
       throttle = NULL,
       controllers = NULL
@@ -1259,7 +1259,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     wait = function(
       mode = "all",
-      seconds_interval = 0.5,
+      seconds_interval = 1,
       seconds_timeout = Inf,
       scale = TRUE,
       throttle = TRUE,

@@ -699,7 +699,7 @@ Apply a single command to multiple inputs.
   algorithm = NULL,
   packages = character(0),
   library = NULL,
-  seconds_interval = 0.5,
+  seconds_interval = 1,
   seconds_timeout = NULL,
   names = NULL,
   save_command = FALSE,
@@ -1018,7 +1018,7 @@ Wait for tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$wait(
   mode = "all",
-  seconds_interval = 0.5,
+  seconds_interval = 1,
   seconds_timeout = Inf,
   scale = TRUE,
   throttle = TRUE,

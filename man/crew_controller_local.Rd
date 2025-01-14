@@ -12,7 +12,7 @@ crew_controller_local(
   tls = crew::crew_tls(),
   tls_enable = NULL,
   tls_config = NULL,
-  seconds_interval = 0.5,
+  seconds_interval = 1,
   seconds_timeout = 60,
   seconds_launch = 30,
   seconds_idle = 300,

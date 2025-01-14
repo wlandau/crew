@@ -25,7 +25,7 @@
 crew_launcher_local <- function(
   name = NULL,
   workers = 1L,
-  seconds_interval = 0.5,
+  seconds_interval = 1,
   seconds_timeout = 60,
   seconds_launch = 30,
   seconds_idle = Inf,

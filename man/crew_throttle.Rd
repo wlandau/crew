@@ -4,7 +4,7 @@
 \alias{crew_throttle}
 \title{Create a stateful throttling object.}
 \usage{
-crew_throttle(seconds_interval = 0.5)
+crew_throttle(seconds_interval = 1)
 }
 \arguments{
 \item{seconds_interval}{Positive numeric of length 1, throttling interval.
@@ -25,7 +25,7 @@ only happen every \code{seconds_interval} seconds. This helps avoid
 overburdening the \code{mirai} dispatcher and other resources.
 }
 \examples{
-throttle <- crew_throttle(seconds_interval = 0.5)
+throttle <- crew_throttle(seconds_interval = 1)
 throttle$poll()
 throttle$poll()
 }

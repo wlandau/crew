@@ -731,7 +731,7 @@ and return the results of all tasks.
   algorithm = NULL,
   packages = character(0),
   library = NULL,
-  seconds_interval = 0.5,
+  seconds_interval = 1,
   seconds_timeout = NULL,
   names = NULL,
   save_command = FALSE,
@@ -1011,7 +1011,7 @@ pop or collect one or more tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$promise(
   mode = "one",
-  seconds_interval = 0.1,
+  seconds_interval = 1,
   scale = NULL,
   throttle = NULL,
   controllers = NULL
@@ -1092,7 +1092,7 @@ Wait for tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$wait(
   mode = "all",
-  seconds_interval = 0.5,
+  seconds_interval = 1,
   seconds_timeout = Inf,
   scale = TRUE,
   throttle = TRUE,

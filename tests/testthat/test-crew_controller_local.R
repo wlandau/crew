@@ -326,6 +326,80 @@ crew_test("crew_controller_local() resource usage metrics with stdout", {
   expect_equal(unique(data$status), 0L)
 })
 
+crew_test("joined logs", {
+  skip_on_cran()
+  skip_on_covr()
+  skip_on_os("windows")
+  dir <- tempfile()
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 60,
+    options_local = crew_options_local(
+      log_directory = dir,
+      log_join = TRUE
+    )
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+    unlink(dir, recursive = TRUE)
+  })
+  x$start()
+  x$push(print("this-print"))
+  x$push(message("this-message"))
+  x$push(warning("this-warning"))
+  x$push(stop("this-stop"))
+  x$wait(mode = "all")
+  Sys.sleep(0.25)
+  dir <- x$launcher$options_local$log_directory
+  logs <- list.files(dir, full.names = TRUE)
+  expect_equal(length(logs), 1L)
+  lines <- readLines(logs)
+  expect_true(any(grepl("this-print", lines, fixed = TRUE)))
+  expect_true(any(grepl("this-message", lines, fixed = TRUE)))
+  expect_true(any(grepl("Warning: this-warning", lines, fixed = TRUE)))
+  expect_true(any(grepl("Error: this-stop", lines, fixed = TRUE)))
+})
+
+crew_test("separate logs", {
+  skip_on_cran()
+  skip_on_covr()
+  skip_on_os("windows")
+  dir <- tempfile()
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 60,
+    options_local = crew_options_local(
+      log_directory = dir,
+      log_join = FALSE
+    )
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+    unlink(dir, recursive = TRUE)
+  })
+  x$start()
+  x$push(print("this-print"))
+  x$push(message("this-message"))
+  x$push(warning("this-warning"))
+  x$push(stop("this-stop"))
+  x$wait(mode = "all")
+  Sys.sleep(0.25)
+  logs <- list.files(dir, full.names = TRUE)
+  expect_equal(length(logs), 2L)
+  stderr <- readLines(logs[1L])
+  stdout <- readLines(logs[2L])
+  expect_true(any(grepl("this-print", stdout, fixed = TRUE)))
+  expect_true(any(grepl("this-message", stderr, fixed = TRUE)))
+  expect_true(any(grepl("Warning: this-warning", stderr, fixed = TRUE)))
+  expect_true(any(grepl("Error: this-stop", stderr, fixed = TRUE)))
+})
+
 crew_test("deprecate seconds_exit", {
   expect_warning(
     x <- crew_controller_local(

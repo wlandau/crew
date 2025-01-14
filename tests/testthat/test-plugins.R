@@ -9,7 +9,7 @@ crew_test("custom launcher", {
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,
     public = list(
-      launch_worker = function(call, name, launcher, worker, instance) {
+      launch_worker = function(call, name, launcher, worker) {
         bin <- if_any(
           tolower(Sys.info()[["sysname"]]) == "windows",
           "R.exe",
@@ -43,8 +43,6 @@ crew_test("custom launcher", {
     crashes_error = 5L
   ) {
     client <- crew::crew_client(
-      name = name,
-      workers = workers,
       host = host,
       port = port,
       tls = tls,
@@ -53,6 +51,7 @@ crew_test("custom launcher", {
     )
     launcher <- custom_launcher_class$new(
       name = name,
+      workers = workers,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout,
       seconds_launch = seconds_launch,
@@ -67,10 +66,7 @@ crew_test("custom launcher", {
       crashes_error = crashes_error,
       tls = tls
     )
-    controller <- crew::crew_controller(
-      client = client,
-      launcher = launcher
-    )
+    controller <- crew::crew_controller(client = client, launcher = launcher)
     controller$validate()
     controller
   }
@@ -85,7 +81,7 @@ crew_test("custom launcher", {
   controller$push(name = "pid", command = ps::ps_pid())
   controller$wait(seconds_timeout = 10, seconds_interval = 0.5)
   out <- controller$pop()$result[[1]]
-  handle <- controller$launcher$workers$handle[[1]]
+  handle <- controller$launcher$instances$handle[[1]]
   exp <- handle$get_pid()
   expect_equal(out, exp)
   expect_true(handle$is_alive())
@@ -96,10 +92,6 @@ crew_test("custom launcher", {
     seconds_timeout = 5
   )
   expect_false(handle$is_alive())
-  controller$launcher$rotate()
-  controller$launcher$tally()
-  out <- controller$launcher$summary()
-  expect_equal(out$launches, 1L)
   controller$terminate()
 })
 

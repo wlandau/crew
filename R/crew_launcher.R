@@ -196,13 +196,11 @@ crew_class_launcher <- R6::R6Class(
     .r_arguments = NULL,
     .options_metrics = NULL,
     .url = NULL,
+    .name = NULL,
     .log = NULL,
     .id = NULL,
     .async = NULL,
-    .throttle = NULL,
-    .name = function() {
-      basename(private$.url)
-    }
+    .throttle = NULL
   ),
   active = list(
     #' @field See [crew_launcher()].
@@ -274,6 +272,10 @@ crew_class_launcher <- R6::R6Class(
     url = function() {
       .subset2(private, ".url")
     },
+    #' @field name Name of the launcher.
+    name = function() {
+      .subset2(private, ".name")
+    },
     #' @field log Data frame of information on relevant worker launches.
     log = function() {
       .subset2(private, ".log")
@@ -327,6 +329,7 @@ crew_class_launcher <- R6::R6Class(
     #' client$terminate()
     #' }
     initialize = function(
+      name = NULL,
       workers = NULL,
       seconds_interval = NULL,
       seconds_timeout = NULL,
@@ -562,11 +565,6 @@ crew_class_launcher <- R6::R6Class(
       if (using_async) {
         self$wait()
         private$.async$terminate()
-        lapply(
-          X = seq_len(nrow(private$.workers)),
-          FUN = self$forward,
-          condition = "error"
-        )
       }
       if (!is.null(private$.throttle)) {
         private$.throttle$reset()
@@ -667,75 +665,6 @@ crew_class_launcher <- R6::R6Class(
         online = FALSE,
         discovered = FALSE
       )
-      invisible()
-    },
-    #' @description Forward an asynchronous launch/termination error condition
-    #'   of a worker.
-    #' @return Throw an error, throw a warning, or return a character string,
-    #'   depending on the `condition` argument.
-    #' @param index Integer of length 1, index of the worker to inspect.
-    #' @param condition Character of length 1 indicating what to do
-    #'   with an error if found. `"error"` to throw an error,
-    #'   `"warning"` to throw a warning,
-    #'   `"message"` to print a message,
-    #'   and `"character"` to return a character vector of specific
-    #'   task-level error messages.
-    #'   The return value is `NULL` if no error is found.
-    forward = function(index, condition = "error") {
-      launch <- mirai_error(private$.workers$handle[[index]])
-      termination <- mirai_error(private$.workers$termination[[index]])
-      if (is.null(launch) && is.null(termination)) {
-        return(NULL)
-      }
-      message_launch <- if_any(
-        is.null(launch),
-        NULL,
-        sprintf("Worker %s launch: %s", index, launch)
-      )
-      message_termination <- if_any(
-        is.null(termination),
-        NULL,
-        sprintf("Worker %s termination: %s", index, termination)
-      )
-      message <- paste0(
-        "Error asynchronously launching and/or terminating a worker. ",
-        "Run the errors() method of the launcher ",
-        "to see all the error messages. ",
-        "To troubleshoot, it may be helpful to rerun with async disabled ",
-        "using processes = NULL in the launcher.\n",
-        paste(c(message_launch, message_termination), collapse = "\n")
-      )
-      switch(
-        condition,
-        error = crew_error(message = message),
-        warning = crew_warning(message = message),
-        message = crew_message(message = message),
-        character = return(c(message_launch, message_termination))
-      )
-      invisible()
-    },
-    #' @description Collect and return the most recent error messages
-    #'   from asynchronous worker launching and termination.
-    #' @return Character vector of all the most recent error messages
-    #'   from asynchronous worker launching and termination. `NULL`
-    #'   if there are no errors.
-    errors = function() {
-      out <- lapply(
-        X = seq_len(nrow(private$.workers)),
-        FUN = self$forward,
-        condition = "character"
-      )
-      unlist(out) %||% NULL
-    },
-    #' @description Wait for any local asynchronous launch or termination
-    #'   tasks to complete.
-    #' @details Only relevant if `processes` is a positive integer.
-    #' @return `NULL` (invisibly).
-    wait = function() {
-      if (!is.null(private$.processes)) {
-        lapply(X = private$.workers$handle, FUN = mirai::call_mirai_)
-        lapply(X = private$.workers$termination, FUN = mirai::call_mirai_)
-      }
       invisible()
     },
     #' @description Auto-scale workers out to meet the demand of tasks.

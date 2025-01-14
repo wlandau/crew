@@ -18,8 +18,7 @@ crew_client(
 )
 }
 \arguments{
-\item{name}{Name of the client object. If \code{NULL}, a name is automatically
-generated.}
+\item{name}{Deprecated on 2025-01-14 (\code{crew} version 0.10.2.9002).}
 
 \item{workers}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 

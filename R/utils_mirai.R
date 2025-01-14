@@ -1,8 +1,8 @@
-mirai_status <- function(name, seconds_interval, seconds_timeout) {
+mirai_status <- function(profile, seconds_interval, seconds_timeout) {
   envir <- new.env(parent = emptyenv())
   crew_retry(
     fun = ~{
-      envir$status <- mirai::status(.compute = name)
+      envir$status <- mirai::status(.compute = profile)
       envir$valid <- is.list(envir$status)
       envir$valid
     },
@@ -12,12 +12,12 @@ mirai_status <- function(name, seconds_interval, seconds_timeout) {
   )
   status <- .subset2(envir, "status")
   valid <- .subset2(envir, "valid")
-  if_any(valid, status, mirai_status_error(status, name))
+  if_any(valid, status, mirai_status_error(status, profile))
 }
 
-mirai_status_error <- function(status, name) {
+mirai_status_error <- function(status, profile) {
   message <- sprintf("'errorValue' int %s\n", nanonext::nng_error(status))
-  pid <- mirai::nextget("pid", .compute = name)
+  pid <- mirai::nextget("pid", .compute = profile)
   exists <- !is.null(pid) &&
     !inherits(
       try(handle <- ps::ps_handle(pid = pid), silent = TRUE),

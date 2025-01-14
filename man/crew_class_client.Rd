@@ -36,8 +36,6 @@ Other client:
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{name}}{See \code{\link[=crew_client]{crew_client()}}.}
-
 \item{\code{host}}{See \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{port}}{See \code{\link[=crew_client]{crew_client()}}.}
@@ -52,6 +50,10 @@ Other client:
 condition variable.}
 
 \item{\code{started}}{Whether the client is started.}
+
+\item{\code{url}}{Client websocket URL.}
+
+\item{\code{profile}}{Compute profile of the client.}
 
 \item{\code{client}}{Process ID of the local process running the client.}
 
@@ -68,8 +70,7 @@ condition variable.}
 \item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
 \item \href{#method-crew_class_client-condition}{\code{crew_class_client$condition()}}
 \item \href{#method-crew_class_client-resolved}{\code{crew_class_client$resolved()}}
-\item \href{#method-crew_class_client-summary}{\code{crew_class_client$summary()}}
-\item \href{#method-crew_class_client-url}{\code{crew_class_client$url()}}
+\item \href{#method-crew_class_client-status}{\code{crew_class_client$status()}}
 \item \href{#method-crew_class_client-pids}{\code{crew_class_client$pids()}}
 }
 }
@@ -80,7 +81,6 @@ condition variable.}
 \code{mirai} client constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_client$new(
-  name = NULL,
   host = NULL,
   port = NULL,
   tls = NULL,
@@ -93,8 +93,6 @@ condition variable.}
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
 \item{\code{host}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{port}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
@@ -196,37 +194,23 @@ The value of the \code{nanonext} condition variable.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-summary"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-summary}{}}}
-\subsection{Method \code{summary()}}{
-Show an informative worker log.
+\if{html}{\out{<a id="method-crew_class_client-status"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-status}{}}}
+\subsection{Method \code{status()}}{
+Internal function:
+return the \code{mirai} status of the compute profile.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$summary()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$status()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Should only be called by the launcher, never by the user.
+The returned \code{events} field changes on every call and must be
+interpreted by the launcher before it vanishes.
 }
 
 \subsection{Returns}{
-A \code{tibble} with one row and the following columns:
-\itemize{
-\item \code{awaiting}: number of tasks waiting to start.
-\item \code{executing}: number of tasks currently running on workers.
-\item \code{completed}: number of tasks completed.
-\item \code{connections}: number of workers connected to the client.
-\item \code{url}: websocket URL of the client.
-}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-url"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-url}{}}}
-\subsection{Method \code{url()}}{
-Return the client URL.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$url()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Character string, client URL. Returns \code{NULL} if the
-client has not started or has since terminated.
+A list with status information.
 }
 }
 \if{html}{\out{<hr>}}

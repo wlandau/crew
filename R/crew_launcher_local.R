@@ -23,6 +23,7 @@
 #' client$terminate()
 #' }
 crew_launcher_local <- function(
+  name = NULL,
   workers = 1L,
   seconds_interval = 0.5,
   seconds_timeout = 60,
@@ -82,6 +83,7 @@ crew_launcher_local <- function(
   options_local$log_join <- local_log_join %|||%
     options_local$log_join
   launcher <- crew_class_launcher_local$new(
+    name = name,
     workers = workers,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
@@ -163,6 +165,7 @@ crew_class_launcher_local <- R6::R6Class(
   public = list(
     #' @description Local launcher constructor.
     #' @return An `R6` object with the local launcher.
+    #' @param name See [crew_launcher()].
     #' @param workers See [crew_launcher()].
     #' @param seconds_interval See [crew_launcher()].
     #' @param seconds_timeout See [crew_launcher()].
@@ -195,6 +198,7 @@ crew_class_launcher_local <- R6::R6Class(
     #' client$terminate()
     #' }
     initialize = function(
+      name = NULL,
       workers = NULL,
       seconds_interval = NULL,
       seconds_timeout = NULL,
@@ -216,6 +220,7 @@ crew_class_launcher_local <- R6::R6Class(
       options_local = NULL
     ) {
       super$initialize(
+        name = name,
         workers = workers,
         seconds_interval = seconds_interval,
         seconds_timeout = seconds_timeout,

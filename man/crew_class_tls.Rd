@@ -124,13 +124,13 @@ TLS credentials for the \code{crew} client.
 \subsection{Method \code{worker()}}{
 TLS credentials for \code{crew} workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$worker(name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$worker(profile)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character of length 1 with the \code{mirai} compute profile.}
+\item{\code{profile}}{Character of length 1 with the \code{mirai} compute profile.}
 }
 \if{html}{\out{</div>}}
 }

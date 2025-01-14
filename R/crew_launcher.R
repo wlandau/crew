@@ -7,6 +7,8 @@
 #'   [crew_launcher_local()].
 #' @inheritParams crew_client
 #' @inheritParams crew_worker
+#' @param name Character string, name of the launcher. If the name is
+#'   `NULL`, then a name is automatically generated when the launcher starts.
 #' @param workers Maximum number of workers to run concurrently
 #'   when auto-scaling, excluding task retries and manual calls to `launch()`.
 #'   Special workers allocated for task retries
@@ -79,7 +81,7 @@
 #' client <- crew_client()
 #' client$start()
 #' launcher <- crew_launcher_local()
-#' launcher$start(url = client$url())
+#' launcher$start(url = client$url)
 #' launcher$launch(index = 1L)
 #' task <- mirai::mirai("result", .compute = client$name)
 #' mirai::call_mirai_(task)
@@ -87,6 +89,7 @@
 #' client$terminate()
 #' }
 crew_launcher <- function(
+  name = NULL,
   workers = 1L,
   seconds_interval = 0.5,
   seconds_timeout = 60,
@@ -136,6 +139,7 @@ crew_launcher <- function(
     value = launch_max
   )
   crew_class_launcher$new(
+    name = as.character(name),
     workers = as.integer(workers),
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
@@ -166,7 +170,7 @@ crew_launcher <- function(
 #' client <- crew_client()
 #' client$start()
 #' launcher <- crew_launcher_local(workers = 1L)
-#' launcher$start(url = client$url())
+#' launcher$start(url = client$url)
 #' launcher$launch(n = 1L)
 #' m <- mirai::mirai("result", .compute = client$name)
 #' Sys.sleep(0.25)
@@ -178,6 +182,7 @@ crew_class_launcher <- R6::R6Class(
   cloneable = FALSE,
   portable = TRUE,
   private = list(
+    .name = NULL,
     .workers = NULL,
     .seconds_interval = NULL,
     .seconds_timeout = NULL,
@@ -196,13 +201,17 @@ crew_class_launcher <- R6::R6Class(
     .r_arguments = NULL,
     .options_metrics = NULL,
     .url = NULL,
-    .name = NULL,
-    .log = NULL,
+    .profile = NULL,
+    .instances = NULL,
     .id = NULL,
     .async = NULL,
     .throttle = NULL
   ),
   active = list(
+    #' @field See [crew_launcher()].
+    name = function() {
+      .subset2(private, ".name")
+    },
     #' @field See [crew_launcher()].
     workers = function() {
       .subset2(private, ".workers")
@@ -272,13 +281,13 @@ crew_class_launcher <- R6::R6Class(
     url = function() {
       .subset2(private, ".url")
     },
-    #' @field name Name of the launcher.
-    name = function() {
-      .subset2(private, ".name")
+    #' @field url `mirai` compute profile of the launcher.
+    profile = function() {
+      .subset2(private, ".profile")
     },
-    #' @field log Data frame of information on relevant worker launches.
-    log = function() {
-      .subset2(private, ".log")
+    #' @field instances Data frame of worker instance information.
+    instances = function() {
+      .subset2(private, ".instances")
     },
     #' @field id Integer worker ID from the last call to `settings()`.
     id = function() {
@@ -297,6 +306,7 @@ crew_class_launcher <- R6::R6Class(
   public = list(
     #' @description Launcher constructor.
     #' @return An `R6` object with the launcher.
+    #' @param name See [crew_launcher()].
     #' @param workers See [crew_launcher()].
     #' @param seconds_interval See [crew_launcher()].
     #' @param seconds_timeout See [crew_launcher()].
@@ -321,7 +331,7 @@ crew_class_launcher <- R6::R6Class(
     #' client <- crew_client()
     #' client$start()
     #' launcher <- crew_launcher_local()
-    #' launcher$start(url = client$url())
+    #' launcher$start(url = client$url)
     #' launcher$launch(n = 1L)
     #' m <- mirai::mirai("result", .compute = client$name)
     #' Sys.sleep(0.25)
@@ -350,6 +360,7 @@ crew_class_launcher <- R6::R6Class(
       r_arguments = NULL,
       options_metrics = NULL
     ) {
+      private$.name <- name
       private$.workers <- workers
       private$.seconds_interval <- seconds_interval
       private$.seconds_timeout <- seconds_timeout
@@ -371,6 +382,18 @@ crew_class_launcher <- R6::R6Class(
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).
     validate = function() {
+      if (!is.null(private$.name)) {
+        crew_assert(
+          private$.name,
+          is.character(.),
+          length(.) == 1L,
+          !anyNA(.),
+          nzchar(.),
+          message = c(
+            "launcher name must be a nonempty non-missing character string"
+          )
+        )
+      }
       crew_assert(
         is.function(self$launch_worker),
         message = "launch_worker() must be a function."
@@ -444,8 +467,8 @@ crew_class_launcher <- R6::R6Class(
             nzchar(.)
           )
         }
-        if (!is.null(private$.log)) {
-          crew_assert(private$.log, is.data.frame(.))
+        if (!is.null(private$.instances)) {
+          crew_assert(private$.instances, is.data.frame(.))
         }
       }
       if (!is.null(private$.r_arguments)) {
@@ -498,8 +521,8 @@ crew_class_launcher <- R6::R6Class(
         walltime = private$.seconds_wall * 1000,
         timerstart = private$.tasks_timers,
         id = private$.id,
-        tls = private$.tls$worker(name = private$.name()),
-        rs = mirai::nextstream(.compute = private$.name())
+        tls = private$.tls$worker(profile = private$.profile),
+        rs = mirai::nextstream(.compute = private$.profile)
       )
     },
     #' @description Create a call to [crew_worker()] to
@@ -523,7 +546,7 @@ crew_class_launcher <- R6::R6Class(
         ),
         env = list(
           settings = self$settings(),
-          launcher = private$.name(),
+          launcher = private$.name,
           worker = worker,
           path = private$.options_metrics$path,
           seconds_interval = private$.options_metrics$seconds_interval %|||% 5
@@ -544,8 +567,10 @@ crew_class_launcher <- R6::R6Class(
       private$.throttle <- crew_throttle(
         seconds_interval = self$seconds_interval
       )
+      private$.name <- private$.name %|||% crew_random_name(n = 4L)
       private$.url <- url
-      private$.log <- tibble::tibble(
+      private$.profile <- basename(url)
+      private$.instances <- tibble::tibble(
         handle = list(),
         id = integer(0L),
         start = numeric(0L),
@@ -559,6 +584,8 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     terminate = function() {
       self$terminate_workers()
+      private$.url <- NULL
+      private$.profile <- NULL
       using_async <- !is.null(private$.async) &&
         private$.async$asynchronous() &&
         private$.async$started()
@@ -647,8 +674,8 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     launch = function() {
       # self$forward(index = index, condition = "error") # TODO: refactor forwarding and asynchronous launches
-      launcher <- private$.name()
-      worker <- crew_random_name()
+      launcher <- private$.name
+      worker <- crew_random_name(n = 4L)
       call <- self$call(worker = worker)
       name <- name_worker(launcher = launcher, worker = worker)
       handle <- self$launch_worker(
@@ -657,8 +684,8 @@ crew_class_launcher <- R6::R6Class(
         launcher = launcher,
         worker = worker
       )
-      private$.log <- tibble::add_row(
-        private$.log,
+      private$.instances <- tibble::add_row(
+        private$.instances,
         handle = list(handle),
         id = private$.id,
         start = nanonext::mclock() / 1000,
@@ -700,37 +727,14 @@ crew_class_launcher <- R6::R6Class(
     #'   This worker index remains the same even when the current instance
     #'   of the worker exits and a new instance launches.
     #'   It is always between 1 and the maximum number of concurrent workers.
-    #' @param instance Character of length 1 to uniquely identify
-    #'   the current instance of the worker a the index in the launcher.
-    launch_worker = function(call, name, launcher, worker, instance) {
-      for (field in list(call, name, launcher, instance)) {
-        crew_assert(
-          field,
-          is.character(.),
-          length(.) == 1L,
-          !anyNA(.),
-          nzchar(.)
-        )
-      }
-      crew_assert(
-        worker,
-        is.numeric(.),
-        length(.) == 1L,
-        !anyNA(.),
-        . > 0L
+    launch_worker = function(call, name, launcher, worker) {
+      list(
+        call = call,
+        name = name,
+        launcher = launcher,
+        worker = worker,
+        abstract = TRUE
       )
-      list(abstract = TRUE)
-    },
-    #' @description Return the number of consecutive times a worker
-    #'   launched without completing all its assigned tasks.
-    #' @return Non-negative integer, number of consecutive times a worker
-    #'   launched without completing all its assigned tasks.
-    #' @param index Non-negative integer, index of the worker pointing
-    #'   to a row of the data frame output of the `summary()` method
-    #'   of the launcher.
-    crashes = function(index) {
-      workers <- .subset2(private, ".workers")
-      .subset(.subset2(workers, "crashes"), index)
     },
     #' @description Abstract worker termination method.
     #' @details Launcher plugins will overwrite this method.
@@ -739,31 +743,25 @@ crew_class_launcher <- R6::R6Class(
     #'   returned by `launch_worker()` which allows the termination
     #'   of the worker.
     terminate_worker = function(handle) {
-      list(abstract = TRUE)
+      list(handle = handle, abstract = TRUE)
     },
-    #' @description Terminate one or more workers.
+    #' @description Terminate all workers.
     #' @return `NULL` (invisibly).
-    #' @param index Integer vector of the indexes of the workers
-    #'   to terminate. If `NULL`, all current workers are terminated.
     terminate_workers = function(index = NULL) {
-      workers <- .subset2(self, "workers")
-      if (is.null(workers)) {
-        return(invisible())
+      instances <- .subset2(self, "instances")
+      for (index in seq_len(nrow(instances))) {
+        self$terminate_worker(handle = instances$handle[[index]])
       }
-      index <- index %|||% seq_len(nrow(workers))
-      for (worker in index) {
-        if (!workers$terminated[worker]) {
-          handle <- workers$handle[[worker]]
-          mirai::call_mirai_(handle)
-          private$.workers$termination[[worker]] <-
-            self$terminate_worker(handle = handle) %|||% crew_null
-        }
-        private$.workers$socket[worker] <- NA_character_
-        private$.workers$start[worker] <- NA_real_
-        private$.workers$terminated[worker] <- TRUE
-        self$forward(index = worker, condition = "warning")
-      }
+      private$.instances <- launcher_empty_instances
       invisible()
     }
   )
+)
+
+launcher_empty_instances <- tibble::tibble(
+  handle = list(),
+  id = integer(0L),
+  start = numeric(0L),
+  online = logical(0L),
+  discovered = logical(0L)
 )

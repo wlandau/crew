@@ -12,7 +12,7 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local(workers = 1L)
-launcher$start(url = client$url())
+launcher$start(url = client$url)
 launcher$launch(n = 1L)
 m <- mirai::mirai("result", .compute = client$name)
 Sys.sleep(0.25)
@@ -28,7 +28,7 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local()
-launcher$start(url = client$url())
+launcher$start(url = client$url)
 launcher$launch(n = 1L)
 m <- mirai::mirai("result", .compute = client$name)
 Sys.sleep(0.25)
@@ -53,12 +53,16 @@ Other launcher:
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{See}}{\code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{See}}{\code{\link[=crew_launcher]{crew_launcher()}}.}
 }
 \if{html}{\out{</div>}}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
+\item{\code{See}}{\code{\link[=crew_launcher]{crew_launcher()}}.}
+
 \item{\code{See}}{\code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
@@ -94,9 +98,9 @@ asynchronously.}
 
 \item{\code{url}}{Websocket URL for worker connections.}
 
-\item{\code{name}}{Name of the launcher.}
+\item{\code{url}}{\code{mirai} compute profile of the launcher.}
 
-\item{\code{log}}{Data frame of information on relevant worker launches.}
+\item{\code{instances}}{Data frame of worker instance information.}
 
 \item{\code{id}}{Integer worker ID from the last call to \code{settings()}.}
 
@@ -124,7 +128,6 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
-\item \href{#method-crew_class_launcher-crashes}{\code{crew_class_launcher$crashes()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
 }
@@ -162,6 +165,8 @@ Launcher constructor.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
 \item{\code{workers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
@@ -211,7 +216,7 @@ An \code{R6} object with the launcher.
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local()
-launcher$start(url = client$url())
+launcher$start(url = client$url)
 launcher$launch(n = 1L)
 m <- mirai::mirai("result", .compute = client$name)
 Sys.sleep(0.25)
@@ -458,7 +463,7 @@ overburdening the \code{mirai} dispatcher and other resources.}
 \subsection{Method \code{launch_worker()}}{
 Abstract worker launch method.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_worker(call, name, launcher, worker, instance)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_worker(call, name, launcher, worker)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -475,9 +480,6 @@ Abstract worker launch method.
 This worker index remains the same even when the current instance
 of the worker exits and a new instance launches.
 It is always between 1 and the maximum number of concurrent workers.}
-
-\item{\code{instance}}{Character of length 1 to uniquely identify
-the current instance of the worker a the index in the launcher.}
 }
 \if{html}{\out{</div>}}
 }
@@ -487,30 +489,6 @@ Launcher plugins will overwrite this method.
 
 \subsection{Returns}{
 A handle to mock the worker launch.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-crashes"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-crashes}{}}}
-\subsection{Method \code{crashes()}}{
-Return the number of consecutive times a worker
-launched without completing all its assigned tasks.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$crashes(index)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{index}}{Non-negative integer, index of the worker pointing
-to a row of the data frame output of the \code{summary()} method
-of the launcher.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Non-negative integer, number of consecutive times a worker
-launched without completing all its assigned tasks.
 }
 }
 \if{html}{\out{<hr>}}
@@ -543,19 +521,11 @@ A handle to mock worker termination.
 \if{html}{\out{<a id="method-crew_class_launcher-terminate_workers"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate_workers}{}}}
 \subsection{Method \code{terminate_workers()}}{
-Terminate one or more workers.
+Terminate all workers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate_workers(index = NULL)}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{index}}{Integer vector of the indexes of the workers
-to terminate. If \code{NULL}, all current workers are terminated.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

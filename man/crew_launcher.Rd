@@ -5,6 +5,7 @@
 \title{Create an abstract launcher.}
 \usage{
 crew_launcher(
+  name = NULL,
   workers = 1L,
   seconds_interval = 0.5,
   seconds_timeout = 60,
@@ -27,6 +28,9 @@ crew_launcher(
 )
 }
 \arguments{
+\item{name}{Character string, name of the launcher. If the name is
+\code{NULL}, then a name is automatically generated when the launcher starts.}
+
 \item{workers}{Maximum number of workers to run concurrently
 when auto-scaling, excluding task retries and manual calls to \code{launch()}.
 Special workers allocated for task retries
@@ -131,7 +135,7 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local()
-launcher$start(url = client$url())
+launcher$start(url = client$url)
 launcher$launch(index = 1L)
 task <- mirai::mirai("result", .compute = client$name)
 mirai::call_mirai_(task)

@@ -5,6 +5,7 @@
 \title{Create a launcher with local process workers.}
 \usage{
 crew_launcher_local(
+  name = NULL,
   workers = 1L,
   seconds_interval = 0.5,
   seconds_timeout = 60,
@@ -29,6 +30,9 @@ crew_launcher_local(
 )
 }
 \arguments{
+\item{name}{Character string, name of the launcher. If the name is
+\code{NULL}, then a name is automatically generated when the launcher starts.}
+
 \item{workers}{Maximum number of workers to run concurrently
 when auto-scaling, excluding task retries and manual calls to \code{launch()}.
 Special workers allocated for task retries

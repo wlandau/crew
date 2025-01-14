@@ -309,7 +309,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
       self$start()
-      replicate(n, private$.launcher$launch, simplify = FALSE)
+      replicate(n, private$.launcher$launch(), simplify = FALSE)
       invisible()
     },
     #' @description Auto-scale workers out to meet the demand of tasks.

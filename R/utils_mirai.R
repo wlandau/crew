@@ -88,9 +88,9 @@ mirai_wait <- function(tasks, condition = "error") {
   for (task in tasks) {
     if (inherits(task, "mirai")) {
       message <- .subset2(task, "data")
-      if (!is.null(message)) {
+      if (mirai::is_mirai_error(message)) {
         message <- paste(
-          "Error asynchronously launching and/or terminating a worker:",
+          "Error asynchronously launching or terminating a worker:",
           as.character(message)
         )
         switch(

@@ -11,7 +11,7 @@ crew_test("crew_controller_local()", {
     crew_test_sleep()
   })
   expect_silent(x$validate())
-  expect_null(x$client$started)
+  expect_false(x$client$started)
   expect_false(x$started())
   expect_null(x$summary())
   expect_null(x$autoscaling)
@@ -35,7 +35,6 @@ crew_test("crew_controller_local()", {
     sort(
       c(
         "controller",
-        "worker",
         "tasks",
         "seconds",
         "errors",
@@ -51,7 +50,7 @@ crew_test("crew_controller_local()", {
   expect_equal(x$pushed, 0L)
   expect_equal(x$popped, 0L)
   task <- x$push(
-    command = Sys.getenv("CREW_INSTANCE"),
+    command = Sys.getenv("CREW_WORKER"),
     name = "task",
     save_command = TRUE
   )
@@ -80,11 +79,15 @@ crew_test("crew_controller_local()", {
   expect_equal(x$summary()$tasks, 1L)
   expect_equal(x$summary()$errors, 0L)
   expect_equal(x$summary()$warnings, 0L)
+  
+  stop("resume refactoring here")
+  
+  
   instance <- parse_instance(x$client$summary()$socket)
   expect_equal(out$name, "task")
-  expect_equal(out$command, "Sys.getenv(\"CREW_INSTANCE\")")
+  expect_equal(out$command, "Sys.getenv(\"CREW_WORKER\")")
   expect_equal(out$result[[1]], instance)
-  expect_false(any(instance == Sys.getenv("CREW_INSTANCE")))
+  expect_false(any(instance == Sys.getenv("CREW_WORKER")))
   expect_true(is.numeric(out$seconds))
   expect_false(anyNA(out$seconds))
   expect_true(out$seconds >= 0)

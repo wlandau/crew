@@ -81,19 +81,17 @@ crew_controller_local <- function(
   options_local$log_join <- local_log_join %|||%
     options_local$log_join
   client <- crew_client(
-    name = name,
-    workers = workers,
     host = host,
     port = port,
     tls = tls,
     tls_enable = tls_enable,
     tls_config = tls_config,
     seconds_interval = seconds_interval,
-    seconds_timeout = seconds_timeout,
-    retry_tasks = retry_tasks
+    seconds_timeout = seconds_timeout
   )
   launcher <- crew_launcher_local(
     name = name,
+    workers = workers,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
     seconds_launch = seconds_launch,

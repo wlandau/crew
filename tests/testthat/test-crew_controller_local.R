@@ -149,7 +149,7 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
     crew_test_sleep()
   })
   expect_silent(x$validate())
-  expect_null(x$client$started)
+  expect_false(x$client$started)
   x$start()
   expect_equal(x$summary()$tasks, 0L)
   expect_equal(x$summary()$errors, 0L)
@@ -192,7 +192,7 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
   expect_true(anyNA(out$warnings))
   expect_true(anyNA(out$trace))
   # cleanup
-  handle <- x$launcher$workers$handle[[1]]
+  handle <- x$launcher$instances$handle[[1]]
   x$terminate()
   expect_false(x$client$started)
   crew_retry(

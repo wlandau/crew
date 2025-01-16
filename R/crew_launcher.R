@@ -668,6 +668,7 @@ crew_class_launcher <- R6::R6Class(
         online = FALSE,
         discovered = FALSE
       )
+      invisible()
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return `NULL` (invisibly)
@@ -720,7 +721,7 @@ crew_class_launcher <- R6::R6Class(
         handle <- mirai_resolve(instances$handle[[index]])
         tasks[[index]] <- self$terminate_worker(handle = handle)
       }
-      mirai_wait_exit(tasks = tasks)
+      mirai_wait_terminate(tasks = tasks)
       private$.instances <- launcher_empty_instances
       invisible()
     }

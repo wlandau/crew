@@ -113,6 +113,7 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 \item \href{#method-crew_class_launcher-update}{\code{crew_class_launcher$update()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
+\item \href{#method-crew_class_launcher-poll}{\code{crew_class_launcher$poll()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
@@ -340,12 +341,26 @@ Handle of the launched worker.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-poll"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-poll}{}}}
+\subsection{Method \code{poll()}}{
+Poll the throttle
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$poll()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} to run whatever work comes next, \code{FALSE} to skip
+until the appropriate time.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-scale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-scale}{}}}
 \subsection{Method \code{scale()}}{
 Auto-scale workers out to meet the demand of tasks.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$scale(status, throttle = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$scale(status, throttle = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -353,10 +368,8 @@ Auto-scale workers out to meet the demand of tasks.
 \describe{
 \item{\code{status}}{A \code{mirai} status list with worker and task information.}
 
-\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
-every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+\item{\code{throttle}}{Deprecated, only used in the controller
+as of 2025-01-16 (\code{crew} version 0.10.2.9003).}
 }
 \if{html}{\out{</div>}}
 }

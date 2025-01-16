@@ -332,6 +332,9 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(throttle = TRUE, controllers = NULL) {
+      if (throttle && !private$.launcher$poll()) {
+        return(invisible())
+      }
       status <- private$.client$status()
       private$.launcher$scale(status = status, throttle = throttle)
       invisible()

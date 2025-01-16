@@ -599,6 +599,9 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param status A `mirai` status list.
     update = function(status) {
+      
+      if (length(status$events)) print(status$events)
+      
       instances <- private$.instances
       id <- instances$id
       events <- as.integer(status$events)
@@ -640,17 +643,18 @@ crew_class_launcher <- R6::R6Class(
       )
       handle
     },
+    #' @description Poll the throttle
+    #' @return `TRUE` to run whatever work comes next, `FALSE` to skip
+    #'   until the appropriate time.
+    poll = function() {
+      private$.throttle$poll()
+    },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return `NULL` (invisibly)
     #' @param status A `mirai` status list with worker and task information.
-    #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
-    #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
-    scale = function(status, throttle = TRUE) {
-      if (throttle && !private$.throttle$poll()) {
-        return(invisible())
-      }
+    #' @param throttle Deprecated, only used in the controller
+    #'   as of 2025-01-16 (`crew` version 0.10.2.9003).
+    scale = function(status, throttle = NULL) {
       self$update(status = status)
       supply <- nrow(private$.instances)
       demand <- status$mirai["awaiting"] + status$mirai["executing"]

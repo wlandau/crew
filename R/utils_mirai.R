@@ -2,8 +2,9 @@ mirai_status <- function(profile, seconds_interval, seconds_timeout) {
   envir <- new.env(parent = emptyenv())
   crew_retry(
     fun = ~{
-      envir$status <- mirai::status(.compute = profile)
-      envir$valid <- is.list(envir$status)
+      status <- mirai::status(.compute = profile)
+      envir$status <- status
+      envir$valid <- is.list(status)
       envir$valid
     },
     seconds_interval = seconds_interval,
@@ -12,11 +13,6 @@ mirai_status <- function(profile, seconds_interval, seconds_timeout) {
   )
   status <- .subset2(envir, "status")
   valid <- .subset2(envir, "valid")
-  
-  if (length(status$events)) {
-    print(status$events)
-  }
-  
   if_any(valid, status, mirai_status_error(status, profile))
 }
 

@@ -1055,7 +1055,7 @@ crew_class_controller <- R6::R6Class(
       index_delete <- NULL
       for (index in seq(n_tasks)) {
         object <- .subset2(tasks, index)
-        if (!nanonext::unresolved(object)) {
+        if (!nanonext::.unresolved(object)) {
           task <- object
           name <- names(tasks)[index]
           index_delete <- index

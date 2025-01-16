@@ -25,7 +25,7 @@
 #' @importFrom mirai call_mirai_ daemon daemons is_mirai is_mirai_error
 #'   mirai nextcode nextget nextstream status stop_mirai
 #' @importFrom nanonext %~>% cv cv_value mclock msleep nng_error random
-#'   unresolved until_ tls_config
+#'   .unresolved until_ tls_config
 #' @importFrom processx process
 #' @importFrom promises promise
 #' @importFrom ps ps_cmdline ps_handle ps_pid ps_is_running

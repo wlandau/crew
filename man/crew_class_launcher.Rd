@@ -107,13 +107,14 @@ asynchronously.}
 \itemize{
 \item \href{#method-crew_class_launcher-new}{\code{crew_class_launcher$new()}}
 \item \href{#method-crew_class_launcher-validate}{\code{crew_class_launcher$validate()}}
+\item \href{#method-crew_class_launcher-poll}{\code{crew_class_launcher$poll()}}
 \item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
+\item \href{#method-crew_class_launcher-resolve}{\code{crew_class_launcher$resolve()}}
 \item \href{#method-crew_class_launcher-update}{\code{crew_class_launcher$update()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
-\item \href{#method-crew_class_launcher-poll}{\code{crew_class_launcher$poll()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
@@ -231,6 +232,20 @@ Validate the launcher.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-poll"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-poll}{}}}
+\subsection{Method \code{poll()}}{
+Poll the throttle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$poll()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} to run whatever work comes next, \code{FALSE} to skip
+until the appropriate time.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-settings"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-settings}{}}}
 \subsection{Method \code{settings()}}{
@@ -308,10 +323,25 @@ Terminate the whole launcher, including all workers.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-resolve"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-resolve}{}}}
+\subsection{Method \code{resolve()}}{
+Resolve asynchronous worker submissions.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$resolve()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly). Throw an error if there were any
+asynchronous worker submission errors.'
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-update"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-update}{}}}
 \subsection{Method \code{update()}}{
-Update worker metadata and terminate lost workers.
+Update worker metadata, resolve asynchronous
+worker submissions, and terminate lost workers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$update(status)}\if{html}{\out{</div>}}
 }
@@ -338,20 +368,6 @@ Launch a worker.
 
 \subsection{Returns}{
 Handle of the launched worker.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-poll"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-poll}{}}}
-\subsection{Method \code{poll()}}{
-Poll the throttle
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$poll()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{TRUE} to run whatever work comes next, \code{FALSE} to skip
-until the appropriate time.
 }
 }
 \if{html}{\out{<hr>}}

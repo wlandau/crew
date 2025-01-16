@@ -30,7 +30,7 @@ crew_controller_group <- function(...) {
     map_lgl(controllers, inherits, what = "crew_class_controller"),
     message = "Found invalid controllers while creating a controller group."
   )
-  names(controllers) <- map_chr(controllers, ~.x$client$name)
+  names(controllers) <- map_chr(controllers, ~.x$launcher$name)
   walk(
     names(controllers),
     ~crew_assert(
@@ -213,7 +213,7 @@ crew_class_controller_group <- R6::R6Class(
         map_lgl(private$.controllers, ~inherits(.x, "crew_class_controller")),
         message = "All objects in a controller group must be controllers."
       )
-      out <- unname(map_chr(private$.controllers, ~.x$client$name))
+      out <- unname(map_chr(private$.controllers, ~.x$launcher$name))
       exp <- names(private$.controllers)
       crew_assert(identical(out, exp), message = "bad controller names")
       crew_assert(inherits(private$.relay, "crew_class_relay"))

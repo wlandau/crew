@@ -368,7 +368,7 @@ crew_class_launcher <- R6::R6Class(
       r_arguments = NULL,
       options_metrics = NULL
     ) {
-      private$.name <- name
+      private$.name <- name %|||% crew_random_name(n = 4L)
       private$.workers <- workers
       private$.seconds_interval <- seconds_interval
       private$.seconds_timeout <- seconds_timeout
@@ -575,7 +575,6 @@ crew_class_launcher <- R6::R6Class(
       private$.throttle <- crew_throttle(
         seconds_interval = self$seconds_interval
       )
-      private$.name <- private$.name %|||% crew_random_name(n = 4L)
       private$.url <- url
       private$.profile <- basename(url)
       private$.instances <- launcher_empty_instances

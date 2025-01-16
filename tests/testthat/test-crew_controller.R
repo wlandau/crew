@@ -11,7 +11,7 @@ crew_test("warnings and errors", {
     crew_test_sleep()
   })
   expect_silent(x$validate())
-  expect_null(x$client$started)
+  expect_false(x$client$started)
   x$start()
   expect_equal(x$summary()$tasks, 0L)
   expect_equal(x$summary()$errors, 0L)
@@ -32,7 +32,7 @@ crew_test("warnings and errors", {
   expect_equal(out$error, "this is an error")
   expect_equal(out$warnings, "this is a warning")
   expect_false(anyNA(out$trace))
-  handle <- x$launcher$workers$handle[[1]]
+  handle <- x$launcher$instances$handle[[1]]
   x$terminate()
   expect_false(x$client$started)
   crew_retry(
@@ -100,7 +100,6 @@ crew_test("can terminate a lost worker", {
     crew_test_sleep()
   })
   private <- crew_private(x$launcher)
-  private$.workers$launches <- 1L
   bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
   path <- file.path(R.home("bin"), bin)
   call <- "Sys.sleep(300)"
@@ -110,14 +109,15 @@ crew_test("can terminate a lost worker", {
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
-  private$.workers$handle[[1L]] <- handle
-  private$.workers$socket[1L] <- x$client$summary()$socket
-  private$.workers$start[1L] <- - Inf
-  private$.workers$launches[1L] <- 1L
-  private$.workers$launched[1L] <- TRUE
-  private$.workers$terminated[1L] <- FALSE
-  expect_true(handle$is_alive())
-  x$launcher$rotate()
+  private$.instances <- tibble::add_row(
+    private$.instances,
+    handle = list(handle),
+    id = 99L,
+    start = - Inf,
+    online = FALSE,
+    discovered = FALSE
+  )
+  x$scale()
   crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.1,

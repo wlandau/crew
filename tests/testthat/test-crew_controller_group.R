@@ -36,7 +36,7 @@ crew_test("crew_controller_group()", {
   })
   expect_silent(x$validate())
   for (index in seq_len(2)) {
-    expect_null(x$controllers[[index]]$client$started)
+    expect_false(x$controllers[[index]]$client$started)
   }
   expect_false(x$started())
   expect_equal(length(x$pids()), 1L)
@@ -66,7 +66,6 @@ crew_test("crew_controller_group()", {
     sort(
       c(
         "controller",
-        "worker",
         "tasks",
         "seconds",
         "errors",
@@ -104,7 +103,7 @@ crew_test("crew_controller_group()", {
   expect_true(anyNA(out$trace))
   expect_true(anyNA(out$warnings))
   pid_out <- out$result[[1]]
-  pid_exp <- x$controllers[[2]]$launcher$workers$handle[[1]]$get_pid()
+  pid_exp <- x$controllers[[2]]$launcher$instances$handle[[1]]$get_pid()
   expect_equal(pid_out, pid_exp)
   # substitute = FALSE # nolint
   x$push(
@@ -135,10 +134,10 @@ crew_test("crew_controller_group()", {
   expect_true(anyNA(out$trace))
   expect_true(anyNA(out$warnings))
   pid_out <- out$result[[1]]
-  pid_exp <- x$controllers[[1]]$launcher$workers$handle[[1]]$get_pid()
+  pid_exp <- x$controllers[[1]]$launcher$instances$handle[[1]]$get_pid()
   expect_equal(pid_out, pid_exp)
   # cleanup
-  handle <- x$controllers[[2]]$launcher$workers$handle[[1]]
+  handle <- x$controllers[[2]]$launcher$instances$handle[[1]]
   x$terminate()
   expect_false(x$started())
   for (index in seq_len(2)) {
@@ -210,14 +209,14 @@ crew_test("crew_controller_group() select", {
     gc()
     crew_test_sleep()
   })
-  expect_null(a$client$started)
-  expect_null(b$client$started)
+  expect_false(a$client$started)
+  expect_false(b$client$started)
   name <- "b"
   x$start(controllers = name)
-  expect_null(a$client$started)
+  expect_false(a$client$started)
   expect_true(b$client$started)
   x$terminate(controllers = name)
-  expect_null(a$client$started)
+  expect_false(a$client$started)
   expect_false(b$client$started)
 })
 
@@ -241,16 +240,12 @@ crew_test("crew_controller_group() launch method", {
     crew_test_sleep()
   })
   x$start()
-  for (index in seq_len(2)) {
-    handle <- x$controllers[[index]]$launcher$workers$handle[[1L]]
-    expect_true(is_crew_null(handle))
-  }
   expect_silent(x$launch(n = 1L))
   handles <- list(
-    x$controllers[[1L]]$launcher$workers$handle[[1L]],
-    x$controllers[[2L]]$launcher$workers$handle[[1L]]
+    x$controllers[["a"]]$launcher$instances$handle[[1L]],
+    x$controllers[["b"]]$launcher$instances$handle[[1L]]
   )
-  for (index in seq_len(2)) {
+  for (index in seq_len(2L)) {
     crew_retry(
       ~handles[[index]]$is_alive(),
       seconds_interval = 0.1,
@@ -258,7 +253,7 @@ crew_test("crew_controller_group() launch method", {
     )
   }
   x$terminate()
-  for (index in seq_len(2)) {
+  for (index in seq_len(2L)) {
     crew_retry(
       ~!handles[[index]]$is_alive(),
       seconds_interval = 0.1,
@@ -285,11 +280,11 @@ crew_test("crew_controller_group() scale method", {
   a$push(command = "x", scale = FALSE)
   x$scale()
   crew_retry(
-    ~length(a$launcher$workers$handle) > 0L,
+    ~nrow(a$launcher$instances) > 0L,
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
-  handle <- a$launcher$workers$handle[[1L]]
+  handle <- a$launcher$instances$handle[[1L]]
   crew_retry(
     fun = ~handle$is_alive(),
     seconds_interval = 0.1,

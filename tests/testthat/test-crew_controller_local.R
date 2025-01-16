@@ -216,7 +216,7 @@ crew_test("crew_controller_local() launch method", {
   })
   x$start()
   x$launch(n = 1L)
-  handle <- x$launcher$workers$handle[[1]]
+  handle <- x$launcher$instances$handle[[1]]
   crew_retry(
     ~handle$is_alive(),
     seconds_interval = 0.1,

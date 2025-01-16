@@ -228,7 +228,7 @@ crew_test("launcher update() with connects", {
     discovered = c(FALSE, FALSE),
     start = c(Inf, Inf)
   )
-  instances$id <- seq_len(nrow(instances))
+  instances$id <- rev(seq_len(nrow(instances)) + 100L)
   instances$handle <- replicate(nrow(instances), list(), simplify = FALSE)
   instances <- instances[, colnames(launcher_empty_instances)]
   instances <- tibble::as_tibble(instances)
@@ -240,19 +240,26 @@ crew_test("launcher update() with connects", {
   on.exit(launcher$terminate())
   private <- crew_private(launcher)
   private$.instances <- instances
-  launcher$update(status = list(events = c(2L, 3L, 7L)))
-  expect_equal(launcher$instances$online, seq_len(8L) %in% c(2L, 3L, 7L))
-  expect_equal(launcher$instances$discovered, seq_len(8L) %in% c(2L, 3L, 7L))
+  launcher$update(status = list(events = c(102L, 103L, 107L)))
+  expect_equal(
+    launcher$instances$online,
+    instances$id %in% c(102L, 103L, 107L)
+  )
+  expect_equal(
+    launcher$instances$discovered,
+    instances$id %in% c(102L, 103L, 107L)
+  )
 })
 
 crew_test("launcher update() with connects and disconnects", {
   skip_on_cran()
+  set.seed(0L)
   instances <- expand.grid(
     online = c(FALSE, FALSE),
     discovered = c(FALSE, FALSE),
     start = c(Inf, Inf)
   )
-  instances$id <- seq_len(nrow(instances))
+  instances$id <- sample(seq_len(nrow(instances)))
   instances$handle <- replicate(nrow(instances), list(), simplify = FALSE)
   instances <- instances[, colnames(launcher_empty_instances)]
   instances <- tibble::as_tibble(instances)
@@ -265,19 +272,26 @@ crew_test("launcher update() with connects and disconnects", {
   private <- crew_private(launcher)
   private$.instances <- instances
   launcher$update(status = list(events = c(2L, 3L, 7L, -7L)))
-  expect_equal(launcher$instances$id, setdiff(seq_len(8L), 7L))
-  expect_equal(launcher$instances$online, seq_len(7L) %in% c(2L, 3L))
-  expect_equal(launcher$instances$discovered, seq_len(7L) %in% c(2L, 3L))
+  expect_equal(launcher$instances$id, setdiff(instances$id, 7L))
+  expect_equal(
+    launcher$instances$online,
+    launcher$instances$id %in% c(2L, 3L)
+  )
+  expect_equal(
+    launcher$instances$discovered,
+    launcher$instances$id %in% c(2L, 3L)
+  )
 })
 
 crew_test("launcher update() with just disconnects", {
   skip_on_cran()
+  set.seed(0L)
   instances <- expand.grid(
     online = c(TRUE, TRUE),
     discovered = c(TRUE, TRUE),
     start = c(Inf, Inf)
   )
-  instances$id <- seq_len(nrow(instances))
+  instances$id <- sample(seq_len(nrow(instances)))
   instances$handle <- replicate(nrow(instances), list(), simplify = FALSE)
   instances <- instances[, colnames(launcher_empty_instances)]
   instances <- tibble::as_tibble(instances)
@@ -290,7 +304,7 @@ crew_test("launcher update() with just disconnects", {
   private <- crew_private(launcher)
   private$.instances <- instances
   launcher$update(status = list(events = c(-4L, -6L)))
-  expect_equal(launcher$instances$id, setdiff(seq_len(8L), c(4L, 6L)))
+  expect_equal(launcher$instances$id, setdiff(instances$id, c(4L, 6L)))
   expect_equal(launcher$instances$online, rep(TRUE, 6L))
   expect_equal(launcher$instances$discovered, rep(TRUE, 6L))
 })

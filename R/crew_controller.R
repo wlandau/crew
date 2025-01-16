@@ -268,7 +268,7 @@ crew_class_controller <- R6::R6Class(
         frequency = "once"
       )
       .subset2(self, "unresolved")() >=
-        .subset2(.subset2(self, "client"), "workers")
+        .subset2(.subset2(self, "launcher"), "workers")
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
@@ -1278,7 +1278,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop_backlog = function(controllers = NULL) {
-      n <- .subset2(.subset2(self, "client"), "workers") -
+      n <- .subset2(.subset2(self, "launcher"), "workers") -
         .subset2(self, "unresolved")()
       if (n < 1L) {
         return(character(0L))

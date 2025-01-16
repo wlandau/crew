@@ -27,6 +27,6 @@ crew_test("backlog of tasks for transient workers", {
   testthat::expect_equal(length(x$tasks), 200L)
   # All results should now be available.
   results <- unlist(x$collect()$result)
-  testthat::expect_equal(length(unique(results$result)), 2 * n)
+  testthat::expect_equal(length(unique(results)), 2 * n)
   x$terminate()
 })

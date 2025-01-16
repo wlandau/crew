@@ -12,6 +12,11 @@ mirai_status <- function(profile, seconds_interval, seconds_timeout) {
   )
   status <- .subset2(envir, "status")
   valid <- .subset2(envir, "valid")
+  
+  if (length(status$events)) {
+    print(status$events)
+  }
+  
   if_any(valid, status, mirai_status_error(status, profile))
 }
 

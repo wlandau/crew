@@ -599,9 +599,6 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     #' @param status A `mirai` status list.
     update = function(status) {
-      
-      if (length(status$events)) print(status$events)
-      
       instances <- private$.instances
       id <- instances$id
       events <- as.integer(status$events)

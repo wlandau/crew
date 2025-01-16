@@ -260,7 +260,7 @@ crew_class_client <- R6::R6Class(
         if_any(private$.tls$mode == "none", "ws", "wss"),
         private$.host,
         private$.port,
-        private$.profile 
+        private$.profile
       )
       mirai::daemons(
         url = url,

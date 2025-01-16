@@ -43,7 +43,9 @@ crew_controller_local(
 If \code{NULL}, the host defaults to the local IP address.}
 
 \item{port}{TCP port to listen for the workers. If \code{NULL},
-then an available ephemeral port is automatically chosen.}
+then an available ephemeral port is automatically chosen.
+The controllers in a controller group can all share the same port because
+each controller uses a separate websocket with a unique token.}
 
 \item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
 

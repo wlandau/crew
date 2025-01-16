@@ -476,6 +476,17 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = .subset2(.subset2(private, ".client"), "profile")
       )
+      if (!is.null(.subset2(.subset2(private, ".tasks"), name))) {
+        crew_error(
+          message = paste(
+            "crew task name",
+            name,
+            "already found in the task list. Before pushing a task",
+            "of the same name, please wait for it to resolve, then",
+            "use pop() or collect() to remove it from the controller."
+          )
+        )
+      }
       on.exit({
         n <- length(.subset2(self, "tasks")) + 1L
         private$.tasks[[n]] <- task

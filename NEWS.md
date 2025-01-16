@@ -1,6 +1,8 @@
-# crew 0.10.2.9002 (development)
+# crew 0.10.2.9003 (development)
 
 * Avoid partial match in a call to `crew_terminate_process()`.
+* Migrate to `mirai` 2.0.0 (#193).
+* Prohibit duplicated task names in `push()`.
 
 # crew 0.10.2
 

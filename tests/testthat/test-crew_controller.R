@@ -399,55 +399,11 @@ crew_test("map() works with errors and names and command strings", {
   expect_false(anyNA(out$error))
   expect_false(anyNA(out$trace))
   expect_false(anyNA(out$warnings))
-  expect_equal(out$worker, rep(1L, 2L))
   expect_equal(out$launcher, rep(x$launcher$name, 2L))
-  expect_false(anyNA(out$instance))
   sum <- x$summary()
-  expect_equal(sum$worker, 1L)
   expect_equal(sum$tasks, 6L)
   expect_equal(sum$errors, 6L)
   expect_equal(sum$warnings, 6L)
-})
-
-crew_test("map() tasks attributed to correct workers", {
-  skip_on_cran()
-  skip_on_os("windows")
-  x <- crew_controller_local(
-    workers = 4L,
-    seconds_idle = 360
-  )
-  on.exit({
-    x$terminate()
-    rm(x)
-    gc()
-    crew_test_sleep()
-  })
-  x$start()
-  f <- function(x, y) {
-    warning("message")
-    Sys.sleep(0.25)
-    x + y
-  }
-  x$launcher$launch(index = 3L)
-  out <- x$map(
-    command = f(x, y) + a + b,
-    iterate = list(x = 1L, y = 3L, id = "z"),
-    data = list(a = 5L),
-    globals = list(f = f),
-    save_command = TRUE,
-    names = "id",
-    error = "silent",
-    warnings = FALSE
-  )
-  sum <- x$summary()
-  expect_equal(sum$worker, seq_len(4L))
-  expect_equal(sum$tasks, c(0L, 0L, 1L, 0L))
-  expect_equal(
-    sum$seconds > sqrt(.Machine$double.eps),
-    c(FALSE, FALSE, TRUE, FALSE)
-  )
-  expect_equal(sum$errors, c(0L, 0L, 1L, 0L))
-  expect_equal(sum$warnings, c(0L, 0L, 1L, 0L))
 })
 
 crew_test("map() does not need a started controller", {
@@ -658,20 +614,34 @@ crew_test("cancel() named", {
     crew_test_sleep()
   })
   x$start()
-  for (index in seq_len(2)) {
-    x$push(Sys.sleep(1000), name = "x")
-  }
-  for (index in seq_len(2)) {
-    x$push(Sys.sleep(1000), name = "z")
-  }
+  x$push(Sys.sleep(1000), name = "x")
   x$push(Sys.sleep(1000), name = "y")
+  x$push(Sys.sleep(1000), name = "z")
   x$cancel(names = c("x", "z"))
-  for (index in seq_len(4L)) {
+  for (index in seq_len(2L)) {
     x$wait(mode = "one", seconds_timeout = 30)
   }
   tasks <- x$collect()
-  expect_equal(nrow(tasks), 4L)
-  expect_equal(sort(tasks$name), sort(c("x", "x", "z", "z")))
+  expect_equal(nrow(tasks), 2L)
+  expect_equal(sort(tasks$name), sort(c("x", "z")))
   expect_true(all(grepl("operation canceled", tolower(tasks$error))))
   expect_equal(names(x$tasks), "y")
+})
+
+crew_test("handle duplicated names", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(TRUE, name = "x")
+  expect_crew_error(x$push(TRUE, name = "x"))
 })

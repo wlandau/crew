@@ -14,7 +14,7 @@ crew_test("crew_clean()", {
   handle_dispatcher <- x$client$dispatcher
   expect_true(ps::ps_is_running(handle_dispatcher))
   x$launch(n = 1L)
-  handle_worker <- x$launcher$workers$handle[[1]]
+  handle_worker <- x$launcher$instances$handle[[1]]
   crew_retry(
     ~handle_worker$is_alive(),
     seconds_interval = 0.1,

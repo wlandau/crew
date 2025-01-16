@@ -13,7 +13,7 @@ crew_test("workers signal themselves to exit when connection breaks", {
     seconds_timeout = 60
   )
   Sys.sleep(5)
-  worker <- x$launcher$workers$handle[[1L]]
+  worker <- x$launcher$instances$handle[[1L]]
   on.exit(worker$signal(signal = crew_terminate_signal()))
   expect_false(worker$is_alive())
 })

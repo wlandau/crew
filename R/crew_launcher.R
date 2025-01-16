@@ -152,7 +152,6 @@ crew_launcher <- function(
     reset_packages = reset_packages,
     reset_options = reset_options,
     garbage_collection = garbage_collection,
-    crashes_error = crashes_error,
     tls = tls,
     processes = processes,
     r_arguments = r_arguments,
@@ -203,7 +202,6 @@ crew_class_launcher <- R6::R6Class(
     .reset_packages = NULL,
     .reset_options = NULL,
     .garbage_collection = NULL,
-    .crashes_error = NULL,
     .tls = NULL,
     .processes = NULL,
     .r_arguments = NULL,
@@ -381,7 +379,6 @@ crew_class_launcher <- R6::R6Class(
       private$.reset_packages <- reset_packages
       private$.reset_options <- reset_options
       private$.garbage_collection <- garbage_collection
-      private$.crashes_error <- crashes_error
       private$.tls <- tls
       private$.processes <- processes
       private$.r_arguments <- r_arguments

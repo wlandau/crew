@@ -163,6 +163,7 @@ launcher_empty_instances <- tibble::tibble(
   handle = list(),
   id = integer(0L),
   start = numeric(0L),
+  submitted = logical(0L),
   online = logical(0L),
   discovered = logical(0L)
 )
@@ -506,6 +507,12 @@ crew_class_launcher <- R6::R6Class(
       }
       invisible()
     },
+    #' @description Poll the throttle.
+    #' @return `TRUE` to run whatever work comes next, `FALSE` to skip
+    #'   until the appropriate time.
+    poll = function() {
+      private$.throttle$poll()
+    },
     #' @description List of arguments for `mirai::daemon()`.
     #' @return List of arguments for `mirai::daemon()`.
     settings = function() {
@@ -595,10 +602,27 @@ crew_class_launcher <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Update worker metadata and terminate lost workers.
+    #' @description Resolve asynchronous worker submissions.
+    #' @return `NULL` (invisibly). Throw an error if there were any
+    #'   asynchronous worker submission errors.'
+    resolve = function() {
+      unresolved <- which(!private$.instances$submitted)
+      handles <- private$.instances$handle
+      for (index in unresolved) {
+        handle <- .subset2(handles, index)
+        if (mirai_resolved(handle)) {
+          mirai_assert_launch(handle)
+          private$.instances$handle[[index]] <- mirai_resolve(handle)
+          private$.instances$submitted[index] <- TRUE
+        }
+      }
+    },
+    #' @description Update worker metadata, resolve asynchronous
+    #'   worker submissions, and terminate lost workers.
     #' @return `NULL` (invisibly).
     #' @param status A `mirai` status list.
     update = function(status) {
+      self$resolve()
       instances <- private$.instances
       id <- instances$id
       events <- as.integer(status$events)
@@ -613,7 +637,12 @@ crew_class_launcher <- R6::R6Class(
       awaiting <- (now() - start) < private$.seconds_launch
       active <- online | (!discovered & awaiting)
       lost <- !active & !discovered
-      mirai_wait(lapply(instances$handle[lost], self$terminate_worker))
+      mirai_wait_terminate(
+        map(
+          instances$handle[lost],
+          ~self$terminate_worker(mirai_resolve(.x))
+        )
+      )
       private$.instances <- instances[active, ]
       invisible()
     },
@@ -635,16 +664,10 @@ crew_class_launcher <- R6::R6Class(
         handle = list(handle),
         id = private$.id,
         start = now(),
+        submitted = FALSE,
         online = FALSE,
         discovered = FALSE
       )
-      handle
-    },
-    #' @description Poll the throttle
-    #' @return `TRUE` to run whatever work comes next, `FALSE` to skip
-    #'   until the appropriate time.
-    poll = function() {
-      private$.throttle$poll()
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return `NULL` (invisibly)
@@ -656,8 +679,7 @@ crew_class_launcher <- R6::R6Class(
       supply <- nrow(private$.instances)
       demand <- status$mirai["awaiting"] + status$mirai["executing"]
       increment <- min(self$workers, max(0L, demand - supply))
-      tasks <- replicate(increment, self$launch(), simplify = FALSE)
-      mirai_wait(tasks = tasks)
+      replicate(increment, self$launch(), simplify = FALSE)
       invisible()
     },
     #' @description Abstract worker launch method.
@@ -695,10 +717,10 @@ crew_class_launcher <- R6::R6Class(
       instances <- .subset2(self, "instances")
       tasks <- list()
       for (index in seq_len(nrow(instances))) {
-        handle <- instances$handle[[index]]
+        handle <- mirai_resolve(instances$handle[[index]])
         tasks[[index]] <- self$terminate_worker(handle = handle)
       }
-      mirai_wait(tasks = tasks, condition = "warning")
+      mirai_wait_exit(tasks = tasks)
       private$.instances <- launcher_empty_instances
       invisible()
     }

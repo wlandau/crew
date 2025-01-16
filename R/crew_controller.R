@@ -906,7 +906,7 @@ crew_class_controller <- R6::R6Class(
       on.exit({
         private$.tasks <- list()
         private$.popped <- private$.popped + total
-        private$.summary$tasks <- summary$tasks + tasks
+        private$.summary$tasks <- summary$tasks + length(tasks)
         private$.summary$seconds <- summary$seconds + seconds
         private$.summary$errors <- summary$errors + summary_errors
         private$.summary$warnings <- summary$warnings + summary_warnings

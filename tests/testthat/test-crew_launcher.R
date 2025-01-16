@@ -21,7 +21,7 @@ crew_test("active bindings for covr", {
   skip_on_cran()
   skip_on_os("windows")
   out <- crew_launcher(processes = 1L, r_arguments = "--vanilla")
-  expect_null(out$name)
+  expect_true(is.character(out$name))
   expect_equal(out$workers, 1L)
   expect_true(is.numeric(out$seconds_interval))
   expect_true(is.numeric(out$seconds_timeout))

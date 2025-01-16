@@ -25,7 +25,7 @@ crew_controller_local(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  crashes_error = 5L,
+  crashes_error = NULL,
   launch_max = NULL,
   r_arguments = c("--no-save", "--no-restore"),
   options_metrics = crew::crew_options_metrics(),

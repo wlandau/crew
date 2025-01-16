@@ -654,8 +654,8 @@ crew_class_launcher <- R6::R6Class(
       self$update(status = status)
       supply <- nrow(private$.instances)
       demand <- status$mirai["awaiting"] + status$mirai["executing"]
-      need <- max(0L, demand - supply)
-      tasks <- replicate(need, self$launch(), simplify = FALSE)
+      increment <- min(self$workers, max(0L, demand - supply))
+      tasks <- replicate(increment, self$launch(), simplify = FALSE)
       mirai_wait(tasks = tasks)
       invisible()
     },

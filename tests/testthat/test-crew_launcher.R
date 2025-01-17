@@ -220,7 +220,11 @@ crew_test("launcher update() with no new events", {
   private$.instances <- instances
   launcher$update(status = list())
   instances$submitted <- TRUE
-  expect_equal(launcher$instances, instances[c(1L, 3L, 4L, 5L, 7L), ])
+  names <- setdiff(colnames(launcher_empty_instances), "handle")
+  expect_equal(
+    launcher$instances[, names],
+    instances[c(1L, 3L, 4L, 5L, 7L), names]
+  )
   expect_true(all(launcher$instances$submitted))
 })
 

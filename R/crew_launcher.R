@@ -614,7 +614,7 @@ crew_class_launcher <- R6::R6Class(
         handle <- .subset2(handles, index)
         if (mirai_resolved(handle)) {
           handle <- mirai_resolve(handle, launching = TRUE)
-          private$.instances$handle[[index]] <- handle
+          private$.instances$handle[[index]] <- handle %||% crew_null
           private$.instances$submitted[index] <- TRUE
         }
       }
@@ -660,7 +660,7 @@ crew_class_launcher <- R6::R6Class(
       )
       private$.instances <- tibble::add_row(
         private$.instances,
-        handle = list(handle),
+        handle = list(handle) %||% crew_null,
         id = private$.id,
         start = now(),
         submitted = FALSE,

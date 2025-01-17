@@ -92,7 +92,7 @@ crew_client <- function(
     tls = tls,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
-    relay = crew_relay(seconds_interval = seconds_interval)
+    relay = crew_relay()
   )
   client$validate()
   client

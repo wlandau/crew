@@ -4,11 +4,7 @@
 \alias{crew_relay}
 \title{Create a \code{crew} relay object.}
 \usage{
-crew_relay(seconds_interval = 1)
-}
-\arguments{
-\item{seconds_interval}{Positive numeric scalar, maximum wait time interval
-for throttling (see \code{\link[=crew_throttle]{crew_throttle()}}).}
+crew_relay()
 }
 \value{
 An \code{R6} \code{crew} relay object.

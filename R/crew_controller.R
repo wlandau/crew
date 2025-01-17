@@ -103,13 +103,13 @@ crew_class_controller <- R6::R6Class(
     },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
-        private$.client$relay$wait()
+        private$.client$relay$wait(throttle = private$.launcher$throttle)
       }
       .subset2(self, "unresolved")() < 1L
     },
     .wait_one_once = function() {
       if (.subset2(self, "unpopped")() < 1L) {
-        private$.client$relay$wait()
+        private$.client$relay$wait(throttle = private$.launcher$throttle)
       }
       .subset2(self, "unpopped")() > 0L
     }
@@ -324,7 +324,9 @@ crew_class_controller <- R6::R6Class(
     #'   For finer control of the number of workers launched,
     #'   call `launch()` on the controller with the exact desired
     #'   number of workers.
-    #' @return `NULL` (invisibly).
+    #' @return Invisibly returns `TRUE` if there was any relevant
+    #'   auto-scaling activity (new worker launches or worker
+    #'   connection/disconnection events) (`FALSE` otherwise).
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
@@ -336,8 +338,8 @@ crew_class_controller <- R6::R6Class(
         return(invisible())
       }
       status <- private$.client$status()
-      private$.launcher$scale(status = status, throttle = throttle)
-      invisible()
+      activity <- private$.launcher$scale(status = status, throttle = throttle)
+      invisible(activity)
     },
     #' @description Run worker auto-scaling in a private `later` loop
     #'   every `controller$client$seconds_interval` seconds.
@@ -872,6 +874,7 @@ crew_class_controller <- R6::R6Class(
       tasks <- private$.tasks
       total <- length(tasks)
       relay <- .subset2(.subset2(self, "client"), "relay")
+      throttle_object <- .subset2(.subset2(self, "launcher"), "throttle")
       start <- nanonext::mclock()
       pushed <- private$.pushed
       this_envir <- environment()
@@ -903,7 +906,7 @@ crew_class_controller <- R6::R6Class(
             )
           }
           if (unresolved > 0L) {
-            .subset2(relay, "wait")()
+            .subset2(relay, "wait")(throttle = throttle_object)
           }
           .subset2(self, "unresolved")() < 1L
         },

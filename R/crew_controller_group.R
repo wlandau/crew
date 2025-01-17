@@ -44,14 +44,16 @@ crew_controller_group <- function(..., seconds_interval = 1) {
       )
     )
   )
-  relay <- crew_relay(seconds_interval = seconds_interval)
+  relay <- crew_relay()
   relay$start()
+  throttle <- crew_throttle(seconds_max = seconds_interval)
   for (controller in controllers) {
     controller$client$relay$set_to(relay$condition)
   }
   out <- crew_class_controller_group$new(
     controllers = controllers,
-    relay = relay
+    relay = relay,
+    throttle = throttle
   )
   out$validate()
   out
@@ -82,6 +84,7 @@ crew_class_controller_group <- R6::R6Class(
   private = list(
     .controllers = NULL,
     .relay = NULL,
+    .throttle = NULL,
     .select_controllers = function(names) {
       if (is.null(names)) {
         return(private$.controllers)
@@ -136,7 +139,7 @@ crew_class_controller_group <- R6::R6Class(
               return(TRUE)
             }
           }
-          private$.relay$wait()
+          private$.relay$wait(throttle = private$.throttle)
           FALSE
         },
         seconds_interval = 0,
@@ -174,6 +177,11 @@ crew_class_controller_group <- R6::R6Class(
     #'   condition variable.
     relay = function() {
       .subset2(private, ".relay")
+    },
+    #' @field throttle [crew_throttle()] object to orchestrate exponential
+    #'  backoff in the relay and auto-scaling.
+    throttle = function() {
+      .subset2(private, ".throttle")
     }
   ),
   public = list(
@@ -182,6 +190,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @param controllers List of `R6` controller objects.
     #' @param relay Relay object for event-driven programming on a downstream
     #'   condition variable.
+    #' @param throttle [crew_throttle()] object to orchestrate exponential
+    #'  backoff in the relay and auto-scaling.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' persistent <- crew_controller_local(name = "persistent")
@@ -198,10 +208,12 @@ crew_class_controller_group <- R6::R6Class(
     #' }
     initialize = function(
       controllers = NULL,
-      relay = NULL
+      relay = NULL,
+      throttle = NULL
     ) {
       private$.controllers <- controllers
       private$.relay <- relay
+      private$.throttle <- throttle
       invisible()
     },
     #' @description Validate the client.
@@ -216,6 +228,7 @@ crew_class_controller_group <- R6::R6Class(
       crew_assert(identical(out, exp), message = "bad controller names")
       crew_assert(inherits(private$.relay, "crew_class_relay"))
       private$.relay$validate()
+      private$.throttle$validate()
       invisible()
     },
     #' @description See if the controllers are empty.
@@ -317,7 +330,9 @@ crew_class_controller_group <- R6::R6Class(
     #' @description Automatically scale up the number of workers if needed
     #'   in one or more controller objects.
     #' @details See the `scale()` method in individual controller classes.
-    #' @return `NULL` (invisibly).
+    #' @return Invisibly returns `TRUE` if there was any relevant
+    #'   auto-scaling activity (new worker launches or worker
+    #'   connection/disconnection events) (`FALSE` otherwise).
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
@@ -326,7 +341,12 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     scale = function(throttle = TRUE, controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      walk(control, ~.x$scale(throttle = throttle))
+      if (throttle && !private$.throttle$poll()) {
+        return(invisible())
+      }
+      activity <- any(map_lgl(control, ~.x$scale(throttle = FALSE)))
+      private$.throttle$update(activity = activity)
+      invisible(activity)
     },
     #' @description Run worker auto-scaling in a private `later` loop
     #'   every `controller$client$seconds_interval` seconds.

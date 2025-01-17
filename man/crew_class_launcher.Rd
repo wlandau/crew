@@ -392,7 +392,9 @@ as of 2025-01-16 (\code{crew} version 0.10.2.9003).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{NULL} (invisibly)
+Invisibly returns \code{TRUE} if there was any relevant
+auto-scaling activity (new worker launches or worker
+connection/disconnection events) (\code{FALSE} otherwise).
 }
 }
 \if{html}{\out{<hr>}}

@@ -670,7 +670,9 @@ crew_class_launcher <- R6::R6Class(
       invisible()
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
-    #' @return `NULL` (invisibly)
+    #' @return Invisibly returns `TRUE` if there was any relevant
+    #'   auto-scaling activity (new worker launches or worker
+    #'   connection/disconnection events) (`FALSE` otherwise).
     #' @param status A `mirai` status list with worker and task information.
     #' @param throttle Deprecated, only used in the controller
     #'   as of 2025-01-16 (`crew` version 0.10.2.9003).
@@ -680,8 +682,9 @@ crew_class_launcher <- R6::R6Class(
       demand <- status$mirai["awaiting"] + status$mirai["executing"]
       increment <- min(self$workers - supply, max(0L, demand - supply))
       replicate(increment, self$launch(), simplify = FALSE)
-      private$.throttle$update(length(status$events) > 0L || increment > 0L)
-      invisible()
+      activity <- length(status$events) > 0L || increment > 0L
+      private$.throttle$update(activity = activity)
+      invisible(activity)
     },
     #' @description Abstract worker launch method.
     #' @details Launcher plugins will overwrite this method.

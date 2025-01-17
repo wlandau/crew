@@ -59,7 +59,7 @@ crew_throttle <- function(
 #' @description `R6` class for throttle configuration.
 #' @details See [crew_throttle()].
 #' @examples
-#' throttle <- crew_throttle(max = 1)
+#' throttle <- crew_throttle(seconds_max = 1)
 #' throttle$poll()
 #' throttle$poll()
 crew_class_throttle <- R6::R6Class(
@@ -109,7 +109,7 @@ crew_class_throttle <- R6::R6Class(
     #' @param seconds_start See [crew_throttle()].
     #' @param base See [crew_throttle()].
     #' @examples
-    #' throttle <- crew_throttle(max = 1)
+    #' throttle <- crew_throttle(seconds_max = 1)
     #' throttle$poll()
     #' throttle$poll()
     initialize = function(

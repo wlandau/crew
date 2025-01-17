@@ -475,9 +475,7 @@ crew_class_launcher <- R6::R6Class(
           )
         }
         # nocov end
-        if (!is.null(private$.instances)) {
-          crew_assert(private$.instances, is.data.frame(.))
-        }
+        crew_assert(private$.instances, is.data.frame(.))
       }
       if (!is.null(private$.r_arguments)) {
         crew_assert(

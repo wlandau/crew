@@ -611,8 +611,8 @@ crew_class_launcher <- R6::R6Class(
       for (index in unresolved) {
         handle <- .subset2(handles, index)
         if (mirai_resolved(handle)) {
-          mirai_assert_launch(handle)
-          private$.instances$handle[[index]] <- mirai_resolve(handle)
+          handle <- mirai_resolve(handle, action = "launching")
+          private$.instances$handle[[index]] <- handle
           private$.instances$submitted[index] <- TRUE
         }
       }
@@ -638,9 +638,8 @@ crew_class_launcher <- R6::R6Class(
       active <- online | (!discovered & awaiting)
       lost <- !active & !discovered
       handles <- instances$handle[lost]
-      walk(handles, mirai_resolve)
-      walk(handles, mirai_assert_launch)
-      mirai_wait_terminate(map(handles, self$terminate_worker))
+      handles <- lapply(handles, mirai_resolve, action = "launching")
+      mirai_wait(map(handles, self$terminate_worker), action = "terminating")
       private$.instances <- instances[active, ]
       invisible()
     },
@@ -716,11 +715,10 @@ crew_class_launcher <- R6::R6Class(
       instances <- .subset2(self, "instances")
       tasks <- list()
       for (index in seq_len(nrow(instances))) {
-        handle <- mirai_resolve(instances$handle[[index]])
-        mirai_assert_launch(handle)
+        handle <- mirai_resolve(instances$handle[[index]], "launching")
         tasks[[index]] <- self$terminate_worker(handle = handle)
       }
-      mirai_wait_terminate(tasks = tasks)
+      mirai_wait(tasks = tasks, action = "terminating")
       private$.instances <- launcher_empty_instances
       invisible()
     }

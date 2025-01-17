@@ -85,7 +85,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   )
   task <- mirai::mirai(ps::ps_pid(), .compute = client$profile)
   crew_retry(
-    ~!unresolved(task),
+    ~!nanonext::.unresolved(task),
     seconds_interval = 0.5,
     seconds_timeout = 10
   )
@@ -137,7 +137,7 @@ crew_test("crew_launcher_local() worker tasks_max", {
   )
   task <- mirai::mirai(ps::ps_pid(), .compute = client$profile)
   crew::crew_retry(
-    ~!unresolved(task),
+    ~!nanonext::.unresolved(task),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )

@@ -201,6 +201,7 @@ crew_test("launcher call", {
 crew_test("launcher update() with no new events", {
   skip_on_cran()
   instances <- expand.grid(
+    submitted = FALSE,
     online = c(TRUE, FALSE),
     discovered = c(TRUE, FALSE),
     start = c(Inf, -Inf)
@@ -218,12 +219,15 @@ crew_test("launcher update() with no new events", {
   private <- crew_private(launcher)
   private$.instances <- instances
   launcher$update(status = list())
+  instances$submitted <- TRUE
   expect_equal(launcher$instances, instances[c(1L, 3L, 4L, 5L, 7L), ])
+  expect_true(all(launcher$instances$submitted))
 })
 
 crew_test("launcher update() with connects", {
   skip_on_cran()
   instances <- expand.grid(
+    submitted = FALSE,
     online = c(FALSE, FALSE),
     discovered = c(FALSE, FALSE),
     start = c(Inf, Inf)
@@ -249,12 +253,14 @@ crew_test("launcher update() with connects", {
     launcher$instances$discovered,
     instances$id %in% c(102L, 103L, 107L)
   )
+  expect_true(all(launcher$instances$submitted))
 })
 
 crew_test("launcher update() with connects and disconnects", {
   skip_on_cran()
   set.seed(0L)
   instances <- expand.grid(
+    submitted = FALSE,
     online = c(FALSE, FALSE),
     discovered = c(FALSE, FALSE),
     start = c(Inf, Inf)
@@ -281,12 +287,14 @@ crew_test("launcher update() with connects and disconnects", {
     launcher$instances$discovered,
     launcher$instances$id %in% c(2L, 3L)
   )
+  expect_true(all(launcher$instances$submitted))
 })
 
 crew_test("launcher update() with just disconnects", {
   skip_on_cran()
   set.seed(0L)
   instances <- expand.grid(
+    submitted = FALSE,
     online = c(TRUE, TRUE),
     discovered = c(TRUE, TRUE),
     start = c(Inf, Inf)
@@ -307,6 +315,7 @@ crew_test("launcher update() with just disconnects", {
   expect_equal(launcher$instances$id, setdiff(instances$id, c(4L, 6L)))
   expect_equal(launcher$instances$online, rep(TRUE, 6L))
   expect_equal(launcher$instances$discovered, rep(TRUE, 6L))
+  expect_true(all(launcher$instances$submitted))
 })
 
 crew_test("deprecate seconds_exit", {

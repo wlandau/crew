@@ -59,7 +59,7 @@ crew_test("async task with 1 process", {
     packages = "rlang"
   )
   crew_retry(
-    fun = ~!nanonext::unresolved(out),
+    fun = ~!nanonext::.unresolved(out),
     seconds_interval = 0.01,
     seconds_timeout = 10
   )

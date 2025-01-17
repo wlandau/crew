@@ -70,6 +70,7 @@ crew_test("mirai_wait()", {
 crew_test("mirai_assert()", {
   skip_on_cran()
   skip_on_os("windows")
+  expect_silent(mirai_assert(task = "123", action = "456"))
   task <- mirai::mirai(TRUE)
   mirai::call_mirai_(task)
   expect_silent(mirai_assert(task, action = "x"))

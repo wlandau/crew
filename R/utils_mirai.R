@@ -97,6 +97,9 @@ mirai_wait <- function(tasks, action) {
 }
 
 mirai_assert <- function(task, action) {
+  if (!mirai::is_mirai(task)) {
+    return()
+  }
   data <- .subset2(task, "data")
   if (mirai::is_mirai_error(data)) {
     crew_error(

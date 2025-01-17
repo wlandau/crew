@@ -27,7 +27,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     options_metrics = NULL
   )
   crew_retry(
-    ~!nanonext::unresolved(m$data),
+    ~!nanonext::.unresolved(m$data),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
@@ -74,7 +74,7 @@ crew_test("crew_worker() metrics logging to a directory", {
     )
   )
   crew_retry(
-    ~!nanonext::unresolved(m$data),
+    ~!nanonext::.unresolved(m$data),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )

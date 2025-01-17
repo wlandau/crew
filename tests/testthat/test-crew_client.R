@@ -67,11 +67,11 @@ crew_test("crew_client() works", {
   )
   task <- mirai::mirai(ps::ps_pid(), .compute = client$profile)
   crew_retry(
-    ~!mirai::unresolved(task),
+    ~!nanonext::.unresolved(task),
     seconds_interval = 0.5,
     seconds_timeout = 10
   )
-  expect_false(unresolved(task))
+  expect_false(nanonext::.unresolved(task))
   expect_true(is.numeric(task$data))
   expect_true(abs(task$data - ps::ps_pid()) > 0.5)
   expect_true(client$started)

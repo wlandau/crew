@@ -578,7 +578,7 @@ crew_class_launcher <- R6::R6Class(
       private$.async <- crew_async(workers = private$.processes)
       private$.async$start()
       private$.throttle <- crew_throttle(
-        seconds_interval = self$seconds_interval
+        seconds_max = self$seconds_interval
       )
       private$.url <- url
       private$.profile <- basename(url)
@@ -677,8 +677,13 @@ crew_class_launcher <- R6::R6Class(
       self$update(status = status)
       supply <- nrow(private$.instances)
       demand <- status$mirai["awaiting"] + status$mirai["executing"]
-      increment <- min(self$workers, max(0L, demand - supply))
+      increment <- min(self$workers - supply, max(0L, demand - supply))
       replicate(increment, self$launch(), simplify = FALSE)
+      if (length(status$events) > 0L || increment > 0L) {
+        private$.throttle$accelerate()
+      } else {
+        private$.throttle$decelerate()
+      }
       invisible()
     },
     #' @description Abstract worker launch method.

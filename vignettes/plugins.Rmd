@@ -24,7 +24,7 @@ library(crew)
 
 # 📣 Request for community contributions 📣
 
-<span style="color: blue">**The launcher plugin framework aims to extend `crew` to modern platforms and services like [Google Cloud Run](https://cloud.google.com/run/), [Kubernetes](https://kubernetes.io/), and beyond. At the time of writing, plugins for cloud computing do not yet exist. So if you have access to these services and know how to use them, please consider contributing a package with plugins of your own. The maintainer of `crew` would love to work with you!**</span>
+<span style="color: blue">**The launcher plugin framework aims to extend `crew` to modern platforms and services like [Google Cloud Run](https://cloud.google.com/run), [Kubernetes](https://kubernetes.io/), and beyond. At the time of writing, plugins for cloud computing do not yet exist. So if you have access to these services and know how to use them, please consider contributing a package with plugins of your own. The maintainer of `crew` would love to work with you!**</span>
 
 # How it works
 

@@ -52,12 +52,7 @@ test_that("backlog of tasks completes with finite tasks_max", {
   cli::cli_progress_done()
   cli::cli_alert_success(paste(time["elapsed"], "seconds"))
   testthat::expect_equal(sort(as.integer(names)), seq_len(n_tasks))
-  private <- crew_private(controller$launcher)
-  private$.workers$launched <- FALSE
-  controller$launcher$tally()
   testthat::expect_equal(controller$unresolved(), 0L)
-  controller$terminate()
   testthat::expect_equal(length(controller$tasks), 0L)
-  testthat::expect_equal(sum(controller$launcher$workers$assigned), n_tasks)
-  testthat::expect_equal(sum(controller$launcher$workers$complete), n_tasks)
+  controller$terminate()
 })

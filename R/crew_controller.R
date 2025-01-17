@@ -1372,8 +1372,8 @@ crew_class_controller <- R6::R6Class(
           private$.client$terminate()
         },
         false = {
-          private$.client$terminate()
-          private$.launcher$terminate()
+          private$.client$terminate() # nocov
+          private$.launcher$terminate() # nocov
         }
       )
       private$.tasks <- list()

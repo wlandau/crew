@@ -336,7 +336,12 @@ crew_class_client <- R6::R6Class(
     #'   on resolution. The return value is `NULL` if the client
     #'   is not running.
     condition = function() {
-      mirai::nextget(x = "cv", .compute = .subset2(private, ".profile"))
+      profile <- .subset2(private, ".profile")
+      if (is.null(profile)) {
+        NULL
+      } else {
+        mirai::nextget(x = "cv", .compute = profile)
+      }
     },
     #' @description Get the true value of the `nanonext` condition variable.
     #' @return The value of the `nanonext` condition variable.

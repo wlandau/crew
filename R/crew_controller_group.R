@@ -119,11 +119,12 @@ crew_class_controller_group <- R6::R6Class(
     },
     .wait_one = function(
       controllers,
+      control,
       seconds_timeout,
       scale,
       throttle
     ) {
-      if (sum(map_int(controllers, ~length(.x$tasks))) < 1L) {
+      if (sum(map_int(control, ~length(.x$tasks))) < 1L) {
         return(FALSE)
       }
       envir <- new.env(parent = emptyenv())
@@ -131,9 +132,9 @@ crew_class_controller_group <- R6::R6Class(
       crew_retry(
         fun = ~{
           if (scale) {
-            walk(controllers, ~.x$scale(throttle = throttle))
+            self$scale(throttle = throttle, controllers = controllers)
           }
-          for (controller in controllers) {
+          for (controller in control) {
             if (controller$unpopped() > 0L) {
               envir$result <- TRUE
               return(TRUE)
@@ -150,22 +151,32 @@ crew_class_controller_group <- R6::R6Class(
     },
     .wait_all = function(
       controllers,
+      control,
       seconds_timeout,
       scale,
       throttle
     ) {
-      for (controller in controllers) {
-        out <- controller$wait(
-          mode = "all",
-          seconds_timeout = seconds_timeout,
-          scale = scale,
-          throttle = throttle
-        )
-        if (!out) {
-          return(FALSE)
-        }
+      if (sum(map_int(control, ~length(.x$tasks))) < 1L) {
+        return(FALSE)
       }
-      TRUE
+      envir <- new.env(parent = emptyenv())
+      envir$result <- FALSE
+      crew_retry(
+        fun = ~{
+          if (scale) {
+            self$scale(throttle = throttle, controllers = controllers)
+          }
+          envir$result <- sum(map_int(control, ~.x$unresolved())) < 1L
+          if (!envir$result) {
+            private$.relay$wait(throttle = private$.throttle)
+          }
+          envir$result
+        },
+        seconds_interval = 0,
+        seconds_timeout = seconds_timeout,
+        error = FALSE
+      )
+      envir$result
     }
   ),
   active = list(
@@ -927,13 +938,15 @@ crew_class_controller_group <- R6::R6Class(
       out <- if_any(
         identical(mode, "one"),
         private$.wait_one(
-          controllers = control,
+          controllers = controllers,
+          control = control,
           seconds_timeout = seconds_timeout,
           scale = scale,
           throttle = throttle
         ),
         private$.wait_all(
-          controllers = control,
+          controllers = controllers,
+          control = control,
           seconds_timeout = seconds_timeout,
           scale = scale,
           throttle = throttle

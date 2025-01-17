@@ -337,6 +337,7 @@ crew_class_controller <- R6::R6Class(
       if (throttle && !private$.launcher$poll()) {
         return(invisible())
       }
+      .subset2(self, "start")()
       status <- private$.client$status()
       activity <- private$.launcher$scale(status = status, throttle = throttle)
       invisible(activity)

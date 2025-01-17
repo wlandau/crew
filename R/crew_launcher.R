@@ -82,8 +82,8 @@
 #' client$start()
 #' launcher <- crew_launcher_local()
 #' launcher$start(url = client$url)
-#' launcher$launch(index = 1L)
-#' task <- mirai::mirai("result", .compute = client$name)
+#' launcher$launch()
+#' task <- mirai::mirai("result", .compute = client$profile)
 #' mirai::call_mirai_(task)
 #' task$data
 #' client$terminate()
@@ -177,12 +177,12 @@ launcher_empty_instances <- tibble::tibble(
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
 #' client$start()
-#' launcher <- crew_launcher_local(workers = 1L)
+#' launcher <- crew_launcher_local()
 #' launcher$start(url = client$url)
-#' launcher$launch(n = 1L)
-#' m <- mirai::mirai("result", .compute = client$name)
-#' Sys.sleep(0.25)
-#' m$data
+#' launcher$launch()
+#' task <- mirai::mirai("result", .compute = client$profile)
+#' mirai::call_mirai_(task)
+#' task$data
 #' client$terminate()
 #' }
 crew_class_launcher <- R6::R6Class(
@@ -339,10 +339,10 @@ crew_class_launcher <- R6::R6Class(
     #' client$start()
     #' launcher <- crew_launcher_local()
     #' launcher$start(url = client$url)
-    #' launcher$launch(n = 1L)
-    #' m <- mirai::mirai("result", .compute = client$name)
-    #' Sys.sleep(0.25)
-    #' m$data
+    #' launcher$launch()
+    #' task <- mirai::mirai("result", .compute = client$profile)
+    #' mirai::call_mirai_(task)
+    #' task$data
     #' client$terminate()
     #' }
     initialize = function(
@@ -544,7 +544,8 @@ crew_class_launcher <- R6::R6Class(
     #' @examples
     #' launcher <- crew_launcher_local()
     #' launcher$start(url = "ws://127.0.0.1:57000")
-    #' launcher$call()
+    #' launcher$call(worker = "worker_name")
+    #' launcher$terminate()
     call = function(worker) {
       call <- substitute(
         crew::crew_worker(
@@ -588,18 +589,18 @@ crew_class_launcher <- R6::R6Class(
     #' @description Terminate the whole launcher, including all workers.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      self$terminate_workers()
       private$.url <- NULL
       private$.profile <- NULL
+      if (!is.null(private$.throttle)) {
+        private$.throttle$reset()
+      }
       using_async <- !is.null(private$.async) &&
         private$.async$asynchronous() &&
         private$.async$started()
       if (using_async) {
-        private$.async$terminate()
+        on.exit(private$.async$terminate())
       }
-      if (!is.null(private$.throttle)) {
-        private$.throttle$reset()
-      }
+      self$terminate_workers()
       invisible()
     },
     #' @description Resolve asynchronous worker submissions.

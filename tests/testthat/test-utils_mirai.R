@@ -82,4 +82,3 @@ crew_test("mirai_assert()", {
     class = "crew_warning"
   )
 })
-  

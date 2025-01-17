@@ -11,12 +11,12 @@ which launch and manage workers.
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
-launcher <- crew_launcher_local(workers = 1L)
+launcher <- crew_launcher_local()
 launcher$start(url = client$url)
-launcher$launch(n = 1L)
-m <- mirai::mirai("result", .compute = client$name)
-Sys.sleep(0.25)
-m$data
+launcher$launch()
+task <- mirai::mirai("result", .compute = client$profile)
+mirai::call_mirai_(task)
+task$data
 client$terminate()
 }
 
@@ -29,10 +29,10 @@ client <- crew_client()
 client$start()
 launcher <- crew_launcher_local()
 launcher$start(url = client$url)
-launcher$launch(n = 1L)
-m <- mirai::mirai("result", .compute = client$name)
-Sys.sleep(0.25)
-m$data
+launcher$launch()
+task <- mirai::mirai("result", .compute = client$profile)
+mirai::call_mirai_(task)
+task$data
 client$terminate()
 }
 
@@ -42,7 +42,8 @@ client$terminate()
 
 launcher <- crew_launcher_local()
 launcher$start(url = "ws://127.0.0.1:57000")
-launcher$call()
+launcher$call(worker = "worker_name")
+launcher$terminate()
 }
 \seealso{
 Other launcher: 
@@ -206,10 +207,10 @@ client <- crew_client()
 client$start()
 launcher <- crew_launcher_local()
 launcher$start(url = client$url)
-launcher$launch(n = 1L)
-m <- mirai::mirai("result", .compute = client$name)
-Sys.sleep(0.25)
-m$data
+launcher$launch()
+task <- mirai::mirai("result", .compute = client$profile)
+mirai::call_mirai_(task)
+task$data
 client$terminate()
 }
 }
@@ -282,7 +283,8 @@ Character string with a call to \code{\link[=crew_worker]{crew_worker()}}.
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{launcher <- crew_launcher_local()
 launcher$start(url = "ws://127.0.0.1:57000")
-launcher$call()
+launcher$call(worker = "worker_name")
+launcher$terminate()
 }
 \if{html}{\out{</div>}}
 

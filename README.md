@@ -30,7 +30,7 @@ packages [`future`](https://future.futureverse.org/),
 **The [launcher plugin
 framework](https://wlandau.github.io/crew/articles/plugins.html) aims to
 extend `crew` to modern platforms and services like [Google Cloud
-Run](https://cloud.google.com/run/),
+Run](https://cloud.google.com/run),
 [Kubernetes](https://kubernetes.io/), and beyond. At the time of
 writing, plugins for cloud computing do not yet exist. So if you have
 access to these services and know how to use them, please consider

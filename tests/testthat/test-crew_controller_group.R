@@ -566,7 +566,7 @@ crew_test("crew_controller_group() wait all timeout", {
     name = "task_a",
     controller = "b"
   )
-  expect_false(x$wait(mode = "all", seconds_timeout = 0, seconds_interval = 0))
+  expect_false(x$wait(mode = "all", seconds_timeout = 0))
 })
 
 crew_test("controllers in groups must not already be started", {

@@ -699,7 +699,7 @@ Apply a single command to multiple inputs.
   algorithm = NULL,
   packages = character(0),
   library = NULL,
-  seconds_interval = 1,
+  seconds_interval = NULL,
   seconds_timeout = NULL,
   names = NULL,
   save_command = FALSE,
@@ -775,8 +775,11 @@ See \code{vignette("parallel", package = "parallel")} for details.}
 \item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
 argument of \code{require()}.}
 
-\item{\code{seconds_interval}}{Number of seconds to wait between auto-scaling
-operations while waiting for tasks to complete.}
+\item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
+0.10.2.9003). Instead, the \code{seconds_interval} argument passed
+to \code{\link[=crew_controller_group]{crew_controller_group()}} is used as \code{seconds_max}
+in a \code{\link[=crew_throttle]{crew_throttle()}} object which orchestrates exponential
+backoff.}
 
 \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
@@ -1018,7 +1021,7 @@ Wait for tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$wait(
   mode = "all",
-  seconds_interval = 1,
+  seconds_interval = NULL,
   seconds_timeout = Inf,
   scale = TRUE,
   throttle = TRUE,
@@ -1035,8 +1038,11 @@ a single task in a single controller to complete. In this scheme,
 the timeout limit is applied to each controller sequentially,
 and a timeout is treated the same as a completed controller.}
 
-\item{\code{seconds_interval}}{Number of seconds to interrupt the wait
-in order to scale up workers as needed.}
+\item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
+0.10.2.9003). Instead, the \code{seconds_interval} argument passed
+to \code{\link[=crew_controller_group]{crew_controller_group()}} is used as \code{seconds_max}
+in a \code{\link[=crew_throttle]{crew_throttle()}} object which orchestrates exponential
+backoff.}
 
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for
 results to become available.}

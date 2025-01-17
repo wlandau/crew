@@ -21,7 +21,7 @@ crew_test("crew_controller_local()", {
   expect_false(x$saturated())
   crew_retry(
     ~{
-      x$wait(mode = "all", seconds_timeout = 30, seconds_interval = 0.5)
+      x$wait(mode = "all", seconds_timeout = 30)
       TRUE
     },
     seconds_interval = 0.5,

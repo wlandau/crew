@@ -3,6 +3,7 @@
 #' @family controller_group
 #' @description Create an `R6` object to submit tasks and launch workers
 #'   through multiple `crew` controllers.
+#' @inheritParams crew_client
 #' @param ... `R6` controller objects or lists of `R6` controller objects.
 #'   Nested lists are allowed, but each element must be a control object
 #'   or another list.
@@ -20,7 +21,7 @@
 #' group$pop()
 #' group$terminate()
 #' }
-crew_controller_group <- function(...) {
+crew_controller_group <- function(..., seconds_interval = 1) {
   controllers <- unlist(list(...), recursive = TRUE)
   crew_assert(
     length(controllers) > 0L,
@@ -43,7 +44,7 @@ crew_controller_group <- function(...) {
       )
     )
   )
-  relay <- crew_relay()
+  relay <- crew_relay(seconds_interval = seconds_interval)
   relay$start()
   for (controller in controllers) {
     controller$client$relay$set_to(relay$condition)
@@ -115,7 +116,6 @@ crew_class_controller_group <- R6::R6Class(
     },
     .wait_one = function(
       controllers,
-      seconds_interval,
       seconds_timeout,
       scale,
       throttle
@@ -136,7 +136,7 @@ crew_class_controller_group <- R6::R6Class(
               return(TRUE)
             }
           }
-          private$.relay$wait(seconds_timeout = seconds_interval)
+          private$.relay$wait()
           FALSE
         },
         seconds_interval = 0,
@@ -147,7 +147,6 @@ crew_class_controller_group <- R6::R6Class(
     },
     .wait_all = function(
       controllers,
-      seconds_interval,
       seconds_timeout,
       scale,
       throttle
@@ -155,7 +154,6 @@ crew_class_controller_group <- R6::R6Class(
       for (controller in controllers) {
         out <- controller$wait(
           mode = "all",
-          seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,
           scale = scale,
           throttle = throttle
@@ -619,8 +617,11 @@ crew_class_controller_group <- R6::R6Class(
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
-    #' @param seconds_interval Number of seconds to wait between auto-scaling
-    #'   operations while waiting for tasks to complete.
+    #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
+    #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
+    #'   to [crew_controller_group()] is used as `seconds_max`
+    #'   in a [crew_throttle()] object which orchestrates exponential
+    #'   backoff.
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param names Optional character of length 1, name of the element of
@@ -662,7 +663,7 @@ crew_class_controller_group <- R6::R6Class(
       algorithm = NULL,
       packages = character(0),
       library = NULL,
-      seconds_interval = 1,
+      seconds_interval = NULL,
       seconds_timeout = NULL,
       names = NULL,
       save_command = FALSE,
@@ -688,7 +689,6 @@ crew_class_controller_group <- R6::R6Class(
         algorithm = algorithm,
         packages = packages,
         library = library,
-        seconds_interval = seconds_interval,
         seconds_timeout = seconds_timeout,
         names = names,
         save_command = save_command,
@@ -868,8 +868,11 @@ crew_class_controller_group <- R6::R6Class(
     #'   a single task in a single controller to complete. In this scheme,
     #'   the timeout limit is applied to each controller sequentially,
     #'   and a timeout is treated the same as a completed controller.
-    #' @param seconds_interval Number of seconds to interrupt the wait
-    #'   in order to scale up workers as needed.
+    #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
+    #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
+    #'   to [crew_controller_group()] is used as `seconds_max`
+    #'   in a [crew_throttle()] object which orchestrates exponential
+    #'   backoff.
     #' @param seconds_timeout Timeout length in seconds waiting for
     #'   results to become available.
     #' @param scale Logical of length 1, whether to call `scale_later()`
@@ -884,12 +887,20 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     wait = function(
       mode = "all",
-      seconds_interval = 1,
+      seconds_interval = NULL,
       seconds_timeout = Inf,
       scale = TRUE,
       throttle = TRUE,
       controllers = NULL
     ) {
+      crew_deprecate(
+        name = "seconds_interval",
+        date = "2025-01-17",
+        version = "0.10.2.9003",
+        alternative = "none (no longer used)",
+        condition = "warning",
+        value = seconds_interval
+      )
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
       control <- private$.select_controllers(controllers)
@@ -897,14 +908,12 @@ crew_class_controller_group <- R6::R6Class(
         identical(mode, "one"),
         private$.wait_one(
           controllers = control,
-          seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,
           scale = scale,
           throttle = throttle
         ),
         private$.wait_all(
           controllers = control,
-          seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,
           scale = scale,
           throttle = throttle

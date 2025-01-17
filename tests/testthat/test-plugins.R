@@ -79,7 +79,7 @@ crew_test("custom launcher", {
     crew_test_sleep()
   })
   controller$push(name = "pid", command = ps::ps_pid())
-  controller$wait(seconds_timeout = 10, seconds_interval = 0.5)
+  controller$wait(seconds_timeout = 10)
   out <- controller$pop()$result[[1]]
   handle <- controller$launcher$instances$handle[[1]]
   exp <- handle$get_pid()
@@ -392,7 +392,7 @@ crew_test("custom launcher with async internal launcher tasks", {
     crew_test_sleep()
   })
   controller$push(name = "pid", command = ps::ps_pid())
-  controller$wait(seconds_timeout = 10, seconds_interval = 0.5)
+  controller$wait(seconds_timeout = 10)
   envir <- new.env(parent = emptyenv())
   crew_retry(
     ~ {

@@ -18,8 +18,9 @@
 #'   is smaller than the supplied value of the `workers` argument.
 #' @param seconds_interval Number of seconds between
 #'   polling intervals waiting for certain internal
-#'   synchronous operations to complete,
-#'   such as checking `mirai::status()`.
+#'   synchronous operations to complete. In certain cases, exponential
+#'   backoff is used with this argument passed to `seconds_max`
+#'   in a [crew_throttle()] object.
 #' @param seconds_timeout Number of seconds until timing
 #'   out while waiting for certain synchronous operations to complete,
 #'   such as checking `mirai::status()`.

@@ -25,7 +25,7 @@ crew_test("relay and waiting", {
   expect_equal(nanonext::cv_value(x$from), 1L)
   expect_equal(nanonext::cv_value(x$condition), 0L)
   expect_equal(nanonext::cv_value(x$to), 1L)
-  expect_false(x$wait(seconds_timeout = 0))
+  expect_false(x$wait())
   expect_equal(nanonext::cv_value(x$from), 1L)
   expect_equal(nanonext::cv_value(x$condition), 0L)
   expect_equal(nanonext::cv_value(x$to), 1L)

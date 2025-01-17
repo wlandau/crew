@@ -25,18 +25,42 @@ Other relay:
 \item{\code{from}}{Condition variable to relay from.}
 
 \item{\code{to}}{Condition variable to relay to.}
+
+\item{\code{throttle}}{A \code{\link[=crew_throttle]{crew_throttle()}} object for exponential backoff.
+for waiting times.}
 }
 \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-crew_class_relay-new}{\code{crew_class_relay$new()}}
 \item \href{#method-crew_class_relay-validate}{\code{crew_class_relay$validate()}}
 \item \href{#method-crew_class_relay-start}{\code{crew_class_relay$start()}}
 \item \href{#method-crew_class_relay-terminate}{\code{crew_class_relay$terminate()}}
 \item \href{#method-crew_class_relay-set_from}{\code{crew_class_relay$set_from()}}
 \item \href{#method-crew_class_relay-set_to}{\code{crew_class_relay$set_to()}}
 \item \href{#method-crew_class_relay-wait}{\code{crew_class_relay$wait()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_relay-new"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_relay-new}{}}}
+\subsection{Method \code{new()}}{
+Relay constructor.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$new(throttle)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{throttle}}{A \code{\link[=crew_throttle]{crew_throttle()}} object for exponential backoff.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A relay object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -123,19 +147,11 @@ Set the condition variable to relay to.
 \if{latex}{\out{\hypertarget{method-crew_class_relay-wait}{}}}
 \subsection{Method \code{wait()}}{
 Wait until an unobserved task resolves or the timeout
-is reached.
+is reached. Use the throttle to determine the waiting time.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait(seconds_timeout = 1000)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{seconds_timeout}}{Positive numeric of length 1,
-Number of seconds to wait before timing out.}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

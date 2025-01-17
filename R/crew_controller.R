@@ -101,15 +101,15 @@ crew_class_controller <- R6::R6Class(
       })
       invisible(task)
     },
-    .wait_all_once = function(seconds_interval) {
+    .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
-        private$.client$relay$wait(seconds_timeout = seconds_interval)
+        private$.client$relay$wait()
       }
       .subset2(self, "unresolved")() < 1L
     },
-    .wait_one_once = function(seconds_interval) {
+    .wait_one_once = function() {
       if (.subset2(self, "unpopped")() < 1L) {
-        private$.client$relay$wait(seconds_timeout = seconds_interval)
+        private$.client$relay$wait()
       }
       .subset2(self, "unpopped")() > 0L
     }
@@ -776,8 +776,11 @@ crew_class_controller <- R6::R6Class(
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
-    #' @param seconds_interval Number of seconds to wait between auto-scaling
-    #'   operations while waiting for tasks to complete.
+    #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
+    #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
+    #'   to [crew_controller_group()] is used as `seconds_max`
+    #'   in a [crew_throttle()] object which orchestrates exponential
+    #'   backoff.
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param names Optional character of length 1, name of the element of
@@ -817,7 +820,7 @@ crew_class_controller <- R6::R6Class(
       algorithm = NULL,
       packages = character(0),
       library = NULL,
-      seconds_interval = 1,
+      seconds_interval = NULL,
       seconds_timeout = NULL,
       names = NULL,
       save_command = FALSE,
@@ -828,6 +831,14 @@ crew_class_controller <- R6::R6Class(
       throttle = TRUE,
       controller = NULL
     ) {
+      crew_deprecate(
+        name = "seconds_interval",
+        date = "2025-01-17",
+        version = "0.10.2.9003",
+        alternative = "none (no longer used)",
+        condition = "warning",
+        value = seconds_interval
+      )
       crew_assert(
         length(private$.tasks) < 1L,
         message = "cannot map() until all prior tasks are completed and popped"
@@ -892,7 +903,7 @@ crew_class_controller <- R6::R6Class(
             )
           }
           if (unresolved > 0L) {
-            .subset2(relay, "wait")(seconds_timeout = seconds_interval)
+            .subset2(relay, "wait")()
           }
           .subset2(self, "unresolved")() < 1L
         },
@@ -1218,8 +1229,11 @@ crew_class_controller <- R6::R6Class(
     #'   in `mode` was met, `FALSE` otherwise.
     #' @param mode Character of length 1: `"all"` to wait for all tasks to
     #'   complete, `"one"` to wait for a single task to complete.
-    #' @param seconds_interval Number of seconds to interrupt the wait
-    #'   in order to scale up workers as needed.
+    #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
+    #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
+    #'   to [crew_controller_group()] is used as `seconds_max`
+    #'   in a [crew_throttle()] object which orchestrates exponential
+    #'   backoff.
     #' @param seconds_timeout Timeout length in seconds waiting for tasks.
     #' @param scale Logical, whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
@@ -1232,12 +1246,20 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     wait = function(
       mode = "all",
-      seconds_interval = 1,
+      seconds_interval = NULL,
       seconds_timeout = Inf,
       scale = TRUE,
       throttle = TRUE,
       controllers = NULL
     ) {
+      crew_deprecate(
+        name = "seconds_interval",
+        date = "2025-01-17",
+        version = "0.10.2.9003",
+        alternative = "none (no longer used)",
+        condition = "warning",
+        value = seconds_interval
+      )
       crew_assert(mode, identical(., "all") || identical(., "one"))
       mode_all <- identical(mode, "all")
       if (length(private$.tasks) < 1L) {
@@ -1252,8 +1274,8 @@ crew_class_controller <- R6::R6Class(
           }
           envir$result <- if_any(
             mode_all,
-            private$.wait_all_once(seconds_interval = seconds_interval),
-            private$.wait_one_once(seconds_interval = seconds_interval)
+            private$.wait_all_once(),
+            private$.wait_one_once()
           )
           envir$result
         },

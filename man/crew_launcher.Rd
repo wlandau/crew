@@ -41,8 +41,9 @@ is smaller than the supplied value of the \code{workers} argument.}
 
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal
-synchronous operations to complete,
-such as checking \code{mirai::status()}.}
+synchronous operations to complete. In certain cases, exponential
+backoff is used with this argument passed to \code{seconds_max}
+in a \code{\link[=crew_throttle]{crew_throttle()}} object.}
 
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete,

@@ -5,10 +5,13 @@
 #' @details A `crew` relay object keeps the signaling relationships
 #'   among condition variables.
 #' @return An `R6` `crew` relay object.
+#' @param seconds_interval Positive numeric scalar, maximum wait time interval
+#'   for throttling (see [crew_throttle()]).
 #' @examples
 #' crew_relay()
-crew_relay <- function() {
-  relay <- crew_class_relay$new()
+crew_relay <- function(seconds_interval = 1) {
+  throttle <- crew_throttle(seconds_max = seconds_interval)
+  relay <- crew_class_relay$new(throttle = throttle)
   relay$validate()
   relay
 }
@@ -26,7 +29,8 @@ crew_class_relay <- R6::R6Class(
   private = list(
     .condition = NULL,
     .from = NULL,
-    .to = NULL
+    .to = NULL,
+    .throttle = NULL
   ),
   active = list(
     #' @field condition Main condition variable.
@@ -40,9 +44,20 @@ crew_class_relay <- R6::R6Class(
     #' @field to Condition variable to relay to.
     to = function() {
       .subset2(private, ".to")
+    },
+    #' @field throttle A [crew_throttle()] object for exponential backoff.
+    #'   for waiting times.
+    throttle = function() {
+      .subset2(private, ".throttle")
     }
   ),
   public = list(
+    #' @description Relay constructor.
+    #' @return A relay object.
+    #' @param throttle A [crew_throttle()] object for exponential backoff.
+    initialize = function(throttle) {
+      private$.throttle <- throttle
+    },
     #' @description Validate the object.
     #' @return `NULL` (invisibly).
     validate = function() {
@@ -88,14 +103,15 @@ crew_class_relay <- R6::R6Class(
       invisible()
     },
     #' @description Wait until an unobserved task resolves or the timeout
-    #'   is reached.
+    #'   is reached. Use the throttle to determine the waiting time.
     #' @return `NULL` (invisibly).
-    #' @param seconds_timeout Positive numeric of length 1,
-    #'   Number of seconds to wait before timing out.
-    wait = function(seconds_timeout = 1e3) {
-      timeout <- seconds_timeout * 1000
+    wait = function() {
+      throttle <- .subset2(private, ".throttle")
       condition <- .subset2(self, "condition")
-      nanonext::until_(cv = condition, msec = timeout)
+      timeout <- .subset2(throttle, "seconds_interval") * 1000
+      signal <- nanonext::until_(cv = condition, msec = timeout)
+      .subset2(throttle, "update")(signal)
+      signal
     }
   )
 )

@@ -55,6 +55,7 @@ millisecond timestamp of the last time \code{poll()} returned \code{TRUE}.
 \item \href{#method-crew_class_throttle-accelerate}{\code{crew_class_throttle$accelerate()}}
 \item \href{#method-crew_class_throttle-decelerate}{\code{crew_class_throttle$decelerate()}}
 \item \href{#method-crew_class_throttle-reset}{\code{crew_class_throttle$reset()}}
+\item \href{#method-crew_class_throttle-update}{\code{crew_class_throttle$update()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -161,6 +162,27 @@ Reset the throttle object so the next \code{poll()} returns
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$reset()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_throttle-update"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_throttle-update}{}}}
+\subsection{Method \code{update()}}{
+Reset the throttle when there is activity and
+decelerate it gradually when there is no activity.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$update(activity)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{activity}}{\code{TRUE} if there is activity, \code{FALSE} otherwise.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

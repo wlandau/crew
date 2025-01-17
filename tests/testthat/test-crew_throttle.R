@@ -70,3 +70,25 @@ test_that("crew_throttle decelerate()", {
   x$reset()
   expect_equal(x$seconds_interval, 10)
 })
+
+test_that("crew_throttle update()", {
+  x <- crew_throttle(
+    seconds_max = 25,
+    seconds_min = 1,
+    seconds_start = 10,
+    base = 2
+  )
+  expect_equal(x$seconds_interval, 10)
+  expect_false(is.finite(x$polled))
+  x$update(activity = FALSE)
+  expect_equal(x$seconds_interval, 20)
+  expect_false(is.finite(x$polled))
+  expect_true(x$poll())
+  expect_true(is.finite(x$polled))
+  x$update(activity = FALSE)
+  expect_equal(x$seconds_interval, 25)
+  expect_true(is.finite(x$polled))
+  x$update(activity = TRUE)
+  expect_equal(x$seconds_interval, 10)
+  expect_false(is.finite(x$polled))
+})

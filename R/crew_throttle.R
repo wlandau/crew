@@ -14,6 +14,9 @@
 #'   in the throttle object, respectively,
 #'   by dividing or multiplying by `base` (but keeping the wait time
 #'   between `seconds_min` and `seconds_max`).
+#'   In practice, `crew` calls `reset()` instead of `update()`
+#'   in order to respond quicker to surges of activity (see the
+#'   `update()` method).
 #' @return An `R6` object with throttle configuration settings and methods.
 #' @param seconds_max Positive numeric scalar, maximum throttling interval
 #    in seconds.
@@ -207,6 +210,18 @@ crew_class_throttle <- R6::R6Class(
     reset = function() {
       private$.seconds_interval <- .subset2(private, ".seconds_start")
       private$.polled <- -Inf
+      invisible()
+    },
+    #' @description Reset the throttle when there is activity and
+    #'   decelerate it gradually when there is no activity.
+    #' @return `NULL` (invisibly).
+    #' @param activity `TRUE` if there is activity, `FALSE` otherwise.
+    update = function(activity) {
+      if (activity) {
+        .subset2(self, "reset")()
+      } else {
+        .subset2(self, "decelerate")()
+      }
       invisible()
     }
   )

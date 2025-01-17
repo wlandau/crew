@@ -47,6 +47,9 @@ or increases the wait time with methods \code{accelerate()} and \code{decelerate
 in the throttle object, respectively,
 by dividing or multiplying by \code{base} (but keeping the wait time
 between \code{seconds_min} and \code{seconds_max}).
+In practice, \code{crew} calls \code{reset()} instead of \code{update()}
+in order to respond quicker to surges of activity (see the
+\code{update()} method).
 }
 \examples{
 throttle <- crew_throttle(seconds_max = 1)

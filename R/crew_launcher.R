@@ -679,11 +679,7 @@ crew_class_launcher <- R6::R6Class(
       demand <- status$mirai["awaiting"] + status$mirai["executing"]
       increment <- min(self$workers - supply, max(0L, demand - supply))
       replicate(increment, self$launch(), simplify = FALSE)
-      if (length(status$events) > 0L || increment > 0L) {
-        private$.throttle$accelerate()
-      } else {
-        private$.throttle$decelerate()
-      }
+      private$.throttle$update(length(status$events) > 0L || increment > 0L)
       invisible()
     },
     #' @description Abstract worker launch method.

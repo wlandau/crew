@@ -1364,8 +1364,17 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     terminate = function(controllers = NULL) {
       self$cancel(all = TRUE)
-      private$.client$terminate()
-      private$.launcher$terminate()
+      if_any(
+        condition = isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
+        true = {
+          private$.launcher$terminate()
+          private$.client$terminate()
+        },
+        false = {
+          private$.client$terminate()
+          private$.launcher$terminate()
+        }
+      )
       private$.tasks <- list()
       private$.pushed <- NULL
       private$.popped <- NULL

@@ -80,35 +80,42 @@ mirai_resolved <- function(task) {
   !is_mirai(task) || !nanonext::.unresolved(task)
 }
 
-mirai_resolve <- function(task, action) {
+mirai_resolve <- function(task, launching) {
   if (mirai::is_mirai(task)) {
     mirai::call_mirai_(task)
-    mirai_assert(task, action)
+    mirai_assert(task, launching)
     task$data
   } else {
     task
   }
 }
 
-mirai_wait <- function(tasks, action) {
+mirai_wait <- function(tasks, launching) {
   mirai::call_mirai_(tasks)
-  lapply(tasks, mirai_assert, action = action)
+  lapply(tasks, mirai_assert, launching = launching)
   invisible()
 }
 
-mirai_assert <- function(task, action) {
+mirai_assert <- function(task, launching) {
   if (!mirai::is_mirai(task)) {
     return()
   }
   data <- .subset2(task, "data")
   if (mirai::is_mirai_error(data)) {
-    crew_error(
-      message = paste(
-        "Error asynchronously",
-        action,
-        "a worker:",
-        as.character(data)
+    if (launching) {
+      crew_error(
+        message = paste(
+          "Error asynchronously launching a worker:",
+          as.character(data)
+        )
       )
-    )
+    } else {
+      crew_warning(
+        message = paste(
+          "Error asynchronously terminating a worker:",
+          as.character(data)
+        )
+      )
+    }
   }
 }

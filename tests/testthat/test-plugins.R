@@ -316,7 +316,7 @@ crew_test("custom launcher with async internal launcher tasks", {
         )
       },
       terminate_worker = function(handle) {
-        pid <- handle$data$pid
+        pid <- handle$pid
         self$async$eval(
           command = {
             crew::crew_terminate_process(pid)
@@ -399,8 +399,8 @@ crew_test("custom launcher with async internal launcher tasks", {
     seconds_timeout = 15
   )
   handle <- controller$launcher$instances$handle[[1L]]
-  pid <- handle$data$pid
+  pid <- handle$pid
   expect_equal(envir$pid, pid)
-  expect_equal(handle$data$status, "started")
+  expect_equal(handle$status, "started")
   controller$launcher$terminate()
 })

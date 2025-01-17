@@ -50,7 +50,7 @@ task
 #>   name    command result seconds  seed algorithm error trace warnings
 #>   <chr>   <chr>   <list>   <dbl> <int> <chr>     <chr> <chr> <chr>
 #> 1 get pid NA      <int>        0    NA NA        NA    NA    NA
-#> # ℹ 3 more variables: launcher <chr>, worker <int>, instance <chr>
+#> # ℹ 2 more variables: launcher <chr>, worker <int>
 ```
 
 Alternatively, `wait()` is a loop that repeatedly checks tasks and launches workers until all tasks complete.
@@ -84,6 +84,7 @@ Here is the full list of output in the `task` object returned by `pop()`.
 * `warnings`: the first 2048 characters. of the text of
   warning messages that the task may have generated, `NA` otherwise.
 * `launcher`: name of the `crew` launcher where the task ran.
+* `worker`: name of the `crew` worker that the task ran on.
 
 If `seed` and `algorithm` are both non-missing in the output,
 then you can recover the pseudo-random number generator state
@@ -119,7 +120,7 @@ results
 #>   <chr> <chr>   <list>      <dbl> <int> <chr>     <chr> <chr> <chr>
 #> 1 1     NA      <dbl [1]>       0    NA NA        NA    NA    NA
 #> 2 2     NA      <dbl [1]>       0    NA NA        NA    NA    NA
-#> # ℹ 3 more variables: launcher <chr>, worker <int>, instance <chr>
+#> # ℹ 2 more variables: launcher <chr>, worker <int>
 
 as.numeric(results$result)
 #> [1] 14 18
@@ -154,7 +155,7 @@ controller$collect()
 #>   <chr> <chr>   <list>      <dbl> <int> <chr>     <chr> <chr> <chr>
 #> 1 1     NA      <dbl [1]>       0    NA NA        NA    NA    NA
 #> 2 2     NA      <dbl [1]>       0    NA NA        NA    NA    NA
-#> # ℹ 3 more variables: launcher <chr>, worker <int>, instance <chr>
+#> # ℹ 2 more variables: launcher <chr>, worker <int>
 ```
 
 However, there are subtle differences between the synchronous and asynchronous functional programming methods:
@@ -164,37 +165,14 @@ However, there are subtle differences between the synchronous and asynchronous f
 
 # Summaries
 
-The controller summary shows how many tasks each worker ran, how many total seconds it spent running tasks, and how many tasks threw warnings and errors.
+The controller summary shows how many tasks were completed and popped, how many total seconds the workers spent running tasks, and how many tasks threw warnings or errors.
 
 ```r
 controller$summary()
-#> # A tibble: 2 × 6
-#>   controller worker tasks seconds errors warnings
-#>   <chr>       <int> <int>   <dbl>  <int>    <int>
-#> 1 example         1     2   0.001      0        0
-#> 2 example         2     1   0          0        0
-```
-
-The launcher summary counts the number of times each worker was launched, and it shows the total number of assigned and completed tasks from all past terminated instances of each worker. In addition, it shows whether the current worker instance was actively connected ("online") or had connected at some point during its life cycle ("discovered") as of the last call to `controller$launcher$tally()`.
-
-```r
-controller$launcher$summary()
-#> # A tibble: 2 × 6
-#>   worker launches online discovered assigned complete
-#>    <int>    <int> <lgl>  <lgl>         <int>    <int>
-#> 1      1        2 TRUE   TRUE              0        0
-#> 2      2        1 TRUE   TRUE              0        0
-```
-
-Finally, the client summary shows up-to-date worker status from `mirai::daemons()`.
-
-```r
-controller$client$summary()
-#> # A tibble: 2 × 6
-#>   worker online instances assigned complete socket
-#>    <int> <lgl>      <int>    <int>    <int> <chr>
-#> 1      1 FALSE          1        2        2 ws://10.0.0.32:58685/1/15e07250…
-#> 2      2 FALSE          1        1        1 ws://10.0.0.32:58685/2/cb45b3d4…
+#> # A tibble: 1 × 5
+#>   controller tasks seconds errors warnings
+#>   <chr>      <int>   <dbl>  <int>    <int>
+#> 1 example        5       0      0        0
 ```
 
 # Termination
@@ -205,7 +183,7 @@ Call `terminate()` on the controller after you finish using it. `terminate()` tr
 controller$terminate()
 ```
 
-The `mirai` dispatcher process should exit on its own, but if not, you can manually terminate the process with `ps::ps_kill(p = controller$client$dispatcher)` or call `crew_clean()` to terminate any dispatchers from current or previous R sessions.
+The `mirai` dispatcher process should exit on its own, but if not, you can manually terminate the process with `ps::ps_kill(p = controller$client$dispatcher)` or call `crew_clean()` to terminate any dispatchers and local workers running on your local machine.
 
 ```r
 crew_clean()
@@ -236,10 +214,6 @@ monitor$workers()
 ```
 
 `crew_monitor_local()` only manages processes running on your local computer. To manage `crew` workers running on different computers, such as SLURM or AWS Batch, please familiarize yourself with the given computing platform, and consider using the monitor objects in the relevant third-party plugin packages such as [`crew.cluster`](https://wlandau.github.io/crew.cluster/) or [`crew.aws.batch`](https://wlandau.github.io/crew.aws.batch/). Example: <https://wlandau.github.io/crew.aws.batch/index.html#job-management>.
-
-# Logging
-
-
 
 # Tuning and auto-scaling
 

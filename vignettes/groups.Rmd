@@ -74,11 +74,11 @@ The controller group has a `summary()` method which aggregates the summaries of 
 
 ```r
 group$summary()
-#> # A tibble: 2 × 6
-#>   controller      worker tasks seconds errors warnings
-#>   <chr>            <int> <int>   <dbl>  <int>    <int>
-#> 1 persistent           1     2       0      0        0
-#> 2 semi-persistent      1     1       0      0        0
+#> # A tibble: 2 × 5
+#>   controller      tasks seconds errors warnings
+#>   <chr>           <int>   <dbl>  <int>    <int>
+#> 1 persistent          2       0      0        0
+#> 2 semi-persistent     1       0      0        0
 ```
 
 When you are finished, please call `terminate()` with no arguments to terminate all controllers in the controller group.

@@ -8,8 +8,8 @@
 #'   If `NULL`, the host defaults to the local IP address.
 #' @param port TCP port to listen for the workers. If `NULL`,
 #'   then an available ephemeral port is automatically chosen.
-#'   The controllers in a controller group can all share the same port because
-#'   each controller uses a separate websocket with a unique token.
+#'   Controllers running simultaneously on the same computer
+#'   (as in a controller group) must not share the same TCP port.
 #' @param tls A TLS configuration object from [crew_tls()].
 #' @param tls_enable Deprecated on 2023-09-15 in version 0.4.1.
 #'   Use argument `tls` instead.

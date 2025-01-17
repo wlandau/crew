@@ -463,6 +463,7 @@ crew_class_launcher <- R6::R6Class(
         )
       }
       # TODO: validate these fields when revdeps catch up.
+      # nocov start
       if (FALSE) {
         if (!is.null(private$.url)) {
           crew_assert(
@@ -473,6 +474,7 @@ crew_class_launcher <- R6::R6Class(
             nzchar(.)
           )
         }
+        # nocov end
         if (!is.null(private$.instances)) {
           crew_assert(private$.instances, is.data.frame(.))
         }

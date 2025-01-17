@@ -130,7 +130,7 @@ crew_class_controller_group <- R6::R6Class(
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
       crew_retry(
-        fun = ~{
+        fun = ~ {
           if (scale) {
             self$scale(throttle = throttle, controllers = controllers)
           }
@@ -162,7 +162,7 @@ crew_class_controller_group <- R6::R6Class(
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
       crew_retry(
-        fun = ~{
+        fun = ~ {
           if (scale) {
             self$scale(throttle = throttle, controllers = controllers)
           }

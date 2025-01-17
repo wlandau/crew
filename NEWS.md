@@ -1,8 +1,11 @@
-# crew 0.10.2.9003 (development)
+# crew 0.10.2.9004 (development)
 
 * Avoid partial match in a call to `crew_terminate_process()`.
 * Migrate to `mirai` 2.0.0 (#193).
 * Prohibit duplicated task names in `push()`.
+* Use exponential backoff in throttles.
+* Share throttles between `scale()` and `wait()` to increase responsiveness.
+* Use a unified throttle for controller groups, which requires refactoring `wait(mode = "all")` for controller groups.
 
 # crew 0.10.2
 

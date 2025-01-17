@@ -42,6 +42,7 @@ crew_test("crew_controller_group()", {
   expect_false(x$started())
   expect_equal(length(x$pids()), 1L)
   x$start()
+  expect_true(x$wait(mode = "all"))
   expect_true(x$started())
   expect_true(x$empty())
   expect_false(x$saturated())
@@ -59,6 +60,7 @@ crew_test("crew_controller_group()", {
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
+  expect_true(x$wait(mode = "all"))
   s <- x$summary()
   expect_equal(nrow(s), 2L)
   expect_equal(s$controller, c("a", "b"))

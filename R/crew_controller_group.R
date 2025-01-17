@@ -157,7 +157,7 @@ crew_class_controller_group <- R6::R6Class(
       throttle
     ) {
       if (sum(map_int(control, ~length(.x$tasks))) < 1L) {
-        return(FALSE)
+        return(TRUE)
       }
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE

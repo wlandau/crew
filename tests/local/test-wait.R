@@ -11,7 +11,6 @@ crew_test("single controller, no tasks", {
       expect_true(
         x$wait(
           mode = "all",
-          seconds_interval = 5,
           seconds_timeout = Inf
         )
       )
@@ -21,7 +20,6 @@ crew_test("single controller, no tasks", {
       expect_false(
         x$wait(
           mode = "one",
-          seconds_interval = 5,
           seconds_timeout = Inf
         )
       )

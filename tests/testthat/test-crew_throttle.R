@@ -15,7 +15,7 @@ test_that("crew_throttle poll() and reset()", {
 test_that("crew_throttle active bindings", {
   x <- crew_throttle(seconds_interval = 300)
   expect_equal(x$seconds_interval, 300)
-  expect_null(x$polled)
+  expect_false(is.finite(x$polled))
   expect_true(x$poll())
   expect_true(is.numeric(x$polled))
 })

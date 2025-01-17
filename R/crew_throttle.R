@@ -37,7 +37,7 @@ crew_class_throttle <- R6::R6Class(
   cloneable = FALSE,
   private = list(
     .seconds_interval = NULL,
-    .polled = NULL
+    .polled = -Inf
   ),
   active = list(
     #' @field seconds_interval Positive numeric of length 1,
@@ -86,9 +86,9 @@ crew_class_throttle <- R6::R6Class(
     #' @return `TRUE` if `poll()` did not return `TRUE` in the last
     #'   `seconds_interval` seconds, `FALSE` otherwise.
     poll = function() {
-      now <- nanonext::mclock()
-      last <- private$.polled %|||% -Inf
-      interval <- 1000 * private$.seconds_interval
+      now <- now()
+      last <- .subset2(private, ".polled")
+      interval <- .subset2(private, ".seconds_interval")
       out <- (now - last) > interval
       if (out) {
         private$.polled <- now
@@ -99,7 +99,7 @@ crew_class_throttle <- R6::R6Class(
     #'   `TRUE`.
     #' @return `NULL` (invisibly).
     reset = function() {
-      private$.polled <- NULL
+      private$.polled <- -Inf
       invisible()
     }
   )

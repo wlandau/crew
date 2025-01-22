@@ -640,11 +640,6 @@ crew_class_controller <- R6::R6Class(
       )
       crew_assert(scale, isTRUE(.) || isFALSE(.))
       crew_assert(throttle, isTRUE(.) || isFALSE(.))
-      .timeout <- if_any(
-        is.null(seconds_timeout),
-        NULL,
-        seconds_timeout * 1000
-      )
       names <- if_any(
         is.null(names),
         paste(
@@ -666,7 +661,6 @@ crew_class_controller <- R6::R6Class(
       }
       tasks <- list()
       push <- self$push
-      string <- deparse_safe(command)
       for (index in seq_along(names)) {
         for (name in names_iterate) {
           data[[name]] <- .subset2(.subset2(iterate, name), index)
@@ -678,14 +672,13 @@ crew_class_controller <- R6::R6Class(
         }
         tasks[[index]] <- push(
           command = command,
-          string = string,
           data = data,
           globals = globals,
           seed = task_seed,
           algorithm = algorithm,
           packages = packages,
           library = library,
-          .timeout = .timeout,
+          seconds_timeout = seconds_timeout,
           name = .subset(names, index)
         )
       }

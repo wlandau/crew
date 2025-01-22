@@ -51,8 +51,7 @@ crew_test("crew_controller_local()", {
   expect_equal(x$popped, 0L)
   task <- x$push(
     command = Sys.getenv("CREW_WORKER"),
-    name = "task",
-    save_command = TRUE
+    name = "task"
   )
   expect_s3_class(task, "mirai")
   expect_equal(x$pushed, 1L)
@@ -102,7 +101,6 @@ crew_test("crew_controller_local()", {
       globals = list(.crew_y = "c"),
       seed = 0L,
       algorithm = "L'Ecuyer-CMRG",
-      save_command = FALSE,
       seconds_timeout = 100
     )
     x$wait(seconds_timeout = 5)

@@ -81,8 +81,7 @@ crew_test("crew_controller_group()", {
   task <- x$push(
     command = ps::ps_pid(),
     name = "task_pid",
-    controller = "b",
-    save_command = TRUE
+    controller = "b"
   )
   expect_s3_class(task, "mirai")
   expect_false(x$empty())
@@ -113,8 +112,7 @@ crew_test("crew_controller_group()", {
     command = quote(ps::ps_pid()),
     substitute = FALSE,
     name = "task_pid2",
-    controller = "a",
-    save_command = FALSE
+    controller = "a"
   )
   x$wait(seconds_timeout = 5)
   envir <- new.env(parent = emptyenv())

@@ -94,22 +94,22 @@ monad_validate <- function(monad) {
 
 as_monad <- function(task, name) {
   out <- .subset2(task, "data")
-  if (!is.list(out)) {
-    out <- monad_init(
-      name = name,
-      status = if_any(
-        identical(as.integer(out), 20L),
-        "canceled",
-        "error"
-      ),
-      code = as.integer(out),
-      error = paste(
-        utils::capture.output(print(out), type = "output"),
-        collapse = "\n"
-      )
-    )
+  if (is.list(out)) {
+    return(out)
   }
-  monad_tibble(out)
+  monad_init(
+    name = name,
+    status = if_any(
+      identical(as.integer(out), 20L),
+      "canceled",
+      "error"
+    ),
+    code = as.integer(out),
+    error = paste(
+      utils::capture.output(print(out), type = "output"),
+      collapse = "\n"
+    )
+  )
 }
 
 as_monad_tibble <- function(object) {

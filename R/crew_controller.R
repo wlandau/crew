@@ -672,6 +672,7 @@ crew_class_controller <- R6::R6Class(
         }
         tasks[[index]] <- push(
           command = command,
+          substitute = FALSE,
           data = data,
           globals = globals,
           seed = task_seed,

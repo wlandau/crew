@@ -6,7 +6,6 @@
 \usage{
 crew_eval(
   command,
-  string = NULL,
   name,
   data = list(),
   globals = list(),
@@ -18,8 +17,6 @@ crew_eval(
 }
 \arguments{
 \item{command}{Language object with R code to run.}
-
-\item{string}{Optional character string with the deparsed command.}
 
 \item{name}{Character of length 1, name of the task.}
 

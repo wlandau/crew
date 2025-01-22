@@ -10,7 +10,6 @@
 #' @return A monad object with results and metadata.
 #' @param command Language object with R code to run.
 #' @param name Character of length 1, name of the task.
-#' @param string Optional character string with the deparsed command.
 #' @param data Named list of local data objects in the evaluation environment.
 #' @param globals Named list of objects to temporarily assign to the
 #'   global environment for the task.
@@ -37,7 +36,6 @@
 #' crew_eval(quote(1 + 1))
 crew_eval <- function(
   command,
-  string = NULL,
   name,
   data = list(),
   globals = list(),
@@ -104,9 +102,6 @@ crew_eval <- function(
   error <- .subset2(state, "error")
   trace <- .subset2(state, "trace")
   warnings <- .subset2(state, "warnings")
-  if (is.null(string)) {
-    string <- deparse_safe(command)
-  }
   if (is.null(seed)) {
     seed <- NA_integer_
   }
@@ -129,7 +124,7 @@ crew_eval <- function(
   }
   monad_init(
     name = name,
-    command = string,
+    command = deparse_safe(command),
     result = result,
     status = status,
     error = error,

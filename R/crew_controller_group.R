@@ -432,7 +432,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   a random name is automatically generated.
     #'   The task name must not conflict with an existing task
     #'   in the controller where it is submitted.
-    #'   To reuse the name, wait for the existing task 
+    #'   To reuse the name, wait for the existing task
     #'   to finish, then either `pop()` or `collect()` it
     #'   to remove it from its controller.
     #' @param save_command Deprecated on 2025-01-22

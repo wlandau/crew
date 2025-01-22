@@ -74,7 +74,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   })
   expect_silent(launcher$validate())
   client$start()
-  launcher$start(url = client$url)
+  launcher$start(url = client$url, profile = client$profile)
   launcher$launch()
   expect_s3_class(launcher$instances$handle[[1L]], "process")
   expect_silent(launcher$validate())
@@ -125,7 +125,7 @@ crew_test("crew_launcher_local() worker tasks_max", {
   })
   client$start()
   expect_silent(launcher$validate())
-  launcher$start(url = client$url)
+  launcher$start(url = client$url, profile = client$profile)
   launcher$launch()
   crew::crew_retry(
     ~{
@@ -170,7 +170,7 @@ crew_test("crew_launcher_local() can terminate a worker", {
     crew_test_sleep()
   })
   client$start()
-  launcher$start(url = client$url)
+  launcher$start(url = client$url, profile = client$profile)
   launcher$launch()
   handle <- launcher$instances$handle[[1L]]
   expect_s3_class(handle, "process")

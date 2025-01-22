@@ -136,7 +136,7 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local(name = client$name)
-launcher$start(url = client$url)
+launcher$start(url = client$url, profile = client$profile)
 launcher$launch()
 task <- mirai::mirai("result", .compute = client$profile)
 mirai::call_mirai_(task)

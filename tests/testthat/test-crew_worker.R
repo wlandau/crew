@@ -7,7 +7,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
   mirai::daemons(
     n = 1L,
-    url = "ws://127.0.0.1:0",
+    url = "tcp://127.0.0.1:0",
     dispatcher = TRUE
   )
   on.exit(mirai::daemons(n = 0L), add = TRUE)
@@ -48,7 +48,7 @@ crew_test("crew_worker() metrics logging to a directory", {
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
   mirai::daemons(
     n = 1L,
-    url = "ws://127.0.0.1:0",
+    url = "tcp://127.0.0.1:0",
     dispatcher = TRUE
   )
   on.exit(mirai::daemons(n = 0L), add = TRUE)

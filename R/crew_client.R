@@ -255,15 +255,8 @@ crew_class_client <- R6::R6Class(
         return(invisible())
       }
       private$.profile <- crew_random_name()
-      url <- sprintf(
-        "%s://%s:%s/%s",
-        if_any(private$.tls$mode == "none", "ws", "wss"),
-        private$.host,
-        private$.port,
-        private$.profile
-      )
       mirai::daemons(
-        url = url,
+        url = private$.tls$url(host = private$.host, port = private$.port),
         dispatcher = TRUE,
         seed = NULL,
         tls = private$.tls$client(),

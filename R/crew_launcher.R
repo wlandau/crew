@@ -82,7 +82,7 @@
 #' client <- crew_client()
 #' client$start()
 #' launcher <- crew_launcher_local()
-#' launcher$start(url = client$url)
+#' launcher$start(url = client$url, profile = client$profile)
 #' launcher$launch()
 #' task <- mirai::mirai("result", .compute = client$profile)
 #' mirai::call_mirai_(task)
@@ -179,7 +179,7 @@ launcher_empty_instances <- tibble::tibble(
 #' client <- crew_client()
 #' client$start()
 #' launcher <- crew_launcher_local()
-#' launcher$start(url = client$url)
+#' launcher$start(url = client$url, profile = client$profile)
 #' launcher$launch()
 #' task <- mirai::mirai("result", .compute = client$profile)
 #' mirai::call_mirai_(task)
@@ -339,7 +339,7 @@ crew_class_launcher <- R6::R6Class(
     #' client <- crew_client()
     #' client$start()
     #' launcher <- crew_launcher_local()
-    #' launcher$start(url = client$url)
+    #' launcher$start(url = client$url, profile = client$profile)
     #' launcher$launch()
     #' task <- mirai::mirai("result", .compute = client$profile)
     #' mirai::call_mirai_(task)
@@ -544,7 +544,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param worker Character string, name of the worker.
     #' @examples
     #' launcher <- crew_launcher_local()
-    #' launcher$start(url = "ws://127.0.0.1:57000")
+    #' launcher$start(url = "tcp://127.0.0.1:57000", profile = client$profile)
     #' launcher$call(worker = "worker_name")
     #' launcher$terminate()
     call = function(worker) {
@@ -571,18 +571,17 @@ crew_class_launcher <- R6::R6Class(
     },
     #' @description Start the launcher.
     #' @param url Character string, websocket URL for worker connections.
+    #' @param profile Character string, `mirai` compute profile.
     #' @return `NULL` (invisibly).
-    start = function(url) {
+    start = function(url, profile) {
       if (!is.null(private$.async)) {
         private$.async$terminate()
       }
       private$.async <- crew_async(workers = private$.processes)
       private$.async$start()
-      private$.throttle <- crew_throttle(
-        seconds_max = self$seconds_interval
-      )
+      private$.throttle <- crew_throttle(seconds_max = self$seconds_interval)
       private$.url <- url
-      private$.profile <- basename(url)
+      private$.profile <- profile
       private$.instances <- launcher_empty_instances
       private$.id <- 0L
       invisible()

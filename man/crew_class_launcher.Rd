@@ -12,7 +12,7 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local()
-launcher$start(url = client$url)
+launcher$start(url = client$url, profile = client$profile)
 launcher$launch()
 task <- mirai::mirai("result", .compute = client$profile)
 mirai::call_mirai_(task)
@@ -28,7 +28,7 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local()
-launcher$start(url = client$url)
+launcher$start(url = client$url, profile = client$profile)
 launcher$launch()
 task <- mirai::mirai("result", .compute = client$profile)
 mirai::call_mirai_(task)
@@ -41,7 +41,7 @@ client$terminate()
 ## ------------------------------------------------
 
 launcher <- crew_launcher_local()
-launcher$start(url = "ws://127.0.0.1:57000")
+launcher$start(url = "tcp://127.0.0.1:57000", profile = client$profile)
 launcher$call(worker = "worker_name")
 launcher$terminate()
 }
@@ -206,7 +206,7 @@ An \code{R6} object with the launcher.
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local()
-launcher$start(url = client$url)
+launcher$start(url = client$url, profile = client$profile)
 launcher$launch()
 task <- mirai::mirai("result", .compute = client$profile)
 mirai::call_mirai_(task)
@@ -282,7 +282,7 @@ Character string with a call to \code{\link[=crew_worker]{crew_worker()}}.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{launcher <- crew_launcher_local()
-launcher$start(url = "ws://127.0.0.1:57000")
+launcher$start(url = "tcp://127.0.0.1:57000", profile = client$profile)
 launcher$call(worker = "worker_name")
 launcher$terminate()
 }
@@ -297,13 +297,15 @@ launcher$terminate()
 \subsection{Method \code{start()}}{
 Start the launcher.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$start(url)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$start(url, profile)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{url}}{Character string, websocket URL for worker connections.}
+
+\item{\code{profile}}{Character string, \code{mirai} compute profile.}
 }
 \if{html}{\out{</div>}}
 }

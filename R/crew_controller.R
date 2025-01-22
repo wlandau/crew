@@ -245,7 +245,10 @@ crew_class_controller <- R6::R6Class(
     start = function(controllers = NULL) {
       if (!isTRUE(.subset2(.subset2(self, "client"), "started"))) {
         private$.client$start()
-        private$.launcher$start(url = private$.client$url)
+        private$.launcher$start(
+          url = private$.client$url,
+          profile = private$.client$profile
+        )
         private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
         private$.pushed <- 0L
         private$.popped <- 0L

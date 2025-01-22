@@ -7,6 +7,7 @@
 * Share throttles between `scale()` and `wait()` to increase responsiveness.
 * Use a unified throttle for controller groups, which requires refactoring `wait(mode = "all")` for controller groups.
 * Name every task and record every command.
+* Switch URLs from `ws://` (and `wss://`) to `tcp://` (and `tls+tcp://`) (#193).
 
 # crew 0.10.2
 

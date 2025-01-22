@@ -113,3 +113,16 @@ test_that("crew_tls_assert_certificate()", {
   )
   expect_silent(crew_tls_assert_certificate(temp))
 })
+
+test_that("crew_tls() URL", {
+  x <- crew_tls(mode = "none")
+  expect_equal(
+    x$url(host = "10.0.0.7", port = 5700L),
+    "tcp://10.0.0.7:5700"
+  )
+  x <- crew_tls(mode = "automatic")
+  expect_equal(
+    x$url(host = "10.0.0.7", port = 0L),
+    "tls+tcp://10.0.0.7:0"
+  )
+})

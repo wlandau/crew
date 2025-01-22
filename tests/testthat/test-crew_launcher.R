@@ -8,7 +8,7 @@ crew_test("validate a started launcher", {
   skip_on_cran()
   skip_on_os("windows")
   out <- crew_launcher(processes = 1L)
-  out$start(url = "url")
+  out$start(url = "url", profile = "profile")
   on.exit(out$terminate())
   expect_s3_class(out$async, "crew_class_async")
   expect_s3_class(out$throttle, "crew_class_throttle")
@@ -59,7 +59,7 @@ crew_test("preemptive async termination for covr", {
     private$.async$terminate()
     out$terminate()
   })
-  out$start(url = "url")
+  out$start(url = "url", profile = "profile")
   expect_true(TRUE)
 })
 
@@ -95,7 +95,7 @@ crew_test("launcher settings", {
     garbage_collection = TRUE,
     tls = crew_tls()
   )
-  launcher$start(url = "url")
+  launcher$start(url = "url", profile = "profile")
   on.exit(launcher$terminate())
   expect_equal(launcher$name, "my_launcher_name")
   settings <- launcher$settings()
@@ -123,7 +123,7 @@ crew_test("launcher alternative cleanup", {
     garbage_collection = TRUE,
     tls = crew_tls()
   )
-  launcher$start(url = "url")
+  launcher$start(url = "url", profile = "profile")
   on.exit(launcher$terminate())
   settings <- launcher$settings()
   expect_equal(settings$cleanup, 10L)
@@ -144,7 +144,7 @@ crew_test("launcher alternative cleanup 2", {
     garbage_collection = FALSE,
     tls = crew_tls()
   )
-  launcher$start(url = "url")
+  launcher$start(url = "url", profile = "profile")
   on.exit(launcher$terminate())
   settings <- launcher$settings()
   expect_equal(settings$cleanup, 5L)
@@ -165,7 +165,7 @@ crew_test("launcher alternative cleanup 3", {
     garbage_collection = FALSE,
     tls = crew_tls()
   )
-  launcher$start(url = "url")
+  launcher$start(url = "url", profile = "profile")
   on.exit(launcher$terminate())
   settings <- launcher$settings()
   expect_equal(settings$cleanup, 0L)
@@ -188,7 +188,7 @@ crew_test("launcher call", {
     garbage_collection = FALSE,
     tls = crew_tls()
   )
-  launcher$start(url = "url")
+  launcher$start(url = "url", profile = "profile")
   on.exit(launcher$terminate())
   out <- launcher$call(worker = "cba033e58")
   expect_true(is.character(out))
@@ -214,7 +214,7 @@ crew_test("launcher update() with no new events", {
     seconds_launch = 9999,
     seconds_interval = 1
   )
-  launcher$start(url = "url")
+  launcher$start(url = "url", profile = "profile")
   on.exit(launcher$terminate())
   private <- crew_private(launcher)
   private$.instances <- instances
@@ -244,7 +244,7 @@ crew_test("launcher update() with connects", {
     seconds_launch = 9999,
     seconds_interval = 1
   )
-  launcher$start(url = "url")
+  launcher$start(url = "url", profile = "profile")
   on.exit(launcher$terminate())
   private <- crew_private(launcher)
   private$.instances <- instances
@@ -277,7 +277,7 @@ crew_test("launcher update() with connects and disconnects", {
     seconds_launch = 9999,
     seconds_interval = 1
   )
-  launcher$start(url = "url")
+  launcher$start(url = "url", profile = "profile")
   on.exit(launcher$terminate())
   private <- crew_private(launcher)
   private$.instances <- instances
@@ -311,7 +311,7 @@ crew_test("launcher update() with just disconnects", {
     seconds_launch = 9999,
     seconds_interval = 1
   )
-  launcher$start(url = "url")
+  launcher$start(url = "url", profile = "profile")
   on.exit(launcher$terminate())
   private <- crew_private(launcher)
   private$.instances <- instances

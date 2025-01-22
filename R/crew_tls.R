@@ -245,6 +245,15 @@ crew_class_tls <- R6::R6Class(
       } else if (private$.mode == "custom") {
         return(c(private$.read_certificates(), ""))
       }
+    },
+    #' @description Form the URL for `crew` worker connections.
+    #' @return Character string with the URL.
+    #' @param host Character string with the host name or IP address.
+    #' @param port Non-negative integer with the port number
+    #'   (0 to let NNG select a random ephemeral port).
+    url = function(host, port) {
+      prefix <- if_any(private$.mode == "none", "tcp", "tls+tcp")
+      sprintf("%s://%s:%s", prefix, host, port)
     }
   )
 )

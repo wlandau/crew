@@ -11,6 +11,7 @@ crew_test("warnings and errors", {
     crew_test_sleep()
   })
   expect_silent(x$validate())
+  expect_null(x$cancel())
   expect_false(x$client$started)
   x$start()
   expect_equal(x$summary()$tasks, 0L)

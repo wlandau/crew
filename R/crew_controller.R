@@ -246,7 +246,7 @@ crew_class_controller <- R6::R6Class(
       if (!isTRUE(.subset2(.subset2(self, "client"), "started"))) {
         private$.client$start()
         private$.launcher$start(url = private$.client$url)
-        private$.tasks <- list()
+        private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
         private$.pushed <- 0L
         private$.popped <- 0L
         private$.summary <- list(
@@ -431,7 +431,8 @@ crew_class_controller <- R6::R6Class(
       if (is.null(name)) {
         name <- basename(tempfile(pattern = "unnamed_task_"))
       }
-      if (!is.null(.subset2(.subset2(private, ".tasks"), name))) {
+      tasks <- .subset2(private, ".tasks")
+      if (!is.null(.subset2(tasks, name))) {
         crew_error(
           message = paste(
             "crew task name",
@@ -457,7 +458,7 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = .subset2(.subset2(private, ".client"), "profile")
       )
-      private$.tasks[[name]] <- task
+      tasks[[name]] <- task
       private$.pushed <- .subset2(self, "pushed") + 1L
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
@@ -902,7 +903,7 @@ crew_class_controller <- R6::R6Class(
       summary_warnings <- sum(!is.na(out$warnings))
       summary <- private$.summary
       on.exit({
-        private$.tasks <- list()
+        private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
         private$.popped <- private$.popped + total
         private$.summary$tasks <- summary$tasks + length(tasks)
         private$.summary$seconds <- summary$seconds + seconds
@@ -1030,20 +1031,20 @@ crew_class_controller <- R6::R6Class(
       }
       tasks <- .subset2(self, "tasks")
       n_tasks <- length(tasks)
+      names <- names(tasks)
       if (n_tasks < 1L) {
         return(NULL)
       }
       task <- NULL
-      name <- NULL
-      index_delete <- NULL
-      for (index in seq(n_tasks)) {
-        object <- .subset2(tasks, index)
+      index <- 1L
+      while (index <= n_tasks) {
+        name <- .subset(names, index)
+        object <- .subset2(tasks, name)
         if (!nanonext::.unresolved(object)) {
           task <- object
-          name <- names(tasks)[index]
-          index_delete <- index
           break
         }
+        index <- index + 1L
       }
       if (is.null(task)) {
         return(NULL)
@@ -1051,7 +1052,7 @@ crew_class_controller <- R6::R6Class(
       out <- as_monad(task, name = name)
       summary <- .subset2(private, ".summary")
       on.exit({
-        private$.tasks[[index_delete]] <- NULL
+        remove(list = name, envir = tasks)
         private$.popped <- .subset2(self, "popped") + 1L
       })
       if (anyNA(.subset2(out, "launcher"))) {
@@ -1337,10 +1338,16 @@ crew_class_controller <- R6::R6Class(
         )
       )
       tasks <- .subset2(private, ".tasks")
-      if (!all) {
-        tasks <- tasks[intersect(names(tasks), names)]
+      if (is.null(tasks)) {
+        return(invisible())
       }
-      mirai::stop_mirai(tasks)
+      if (all) {
+        mirai::stop_mirai(as.list(tasks))
+      }
+      names <- intersect(names, names(tasks))
+      for (name in names) {
+        mirai::stop_mirai(.subset2(tasks, name))
+      }
       invisible()
     },
     #' @description Get the process IDs of the local process and the
@@ -1370,7 +1377,7 @@ crew_class_controller <- R6::R6Class(
           private$.launcher$terminate() # nocov
         }
       )
-      private$.tasks <- list()
+      private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
       private$.pushed <- NULL
       private$.popped <- NULL
       private$.autoscaling <- FALSE

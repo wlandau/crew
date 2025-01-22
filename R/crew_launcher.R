@@ -680,8 +680,15 @@ crew_class_launcher <- R6::R6Class(
       self$update(status = status)
       supply <- nrow(private$.instances)
       demand <- status$mirai["awaiting"] + status$mirai["executing"]
-      increment <- min(self$workers - supply, max(0L, demand - supply))
-      replicate(increment, self$launch(), simplify = FALSE)
+      increment <- 0L
+      if (!anyNA(demand)) {
+        increment <- min(self$workers - supply, max(0L, demand - supply))
+        index <- 1L
+        while (index <= increment) {
+          self$launch()
+          index <- index + 1L
+        }
+      }
       activity <- length(status$events) > 0L || increment > 0L
       private$.throttle$update(activity = activity)
       invisible(activity)

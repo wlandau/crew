@@ -157,7 +157,7 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
   x$push(command = command, substitute = FALSE, name = "substitute")
   x$wait(seconds_timeout = 10)
   # just the mirai task data
-  out <- x$tasks[[1L]]$data
+  out <- as.list(x$tasks)[[1L]]$data
   expect_equal(out$result[[1L]], 5L)
   expect_equal(out$name, "substitute")
   expect_true(is.numeric(out$seconds))

@@ -457,12 +457,8 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = .subset2(.subset2(private, ".client"), "profile")
       )
-      on.exit({
-        n <- length(.subset2(self, "tasks")) + 1L
-        private$.tasks[[n]] <- task
-        names(private$.tasks)[n] <- name
-        private$.pushed <- .subset2(self, "pushed") + 1L
-      })
+      private$.tasks[[name]] <- task
+      private$.pushed <- .subset2(self, "pushed") + 1L
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
       }
@@ -670,7 +666,8 @@ crew_class_controller <- R6::R6Class(
         } else {
           task_seed <- seed - (sign * index)
         }
-        tasks[[index]] <- push(
+        name <- .subset(names, index)
+        tasks[[name]] <- push(
           command = command,
           substitute = FALSE,
           data = data,
@@ -680,7 +677,7 @@ crew_class_controller <- R6::R6Class(
           packages = packages,
           library = library,
           seconds_timeout = seconds_timeout,
-          name = .subset(names, index)
+          name = name
         )
       }
       if (scale) {
@@ -829,7 +826,7 @@ crew_class_controller <- R6::R6Class(
       if (substitute) {
         command <- substitute(command)
       }
-      self$walk(
+      tasks <- self$walk(
         command = command,
         iterate = iterate,
         data = data,
@@ -844,12 +841,7 @@ crew_class_controller <- R6::R6Class(
         scale = scale,
         throttle = throttle
       )
-      names <- if_any(
-        is.null(names),
-        as.character(seq_along(iterate[[1L]])),
-        iterate[[names]]
-      )
-      tasks <- private$.tasks
+      names <- names(tasks)
       total <- length(tasks)
       relay <- .subset2(.subset2(self, "client"), "relay")
       throttle_object <- .subset2(.subset2(self, "launcher"), "throttle")

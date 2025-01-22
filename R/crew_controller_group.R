@@ -428,12 +428,15 @@ crew_class_controller_group <- R6::R6Class(
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
-    #' @param name Optional name of the task. Replaced with a random name
-    #'   if `NULL` or in conflict with an existing name in the task list.
-    #' @param save_command Logical of length 1. If `TRUE`, the controller
-    #'   deparses the command and returns it with the output on `pop()`.
-    #'   If `FALSE` (default), the controller skips this step to
-    #'   increase speed.
+    #' @param name Character string, name of the task. If `NULL`,
+    #'   a random name is automatically generated.
+    #'   The task name must not conflict with an existing task
+    #'   in the controller where it is submitted.
+    #'   To reuse the name, wait for the existing task 
+    #'   to finish, then either `pop()` or `collect()` it
+    #'   to remove it from its controller.
+    #' @param save_command Deprecated on 2025-01-22
+    #'   (`crew` version 0.10.2.9004).
     #' @param controller Character of length 1,
     #'   name of the controller to submit the task.
     #'   If `NULL`, the controller defaults to the
@@ -450,8 +453,8 @@ crew_class_controller_group <- R6::R6Class(
       seconds_timeout = NULL,
       scale = TRUE,
       throttle = TRUE,
-      name = NA_character_,
-      save_command = FALSE,
+      name = NULL,
+      save_command = NULL,
       controller = NULL
     ) {
       if (substitute) {
@@ -473,8 +476,7 @@ crew_class_controller_group <- R6::R6Class(
         seconds_timeout = seconds_timeout,
         scale = scale,
         throttle = throttle,
-        name = name,
-        save_command = save_command
+        name = name
       )
     },
     #' @description Apply a single command to multiple inputs,
@@ -541,8 +543,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @param names Optional character of length 1, name of the element of
     #'   `iterate` with names for the tasks. If `names` is supplied,
     #'   then `iterate[[names]]` must be a character vector.
-    #' @param save_command Logical of length 1, whether to store
-    #'   a text string version of the R command in the output.
+    #' @param save_command Deprecated on 2025-01-22
+    #'   (`crew` version 0.10.2.9004).
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
@@ -565,7 +567,7 @@ crew_class_controller_group <- R6::R6Class(
       library = NULL,
       seconds_timeout = NULL,
       names = NULL,
-      save_command = FALSE,
+      save_command = NULL,
       scale = TRUE,
       throttle = TRUE,
       controller = NULL
@@ -587,7 +589,6 @@ crew_class_controller_group <- R6::R6Class(
         library = library,
         seconds_timeout = seconds_timeout,
         names = names,
-        save_command = save_command,
         scale = scale,
         throttle = throttle
       )
@@ -658,8 +659,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @param names Optional character of length 1, name of the element of
     #'   `iterate` with names for the tasks. If `names` is supplied,
     #'   then `iterate[[names]]` must be a character vector.
-    #' @param save_command Logical of length 1, whether to store
-    #'   a text string version of the R command in the output.
+    #' @param save_command Deprecated on 2025-01-22
+    #'   (`crew` version 0.10.2.9004).
     #' @param error Character vector of length 1, choice of action if
     #'   a task has an error. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
@@ -697,7 +698,7 @@ crew_class_controller_group <- R6::R6Class(
       seconds_interval = NULL,
       seconds_timeout = NULL,
       names = NULL,
-      save_command = FALSE,
+      save_command = NULL,
       error = "stop",
       warnings = TRUE,
       verbose = interactive(),
@@ -705,6 +706,14 @@ crew_class_controller_group <- R6::R6Class(
       throttle = TRUE,
       controller = NULL
     ) {
+      crew_deprecate(
+        name = "save_command",
+        date = "2025-01-22",
+        version = "0.10.2.9004",
+        alternative = "none (no longer used)",
+        condition = "warning",
+        value = save_command
+      )
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
       if (substitute) {
         command <- substitute(command)
@@ -722,7 +731,6 @@ crew_class_controller_group <- R6::R6Class(
         library = library,
         seconds_timeout = seconds_timeout,
         names = names,
-        save_command = save_command,
         error = error,
         warnings = warnings,
         verbose = verbose,

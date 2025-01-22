@@ -1364,7 +1364,6 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     terminate = function(controllers = NULL) {
-      self$cancel(all = TRUE)
       # https://github.com/r-lib/covr/issues/445#issuecomment-689032236
       if_any(
         condition = isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),

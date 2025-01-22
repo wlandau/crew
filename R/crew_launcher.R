@@ -544,7 +544,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param worker Character string, name of the worker.
     #' @examples
     #' launcher <- crew_launcher_local()
-    #' launcher$start(url = "tcp://127.0.0.1:57000", profile = client$profile)
+    #' launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
     #' launcher$call(worker = "worker_name")
     #' launcher$terminate()
     call = function(worker) {

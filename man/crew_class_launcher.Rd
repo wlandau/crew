@@ -41,7 +41,7 @@ client$terminate()
 ## ------------------------------------------------
 
 launcher <- crew_launcher_local()
-launcher$start(url = "tcp://127.0.0.1:57000", profile = client$profile)
+launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
 launcher$call(worker = "worker_name")
 launcher$terminate()
 }
@@ -282,7 +282,7 @@ Character string with a call to \code{\link[=crew_worker]{crew_worker()}}.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{launcher <- crew_launcher_local()
-launcher$start(url = "tcp://127.0.0.1:57000", profile = client$profile)
+launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
 launcher$call(worker = "worker_name")
 launcher$terminate()
 }

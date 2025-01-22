@@ -67,40 +67,6 @@ crew_class_controller <- R6::R6Class(
     .error = NULL,
     .backlog = NULL,
     .autoscaling = NULL,
-    .shove = function(
-      command,
-      data = list(),
-      globals = list(),
-      seed = NULL,
-      algorithm = NULL,
-      packages = character(0),
-      library = NULL,
-      .timeout = NULL,
-      name = NA_character_,
-      string = NA_character_
-    ) {
-      task <- mirai::mirai(
-        .expr = expr_crew_eval,
-        .args = list(
-          name = name,
-          command = command,
-          string = string,
-          data = data,
-          globals = globals,
-          seed = seed,
-          algorithm = algorithm,
-          packages = packages,
-          library = library
-        ),
-        .timeout = .timeout,
-        .compute = .subset2(.subset2(private, ".client"), "profile")
-      )
-      on.exit({
-        private$.tasks[[length(.subset2(self, "tasks")) + 1L]] <- task
-        private$.pushed <- .subset2(self, "pushed") + 1L
-      })
-      invisible(task)
-    },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
         private$.client$relay$wait(throttle = private$.launcher$throttle)
@@ -428,12 +394,13 @@ crew_class_controller <- R6::R6Class(
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
-    #' @param name Optional name of the task. Must be a character string
-    #'   or `NA`.
-    #' @param save_command Logical of length 1. If `TRUE`, the controller
-    #'   deparses the command and returns it with the output on `pop()`.
-    #'   If `FALSE` (default), the controller skips this step to
-    #'   increase speed.
+    #' @param name Character string, name of the task. If `NULL`, then
+    #'   a random name is generated automatically.
+    #'   The name of the task must not conflict with the name of another
+    #'   task pushed to the controller. Any previous task with the same name
+    #'   must first be popped before a new task with that name can be pushed.
+    #' @param save_command Deprecated on 2025-01-22 (`crew` version
+    #'   0.10.2.9004) and no longer used.
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     push = function(
@@ -448,40 +415,22 @@ crew_class_controller <- R6::R6Class(
       seconds_timeout = NULL,
       scale = TRUE,
       throttle = TRUE,
-      name = NA_character_,
-      save_command = FALSE,
+      name = NULL,
+      save_command = NULL,
       controller = NULL
     ) {
       .subset2(self, "start")()
       if (substitute) {
         command <- substitute(command)
       }
-      if (save_command) {
-        string <- deparse_safe(command)
-      } else {
-        string <- NA_character_
-      }
       if (is.null(seconds_timeout)) {
         .timeout <- NULL
       } else {
         .timeout <- seconds_timeout * 1000
       }
-      task <- mirai::mirai(
-        .expr = expr_crew_eval,
-        .args = list(
-          name = name,
-          command = command,
-          string = string,
-          data = data,
-          globals = globals,
-          seed = seed,
-          algorithm = algorithm,
-          packages = packages,
-          library = library
-        ),
-        .timeout = .timeout,
-        .compute = .subset2(.subset2(private, ".client"), "profile")
-      )
+      if (is.null(name)) {
+        name <- basename(tempfile(pattern = "unnamed_task_"))
+      }
       if (!is.null(.subset2(.subset2(private, ".tasks"), name))) {
         crew_error(
           message = paste(
@@ -493,6 +442,21 @@ crew_class_controller <- R6::R6Class(
           )
         )
       }
+      task <- mirai::mirai(
+        .expr = expr_crew_eval,
+        .args = list(
+          name = name,
+          command = command,
+          data = data,
+          globals = globals,
+          seed = seed,
+          algorithm = algorithm,
+          packages = packages,
+          library = library
+        ),
+        .timeout = .timeout,
+        .compute = .subset2(.subset2(private, ".client"), "profile")
+      )
       on.exit({
         n <- length(.subset2(self, "tasks")) + 1L
         private$.tasks[[n]] <- task
@@ -568,8 +532,8 @@ crew_class_controller <- R6::R6Class(
     #' @param names Optional character of length 1, name of the element of
     #'   `iterate` with names for the tasks. If `names` is supplied,
     #'   then `iterate[[names]]` must be a character vector.
-    #' @param save_command Logical of length 1, whether to store
-    #'   a text string version of the R command in the output.
+    #' @param save_command Deprecated on 2025-01-22 (`crew` version
+    #'   0.10.2.9004). The command is always saved now.
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
@@ -590,17 +554,24 @@ crew_class_controller <- R6::R6Class(
       library = NULL,
       seconds_timeout = NULL,
       names = NULL,
-      save_command = FALSE,
+      save_command = NULL,
       scale = TRUE,
       throttle = TRUE,
       controller = NULL
     ) {
       .subset2(self, "start")()
+      crew_deprecate(
+        name = "save_command",
+        date = "2025-01-22",
+        version = "0.10.2.9004",
+        alternative = "none (no longer needed)",
+        condition = "warning",
+        value = save_command
+      )
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
       if (substitute) {
         command <- substitute(command)
       }
-      crew_assert(save_command, isTRUE(.) || isFALSE(.))
       crew_assert(
         iterate,
         is.list(.),
@@ -669,7 +640,6 @@ crew_class_controller <- R6::R6Class(
       )
       crew_assert(scale, isTRUE(.) || isFALSE(.))
       crew_assert(throttle, isTRUE(.) || isFALSE(.))
-      string <- if_any(save_command, deparse_safe(command), NA_character_)
       .timeout <- if_any(
         is.null(seconds_timeout),
         NULL,
@@ -677,7 +647,11 @@ crew_class_controller <- R6::R6Class(
       )
       names <- if_any(
         is.null(names),
-        as.character(seq_along(iterate[[1L]])),
+        paste(
+          basename(tempfile(pattern = "unnamed_task_")),
+          as.character(seq_along(iterate[[1L]])),
+          sep = "_"
+        ),
         iterate[[names]]
       )
       crew_assert(
@@ -691,6 +665,8 @@ crew_class_controller <- R6::R6Class(
         seed <- 1L
       }
       tasks <- list()
+      push <- self$push
+      string <- deparse_safe(command)
       for (index in seq_along(names)) {
         for (name in names_iterate) {
           data[[name]] <- .subset2(.subset2(iterate, name), index)
@@ -700,7 +676,7 @@ crew_class_controller <- R6::R6Class(
         } else {
           task_seed <- seed - (sign * index)
         }
-        tasks[[index]] <- .subset2(private, ".shove")(
+        tasks[[index]] <- push(
           command = command,
           string = string,
           data = data,
@@ -714,7 +690,7 @@ crew_class_controller <- R6::R6Class(
         )
       }
       if (scale) {
-        .subset2(self, "scale")(throttle = throttle)
+        self$scale(throttle = throttle)
       }
       invisible(tasks)
     },
@@ -789,8 +765,8 @@ crew_class_controller <- R6::R6Class(
     #' @param names Optional character of length 1, name of the element of
     #'   `iterate` with names for the tasks. If `names` is supplied,
     #'   then `iterate[[names]]` must be a character vector.
-    #' @param save_command Logical of length 1, whether to store
-    #'   a text string version of the R command in the output.
+    #' @param save_command Deprecated on 2025-01-22 (`crew` version
+    #'   0.10.2.9004). The command is always saved now.
     #' @param error Character of length 1, choice of action if
     #'   a task has an error. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
@@ -826,7 +802,7 @@ crew_class_controller <- R6::R6Class(
       seconds_interval = NULL,
       seconds_timeout = NULL,
       names = NULL,
-      save_command = FALSE,
+      save_command = NULL,
       error = "stop",
       warnings = TRUE,
       verbose = interactive(),
@@ -841,6 +817,14 @@ crew_class_controller <- R6::R6Class(
         alternative = "none (no longer used)",
         condition = "warning",
         value = seconds_interval
+      )
+      crew_deprecate(
+        name = "save_command",
+        date = "2025-01-22",
+        version = "0.10.2.9004",
+        alternative = "none (no longer needed)",
+        condition = "warning",
+        value = save_command
       )
       crew_assert(
         length(private$.tasks) < 1L,
@@ -863,7 +847,6 @@ crew_class_controller <- R6::R6Class(
         library = library,
         seconds_timeout = seconds_timeout,
         names = names,
-        save_command = save_command,
         scale = scale,
         throttle = throttle
       )
@@ -980,8 +963,7 @@ crew_class_controller <- R6::R6Class(
     #' @return If there is no task to collect, return `NULL`. Otherwise,
     #'   return a one-row `tibble` with the following columns.
     #'   * `name`: the task name if given.
-    #'   * `command`: a character string with the R command if `save_command`
-    #'     was set to `TRUE` in `push()`.
+    #'   * `command`: a character string with the R command.
     #'   * `result`: a list containing the return value of the R command.
     #'   * `seconds`: number of seconds that the task ran.
     #'   * `seed`: the single integer originally supplied to `push()`,

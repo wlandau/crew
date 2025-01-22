@@ -2,14 +2,14 @@ monad_init <- function(
   name = NA_character_,
   command = NA_character_,
   result = NA,
+  status = NA_character_,
+  error = NA_character_,
+  code = NA_integer_,
+  trace = NA_character_,
+  warnings = NA_character_,
   seconds = NA_real_,
   seed = NA_integer_,
   algorithm = NA_character_,
-  status = NA_character_,
-  code = NA_integer_,
-  error = NA_character_,
-  trace = NA_character_,
-  warnings = NA_character_,
   launcher = NA_character_,
   worker = NA_character_
 ) {
@@ -17,14 +17,14 @@ monad_init <- function(
     name = name,
     command = command,
     result = list(result),
+    status = status,
+    error = error,
+    code = code,
+    trace = trace,
+    warnings = warnings,
     seconds = seconds,
     seed = seed,
     algorithm = algorithm,
-    status = status,
-    code = code,
-    error = error,
-    trace = trace,
-    warnings = warnings,
     launcher = launcher,
     worker = worker
   )
@@ -35,36 +35,38 @@ monad_new <- function(
   name = NULL,
   command = NULL,
   result = NULL,
+  status = NULL,
+  error = NULL,
+  code = NULL,
+  trace = NULL,
+  warnings = NULL,
   seconds = NULL,
   seed = NULL,
   algorithm = NULL,
-  status = NULL,
-  code = NULL,
-  error = NULL,
-  trace = NULL,
-  warnings = NULL,
   launcher = NULL,
   worker = NULL
 ) {
-  list(
-    name = name,
-    command = command,
-    result = result,
-    seconds = seconds,
-    seed = seed,
-    algorithm = algorithm,
-    status = status,
-    code = code,
-    error = error,
-    trace = trace,
-    warnings = warnings,
-    launcher = launcher,
-    worker = worker
+  as_monad_tibble(
+    list(
+      name = name,
+      command = command,
+      result = result,
+      status = status,
+      error = error,
+      code = code,
+      trace = trace,
+      warnings = warnings,
+      seconds = seconds,
+      seed = seed,
+      algorithm = algorithm,
+      launcher = launcher,
+      worker = worker
+    )
   )
 }
 
 monad_validate <- function(monad) {
-  crew_assert(is.list(monad))
+  crew_assert(tibble::is_tibble(monad))
   crew_assert(identical(names(monad), names(formals(monad_new))))
   cols <- c(
     "name",
@@ -110,13 +112,13 @@ as_monad <- function(task, name) {
   monad_tibble(out)
 }
 
-monad_tibble <- function(monad) {
-  attributes(monad) <- list(
+as_monad_tibble <- function(object) {
+  attributes(object) <- list(
     names = monad_names,
     class = c("tbl_df", "tbl", "data.frame"),
     row.names = monad_rownames
   )
-  monad
+  object
 }
 
 monad_names <- names(formals(monad_new))

@@ -10,7 +10,7 @@
 #' @return A monad object with results and metadata.
 #' @param command Language object with R code to run.
 #' @param name Character of length 1, name of the task.
-#' @param string Character of length 1, string representation of the command.
+#' @param string Optional character string with the deparsed command.
 #' @param data Named list of local data objects in the evaluation environment.
 #' @param globals Named list of objects to temporarily assign to the
 #'   global environment for the task.
@@ -37,8 +37,8 @@
 #' crew_eval(quote(1 + 1))
 crew_eval <- function(
   command,
-  name = NA_character_,
-  string = NA_character_,
+  string = NULL,
+  name,
   data = list(),
   globals = list(),
   seed = NULL,
@@ -46,9 +46,6 @@ crew_eval <- function(
   packages = character(0),
   library = NULL
 ) {
-  if (anyNA(name)) {
-    name <- basename(tempfile(pattern = "unnamed_task_"))
-  }
   if (package_installed("autometric (>= 0.1.0)")) {
     autometric::log_phase_set(phase = name)
     on.exit(autometric::log_phase_reset())
@@ -104,18 +101,44 @@ crew_eval <- function(
     error = function(condition) NA
   )
   seconds <- (nanonext::mclock() - start) / 1000
+  error <- .subset2(state, "error")
+  trace <- .subset2(state, "trace")
+  warnings <- .subset2(state, "warnings")
+  if (is.null(string)) {
+    string <- deparse_safe(command)
+  }
+  if (is.null(seed)) {
+    seed <- NA_integer_
+  }
+  if (is.null(algorithm)) {
+    algorithm <- NA_character_
+  }
+  if (is.null(error)) {
+    error <- NA_character_
+    status <- "success"
+    code <- 0L
+  } else {
+    status <- "error"
+    code <- 1L
+  }
+  if (is.null(trace)) {
+    trace <- NA_character_
+  }
+  if (is.null(warnings)) {
+    warnings <- NA_character_
+  }
   monad_init(
     name = name,
     command = string,
     result = result,
+    status = status,
+    error = error,
+    code = code,
+    trace = trace,
+    warnings = warnings,
     seconds = seconds,
-    seed = seed %|||% NA_integer_,
-    algorithm = algorithm %|||% NA_character_,
-    status = if_any(is.null(state$error), "success", "error"),
-    code = as.integer(!is.null(state$error)),
-    error = state$error %|||% NA_character_,
-    trace = state$trace %|||% NA_character_,
-    warnings = state$warnings %|||% NA_character_,
+    seed = seed,
+    algorithm = algorithm,
     launcher = Sys.getenv("CREW_LAUNCHER", unset = NA_character_),
     worker = Sys.getenv("CREW_WORKER", unset = NA_character_)
   )
@@ -152,7 +175,6 @@ expr_crew_eval <- quote(
   crew::crew_eval(
     name = name,
     command = command,
-    string = string,
     data = data,
     globals = globals,
     seed = seed,

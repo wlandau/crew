@@ -495,8 +495,8 @@ Push a task to the head of the task list.
   seconds_timeout = NULL,
   scale = TRUE,
   throttle = TRUE,
-  name = NA_character_,
-  save_command = FALSE,
+  name = NULL,
+  save_command = NULL,
   controller = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -563,13 +563,14 @@ within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
-\item{\code{name}}{Optional name of the task. Must be a character string
-or \code{NA}.}
+\item{\code{name}}{Character string, name of the task. If \code{NULL}, then
+a random name is generated automatically.
+The name of the task must not conflict with the name of another
+task pushed to the controller. Any previous task with the same name
+must first be popped before a new task with that name can be pushed.}
 
-\item{\code{save_command}}{Logical of length 1. If \code{TRUE}, the controller
-deparses the command and returns it with the output on \code{pop()}.
-If \code{FALSE} (default), the controller skips this step to
-increase speed.}
+\item{\code{save_command}}{Deprecated on 2025-01-22 (\code{crew} version
+0.10.2.9004) and no longer used.}
 
 \item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -602,7 +603,7 @@ waiting for any task to complete.
   library = NULL,
   seconds_timeout = NULL,
   names = NULL,
-  save_command = FALSE,
+  save_command = NULL,
   scale = TRUE,
   throttle = TRUE,
   controller = NULL
@@ -679,8 +680,8 @@ argument of \code{mirai::mirai()} (after converting to milliseconds).}
 \code{iterate} with names for the tasks. If \code{names} is supplied,
 then \code{iterate[[names]]} must be a character vector.}
 
-\item{\code{save_command}}{Logical of length 1, whether to store
-a text string version of the R command in the output.}
+\item{\code{save_command}}{Deprecated on 2025-01-22 (\code{crew} version
+0.10.2.9004). The command is always saved now.}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
 demand. See also the \code{throttle} argument.}
@@ -727,7 +728,7 @@ and return the results of all tasks.
   seconds_interval = NULL,
   seconds_timeout = NULL,
   names = NULL,
-  save_command = FALSE,
+  save_command = NULL,
   error = "stop",
   warnings = TRUE,
   verbose = interactive(),
@@ -813,8 +814,8 @@ argument of \code{mirai::mirai()} (after converting to milliseconds).}
 \code{iterate} with names for the tasks. If \code{names} is supplied,
 then \code{iterate[[names]]} must be a character vector.}
 
-\item{\code{save_command}}{Logical of length 1, whether to store
-a text string version of the R command in the output.}
+\item{\code{save_command}}{Deprecated on 2025-01-22 (\code{crew} version
+0.10.2.9004). The command is always saved now.}
 
 \item{\code{error}}{Character of length 1, choice of action if
 a task has an error. Possible values:
@@ -918,8 +919,7 @@ If there is no task to collect, return \code{NULL}. Otherwise,
 return a one-row \code{tibble} with the following columns.
 \itemize{
 \item \code{name}: the task name if given.
-\item \code{command}: a character string with the R command if \code{save_command}
-was set to \code{TRUE} in \code{push()}.
+\item \code{command}: a character string with the R command.
 \item \code{result}: a list containing the return value of the R command.
 \item \code{seconds}: number of seconds that the task ran.
 \item \code{seed}: the single integer originally supplied to \code{push()},

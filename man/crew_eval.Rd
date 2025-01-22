@@ -6,8 +6,8 @@
 \usage{
 crew_eval(
   command,
-  name = NA_character_,
-  string = NA_character_,
+  string = NULL,
+  name,
   data = list(),
   globals = list(),
   seed = NULL,
@@ -19,9 +19,9 @@ crew_eval(
 \arguments{
 \item{command}{Language object with R code to run.}
 
-\item{name}{Character of length 1, name of the task.}
+\item{string}{Optional character string with the deparsed command.}
 
-\item{string}{Character of length 1, string representation of the command.}
+\item{name}{Character of length 1, name of the task.}
 
 \item{data}{Named list of local data objects in the evaluation environment.}
 

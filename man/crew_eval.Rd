@@ -62,7 +62,7 @@ The random number generator seed, \code{globals}, and global options
 are restored to their original values on exit.
 }
 \examples{
-crew_eval(quote(1 + 1))
+crew_eval(quote(1 + 1), name = "task_name")
 }
 \seealso{
 Other utility: 

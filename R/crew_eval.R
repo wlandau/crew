@@ -33,7 +33,7 @@
 #' @param library Library path to load the packages. See the `lib.loc`
 #'   argument of `require()`.
 #' @examples
-#' crew_eval(quote(1 + 1))
+#' crew_eval(quote(1 + 1), name = "task_name")
 crew_eval <- function(
   command,
   name,

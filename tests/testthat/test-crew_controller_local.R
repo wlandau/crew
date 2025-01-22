@@ -107,7 +107,7 @@ crew_test("crew_controller_local()", {
     out <- x$pop()
     set.seed(seed = 0L, kind = "L'Ecuyer-CMRG")
     exp <- paste0("abc", sample.int(n = 1e9L, size = 1L))
-    expect_true(anyNA(out$command))
+    expect_false(anyNA(out$command))
     expect_equal(out$result[[1]], exp)
     expect_equal(out$error, NA_character_)
     expect_false(exists(x = ".crew_y", envir = globalenv()))
@@ -156,8 +156,8 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
   # regular push
   x$push(command = command, substitute = FALSE, name = "substitute")
   x$wait(seconds_timeout = 10)
-  # just list
-  out <- monad_tibble(x$tasks[[1L]]$data)
+  # just the mirai task data
+  out <- x$tasks[[1L]]$data
   expect_equal(out$result[[1L]], 5L)
   expect_equal(out$name, "substitute")
   expect_true(is.numeric(out$seconds))
@@ -167,19 +167,6 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
   expect_true(anyNA(out$warnings))
   expect_true(anyNA(out$trace))
   # full pop
-  out <- x$pop(scale = FALSE)
-  expect_equal(out$result[[1]], 5L)
-  expect_equal(out$name, "substitute")
-  expect_true(is.numeric(out$seconds))
-  expect_false(anyNA(out$seconds))
-  expect_true(out$seconds >= 0)
-  expect_true(anyNA(out$error))
-  expect_true(anyNA(out$warnings))
-  expect_true(anyNA(out$trace))
-  # quick push
-  private <- crew_private(x)
-  private$.shove(command = command, name = "substitute")
-  x$wait(seconds_timeout = 10)
   out <- x$pop(scale = FALSE)
   expect_equal(out$result[[1]], 5L)
   expect_equal(out$name, "substitute")

@@ -3,9 +3,16 @@ mirai_status <- function(profile, seconds_interval, seconds_timeout) {
   crew_retry(
     fun = ~{
       status <- mirai::status(.compute = profile)
+      valid <- is.list(status)
+      retry <- is.numeric(status) && identical(as.integer(status), 5L)
+      if_any(
+        valid || retry,
+        NULL,
+        mirai_status_error(status = status, profile = profile)
+      )
       envir$status <- status
-      envir$valid <- is.list(status)
-      envir$valid
+      envir$valid <- valid
+      valid
     },
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,

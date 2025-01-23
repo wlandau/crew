@@ -8,6 +8,8 @@
 * Use a unified throttle for controller groups, which requires refactoring `wait(mode = "all")` for controller groups.
 * Name every task and record every command.
 * Switch URLs from `ws://` (and `wss://`) to `tcp://` (and `tls+tcp://`) (#193).
+* Change R-level error status code to -1 (previously 1).
+* Add a queue class for resolved tasks to make `pop()` and `collect()` more efficient.
 
 # crew 0.10.2
 

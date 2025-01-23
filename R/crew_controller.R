@@ -1364,9 +1364,6 @@ crew_class_controller <- R6::R6Class(
         )
       )
       tasks <- .subset2(private, ".tasks")
-      if (is.null(tasks)) {
-        return(invisible())
-      }
       if (all) {
         mirai::stop_mirai(as.list(tasks))
       }

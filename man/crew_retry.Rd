@@ -12,7 +12,8 @@ crew_retry(
   max_tries = Inf,
   error = TRUE,
   message = character(0),
-  envir = parent.frame()
+  envir = parent.frame(),
+  assertions = TRUE
 )
 }
 \arguments{
@@ -36,6 +37,9 @@ before giving up.}
 if the wait times out.}
 
 \item{envir}{Environment to evaluate \code{fun}.}
+
+\item{assertions}{\code{TRUE} to run assertions to check if arguments are
+valid, \code{FALSE} otherwise. \code{TRUE} is recommended for users.}
 }
 \value{
 \code{NULL} (invisibly).

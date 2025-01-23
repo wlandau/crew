@@ -867,26 +867,28 @@ crew_class_controller <- R6::R6Class(
           .envir = progress_envir
         )
       }
+      iterate <- function() {
+        if (scale) {
+          .subset2(self, "scale")(throttle = throttle)
+        }
+        unresolved <- .subset2(self, "unresolved")()
+        if (verbose) {
+          cli::cli_progress_update(
+            set = total - unresolved,
+            .envir = progress_envir
+          )
+        }
+        if (unresolved > 0L) {
+          .subset2(relay, "wait")(throttle = throttle_object)
+        }
+        .subset2(self, "unresolved")() < 1L
+      }
       crew_retry(
-        fun = ~{
-          if (scale) {
-            .subset2(self, "scale")(throttle = throttle)
-          }
-          unresolved <- .subset2(self, "unresolved")()
-          if (verbose) {
-            cli::cli_progress_update(
-              set = total - unresolved,
-              .envir = progress_envir
-            )
-          }
-          if (unresolved > 0L) {
-            .subset2(relay, "wait")(throttle = throttle_object)
-          }
-          .subset2(self, "unresolved")() < 1L
-        },
+        fun = iterate,
         seconds_interval = 0,
         seconds_timeout = Inf,
-        error = FALSE
+        error = FALSE,
+        assertions = FALSE
       )
       if (verbose) {
         cli::cli_progress_done(.envir = progress_envir)
@@ -1248,21 +1250,23 @@ crew_class_controller <- R6::R6Class(
       }
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
+      iterate <- function() {
+        if (!envir$result && scale) {
+          self$scale(throttle = throttle)
+        }
+        envir$result <- if_any(
+          mode_all,
+          private$.wait_all_once(),
+          private$.wait_one_once()
+        )
+        envir$result
+      }
       crew_retry(
-        fun = ~{
-          if (!envir$result && scale) {
-            self$scale(throttle = throttle)
-          }
-          envir$result <- if_any(
-            mode_all,
-            private$.wait_all_once(),
-            private$.wait_one_once()
-          )
-          envir$result
-        },
+        fun = iterate,
         seconds_interval = 0,
         seconds_timeout = seconds_timeout,
-        error = FALSE
+        error = FALSE,
+        assertions = FALSE
       )
       invisible(envir$result)
     },

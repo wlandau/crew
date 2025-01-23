@@ -129,23 +129,25 @@ crew_class_controller_group <- R6::R6Class(
       }
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
+      iterate <- function() {
+        if (scale) {
+          self$scale(throttle = throttle, controllers = controllers)
+        }
+        for (controller in control) {
+          if (controller$unpopped() > 0L) {
+            envir$result <- TRUE
+            return(TRUE)
+          }
+        }
+        private$.relay$wait(throttle = private$.throttle)
+        FALSE
+      }
       crew_retry(
-        fun = ~ {
-          if (scale) {
-            self$scale(throttle = throttle, controllers = controllers)
-          }
-          for (controller in control) {
-            if (controller$unpopped() > 0L) {
-              envir$result <- TRUE
-              return(TRUE)
-            }
-          }
-          private$.relay$wait(throttle = private$.throttle)
-          FALSE
-        },
+        fun = iterate,
         seconds_interval = 0,
         seconds_timeout = seconds_timeout,
-        error = FALSE
+        error = FALSE,
+        assertions = FALSE
       )
       envir$result
     },
@@ -161,20 +163,22 @@ crew_class_controller_group <- R6::R6Class(
       }
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
+      iterate <- function() {
+        if (scale) {
+          self$scale(throttle = throttle, controllers = controllers)
+        }
+        envir$result <- sum(map_int(control, ~.x$unresolved())) < 1L
+        if (!envir$result) {
+          private$.relay$wait(throttle = private$.throttle)
+        }
+        envir$result
+      }
       crew_retry(
-        fun = ~ {
-          if (scale) {
-            self$scale(throttle = throttle, controllers = controllers)
-          }
-          envir$result <- sum(map_int(control, ~.x$unresolved())) < 1L
-          if (!envir$result) {
-            private$.relay$wait(throttle = private$.throttle)
-          }
-          envir$result
-        },
+        fun = iterate,
         seconds_interval = 0,
         seconds_timeout = seconds_timeout,
-        error = FALSE
+        error = FALSE,
+        assertions = FALSE
       )
       envir$result
     }

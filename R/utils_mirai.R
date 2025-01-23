@@ -1,22 +1,24 @@
 mirai_status <- function(profile, seconds_interval, seconds_timeout) {
   envir <- new.env(parent = emptyenv())
+  iterate <- function() {
+    status <- mirai::status(.compute = profile)
+    valid <- is.list(status)
+    retry <- is.numeric(status) && identical(as.integer(status), 5L)
+    if_any(
+      valid || retry,
+      NULL,
+      mirai_status_error(status = status, profile = profile)
+    )
+    envir$status <- status
+    envir$valid <- valid
+    valid
+  }
   crew_retry(
-    fun = ~{
-      status <- mirai::status(.compute = profile)
-      valid <- is.list(status)
-      retry <- is.numeric(status) && identical(as.integer(status), 5L)
-      if_any(
-        valid || retry,
-        NULL,
-        mirai_status_error(status = status, profile = profile)
-      )
-      envir$status <- status
-      envir$valid <- valid
-      valid
-    },
+    fun = iterate,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
-    error = FALSE
+    error = FALSE,
+    assertions = FALSE
   )
   status <- .subset2(envir, "status")
   valid <- .subset2(envir, "valid")

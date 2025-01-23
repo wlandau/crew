@@ -76,8 +76,9 @@ crew_deprecate <- function(
   skip_cran = FALSE,
   frequency = "always"
 ) {
-  on_cran <- !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false")))
-  if (is.null(value) || (skip_cran && on_cran)) {
+  skip <- is.null(value) ||
+    (skip_cran && !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false"))))
+  if (skip) {
     return(invisible())
   }
   message <- sprintf(

@@ -67,6 +67,7 @@ crew_class_controller <- R6::R6Class(
     .error = NULL,
     .backlog = NULL,
     .autoscaling = NULL,
+    .condition = -1L,
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
         private$.client$relay$wait(throttle = private$.launcher$throttle)
@@ -152,6 +153,12 @@ crew_class_controller <- R6::R6Class(
       crew_assert(private$.summary, is.null(.) || is.list(.))
       crew_assert(private$.backlog, is.null(.) || is.character(.))
       crew_assert(private$.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
+      crew_assert(
+        private$.condition,
+        is.integer(.),
+        length(.) == 1L,
+        is.finite(.)
+      )
       invisible()
     },
     #' @description Check if the controller is empty.
@@ -260,6 +267,7 @@ crew_class_controller <- R6::R6Class(
           warnings = 0L
         )
         private$.backlog <- character(0L)
+        private$.condition <- -1L
       }
       invisible()
     },
@@ -1391,7 +1399,8 @@ crew_class_controller <- R6::R6Class(
       private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
       private$.pushed <- NULL
       private$.popped <- NULL
-      private$.autoscaling <- FALSE
+      private$.autoscaling <- NULL
+      private$.condition <- -1L
       invisible()
     }
   )

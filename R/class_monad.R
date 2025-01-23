@@ -97,18 +97,24 @@ as_monad <- function(task, name) {
   if (is.list(out)) {
     return(out)
   }
+  if (!is.integer(out) || length(out) != 1L || anyNA(out)) {
+    status <- "error"
+    error <- as.character(out)
+    code <- -1L
+  } else {
+    code <- as.integer(out)
+    error <- nanonext::nng_error(code)
+    if (identical(code, 19L)) {
+      status <- "crash"
+    } else if (identical(code, 20L)) {
+      status <- "cancel"
+    }
+  }
   monad_init(
     name = name,
-    status = if_any(
-      identical(as.integer(out), 20L),
-      "canceled",
-      "error"
-    ),
-    code = as.integer(out),
-    error = paste(
-      utils::capture.output(print(out), type = "output"),
-      collapse = "\n"
-    )
+    status = status,
+    error = error,
+    code = code
   )
 }
 

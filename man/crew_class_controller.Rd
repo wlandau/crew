@@ -931,9 +931,10 @@ completing the task.
 \item \code{error}: the first 2048 characters of the error message if
 the task threw an error, \code{NA} otherwise.
 \item \code{code}: an integer code denoting the specific exit status:
-\code{0} for successful tasks, \code{1} for tasks with an error in the R
+\code{0} for successful tasks, \code{-1} for tasks with an error in the R
 command of the task, and another positive integer with an NNG
 status code if there is an error at the NNG/\code{nanonext} level.
+\code{nanonext::nng_error()} can interpret these codes.
 \item \code{trace}: the first 2048 characters of the text of the traceback
 if the task threw an error, \code{NA} otherwise.
 \item \code{warnings}: the first 2048 characters. of the text of

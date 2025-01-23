@@ -79,9 +79,10 @@ Here is the full list of output in the `task` object returned by `pop()`.
 * `error`: the first 2048 characters of the error message if
   the task threw an error, `NA` otherwise.
 * `code`: an integer code denoting the specific exit status:
-  `0` for successful tasks, `1` for tasks with an error in the R
+  `0` for successful tasks, `-1` for tasks with an error in the R
   command of the task, and another positive integer with an NNG
   status code if there is an error at the NNG/`nanonext` level.
+  `nanonext::nng_error()` can interpret these codes.
 * `trace`: the first 2048 characters of the text of the traceback
   if the task threw an error, `NA` otherwise.
 * `warnings`: the first 2048 characters. of the text of

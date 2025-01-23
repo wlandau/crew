@@ -114,7 +114,7 @@ crew_eval <- function(
     code <- 0L
   } else {
     status <- "error"
-    code <- 1L
+    code <- -1L
   }
   if (is.null(trace)) {
     trace <- NA_character_

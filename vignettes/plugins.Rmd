@@ -89,14 +89,10 @@ To see what the `call` object looks like, create a new launcher and run the `cal
 ```r
 library(crew)
 launcher <- crew_launcher_local()
-launcher$start(url = "ws://127.0.0.1:57000/token")
+launcher$start(url = "tcp://127.0.0.1:57000", profile = "example_profile")
 launcher$call(worker = "worker_name")
-#> [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:57000/token\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tls = NULL, rs = NULL), launcher = \"a41fc8a9\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
+#> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tls = NULL, rs = NULL), launcher = \"27548330\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
 ```
-
-# Worker retries
-
-TBD...
 
 # Helper
 

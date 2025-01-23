@@ -918,9 +918,25 @@ will attempt to auto-scale workers as needed.
 If there is no task to collect, return \code{NULL}. Otherwise,
 return a one-row \code{tibble} with the following columns.
 \itemize{
-\item \code{name}: the task name if given.
+\item \code{name}: the task name.
 \item \code{command}: a character string with the R command.
 \item \code{result}: a list containing the return value of the R command.
+\code{NA} if the task failed.
+\item \code{status}: a character string. \code{"success"} if the task succeeded,
+\code{"cancel"} if the task was canceled with
+the \code{cancel()} controller method, \code{"error"} if the R code in the task
+threw an error, \code{"crash"} if the worker running the task exited before
+completing the task.
+\item \code{error}: the first 2048 characters of the error message if
+the task threw an error, \code{NA} otherwise.
+\item \code{code}: an integer code denoting the specific exit status:
+\code{0} for successful tasks, \code{1} for tasks with an error in the R
+command of the task, and another positive integer with an NNG
+status code if there is an error at the NNG/\code{nanonext} level.
+\item \code{trace}: the first 2048 characters of the text of the traceback
+if the task threw an error, \code{NA} otherwise.
+\item \code{warnings}: the first 2048 characters. of the text of
+warning messages that the task may have generated, \code{NA} otherwise.
 \item \code{seconds}: number of seconds that the task ran.
 \item \code{seed}: the single integer originally supplied to \code{push()},
 \code{NA} otherwise. The pseudo-random number generator state
@@ -933,21 +949,8 @@ originally supplied to \code{push()},
 just prior to the task can be restored using
 \code{set.seed(seed = seed, kind = algorithm)}, where \code{seed} and
 \code{algorithm} are part of this output.
-\item \code{status}: a character string. \code{"success"} if the task did not
-throw an error, \code{"cancel"} if the task was canceled with
-the \code{cancel()} controller method, or \code{"error"} if the task
-threw an error.
-\item \code{code}: an integer code denoting the specific exit status:
-\code{0} for successful tasks, \code{1} for tasks with an error in the R
-command of the task, and another positive integer with an NNG
-status code if there is an error at the NNG/\code{nanonext} level.
-\item \code{error}: the first 2048 characters of the error message if
-the task threw an error, \code{NA} otherwise.
-\item \code{trace}: the first 2048 characters of the text of the traceback
-if the task threw an error, \code{NA} otherwise.
-\item \code{warnings}: the first 2048 characters. of the text of
-warning messages that the task may have generated, \code{NA} otherwise.
 \item \code{launcher}: name of the \code{crew} launcher where the task ran.
+\item \code{worker}: name of the \code{crew} worker that ran the task.
 }
 }
 }

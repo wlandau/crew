@@ -952,9 +952,25 @@ crew_class_controller <- R6::R6Class(
     #'   will attempt to auto-scale workers as needed.
     #' @return If there is no task to collect, return `NULL`. Otherwise,
     #'   return a one-row `tibble` with the following columns.
-    #'   * `name`: the task name if given.
+    #'   * `name`: the task name.
     #'   * `command`: a character string with the R command.
     #'   * `result`: a list containing the return value of the R command.
+    #'     `NA` if the task failed.
+    #'   * `status`: a character string. `"success"` if the task succeeded,
+    #'     `"cancel"` if the task was canceled with
+    #'     the `cancel()` controller method, `"error"` if the R code in the task
+    #'     threw an error, `"crash"` if the worker running the task exited before
+    #'     completing the task.
+    #'   * `error`: the first 2048 characters of the error message if
+    #'     the task threw an error, `NA` otherwise.
+    #'   * `code`: an integer code denoting the specific exit status:
+    #'     `0` for successful tasks, `1` for tasks with an error in the R
+    #'     command of the task, and another positive integer with an NNG
+    #'     status code if there is an error at the NNG/`nanonext` level.
+    #'   * `trace`: the first 2048 characters of the text of the traceback
+    #'     if the task threw an error, `NA` otherwise.
+    #'   * `warnings`: the first 2048 characters. of the text of
+    #'     warning messages that the task may have generated, `NA` otherwise.
     #'   * `seconds`: number of seconds that the task ran.
     #'   * `seed`: the single integer originally supplied to `push()`,
     #'      `NA` otherwise. The pseudo-random number generator state
@@ -967,21 +983,8 @@ crew_class_controller <- R6::R6Class(
     #'      just prior to the task can be restored using
     #'      `set.seed(seed = seed, kind = algorithm)`, where `seed` and
     #'      `algorithm` are part of this output.
-    #'   * `status`: a character string. `"success"` if the task did not
-    #'     throw an error, `"cancel"` if the task was canceled with
-    #'     the `cancel()` controller method, or `"error"` if the task
-    #'     threw an error.
-    #'   * `code`: an integer code denoting the specific exit status:
-    #'     `0` for successful tasks, `1` for tasks with an error in the R
-    #'     command of the task, and another positive integer with an NNG
-    #'     status code if there is an error at the NNG/`nanonext` level.
-    #'   * `error`: the first 2048 characters of the error message if
-    #'     the task threw an error, `NA` otherwise.
-    #'   * `trace`: the first 2048 characters of the text of the traceback
-    #'     if the task threw an error, `NA` otherwise.
-    #'   * `warnings`: the first 2048 characters. of the text of
-    #'     warning messages that the task may have generated, `NA` otherwise.
     #'   * `launcher`: name of the `crew` launcher where the task ran.
+    #'   * `worker`: name of the `crew` worker that ran the task.
     #' @param scale Logical of length 1,
     #'   whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.

@@ -62,6 +62,8 @@ from the last call to \verb{map(error = "stop)}.}
 
 \item{\code{autoscaling}}{\code{TRUE} or \code{FALSE}, whether async \code{later}-based
 auto-scaling is currently running}
+
+\item{\code{queue}}{Queue of resolved unpopped/uncollected tasks.}
 }
 \if{html}{\out{</div>}}
 }

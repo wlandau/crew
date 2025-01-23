@@ -9,7 +9,7 @@
 * Name every task and record every command.
 * Switch URLs from `ws://` (and `wss://`) to `tcp://` (and `tls+tcp://`) (#193).
 * Change R-level error status code to -1 (previously 1).
-* Add a queue class for resolved tasks to make `pop()` and `collect()` more efficient.
+* Add a queue class for resolved tasks to make `pop()` and `collect()` more efficient. `pop()` is 64 times faster.
 
 # crew 0.10.2
 

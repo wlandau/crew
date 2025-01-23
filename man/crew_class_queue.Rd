@@ -35,6 +35,9 @@ next name to pop.}
 \item \href{#method-crew_class_queue-set}{\code{crew_class_queue$set()}}
 \item \href{#method-crew_class_queue-pop}{\code{crew_class_queue$pop()}}
 \item \href{#method-crew_class_queue-collect}{\code{crew_class_queue$collect()}}
+\item \href{#method-crew_class_queue-empty}{\code{crew_class_queue$empty()}}
+\item \href{#method-crew_class_queue-nonempty}{\code{crew_class_queue$nonempty()}}
+\item \href{#method-crew_class_queue-popped}{\code{crew_class_queue$popped()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -109,6 +112,49 @@ Remove and return all available names off the queue.
 \subsection{Returns}{
 Character vector, names collected from the queue.
 \code{NULL} if there are no more names available to collect.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-empty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-empty}{}}}
+\subsection{Method \code{empty()}}{
+Report if the queue is empty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$empty()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} if the queue is empty, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-nonempty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-nonempty}{}}}
+\subsection{Method \code{nonempty()}}{
+Report if the queue is nonempty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$nonempty()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} if the queue is nonempty, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-popped"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-popped}{}}}
+\subsection{Method \code{popped()}}{
+List the names already popped.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$popped()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+\code{set()}, \code{reset()}, and \code{collect()} remove these names.
+}
+
+\subsection{Returns}{
+Character vector of names already popped.
 }
 }
 }

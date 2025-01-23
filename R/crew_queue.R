@@ -97,6 +97,22 @@ crew_class_queue <- R6::R6Class(
       }
       .subset2(self, "reset")()
       out
+    },
+    #' @description Report if the queue is empty.
+    #' @return `TRUE` if the queue is empty, `FALSE` otherwise.
+    empty = function() {
+      .subset2(private, ".head") > length(.subset2(private, ".names"))
+    },
+    #' @description Report if the queue is nonempty.
+    #' @return `TRUE` if the queue is nonempty, `FALSE` otherwise.
+    nonempty = function() {
+      .subset2(private, ".head") <= length(.subset2(private, ".names"))
+    },
+    #' @description List the names already popped.
+    #' @details `set()`, `reset()`, and `collect()` remove these names.
+    #' @return Character vector of names already popped.
+    popped = function() {
+      .subset2(private, ".names")[seq_len(.subset2(private, ".head") - 1L)]
     }
   )
 )

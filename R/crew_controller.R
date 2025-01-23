@@ -68,7 +68,28 @@ crew_class_controller <- R6::R6Class(
     .backlog = character(0L),
     .autoscaling = FALSE,
     .queue = NULL,
-    .condition = -1L,
+    .resolved = -1L,
+    .resolve = function() {
+      queue <- .subset2(private, ".queue")
+      if (.subset2(queue, "nonempty")()) {
+        return()
+      }
+      observed <- .subset2(.subset2(private, ".client"), "resolved")()
+      expected <- .subset2(private, ".resolved")
+      if (observed == expected) {
+        return()
+      }
+      tasks <- .subset2(private, ".tasks")
+      status <- eapply(
+        env = tasks,
+        FUN = nanonext::.unresolved,
+        all.names = TRUE,
+        USE.NAMES = TRUE
+      )
+      resolved <- names(status)[!as.logical(status)]
+      .subset2(queue, "set")(names = resolved)
+      private$.resolved <- observed
+    },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
         private$.client$relay$wait(throttle = private$.launcher$throttle)
@@ -117,6 +138,10 @@ crew_class_controller <- R6::R6Class(
     #'   auto-scaling is currently running
     autoscaling = function() {
       .subset2(private, ".autoscaling")
+    },
+    #' @field queue Queue of resolved unpopped/uncollected tasks.
+    queue = function() {
+      .subset2(private, ".queue")
     }
   ),
   public = list(
@@ -155,7 +180,7 @@ crew_class_controller <- R6::R6Class(
       crew_assert(private$.backlog, is.null(.) || is.character(.))
       crew_assert(private$.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
       crew_assert(
-        private$.condition,
+        private$.resolved,
         is.integer(.),
         length(.) == 1L,
         is.finite(.)
@@ -173,7 +198,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     empty = function(controllers = NULL) {
-      length(.subset2(self, "tasks")) < 1L
+      .subset2(private, ".pushed") == .subset2(private, ".popped")
     },
     #' @description Check if the controller is nonempty.
     #' @details A controller is empty if it has no running tasks
@@ -182,7 +207,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     nonempty = function(controllers = NULL) {
-      length(.subset2(self, "tasks")) > 0L
+      .subset2(private, ".pushed") > .subset2(private, ".popped")
     },
     #' @description Number of resolved `mirai()` tasks.
     #' @details `resolved()` is cumulative: it counts all the resolved
@@ -202,7 +227,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     unresolved = function(controllers = NULL) {
-      .subset2(self, "pushed") - .subset2(self, "resolved")()
+      .subset2(private, ".pushed") - .subset2(self, "resolved")()
     },
     #' @description Number of resolved `mirai()` tasks available via `pop()`.
     #' @return Non-negative integer of length 1,
@@ -210,7 +235,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     unpopped = function(controllers = NULL) {
-      .subset2(self, "resolved")() - .subset2(self, "popped")
+      .subset2(self, "resolved")() - .subset2(private, ".popped")
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -273,7 +298,7 @@ crew_class_controller <- R6::R6Class(
         )
         private$.backlog <- character(0L)
         private$.queue <- crew_queue()
-        private$.condition <- -1L
+        private$.resolved <- -1L
       }
       invisible()
     },
@@ -1030,6 +1055,9 @@ crew_class_controller <- R6::R6Class(
       error = NULL,
       controllers = NULL
     ) {
+      if (!.subset2(.subset2(self, "client"), "started")) {
+        return(NULL)
+      }
       crew_deprecate(
         name = "collect",
         date = "2023-10-02",
@@ -1053,48 +1081,28 @@ crew_class_controller <- R6::R6Class(
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
       }
+      if (.subset2(self, "empty")()) {
+        return(NULL)
+      }
+      .subset2(private, ".resolve")()
+      name <- .subset2(.subset2(private, ".queue"), "pop")()
+      if (is.null(name)) {
+        return(NULL)
+      }
       tasks <- .subset2(self, "tasks")
-      n_tasks <- length(tasks)
-      names <- names(tasks)
-      if (n_tasks < 1L) {
-        return(NULL)
-      }
-      task <- NULL
-      index <- 1L
-      while (index <= n_tasks) {
-        name <- .subset(names, index)
-        object <- .subset2(tasks, name)
-        if (!nanonext::.unresolved(object)) {
-          task <- object
-          break
-        }
-        index <- index + 1L
-      }
-      if (is.null(task)) {
-        return(NULL)
-      }
+      task <- .subset2(tasks, name)
+      remove(list = name, envir = tasks)
+      private$.popped <- .subset2(self, "popped") + 1L
       out <- as_monad(task, name = name)
       summary <- .subset2(private, ".summary")
-      on.exit({
-        remove(list = name, envir = tasks)
-        private$.popped <- .subset2(self, "popped") + 1L
-      })
-      if (anyNA(.subset2(out, "launcher"))) {
-        return(out)
-      }
-      on.exit(
-        expr = {
-          index <- .subset2(out, "worker")
-          private$.summary$tasks <- .subset2(summary, "tasks") + 1L
-          private$.summary$seconds <- .subset2(summary, "seconds") +
-            .subset2(out, "seconds")
-          private$.summary$errors <- .subset2(summary, "errors") +
-            !anyNA(.subset2(out, "error"))
-          private$.summary$warnings <- .subset2(summary, "warnings") +
-            !anyNA(.subset2(out, "warnings"))
-        },
-        add = TRUE
-      )
+      summary$tasks <- .subset2(summary, "tasks") + 1L
+      summary$seconds <- .subset2(summary, "seconds") +
+        .subset2(out, "seconds")
+      summary$errors <- .subset2(summary, "errors") +
+        !anyNA(.subset2(out, "error"))
+      summary$warnings <- .subset2(summary, "warnings") +
+        !anyNA(.subset2(out, "warnings"))
+      private$.summary <- summary
       if (!is.null(error) && !anyNA(.subset2(out, "error"))) {
         if (identical(error, "stop")) {
           crew_error(message = .subset2(out, "error"))
@@ -1130,6 +1138,19 @@ crew_class_controller <- R6::R6Class(
       error = NULL,
       controllers = NULL
     ) {
+      if (scale) {
+        .subset2(self, "scale")(throttle = throttle)
+      }
+      if (.subset2(self, "empty")()) {
+        return(NULL)
+      }
+      .subset2(private, ".resolve")()
+      names <- .subset2(.subset2(private, ".queue"), "collect")()
+      if (!length(names)) {
+        return(NULL)
+      }
+      
+      
       pop <- .subset2(self, "pop")
       out <- list()
       while (!is.null(task <- pop(scale = FALSE, error = error))) {
@@ -1404,7 +1425,7 @@ crew_class_controller <- R6::R6Class(
       private$.popped <- NULL
       private$.autoscaling <- NULL
       private$.queue <- crew_queue()
-      private$.condition <- -1L
+      private$.resolved <- -1L
       invisible()
     }
   )

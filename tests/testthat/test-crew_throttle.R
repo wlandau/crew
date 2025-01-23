@@ -1,10 +1,10 @@
-test_that("crew_throttle validation", {
+crew_test("crew_throttle validation", {
   expect_silent(crew_throttle()$validate())
   expect_silent(crew_throttle(seconds_max = 5)$validate())
   expect_crew_error(crew_throttle(seconds_max = -1))
 })
 
-test_that("crew_throttle active bindings", {
+crew_test("crew_throttle active bindings", {
   x <- crew_throttle(
     seconds_max = 300,
     seconds_min = 0.1,
@@ -21,7 +21,7 @@ test_that("crew_throttle active bindings", {
   expect_true(is.numeric(x$polled))
 })
 
-test_that("crew_throttle poll() and reset()", {
+crew_test("crew_throttle poll() and reset()", {
   x <- crew_throttle(
     seconds_max = 300,
     seconds_min = 0.1,
@@ -35,7 +35,7 @@ test_that("crew_throttle poll() and reset()", {
   expect_true(x$poll())
 })
 
-test_that("crew_throttle accelerate()", {
+crew_test("crew_throttle accelerate()", {
   x <- crew_throttle(
     seconds_max = 25,
     seconds_min = 3,
@@ -53,7 +53,7 @@ test_that("crew_throttle accelerate()", {
   expect_equal(x$seconds_interval, 8)
 })
 
-test_that("crew_throttle decelerate()", {
+crew_test("crew_throttle decelerate()", {
   x <- crew_throttle(
     seconds_max = 25,
     seconds_min = 1,
@@ -71,7 +71,7 @@ test_that("crew_throttle decelerate()", {
   expect_equal(x$seconds_interval, 10)
 })
 
-test_that("crew_throttle update()", {
+crew_test("crew_throttle update()", {
   x <- crew_throttle(
     seconds_max = 25,
     seconds_min = 1,

@@ -64,6 +64,10 @@ reference:
   contents:
   - crew_relay
   - crew_class_relay
+- title: Queues
+  contents:
+  - crew_queue
+  - crew_class_queue
 - title: Local asynchronicity
   contents:
   - crew_async

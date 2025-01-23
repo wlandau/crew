@@ -569,7 +569,7 @@ crew_test("backlog with saturation", {
 
 crew_test("descale", {
   controller <- crew_controller_local()
-  expect_null(controller$autoscaling)
+  expect_false(controller$autoscaling)
   controller$descale()
   expect_false(controller$autoscaling)
 })

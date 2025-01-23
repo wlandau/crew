@@ -60,13 +60,14 @@ crew_class_controller <- R6::R6Class(
   private = list(
     .client = NULL,
     .launcher = NULL,
-    .tasks = NULL,
-    .pushed = NULL,
-    .popped = NULL,
+    .tasks = new.env(parent = emptyenv(), hash = TRUE),
+    .pushed = 0L,
+    .popped = 0L,
     .summary = NULL,
     .error = NULL,
-    .backlog = NULL,
-    .autoscaling = NULL,
+    .backlog = character(0L),
+    .autoscaling = FALSE,
+    .queue = NULL,
     .condition = -1L,
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
@@ -149,7 +150,7 @@ crew_class_controller <- R6::R6Class(
       crew_assert(inherits(private$.launcher, "crew_class_launcher"))
       private$.client$validate()
       private$.launcher$validate()
-      crew_assert(private$.tasks, is.null(.) || is.list(.))
+      crew_assert(private$.tasks, is.null(.) || is.environment(.))
       crew_assert(private$.summary, is.null(.) || is.list(.))
       crew_assert(private$.backlog, is.null(.) || is.character(.))
       crew_assert(private$.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
@@ -159,6 +160,10 @@ crew_class_controller <- R6::R6Class(
         length(.) == 1L,
         is.finite(.)
       )
+      if (!is.null(private$.queue)) {
+        crew_assert(private$.queue, inherits(., "crew_class_queue"))
+        private$.queue$validate()
+      }
       invisible()
     },
     #' @description Check if the controller is empty.
@@ -250,7 +255,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     start = function(controllers = NULL) {
-      if (!isTRUE(.subset2(.subset2(self, "client"), "started"))) {
+      if (!.subset2(.subset2(self, "client"), "started")) {
         private$.client$start()
         private$.launcher$start(
           url = private$.client$url,
@@ -267,6 +272,7 @@ crew_class_controller <- R6::R6Class(
           warnings = 0L
         )
         private$.backlog <- character(0L)
+        private$.queue <- crew_queue()
         private$.condition <- -1L
       }
       invisible()
@@ -277,7 +283,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     started = function(controllers = NULL) {
-      isTRUE(.subset2(.subset2(self, "client"), "started"))
+      .subset2(.subset2(self, "client"), "started")
     },
     #' @description Launch one or more workers.
     #' @return `NULL` (invisibly).
@@ -1400,6 +1406,7 @@ crew_class_controller <- R6::R6Class(
       private$.pushed <- NULL
       private$.popped <- NULL
       private$.autoscaling <- NULL
+      private$.queue <- crew_queue()
       private$.condition <- -1L
       invisible()
     }

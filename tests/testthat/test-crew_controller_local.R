@@ -14,7 +14,7 @@ crew_test("crew_controller_local()", {
   expect_false(x$client$started)
   expect_false(x$started())
   expect_null(x$summary())
-  expect_null(x$autoscaling)
+  expect_false(x$autoscaling)
   expect_equal(length(x$pids()), 1L)
   x$start()
   expect_true(x$empty())

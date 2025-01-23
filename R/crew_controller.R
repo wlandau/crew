@@ -69,14 +69,14 @@ crew_class_controller <- R6::R6Class(
     .autoscaling = FALSE,
     .queue = NULL,
     .resolved = -1L,
-    .resolve = function() {
+    .resolve = function(force) {
       queue <- .subset2(private, ".queue")
-      if (.subset2(queue, "nonempty")()) {
+      if ((!force) && .subset2(queue, "nonempty")()) {
         return()
       }
       observed <- .subset2(.subset2(private, ".client"), "resolved")()
       expected <- .subset2(private, ".resolved")
-      if (observed == expected) {
+      if ((!force) && (observed == expected)) {
         return()
       }
       tasks <- .subset2(private, ".tasks")
@@ -1084,7 +1084,7 @@ crew_class_controller <- R6::R6Class(
       if (.subset2(self, "empty")()) {
         return(NULL)
       }
-      .subset2(private, ".resolve")()
+      .subset2(private, ".resolve")(force = FALSE)
       name <- .subset2(.subset2(private, ".queue"), "pop")()
       if (is.null(name)) {
         return(NULL)
@@ -1093,11 +1093,13 @@ crew_class_controller <- R6::R6Class(
       task <- .subset2(tasks, name)
       remove(list = name, envir = tasks)
       private$.popped <- .subset2(self, "popped") + 1L
-      out <- as_monad(task, name = name)
+      out <- as_monad(task = task, name = name)
+      seconds <- .subset2(out, "seconds")
       summary <- .subset2(private, ".summary")
       summary$tasks <- .subset2(summary, "tasks") + 1L
-      summary$seconds <- .subset2(summary, "seconds") +
-        .subset2(out, "seconds")
+      if (!anyNA(seconds)) {
+        summary$seconds <- .subset2(summary, "seconds") + seconds
+      }
       summary$errors <- .subset2(summary, "errors") +
         !anyNA(.subset2(out, "error"))
       summary$warnings <- .subset2(summary, "warnings") +
@@ -1138,26 +1140,56 @@ crew_class_controller <- R6::R6Class(
       error = NULL,
       controllers = NULL
     ) {
+      if (!is.null(error)) {
+        crew_assert(
+          error,
+          is.character(.),
+          !anyNA(.),
+          nzchar(.),
+          length(.) == 1L,
+          error %in% c("stop", "warn", "silent"),
+          message = "invalid error argument to collect()"
+        )
+      }
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
       }
       if (.subset2(self, "empty")()) {
         return(NULL)
       }
-      .subset2(private, ".resolve")()
-      names <- .subset2(.subset2(private, ".queue"), "collect")()
+      queue <- .subset2(private, ".queue")
+      .subset2(private, ".resolve")(force = TRUE)
+      names <- .subset2(queue, "collect")()
       if (!length(names)) {
         return(NULL)
       }
-      
-      
-      pop <- .subset2(self, "pop")
-      out <- list()
-      while (!is.null(task <- pop(scale = FALSE, error = error))) {
-        out[[length(out) + 1L]] <- task
-      }
+      tasks <- .subset2(private, ".tasks")
+      out <- lapply(names, function(name) {
+        as_monad(task = .subset2(tasks, name), name = name)
+      })
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
-      if_any(nrow(out), out, NULL)
+      remove(list = names, envir = tasks)
+      popped <- length(names)
+      private$.popped <- .subset2(self, "popped") + popped
+      summary <- .subset2(private, ".summary")
+      summary$tasks <- .subset2(summary, "tasks") + popped
+      summary$seconds <- .subset2(summary, "seconds") +
+        sum(.subset2(out, "seconds"), na.rm = TRUE)
+      summary$errors <- .subset2(summary, "errors") +
+        sum(!is.na(.subset2(out, "error")))
+      summary$warnings <- .subset2(summary, "warnings") +
+        sum(!is.na(.subset2(out, "warnings")))
+      private$.summary <- summary
+      errors <- .subset2(out, "error")
+      errors <- errors[!is.na(errors)]
+      if (!is.null(error) && length(errors)) {
+        if (identical(error, "stop")) {
+          crew_error(message = errors[1L])
+        } else if (identical(error, "warn")) {
+          crew_warning(message =  errors[1L])
+        }
+      }
+      out
     },
     #' @description Create a `promises::promise()` object to asynchronously
     #'   pop or collect one or more tasks.

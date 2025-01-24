@@ -29,7 +29,7 @@ crew_controller_local <- function(
   seconds_idle = 300,
   seconds_wall = Inf,
   seconds_exit = NULL,
-  retry_tasks = TRUE,
+  retry_tasks = NULL,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
@@ -41,6 +41,7 @@ crew_controller_local <- function(
   r_arguments = c("--no-save", "--no-restore"),
   options_metrics = crew::crew_options_metrics(),
   options_local = crew::crew_options_local(),
+  crashes_max = 5L,
   local_log_directory = NULL,
   local_log_join = NULL
 ) {
@@ -84,6 +85,14 @@ crew_controller_local <- function(
     condition = "message",
     value = crashes_error
   )
+  crew_deprecate(
+    name = "retry_tasks",
+    date = "2025-01-24",
+    version = "0.10.2.9005",
+    alternative = "none",
+    condition = "message",
+    value = retry_tasks
+  )
   options_local$log_directory <- local_log_directory %|||%
     options_local$log_directory
   options_local$log_join <- local_log_join %|||%
@@ -111,7 +120,6 @@ crew_controller_local <- function(
     reset_packages = reset_packages,
     reset_options = reset_options,
     garbage_collection = garbage_collection,
-    crashes_error = crashes_error,
     tls = tls,
     r_arguments = r_arguments,
     options_metrics = options_metrics,
@@ -119,7 +127,11 @@ crew_controller_local <- function(
     local_log_directory = local_log_directory,
     local_log_join = local_log_join
   )
-  controller <- crew_controller(client = client, launcher = launcher)
+  controller <- crew_controller(
+    client = client,
+    launcher = launcher,
+    crashes_max = crashes_max
+  )
   controller$validate()
   controller
 }

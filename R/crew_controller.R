@@ -7,6 +7,28 @@
 #' @param client An `R6` client object created by [crew_client()].
 #' @param launcher An `R6` launcher object created by one of the
 #'   `crew_launcher_*()` functions such as [crew_launcher_local()].
+#' @param crashes_max Positive integer, threshold on the number of
+#'   crashes for a task.
+#'   If a task with fails `crashes_max` times in a row
+#'   with a status of `"crash"` (its worker crashed while running it)
+#'   then the controller throws an error the next time a task with the
+#'   same name is pushed.
+#'
+#'   As of `crew` version 0.10.2.9005, the controller does not
+#'   automatically resubmit crashed tasks. It is the user's responsibility
+#'   to pop or collect the task, notice that the `status` column of the
+#'   output equals `"crash"` (`code` equals `19`) and then resubmit the
+#'   task using the same task name.
+#'
+#'   `crew` and `mirai` choose not to automatically resubmit tasks
+#'   because in order to do this, the data dependencies of every task
+#'   would need to persist in memory in case any task needs a retry.
+#'   If thousands of tasks are running simultaneously and each of them
+#'   needs a different input dataset, then memory consumption could skyrocket.
+#'   So, `mirai` relinquishes the dependency memory of
+#'   a task as soon as a worker starts running it.
+#'   This reduces memory consumption but shifts
+#'   responsibility for retries to the user.
 #' @param auto_scale Deprecated. Use the `scale` argument of `push()`,
 #'   `pop()`, and `wait()` instead.
 #' @examples
@@ -23,6 +45,7 @@
 crew_controller <- function(
   client,
   launcher,
+  crashes_max = 5L,
   auto_scale = NULL
 ) {
   crew_deprecate(
@@ -33,7 +56,11 @@ crew_controller <- function(
     value = auto_scale,
     frequency = "once"
   )
-  controller <- crew_class_controller$new(client = client, launcher = launcher)
+  controller <- crew_class_controller$new(
+    client = client,
+    launcher = launcher,
+    crashes_max = crashes_max
+  )
   controller$validate()
   controller
 }
@@ -63,6 +90,8 @@ crew_class_controller <- R6::R6Class(
     .tasks = new.env(parent = emptyenv(), hash = TRUE),
     .pushed = 0L,
     .popped = 0L,
+    .crashes_max = NULL,
+    .crashes = new.env(parent = emptyenv(), hash = TRUE),
     .summary = NULL,
     .error = NULL,
     .backlog = character(0L),
@@ -125,6 +154,15 @@ crew_class_controller <- R6::R6Class(
     popped = function() {
       .subset2(private, ".popped")
     },
+    #' @field crashes_max See [crew_controller()]
+    crashes_max = function() {
+      .subset2(private, ".crashes_max")
+    },
+    #' @field crashes Hash environment with the number of consecutive
+    #'   crashes of each popped task.
+    crashes = function() {
+      .subset2(private, ".crashes")
+    },
     #' @field error Tibble of task results (with one result per row)
     #'   from the last call to `map(error = "stop)`.
     error = function() {
@@ -149,6 +187,7 @@ crew_class_controller <- R6::R6Class(
     #' @return An `R6` controller object.
     #' @param client Router object. See [crew_controller()].
     #' @param launcher Launcher object. See [crew_controller()].
+    #' @param crashes_max See [crew_controller()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
@@ -162,10 +201,12 @@ crew_class_controller <- R6::R6Class(
     #' }
     initialize = function(
       client = NULL,
-      launcher = NULL
+      launcher = NULL,
+      crashes_max = NULL
     ) {
       private$.client <- client
       private$.launcher <- launcher
+      private$.crashes_max <- crashes_max
       invisible()
     },
     #' @description Validate the client.
@@ -175,6 +216,21 @@ crew_class_controller <- R6::R6Class(
       crew_assert(inherits(private$.launcher, "crew_class_launcher"))
       private$.client$validate()
       private$.launcher$validate()
+      # TODO: re-enable checks on crashes_max and crashes
+      # when reverse dependencies catch up.
+      if (!is.null(private$.crashes_max)) {
+        crew_assert(
+          private$.crashes_max,
+          is.integer(.),
+          length(.) == 1L,
+          is.finite(.),
+          . > 0L,
+          message = "crashes_max must be a positive integer scalar."
+        )
+      }
+      if (!is.null(private$.crashes)) {
+        crew_assert(is.environment(private$.crashes))
+      }
       crew_assert(private$.tasks, is.null(.) || is.environment(.))
       crew_assert(private$.summary, is.null(.) || is.list(.))
       crew_assert(private$.backlog, is.null(.) || is.character(.))
@@ -289,6 +345,7 @@ crew_class_controller <- R6::R6Class(
         private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
         private$.pushed <- 0L
         private$.popped <- 0L
+        private$.crashes <- new.env(parent = emptyenv(), hash = TRUE)
         private$.summary <- list(
           controller = private$.launcher$name,
           tasks = 0L,
@@ -1453,9 +1510,10 @@ crew_class_controller <- R6::R6Class(
         }
       )
       private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
-      private$.pushed <- NULL
-      private$.popped <- NULL
-      private$.autoscaling <- NULL
+      private$.pushed <- 0L
+      private$.popped <- 0L
+      private$.crashes <- new.env(parent = emptyenv(), hash = TRUE)
+      private$.autoscaling <- FALSE
       private$.queue <- crew_queue()
       private$.resolved <- -1L
       invisible()

@@ -4,13 +4,36 @@
 \alias{crew_controller}
 \title{Create a controller object from a client and launcher.}
 \usage{
-crew_controller(client, launcher, auto_scale = NULL)
+crew_controller(client, launcher, crashes_max = 5L, auto_scale = NULL)
 }
 \arguments{
 \item{client}{An \code{R6} client object created by \code{\link[=crew_client]{crew_client()}}.}
 
 \item{launcher}{An \code{R6} launcher object created by one of the
 \verb{crew_launcher_*()} functions such as \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+
+\item{crashes_max}{Positive integer, threshold on the number of
+crashes for a task.
+If a task with fails \code{crashes_max} times in a row
+with a status of \code{"crash"} (its worker crashed while running it)
+then the controller throws an error the next time a task with the
+same name is pushed.
+
+As of \code{crew} version 0.10.2.9005, the controller does not
+automatically resubmit crashed tasks. It is the user's responsibility
+to pop or collect the task, notice that the \code{status} column of the
+output equals \code{"crash"} (\code{code} equals \code{19}) and then resubmit the
+task using the same task name.
+
+\code{crew} and \code{mirai} choose not to automatically resubmit tasks
+because in order to do this, the data dependencies of every task
+would need to persist in memory in case any task needs a retry.
+If thousands of tasks are running simultaneously and each of them
+needs a different input dataset, then memory consumption could skyrocket.
+So, \code{mirai} relinquishes the dependency memory of
+a task as soon as a worker starts running it.
+This reduces memory consumption but shifts
+responsibility for retries to the user.}
 
 \item{auto_scale}{Deprecated. Use the \code{scale} argument of \code{push()},
 \code{pop()}, and \code{wait()} instead.}

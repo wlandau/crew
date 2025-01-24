@@ -55,6 +55,11 @@ Other controller:
 \item{\code{popped}}{Number of tasks popped
 since the controller was started.}
 
+\item{\code{crashes_max}}{See \code{\link[=crew_controller]{crew_controller()}}}
+
+\item{\code{crashes}}{Hash environment with the number of consecutive
+crashes of each popped task.}
+
 \item{\code{error}}{Tibble of task results (with one result per row)
 from the last call to \verb{map(error = "stop)}.}
 
@@ -105,7 +110,7 @@ auto-scaling is currently running}
 \subsection{Method \code{new()}}{
 \code{mirai} controller constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$new(client = NULL, launcher = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$new(client = NULL, launcher = NULL, crashes_max = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -114,6 +119,8 @@ auto-scaling is currently running}
 \item{\code{client}}{Router object. See \code{\link[=crew_controller]{crew_controller()}}.}
 
 \item{\code{launcher}}{Launcher object. See \code{\link[=crew_controller]{crew_controller()}}.}
+
+\item{\code{crashes_max}}{See \code{\link[=crew_controller]{crew_controller()}}.}
 }
 \if{html}{\out{</div>}}
 }

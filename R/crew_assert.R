@@ -27,7 +27,11 @@ crew_assert <- function(
   }
   conditions <- lapply(
     expr,
-    function(expr) all(eval(expr, envir = list(. = value), enclos = envir))
+    function(expr) {
+      out <- all(eval(expr, envir = list(. = value), enclos = envir))
+      out[is.na(out)] <- FALSE
+      out
+    }
   )
   if (!all(unlist(conditions))) {
     chr_expr <- lapply(expr, function(x) sprintf("all(%s)", deparse(x)))

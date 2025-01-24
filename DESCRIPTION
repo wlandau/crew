@@ -44,8 +44,8 @@ Imports:
   data.table,
   getip,
   later,
-  mirai (>= 2.0.0.9000),
-  nanonext (>= 1.3.0),
+  mirai (>= 2.0.1),
+  nanonext (>= 1.4.0),
   processx,
   promises,
   ps,
@@ -62,8 +62,6 @@ Suggests:
   markdown (>= 1.1),
   rmarkdown (>= 2.4),
   testthat (>= 3.0.0)
-Remotes:
-  shikokuchuo/mirai
 Encoding: UTF-8
 Language: en-US
 VignetteBuilder: knitr

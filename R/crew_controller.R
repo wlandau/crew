@@ -27,6 +27,12 @@
 #'   with a status of `"crash"`,
 #'   then the controller throws an error when it retries the task.
 #'
+#'   If you specify a backup controller with the `backup` argument,
+#'   then if a task reaches exactly `crashes_max` crashes in the
+#'   current controller, then its next `push()` to the current controller
+#'   automatically submits it to the `backup` controller instead.
+#'   See the `backup` argument for details.
+#'
 #'   As of `crew` version 0.10.2.9005, the controller does not
 #'   automatically resubmit crashed tasks. It is the user's responsibility
 #'   to pop or collect the task, notice that the `status` column of the
@@ -43,12 +49,22 @@
 #'   a task as soon as a worker starts running it.
 #'   This reduces memory consumption but shifts
 #'   responsibility for retries to the user (or packages like `targets`).
-#' @param backup Character string, only relevant if the controller is
-#'   part of a controller group (see [crew_controller_group()]).
-#'   The `backup` argument is the name of a controller to submit a task
-#'   if it crashes `crashes_max` times in a row (and there was at
-#'   least one attempt). `backup` allows you to 
-#'   
+#' @param backup An optional `crew` controller object, or `NULL` to omit.
+#'   If supplied, the `backup` controller runs any pushed tasks that have
+#'   already reached `crashes_max` crashes.
+#'   In other words, if you push a task that already crashed `crashes_max`
+#'   times, then instead of running in the current controller, the task 
+#'   will run in the backup controller. Using `backup`, you can create
+#'   a chain of controllers with different levels of resources
+#'   (such as worker memory and CPUs) so that a task that fails on
+#'   one controller can retry using incrementally more powerful workers.
+#'
+#'   Limitations of `backup`:
+#'     * `crashes_max` needs to be positive in order for `backup` to be used.
+#'       Otherwise, every task would always skip the current controller and
+#'       go to `backup`.
+#'     * `backup` cannot be a controller group. It must be an ordinary
+#'       controller.
 #' @param auto_scale Deprecated. Use the `scale` argument of `push()`,
 #'   `pop()`, and `wait()` instead.
 #' @examples
@@ -66,6 +82,7 @@ crew_controller <- function(
   client,
   launcher,
   crashes_max = 0L,
+  backup = NULL,
   auto_scale = NULL
 ) {
   crew_deprecate(
@@ -79,7 +96,8 @@ crew_controller <- function(
   controller <- crew_class_controller$new(
     client = client,
     launcher = launcher,
-    crashes_max = crashes_max
+    crashes_max = crashes_max,
+    backup = backup
   )
   controller$validate()
   controller
@@ -112,6 +130,7 @@ crew_class_controller <- R6::R6Class(
     .popped = 0L,
     .crashes_max = NULL,
     .crash_log = new.env(parent = emptyenv(), hash = TRUE),
+    .backup = NULL,
     .summary = NULL,
     .error = NULL,
     .backlog = character(0L),
@@ -202,9 +221,13 @@ crew_class_controller <- R6::R6Class(
     popped = function() {
       .subset2(private, ".popped")
     },
-    #' @field crashes_max See [crew_controller()]
+    #' @field crashes_max See [crew_controller()].
     crashes_max = function() {
       .subset2(private, ".crashes_max")
+    },
+    #' @field backup See [crew_controller()].
+    backup = function() {
+      .subset2(private, ".backup")
     },
     #' @field error Tibble of task results (with one result per row)
     #'   from the last call to `map(error = "stop)`.
@@ -231,6 +254,7 @@ crew_class_controller <- R6::R6Class(
     #' @param client Router object. See [crew_controller()].
     #' @param launcher Launcher object. See [crew_controller()].
     #' @param crashes_max See [crew_controller()].
+    #' @param backup See [crew_controller()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
@@ -245,11 +269,13 @@ crew_class_controller <- R6::R6Class(
     initialize = function(
       client = NULL,
       launcher = NULL,
-      crashes_max = NULL
+      crashes_max = NULL,
+      backup = NULL
     ) {
       private$.client <- client
       private$.launcher <- launcher
       private$.crashes_max <- crashes_max
+      private$.backup <- backup
       invisible()
     },
     #' @description Validate the client.
@@ -273,6 +299,16 @@ crew_class_controller <- R6::R6Class(
       }
       if (!is.null(private$.crash_log)) {
         crew_assert(is.environment(private$.crash_log))
+      }
+      if (!is.null(private$.backup)) {
+        crew_assert(
+          inherits(private$.backup, "crew_class_controller"),
+          message = "backup must be NULL or a crew controller."
+        )
+        crew_assert(
+          !inherits(private$.backup, "crew_class_controller_group"),
+          message = "backup cannot be a controller group."
+        )
       }
       crew_assert(private$.tasks, is.null(.) || is.environment(.))
       crew_assert(private$.summary, is.null(.) || is.list(.))
@@ -597,6 +633,27 @@ crew_class_controller <- R6::R6Class(
             "use pop() or collect() to remove it from the controller."
           )
         )
+      }
+      backup <- .subset2(private, ".backup")
+      if (!is.null(backup)) {
+        max <- .subset2(private, ".crashes_max")
+        if ((max > 0L) && (.subset2(self, "crashes")(name = name) == max)) {
+          .subset2(backup, "push") (
+            command = command,
+            data = data,
+            globals = globals,
+            substitute = FALSE,
+            seed = seed,
+            algorithm = algorithm,
+            packages = packages,
+            library = library,
+            seconds_timeout = seconds_timeout,
+            scale = scale,
+            throttle = throttle,
+            name = name,
+            controller = controller
+          )
+        }
       }
       task <- mirai::mirai(
         .expr = expr_crew_eval,

@@ -130,7 +130,9 @@ crew_controller_custom <- function(
   reset_options = FALSE,
   garbage_collection = FALSE,
   r_arguments = NULL,
-  options_metrics = crew::crew_options_metrics()
+  options_metrics = crew::crew_options_metrics(),
+  crashes_max = 0L,
+  backup = NULL
 ) {
   client <- crew::crew_client(
     host = host,
@@ -157,7 +159,12 @@ crew_controller_custom <- function(
     r_arguments = r_arguments,
     options_metrics = options_metrics
   )
-  controller <- crew::crew_controller(client = client, launcher = launcher)
+  controller <- crew::crew_controller(
+    client = client,
+    launcher = launcher,
+    crashes_max = crashes_max,
+    backup = backup
+  )
   controller$validate()
   controller
 }

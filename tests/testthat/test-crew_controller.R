@@ -735,3 +735,47 @@ crew_test("crash detection with crashes_max == 2L", {
   expect_crew_error(x$pop())
   expect_false(x$retryable(name = "x"))
 })
+
+crew_test("crash detection with crashes_max == 2L and collect()", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360,
+    crashes_max = 2L
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  for (index in seq_len(2L)) {
+    expect_true(x$retryable(name = "x"))
+    x$push(Sys.sleep(300L), name = "x", scale = TRUE)
+    crew_retry(
+      ~ {
+        x$scale()
+        isTRUE(x$launcher$instances$online)
+      },
+      seconds_interval = 0.1
+    )
+    x$launcher$terminate_workers()
+    x$wait()
+    expect_true(tibble::is_tibble(x$collect()))
+    expect_true(x$retryable(name = "x"))
+  }
+  x$push(Sys.sleep(300L), name = "x", scale = TRUE)
+  crew_retry(
+    ~ {
+      x$scale()
+      isTRUE(x$launcher$instances$online)
+    },
+    seconds_interval = 0.1
+  )
+  x$launcher$terminate_workers()
+  x$wait()
+  expect_crew_error(x$collect())
+  expect_false(x$retryable(name = "x"))
+})

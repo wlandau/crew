@@ -16,8 +16,10 @@ crew_test("bad field", {
 
 crew_test("as_monad()", {
   skip_on_cran()
+  on.exit(mirai::daemons(n = 0L))
   task <- structure(list(data = list(2L)), class = c("mirai", "recvAio"))
   expect_equal(as_monad(task = task, name = "x"), list(2L))
+  mirai::daemons(n = 1L, autoexit = crew_terminate_signal())
   task <- mirai::mirai(stop("error_message"))
   mirai::call_mirai_(task)
   monad <- as_monad(task = task, name = "x")
@@ -34,8 +36,6 @@ crew_test("as_monad()", {
   expect_equal(monad$status, "cancel")
   expect_true(grepl("cancel", tolower(monad$error)))
   expect_equal(monad$code, 20L)
-  on.exit(mirai::daemons(n = 0L))
-  mirai::daemons(n = 1L)
   task <- mirai::mirai(Sys.sleep(300))
   Sys.sleep(0.25)
   mirai::daemons(n = 0L)

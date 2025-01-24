@@ -365,8 +365,8 @@ crew_class_controller_group <- R6::R6Class(
     },
     #' @description Run worker auto-scaling in a private `later` loop
     #'   every `controller$client$seconds_interval` seconds.
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
     #' @return `NULL` (invisibly).
     autoscale = function(controllers = NULL) {
       # Tested in tests/interactive/test-promises.R
@@ -377,12 +377,26 @@ crew_class_controller_group <- R6::R6Class(
     },
     #' @description Terminate the auto-scaling loop started by
     #'   `controller$autoscale()`.
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
     #' @return `NULL` (invisibly).
     descale = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
       walk(control, ~.x$descale())
+    },
+    #' @description Report the number of consecutive crashes of a task,
+    #'   summed over all selected controllers in the group.
+    #' @details See the `crashes_max` argument of [crew_controller()].
+    #' @return Non-negative integer, number of consecutive times the task
+    #'   crashed.
+    #' @param name Character string, name of the task to check.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    #' @return Number of consecutive crashes of the named task,
+    #'   summed over all the controllers in the group.
+    crashes = function(name, controllers = NULL) {
+      control <- private$.select_controllers(controllers)
+      sum(map_int(control, ~.x$crashes(name = name)))
     },
     #' @description Push a task to the head of the task list.
     #' @return Invisibly return the `mirai` object of the pushed task.

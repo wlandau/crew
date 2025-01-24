@@ -64,7 +64,10 @@
 #'       Otherwise, every task would always skip the current controller and
 #'       go to `backup`.
 #'     * `backup` cannot be a controller group. It must be an ordinary
-#'       controller.
+#'       controller. However, it is recommended to put all controllers
+#'       in a backup chain inside a controller group so you can retrieve
+#'       results with the group-level `pop()` and `collect()` methods,
+#'       regardless of which controller actually ended up owning the task.
 #' @param auto_scale Deprecated. Use the `scale` argument of `push()`,
 #'   `pop()`, and `wait()` instead.
 #' @examples
@@ -190,7 +193,11 @@ crew_class_controller <- R6::R6Class(
             shQuote(name),
             "crashed",
             count,
-            "time(s) in a row. For details and advice, please see the",
+            sprintf(
+              "consecutive time(s) in launcher %s.",
+              shQuote(private$.launcher$name)
+            ),
+            "For details and advice, please see the",
             "crashes_max argument of crew::crew_controller(), as well as",
             "https://wlandau.github.io/crew/articles/risks.html#crashes",
             "and See https://wlandau.github.io/crew/articles/logging.html."
@@ -302,12 +309,13 @@ crew_class_controller <- R6::R6Class(
       }
       if (!is.null(private$.backup)) {
         crew_assert(
-          inherits(private$.backup, "crew_class_controller"),
-          message = "backup must be NULL or a crew controller."
-        )
-        crew_assert(
-          !inherits(private$.backup, "crew_class_controller_group"),
-          message = "backup cannot be a controller group."
+          private$.backup,
+          inherits(., "crew_class_controller"),
+          !inherits(., "crew_class_controller_group"),
+          message = paste(
+            "backup must be NULL or a crew controller, and",
+            "it must not be a controller group."
+          )
         )
       }
       crew_assert(private$.tasks, is.null(.) || is.environment(.))
@@ -525,7 +533,10 @@ crew_class_controller <- R6::R6Class(
     #' @return Non-negative integer, number of consecutive times the task
     #'   crashed.
     #' @param name Character string, name of the task to check.
-    crashes = function(name) {
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    #' @return `NULL` (invisibly).
+    crashes = function(name, controllers = NULL) {
       count <- .subset2(.subset2(private, ".crash_log"), name)
       if (is.null(count)) {
         0L
@@ -638,20 +649,22 @@ crew_class_controller <- R6::R6Class(
       if (!is.null(backup)) {
         max <- .subset2(private, ".crashes_max")
         if ((max > 0L) && (.subset2(self, "crashes")(name = name) == max)) {
-          .subset2(backup, "push") (
-            command = command,
-            data = data,
-            globals = globals,
-            substitute = FALSE,
-            seed = seed,
-            algorithm = algorithm,
-            packages = packages,
-            library = library,
-            seconds_timeout = seconds_timeout,
-            scale = scale,
-            throttle = throttle,
-            name = name,
-            controller = controller
+          return(
+            .subset2(backup, "push") (
+              command = command,
+              data = data,
+              globals = globals,
+              substitute = FALSE,
+              seed = seed,
+              algorithm = algorithm,
+              packages = packages,
+              library = library,
+              seconds_timeout = seconds_timeout,
+              scale = scale,
+              throttle = throttle,
+              name = name,
+              controller = controller
+            )
           )
         }
       }

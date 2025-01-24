@@ -787,3 +787,116 @@ crew_test("descale", {
   x$descale()
   expect_false(controller$autoscaling)
 })
+
+crew_test("crash detection with backup controllers in a group", {
+  skip_on_cran()
+  skip_on_os("windows")
+  c <- crew_controller_local(
+    name = "c",
+    workers = 1L,
+    seconds_idle = 360,
+    crashes_max = 2L
+  )
+  b <- crew_controller_local(
+    name = "b",
+    workers = 1L,
+    seconds_idle = 360,
+    crashes_max = 2L,
+    backup = c
+  )
+  a <- crew_controller_local(
+    name = "a",
+    workers = 1L,
+    seconds_idle = 360,
+    crashes_max = 2L,
+    backup = b
+  )
+  x <- crew_controller_group(a, b, c)
+  on.exit({
+    x$terminate()
+    rm(x)
+    rm(a)
+    rm(b)
+    rm(c)
+    gc()
+    crew_test_sleep()
+  })
+  expect_equal(x$crashes(name = "x"), 0L)
+  expect_equal(a$crashes(name = "x"), 0L)
+  expect_equal(b$crashes(name = "x"), 0L)
+  expect_equal(c$crashes(name = "x"), 0L)
+  crash <- function() {
+    a$push(Sys.sleep(300L), name = "x")
+    crew_retry(
+      ~ {
+        x$scale()
+        isTRUE(a$launcher$instances$online) ||
+          isTRUE(b$launcher$instances$online) ||
+          isTRUE(c$launcher$instances$online)
+      },
+      seconds_interval = 0.1,
+      seconds_timeout = 60
+    )
+    Sys.sleep(0.25)
+    a$launcher$terminate_workers()
+    b$launcher$terminate_workers()
+    c$launcher$terminate_workers()
+    x$wait()
+    x$pop()
+  }
+  expect_true(tibble::is_tibble(crash()))
+  expect_equal(x$crashes(name = "x"), 1L)
+  expect_equal(a$crashes(name = "x"), 1L)
+  expect_equal(b$crashes(name = "x"), 0L)
+  expect_equal(c$crashes(name = "x"), 0L)
+  summary <- x$summary()
+  expect_equal(summary$controller, c("a", "b", "c"))
+  expect_equal(summary$tasks, c(1L, 0L, 0L))
+  expect_equal(summary$errors, c(1L, 0L, 0L))
+  expect_true(tibble::is_tibble(crash()))
+  expect_equal(x$crashes(name = "x"), 2L)
+  expect_equal(a$crashes(name = "x"), 2L)
+  expect_equal(b$crashes(name = "x"), 0L)
+  expect_equal(c$crashes(name = "x"), 0L)
+  summary <- x$summary()
+  expect_equal(summary$controller, c("a", "b", "c"))
+  expect_equal(summary$tasks, c(2L, 0L, 0L))
+  expect_equal(summary$errors, c(2L, 0L, 0L))
+  expect_true(tibble::is_tibble(crash()))
+  expect_equal(x$crashes(name = "x"), 3L)
+  expect_equal(a$crashes(name = "x"), 2L)
+  expect_equal(b$crashes(name = "x"), 1L)
+  expect_equal(c$crashes(name = "x"), 0L)
+  summary <- x$summary()
+  expect_equal(summary$controller, c("a", "b", "c"))
+  expect_equal(summary$tasks, c(2L, 1L, 0L))
+  expect_equal(summary$errors, c(2L, 1L, 0L))
+  expect_true(tibble::is_tibble(crash()))
+  expect_equal(x$crashes(name = "x"), 4L)
+  expect_equal(a$crashes(name = "x"), 2L)
+  expect_equal(b$crashes(name = "x"), 2L)
+  expect_equal(c$crashes(name = "x"), 0L)
+  summary <- x$summary()
+  expect_equal(summary$controller, c("a", "b", "c"))
+  expect_equal(summary$tasks, c(2L, 2L, 0L))
+  expect_equal(summary$errors, c(2L, 2L, 0L))
+  expect_true(tibble::is_tibble(crash()))
+  expect_equal(x$crashes(name = "x"), 5L)
+  expect_equal(a$crashes(name = "x"), 2L)
+  expect_equal(b$crashes(name = "x"), 2L)
+  expect_equal(c$crashes(name = "x"), 1L)
+  summary <- x$summary()
+  expect_equal(summary$controller, c("a", "b", "c"))
+  expect_equal(summary$tasks, c(2L, 2L, 1L))
+  expect_equal(summary$errors, c(2L, 2L, 1L))
+  expect_true(tibble::is_tibble(crash()))
+  expect_equal(x$crashes(name = "x"), 6L)
+  expect_equal(a$crashes(name = "x"), 2L)
+  expect_equal(b$crashes(name = "x"), 2L)
+  expect_equal(c$crashes(name = "x"), 2L)
+  summary <- x$summary()
+  expect_equal(summary$controller, c("a", "b", "c"))
+  expect_equal(summary$tasks, c(2L, 2L, 2L))
+  expect_equal(summary$errors, c(2L, 2L, 2L))
+  expect_crew_error(crash())
+})

@@ -42,6 +42,7 @@ crew_controller_local <- function(
   options_metrics = crew::crew_options_metrics(),
   options_local = crew::crew_options_local(),
   crashes_max = 0L,
+  backup = NULL,
   local_log_directory = NULL,
   local_log_join = NULL
 ) {
@@ -130,7 +131,8 @@ crew_controller_local <- function(
   controller <- crew_controller(
     client = client,
     launcher = launcher,
-    crashes_max = crashes_max
+    crashes_max = crashes_max,
+    backup = backup
   )
   controller$validate()
   controller

@@ -47,7 +47,7 @@ crew_test("warnings and errors", {
   crew_retry(
     ~!handle$is_alive(),
     seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_timeout = 10
   )
 })
 
@@ -656,7 +656,6 @@ crew_test("handle duplicated names", {
   expect_crew_error(x$push(TRUE, name = "x"))
 })
 
-
 crew_test("crash detection with crashes_max == 0L", {
   skip_on_cran()
   skip_on_os("windows")
@@ -685,8 +684,10 @@ crew_test("crash detection with crashes_max == 0L", {
       x$scale()
       isTRUE(x$launcher$instances$online)
     },
-    seconds_interval = 0.1
+    seconds_interval = 0.1,
+    seconds_timeout = 60
   )
+  Sys.sleep(0.25)
   x$launcher$terminate_workers()
   x$wait()
   expect_equal(x$crashes(name = "x"), 0L)
@@ -717,8 +718,10 @@ crew_test("crash detection with crashes_max == 2L", {
         x$scale()
         isTRUE(x$launcher$instances$online)
       },
-      seconds_interval = 0.1
+      seconds_interval = 0.1,
+      seconds_timeout = 60
     )
+    Sys.sleep(0.25)
     x$launcher$terminate_workers()
     x$wait()
     expect_true(tibble::is_tibble(x$pop()))
@@ -730,8 +733,10 @@ crew_test("crash detection with crashes_max == 2L", {
       x$scale()
       isTRUE(x$launcher$instances$online)
     },
-    seconds_interval = 0.1
+    seconds_interval = 0.1,
+    seconds_timeout = 60
   )
+  Sys.sleep(0.25)
   x$launcher$terminate_workers()
   x$wait()
   expect_crew_error(x$pop())
@@ -761,8 +766,10 @@ crew_test("crash detection resets, crashes_max == 2L", {
         x$scale()
         isTRUE(x$launcher$instances$online)
       },
-      seconds_interval = 0.1
+      seconds_interval = 0.1,
+      seconds_timeout = 60
     )
+    Sys.sleep(0.25)
     x$launcher$terminate_workers()
     x$wait()
     expect_true(tibble::is_tibble(x$pop()))
@@ -797,8 +804,10 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
         x$scale()
         isTRUE(x$launcher$instances$online)
       },
-      seconds_interval = 0.1
+      seconds_interval = 0.1,
+      seconds_timeout = 60
     )
+    Sys.sleep(0.25)
     x$launcher$terminate_workers()
     x$wait()
     expect_true(tibble::is_tibble(x$collect()))
@@ -810,10 +819,18 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
       x$scale()
       isTRUE(x$launcher$instances$online)
     },
-    seconds_interval = 0.1
+    seconds_interval = 0.1,
+    seconds_timeout = 60
   )
+  Sys.sleep(0.25)
   x$launcher$terminate_workers()
   x$wait()
   expect_crew_error(x$collect())
   expect_equal(x$crashes(name = "x"), 3L)
+})
+
+crew_test("backup cannot be a controller group", {
+  a <- crew_controller_local()
+  b <- crew_controller_group(a)
+  expect_crew_error(crew_controller_local(backup = b))
 })

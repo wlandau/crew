@@ -870,7 +870,13 @@ crew_class_controller <- R6::R6Class(
           as.character(seq_along(iterate[[1L]])),
           sep = "_"
         ),
-        iterate[[names]]
+        as.character(iterate[[names]])
+      )
+      crew_assert(
+        names,
+        is.character(.),
+        !anyNA(.),
+        message = "task names in map() must be valid character strings."
       )
       crew_assert(
         anyDuplicated(names) < 1L,

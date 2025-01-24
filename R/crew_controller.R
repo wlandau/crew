@@ -86,7 +86,7 @@
 crew_controller <- function(
   client,
   launcher,
-  crashes_max = 0L,
+  crashes_max = 5L,
   backup = NULL,
   auto_scale = NULL
 ) {

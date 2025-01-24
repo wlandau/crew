@@ -127,7 +127,7 @@ crew_controller_custom <- function(
   garbage_collection = FALSE,
   r_arguments = NULL,
   options_metrics = crew::crew_options_metrics(),
-  crashes_max = 0L,
+  crashes_max = 5L,
   backup = NULL
 ) {
   client <- crew::crew_client(

@@ -30,7 +30,7 @@ crew_controller_local(
   r_arguments = c("--no-save", "--no-restore"),
   options_metrics = crew::crew_options_metrics(),
   options_local = crew::crew_options_local(),
-  crashes_max = 0L,
+  crashes_max = 5L,
   backup = NULL,
   local_log_directory = NULL,
   local_log_join = NULL

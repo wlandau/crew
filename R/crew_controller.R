@@ -43,6 +43,8 @@
 #'   a task as soon as a worker starts running it.
 #'   This reduces memory consumption but shifts
 #'   responsibility for retries to the user (or packages like `targets`).
+#' @param backup Character string, name of a controller to submit a task
+#'   if it runs at least once and crashes `crashes_max` times in a row.
 #' @param auto_scale Deprecated. Use the `scale` argument of `push()`,
 #'   `pop()`, and `wait()` instead.
 #' @examples

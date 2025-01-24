@@ -7,18 +7,32 @@
 #' @param client An `R6` client object created by [crew_client()].
 #' @param launcher An `R6` launcher object created by one of the
 #'   `crew_launcher_*()` functions such as [crew_launcher_local()].
-#' @param crashes_max Positive integer, threshold on the number of
-#'   crashes for a task.
-#'   If a task with fails `crashes_max` times in a row
-#'   with a status of `"crash"` (its worker crashed while running it)
-#'   then the controller throws an error the next time a task with the
-#'   same name is pushed.
+#' @param crashes_max A crash is different from an ordinary error.
+#'   If a task throws an ordinary error at the R level, then `crew`
+#'   catches it automatically and returns the error message in the output
+#'   data returned when the task is popped or collected. However,
+#'   if the worker shuts down while the task is running, then `crew`
+#'   cannot retrieve the error message, and the task is considered "crashed".
+#'   In such cases, the output data for the task returns a status of `"crash"`
+#'   instead of `"error"`.
+#'
+#'   Sometimes the worker exits unexpectedly because the task causes
+#'   an out-of-memory error or an AWS Batch spot instance exits.
+#'   In such cases, it is sometimes desirable to retry the task on a
+#'   different worker.
+#'
+#'   `crashes_max` is a positive integer, and it sets the maximum number of
+#'   allowable consecutive crashes for a given task.
+#'   If a task crashes more than `crashes_max` times in a row
+#'   with a status of `"crash"`,
+#'   then the controller throws an error when it retries the task.
 #'
 #'   As of `crew` version 0.10.2.9005, the controller does not
 #'   automatically resubmit crashed tasks. It is the user's responsibility
 #'   to pop or collect the task, notice that the `status` column of the
 #'   output equals `"crash"` (`code` equals `19`) and then resubmit the
-#'   task using the same task name.
+#'   task using the same task name. Some packages that use `crew`,
+#'   such as `targets`, already resubmit crashed tasks automatically.
 #'
 #'   `crew` and `mirai` choose not to automatically resubmit tasks
 #'   because in order to do this, the data dependencies of every task
@@ -28,7 +42,7 @@
 #'   So, `mirai` relinquishes the dependency memory of
 #'   a task as soon as a worker starts running it.
 #'   This reduces memory consumption but shifts
-#'   responsibility for retries to the user.
+#'   responsibility for retries to the user (or packages like `targets`).
 #' @param auto_scale Deprecated. Use the `scale` argument of `push()`,
 #'   `pop()`, and `wait()` instead.
 #' @examples
@@ -45,7 +59,7 @@
 crew_controller <- function(
   client,
   launcher,
-  crashes_max = 5L,
+  crashes_max = 0L,
   auto_scale = NULL
 ) {
   crew_deprecate(
@@ -130,6 +144,34 @@ crew_class_controller <- R6::R6Class(
         private$.client$relay$wait(throttle = private$.launcher$throttle)
       }
       .subset2(self, "unpopped")() > 0L
+    },
+    .scan_crash = function(name, task) {
+      code <- .subset2(task, "code")
+      crashes <- .subset2(private, ".crashes")
+      if (code != code_crash) {
+        private$.crashes[[name]] <- NULL
+        return()
+      }
+      previous <- .subset2(crashes, name)
+      if (is.null(previous)) {
+        previous <- 0L
+      }
+      count <- previous + 1L
+      private$.crashes[[name]] <- count
+      if (count > .subset2(private, ".crashes_max")) {
+        crew_error(
+          message = paste(
+            "crew task",
+            shQuote(name),
+            "crashed",
+            count,
+            "time(s) in a row. For details and advice, please see the",
+            "crashes_max argument of crew::crew_controller(), as well as",
+            "https://wlandau.github.io/crew/articles/risks.html#crashes",
+            "and See https://wlandau.github.io/crew/articles/logging.html."
+          )
+        )
+      }
     }
   ),
   active = list(
@@ -224,7 +266,7 @@ crew_class_controller <- R6::R6Class(
           is.integer(.),
           length(.) == 1L,
           is.finite(.),
-          . > 0L,
+          . >= 0L,
           message = "crashes_max must be a positive integer scalar."
         )
       }
@@ -440,6 +482,18 @@ crew_class_controller <- R6::R6Class(
     descale = function(controllers = NULL) {
       private$.autoscaling <- FALSE
       invisible()
+    },
+    #' @description Check if a task is retryable.
+    #' @details A task is retryable if its number of consecutive crashes
+    #'   is less than or equal to `crashes_max`.
+    #'   For details, see the `crashes_max` argument of [crew_controller()].
+    #' @return `TRUE` if the task is retryable, `FALSE` if it crashed
+    #'   too many times in a row to retry.
+    #' @param name Character string, name of the task to check.
+    retryable = function(name) {
+      crashes <- .subset2(private, ".crashes")
+      count <- .subset2(crashes, name)
+      is.null(count) || (count <= .subset2(private, ".crashes_max"))
     },
     #' @description Push a task to the head of the task list.
     #' @return Invisibly return the `mirai` object of the pushed task.
@@ -869,6 +923,9 @@ crew_class_controller <- R6::R6Class(
     #'   * `"warn"`: throw a warning. This allows the return value with
     #'     all the error messages and tracebacks to be generated.
     #'   * `"silent"`: do nothing special.
+    #'   NOTE: the only kinds of errors considered here are errors at the R
+    #'   level. A crashed tasks will return a status of `"crash"` in the output
+    #'   and not trigger an error in `map()` unless `crashes_max` is reached.
     #' @param warnings Logical of length 1, whether to throw a warning in the
     #'   interactive session if at least one task encounters an error.
     #' @param verbose Logical of length 1, whether to print progress messages.
@@ -991,10 +1048,11 @@ crew_class_controller <- R6::R6Class(
       }
       out <- list()
       for (index in seq_along(tasks)) {
-        out[[length(out) + 1L]] <- as_monad(
-          task = tasks[[index]],
-          name = names[[index]]
-        )
+        task <- .subset2(tasks, index)
+        name <- .subset(names, index)
+        monad <- as_monad(task = task, name = name)
+        .subset2(private, ".scan_crash")(name = name, task = monad)
+        out[[length(out) + 1L]] <- monad
       }
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
       out <- out[match(x = names, table = out$name),, drop = FALSE] # nolint
@@ -1103,6 +1161,9 @@ crew_class_controller <- R6::R6Class(
     #'     a value.
     #'   * `"warn"`: throw a warning.
     #'   * `NULL` or `"silent"`: do not react to errors.
+    #'   NOTE: the only kinds of errors considered here are errors at the R
+    #'   level. A crashed tasks will return a status of `"crash"` in the output
+    #'   and not trigger an error in `pop()` unless `crashes_max` is reached.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop = function(
@@ -1151,6 +1212,7 @@ crew_class_controller <- R6::R6Class(
       remove(list = name, envir = tasks)
       private$.popped <- .subset2(self, "popped") + 1L
       out <- as_monad(task = task, name = name)
+      .subset2(private, ".scan_crash")(name = name, task = out)
       seconds <- .subset2(out, "seconds")
       summary <- .subset2(private, ".summary")
       summary$tasks <- .subset2(summary, "tasks") + 1L
@@ -1185,10 +1247,14 @@ crew_class_controller <- R6::R6Class(
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param error `NULL` or character of length 1, choice of action if
     #'   the popped task threw an error. Possible values:
-    #'   * `"stop"`: throw an error in the main R session instead of returning
-    #'     a value.
-    #'   * `"warn"`: throw a warning.
-    #'   * `NULL` or `"silent"`: do not react to errors.
+    #'     * `"stop"`: throw an error in the main R session instead of
+    #'       returning a value.
+    #'     * `"warn"`: throw a warning.
+    #'     * `NULL` or `"silent"`: do not react to errors.
+    #'   NOTE: the only kinds of errors considered here are errors at the R
+    #'   level. A crashed tasks will return a status of `"crash"` in the output
+    #'   and not trigger an error in `collect()`
+    #'   unless `crashes_max` is reached.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     collect = function(
@@ -1221,8 +1287,11 @@ crew_class_controller <- R6::R6Class(
         return(NULL)
       }
       tasks <- .subset2(private, ".tasks")
+      scan_crash <- .subset2(private, ".scan_crash")
       out <- lapply(names, function(name) {
-        as_monad(task = .subset2(tasks, name), name = name)
+        out <- as_monad(task = .subset2(tasks, name), name = name)
+        scan_crash(name = name, task = out)
+        out
       })
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
       remove(list = names, envir = tasks)

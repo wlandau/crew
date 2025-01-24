@@ -4,7 +4,7 @@
 \alias{crew_controller}
 \title{Create a controller object from a client and launcher.}
 \usage{
-crew_controller(client, launcher, crashes_max = 5L, auto_scale = NULL)
+crew_controller(client, launcher, crashes_max = 0L, auto_scale = NULL)
 }
 \arguments{
 \item{client}{An \code{R6} client object created by \code{\link[=crew_client]{crew_client()}}.}
@@ -12,18 +12,32 @@ crew_controller(client, launcher, crashes_max = 5L, auto_scale = NULL)
 \item{launcher}{An \code{R6} launcher object created by one of the
 \verb{crew_launcher_*()} functions such as \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
 
-\item{crashes_max}{Positive integer, threshold on the number of
-crashes for a task.
-If a task with fails \code{crashes_max} times in a row
-with a status of \code{"crash"} (its worker crashed while running it)
-then the controller throws an error the next time a task with the
-same name is pushed.
+\item{crashes_max}{A crash is different from an ordinary error.
+If a task throws an ordinary error at the R level, then \code{crew}
+catches it automatically and returns the error message in the output
+data returned when the task is popped or collected. However,
+if the worker shuts down while the task is running, then \code{crew}
+cannot retrieve the error message, and the task is considered "crashed".
+In such cases, the output data for the task returns a status of \code{"crash"}
+instead of \code{"error"}.
+
+Sometimes the worker exits unexpectedly because the task causes
+an out-of-memory error or an AWS Batch spot instance exits.
+In such cases, it is sometimes desirable to retry the task on a
+different worker.
+
+\code{crashes_max} is a positive integer, and it sets the maximum number of
+allowable consecutive crashes for a given task.
+If a task crashes more than \code{crashes_max} times in a row
+with a status of \code{"crash"},
+then the controller throws an error when it retries the task.
 
 As of \code{crew} version 0.10.2.9005, the controller does not
 automatically resubmit crashed tasks. It is the user's responsibility
 to pop or collect the task, notice that the \code{status} column of the
 output equals \code{"crash"} (\code{code} equals \code{19}) and then resubmit the
-task using the same task name.
+task using the same task name. Some packages that use \code{crew},
+such as \code{targets}, already resubmit crashed tasks automatically.
 
 \code{crew} and \code{mirai} choose not to automatically resubmit tasks
 because in order to do this, the data dependencies of every task
@@ -33,7 +47,7 @@ needs a different input dataset, then memory consumption could skyrocket.
 So, \code{mirai} relinquishes the dependency memory of
 a task as soon as a worker starts running it.
 This reduces memory consumption but shifts
-responsibility for retries to the user.}
+responsibility for retries to the user (or packages like \code{targets}).}
 
 \item{auto_scale}{Deprecated. Use the \code{scale} argument of \code{push()},
 \code{pop()}, and \code{wait()} instead.}

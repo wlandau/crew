@@ -89,6 +89,7 @@ auto-scaling is currently running}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
 \item \href{#method-crew_class_controller-autoscale}{\code{crew_class_controller$autoscale()}}
 \item \href{#method-crew_class_controller-descale}{\code{crew_class_controller$descale()}}
+\item \href{#method-crew_class_controller-retryable}{\code{crew_class_controller$retryable()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
 \item \href{#method-crew_class_controller-walk}{\code{crew_class_controller$walk()}}
 \item \href{#method-crew_class_controller-map}{\code{crew_class_controller$map()}}
@@ -487,6 +488,33 @@ compatible with the analogous method of controller groups.}
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-retryable"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-retryable}{}}}
+\subsection{Method \code{retryable()}}{
+Check if a task is retryable.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$retryable(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character string, name of the task to check.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+A task is retryable if its number of consecutive crashes
+is less than or equal to \code{crashes_max}.
+For details, see the \code{crashes_max} argument of \code{\link[=crew_controller]{crew_controller()}}.
+}
+
+\subsection{Returns}{
+\code{TRUE} if the task is retryable, \code{FALSE} if it crashed
+too many times in a row to retry.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-push"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-push}{}}}
 \subsection{Method \code{push()}}{
@@ -838,6 +866,9 @@ you are finished troubleshooting.
 \item \code{"warn"}: throw a warning. This allows the return value with
 all the error messages and tracebacks to be generated.
 \item \code{"silent"}: do nothing special.
+NOTE: the only kinds of errors considered here are errors at the R
+level. A crashed tasks will return a status of \code{"crash"} in the output
+and not trigger an error in \code{map()} unless \code{crashes_max} is reached.
 }}
 
 \item{\code{warnings}}{Logical of length 1, whether to throw a warning in the
@@ -911,6 +942,9 @@ the popped task threw an error. Possible values:
 a value.
 \item \code{"warn"}: throw a warning.
 \item \code{NULL} or \code{"silent"}: do not react to errors.
+NOTE: the only kinds of errors considered here are errors at the R
+level. A crashed tasks will return a status of \code{"crash"} in the output
+and not trigger an error in \code{pop()} unless \code{crashes_max} is reached.
 }}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
@@ -994,12 +1028,14 @@ overburdening the \code{mirai} dispatcher and other resources.}
 
 \item{\code{error}}{\code{NULL} or character of length 1, choice of action if
 the popped task threw an error. Possible values:
-\itemize{
-\item \code{"stop"}: throw an error in the main R session instead of returning
-a value.
-\item \code{"warn"}: throw a warning.
-\item \code{NULL} or \code{"silent"}: do not react to errors.
-}}
+* \code{"stop"}: throw an error in the main R session instead of
+returning a value.
+* \code{"warn"}: throw a warning.
+* \code{NULL} or \code{"silent"}: do not react to errors.
+NOTE: the only kinds of errors considered here are errors at the R
+level. A crashed tasks will return a status of \code{"crash"} in the output
+and not trigger an error in \code{collect()}
+unless \code{crashes_max} is reached.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

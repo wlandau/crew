@@ -104,9 +104,9 @@ as_monad <- function(task, name) {
   } else {
     code <- as.integer(out)
     error <- nanonext::nng_error(code)
-    if (identical(code, 19L)) {
+    if (identical(code, code_crash)) {
       status <- "crash"
-    } else if (identical(code, 20L)) {
+    } else if (identical(code, code_cancel)) {
       status <- "cancel"
     }
   }
@@ -130,3 +130,6 @@ as_monad_tibble <- function(object) {
 monad_names <- names(formals(monad_new))
 monad_names_n <- length(monad_names)
 monad_rownames <- .set_row_names(1L)
+
+code_crash <- 19L
+code_cancel <- 20L

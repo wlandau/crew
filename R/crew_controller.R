@@ -58,16 +58,17 @@
 #'   a chain of controllers with different levels of resources
 #'   (such as worker memory and CPUs) so that a task that fails on
 #'   one controller can retry using incrementally more powerful workers.
+#'   All controllers in a backup chain should be part of the same
+#'   controller group (see [crew_controller_group()]) so you can call the
+#'   group-level `pop()` and `collect()` methods to make sure you get results
+#'   regardless of which controller actually ended up running the task.
 #'
 #'   Limitations of `backup`:
 #'     * `crashes_max` needs to be positive in order for `backup` to be used.
 #'       Otherwise, every task would always skip the current controller and
 #'       go to `backup`.
 #'     * `backup` cannot be a controller group. It must be an ordinary
-#'       controller. However, it is recommended to put all controllers
-#'       in a backup chain inside a controller group so you can retrieve
-#'       results with the group-level `pop()` and `collect()` methods,
-#'       regardless of which controller actually ended up owning the task.
+#'       controller.
 #' @param auto_scale Deprecated. Use the `scale` argument of `push()`,
 #'   `pop()`, and `wait()` instead.
 #' @examples

@@ -854,7 +854,7 @@ backoff.}
 \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
-\item{\code{names}}{Optional character of length 1, name of the element of
+\item{\code{names}}{Optional character string, name of the element of
 \code{iterate} with names for the tasks. If \code{names} is supplied,
 then \code{iterate[[names]]} must be a character vector.}
 

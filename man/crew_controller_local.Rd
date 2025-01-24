@@ -144,7 +144,7 @@ no data is retrievable from the task because the worker exited
 unexpectedly while the task is running.
 In such cases, the output data for the task returns a status of \code{"crash"}
 instead of \code{"error"}, and the error message states that the connection
-to the worker was severed.
+to the worker was reset.
 
 Sometimes the worker exits unexpectedly because the task causes
 an out-of-memory error or an AWS Batch spot instance exits.

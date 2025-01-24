@@ -15,7 +15,7 @@
 #'   unexpectedly while the task is running.
 #'   In such cases, the output data for the task returns a status of `"crash"`
 #'   instead of `"error"`, and the error message states that the connection
-#'   to the worker was severed.
+#'   to the worker was reset.
 #'
 #'   Sometimes the worker exits unexpectedly because the task causes
 #'   an out-of-memory error or an AWS Batch spot instance exits.
@@ -980,7 +980,7 @@ crew_class_controller <- R6::R6Class(
     #'   backoff.
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
-    #' @param names Optional character of length 1, name of the element of
+    #' @param names Optional character string, name of the element of
     #'   `iterate` with names for the tasks. If `names` is supplied,
     #'   then `iterate[[names]]` must be a character vector.
     #' @param save_command Deprecated on 2025-01-22 (`crew` version

@@ -7,14 +7,15 @@
 #' @param client An `R6` client object created by [crew_client()].
 #' @param launcher An `R6` launcher object created by one of the
 #'   `crew_launcher_*()` functions such as [crew_launcher_local()].
-#' @param crashes_max A crash is different from an ordinary error.
+#' @param crashes_max A crash is special kind of error.
 #'   If a task throws an ordinary error at the R level, then `crew`
 #'   catches it automatically and returns the error message in the output
-#'   data returned when the task is popped or collected. However,
-#'   if the worker shuts down while the task is running, then `crew`
-#'   cannot retrieve the error message, and the task is considered "crashed".
+#'   data returned when the task is popped or collected. However, in a crash,
+#'   no data is retrievable from the task because the worker exited
+#'   unexpectedly while the task is running.
 #'   In such cases, the output data for the task returns a status of `"crash"`
-#'   instead of `"error"`.
+#'   instead of `"error"`, and the error message states that the connection
+#'   to the worker was severed.
 #'
 #'   Sometimes the worker exits unexpectedly because the task causes
 #'   an out-of-memory error or an AWS Batch spot instance exits.

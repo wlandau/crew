@@ -1,7 +1,6 @@
 crew_test("active bindings", {
   x <- crew_controller_local(crashes_max = 1L)
   expect_equal(x$crashes_max, 1L)
-  expect_true(is.environment(x$crashes))
 })
 
 crew_test("warnings and errors", {

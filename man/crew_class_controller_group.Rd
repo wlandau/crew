@@ -77,6 +77,7 @@ backoff in the relay and auto-scaling.}
 \item \href{#method-crew_class_controller_group-scale}{\code{crew_class_controller_group$scale()}}
 \item \href{#method-crew_class_controller_group-autoscale}{\code{crew_class_controller_group$autoscale()}}
 \item \href{#method-crew_class_controller_group-descale}{\code{crew_class_controller_group$descale()}}
+\item \href{#method-crew_class_controller_group-crashes}{\code{crew_class_controller_group$crashes()}}
 \item \href{#method-crew_class_controller_group-push}{\code{crew_class_controller_group$push()}}
 \item \href{#method-crew_class_controller_group-walk}{\code{crew_class_controller_group$walk()}}
 \item \href{#method-crew_class_controller_group-map}{\code{crew_class_controller_group$map()}}
@@ -435,8 +436,8 @@ every \code{controller$client$seconds_interval} seconds.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -457,13 +458,42 @@ Terminate the auto-scaling loop started by
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-crashes"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-crashes}{}}}
+\subsection{Method \code{crashes()}}{
+Report the number of consecutive crashes of a task,
+summed over all selected controllers in the group.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$crashes(name, controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character string, name of the task to check.}
+
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+See the \code{crashes_max} argument of \code{\link[=crew_controller]{crew_controller()}}.
+}
+
+\subsection{Returns}{
+Number of consecutive crashes of the named task,
+summed over all the controllers in the group.
 }
 }
 \if{html}{\out{<hr>}}

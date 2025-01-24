@@ -387,13 +387,11 @@ crew_class_controller_group <- R6::R6Class(
     #' @description Report the number of consecutive crashes of a task,
     #'   summed over all selected controllers in the group.
     #' @details See the `crashes_max` argument of [crew_controller()].
-    #' @return Non-negative integer, number of consecutive times the task
-    #'   crashed.
+    #' @return Number of consecutive crashes of the named task,
+    #'   summed over all the controllers in the group.
     #' @param name Character string, name of the task to check.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    #' @return Number of consecutive crashes of the named task,
-    #'   summed over all the controllers in the group.
     crashes = function(name, controllers = NULL) {
       control <- private$.select_controllers(controllers)
       sum(map_int(control, ~.x$crashes(name = name)))

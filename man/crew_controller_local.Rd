@@ -31,6 +31,7 @@ crew_controller_local(
   options_metrics = crew::crew_options_metrics(),
   options_local = crew::crew_options_local(),
   crashes_max = 0L,
+  backup = NULL,
   local_log_directory = NULL,
   local_log_join = NULL
 )
@@ -155,6 +156,12 @@ If a task crashes more than \code{crashes_max} times in a row
 with a status of \code{"crash"},
 then the controller throws an error when it retries the task.
 
+If you specify a backup controller with the \code{backup} argument,
+then if a task reaches exactly \code{crashes_max} crashes in the
+current controller, then its next \code{push()} to the current controller
+automatically submits it to the \code{backup} controller instead.
+See the \code{backup} argument for details.
+
 As of \code{crew} version 0.10.2.9005, the controller does not
 automatically resubmit crashed tasks. It is the user's responsibility
 to pop or collect the task, notice that the \code{status} column of the
@@ -171,6 +178,26 @@ So, \code{mirai} relinquishes the dependency memory of
 a task as soon as a worker starts running it.
 This reduces memory consumption but shifts
 responsibility for retries to the user (or packages like \code{targets}).}
+
+\item{backup}{An optional \code{crew} controller object, or \code{NULL} to omit.
+If supplied, the \code{backup} controller runs any pushed tasks that have
+already reached \code{crashes_max} crashes.
+In other words, if you push a task that already crashed \code{crashes_max}
+times, then instead of running in the current controller, the task
+will run in the backup controller. Using \code{backup}, you can create
+a chain of controllers with different levels of resources
+(such as worker memory and CPUs) so that a task that fails on
+one controller can retry using incrementally more powerful workers.
+
+Limitations of \code{backup}:
+* \code{crashes_max} needs to be positive in order for \code{backup} to be used.
+Otherwise, every task would always skip the current controller and
+go to \code{backup}.
+* \code{backup} cannot be a controller group. It must be an ordinary
+controller. However, it is recommended to put all controllers
+in a backup chain inside a controller group so you can retrieve
+results with the group-level \code{pop()} and \code{collect()} methods,
+regardless of which controller actually ended up owning the task.}
 
 \item{local_log_directory}{Deprecated on 2024-10-08. Use
 \code{options_local} instead.}

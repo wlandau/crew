@@ -53,7 +53,7 @@
 #'   If supplied, the `backup` controller runs any pushed tasks that have
 #'   already reached `crashes_max` crashes.
 #'   In other words, if you push a task that already crashed `crashes_max`
-#'   times, then instead of running in the current controller, the task 
+#'   times, then instead of running in the current controller, the task
 #'   will run in the backup controller. Using `backup`, you can create
 #'   a chain of controllers with different levels of resources
 #'   (such as worker memory and CPUs) so that a task that fails on
@@ -535,7 +535,6 @@ crew_class_controller <- R6::R6Class(
     #' @param name Character string, name of the task to check.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    #' @return `NULL` (invisibly).
     crashes = function(name, controllers = NULL) {
       count <- .subset2(.subset2(private, ".crash_log"), name)
       if (is.null(count)) {

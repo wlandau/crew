@@ -26,7 +26,7 @@ an out-of-memory error or an AWS Batch spot instance exits.
 In such cases, it is sometimes desirable to retry the task on a
 different worker.
 
-\code{crashes_max} is a positive integer, and it sets the maximum number of
+\code{crashes_max} is a non-negative integer, and it sets the maximum number of
 allowable consecutive crashes for a given task.
 If a task crashes more than \code{crashes_max} times in a row
 with a status of \code{"crash"},
@@ -51,6 +51,12 @@ responsibility for retries to the user (or packages like \code{targets}).}
 
 \item{auto_scale}{Deprecated. Use the \code{scale} argument of \code{push()},
 \code{pop()}, and \code{wait()} instead.}
+
+\item{backup}{Character string, only relevant if the controller is
+part of a controller group (see \code{\link[=crew_controller_group]{crew_controller_group()}}).
+The \code{backup} argument is the name of a controller to submit a task
+if it crashes \code{crashes_max} times in a row (and there was at
+least one attempt). \code{backup} allows you to}
 }
 \description{
 This function is for developers of \code{crew} launcher plugins.

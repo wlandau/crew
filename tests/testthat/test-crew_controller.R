@@ -671,13 +671,14 @@ crew_test("crash detection with crashes_max == 0L", {
     gc()
     crew_test_sleep()
   })
-  expect_true(x$retryable(name = "x"))
+  expect_equal(x$crashes(name = "x"), 0L)
   x$start()
-  expect_true(x$retryable(name = "x"))
+  expect_equal(x$crashes(name = "x"), 0L)
   x$push(TRUE, name = "x")
-  expect_true(x$retryable(name = "x"))
+  expect_equal(x$crashes(name = "x"), 0L)
   x$wait()
   expect_true(tibble::is_tibble(x$pop()))
+  expect_equal(x$crashes(name = "x"), 0L)
   x$push(Sys.sleep(300L), name = "x")
   crew_retry(
     ~ {
@@ -688,8 +689,9 @@ crew_test("crash detection with crashes_max == 0L", {
   )
   x$launcher$terminate_workers()
   x$wait()
+  expect_equal(x$crashes(name = "x"), 0L)
   expect_crew_error(x$pop())
-  expect_false(x$retryable(name = "x"))
+  expect_equal(x$crashes(name = "x"), 1L)
 })
 
 crew_test("crash detection with crashes_max == 2L", {
@@ -708,7 +710,7 @@ crew_test("crash detection with crashes_max == 2L", {
   })
   x$start()
   for (index in seq_len(2L)) {
-    expect_true(x$retryable(name = "x"))
+    expect_equal(x$crashes(name = "x"), index - 1L)
     x$push(Sys.sleep(300L), name = "x", scale = TRUE)
     crew_retry(
       ~ {
@@ -720,7 +722,7 @@ crew_test("crash detection with crashes_max == 2L", {
     x$launcher$terminate_workers()
     x$wait()
     expect_true(tibble::is_tibble(x$pop()))
-    expect_true(x$retryable(name = "x"))
+    expect_equal(x$crashes(name = "x"), index)
   }
   x$push(Sys.sleep(300L), name = "x", scale = TRUE)
   crew_retry(
@@ -733,7 +735,7 @@ crew_test("crash detection with crashes_max == 2L", {
   x$launcher$terminate_workers()
   x$wait()
   expect_crew_error(x$pop())
-  expect_false(x$retryable(name = "x"))
+  expect_equal(x$crashes(name = "x"), 3L)
 })
 
 crew_test("crash detection resets, crashes_max == 2L", {
@@ -752,7 +754,7 @@ crew_test("crash detection resets, crashes_max == 2L", {
   })
   x$start()
   for (index in seq_len(6L)) {
-    expect_true(x$retryable(name = "x"))
+    expect_equal(x$crashes(name = "x"), 0L)
     x$push(Sys.sleep(300L), name = "x", scale = TRUE)
     crew_retry(
       ~ {
@@ -764,13 +766,12 @@ crew_test("crash detection resets, crashes_max == 2L", {
     x$launcher$terminate_workers()
     x$wait()
     expect_true(tibble::is_tibble(x$pop()))
-    expect_true(x$retryable(name = "x"))
+    expect_equal(x$crashes(name = "x"), 1L)
     x$push(TRUE, name = "x")
     x$wait()
     expect_true(tibble::is_tibble(x$pop()))
-    expect_true(x$retryable(name = "x"))
+    expect_equal(x$crashes(name = "x"), 0L)
   }
-  expect_true(x$retryable(name = "x"))
 })
 
 crew_test("crash detection with crashes_max == 2L and collect()", {
@@ -789,7 +790,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
   })
   x$start()
   for (index in seq_len(2L)) {
-    expect_true(x$retryable(name = "x"))
+    expect_equal(x$crashes(name = "x"), index - 1L)
     x$push(Sys.sleep(300L), name = "x", scale = TRUE)
     crew_retry(
       ~ {
@@ -801,7 +802,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
     x$launcher$terminate_workers()
     x$wait()
     expect_true(tibble::is_tibble(x$collect()))
-    expect_true(x$retryable(name = "x"))
+    expect_equal(x$crashes(name = "x"), index)
   }
   x$push(Sys.sleep(300L), name = "x", scale = TRUE)
   crew_retry(
@@ -814,5 +815,5 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
   x$launcher$terminate_workers()
   x$wait()
   expect_crew_error(x$collect())
-  expect_false(x$retryable(name = "x"))
+  expect_equal(x$crashes(name = "x"), 3L)
 })

@@ -57,9 +57,6 @@ since the controller was started.}
 
 \item{\code{crashes_max}}{See \code{\link[=crew_controller]{crew_controller()}}}
 
-\item{\code{crashes}}{Hash environment with the number of consecutive
-crashes of each popped task.}
-
 \item{\code{error}}{Tibble of task results (with one result per row)
 from the last call to \verb{map(error = "stop)}.}
 
@@ -89,7 +86,7 @@ auto-scaling is currently running}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
 \item \href{#method-crew_class_controller-autoscale}{\code{crew_class_controller$autoscale()}}
 \item \href{#method-crew_class_controller-descale}{\code{crew_class_controller$descale()}}
-\item \href{#method-crew_class_controller-retryable}{\code{crew_class_controller$retryable()}}
+\item \href{#method-crew_class_controller-crashes}{\code{crew_class_controller$crashes()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
 \item \href{#method-crew_class_controller-walk}{\code{crew_class_controller$walk()}}
 \item \href{#method-crew_class_controller-map}{\code{crew_class_controller$map()}}
@@ -488,12 +485,12 @@ compatible with the analogous method of controller groups.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-retryable"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-retryable}{}}}
-\subsection{Method \code{retryable()}}{
-Check if a task is retryable.
+\if{html}{\out{<a id="method-crew_class_controller-crashes"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-crashes}{}}}
+\subsection{Method \code{crashes()}}{
+Report the number of consecutive crashes of a task.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$retryable(name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$crashes(name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -504,14 +501,12 @@ Check if a task is retryable.
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-A task is retryable if its number of consecutive crashes
-is less than or equal to \code{crashes_max}.
-For details, see the \code{crashes_max} argument of \code{\link[=crew_controller]{crew_controller()}}.
+See the \code{crashes_max} argument of \code{\link[=crew_controller]{crew_controller()}}.
 }
 
 \subsection{Returns}{
-\code{TRUE} if the task is retryable, \code{FALSE} if it crashed
-too many times in a row to retry.
+Non-negative integer, number of consecutive times the task
+crashed.
 }
 }
 \if{html}{\out{<hr>}}

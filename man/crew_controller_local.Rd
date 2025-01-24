@@ -149,7 +149,7 @@ an out-of-memory error or an AWS Batch spot instance exits.
 In such cases, it is sometimes desirable to retry the task on a
 different worker.
 
-\code{crashes_max} is a positive integer, and it sets the maximum number of
+\code{crashes_max} is a non-negative integer, and it sets the maximum number of
 allowable consecutive crashes for a given task.
 If a task crashes more than \code{crashes_max} times in a row
 with a status of \code{"crash"},

@@ -21,7 +21,7 @@
 #'   In such cases, it is sometimes desirable to retry the task on a
 #'   different worker.
 #'
-#'   `crashes_max` is a positive integer, and it sets the maximum number of
+#'   `crashes_max` is a non-negative integer, and it sets the maximum number of
 #'   allowable consecutive crashes for a given task.
 #'   If a task crashes more than `crashes_max` times in a row
 #'   with a status of `"crash"`,
@@ -43,8 +43,12 @@
 #'   a task as soon as a worker starts running it.
 #'   This reduces memory consumption but shifts
 #'   responsibility for retries to the user (or packages like `targets`).
-#' @param backup Character string, name of a controller to submit a task
-#'   if it runs at least once and crashes `crashes_max` times in a row.
+#' @param backup Character string, only relevant if the controller is
+#'   part of a controller group (see [crew_controller_group()]).
+#'   The `backup` argument is the name of a controller to submit a task
+#'   if it crashes `crashes_max` times in a row (and there was at
+#'   least one attempt). `backup` allows you to 
+#'   
 #' @param auto_scale Deprecated. Use the `scale` argument of `push()`,
 #'   `pop()`, and `wait()` instead.
 #' @examples
@@ -107,7 +111,7 @@ crew_class_controller <- R6::R6Class(
     .pushed = 0L,
     .popped = 0L,
     .crashes_max = NULL,
-    .crashes = new.env(parent = emptyenv(), hash = TRUE),
+    .crash_log = new.env(parent = emptyenv(), hash = TRUE),
     .summary = NULL,
     .error = NULL,
     .backlog = character(0L),
@@ -149,17 +153,17 @@ crew_class_controller <- R6::R6Class(
     },
     .scan_crash = function(name, task) {
       code <- .subset2(task, "code")
-      crashes <- .subset2(private, ".crashes")
+      log <- .subset2(private, ".crash_log")
       if (code != code_crash) {
-        private$.crashes[[name]] <- NULL
+        private$.crash_log[[name]] <- NULL
         return()
       }
-      previous <- .subset2(crashes, name)
+      previous <- .subset2(log, name)
       if (is.null(previous)) {
         previous <- 0L
       }
       count <- previous + 1L
-      private$.crashes[[name]] <- count
+      private$.crash_log[[name]] <- count
       if (count > .subset2(private, ".crashes_max")) {
         crew_error(
           message = paste(
@@ -201,11 +205,6 @@ crew_class_controller <- R6::R6Class(
     #' @field crashes_max See [crew_controller()]
     crashes_max = function() {
       .subset2(private, ".crashes_max")
-    },
-    #' @field crashes Hash environment with the number of consecutive
-    #'   crashes of each popped task.
-    crashes = function() {
-      .subset2(private, ".crashes")
     },
     #' @field error Tibble of task results (with one result per row)
     #'   from the last call to `map(error = "stop)`.
@@ -272,8 +271,8 @@ crew_class_controller <- R6::R6Class(
           message = "crashes_max must be a positive integer scalar."
         )
       }
-      if (!is.null(private$.crashes)) {
-        crew_assert(is.environment(private$.crashes))
+      if (!is.null(private$.crash_log)) {
+        crew_assert(is.environment(private$.crash_log))
       }
       crew_assert(private$.tasks, is.null(.) || is.environment(.))
       crew_assert(private$.summary, is.null(.) || is.list(.))
@@ -389,7 +388,7 @@ crew_class_controller <- R6::R6Class(
         private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
         private$.pushed <- 0L
         private$.popped <- 0L
-        private$.crashes <- new.env(parent = emptyenv(), hash = TRUE)
+        private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
         private$.summary <- list(
           controller = private$.launcher$name,
           tasks = 0L,
@@ -485,17 +484,18 @@ crew_class_controller <- R6::R6Class(
       private$.autoscaling <- FALSE
       invisible()
     },
-    #' @description Check if a task is retryable.
-    #' @details A task is retryable if its number of consecutive crashes
-    #'   is less than or equal to `crashes_max`.
-    #'   For details, see the `crashes_max` argument of [crew_controller()].
-    #' @return `TRUE` if the task is retryable, `FALSE` if it crashed
-    #'   too many times in a row to retry.
+    #' @description Report the number of consecutive crashes of a task.
+    #' @details See the `crashes_max` argument of [crew_controller()].
+    #' @return Non-negative integer, number of consecutive times the task
+    #'   crashed.
     #' @param name Character string, name of the task to check.
-    retryable = function(name) {
-      crashes <- .subset2(private, ".crashes")
-      count <- .subset2(crashes, name)
-      is.null(count) || (count <= .subset2(private, ".crashes_max"))
+    crashes = function(name) {
+      count <- .subset2(.subset2(private, ".crash_log"), name)
+      if (is.null(count)) {
+        0L
+      } else {
+        count
+      }
     },
     #' @description Push a task to the head of the task list.
     #' @return Invisibly return the `mirai` object of the pushed task.
@@ -1583,7 +1583,7 @@ crew_class_controller <- R6::R6Class(
       private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
       private$.pushed <- 0L
       private$.popped <- 0L
-      private$.crashes <- new.env(parent = emptyenv(), hash = TRUE)
+      private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
       private$.autoscaling <- FALSE
       private$.queue <- crew_queue()
       private$.resolved <- -1L

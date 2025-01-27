@@ -424,7 +424,6 @@ crew_class_launcher <- R6::R6Class(
         )
       }
       fields <- c(
-        "workers",
         "seconds_interval",
         "seconds_timeout",
         "seconds_launch",
@@ -433,6 +432,10 @@ crew_class_launcher <- R6::R6Class(
         "tasks_max",
         "tasks_timers"
       )
+      # TODO: require non-null workers field when plugins catch up
+      if (!is.null(self[["workers"]])) {
+        fields <- c(fields, "workers")
+      }
       for (field in fields) {
         crew_assert(
           self[[field]],

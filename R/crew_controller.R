@@ -198,13 +198,13 @@ crew_class_controller <- R6::R6Class(
             "crashed",
             count,
             sprintf(
-              "consecutive time(s) in launcher %s.",
+              "consecutive time(s) in controller %s.",
               shQuote(private$.launcher$name)
             ),
             "For details and advice, please see the",
             "crashes_max argument of crew::crew_controller(), as well as",
             "https://wlandau.github.io/crew/articles/risks.html#crashes",
-            "and See https://wlandau.github.io/crew/articles/logging.html."
+            "and https://wlandau.github.io/crew/articles/logging.html."
           )
         )
       }

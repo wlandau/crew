@@ -1,4 +1,4 @@
-# crew 0.10.2.9006 (development)
+# crew 1.0.0
 
 * Avoid partial match in a call to `crew_terminate_process()`.
 * Migrate to `mirai` 2.0.0 with the pair 1 poly protocol (#193). Most notably, all workers now share the same URL instead of having different web sockets for different workers. This gets rid of `crew`'s previous "slotted" model for workers.

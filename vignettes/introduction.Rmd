@@ -75,9 +75,10 @@ Here is the full list of output in the `task` object returned by `pop()`.
   `"cancel"` if the task was canceled with
   the `cancel()` controller method, `"error"` if the R code in the task
   threw an error, `"crash"` if the worker running the task exited before
-  completing the task.
+  completing the task. (See the "Crashes and retries" section below
+  for more on crashes.)
 * `error`: the first 2048 characters of the error message if
-  the task threw an error, `NA` otherwise.
+  the task status is not  `"success"`, `NA` otherwise.
 * `code`: an integer code denoting the specific exit status:
   `0` for successful tasks, `-1` for tasks with an error in the R
   command of the task, and another positive integer with an NNG

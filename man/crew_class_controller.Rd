@@ -979,7 +979,7 @@ the \code{cancel()} controller method,
 \code{"crash"} if the worker running the task exited before
 completing the task.
 \item \code{error}: the first 2048 characters of the error message if
-the task threw an error, \code{NA} otherwise.
+the task status is not \code{"success"}, \code{NA} otherwise.
 \item \code{code}: an integer code denoting the specific exit status:
 \code{0} for successful tasks, \code{-1} for tasks with an error in the R
 command of the task, and another positive integer with an NNG
@@ -1052,7 +1052,8 @@ compatible with the analogous method of controller groups.}
 \subsection{Returns}{
 A \code{tibble} of results and metadata of all resolved tasks,
 with one row per task. Returns \code{NULL} if there are no tasks
-to collect.
+to collect. See \code{pop()} for details on the columns of the
+returned \code{tibble}.
 }
 }
 \if{html}{\out{<hr>}}

@@ -179,7 +179,7 @@ crew_class_controller <- R6::R6Class(
       code <- .subset2(task, "code")
       log <- .subset2(private, ".crash_log")
       if (code != code_crash) {
-        if (!is.null(.subset2(log, "name"))) {
+        if (!is.null(.subset2(log, name))) {
           private$.crash_log[[name]] <- NULL
         }
         return()
@@ -1200,7 +1200,7 @@ crew_class_controller <- R6::R6Class(
     #'     `"crash"` if the worker running the task exited before
     #'     completing the task.
     #'   * `error`: the first 2048 characters of the error message if
-    #'     the task threw an error, `NA` otherwise.
+    #'     the task status is not `"success"`, `NA` otherwise.
     #'   * `code`: an integer code denoting the specific exit status:
     #'     `0` for successful tasks, `-1` for tasks with an error in the R
     #'     command of the task, and another positive integer with an NNG
@@ -1318,7 +1318,8 @@ crew_class_controller <- R6::R6Class(
     #'   `tibble`.
     #' @return A `tibble` of results and metadata of all resolved tasks,
     #'   with one row per task. Returns `NULL` if there are no tasks
-    #'   to collect.
+    #'   to collect. See `pop()` for details on the columns of the
+    #'   returned `tibble`.
     #' @param scale Logical of length 1,
     #'   whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.

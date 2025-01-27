@@ -975,9 +975,9 @@ return a one-row \code{tibble} with the following columns.
 \item \code{status}: a character string. \code{"success"} if the task succeeded,
 \code{"cancel"} if the task was canceled with
 the \code{cancel()} controller method,
-\code{"error"} if the R code in the task threw an error,
 \code{"crash"} if the worker running the task exited before
-it could complete the task.
+it could complete the task, or \code{"error"}
+for any other kind of error.
 \item \code{error}: the first 2048 characters of the error message if
 the task status is not \code{"success"}, \code{NA} otherwise.
 Messages for crashes and cancellations are captured here

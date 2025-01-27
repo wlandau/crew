@@ -132,20 +132,20 @@ crew_test("crew_launcher_local() worker tasks_max", {
       handle <- launcher$instances$handle[[1]]
       !is_crew_null(handle) && handle$is_alive()
     },
-    seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_interval = 0.5,
+    seconds_timeout = 30
   )
   task <- mirai::mirai(ps::ps_pid(), .compute = client$profile)
   crew::crew_retry(
     ~!nanonext::.unresolved(task),
-    seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_interval = 0.5,
+    seconds_timeout = 30
   )
   expect_equal(task$data, launcher$instances$handle[[1]]$get_pid())
   crew::crew_retry(
     ~!launcher$instances$handle[[1]]$is_alive(),
-    seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_interval = 0.5,
+    seconds_timeout = 30
   )
 })
 

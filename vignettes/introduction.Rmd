@@ -249,3 +249,7 @@ Please tune these these arguments to achieve the desired balance for auto-scalin
 # Asynchronous management of workers
 
 Some launchers support local processes to launch and terminate workers asynchronously. For example, a cloud-based launcher may need to make HTTP requests to launch and terminate workers on e.g. AWS Batch, and these time-consuming requests should happen in the background. Controllers that support this will have a `processes` argument to specify the number of local R processes to churn through worker launches and terminations. Set `processes = NULL` to disable async, which can be helpful for troubleshooting.
+
+ # Crashes and retries
+ 
+ 

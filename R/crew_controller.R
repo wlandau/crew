@@ -179,7 +179,9 @@ crew_class_controller <- R6::R6Class(
       code <- .subset2(task, "code")
       log <- .subset2(private, ".crash_log")
       if (code != code_crash) {
-        private$.crash_log[[name]] <- NULL
+        if (!is.null(.subset2(log, "name"))) {
+          private$.crash_log[[name]] <- NULL
+        }
         return()
       }
       previous <- .subset2(log, name)

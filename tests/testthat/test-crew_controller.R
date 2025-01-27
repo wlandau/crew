@@ -31,6 +31,7 @@ crew_test("warnings and errors", {
   }, name = "warnings_and_errors")
   x$wait(seconds_timeout = 5)
   out <- x$pop(scale = FALSE)
+  skip_on_covr() # error handling is mysteriously messed up with covr
   expect_equal(x$summary()$tasks, 1L)
   expect_equal(x$summary()$error, 1L)
   expect_equal(x$summary()$warning, 1L)
@@ -84,12 +85,14 @@ crew_test("can relay task errors as local warnings", {
   x$start()
   x$push(command =  stop("this is an error"), name = "warnings_and_errors")
   x$wait(seconds_timeout = 5)
-  if_any(
-    isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
-    suppressWarnings(x$pop(scale = FALSE, error = "warn")),
-    expect_warning(
-      x$pop(scale = FALSE, error = "warn"),
-      class = "crew_warning"
+  expect_silent(
+    if_any(
+      isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
+      suppressWarnings(x$pop(scale = FALSE, error = "warn")),
+      expect_warning(
+        x$pop(scale = FALSE, error = "warn"),
+        class = "crew_warning"
+      )
     )
   )
 })

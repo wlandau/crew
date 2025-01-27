@@ -170,7 +170,16 @@ crew_test("crew_controller_group() can relay task errors as local errors", {
   x$start()
   x$push(command =  stop("this is an error"), name = "warnings_and_errors")
   x$wait(seconds_timeout = 5)
-  expect_crew_error(x$pop(scale = FALSE, error = "stop"))
+  expect_silent(
+    if_any(
+      isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
+      try(
+        suppressWarnings(x$pop(scale = FALSE, error = "stop")),
+        silent = TRUE
+      ),
+      expect_crew_error(x$pop(scale = FALSE, error = "stop"))
+    )
+  )
 })
 
 crew_test("crew_controller_group() can relay task errors as local warnings", {
@@ -189,9 +198,15 @@ crew_test("crew_controller_group() can relay task errors as local warnings", {
   x$start()
   x$push(command =  stop("this is an error"), name = "warnings_and_errors")
   x$wait(seconds_timeout = 5)
-  expect_warning(
-    x$pop(scale = FALSE, error = "warn"),
-    class = "crew_warning"
+  expect_silent(
+    if_any(
+      isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
+      suppressWarnings(x$pop(scale = FALSE, error = "warn")),
+      expect_warning(
+        x$pop(scale = FALSE, error = "warn"),
+        class = "crew_warning"
+      )
+    )
   )
 })
 
@@ -436,8 +451,14 @@ crew_test("controller group collect() error as warning", {
   x$push(stop("failure 1"))
   x$push(stop("failure 2"))
   x$wait(mode = "all")
-  suppressWarnings(
-    expect_warning(x$collect(error = "warn"), class = "crew_warning")
+  expect_silent(
+    if_any(
+      isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
+      suppressWarnings(x$collect(error = "warn")),
+      suppressWarnings(
+        expect_warning(x$collect(error = "warn"), class = "crew_warning")
+      )
+    )
   )
 })
 
@@ -457,7 +478,15 @@ crew_test("controller group collect() stop on error", {
   x$push(stop("failure 1"))
   x$push(stop("failure 2"))
   x$wait(mode = "all")
-  expect_crew_error(x$collect(error = "stop"))
+  expect_silent(
+    if_any(
+      isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
+      suppressWarnings(try(x$collect(error = "stop"), silent = TRUE)),
+      suppressWarnings(
+        expect_crew_error(x$collect(error = "stop"))
+      )
+    )
+  )
 })
 
 crew_test("controller group map() works", {

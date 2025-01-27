@@ -134,7 +134,7 @@ crew_eval <- function(
     seconds = seconds,
     seed = seed,
     algorithm = algorithm,
-    launcher = Sys.getenv("CREW_LAUNCHER", unset = NA_character_),
+    controller = Sys.getenv("CREW_CONTROLLER", unset = NA_character_),
     worker = Sys.getenv("CREW_WORKER", unset = NA_character_)
   )
 }

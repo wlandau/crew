@@ -977,7 +977,7 @@ return a one-row \code{tibble} with the following columns.
 the \code{cancel()} controller method,
 \code{"error"} if the R code in the task threw an error,
 \code{"crash"} if the worker running the task exited before
-completing the task.
+it could complete the task.
 \item \code{error}: the first 2048 characters of the error message if
 the task status is not \code{"success"}, \code{NA} otherwise.
 \item \code{code}: an integer code denoting the specific exit status:
@@ -1001,7 +1001,7 @@ originally supplied to \code{push()},
 just prior to the task can be restored using
 \code{set.seed(seed = seed, kind = algorithm)}, where \code{seed} and
 \code{algorithm} are part of this output.
-\item \code{launcher}: name of the \code{crew} launcher where the task ran.
+\item \code{controller}: name of the \code{crew} controller where the task ran.
 \item \code{worker}: name of the \code{crew} worker that ran the task.
 }
 }

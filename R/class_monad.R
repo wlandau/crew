@@ -10,7 +10,7 @@ monad_init <- function(
   seconds = NA_real_,
   seed = NA_integer_,
   algorithm = NA_character_,
-  launcher = NA_character_,
+  controller = NA_character_,
   worker = NA_character_
 ) {
   out <- monad_new(
@@ -25,7 +25,7 @@ monad_init <- function(
     seconds = seconds,
     seed = seed,
     algorithm = algorithm,
-    launcher = launcher,
+    controller = controller,
     worker = worker
   )
   out
@@ -43,7 +43,7 @@ monad_new <- function(
   seconds = NULL,
   seed = NULL,
   algorithm = NULL,
-  launcher = NULL,
+  controller = NULL,
   worker = NULL
 ) {
   as_monad_tibble(
@@ -59,7 +59,7 @@ monad_new <- function(
       seconds = seconds,
       seed = seed,
       algorithm = algorithm,
-      launcher = launcher,
+      controller = controller,
       worker = worker
     )
   )
@@ -76,7 +76,7 @@ monad_validate <- function(monad) {
     "error",
     "trace",
     "warnings",
-    "launcher",
+    "controller",
     "worker"
   )
   for (col in cols) {
@@ -92,7 +92,7 @@ monad_validate <- function(monad) {
   invisible()
 }
 
-as_monad <- function(task, name) {
+as_monad <- function(task, name, controller) {
   out <- .subset2(task, "data")
   if (is.list(out)) {
     return(out)
@@ -114,7 +114,8 @@ as_monad <- function(task, name) {
     name = name,
     status = status,
     error = error,
-    code = code
+    code = code,
+    controller = controller
   )
 }
 

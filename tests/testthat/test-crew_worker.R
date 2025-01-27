@@ -1,7 +1,7 @@
 crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   skip_on_cran()
   skip_on_os("windows")
-  envvars <- c("CREW_LAUNCHER", "CREW_WORKER")
+  envvars <- c("CREW_CONTROLLER", "CREW_WORKER")
   previous <- Sys.getenv(envvars)
   Sys.unsetenv(envvars)
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
@@ -14,7 +14,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   on.exit(crew_test_sleep(), add = TRUE)
   m <- mirai::mirai(
     list(
-      launcher = Sys.getenv("CREW_LAUNCHER"),
+      controller = Sys.getenv("CREW_CONTROLLER"),
       worker = Sys.getenv("CREW_WORKER")
     )
   )
@@ -22,7 +22,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   settings <- list(url = url, maxtasks = 1L, cleanup = 0L, dispatcher = TRUE)
   crew_worker(
     settings = settings,
-    launcher = "my_launcher",
+    controller = "my_controller",
     worker = "worker_id",
     options_metrics = NULL
   )
@@ -31,7 +31,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
-  expect_equal(m$data$launcher, "my_launcher")
+  expect_equal(m$data$controller, "my_controller")
   expect_equal(m$data$worker, "worker_id")
   for (var in envvars) {
     expect_equal(Sys.getenv(var, unset = ""), "")
@@ -42,7 +42,7 @@ crew_test("crew_worker() metrics logging to a directory", {
   skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("autometric", minimum_version = "0.1.0")
-  envvars <- c("CREW_LAUNCHER", "CREW_WORKER")
+  envvars <- c("CREW_CONTROLLER", "CREW_WORKER")
   previous <- Sys.getenv(envvars)
   Sys.unsetenv(envvars)
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
@@ -56,7 +56,7 @@ crew_test("crew_worker() metrics logging to a directory", {
   m <- mirai::mirai({
     Sys.sleep(2)
     list(
-      launcher = Sys.getenv("CREW_LAUNCHER"),
+      controller = Sys.getenv("CREW_CONTROLLER"),
       worker = Sys.getenv("CREW_WORKER")
     )
   })
@@ -66,7 +66,7 @@ crew_test("crew_worker() metrics logging to a directory", {
   log <- tempfile()
   crew_worker(
     settings = settings,
-    launcher = "my_launcher",
+    controller = "my_controller",
     worker = "worker_id",
     options_metrics = crew_options_metrics(
       path = log,
@@ -78,7 +78,7 @@ crew_test("crew_worker() metrics logging to a directory", {
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
-  expect_equal(m$data$launcher, "my_launcher")
+  expect_equal(m$data$controller, "my_controller")
   expect_equal(m$data$worker, "worker_id")
   for (var in envvars) {
     expect_equal(Sys.getenv(var, unset = ""), "")

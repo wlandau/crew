@@ -7,7 +7,7 @@
 #'   for examples.
 #' @return `NULL` (invisibly)
 #' @param settings Named list of arguments to `mirai::daemon()`.
-#' @param launcher Character of length 1, name of the launcher.
+#' @param controller Character string, name of the controller.
 #' @param worker Character of length 1 to uniquely identify the current worker.
 #' @param options_metrics Either `NULL` to opt out of resource metric logging
 #'   for workers, or an object from [crew_options_metrics()] to enable
@@ -15,16 +15,28 @@
 #'   For resource logging to run,
 #'   the `autometric` R package version 0.1.0 or higher
 #'   must be installed.
+#' @param launcher Deprecated on 2025-01-27 (`crew` version 0.10.2.9005).
+#'   Use `controller` instead.
 crew_worker <- function(
   settings,
-  launcher,
+  controller,
   worker,
-  options_metrics = crew::crew_options_metrics()
+  options_metrics = crew::crew_options_metrics(),
+  launcher = NULL
 ) {
+  controller <- launcher %|||% controller
+  crew_deprecate(
+    name = "launcher",
+    date = "2025-01-27",
+    version = "0.10.2.9005",
+    alternative = "controller",
+    value = launcher,
+    skip_cran = TRUE
+  )
   autometric <- package_installed("autometric (>= 0.1.0)")
   if (autometric && !is.null(options_metrics$path)) {
     pids <- Sys.getpid()
-    names(pids) <- sprintf("crew_worker_%s_%s", launcher, worker)
+    names(pids) <- sprintf("crew_worker_%s_%s", controller, worker)
     autometric::log_start(
       path = log_metrics_path(options_metrics$path, names(pids)),
       seconds = options_metrics$seconds_interval,
@@ -32,10 +44,10 @@ crew_worker <- function(
     )
     on.exit(autometric::log_stop())
   }
-  envvars <- c("CREW_LAUNCHER", "CREW_WORKER")
+  envvars <- c("CREW_CONTROLLER", "CREW_WORKER")
   previous <- Sys.getenv(envvars)
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)), add = TRUE)
-  Sys.setenv(CREW_LAUNCHER = launcher, CREW_WORKER = worker)
+  Sys.setenv(CREW_CONTROLLER = controller, CREW_WORKER = worker)
   crew_message(utils::capture.output(print(utils::sessionInfo())))
   code <- do.call(what = mirai::daemon, args = settings)
   crew_message(

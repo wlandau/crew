@@ -7,55 +7,23 @@
 #' @param client An `R6` client object created by [crew_client()].
 #' @param launcher An `R6` launcher object created by one of the
 #'   `crew_launcher_*()` functions such as [crew_launcher_local()].
-#' @param crashes_max A crash is special kind of error.
-#'   If a task throws an ordinary error at the R level, then `crew`
-#'   catches it automatically and returns the error message in the output
-#'   data returned when the task is popped or collected. However, in a crash,
-#'   no data is retrievable from the task because the worker exited
-#'   unexpectedly while the task is running.
-#'   In such cases, the output data for the task returns a status of `"crash"`
-#'   instead of `"error"`, and the error message states that the connection
-#'   to the worker was reset.
-#'
-#'   Sometimes the worker exits unexpectedly because the task causes
-#'   an out-of-memory error or an AWS Batch spot instance exits.
-#'   In such cases, it is sometimes desirable to retry the task on a
-#'   different worker.
+#' @param crashes_max In rare cases, a worker may exit unexpectedly
+#'   before it completes its current task. If this happens, `pop()`
+#'   returns a status of `"crash"` instead of `"error"` for the task.
+#'   The controller does not automatically retry the task, but
+#'   you can retry it manually by calling `push()` again and using the same
+#'   task name as before. (However, `targets` pipelines running `crew`
+#'   do automatically retry tasks whose workers crashed.)
 #'
 #'   `crashes_max` is a non-negative integer, and it sets the maximum number of
 #'   allowable consecutive crashes for a given task.
-#'   If a task crashes more than `crashes_max` times in a row
-#'   with a status of `"crash"`,
-#'   then the controller throws an error when it retries the task.
-#'
-#'   If you specify a backup controller with the `backup` argument,
-#'   then if a task reaches exactly `crashes_max` crashes in the
-#'   current controller, then its next `push()` to the current controller
-#'   automatically submits it to the `backup` controller instead.
-#'   See the `backup` argument for details.
-#'
-#'   As of `crew` version 0.10.2.9005, the controller does not
-#'   automatically resubmit crashed tasks. It is the user's responsibility
-#'   to pop or collect the task, notice that the `status` column of the
-#'   output equals `"crash"` (`code` equals `19`) and then resubmit the
-#'   task using the same task name. Some packages that use `crew`,
-#'   such as `targets`, already resubmit crashed tasks automatically.
-#'
-#'   `crew` and `mirai` choose not to automatically resubmit tasks
-#'   because in order to do this, the data dependencies of every task
-#'   would need to persist in memory in case any task needs a retry.
-#'   If thousands of tasks are running simultaneously and each of them
-#'   needs a different input dataset, then memory consumption could skyrocket.
-#'   So, `mirai` relinquishes the dependency memory of
-#'   a task as soon as a worker starts running it.
-#'   This reduces memory consumption but shifts
-#'   responsibility for retries to the user (or packages like `targets`).
+#'   If a task's worker crashes more than `crashes_max` times in a row,
+#'   then `pop()` throws an error when it tries to return the results
+#'   of the task.
 #' @param backup An optional `crew` controller object, or `NULL` to omit.
 #'   If supplied, the `backup` controller runs any pushed tasks that have
-#'   already reached `crashes_max` crashes.
-#'   In other words, if you push a task that already crashed `crashes_max`
-#'   times, then instead of running in the current controller, the task
-#'   will run in the backup controller. Using `backup`, you can create
+#'   already reached `crashes_max` consecutive crashes.
+#'   Using `backup`, you can create
 #'   a chain of controllers with different levels of resources
 #'   (such as worker memory and CPUs) so that a task that fails on
 #'   one controller can retry using incrementally more powerful workers.
@@ -193,7 +161,7 @@ crew_class_controller <- R6::R6Class(
       if (count > .subset2(private, ".crashes_max")) {
         crew_error(
           message = paste(
-            "crew task",
+            "the crew worker of task",
             shQuote(name),
             "crashed",
             count,
@@ -305,7 +273,7 @@ crew_class_controller <- R6::R6Class(
           length(.) == 1L,
           is.finite(.),
           . >= 0L,
-          message = "crashes_max must be a positive integer scalar."
+          message = "crashes_max must be a non-negative integer scalar."
         )
       }
       if (!is.null(private$.crash_log)) {
@@ -320,6 +288,10 @@ crew_class_controller <- R6::R6Class(
             "backup must be NULL or a crew controller, and",
             "it must not be a controller group."
           )
+        )
+        crew_assert(
+          private$.crashes_max > 0L,
+          message = "crashes_max must be positive if backup is not NULL."
         )
       }
       crew_assert(private$.tasks, is.null(.) || is.environment(.))
@@ -1128,10 +1100,15 @@ crew_class_controller <- R6::R6Class(
         cli::cli_progress_done(.envir = progress_envir)
       }
       out <- list()
+      controller_name <- .subset2(.subset2(private, ".launcher"), "name")
       for (index in seq_along(tasks)) {
         task <- .subset2(tasks, index)
         name <- .subset(names, index)
-        monad <- as_monad(task = task, name = name)
+        monad <- as_monad(
+          task = task,
+          name = name,
+          controller = controller_name
+        )
         .subset2(private, ".scan_crash")(name = name, task = monad)
         out[[length(out) + 1L]] <- monad
       }
@@ -1198,7 +1175,7 @@ crew_class_controller <- R6::R6Class(
     #'     the `cancel()` controller method,
     #'     `"error"` if the R code in the task threw an error,
     #'     `"crash"` if the worker running the task exited before
-    #'     completing the task.
+    #'     it could complete the task.
     #'   * `error`: the first 2048 characters of the error message if
     #'     the task status is not `"success"`, `NA` otherwise.
     #'   * `code`: an integer code denoting the specific exit status:
@@ -1222,7 +1199,7 @@ crew_class_controller <- R6::R6Class(
     #'      just prior to the task can be restored using
     #'      `set.seed(seed = seed, kind = algorithm)`, where `seed` and
     #'      `algorithm` are part of this output.
-    #'   * `launcher`: name of the `crew` launcher where the task ran.
+    #'   * `controller`: name of the `crew` controller where the task ran.
     #'   * `worker`: name of the `crew` worker that ran the task.
     #' @param scale Logical of length 1,
     #'   whether to automatically call `scale()`
@@ -1292,7 +1269,11 @@ crew_class_controller <- R6::R6Class(
       task <- .subset2(tasks, name)
       remove(list = name, envir = tasks)
       private$.popped <- .subset2(self, "popped") + 1L
-      out <- as_monad(task = task, name = name)
+      out <- as_monad(
+        task = task,
+        name = name,
+        controller = .subset2(.subset2(private, ".launcher"), "name")
+      )
       .subset2(private, ".scan_crash")(name = name, task = out)
       seconds <- .subset2(out, "seconds")
       summary <- .subset2(private, ".summary")
@@ -1370,8 +1351,13 @@ crew_class_controller <- R6::R6Class(
       }
       tasks <- .subset2(private, ".tasks")
       scan_crash <- .subset2(private, ".scan_crash")
+      controller_name <- .subset2(.subset2(private, ".launcher"), "name")
       out <- lapply(names, function(name) {
-        out <- as_monad(task = .subset2(tasks, name), name = name)
+        out <- as_monad(
+          task = .subset2(tasks, name),
+          name = name,
+          controller = controller_name
+        )
         scan_crash(name = name, task = out)
         out
       })

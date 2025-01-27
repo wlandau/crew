@@ -37,8 +37,11 @@ crew_test("crew_controller_local()", {
         "controller",
         "tasks",
         "seconds",
-        "errors",
-        "warnings"
+        "success",
+        "error",
+        "crash",
+        "cancel",
+        "warning"
       )
     )
   )
@@ -76,8 +79,8 @@ crew_test("crew_controller_local()", {
   expect_true(x$empty())
   expect_false(x$nonempty())
   expect_equal(x$summary()$tasks, 1L)
-  expect_equal(x$summary()$errors, 0L)
-  expect_equal(x$summary()$warnings, 0L)
+  expect_equal(x$summary()$error, 0L)
+  expect_equal(x$summary()$warning, 0L)
   expect_equal(out$name, "task")
   expect_equal(out$command, "Sys.getenv(\"CREW_WORKER\")")
   expect_equal(out$result[[1]], out$worker)
@@ -150,8 +153,8 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
   expect_false(x$client$started)
   x$start()
   expect_equal(x$summary()$tasks, 0L)
-  expect_equal(x$summary()$errors, 0L)
-  expect_equal(x$summary()$warnings, 0L)
+  expect_equal(x$summary()$error, 0L)
+  expect_equal(x$summary()$warning, 0L)
   command <- quote(sqrt(4L) + sqrt(9L))
   # regular push
   x$push(command = command, substitute = FALSE, name = "substitute")

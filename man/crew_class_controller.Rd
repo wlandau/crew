@@ -862,7 +862,7 @@ then \code{iterate[[names]]} must be a character vector.}
 0.10.2.9004). The command is always saved now.}
 
 \item{\code{error}}{Character of length 1, choice of action if
-a task has an error. Possible values:
+a task was not successful. Possible values:
 \itemize{
 \item \code{"stop"}: throw an error in the main R session instead of returning
 a value. In case of an error, the results from the last errored
@@ -980,6 +980,8 @@ the \code{cancel()} controller method,
 it could complete the task.
 \item \code{error}: the first 2048 characters of the error message if
 the task status is not \code{"success"}, \code{NA} otherwise.
+Messages for crashes and cancellations are captured here
+alongside ordinary R-level errors.
 \item \code{code}: an integer code denoting the specific exit status:
 \code{0} for successful tasks, \code{-1} for tasks with an error in the R
 command of the task, and another positive integer with an NNG
@@ -1273,7 +1275,14 @@ It has one row and the following columns:
 \item \code{controller}: name of the controller.
 \item \code{tasks}: number of tasks.
 \item \code{seconds}: total number of runtime in seconds.
-\item \code{errors}: total number of tasks with errors.
+\item \code{success}: total number of successful tasks.
+\item \code{error}: total number of tasks with errors, either in the R code
+of the task or an NNG-level error that is not a cancellation
+or crash.
+\item \code{crash}: total number of crashed tasks (where the worker exited
+unexpectedly while it was running the task).
+\item \code{cancel}: total number of tasks interrupted with the \code{cancel()}
+controller method.
 \item \code{warnings}: total number of tasks with one or more warnings.
 }
 }

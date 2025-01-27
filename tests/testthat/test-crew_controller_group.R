@@ -71,8 +71,11 @@ crew_test("crew_controller_group()", {
         "controller",
         "tasks",
         "seconds",
-        "errors",
-        "warnings"
+        "success",
+        "error",
+        "crash",
+        "cancel",
+        "warning"
       )
     )
   )
@@ -497,8 +500,9 @@ crew_test("controller group map() works", {
   expect_equal(out$controller, rep(a$launcher$name, 2L))
   sum <- x$summary()
   expect_equal(sum$tasks, 2L)
-  expect_equal(sum$errors, 0L)
-  expect_equal(sum$warnings, 0L)
+  expect_equal(sum$success, 2L)
+  expect_equal(sum$error, 0L)
+  expect_equal(sum$warning, 0L)
 })
 
 crew_test("crew_controller_group() wait one", {
@@ -854,7 +858,8 @@ crew_test("crash detection with backup controllers in a group", {
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
   expect_equal(summary$tasks, c(1L, 0L, 0L))
-  expect_equal(summary$errors, c(1L, 0L, 0L))
+  expect_equal(summary$crash, c(1L, 0L, 0L))
+  expect_equal(summary$error, c(0L, 0L, 0L))
   out <- crash()
   expect_true(tibble::is_tibble(out))
   expect_equal(out$controller, "a")
@@ -865,7 +870,8 @@ crew_test("crash detection with backup controllers in a group", {
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
   expect_equal(summary$tasks, c(2L, 0L, 0L))
-  expect_equal(summary$errors, c(2L, 0L, 0L))
+  expect_equal(summary$crash, c(2L, 0L, 0L))
+  expect_equal(summary$error, c(0L, 0L, 0L))
   out <- crash()
   expect_true(tibble::is_tibble(out))
   expect_equal(out$controller, "b")
@@ -876,7 +882,7 @@ crew_test("crash detection with backup controllers in a group", {
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
   expect_equal(summary$tasks, c(2L, 1L, 0L))
-  expect_equal(summary$errors, c(2L, 1L, 0L))
+  expect_equal(summary$crash, c(2L, 1L, 0L))
   out <- crash()
   expect_true(tibble::is_tibble(out))
   expect_equal(out$controller, "b")
@@ -887,7 +893,7 @@ crew_test("crash detection with backup controllers in a group", {
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
   expect_equal(summary$tasks, c(2L, 2L, 0L))
-  expect_equal(summary$errors, c(2L, 2L, 0L))
+  expect_equal(summary$crash, c(2L, 2L, 0L))
   out <- crash()
   expect_true(tibble::is_tibble(out))
   expect_equal(out$controller, "c")
@@ -898,7 +904,7 @@ crew_test("crash detection with backup controllers in a group", {
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
   expect_equal(summary$tasks, c(2L, 2L, 1L))
-  expect_equal(summary$errors, c(2L, 2L, 1L))
+  expect_equal(summary$crash, c(2L, 2L, 1L))
   out <- crash()
   expect_true(tibble::is_tibble(out))
   expect_equal(out$controller, "c")
@@ -909,6 +915,6 @@ crew_test("crash detection with backup controllers in a group", {
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
   expect_equal(summary$tasks, c(2L, 2L, 2L))
-  expect_equal(summary$errors, c(2L, 2L, 2L))
+  expect_equal(summary$crash, c(2L, 2L, 2L))
   expect_crew_error(crash())
 })

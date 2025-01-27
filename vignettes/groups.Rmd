@@ -74,11 +74,11 @@ The controller group has a `summary()` method which aggregates the summaries of 
 
 ```r
 group$summary()
-#> # A tibble: 2 × 5
-#>   controller      tasks seconds errors warnings
-#>   <chr>           <int>   <dbl>  <int>    <int>
-#> 1 persistent          2       0      0        0
-#> 2 semi-persistent     1       0      0        0
+#> # A tibble: 2 × 8
+#>   controller      tasks seconds success error crash cancel warning
+#>   <chr>           <int>   <dbl>   <int> <int> <int>  <int>   <int>
+#> 1 persistent          2       0       2     0     0      0       0
+#> 2 semi-persistent     1       0       1     0     0      0       0
 ```
 
 When you are finished, please call `terminate()` with no arguments to terminate all controllers in the controller group.
@@ -162,12 +162,12 @@ task[, c("name", "result", "status", "error", "code", "controller")]
 
 ```r
 group$summary()
-# A tibble: 3 × 5
-  controller    tasks seconds errors warnings
-  <chr>         <int>   <dbl>  <int>    <int>
-1 default       4       0      4        0
-2 medium_memory 3       0      3        0
-3 high_memory   1       0      1        0
+#> # A tibble: 2 × 8
+#>   controller    tasks seconds success error crash cancel warning
+#>   <chr>         <int>   <dbl>   <int> <int> <int>  <int>   <int>
+#> 1 default       4       0       4     0     0      0       0
+#> 2 medium_memory 3       0       3     0     0      0       0
+#> 3 high_memory   1       0       1     0     0      0       0
 ```
 
 If you use a controller group like this one in a [`targets`](https://docs.ropensci.org/targets/) pipeline (with `tar_option_set(controller = "group")` in `_targets.R`) then `tar_make()` will automatically retry crashed tasks using the configuration in the controller group. This behavior requires [`targets`](https://docs.ropensci.org/targets/) version 1.10.0.9002 or later.

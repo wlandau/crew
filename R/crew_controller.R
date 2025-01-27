@@ -159,6 +159,7 @@ crew_class_controller <- R6::R6Class(
       count <- previous + 1L
       private$.crash_log[[name]] <- count
       if (count > .subset2(private, ".crashes_max")) {
+        private$.summary$crash <- private$.summary$crash + 1L
         crew_error(
           message = paste(
             "the crew worker of task",
@@ -413,8 +414,11 @@ crew_class_controller <- R6::R6Class(
           controller = private$.launcher$name,
           tasks = 0L,
           seconds = 0,
-          errors = 0L,
-          warnings = 0L
+          success = 0L,
+          error = 0L,
+          crash = 0L,
+          cancel = 0L,
+          warning = 0L
         )
         private$.backlog <- character(0L)
         private$.queue <- crew_queue()
@@ -966,7 +970,7 @@ crew_class_controller <- R6::R6Class(
     #' @param save_command Deprecated on 2025-01-22 (`crew` version
     #'   0.10.2.9004). The command is always saved now.
     #' @param error Character of length 1, choice of action if
-    #'   a task has an error. Possible values:
+    #'   a task was not successful. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
     #'     a value. In case of an error, the results from the last errored
     #'     `map()` are in the `error` field
@@ -1115,17 +1119,20 @@ crew_class_controller <- R6::R6Class(
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
       out <- out[match(x = names, table = out$name),, drop = FALSE] # nolint
       out <- out[!is.na(out$name),, drop = FALSE] # nolint
-      seconds <- sum(out$seconds)
-      summary_errors <- sum(!is.na(out$error))
-      summary_warnings <- sum(!is.na(out$warnings))
-      summary <- private$.summary
       on.exit({
         private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
-        private$.popped <- private$.popped + total
-        private$.summary$tasks <- summary$tasks + length(tasks)
-        private$.summary$seconds <- summary$seconds + seconds
-        private$.summary$errors <- summary$errors + summary_errors
-        private$.summary$warnings <- summary$warnings + summary_warnings
+        private$.popped <- .subset2(private, ".popped") + nrow(out)
+        summary <- private$.summary
+        summary$tasks <- .subset2(summary, "tasks") + nrow(out)
+        summary$seconds <- .subset2(summary, "seconds") +
+          sum(out$seconds)
+        for (status in c("success", "error", "crash", "cancel")) {
+          summary[[status]] <- .subset2(summary, status) +
+            sum(.subset2(out, "status") == status)
+        }
+        summary$warning <- .subset2(summary, "warning") +
+          sum(!is.na(out$warnings))
+        private$.summary <- summary
       })
       warning_messages <- out$warnings
       if (!all(is.na(warning_messages)) && isTRUE(warnings)) {
@@ -1142,7 +1149,7 @@ crew_class_controller <- R6::R6Class(
       error_messages <- out$error
       if (!all(is.na(error_messages)) && !identical(error, "silent")) {
         message <- sprintf(
-          "%s tasks encountered errors. First error message: \"%s\".",
+          "%s tasks were not successful. First error message: \"%s\".",
           sum(!is.na(error_messages)),
           error_messages[min(which(!is.na(error_messages)))]
         )
@@ -1173,11 +1180,13 @@ crew_class_controller <- R6::R6Class(
     #'   * `status`: a character string. `"success"` if the task succeeded,
     #'     `"cancel"` if the task was canceled with
     #'     the `cancel()` controller method,
-    #'     `"error"` if the R code in the task threw an error,
     #'     `"crash"` if the worker running the task exited before
-    #'     it could complete the task.
+    #'     it could complete the task, or `"error"`
+    #'      for any other kind of error.
     #'   * `error`: the first 2048 characters of the error message if
     #'     the task status is not `"success"`, `NA` otherwise.
+    #'     Messages for crashes and cancellations are captured here
+    #'     alongside ordinary R-level errors.
     #'   * `code`: an integer code denoting the specific exit status:
     #'     `0` for successful tasks, `-1` for tasks with an error in the R
     #'     command of the task, and another positive integer with an NNG
@@ -1281,9 +1290,11 @@ crew_class_controller <- R6::R6Class(
       if (!anyNA(seconds)) {
         summary$seconds <- .subset2(summary, "seconds") + seconds
       }
-      summary$errors <- .subset2(summary, "errors") +
-        !anyNA(.subset2(out, "error"))
-      summary$warnings <- .subset2(summary, "warnings") +
+      for (status in c("success", "error", "crash", "cancel")) {
+        summary[[status]] <- .subset2(summary, status) +
+          (.subset2(out, "status") == status)
+      }
+      summary$warning <- .subset2(summary, "warning") +
         !anyNA(.subset2(out, "warnings"))
       private$.summary <- summary
       if (!is.null(error) && !anyNA(.subset2(out, "error"))) {
@@ -1369,9 +1380,11 @@ crew_class_controller <- R6::R6Class(
       summary$tasks <- .subset2(summary, "tasks") + popped
       summary$seconds <- .subset2(summary, "seconds") +
         sum(.subset2(out, "seconds"), na.rm = TRUE)
-      summary$errors <- .subset2(summary, "errors") +
-        sum(!is.na(.subset2(out, "error")))
-      summary$warnings <- .subset2(summary, "warnings") +
+      for (status in c("success", "error", "crash", "cancel")) {
+        summary[[status]] <- .subset2(summary, status) +
+          sum(.subset2(out, "status") == status)
+      }
+      summary$warning <- .subset2(summary, "warning") +
         sum(!is.na(.subset2(out, "warnings")))
       private$.summary <- summary
       errors <- .subset2(out, "error")
@@ -1578,7 +1591,14 @@ crew_class_controller <- R6::R6Class(
     #'   * `controller`: name of the controller.
     #'   * `tasks`: number of tasks.
     #'   * `seconds`: total number of runtime in seconds.
-    #'   * `errors`: total number of tasks with errors.
+    #'   * `success`: total number of successful tasks.
+    #'   * `error`: total number of tasks with errors, either in the R code
+    #'     of the task or an NNG-level error that is not a cancellation
+    #'     or crash.
+    #'   * `crash`: total number of crashed tasks (where the worker exited
+    #'     unexpectedly while it was running the task).
+    #'   * `cancel`: total number of tasks interrupted with the `cancel()`
+    #'     controller method.
     #'   * `warnings`: total number of tasks with one or more warnings.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.

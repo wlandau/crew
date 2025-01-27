@@ -73,12 +73,12 @@ Here is the full list of output in the `task` object returned by `pop()`.
 * `result`: a list containing the return value of the R command. `NA` if the task failed.
 * `status`: a character string. `"success"` if the task succeeded,
   `"cancel"` if the task was canceled with
-  the `cancel()` controller method, `"error"` if the R code in the task
-  threw an error, `"crash"` if the worker running the task exited before
-  completing the task. (See the "Crashes and retries" section below
+  the `cancel()` controller method, `"crash"` if the worker running
+  the task exited before completing the task, and `"error"` for any other
+  kind of error. (See the "Crashes and retries" section below
   for more on crashes.)
 * `error`: the first 2048 characters of the error message if
-  the task status is not  `"success"`, `NA` otherwise.
+  the task status is not `"success"`, `NA` otherwise.
 * `code`: an integer code denoting the specific exit status:
   `0` for successful tasks, `-1` for tasks with an error in the R
   command of the task, and another positive integer with an NNG
@@ -182,14 +182,14 @@ However, there are subtle differences between the synchronous and asynchronous f
 
 # Summaries
 
-The controller summary shows how many tasks were completed and popped, how many total seconds the workers spent running tasks, and how many tasks threw warnings or errors.
+The controller summary shows how many tasks were completed and popped, how many total seconds the workers spent running tasks, how many tasks threw warnings or errors, etc.
 
 ```r
 controller$summary()
-#> # A tibble: 1 × 5
-#>   controller tasks seconds errors warnings
-#>   <chr>      <int>   <dbl>  <int>    <int>
-#> 1 example        5       0      0        0
+#> # A tibble: 1 × 8
+#>   controller tasks seconds success error crash cancel warning
+#>   <chr>      <int>   <dbl>   <int> <int> <int>  <int>   <int>
+#> 1 example        5       0       5     0     0      0       0
 ```
 
 # Termination

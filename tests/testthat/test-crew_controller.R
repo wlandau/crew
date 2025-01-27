@@ -23,8 +23,8 @@ crew_test("warnings and errors", {
   x$start()
   expect_silent(x$validate())
   expect_equal(x$summary()$tasks, 0L)
-  expect_equal(x$summary()$errors, 0L)
-  expect_equal(x$summary()$warnings, 0L)
+  expect_equal(x$summary()$error, 0L)
+  expect_equal(x$summary()$warning, 0L)
   x$push(command = {
     warning("this is a warning")
     stop("this is an error")
@@ -32,8 +32,8 @@ crew_test("warnings and errors", {
   x$wait(seconds_timeout = 5)
   out <- x$pop(scale = FALSE)
   expect_equal(x$summary()$tasks, 1L)
-  expect_equal(x$summary()$errors, 1L)
-  expect_equal(x$summary()$warnings, 1L)
+  expect_equal(x$summary()$error, 1L)
+  expect_equal(x$summary()$warning, 1L)
   expect_equal(out$name, "warnings_and_errors")
   expect_true(is.numeric(out$seconds))
   expect_false(anyNA(out$seconds))
@@ -341,8 +341,8 @@ crew_test("controller map() works", {
   expect_equal(out$controller, rep(x$launcher$name, 2L))
   sum <- x$summary()
   expect_equal(sum$tasks, 2L)
-  expect_equal(sum$errors, 0L)
-  expect_equal(sum$warnings, 0L)
+  expect_equal(sum$error, 0L)
+  expect_equal(sum$warning, 0L)
 })
 
 crew_test("map() works with errors and names and command strings", {
@@ -417,8 +417,8 @@ crew_test("map() works with errors and names and command strings", {
   expect_equal(out$controller, rep(x$launcher$name, 2L))
   sum <- x$summary()
   expect_equal(sum$tasks, 6L)
-  expect_equal(sum$errors, 6L)
-  expect_equal(sum$warnings, 6L)
+  expect_equal(sum$error, 6L)
+  expect_equal(sum$warning, 6L)
 })
 
 crew_test("map() does not need a started controller", {
@@ -640,6 +640,13 @@ crew_test("cancel() named", {
   expect_equal(sort(tasks$name), sort(c("x", "z")))
   expect_true(all(grepl("operation canceled", tolower(tasks$error))))
   expect_equal(names(x$tasks), "y")
+  s <- x$summary()
+  expect_equal(s$tasks, 2L)
+  expect_equal(s$success, 0L)
+  expect_equal(s$error, 0L)
+  expect_equal(s$crash, 0L)
+  expect_equal(s$cancel, 2L)
+  expect_equal(s$warning, 0L)
 })
 
 crew_test("handle duplicated names", {
@@ -745,6 +752,7 @@ crew_test("crash detection with crashes_max == 2L", {
   x$wait()
   expect_crew_error(x$pop())
   expect_equal(x$crashes(name = "x"), 3L)
+  expect_equal(x$summary()$crash, 3L)
 })
 
 crew_test("crash detection resets, crashes_max == 2L", {

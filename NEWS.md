@@ -11,6 +11,7 @@
 * Change R-level error status code to -1 (previously 1).
 * Add a queue class for resolved tasks to make `pop()` and `collect()` more efficient. `pop()` is 64 times faster.
 * For clarity, rename the `"launcher"` column of the results to `"controller"`.
+* Log crashes and cancellations separately from ordinary errors in `summary()`.
 
 # crew 0.10.2
 

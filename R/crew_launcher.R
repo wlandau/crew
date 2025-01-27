@@ -432,7 +432,7 @@ crew_class_launcher <- R6::R6Class(
         "tasks_max",
         "tasks_timers"
       )
-      # TODO: require non-null workers field when plugins catch up
+      # TODO: require non-null workers field when plugins catch up.
       if (!is.null(self[["workers"]])) {
         fields <- c(fields, "workers")
       }

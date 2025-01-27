@@ -67,7 +67,18 @@ crew_test("can relay task errors as local errors", {
   x$start()
   x$push(command =  stop("this is an error"), name = "warnings_and_errors")
   x$wait(seconds_timeout = 5)
-  expect_crew_error(x$pop(scale = FALSE, error = "stop"))
+  expect_silent(
+    if_any(
+      isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
+      suppressWarnings(
+        try(
+          x$pop(scale = FALSE, error = "stop"),
+          silent = TRUE
+        )
+      ),
+      expect_crew_error(x$pop(scale = FALSE, error = "stop"))
+    )
+  )
 })
 
 crew_test("can relay task errors as local warnings", {

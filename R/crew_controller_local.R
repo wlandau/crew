@@ -39,10 +39,10 @@ crew_controller_local <- function(
   crashes_error = NULL,
   launch_max = NULL,
   r_arguments = c("--no-save", "--no-restore"),
-  options_metrics = crew::crew_options_metrics(),
-  options_local = crew::crew_options_local(),
   crashes_max = 5L,
   backup = NULL,
+  options_metrics = crew::crew_options_metrics(),
+  options_local = crew::crew_options_local(),
   local_log_directory = NULL,
   local_log_join = NULL
 ) {

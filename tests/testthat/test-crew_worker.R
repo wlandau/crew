@@ -5,20 +5,23 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   previous <- Sys.getenv(envvars)
   Sys.unsetenv(envvars)
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
+  profile <- basename(tempfile())
   mirai::daemons(
     n = 1L,
     url = "tcp://127.0.0.1:0",
-    dispatcher = TRUE
+    dispatcher = TRUE,
+    .compute = profile
   )
-  on.exit(mirai::daemons(n = 0L), add = TRUE)
+  on.exit(mirai::daemons(n = 0L, .compute = profile), add = TRUE)
   on.exit(crew_test_sleep(), add = TRUE)
-  m <- mirai::mirai(
-    list(
+  task <- mirai::mirai(
+    .expr = list(
       controller = Sys.getenv("CREW_CONTROLLER"),
       worker = Sys.getenv("CREW_WORKER")
-    )
+    ),
+    .compute = profile
   )
-  url <- mirai::status()$daemons
+  url <- mirai::status(.compute = profile)$daemons
   settings <- list(url = url, maxtasks = 1L, cleanup = 0L, dispatcher = TRUE)
   crew_worker(
     settings = settings,
@@ -27,12 +30,14 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     options_metrics = NULL
   )
   crew_retry(
-    ~!nanonext::.unresolved(m$data),
+    ~!nanonext::unresolved(task),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
-  expect_equal(m$data$controller, "my_controller")
-  expect_equal(m$data$worker, "worker_id")
+  data <- task$data
+  expect_true(is.list(data))
+  expect_equal(data$controller, "my_controller")
+  expect_equal(data$worker, "worker_id")
   for (var in envvars) {
     expect_equal(Sys.getenv(var, unset = ""), "")
   }

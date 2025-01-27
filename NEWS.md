@@ -1,8 +1,8 @@
-# crew 0.10.2.9005 (development)
+# crew 0.10.2.9006 (development)
 
 * Avoid partial match in a call to `crew_terminate_process()`.
 * Migrate to `mirai` 2.0.0 (#193).
-* Prohibit duplicated task names in `push()`.
+* Prohibit duplicated task names in `push()`. (The task must be popped first before another task of the same name can be submitted.) This allows controllers to use hash tables to track tasks, which makes `push()` and `pop()` orders of magnitude faster. It is also needed for the new retry mechanism based on backup controllers and controller groups.
 * Use exponential backoff in throttles.
 * Share throttles between `scale()` and `wait()` to increase responsiveness.
 * Use a unified throttle for controller groups, which requires refactoring `wait(mode = "all")` for controller groups.

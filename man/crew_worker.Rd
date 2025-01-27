@@ -6,16 +6,15 @@
 \usage{
 crew_worker(
   settings,
-  controller,
+  launcher,
   worker,
-  options_metrics = crew::crew_options_metrics(),
-  launcher = NULL
+  options_metrics = crew::crew_options_metrics()
 )
 }
 \arguments{
 \item{settings}{Named list of arguments to \code{mirai::daemon()}.}
 
-\item{controller}{Character string, name of the controller.}
+\item{launcher}{Character string, name of the launcher}
 
 \item{worker}{Character of length 1 to uniquely identify the current worker.}
 
@@ -25,9 +24,6 @@ and configure resource metric logging for workers.
 For resource logging to run,
 the \code{autometric} R package version 0.1.0 or higher
 must be installed.}
-
-\item{launcher}{Deprecated on 2025-01-27 (\code{crew} version 0.10.2.9005).
-Use \code{controller} instead.}
 }
 \value{
 \code{NULL} (invisibly)

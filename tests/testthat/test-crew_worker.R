@@ -22,7 +22,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   settings <- list(url = url, maxtasks = 1L, cleanup = 0L, dispatcher = TRUE)
   crew_worker(
     settings = settings,
-    controller = "my_controller",
+    launcher = "my_controller",
     worker = "worker_id",
     options_metrics = NULL
   )
@@ -66,7 +66,7 @@ crew_test("crew_worker() metrics logging to a directory", {
   log <- tempfile()
   crew_worker(
     settings = settings,
-    controller = "my_controller",
+    launcher = "my_controller",
     worker = "worker_id",
     options_metrics = crew_options_metrics(
       path = log,

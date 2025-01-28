@@ -326,3 +326,14 @@ crew_test("deprecate seconds_exit", {
   suppressWarnings(crew_launcher(seconds_exit = 1))
   expect_true(TRUE)
 })
+
+crew_test("deprecated crashes() method", {
+  x <- crew_launcher_local()
+  expect_equal(x$crashes(index = 1L), 1L)
+})
+
+crew_test("deprecated set_name() method", {
+  x <- crew_launcher_local(name = "x")
+  x$set_name(name = "y")
+  expect_equal(x$name, "y")
+})

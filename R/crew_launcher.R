@@ -545,12 +545,20 @@ crew_class_launcher <- R6::R6Class(
     #'   help create custom launchers.
     #' @return Character string with a call to [crew_worker()].
     #' @param worker Character string, name of the worker.
+    #' @param socket Deprecated on 2025-01-28 (`crew` version 1.0.0).
+    #' @param launcher Deprecated on 2025-01-28 (`crew` version 1.0.0).
+    #' @param instance Deprecated on 2025-01-28 (`crew` version 1.0.0).
     #' @examples
     #' launcher <- crew_launcher_local()
     #' launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
     #' launcher$call(worker = "worker_name")
     #' launcher$terminate()
-    call = function(worker) {
+    call = function(
+      worker,
+      socket = NULL,
+      launcher = NULL,
+      instance = NULL
+    ) {
       call <- substitute(
         crew::crew_worker(
           settings = settings,
@@ -575,8 +583,20 @@ crew_class_launcher <- R6::R6Class(
     #' @description Start the launcher.
     #' @param url Character string, websocket URL for worker connections.
     #' @param profile Character string, `mirai` compute profile.
+    #' @param sockets Deprecated on 2025-01-28 (`crew` version 1.0.0).
     #' @return `NULL` (invisibly).
-    start = function(url, profile) {
+    start = function(url = NULL, profile = NULL, sockets = NULL) {
+      crew::crew_deprecate(
+        name = "sockets",
+        date = "2025-01-28",
+        version = "1.0.0",
+        alternative = "url and profile",
+        condition = "message",
+        value = sockets,
+        skip_cran = TRUE
+      )
+      url <- url %|||% sockets[1L]
+      profile <- profile %|||% crew_random_name()
       if (!is.null(private$.async)) {
         private$.async$terminate()
       }
@@ -735,6 +755,37 @@ crew_class_launcher <- R6::R6Class(
       }
       mirai_wait(tasks = tasks, launching = FALSE)
       private$.instances <- launcher_empty_instances
+      invisible()
+    },
+    #' @description Deprecated on 2025-01-28 (`crew` version 1.0.0).
+    #' @param index Unused argument.
+    #' @return The integer 1, for compatibility.
+    crashes = function(index = NULL) {
+      crew_deprecate(
+        name = "crashes() method in crew launchers",
+        date = "2025-01-28",
+        version = "1.0.0",
+        alternative = "none",
+        condition = "message",
+        value = "x",
+        skip_cran = TRUE
+      )
+      1L
+    },
+    #' @description Deprecated on 2025-01-28 (`crew` version 1.0.0).
+    #' @param name Name to set for the launcher.
+    #' @return `NULL` (invisibly).
+    set_name = function(name) {
+      crew_deprecate(
+        name = "crashes() method in crew launchers",
+        date = "2025-01-28",
+        version = "1.0.0",
+        alternative = "none",
+        condition = "message",
+        value = "x",
+        skip_cran = TRUE
+      )
+      private$.name <- name
       invisible()
     }
   )

@@ -120,6 +120,8 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
 \item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
+\item \href{#method-crew_class_launcher-crashes}{\code{crew_class_launcher$crashes()}}
+\item \href{#method-crew_class_launcher-set_name}{\code{crew_class_launcher$set_name()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -266,13 +268,24 @@ List of arguments for \code{mirai::daemon()}.
 Create a call to \code{\link[=crew_worker]{crew_worker()}} to
 help create custom launchers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call(worker)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call(
+  worker,
+  socket = NULL,
+  launcher = NULL,
+  instance = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{worker}}{Character string, name of the worker.}
+
+\item{\code{socket}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
+
+\item{\code{launcher}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
+
+\item{\code{instance}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
 }
 \if{html}{\out{</div>}}
 }
@@ -297,7 +310,7 @@ launcher$terminate()
 \subsection{Method \code{start()}}{
 Start the launcher.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$start(url, profile)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$start(url = NULL, profile = NULL, sockets = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -306,6 +319,8 @@ Start the launcher.
 \item{\code{url}}{Character string, websocket URL for worker connections.}
 
 \item{\code{profile}}{Character string, \code{mirai} compute profile.}
+
+\item{\code{sockets}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
 }
 \if{html}{\out{</div>}}
 }
@@ -468,6 +483,46 @@ Terminate all workers.
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate_workers()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-crashes"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-crashes}{}}}
+\subsection{Method \code{crashes()}}{
+Deprecated on 2025-01-28 (\code{crew} version 1.0.0).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$crashes(index = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{index}}{Unused argument.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The integer 1, for compatibility.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-set_name"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-set_name}{}}}
+\subsection{Method \code{set_name()}}{
+Deprecated on 2025-01-28 (\code{crew} version 1.0.0).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$set_name(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Name to set for the launcher.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

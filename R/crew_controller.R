@@ -1297,13 +1297,20 @@ crew_class_controller <- R6::R6Class(
       summary$warning <- .subset2(summary, "warning") +
         !anyNA(.subset2(out, "warnings"))
       private$.summary <- summary
-      if (!is.null(error) && !anyNA(.subset2(out, "error"))) {
-        if (identical(error, "stop")) {
-          crew_error(message = .subset2(out, "error"))
-        } else if (identical(error, "warn")) {
-          crew_warning(message = .subset2(out, "error"))
-        }
-      }
+      has_error <- !is.null(error) &&
+        any(.subset2(out, "status") != "success")
+      throw_error <- has_error && identical(error, "stop")
+      throw_warning <- has_error && identical(error, "warn")
+      if_any(
+        throw_error,
+        crew_error(message = .subset2(out, "error")),
+        NULL
+      )
+      if_any(
+        throw_warning,
+        crew_warning(message = .subset2(out, "error")),
+        NULL
+      )
       out
     },
     #' @description Pop all available task results and return them in a tidy

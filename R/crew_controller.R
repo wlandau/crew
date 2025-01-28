@@ -258,7 +258,7 @@ crew_class_controller <- R6::R6Class(
       private$.backup <- backup
       invisible()
     },
-    #' @description Validate the client.
+    #' @description Validate the controller.
     #' @return `NULL` (invisibly).
     validate = function() {
       crew_assert(inherits(private$.client, "crew_class_client"))
@@ -274,7 +274,9 @@ crew_class_controller <- R6::R6Class(
           length(.) == 1L,
           is.finite(.),
           . >= 0L,
-          message = "crashes_max must be a non-negative integer scalar."
+          message = c(
+            "crashes_max must be a finite non-negative integer scalar."
+          )
         )
       }
       if (!is.null(private$.crash_log)) {

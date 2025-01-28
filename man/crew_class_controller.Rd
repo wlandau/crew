@@ -156,7 +156,7 @@ controller$terminate()
 \if{html}{\out{<a id="method-crew_class_controller-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-validate}{}}}
 \subsection{Method \code{validate()}}{
-Validate the client.
+Validate the controller.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$validate()}\if{html}{\out{</div>}}
 }

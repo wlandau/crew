@@ -217,7 +217,7 @@ crew_class_tls <- R6::R6Class(
       # nocov start
       if (isTRUE(test)) {
         nanonext::tls_config(
-          client = self$worker(name = "default"),
+          client = self$worker(profile = "default"),
           server = self$client(),
           pass = private$.password
         )
@@ -236,15 +236,24 @@ crew_class_tls <- R6::R6Class(
     },
     #' @description TLS credentials for `crew` workers.
     #' @return `NULL` or character vector, depending on the mode.
-    #' @param name Character of length 1 with the `mirai` compute profile.
-    worker = function(name) {
+    #' @param profile Character of length 1 with the `mirai` compute profile.
+    worker = function(profile) {
       if (private$.mode == "none") {
         return(NULL)
       } else if (private$.mode == "automatic") {
-        return(mirai::nextget(x = "tls", .compute = name))
+        return(mirai::nextget(x = "tls", .compute = profile))
       } else if (private$.mode == "custom") {
         return(c(private$.read_certificates(), ""))
       }
+    },
+    #' @description Form the URL for `crew` worker connections.
+    #' @return Character string with the URL.
+    #' @param host Character string with the host name or IP address.
+    #' @param port Non-negative integer with the port number
+    #'   (0 to let NNG select a random ephemeral port).
+    url = function(host, port) {
+      prefix <- if_any(private$.mode == "none", "tcp", "tls+tcp")
+      sprintf("%s://%s:%s", prefix, host, port)
     }
   )
 )

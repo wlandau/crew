@@ -43,6 +43,7 @@ Other tls:
 \item \href{#method-crew_class_tls-validate}{\code{crew_class_tls$validate()}}
 \item \href{#method-crew_class_tls-client}{\code{crew_class_tls$client()}}
 \item \href{#method-crew_class_tls-worker}{\code{crew_class_tls$worker()}}
+\item \href{#method-crew_class_tls-url}{\code{crew_class_tls$url()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -124,18 +125,41 @@ TLS credentials for the \code{crew} client.
 \subsection{Method \code{worker()}}{
 TLS credentials for \code{crew} workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$worker(name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$worker(profile)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character of length 1 with the \code{mirai} compute profile.}
+\item{\code{profile}}{Character of length 1 with the \code{mirai} compute profile.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 \code{NULL} or character vector, depending on the mode.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_tls-url"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_tls-url}{}}}
+\subsection{Method \code{url()}}{
+Form the URL for \code{crew} worker connections.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_tls$url(host, port)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{host}}{Character string with the host name or IP address.}
+
+\item{\code{port}}{Non-negative integer with the port number
+(0 to let NNG select a random ephemeral port).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Character string with the URL.
 }
 }
 }

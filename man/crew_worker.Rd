@@ -8,21 +8,15 @@ crew_worker(
   settings,
   launcher,
   worker,
-  instance,
   options_metrics = crew::crew_options_metrics()
 )
 }
 \arguments{
 \item{settings}{Named list of arguments to \code{mirai::daemon()}.}
 
-\item{launcher}{Character of length 1, name of the launcher.}
+\item{launcher}{Character string, name of the launcher}
 
-\item{worker}{Positive integer of length 1, index of the worker.
-This worker index remains the same even when the current instance
-of the worker exits and a new instance launches.}
-
-\item{instance}{Character of length 1 to uniquely identify
-the current instance of the worker.}
+\item{worker}{Character of length 1 to uniquely identify the current worker.}
 
 \item{options_metrics}{Either \code{NULL} to opt out of resource metric logging
 for workers, or an object from \code{\link[=crew_options_metrics]{crew_options_metrics()}} to enable

@@ -4,12 +4,29 @@
 \alias{crew_throttle}
 \title{Create a stateful throttling object.}
 \usage{
-crew_throttle(seconds_interval = 0.5)
+crew_throttle(
+  seconds_max = 1,
+  seconds_min = 0.001,
+  seconds_start = seconds_min,
+  base = 2
+)
 }
 \arguments{
-\item{seconds_interval}{Positive numeric of length 1, throttling interval.
-The \code{poll()} method returns \code{TRUE} if and only if it was not called
-in the last \code{seconds_interval} seconds.}
+\item{seconds_max}{Positive numeric scalar, maximum throttling interval}
+
+\item{seconds_min}{Positive numeric scalar, minimum throttling interval.}
+
+\item{seconds_start}{Positive numeric scalar,
+the initial wait time interval in seconds.
+The default is \code{min} because there is almost always
+auto-scaling to be done when the controller is created.
+\code{reset()} always sets the current wait interval back to \code{seconds_start}.}
+
+\item{base}{Numeric scalar greater than 1, base of the exponential
+backoff algorithm. \code{increment()} multiplies the waiting interval by
+\code{base} and \code{decrement()} divides the waiting interval by \code{base}.
+The default \code{base} is 2, which specifies a binary exponential
+backoff algorithm.}
 }
 \value{
 An \code{R6} object with throttle configuration settings and methods.
@@ -21,11 +38,21 @@ Create an \code{R6} object for throttling.
 Throttling is a technique that limits how often a function is
 called in a given period of time. \code{\link[=crew_throttle]{crew_throttle()}} objects support
 the \code{throttle} argument of controller methods, which ensures auto-scaling
-only happen every \code{seconds_interval} seconds. This helps avoid
-overburdening the \code{mirai} dispatcher and other resources.
+does not induce superfluous overhead.
+The throttle uses deterministic exponential backoff algorithm
+(\url{https://en.wikipedia.org/wiki/Exponential_backoff}) which
+increases wait times when there is nothing to do and decreases
+wait times when there is something to do. The controller decreases
+or increases the wait time with methods \code{accelerate()} and \code{decelerate()}
+in the throttle object, respectively,
+by dividing or multiplying by \code{base} (but keeping the wait time
+between \code{seconds_min} and \code{seconds_max}).
+In practice, \code{crew} calls \code{reset()} instead of \code{update()}
+in order to respond quicker to surges of activity (see the
+\code{update()} method).
 }
 \examples{
-throttle <- crew_throttle(seconds_interval = 0.5)
+throttle <- crew_throttle(seconds_max = 1)
 throttle$poll()
 throttle$poll()
 }

@@ -6,28 +6,29 @@
 \usage{
 crew_client(
   name = NULL,
-  workers = 1L,
+  workers = NULL,
   host = NULL,
   port = NULL,
   tls = crew::crew_tls(),
   tls_enable = NULL,
   tls_config = NULL,
-  seconds_interval = 0.5,
+  seconds_interval = 1,
   seconds_timeout = 60,
-  retry_tasks = TRUE
+  retry_tasks = NULL
 )
 }
 \arguments{
-\item{name}{Name of the client object. If \code{NULL}, a name is automatically
-generated.}
+\item{name}{Deprecated on 2025-01-14 (\code{crew} version 0.10.2.9002).}
 
-\item{workers}{Integer, maximum number of parallel workers to run.}
+\item{workers}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
 \item{host}{IP address of the \code{mirai} client to send and receive tasks.
 If \code{NULL}, the host defaults to the local IP address.}
 
 \item{port}{TCP port to listen for the workers. If \code{NULL},
-then an available ephemeral port is automatically chosen.}
+then an available ephemeral port is automatically chosen.
+Controllers running simultaneously on the same computer
+(as in a controller group) must not share the same TCP port.}
 
 \item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
 
@@ -46,12 +47,7 @@ such as checking \code{mirai::status()}}
 out while waiting for certain synchronous operations to complete,
 such as checking \code{mirai::status()}.}
 
-\item{retry_tasks}{\code{TRUE} to automatically retry a task in the event of
-an unexpected worker exit. \code{FALSE} to give up on the first exit and
-return a \code{mirai} error code (code number 19).
-\code{TRUE} (default) is recommended in most situations.
-Use \code{FALSE} for debugging purposes, e.g. to confirm that a task
-is causing a worker to run out of memory or crash in some other way.}
+\item{retry_tasks}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 }
 \description{
 Create an \code{R6} wrapper object to manage the \code{mirai} client.

@@ -1,6 +1,17 @@
-# crew 0.10.2.9001 (development)
+# crew 1.0.0
 
 * Avoid partial match in a call to `crew_terminate_process()`.
+* Migrate to `mirai` 2.0.0 with the pair 1 poly protocol (#193). Most notably, all workers now share the same URL instead of having different web sockets for different workers. This gets rid of `crew`'s previous "slotted" model for workers.
+* Prohibit duplicated task names in `push()`. (The task must be popped first before another task of the same name can be submitted.) This allows controllers to use hash tables to track tasks, which makes `push()` and `pop()` orders of magnitude faster. It is also needed for the new retry mechanism based on backup controllers and controller groups.
+* Use exponential backoff in throttles.
+* Share throttles between `scale()` and `wait()` to increase responsiveness.
+* Use a unified throttle for controller groups, which requires refactoring `wait(mode = "all")` for controller groups.
+* Name every task and record every command.
+* Switch URLs from `ws://` (and `wss://`) to `tcp://` (and `tls+tcp://`) (#193).
+* Change R-level error status code to -1 (previously 1).
+* Add a queue class for resolved tasks to make `pop()` and `collect()` more efficient. `pop()` is 64 times faster.
+* For clarity, rename the `"launcher"` column of the results to `"controller"`.
+* Log crashes and cancellations separately from ordinary errors in `summary()`.
 
 # crew 0.10.2
 

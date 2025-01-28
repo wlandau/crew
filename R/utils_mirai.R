@@ -1,25 +1,33 @@
-daemons_info <- function(name, seconds_interval, seconds_timeout) {
+mirai_status <- function(profile, seconds_interval, seconds_timeout) {
   envir <- new.env(parent = emptyenv())
+  iterate <- function() {
+    status <- mirai::status(.compute = profile)
+    valid <- is.list(status)
+    retry <- is.numeric(status) && identical(as.integer(status), 5L)
+    if_any(
+      valid || retry,
+      NULL,
+      mirai_status_error(status = status, profile = profile)
+    )
+    envir$status <- status
+    envir$valid <- valid
+    valid
+  }
   crew_retry(
-    fun = ~{
-      daemons <- mirai::status(.compute = name)$daemons
-      valid <- is.matrix(daemons) && all(dim(daemons) > 0L)
-      envir$daemons <- daemons
-      envir$valid <- valid
-      valid
-    },
+    fun = iterate,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
-    error = FALSE
+    error = FALSE,
+    assertions = FALSE
   )
-  daemons <- .subset2(envir, "daemons")
+  status <- .subset2(envir, "status")
   valid <- .subset2(envir, "valid")
-  if_any(valid, daemons, daemons_error(daemons, name))
+  if_any(valid, status, mirai_status_error(status, profile))
 }
 
-daemons_error <- function(daemons, name) {
-  message <- sprintf("'errorValue' int %s\n", nanonext::nng_error(daemons))
-  pid <- mirai::nextget("pid", .compute = name)
+mirai_status_error <- function(status, profile) {
+  message <- sprintf("'errorValue' int %s\n", nanonext::nng_error(status))
+  pid <- mirai::nextget("pid", .compute = profile)
   exists <- !is.null(pid) &&
     !inherits(
       try(handle <- ps::ps_handle(pid = pid), silent = TRUE),
@@ -77,10 +85,46 @@ daemons_error <- function(daemons, name) {
   crew_error(paste(message, info))
 }
 
-mirai_error <- function(task) {
-  if_any(
-    mirai::is_mirai(task) && mirai::is_mirai_error(task$data),
-    as.character(task$data),
-    NULL
-  )
+mirai_resolved <- function(task) {
+  !is_mirai(task) || !nanonext::.unresolved(task)
+}
+
+mirai_resolve <- function(task, launching) {
+  if (mirai::is_mirai(task)) {
+    mirai::call_mirai_(task)
+    mirai_assert(task, launching)
+    task$data
+  } else {
+    task
+  }
+}
+
+mirai_wait <- function(tasks, launching) {
+  mirai::call_mirai_(tasks)
+  lapply(tasks, mirai_assert, launching = launching)
+  invisible()
+}
+
+mirai_assert <- function(task, launching) {
+  if (!mirai::is_mirai(task)) {
+    return()
+  }
+  data <- .subset2(task, "data")
+  if (mirai::is_mirai_error(data)) {
+    if (launching) {
+      crew_error(
+        message = paste(
+          "Error asynchronously launching a worker:",
+          as.character(data)
+        )
+      )
+    } else {
+      crew_warning(
+        message = paste(
+          "Error asynchronously terminating a worker:",
+          as.character(data)
+        )
+      )
+    }
+  }
 }

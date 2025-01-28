@@ -14,9 +14,9 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local(name = client$name)
-launcher$start(sockets = client$summary()$socket)
-launcher$launch(index = 1L)
-task <- mirai::mirai("result", .compute = client$name)
+launcher$start(url = client$url, profile = client$profile)
+launcher$launch()
+task <- mirai::mirai("result", .compute = client$profile)
 mirai::call_mirai_(task)
 task$data
 client$terminate()
@@ -30,9 +30,9 @@ if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local(name = client$name)
-launcher$start(sockets = client$summary()$socket)
-launcher$launch(index = 1L)
-task <- mirai::mirai("result", .compute = client$name)
+launcher$start(url = client$url, profile = client$profile)
+launcher$launch()
+task <- mirai::mirai("result", .compute = client$profile)
 mirai::call_mirai_(task)
 task$data
 client$terminate()
@@ -66,25 +66,16 @@ Other plugin_local:
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="active"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-active'><code>crew::crew_class_launcher$active()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="booting"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-booting'><code>crew::crew_class_launcher$booting()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="call"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-call'><code>crew::crew_class_launcher$call()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="crashes"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-crashes'><code>crew::crew_class_launcher$crashes()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="done"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-done'><code>crew::crew_class_launcher$done()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="errors"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-errors'><code>crew::crew_class_launcher$errors()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="forward"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-forward'><code>crew::crew_class_launcher$forward()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch'><code>crew::crew_class_launcher$launch()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="rotate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-rotate'><code>crew::crew_class_launcher$rotate()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="poll"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-poll'><code>crew::crew_class_launcher$poll()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="resolve"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-resolve'><code>crew::crew_class_launcher$resolve()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="scale"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-scale'><code>crew::crew_class_launcher$scale()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="set_name"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-set_name'><code>crew::crew_class_launcher$set_name()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="settings"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-settings'><code>crew::crew_class_launcher$settings()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="start"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-start'><code>crew::crew_class_launcher$start()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="summary"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-summary'><code>crew::crew_class_launcher$summary()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="tally"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-tally'><code>crew::crew_class_launcher$tally()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate'><code>crew::crew_class_launcher$terminate()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate_workers"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate_workers'><code>crew::crew_class_launcher$terminate_workers()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="unlaunched"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-unlaunched'><code>crew::crew_class_launcher$unlaunched()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="wait"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-wait'><code>crew::crew_class_launcher$wait()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="update"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-update'><code>crew::crew_class_launcher$update()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -96,6 +87,7 @@ Local launcher constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$new(
   name = NULL,
+  workers = NULL,
   seconds_interval = NULL,
   seconds_timeout = NULL,
   seconds_launch = NULL,
@@ -121,6 +113,8 @@ Local launcher constructor.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{workers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
@@ -169,9 +163,9 @@ An \code{R6} object with the local launcher.
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local(name = client$name)
-launcher$start(sockets = client$summary()$socket)
-launcher$launch(index = 1L)
-task <- mirai::mirai("result", .compute = client$name)
+launcher$start(url = client$url, profile = client$profile)
+launcher$launch()
+task <- mirai::mirai("result", .compute = client$profile)
 mirai::call_mirai_(task)
 task$data
 client$terminate()
@@ -202,7 +196,7 @@ Validate the local launcher.
 Launch a local process worker which will
 dial into a socket.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$launch_worker(call, name, launcher, worker, instance)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$launch_worker(call, name, launcher, worker)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -212,18 +206,12 @@ dial into a socket.
 \code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
 
 \item{\code{name}}{Character of length 1 with a long informative worker name
-which contains the \code{launcher}, \code{worker}, and \code{instance} arguments
+which contains the \code{launcher} and \code{worker} arguments
 described below.}
 
 \item{\code{launcher}}{Character of length 1, name of the launcher.}
 
-\item{\code{worker}}{Positive integer of length 1, index of the worker.
-This worker index remains the same even when the current instance
-of the worker exits and a new instance launches.
-It is always between 1 and the maximum number of concurrent workers.}
-
-\item{\code{instance}}{Character of length 1 to uniquely identify
-the current instance of the worker a the index in the launcher.}
+\item{\code{worker}}{Character string, name of the worker within the launcher.}
 }
 \if{html}{\out{</div>}}
 }

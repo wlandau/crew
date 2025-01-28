@@ -22,13 +22,9 @@ library(crew)
 
 `crew` lets users write custom [launchers](https://wlandau.github.io/crew/reference/crew_class_launcher.html) for different types of workers that connect over the local network. The [`crew.cluster`](https://wlandau.github.io/crew.cluster/) package already has plugins for traditional high-performance computing schedulers ([SLURM](https://slurm.schedmd.com/), SGE, LSF, and PBS/TORQUE).
 
-# 📣 Request for community contributions 📣
-
-<span style="color: blue">**The launcher plugin framework aims to extend `crew` to modern platforms and services like [Google Cloud Run](https://cloud.google.com/run/), [Kubernetes](https://kubernetes.io/), and beyond. At the time of writing, plugins for cloud computing do not yet exist. So if you have access to these services and know how to use them, please consider contributing a package with plugins of your own. The maintainer of `crew` would love to work with you!**</span>
-
 # How it works
 
-These [launcher](https://wlandau.github.io/crew/reference/crew_class_launcher.html) plugins need not become part of the `crew` package itself. You can write your plugin in a simple R script, or you write it in a custom R package that [depends on](https://r-pkgs.org/dependencies-in-practice.html) `crew`. Published packages with [launcher](https://wlandau.github.io/crew/reference/crew_class_launcher.html) plugins are powerful extensions that enhance `crew` for the entire open-source community. See [R Packages](https://r-pkgs.org/) by [Hadley Wickham](https://hadley.nz/) and [Jenny Bryan](https://jennybryan.org/) for how to write an R package.
+These [launcher](https://wlandau.github.io/crew/reference/crew_class_launcher.html) plugins need not become part of the `crew` package itself. You can write your plugin in a simple R script, or you write it in a custom R package that [depends on](https://r-pkgs.org/dependencies-in-practice.html) `crew`. Published packages with [launcher](https://wlandau.github.io/crew/reference/crew_class_launcher.html) plugins are powerful extensions that enhance `crew` for the entire open-source community. See [R Packages](https://r-pkgs.org/) by [Hadley Wickham](https://github.com/hadley) and [Jenny Bryan](https://github.com/jennybc) for how to write an R package.
 
 # Scope
 
@@ -89,29 +85,10 @@ To see what the `call` object looks like, create a new launcher and run the `cal
 ```r
 library(crew)
 launcher <- crew_launcher_local()
-launcher$call(
-  socket = "ws://127.0.0.1:5000/3/aa9c59ea",
-  launcher = "my_launcher",
-  worker = 3L,
-  instance = "aa9c59ea"
-)
-#> [1] "crew::crew_worker(settings = list(url = \"ws://127.0.0.1:5000/3/aa9c59ea\", asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tls = NULL, rs = NULL), launcher = \"my_launcher\", worker = 3L, instance = \"aa9c59ea\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
+launcher$start(url = "tcp://127.0.0.1:57000", profile = "example_profile")
+launcher$call(worker = "worker_name")
+#> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tls = NULL, rs = NULL), launcher = \"27548330\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
 ```
-
-# Worker retries
-
-The `launch_worker()` method can call `self$crashes(index = worker)` to get the number of consecutive times the worker has crashed (exited without completing all its tasks). When a worker crashes, its crash count increments by 1. The next time a worker does not crash (exits only after completing all its tasks) the crash count resets back to zero.
-
-You can use the crash count to assign more memory, CPU cores, or other resources to a worker launch. Here is a pseudo-code sketch which increases available memory by 4 GB each time a worker crashes, then resets back to the original 16 GB when the worker succeeds:
-
-```r
-launch_worker = function(call, name, launcher, worker, instance) {
-  gigabytes_memory <- 16 + 4 * self$crashes(index = worker)
-  submit_job(call, name, gigabytes_memory)
-}
-```
-
-This mechanism is similar to [retryable options in `crew.cluster`](https://wlandau.github.io/crew.cluster/reference/crew_options_slurm.html#retryable-options) and [in `crew.aws.batch`](https://wlandau.github.io/crew.aws.batch/reference/crew_options_aws_batch.html#retryable-options).
 
 # Helper
 
@@ -142,29 +119,27 @@ crew_controller_custom <- function(
   seconds_launch = 30,
   seconds_idle = Inf,
   seconds_wall = Inf,
-  retry_tasks = TRUE,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  crashes_error = 5L,
   r_arguments = NULL,
-  options_metrics = crew::crew_options_metrics()
+  options_metrics = crew::crew_options_metrics(),
+  crashes_max = 5L,
+  backup = NULL
 ) {
   client <- crew::crew_client(
-    name = name,
-    workers = workers,
     host = host,
     port = port,
     tls = tls,
     seconds_interval = seconds_interval,
-    seconds_timeout = seconds_timeout,
-    retry_tasks = retry_tasks
+    seconds_timeout = seconds_timeout
   )
   launcher <- custom_launcher_class$new(
     name = name,
+    workers = workers,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
     seconds_launch = seconds_launch,
@@ -176,12 +151,16 @@ crew_controller_custom <- function(
     reset_packages = reset_packages,
     reset_options = reset_options,
     garbage_collection = garbage_collection,
-    crashes_error = crashes_error,
     tls = tls,
     r_arguments = r_arguments,
     options_metrics = options_metrics
   )
-  controller <- crew::crew_controller(client = client, launcher = launcher)
+  controller <- crew::crew_controller(
+    client = client,
+    launcher = launcher,
+    crashes_max = crashes_max,
+    backup = backup
+  )
   controller$validate()
   controller
 }
@@ -224,19 +203,15 @@ Please use the result to verify that the task really ran on a worker as intended
 ```r
 getip::getip(type = "local")
 #> "192.168.0.2"
-controller$launcher$workers$handle[[1]]$get_pid()
+controller$launcher$instances$handle[[1]]$get_pid()
 #> [1] 27336
 ```
 
-If you did not set any timeouts or task limits, the worker that ran the task should still be online. The other worker had no tasks, so it did not need to launch.
+If you did not set any timeouts or task limits, the worker that ran the task should still be running. The other worker had no tasks, so it did not need to launch.
 
 ```r
-controller$client$summary()
-#> # A tibble: 2 × 6
-#>   worker online instances assigned complete socket
-#>    <int> <lgl>      <int>    <int>    <int> <chr>
-#> 1      1 TRUE           1        1        1 ws://10.0.0.32:50258/1/571bcda7…
-#> 2      2 FALSE          0        0        0 ws://10.0.0.32:50258/2/daf88d6e…
+controller$launcher$instances$handle[[1]]$is_alive()
+#> [1] TRUE
 ```
 
 When you are done, terminate the controller. This terminates the `mirai` dispatcher process and the `crew` workers.
@@ -258,48 +233,38 @@ controller <- crew_controller_custom(
   workers = 2L
 )
 controller$start()
+
 # Push 100 tasks
 for (index in seq_len(100L)) {
   name <- paste0("task_", index)
   controller$push(name = name, command = index, data = list(index = index))
   message(paste("push", name))
 }
+
 # Wait for the tasks to complete.
-controller$wait()
-# Wait for the workers to idle out and exit on their own.
-crew_retry(
-  ~all(controller$client$summary()$online == FALSE),
-  seconds_interval = 1,
-  seconds_timeout = 60
-)
+controller$wait(mode = "all")
+
 # Do the same for 100 more tasks.
 for (index in (seq_len(100L) + 100L)) {
   name <- paste0("task_", index)
   controller$push(name = name, command = index, data = list(index = index))
   message(paste("push", name))
 }
-controller$wait()
-crew_retry(
-  ~all(controller$client$summary()$online == FALSE),
-  seconds_interval = 1,
-  seconds_timeout = 60
-)
+controller$wait(mode = "all")
+
 # Collect the results.
-results <- NULL
-while (!is.null(result <- controller$pop(scale = FALSE))) {
-  if (!is.null(result)) {
-    results <- dplyr::bind_rows(results, result)
-  }
-}
+results <- controller$collect()
+
 # Check the results
 all(sort(unlist(results$result)) == seq_len(200L))
 #> [1] TRUE
-# View worker and task summaries.
+
+# View the controller summary.
 controller$summary()
-controller$client$summary()
-controller$launcher$summary()
+
 # Terminate the controller.
 controller$terminate()
+
 # Now outside crew, verify that the mirai dispatcher
 # and crew workers successfully terminated.
 ```
@@ -313,7 +278,7 @@ Depending on the launcher plugin, worker launches and terminations can be time-c
 
 Let's demonstrate on the simple `processx` example. The use case itself may silly because the workers are local `processx` processes, but the same principles apply if you replace `processx` with a cloud computing service like AWS Batch and you replace the process IDs with AWS Batch job IDs.
 
-Here is what the launcher class looks like. We work with `processx` PIDs directly because they are light and easy to send to local async `mirai` daemons. The `self$async$eval()` function accepts R code, data, and packages to run a quick local asynchronous task, and it returns a `mirai::mirai()` task object as the handle. `handle$data` returns the results if available, and `crew` uses `mirai::call_mirai()` to make sure any tasks submitted by `launch_worker()` have resolved before they are used by `terminate_worker()`.
+Here is what the launcher class looks like. We work with `processx` PIDs directly because they are light and easy to send to local async `mirai` daemons. The `self$async$eval()` function accepts R code, data, and packages to run a quick local asynchronous task, and it returns a `mirai::mirai()` task object as the handle. `crew` internally resolves launch tasks so the handles you accept in `terminate_worker()` are the exact objects returned from `async$eval()` in `launcher_worker()`.
 
 ```r
 async_launcher_class <- R6::R6Class(
@@ -329,8 +294,8 @@ async_launcher_class <- R6::R6Class(
     },
     terminate_worker = function(handle) {
       self$async$eval(
-        command = crew::crew_terminate_process(handle$data$pid),
-        data = list(pid = handle$data$pid)
+        command = crew::crew_terminate_process(handle$pid),
+        data = list(pid = handle$pid)
       )
     }
   )
@@ -357,12 +322,9 @@ crew_controller_async <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  crashes_error = 5L,
   processes = NULL # Number of local async daemons for worker launches etc.
 ) {
   client <- crew::crew_client(
-    name = name,
-    workers = workers,
     host = host,
     port = port,
     tls = tls,
@@ -371,7 +333,9 @@ crew_controller_async <- function(
   )
   launcher <- async_launcher_class$new(
     name = name,
+    workers = workers,
     seconds_interval = seconds_interval,
+    seconds_timeout = seconds_timeout,
     seconds_launch = seconds_launch,
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
@@ -453,7 +417,7 @@ monitor$daemons()
 #> integer(0)
 monitor$workers()
 #> [1] 57001 57002
-monitor$terminate(pid = c(57001, 57002))
+monitor$terminate(pids = c(57001, 57002))
 monitor$workers()
 #> integer(0)
 ```

@@ -12,22 +12,24 @@ crew_controller_local(
   tls = crew::crew_tls(),
   tls_enable = NULL,
   tls_config = NULL,
-  seconds_interval = 0.5,
+  seconds_interval = 1,
   seconds_timeout = 60,
   seconds_launch = 30,
   seconds_idle = 300,
   seconds_wall = Inf,
   seconds_exit = NULL,
-  retry_tasks = TRUE,
+  retry_tasks = NULL,
   tasks_max = Inf,
   tasks_timers = 0L,
   reset_globals = TRUE,
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
-  crashes_error = 5L,
+  crashes_error = NULL,
   launch_max = NULL,
   r_arguments = c("--no-save", "--no-restore"),
+  crashes_max = 5L,
+  backup = NULL,
   options_metrics = crew::crew_options_metrics(),
   options_local = crew::crew_options_local(),
   local_log_directory = NULL,
@@ -35,16 +37,17 @@ crew_controller_local(
 )
 }
 \arguments{
-\item{name}{Name of the client object. If \code{NULL}, a name is automatically
-generated.}
+\item{name}{Deprecated on 2025-01-14 (\code{crew} version 0.10.2.9002).}
 
-\item{workers}{Integer, maximum number of parallel workers to run.}
+\item{workers}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
 \item{host}{IP address of the \code{mirai} client to send and receive tasks.
 If \code{NULL}, the host defaults to the local IP address.}
 
 \item{port}{TCP port to listen for the workers. If \code{NULL},
-then an available ephemeral port is automatically chosen.}
+then an available ephemeral port is automatically chosen.
+Controllers running simultaneously on the same computer
+(as in a controller group) must not share the same TCP port.}
 
 \item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
 
@@ -86,12 +89,7 @@ See the \code{walltime} argument of \code{mirai::daemon()}.}
 \item{seconds_exit}{Deprecated on 2023-09-21 in version 0.5.0.9002.
 No longer necessary.}
 
-\item{retry_tasks}{\code{TRUE} to automatically retry a task in the event of
-an unexpected worker exit. \code{FALSE} to give up on the first exit and
-return a \code{mirai} error code (code number 19).
-\code{TRUE} (default) is recommended in most situations.
-Use \code{FALSE} for debugging purposes, e.g. to confirm that a task
-is causing a worker to run out of memory or crash in some other way.}
+\item{retry_tasks}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
 exiting. See the \code{maxtasks} argument of \code{mirai::daemon()}.
@@ -118,22 +116,48 @@ because packages sometimes rely on options they set at loading time.}
 \item{garbage_collection}{\code{TRUE} to run garbage collection between
 tasks, \code{FALSE} to skip.}
 
-\item{crashes_error}{Positive integer scalar. If a worker exits
-\code{crashes_error} times in a row without completing all its assigned
-tasks, then the launcher throws an informative error.
-The reason for \code{crashes_error}
-is to avoid an infinite loop where a task crashes a worker
-(through a segfault, maxing out memory, etc) but the worker always
-relaunches. To monitor the resources of \code{crew} workers,
-please see \url{https://wlandau.github.io/crew/articles/logging.html}.}
+\item{crashes_error}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
-\item{launch_max}{Deprecated on 2024-11-04 (version 0.10.1.9000).
+\item{launch_max}{Deprecated on 2024-11-04 (\code{crew} version 0.10.2.9002).
 Use \code{crashes_error} instead.}
 
 \item{r_arguments}{Optional character vector of command line arguments
 to pass to \code{Rscript} (non-Windows) or \code{Rscript.exe} (Windows)
 when starting a worker. Example:
 \code{r_arguments = c("--vanilla", "--max-connections=32")}.}
+
+\item{crashes_max}{In rare cases, a worker may exit unexpectedly
+before it completes its current task. If this happens, \code{pop()}
+returns a status of \code{"crash"} instead of \code{"error"} for the task.
+The controller does not automatically retry the task, but
+you can retry it manually by calling \code{push()} again and using the same
+task name as before. (However, \code{targets} pipelines running \code{crew}
+do automatically retry tasks whose workers crashed.)
+
+\code{crashes_max} is a non-negative integer, and it sets the maximum number of
+allowable consecutive crashes for a given task.
+If a task's worker crashes more than \code{crashes_max} times in a row,
+then \code{pop()} throws an error when it tries to return the results
+of the task.}
+
+\item{backup}{An optional \code{crew} controller object, or \code{NULL} to omit.
+If supplied, the \code{backup} controller runs any pushed tasks that have
+already reached \code{crashes_max} consecutive crashes.
+Using \code{backup}, you can create
+a chain of controllers with different levels of resources
+(such as worker memory and CPUs) so that a task that fails on
+one controller can retry using incrementally more powerful workers.
+All controllers in a backup chain should be part of the same
+controller group (see \code{\link[=crew_controller_group]{crew_controller_group()}}) so you can call the
+group-level \code{pop()} and \code{collect()} methods to make sure you get results
+regardless of which controller actually ended up running the task.
+
+Limitations of \code{backup}:
+* \code{crashes_max} needs to be positive in order for \code{backup} to be used.
+Otherwise, every task would always skip the current controller and
+go to \code{backup}.
+* \code{backup} cannot be a controller group. It must be an ordinary
+controller.}
 
 \item{options_metrics}{Either \code{NULL} to opt out of resource metric logging
 for workers, or an object from \code{\link[=crew_options_metrics]{crew_options_metrics()}} to enable

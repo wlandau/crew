@@ -36,10 +36,6 @@ Other client:
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{name}}{See \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{workers}}{See \code{\link[=crew_client]{crew_client()}}.}
-
 \item{\code{host}}{See \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{port}}{See \code{\link[=crew_client]{crew_client()}}.}
@@ -50,12 +46,14 @@ Other client:
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_client]{crew_client()}}.}
 
-\item{\code{retry_tasks}}{See \code{\link[=crew_client]{crew_client()}}}
-
 \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
 
 \item{\code{started}}{Whether the client is started.}
+
+\item{\code{url}}{Client websocket URL.}
+
+\item{\code{profile}}{Compute profile of the client.}
 
 \item{\code{client}}{Process ID of the local process running the client.}
 
@@ -72,7 +70,7 @@ condition variable.}
 \item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
 \item \href{#method-crew_class_client-condition}{\code{crew_class_client$condition()}}
 \item \href{#method-crew_class_client-resolved}{\code{crew_class_client$resolved()}}
-\item \href{#method-crew_class_client-summary}{\code{crew_class_client$summary()}}
+\item \href{#method-crew_class_client-status}{\code{crew_class_client$status()}}
 \item \href{#method-crew_class_client-pids}{\code{crew_class_client$pids()}}
 }
 }
@@ -83,14 +81,11 @@ condition variable.}
 \code{mirai} client constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_client$new(
-  name = NULL,
-  workers = NULL,
   host = NULL,
   port = NULL,
   tls = NULL,
   seconds_interval = NULL,
   seconds_timeout = NULL,
-  retry_tasks = NULL,
   relay = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -98,10 +93,6 @@ condition variable.}
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{workers}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
 \item{\code{host}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{port}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
@@ -111,8 +102,6 @@ condition variable.}
 \item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{seconds_timeout}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{retry_tasks}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{relay}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 }
@@ -205,30 +194,23 @@ The value of the \code{nanonext} condition variable.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-summary"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-summary}{}}}
-\subsection{Method \code{summary()}}{
-Show an informative worker log.
+\if{html}{\out{<a id="method-crew_class_client-status"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-status}{}}}
+\subsection{Method \code{status()}}{
+Internal function:
+return the \code{mirai} status of the compute profile.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$summary()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$status()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Should only be called by the launcher, never by the user.
+The returned \code{events} field changes on every call and must be
+interpreted by the launcher before it vanishes.
 }
 
 \subsection{Returns}{
-A \code{tibble} with information on the workers, or \code{NULL}
-if the client is not started. The \code{tibble} has 1 row
-per worker and the following columns:
-\itemize{
-\item \code{worker}: integer index of the worker.
-\item \code{online}: \code{TRUE} if the worker is online and connected to the
-websocket URL, \code{FALSE} otherwise.
-\item \code{instances}: integer, number of instances of \code{mirai} daemons
-(\code{crew} workers) that have connected to the websocket URL
-during the life cycle of the listener.
-\item \code{assigned}: number of tasks assigned to the current websocket URL.
-\item \code{complete}: number of tasks completed at the current websocket URL.
-\item \code{socket}: websocket URL. \code{crew} changes the token at the end of the
-URL path periodically as a safeguard while managing workers.
-}
+A list with status information.
 }
 }
 \if{html}{\out{<hr>}}

@@ -26,27 +26,23 @@ crew_test("custom launcher plugin based on system2()", {
     seconds_launch = 30,
     seconds_idle = Inf,
     seconds_wall = Inf,
-    retry_tasks = TRUE,
     tasks_max = Inf,
     tasks_timers = 0L,
     reset_globals = TRUE,
     reset_packages = FALSE,
     reset_options = FALSE,
-    garbage_collection = FALSE,
-    crashes_error = 5L
+    garbage_collection = FALSE
   ) {
     client <- crew::crew_client(
-      name = name,
-      workers = workers,
       host = host,
       port = port,
       tls = tls,
       seconds_interval = seconds_interval,
-      seconds_timeout = seconds_timeout,
-      retry_tasks = retry_tasks
+      seconds_timeout = seconds_timeout
     )
     launcher <- system2_launcher_class$new(
       name = name,
+      workers = workers,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout,
       seconds_launch = seconds_launch,
@@ -58,7 +54,6 @@ crew_test("custom launcher plugin based on system2()", {
       reset_packages = reset_packages,
       reset_options = reset_options,
       garbage_collection = garbage_collection,
-      crashes_error = crashes_error,
       tls = tls
     )
     controller <- crew::crew_controller(client = client, launcher = launcher)
@@ -76,33 +71,16 @@ crew_test("custom launcher plugin based on system2()", {
     controller$push(name = name, command = index, data = list(index = index))
   }
   # Wait for the tasks to complete.
-  controller$wait()
-  # Wait for the workers to idle out and exit on their own.
-  crew_retry(
-    ~all(controller$client$summary()$online == FALSE),
-    seconds_interval = 1,
-    seconds_timeout = 60
-  )
+  controller$wait(mode = "all")
   # Do the same for 100 more tasks.
   for (index in (seq_len(100L) + 100L)) {
     name <- paste0("task_", index)
     controller$push(name = name, command = index, data = list(index = index))
   }
-  controller$wait()
-  crew_retry(
-    ~all(controller$client$summary()$online == FALSE),
-    seconds_interval = 1,
-    seconds_timeout = 60
-  )
-  # Collect the results.
-  results <- NULL
-  while (!is.null(out <- controller$pop(scale = FALSE))) {
-    if (!is.null(out)) {
-      results <- dplyr::bind_rows(results, out)
-    }
-  }
-  # Check the results
-  testthat::expect_true(all(sort(unlist(results$result)) == seq_len(200L)))
+  controller$wait(mode = "all")
+  # Collect and check the results.
+  results <- sort(unlist(controller$collect()$result))
+  testthat::expect_true(all(results == seq_len(200L)))
   # Terminate the controller.
   controller$terminate()
 })

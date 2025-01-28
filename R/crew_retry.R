@@ -17,6 +17,8 @@
 #' @param message Character of length 1, optional error message
 #'   if the wait times out.
 #' @param envir Environment to evaluate `fun`.
+#' @param assertions `TRUE` to run assertions to check if arguments are
+#'   valid, `FALSE` otherwise. `TRUE` is recommended for users.
 #' @examples
 #' crew_retry(fun = function() TRUE)
 crew_retry <- function(
@@ -27,38 +29,43 @@ crew_retry <- function(
   max_tries = Inf,
   error = TRUE,
   message = character(0),
-  envir = parent.frame()
+  envir = parent.frame(),
+  assertions = TRUE
 ) {
   force(envir)
-  fun <- rlang::as_function(fun)
-  crew_assert(is.function(fun))
-  crew_assert(is.list(args))
-  if (length(args)) {
-    crew_assert(names(args), !is.null(.), nzchar(.))
-    crew_assert(identical(length(unique(names(args))), length(args)))
+  if (!is.function(fun)) {
+    fun <- rlang::as_function(fun)
   }
-  crew_assert(
-    seconds_interval,
-    is.numeric(.),
-    length(.) == 1L,
-    !anyNA(.),
-    . >= 0
-  )
-  crew_assert(
-    seconds_timeout,
-    is.numeric(.),
-    length(.) == 1L,
-    !anyNA(.),
-    . >= 0
-  )
-  crew_assert(
-    max_tries,
-    is.numeric(.),
-    length(.) == 1L,
-    !anyNA(.),
-    . >= 0
-  )
-  crew_assert(error, isTRUE(.) || isFALSE(.))
+  if (assertions) {
+    crew_assert(is.function(fun))
+    crew_assert(is.list(args))
+    if (length(args)) {
+      crew_assert(names(args), !is.null(.), nzchar(.))
+      crew_assert(identical(length(unique(names(args))), length(args)))
+    }
+    crew_assert(
+      seconds_interval,
+      is.numeric(.),
+      length(.) == 1L,
+      !anyNA(.),
+      . >= 0
+    )
+    crew_assert(
+      seconds_timeout,
+      is.numeric(.),
+      length(.) == 1L,
+      !anyNA(.),
+      . >= 0
+    )
+    crew_assert(
+      max_tries,
+      is.numeric(.),
+      length(.) == 1L,
+      !anyNA(.),
+      . >= 0
+    )
+    crew_assert(error, isTRUE(.) || isFALSE(.))
+  }
   milli_timeout <- 1000 * seconds_timeout
   tries <- 0L
   start <- nanonext::mclock()

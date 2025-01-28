@@ -7,12 +7,8 @@
 #'   for examples.
 #' @return `NULL` (invisibly)
 #' @param settings Named list of arguments to `mirai::daemon()`.
-#' @param launcher Character of length 1, name of the launcher.
-#' @param worker Positive integer of length 1, index of the worker.
-#'   This worker index remains the same even when the current instance
-#'   of the worker exits and a new instance launches.
-#' @param instance Character of length 1 to uniquely identify
-#'   the current instance of the worker.
+#' @param launcher Character string, name of the launcher
+#' @param worker Character of length 1 to uniquely identify the current worker.
 #' @param options_metrics Either `NULL` to opt out of resource metric logging
 #'   for workers, or an object from [crew_options_metrics()] to enable
 #'   and configure resource metric logging for workers.
@@ -23,13 +19,12 @@ crew_worker <- function(
   settings,
   launcher,
   worker,
-  instance,
   options_metrics = crew::crew_options_metrics()
 ) {
   autometric <- package_installed("autometric (>= 0.1.0)")
   if (autometric && !is.null(options_metrics$path)) {
     pids <- Sys.getpid()
-    names(pids) <- sprintf("crew_worker_%s_%s_%s", launcher, worker, instance)
+    names(pids) <- sprintf("crew_worker_%s_%s", launcher, worker)
     autometric::log_start(
       path = log_metrics_path(options_metrics$path, names(pids)),
       seconds = options_metrics$seconds_interval,
@@ -37,16 +32,18 @@ crew_worker <- function(
     )
     on.exit(autometric::log_stop())
   }
-  envvars <- c("CREW_LAUNCHER", "CREW_WORKER", "CREW_INSTANCE")
+  envvars <- c("CREW_CONTROLLER", "CREW_WORKER")
   previous <- Sys.getenv(envvars)
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)), add = TRUE)
-  Sys.setenv(
-    CREW_LAUNCHER = launcher,
-    CREW_WORKER = worker,
-    CREW_INSTANCE = instance
-  )
+  Sys.setenv(CREW_CONTROLLER = launcher, CREW_WORKER = worker)
   crew_message(utils::capture.output(print(utils::sessionInfo())))
-  do.call(what = mirai::daemon, args = settings)
+  code <- do.call(what = mirai::daemon, args = settings)
+  crew_message(
+    paste(
+      "crew worker finished normally with mirai message:",
+      mirai::nextcode(xc = code)
+    )
+  )
 }
 
 log_metrics_path <- function(path, name) {

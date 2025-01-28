@@ -15,10 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.1
 
-      - name: system dependencies
-        if: runner.os == 'Linux'
-        run: sudo apt-get install -y libmbedtls-dev
-
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
@@ -32,7 +28,7 @@ jobs:
         with:
           extra-packages: any::covr, local::.
           needs: coverage
-          cache-version: 2
+          cache-version: 3
 
       - name: Test coverage
         run: |
@@ -52,7 +48,7 @@ jobs:
 
       - name: Upload test results
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: coverage-test-failures
           path: ${{ runner.temp }}/package

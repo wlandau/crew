@@ -55,6 +55,10 @@ Other controller:
 \item{\code{popped}}{Number of tasks popped
 since the controller was started.}
 
+\item{\code{crashes_max}}{See \code{\link[=crew_controller]{crew_controller()}}.}
+
+\item{\code{backup}}{See \code{\link[=crew_controller]{crew_controller()}}.}
+
 \item{\code{error}}{Tibble of task results (with one result per row)
 from the last call to \verb{map(error = "stop)}.}
 
@@ -62,6 +66,8 @@ from the last call to \verb{map(error = "stop)}.}
 
 \item{\code{autoscaling}}{\code{TRUE} or \code{FALSE}, whether async \code{later}-based
 auto-scaling is currently running}
+
+\item{\code{queue}}{Queue of resolved unpopped/uncollected tasks.}
 }
 \if{html}{\out{</div>}}
 }
@@ -82,6 +88,7 @@ auto-scaling is currently running}
 \item \href{#method-crew_class_controller-scale}{\code{crew_class_controller$scale()}}
 \item \href{#method-crew_class_controller-autoscale}{\code{crew_class_controller$autoscale()}}
 \item \href{#method-crew_class_controller-descale}{\code{crew_class_controller$descale()}}
+\item \href{#method-crew_class_controller-crashes}{\code{crew_class_controller$crashes()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
 \item \href{#method-crew_class_controller-walk}{\code{crew_class_controller$walk()}}
 \item \href{#method-crew_class_controller-map}{\code{crew_class_controller$map()}}
@@ -103,7 +110,12 @@ auto-scaling is currently running}
 \subsection{Method \code{new()}}{
 \code{mirai} controller constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$new(client = NULL, launcher = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$new(
+  client = NULL,
+  launcher = NULL,
+  crashes_max = NULL,
+  backup = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -112,6 +124,10 @@ auto-scaling is currently running}
 \item{\code{client}}{Router object. See \code{\link[=crew_controller]{crew_controller()}}.}
 
 \item{\code{launcher}}{Launcher object. See \code{\link[=crew_controller]{crew_controller()}}.}
+
+\item{\code{crashes_max}}{See \code{\link[=crew_controller]{crew_controller()}}.}
+
+\item{\code{backup}}{See \code{\link[=crew_controller]{crew_controller()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -375,16 +391,7 @@ Launch one or more workers.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{Number of workers to try to launch. The actual
-number launched is capped so that no more than "\code{workers}"
-workers running at a given time, where "\code{workers}"
-is an argument of \code{\link[=crew_controller]{crew_controller()}}. The
-actual cap is the "\code{workers}" argument minus the number of connected
-workers minus the number of starting workers. A "connected"
-worker has an active websocket connection to the \code{mirai} client,
-and "starting" means that the worker was launched at most
-\code{seconds_start} seconds ago, where \code{seconds_start} is
-also an argument of \code{\link[=crew_controller]{crew_controller()}}.}
+\item{\code{n}}{Number of workers to launch.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -432,7 +439,9 @@ number of workers.
 }
 
 \subsection{Returns}{
-\code{NULL} (invisibly).
+Invisibly returns \code{TRUE} if there was any relevant
+auto-scaling activity (new worker launches or worker
+connection/disconnection events) (\code{FALSE} otherwise).
 }
 }
 \if{html}{\out{<hr>}}
@@ -485,6 +494,34 @@ compatible with the analogous method of controller groups.}
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-crashes"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-crashes}{}}}
+\subsection{Method \code{crashes()}}{
+Report the number of consecutive crashes of a task.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$crashes(name, controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character string, name of the task to check.}
+
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+See the \code{crashes_max} argument of \code{\link[=crew_controller]{crew_controller()}}.
+}
+
+\subsection{Returns}{
+Non-negative integer, number of consecutive times the task
+crashed.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-push"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-push}{}}}
 \subsection{Method \code{push()}}{
@@ -502,8 +539,8 @@ Push a task to the head of the task list.
   seconds_timeout = NULL,
   scale = TRUE,
   throttle = TRUE,
-  name = NA_character_,
-  save_command = FALSE,
+  name = NULL,
+  save_command = NULL,
   controller = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -570,13 +607,14 @@ within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
-\item{\code{name}}{Optional name of the task. Must be a character string
-or \code{NA}.}
+\item{\code{name}}{Character string, name of the task. If \code{NULL}, then
+a random name is generated automatically.
+The name of the task must not conflict with the name of another
+task pushed to the controller. Any previous task with the same name
+must first be popped before a new task with that name can be pushed.}
 
-\item{\code{save_command}}{Logical of length 1. If \code{TRUE}, the controller
-deparses the command and returns it with the output on \code{pop()}.
-If \code{FALSE} (default), the controller skips this step to
-increase speed.}
+\item{\code{save_command}}{Deprecated on 2025-01-22 (\code{crew} version
+0.10.2.9004) and no longer used.}
 
 \item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -609,7 +647,7 @@ waiting for any task to complete.
   library = NULL,
   seconds_timeout = NULL,
   names = NULL,
-  save_command = FALSE,
+  save_command = NULL,
   scale = TRUE,
   throttle = TRUE,
   controller = NULL
@@ -686,8 +724,8 @@ argument of \code{mirai::mirai()} (after converting to milliseconds).}
 \code{iterate} with names for the tasks. If \code{names} is supplied,
 then \code{iterate[[names]]} must be a character vector.}
 
-\item{\code{save_command}}{Logical of length 1, whether to store
-a text string version of the R command in the output.}
+\item{\code{save_command}}{Deprecated on 2025-01-22 (\code{crew} version
+0.10.2.9004). The command is always saved now.}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
 demand. See also the \code{throttle} argument.}
@@ -731,10 +769,10 @@ and return the results of all tasks.
   algorithm = NULL,
   packages = character(0),
   library = NULL,
-  seconds_interval = 0.5,
+  seconds_interval = NULL,
   seconds_timeout = NULL,
   names = NULL,
-  save_command = FALSE,
+  save_command = NULL,
   error = "stop",
   warnings = TRUE,
   verbose = interactive(),
@@ -807,21 +845,24 @@ See \code{vignette("parallel", package = "parallel")} for details.}
 \item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
 argument of \code{require()}.}
 
-\item{\code{seconds_interval}}{Number of seconds to wait between auto-scaling
-operations while waiting for tasks to complete.}
+\item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
+0.10.2.9003). Instead, the \code{seconds_interval} argument passed
+to \code{\link[=crew_controller_group]{crew_controller_group()}} is used as \code{seconds_max}
+in a \code{\link[=crew_throttle]{crew_throttle()}} object which orchestrates exponential
+backoff.}
 
 \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
 
-\item{\code{names}}{Optional character of length 1, name of the element of
+\item{\code{names}}{Optional character string, name of the element of
 \code{iterate} with names for the tasks. If \code{names} is supplied,
 then \code{iterate[[names]]} must be a character vector.}
 
-\item{\code{save_command}}{Logical of length 1, whether to store
-a text string version of the R command in the output.}
+\item{\code{save_command}}{Deprecated on 2025-01-22 (\code{crew} version
+0.10.2.9004). The command is always saved now.}
 
 \item{\code{error}}{Character of length 1, choice of action if
-a task has an error. Possible values:
+a task was not successful. Possible values:
 \itemize{
 \item \code{"stop"}: throw an error in the main R session instead of returning
 a value. In case of an error, the results from the last errored
@@ -832,6 +873,9 @@ you are finished troubleshooting.
 \item \code{"warn"}: throw a warning. This allows the return value with
 all the error messages and tracebacks to be generated.
 \item \code{"silent"}: do nothing special.
+NOTE: the only kinds of errors considered here are errors at the R
+level. A crashed tasks will return a status of \code{"crash"} in the output
+and not trigger an error in \code{map()} unless \code{crashes_max} is reached.
 }}
 
 \item{\code{warnings}}{Logical of length 1, whether to throw a warning in the
@@ -905,6 +949,9 @@ the popped task threw an error. Possible values:
 a value.
 \item \code{"warn"}: throw a warning.
 \item \code{NULL} or \code{"silent"}: do not react to errors.
+NOTE: the only kinds of errors considered here are errors at the R
+level. A crashed tasks will return a status of \code{"crash"} in the output
+and not trigger an error in \code{pop()} unless \code{crashes_max} is reached.
 }}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
@@ -921,10 +968,29 @@ will attempt to auto-scale workers as needed.
 If there is no task to collect, return \code{NULL}. Otherwise,
 return a one-row \code{tibble} with the following columns.
 \itemize{
-\item \code{name}: the task name if given.
-\item \code{command}: a character string with the R command if \code{save_command}
-was set to \code{TRUE} in \code{push()}.
+\item \code{name}: the task name.
+\item \code{command}: a character string with the R command.
 \item \code{result}: a list containing the return value of the R command.
+\code{NA} if the task failed.
+\item \code{status}: a character string. \code{"success"} if the task succeeded,
+\code{"cancel"} if the task was canceled with
+the \code{cancel()} controller method,
+\code{"crash"} if the worker running the task exited before
+it could complete the task, or \code{"error"}
+for any other kind of error.
+\item \code{error}: the first 2048 characters of the error message if
+the task status is not \code{"success"}, \code{NA} otherwise.
+Messages for crashes and cancellations are captured here
+alongside ordinary R-level errors.
+\item \code{code}: an integer code denoting the specific exit status:
+\code{0} for successful tasks, \code{-1} for tasks with an error in the R
+command of the task, and another positive integer with an NNG
+status code if there is an error at the NNG/\code{nanonext} level.
+\code{nanonext::nng_error()} can interpret these codes.
+\item \code{trace}: the first 2048 characters of the text of the traceback
+if the task threw an error, \code{NA} otherwise.
+\item \code{warnings}: the first 2048 characters. of the text of
+warning messages that the task may have generated, \code{NA} otherwise.
 \item \code{seconds}: number of seconds that the task ran.
 \item \code{seed}: the single integer originally supplied to \code{push()},
 \code{NA} otherwise. The pseudo-random number generator state
@@ -937,21 +1003,8 @@ originally supplied to \code{push()},
 just prior to the task can be restored using
 \code{set.seed(seed = seed, kind = algorithm)}, where \code{seed} and
 \code{algorithm} are part of this output.
-\item \code{status}: a character string. \code{"success"} if the task did not
-throw an error, \code{"cancel"} if the task was canceled with
-the \code{cancel()} controller method, or \code{"error"} if the task
-threw an error.
-\item \code{code}: an integer code denoting the specific exit status:
-\code{0} for successful tasks, \code{1} for tasks with an error in the R
-command of the task, and another positive integer with an NNG
-status code if there is an error at the NNG/\code{nanonext} level.
-\item \code{error}: the first 2048 characters of the error message if
-the task threw an error, \code{NA} otherwise.
-\item \code{trace}: the first 2048 characters of the text of the traceback
-if the task threw an error, \code{NA} otherwise.
-\item \code{warnings}: the first 2048 characters. of the text of
-warning messages that the task may have generated, \code{NA} otherwise.
-\item \code{launcher}: name of the \code{crew} launcher where the task ran.
+\item \code{controller}: name of the \code{crew} controller where the task ran.
+\item \code{worker}: name of the \code{crew} worker that ran the task.
 }
 }
 }
@@ -984,12 +1037,14 @@ overburdening the \code{mirai} dispatcher and other resources.}
 
 \item{\code{error}}{\code{NULL} or character of length 1, choice of action if
 the popped task threw an error. Possible values:
-\itemize{
-\item \code{"stop"}: throw an error in the main R session instead of returning
-a value.
-\item \code{"warn"}: throw a warning.
-\item \code{NULL} or \code{"silent"}: do not react to errors.
-}}
+* \code{"stop"}: throw an error in the main R session instead of
+returning a value.
+* \code{"warn"}: throw a warning.
+* \code{NULL} or \code{"silent"}: do not react to errors.
+NOTE: the only kinds of errors considered here are errors at the R
+level. A crashed tasks will return a status of \code{"crash"} in the output
+and not trigger an error in \code{collect()}
+unless \code{crashes_max} is reached.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -999,7 +1054,8 @@ compatible with the analogous method of controller groups.}
 \subsection{Returns}{
 A \code{tibble} of results and metadata of all resolved tasks,
 with one row per task. Returns \code{NULL} if there are no tasks
-to collect.
+to collect. See \code{pop()} for details on the columns of the
+returned \code{tibble}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1011,7 +1067,7 @@ pop or collect one or more tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$promise(
   mode = "one",
-  seconds_interval = 0.1,
+  seconds_interval = 1,
   scale = NULL,
   throttle = NULL,
   controllers = NULL
@@ -1092,7 +1148,7 @@ Wait for tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$wait(
   mode = "all",
-  seconds_interval = 0.5,
+  seconds_interval = NULL,
   seconds_timeout = Inf,
   scale = TRUE,
   throttle = TRUE,
@@ -1106,8 +1162,11 @@ Wait for tasks.
 \item{\code{mode}}{Character of length 1: \code{"all"} to wait for all tasks to
 complete, \code{"one"} to wait for a single task to complete.}
 
-\item{\code{seconds_interval}}{Number of seconds to interrupt the wait
-in order to scale up workers as needed.}
+\item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
+0.10.2.9003). Instead, the \code{seconds_interval} argument passed
+to \code{\link[=crew_controller_group]{crew_controller_group()}} is used as \code{seconds_max}
+in a \code{\link[=crew_throttle]{crew_throttle()}} object which orchestrates exponential
+backoff.}
 
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for tasks.}
 
@@ -1208,26 +1267,23 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A data frame of summary statistics on the workers and tasks.
-It has one row per worker websocket and the following columns:
+A data frame of summary statistics on the tasks
+that ran on a worker and then were returned by \code{pop()} or
+\code{collect()}.
+It has one row and the following columns:
 \itemize{
 \item \code{controller}: name of the controller.
-.  * \code{worker}: integer index of the worker.
-\item \code{tasks}: number of tasks which were completed by
-a worker at the websocket and then returned by calling
-\code{pop()} on the controller object.
-\item \code{seconds}: total number of runtime and seconds of
-all the tasks that ran on a worker connected to this websocket
-and then were retrieved by calling \code{pop()} on the controller
-object.
-\item \code{errors}: total number of tasks which ran on a worker
-at the website, encountered an error in R, and then retrieved
-with \code{pop()}.
-\item \code{warnings}: total number of tasks which ran on a worker
-at the website, encountered one or more warnings in R,
-and then retrieved with \code{pop()}. Note: \code{warnings}
-is actually the number of \emph{tasks}, not the number of warnings.
-(A task could throw more than one warning.
+\item \code{tasks}: number of tasks.
+\item \code{seconds}: total number of runtime in seconds.
+\item \code{success}: total number of successful tasks.
+\item \code{error}: total number of tasks with errors, either in the R code
+of the task or an NNG-level error that is not a cancellation
+or crash.
+\item \code{crash}: total number of crashed tasks (where the worker exited
+unexpectedly while it was running the task).
+\item \code{cancel}: total number of tasks interrupted with the \code{cancel()}
+controller method.
+\item \code{warnings}: total number of tasks with one or more warnings.
 }
 }
 }

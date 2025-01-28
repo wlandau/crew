@@ -35,7 +35,7 @@ crew_clean <- function(
   dispatchers = TRUE,
   workers = TRUE,
   user = ps::ps_username(),
-  seconds_interval = 0.5,
+  seconds_interval = 1,
   seconds_timeout = 60,
   verbose = TRUE
 ) {

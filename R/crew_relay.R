@@ -88,14 +88,16 @@ crew_class_relay <- R6::R6Class(
       invisible()
     },
     #' @description Wait until an unobserved task resolves or the timeout
-    #'   is reached.
+    #'   is reached. Use the throttle to determine the waiting time.
     #' @return `NULL` (invisibly).
-    #' @param seconds_timeout Positive numeric of length 1,
-    #'   Number of seconds to wait before timing out.
-    wait = function(seconds_timeout = 1e3) {
-      timeout <- seconds_timeout * 1000
+    #' @param throttle A [crew_throttle()] object to orchestrate the
+    #'   wait time intervals.
+    wait = function(throttle) {
       condition <- .subset2(self, "condition")
-      nanonext::until_(cv = condition, msec = timeout)
+      timeout <- .subset2(throttle, "seconds_interval") * 1000
+      signal <- nanonext::until_(cv = condition, msec = timeout)
+      .subset2(throttle, "update")(signal)
+      signal
     }
   )
 )

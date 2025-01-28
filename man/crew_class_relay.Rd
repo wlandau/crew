@@ -123,16 +123,16 @@ Set the condition variable to relay to.
 \if{latex}{\out{\hypertarget{method-crew_class_relay-wait}{}}}
 \subsection{Method \code{wait()}}{
 Wait until an unobserved task resolves or the timeout
-is reached.
+is reached. Use the throttle to determine the waiting time.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait(seconds_timeout = 1000)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_relay$wait(throttle)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{seconds_timeout}}{Positive numeric of length 1,
-Number of seconds to wait before timing out.}
+\item{\code{throttle}}{A \code{\link[=crew_throttle]{crew_throttle()}} object to orchestrate the
+wait time intervals.}
 }
 \if{html}{\out{</div>}}
 }

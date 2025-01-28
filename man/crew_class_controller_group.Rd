@@ -54,6 +54,9 @@ Other controller_group:
 
 \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
+
+\item{\code{throttle}}{\code{\link[=crew_throttle]{crew_throttle()}} object to orchestrate exponential
+backoff in the relay and auto-scaling.}
 }
 \if{html}{\out{</div>}}
 }
@@ -74,6 +77,7 @@ condition variable.}
 \item \href{#method-crew_class_controller_group-scale}{\code{crew_class_controller_group$scale()}}
 \item \href{#method-crew_class_controller_group-autoscale}{\code{crew_class_controller_group$autoscale()}}
 \item \href{#method-crew_class_controller_group-descale}{\code{crew_class_controller_group$descale()}}
+\item \href{#method-crew_class_controller_group-crashes}{\code{crew_class_controller_group$crashes()}}
 \item \href{#method-crew_class_controller_group-push}{\code{crew_class_controller_group$push()}}
 \item \href{#method-crew_class_controller_group-walk}{\code{crew_class_controller_group$walk()}}
 \item \href{#method-crew_class_controller_group-map}{\code{crew_class_controller_group$map()}}
@@ -94,7 +98,11 @@ condition variable.}
 \subsection{Method \code{new()}}{
 Multi-controller constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$new(controllers = NULL, relay = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$new(
+  controllers = NULL,
+  relay = NULL,
+  throttle = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -104,6 +112,9 @@ Multi-controller constructor.
 
 \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
+
+\item{\code{throttle}}{\code{\link[=crew_throttle]{crew_throttle()}} object to orchestrate exponential
+backoff in the relay and auto-scaling.}
 }
 \if{html}{\out{</div>}}
 }
@@ -407,7 +418,9 @@ See the \code{scale()} method in individual controller classes.
 }
 
 \subsection{Returns}{
-\code{NULL} (invisibly).
+Invisibly returns \code{TRUE} if there was any relevant
+auto-scaling activity (new worker launches or worker
+connection/disconnection events) (\code{FALSE} otherwise).
 }
 }
 \if{html}{\out{<hr>}}
@@ -423,8 +436,8 @@ every \code{controller$client$seconds_interval} seconds.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }
@@ -445,13 +458,42 @@ Terminate the auto-scaling loop started by
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-crashes"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-crashes}{}}}
+\subsection{Method \code{crashes()}}{
+Report the number of consecutive crashes of a task,
+summed over all selected controllers in the group.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$crashes(name, controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character string, name of the task to check.}
+
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+See the \code{crashes_max} argument of \code{\link[=crew_controller]{crew_controller()}}.
+}
+
+\subsection{Returns}{
+Number of consecutive crashes of the named task,
+summed over all the controllers in the group.
 }
 }
 \if{html}{\out{<hr>}}
@@ -472,8 +514,8 @@ Push a task to the head of the task list.
   seconds_timeout = NULL,
   scale = TRUE,
   throttle = TRUE,
-  name = NA_character_,
-  save_command = FALSE,
+  name = NULL,
+  save_command = NULL,
   controller = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -536,13 +578,16 @@ within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
-\item{\code{name}}{Optional name of the task. Replaced with a random name
-if \code{NULL} or in conflict with an existing name in the task list.}
+\item{\code{name}}{Character string, name of the task. If \code{NULL},
+a random name is automatically generated.
+The task name must not conflict with an existing task
+in the controller where it is submitted.
+To reuse the name, wait for the existing task
+to finish, then either \code{pop()} or \code{collect()} it
+to remove it from its controller.}
 
-\item{\code{save_command}}{Logical of length 1. If \code{TRUE}, the controller
-deparses the command and returns it with the output on \code{pop()}.
-If \code{FALSE} (default), the controller skips this step to
-increase speed.}
+\item{\code{save_command}}{Deprecated on 2025-01-22
+(\code{crew} version 0.10.2.9004).}
 
 \item{\code{controller}}{Character of length 1,
 name of the controller to submit the task.
@@ -577,7 +622,7 @@ waiting for any task to complete.
   library = NULL,
   seconds_timeout = NULL,
   names = NULL,
-  save_command = FALSE,
+  save_command = NULL,
   scale = TRUE,
   throttle = TRUE,
   controller = NULL
@@ -654,8 +699,8 @@ argument of \code{mirai::mirai()} (after converting to milliseconds).}
 \code{iterate} with names for the tasks. If \code{names} is supplied,
 then \code{iterate[[names]]} must be a character vector.}
 
-\item{\code{save_command}}{Logical of length 1, whether to store
-a text string version of the R command in the output.}
+\item{\code{save_command}}{Deprecated on 2025-01-22
+(\code{crew} version 0.10.2.9004).}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
 demand. See also the \code{throttle} argument.}
@@ -699,10 +744,10 @@ Apply a single command to multiple inputs.
   algorithm = NULL,
   packages = character(0),
   library = NULL,
-  seconds_interval = 0.5,
+  seconds_interval = NULL,
   seconds_timeout = NULL,
   names = NULL,
-  save_command = FALSE,
+  save_command = NULL,
   error = "stop",
   warnings = TRUE,
   verbose = interactive(),
@@ -775,8 +820,11 @@ See \code{vignette("parallel", package = "parallel")} for details.}
 \item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
 argument of \code{require()}.}
 
-\item{\code{seconds_interval}}{Number of seconds to wait between auto-scaling
-operations while waiting for tasks to complete.}
+\item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
+0.10.2.9003). Instead, the \code{seconds_interval} argument passed
+to \code{\link[=crew_controller_group]{crew_controller_group()}} is used as \code{seconds_max}
+in a \code{\link[=crew_throttle]{crew_throttle()}} object which orchestrates exponential
+backoff.}
 
 \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
@@ -785,8 +833,8 @@ argument of \code{mirai::mirai()} (after converting to milliseconds).}
 \code{iterate} with names for the tasks. If \code{names} is supplied,
 then \code{iterate[[names]]} must be a character vector.}
 
-\item{\code{save_command}}{Logical of length 1, whether to store
-a text string version of the R command in the output.}
+\item{\code{save_command}}{Deprecated on 2025-01-22
+(\code{crew} version 0.10.2.9004).}
 
 \item{\code{error}}{Character vector of length 1, choice of action if
 a task has an error. Possible values:
@@ -1018,7 +1066,7 @@ Wait for tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$wait(
   mode = "all",
-  seconds_interval = 0.5,
+  seconds_interval = NULL,
   seconds_timeout = Inf,
   scale = TRUE,
   throttle = TRUE,
@@ -1035,8 +1083,11 @@ a single task in a single controller to complete. In this scheme,
 the timeout limit is applied to each controller sequentially,
 and a timeout is treated the same as a completed controller.}
 
-\item{\code{seconds_interval}}{Number of seconds to interrupt the wait
-in order to scale up workers as needed.}
+\item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
+0.10.2.9003). Instead, the \code{seconds_interval} argument passed
+to \code{\link[=crew_controller_group]{crew_controller_group()}} is used as \code{seconds_max}
+in a \code{\link[=crew_throttle]{crew_throttle()}} object which orchestrates exponential
+backoff.}
 
 \item{\code{seconds_timeout}}{Timeout length in seconds waiting for
 results to become available.}

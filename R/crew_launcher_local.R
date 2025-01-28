@@ -15,16 +15,17 @@
 #' client <- crew_client()
 #' client$start()
 #' launcher <- crew_launcher_local(name = client$name)
-#' launcher$start(sockets = client$summary()$socket)
-#' launcher$launch(index = 1L)
-#' task <- mirai::mirai("result", .compute = client$name)
+#' launcher$start(url = client$url, profile = client$profile)
+#' launcher$launch()
+#' task <- mirai::mirai("result", .compute = client$profile)
 #' mirai::call_mirai_(task)
 #' task$data
 #' client$terminate()
 #' }
 crew_launcher_local <- function(
   name = NULL,
-  seconds_interval = 0.5,
+  workers = 1L,
+  seconds_interval = 1,
   seconds_timeout = 60,
   seconds_launch = 30,
   seconds_idle = Inf,
@@ -81,9 +82,9 @@ crew_launcher_local <- function(
     options_local$log_directory
   options_local$log_join <- local_log_join %|||%
     options_local$log_join
-  name <- as.character(name %|||% crew_random_name())
   launcher <- crew_class_launcher_local$new(
     name = name,
+    workers = workers,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
     seconds_launch = seconds_launch,
@@ -115,9 +116,9 @@ crew_launcher_local <- function(
 #' client <- crew_client()
 #' client$start()
 #' launcher <- crew_launcher_local(name = client$name)
-#' launcher$start(sockets = client$summary()$socket)
-#' launcher$launch(index = 1L)
-#' task <- mirai::mirai("result", .compute = client$name)
+#' launcher$start(url = client$url, profile = client$profile)
+#' launcher$launch()
+#' task <- mirai::mirai("result", .compute = client$profile)
 #' mirai::call_mirai_(task)
 #' task$data
 #' client$terminate()
@@ -165,6 +166,7 @@ crew_class_launcher_local <- R6::R6Class(
     #' @description Local launcher constructor.
     #' @return An `R6` object with the local launcher.
     #' @param name See [crew_launcher()].
+    #' @param workers See [crew_launcher()].
     #' @param seconds_interval See [crew_launcher()].
     #' @param seconds_timeout See [crew_launcher()].
     #' @param seconds_launch See [crew_launcher()].
@@ -188,15 +190,16 @@ crew_class_launcher_local <- R6::R6Class(
     #' client <- crew_client()
     #' client$start()
     #' launcher <- crew_launcher_local(name = client$name)
-    #' launcher$start(sockets = client$summary()$socket)
-    #' launcher$launch(index = 1L)
-    #' task <- mirai::mirai("result", .compute = client$name)
+    #' launcher$start(url = client$url, profile = client$profile)
+    #' launcher$launch()
+    #' task <- mirai::mirai("result", .compute = client$profile)
     #' mirai::call_mirai_(task)
     #' task$data
     #' client$terminate()
     #' }
     initialize = function(
       name = NULL,
+      workers = NULL,
       seconds_interval = NULL,
       seconds_timeout = NULL,
       seconds_launch = NULL,
@@ -218,6 +221,7 @@ crew_class_launcher_local <- R6::R6Class(
     ) {
       super$initialize(
         name = name,
+        workers = workers,
         seconds_interval = seconds_interval,
         seconds_timeout = seconds_timeout,
         seconds_launch = seconds_launch,
@@ -255,16 +259,11 @@ crew_class_launcher_local <- R6::R6Class(
     #' @param call Character of length 1 with a namespaced call to
     #'   [crew_worker()] which will run in the worker and accept tasks.
     #' @param name Character of length 1 with a long informative worker name
-    #'   which contains the `launcher`, `worker`, and `instance` arguments
+    #'   which contains the `launcher` and `worker` arguments
     #'   described below.
     #' @param launcher Character of length 1, name of the launcher.
-    #' @param worker Positive integer of length 1, index of the worker.
-    #'   This worker index remains the same even when the current instance
-    #'   of the worker exits and a new instance launches.
-    #'   It is always between 1 and the maximum number of concurrent workers.
-    #' @param instance Character of length 1 to uniquely identify
-    #'   the current instance of the worker a the index in the launcher.
-    launch_worker = function(call, name, launcher, worker, instance) {
+    #' @param worker Character string, name of the worker within the launcher.
+    launch_worker = function(call, name, launcher, worker) {
       bin <- if_any(
         tolower(Sys.info()[["sysname"]]) == "windows",
         "Rscript.exe",

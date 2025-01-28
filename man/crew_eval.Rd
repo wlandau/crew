@@ -6,8 +6,7 @@
 \usage{
 crew_eval(
   command,
-  name = NA_character_,
-  string = NA_character_,
+  name,
   data = list(),
   globals = list(),
   seed = NULL,
@@ -20,8 +19,6 @@ crew_eval(
 \item{command}{Language object with R code to run.}
 
 \item{name}{Character of length 1, name of the task.}
-
-\item{string}{Character of length 1, string representation of the command.}
 
 \item{data}{Named list of local data objects in the evaluation environment.}
 
@@ -65,7 +62,7 @@ The random number generator seed, \code{globals}, and global options
 are restored to their original values on exit.
 }
 \examples{
-crew_eval(quote(1 + 1))
+crew_eval(quote(1 + 1), name = "task_name")
 }
 \seealso{
 Other utility: 

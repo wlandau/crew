@@ -3,6 +3,7 @@
 #' @family controller_group
 #' @description Create an `R6` object to submit tasks and launch workers
 #'   through multiple `crew` controllers.
+#' @inheritParams crew_client
 #' @param ... `R6` controller objects or lists of `R6` controller objects.
 #'   Nested lists are allowed, but each element must be a control object
 #'   or another list.
@@ -20,7 +21,7 @@
 #' group$pop()
 #' group$terminate()
 #' }
-crew_controller_group <- function(...) {
+crew_controller_group <- function(..., seconds_interval = 1) {
   controllers <- unlist(list(...), recursive = TRUE)
   crew_assert(
     length(controllers) > 0L,
@@ -30,7 +31,7 @@ crew_controller_group <- function(...) {
     map_lgl(controllers, inherits, what = "crew_class_controller"),
     message = "Found invalid controllers while creating a controller group."
   )
-  names(controllers) <- map_chr(controllers, ~.x$client$name)
+  names(controllers) <- map_chr(controllers, ~.x$launcher$name)
   walk(
     names(controllers),
     ~crew_assert(
@@ -45,12 +46,14 @@ crew_controller_group <- function(...) {
   )
   relay <- crew_relay()
   relay$start()
+  throttle <- crew_throttle(seconds_max = seconds_interval)
   for (controller in controllers) {
     controller$client$relay$set_to(relay$condition)
   }
   out <- crew_class_controller_group$new(
     controllers = controllers,
-    relay = relay
+    relay = relay,
+    throttle = throttle
   )
   out$validate()
   out
@@ -81,6 +84,7 @@ crew_class_controller_group <- R6::R6Class(
   private = list(
     .controllers = NULL,
     .relay = NULL,
+    .throttle = NULL,
     .select_controllers = function(names) {
       if (is.null(names)) {
         return(private$.controllers)
@@ -115,56 +119,68 @@ crew_class_controller_group <- R6::R6Class(
     },
     .wait_one = function(
       controllers,
-      seconds_interval,
+      control,
       seconds_timeout,
       scale,
       throttle
     ) {
-      if (sum(map_int(controllers, ~length(.x$tasks))) < 1L) {
+      if (sum(map_int(control, ~length(.x$tasks))) < 1L) {
         return(FALSE)
       }
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
+      iterate <- function() {
+        if (scale) {
+          self$scale(throttle = throttle, controllers = controllers)
+        }
+        for (controller in control) {
+          if (controller$unpopped() > 0L) {
+            envir$result <- TRUE
+            return(TRUE)
+          }
+        }
+        private$.relay$wait(throttle = private$.throttle)
+        FALSE
+      }
       crew_retry(
-        fun = ~{
-          if (scale) {
-            walk(controllers, ~.x$scale(throttle = throttle))
-          }
-          for (controller in controllers) {
-            if (controller$unpopped() > 0L) {
-              envir$result <- TRUE
-              return(TRUE)
-            }
-          }
-          private$.relay$wait(seconds_timeout = seconds_interval)
-          FALSE
-        },
+        fun = iterate,
         seconds_interval = 0,
         seconds_timeout = seconds_timeout,
-        error = FALSE
+        error = FALSE,
+        assertions = FALSE
       )
       envir$result
     },
     .wait_all = function(
       controllers,
-      seconds_interval,
+      control,
       seconds_timeout,
       scale,
       throttle
     ) {
-      for (controller in controllers) {
-        out <- controller$wait(
-          mode = "all",
-          seconds_interval = seconds_interval,
-          seconds_timeout = seconds_timeout,
-          scale = scale,
-          throttle = throttle
-        )
-        if (!out) {
-          return(FALSE)
-        }
+      if (sum(map_int(control, ~length(.x$tasks))) < 1L) {
+        return(TRUE)
       }
-      TRUE
+      envir <- new.env(parent = emptyenv())
+      envir$result <- FALSE
+      iterate <- function() {
+        if (scale) {
+          self$scale(throttle = throttle, controllers = controllers)
+        }
+        envir$result <- sum(map_int(control, ~.x$unresolved())) < 1L
+        if (!envir$result) {
+          private$.relay$wait(throttle = private$.throttle)
+        }
+        envir$result
+      }
+      crew_retry(
+        fun = iterate,
+        seconds_interval = 0,
+        seconds_timeout = seconds_timeout,
+        error = FALSE,
+        assertions = FALSE
+      )
+      envir$result
     }
   ),
   active = list(
@@ -176,6 +192,11 @@ crew_class_controller_group <- R6::R6Class(
     #'   condition variable.
     relay = function() {
       .subset2(private, ".relay")
+    },
+    #' @field throttle [crew_throttle()] object to orchestrate exponential
+    #'  backoff in the relay and auto-scaling.
+    throttle = function() {
+      .subset2(private, ".throttle")
     }
   ),
   public = list(
@@ -184,6 +205,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @param controllers List of `R6` controller objects.
     #' @param relay Relay object for event-driven programming on a downstream
     #'   condition variable.
+    #' @param throttle [crew_throttle()] object to orchestrate exponential
+    #'  backoff in the relay and auto-scaling.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' persistent <- crew_controller_local(name = "persistent")
@@ -200,10 +223,12 @@ crew_class_controller_group <- R6::R6Class(
     #' }
     initialize = function(
       controllers = NULL,
-      relay = NULL
+      relay = NULL,
+      throttle = NULL
     ) {
       private$.controllers <- controllers
       private$.relay <- relay
+      private$.throttle <- throttle
       invisible()
     },
     #' @description Validate the client.
@@ -213,11 +238,12 @@ crew_class_controller_group <- R6::R6Class(
         map_lgl(private$.controllers, ~inherits(.x, "crew_class_controller")),
         message = "All objects in a controller group must be controllers."
       )
-      out <- unname(map_chr(private$.controllers, ~.x$client$name))
+      out <- unname(map_chr(private$.controllers, ~.x$launcher$name))
       exp <- names(private$.controllers)
       crew_assert(identical(out, exp), message = "bad controller names")
       crew_assert(inherits(private$.relay, "crew_class_relay"))
       private$.relay$validate()
+      private$.throttle$validate()
       invisible()
     },
     #' @description See if the controllers are empty.
@@ -319,7 +345,9 @@ crew_class_controller_group <- R6::R6Class(
     #' @description Automatically scale up the number of workers if needed
     #'   in one or more controller objects.
     #' @details See the `scale()` method in individual controller classes.
-    #' @return `NULL` (invisibly).
+    #' @return Invisibly returns `TRUE` if there was any relevant
+    #'   auto-scaling activity (new worker launches or worker
+    #'   connection/disconnection events) (`FALSE` otherwise).
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
@@ -328,12 +356,17 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     scale = function(throttle = TRUE, controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      walk(control, ~.x$scale(throttle = throttle))
+      if (throttle && !private$.throttle$poll()) {
+        return(invisible())
+      }
+      activity <- any(map_lgl(control, ~.x$scale(throttle = FALSE)))
+      private$.throttle$update(activity = activity)
+      invisible(activity)
     },
     #' @description Run worker auto-scaling in a private `later` loop
     #'   every `controller$client$seconds_interval` seconds.
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
     #' @return `NULL` (invisibly).
     autoscale = function(controllers = NULL) {
       # Tested in tests/interactive/test-promises.R
@@ -344,12 +377,24 @@ crew_class_controller_group <- R6::R6Class(
     },
     #' @description Terminate the auto-scaling loop started by
     #'   `controller$autoscale()`.
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
     #' @return `NULL` (invisibly).
     descale = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
       walk(control, ~.x$descale())
+    },
+    #' @description Report the number of consecutive crashes of a task,
+    #'   summed over all selected controllers in the group.
+    #' @details See the `crashes_max` argument of [crew_controller()].
+    #' @return Number of consecutive crashes of the named task,
+    #'   summed over all the controllers in the group.
+    #' @param name Character string, name of the task to check.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    crashes = function(name, controllers = NULL) {
+      control <- private$.select_controllers(controllers)
+      sum(map_int(control, ~.x$crashes(name = name)))
     },
     #' @description Push a task to the head of the task list.
     #' @return Invisibly return the `mirai` object of the pushed task.
@@ -399,12 +444,15 @@ crew_class_controller_group <- R6::R6Class(
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
-    #' @param name Optional name of the task. Replaced with a random name
-    #'   if `NULL` or in conflict with an existing name in the task list.
-    #' @param save_command Logical of length 1. If `TRUE`, the controller
-    #'   deparses the command and returns it with the output on `pop()`.
-    #'   If `FALSE` (default), the controller skips this step to
-    #'   increase speed.
+    #' @param name Character string, name of the task. If `NULL`,
+    #'   a random name is automatically generated.
+    #'   The task name must not conflict with an existing task
+    #'   in the controller where it is submitted.
+    #'   To reuse the name, wait for the existing task
+    #'   to finish, then either `pop()` or `collect()` it
+    #'   to remove it from its controller.
+    #' @param save_command Deprecated on 2025-01-22
+    #'   (`crew` version 0.10.2.9004).
     #' @param controller Character of length 1,
     #'   name of the controller to submit the task.
     #'   If `NULL`, the controller defaults to the
@@ -421,8 +469,8 @@ crew_class_controller_group <- R6::R6Class(
       seconds_timeout = NULL,
       scale = TRUE,
       throttle = TRUE,
-      name = NA_character_,
-      save_command = FALSE,
+      name = NULL,
+      save_command = NULL,
       controller = NULL
     ) {
       if (substitute) {
@@ -444,8 +492,7 @@ crew_class_controller_group <- R6::R6Class(
         seconds_timeout = seconds_timeout,
         scale = scale,
         throttle = throttle,
-        name = name,
-        save_command = save_command
+        name = name
       )
     },
     #' @description Apply a single command to multiple inputs,
@@ -512,8 +559,8 @@ crew_class_controller_group <- R6::R6Class(
     #' @param names Optional character of length 1, name of the element of
     #'   `iterate` with names for the tasks. If `names` is supplied,
     #'   then `iterate[[names]]` must be a character vector.
-    #' @param save_command Logical of length 1, whether to store
-    #'   a text string version of the R command in the output.
+    #' @param save_command Deprecated on 2025-01-22
+    #'   (`crew` version 0.10.2.9004).
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
@@ -536,7 +583,7 @@ crew_class_controller_group <- R6::R6Class(
       library = NULL,
       seconds_timeout = NULL,
       names = NULL,
-      save_command = FALSE,
+      save_command = NULL,
       scale = TRUE,
       throttle = TRUE,
       controller = NULL
@@ -558,7 +605,6 @@ crew_class_controller_group <- R6::R6Class(
         library = library,
         seconds_timeout = seconds_timeout,
         names = names,
-        save_command = save_command,
         scale = scale,
         throttle = throttle
       )
@@ -619,15 +665,18 @@ crew_class_controller_group <- R6::R6Class(
     #' @param packages Character vector of packages to load for the task.
     #' @param library Library path to load the packages. See the `lib.loc`
     #'   argument of `require()`.
-    #' @param seconds_interval Number of seconds to wait between auto-scaling
-    #'   operations while waiting for tasks to complete.
+    #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
+    #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
+    #'   to [crew_controller_group()] is used as `seconds_max`
+    #'   in a [crew_throttle()] object which orchestrates exponential
+    #'   backoff.
     #' @param seconds_timeout Optional task timeout passed to the `.timeout`
     #'   argument of `mirai::mirai()` (after converting to milliseconds).
     #' @param names Optional character of length 1, name of the element of
     #'   `iterate` with names for the tasks. If `names` is supplied,
     #'   then `iterate[[names]]` must be a character vector.
-    #' @param save_command Logical of length 1, whether to store
-    #'   a text string version of the R command in the output.
+    #' @param save_command Deprecated on 2025-01-22
+    #'   (`crew` version 0.10.2.9004).
     #' @param error Character vector of length 1, choice of action if
     #'   a task has an error. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
@@ -662,10 +711,10 @@ crew_class_controller_group <- R6::R6Class(
       algorithm = NULL,
       packages = character(0),
       library = NULL,
-      seconds_interval = 0.5,
+      seconds_interval = NULL,
       seconds_timeout = NULL,
       names = NULL,
-      save_command = FALSE,
+      save_command = NULL,
       error = "stop",
       warnings = TRUE,
       verbose = interactive(),
@@ -673,6 +722,14 @@ crew_class_controller_group <- R6::R6Class(
       throttle = TRUE,
       controller = NULL
     ) {
+      crew_deprecate(
+        name = "save_command",
+        date = "2025-01-22",
+        version = "0.10.2.9004",
+        alternative = "none (no longer used)",
+        condition = "warning",
+        value = save_command
+      )
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
       if (substitute) {
         command <- substitute(command)
@@ -688,10 +745,8 @@ crew_class_controller_group <- R6::R6Class(
         algorithm = algorithm,
         packages = packages,
         library = library,
-        seconds_interval = seconds_interval,
         seconds_timeout = seconds_timeout,
         names = names,
-        save_command = save_command,
         error = error,
         warnings = warnings,
         verbose = verbose,
@@ -868,8 +923,11 @@ crew_class_controller_group <- R6::R6Class(
     #'   a single task in a single controller to complete. In this scheme,
     #'   the timeout limit is applied to each controller sequentially,
     #'   and a timeout is treated the same as a completed controller.
-    #' @param seconds_interval Number of seconds to interrupt the wait
-    #'   in order to scale up workers as needed.
+    #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
+    #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
+    #'   to [crew_controller_group()] is used as `seconds_max`
+    #'   in a [crew_throttle()] object which orchestrates exponential
+    #'   backoff.
     #' @param seconds_timeout Timeout length in seconds waiting for
     #'   results to become available.
     #' @param scale Logical of length 1, whether to call `scale_later()`
@@ -884,27 +942,35 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     wait = function(
       mode = "all",
-      seconds_interval = 0.5,
+      seconds_interval = NULL,
       seconds_timeout = Inf,
       scale = TRUE,
       throttle = TRUE,
       controllers = NULL
     ) {
+      crew_deprecate(
+        name = "seconds_interval",
+        date = "2025-01-17",
+        version = "0.10.2.9003",
+        alternative = "none (no longer used)",
+        condition = "warning",
+        value = seconds_interval
+      )
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
       control <- private$.select_controllers(controllers)
       out <- if_any(
         identical(mode, "one"),
         private$.wait_one(
-          controllers = control,
-          seconds_interval = seconds_interval,
+          controllers = controllers,
+          control = control,
           seconds_timeout = seconds_timeout,
           scale = scale,
           throttle = throttle
         ),
         private$.wait_all(
-          controllers = control,
-          seconds_interval = seconds_interval,
+          controllers = controllers,
+          control = control,
           seconds_timeout = seconds_timeout,
           scale = scale,
           throttle = throttle

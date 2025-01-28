@@ -16,11 +16,11 @@ crew_test("heavy task load for map()", {
       error = "silent",
       warnings = FALSE
     )
-    testthat::expect_equal(length(controller$list), 0L)
+    testthat::expect_equal(length(controller$tasks), 0L)
     sum <- controller$summary()
-    testthat::expect_equal(sum(sum$errors), index * 1000L)
-    testthat::expect_equal(sum(sum$warnings), index * 3000L)
-    name <- as.integer(out$name)
+    testthat::expect_equal(sum(sum$error), index * 1000L)
+    testthat::expect_equal(sum(sum$warning), index * 3000L)
+    name <- as.integer(gsub("^.*_", "", out$name))
     testthat::expect_equal(name, seq_len(6000L))
     testthat::expect_true(all((name <= 1000L) == !is.na(out$error)))
     testthat::expect_true(
@@ -50,9 +50,9 @@ crew_test("map() auto-scales", {
   )
   testthat::expect_equal(length(controller$list), 0L)
   sum <- controller$summary()
-  testthat::expect_equal(sum(sum$errors), 100L)
-  testthat::expect_equal(sum(sum$warnings), 300L)
-  name <- as.integer(out$name)
+  testthat::expect_equal(sum(sum$error), 100L)
+  testthat::expect_equal(sum(sum$warning), 300L)
+  name <- as.integer(gsub("^.*_", "", out$name))
   testthat::expect_equal(name, seq_len(600L))
   testthat::expect_true(all((name <= 100L) == !is.na(out$error)))
   testthat::expect_true(

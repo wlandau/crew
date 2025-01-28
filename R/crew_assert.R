@@ -27,7 +27,11 @@ crew_assert <- function(
   }
   conditions <- lapply(
     expr,
-    function(expr) all(eval(expr, envir = list(. = value), enclos = envir))
+    function(expr) {
+      out <- all(eval(expr, envir = list(. = value), enclos = envir))
+      out[is.na(out)] <- FALSE
+      out
+    }
   )
   if (!all(unlist(conditions))) {
     chr_expr <- lapply(expr, function(x) sprintf("all(%s)", deparse(x)))
@@ -76,8 +80,9 @@ crew_deprecate <- function(
   skip_cran = FALSE,
   frequency = "always"
 ) {
-  on_cran <- !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false")))
-  if (is.null(value) || (skip_cran && on_cran)) {
+  skip <- is.null(value) ||
+    (skip_cran && !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false"))))
+  if (skip) {
     return(invisible())
   }
   message <- sprintf(

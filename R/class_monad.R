@@ -2,33 +2,31 @@ monad_init <- function(
   name = NA_character_,
   command = NA_character_,
   result = NA,
+  status = NA_character_,
+  error = NA_character_,
+  code = NA_integer_,
+  trace = NA_character_,
+  warnings = NA_character_,
   seconds = NA_real_,
   seed = NA_integer_,
   algorithm = NA_character_,
-  status = NA_character_,
-  code = NA_integer_,
-  error = NA_character_,
-  trace = NA_character_,
-  warnings = NA_character_,
-  launcher = NA_character_,
-  worker = NA_integer_,
-  instance = NA_character_
+  controller = NA_character_,
+  worker = NA_character_
 ) {
   out <- monad_new(
     name = name,
     command = command,
     result = list(result),
+    status = status,
+    error = error,
+    code = code,
+    trace = trace,
+    warnings = warnings,
     seconds = seconds,
     seed = seed,
     algorithm = algorithm,
-    status = status,
-    code = code,
-    error = error,
-    trace = trace,
-    warnings = warnings,
-    launcher = launcher,
-    worker = worker,
-    instance = instance
+    controller = controller,
+    worker = worker
   )
   out
 }
@@ -37,38 +35,38 @@ monad_new <- function(
   name = NULL,
   command = NULL,
   result = NULL,
+  status = NULL,
+  error = NULL,
+  code = NULL,
+  trace = NULL,
+  warnings = NULL,
   seconds = NULL,
   seed = NULL,
   algorithm = NULL,
-  status = NULL,
-  code = NULL,
-  error = NULL,
-  trace = NULL,
-  warnings = NULL,
-  launcher = NULL,
-  worker = NULL,
-  instance = NULL
+  controller = NULL,
+  worker = NULL
 ) {
-  list(
-    name = name,
-    command = command,
-    result = result,
-    seconds = seconds,
-    seed = seed,
-    algorithm = algorithm,
-    status = status,
-    code = code,
-    error = error,
-    trace = trace,
-    warnings = warnings,
-    launcher = launcher,
-    worker = worker,
-    instance = instance
+  as_monad_tibble(
+    list(
+      name = name,
+      command = command,
+      result = result,
+      status = status,
+      error = error,
+      code = code,
+      trace = trace,
+      warnings = warnings,
+      seconds = seconds,
+      seed = seed,
+      algorithm = algorithm,
+      controller = controller,
+      worker = worker
+    )
   )
 }
 
 monad_validate <- function(monad) {
-  crew_assert(is.list(monad))
+  crew_assert(tibble::is_tibble(monad))
   crew_assert(identical(names(monad), names(formals(monad_new))))
   cols <- c(
     "name",
@@ -78,8 +76,8 @@ monad_validate <- function(monad) {
     "error",
     "trace",
     "warnings",
-    "launcher",
-    "instance"
+    "controller",
+    "worker"
   )
   for (col in cols) {
     crew_assert(monad[[col]], is.character(.), length(.) == 1L)
@@ -87,42 +85,52 @@ monad_validate <- function(monad) {
   for (col in c("seconds", "seed")) {
     crew_assert(monad[[col]], is.numeric(.), length(.) == 1L)
   }
-  for (col in c("code", "worker")) {
+  for (col in c("code")) {
     crew_assert(monad[[col]], is.integer(.), length(.) == 1L)
   }
   crew_assert(monad$result, is.list(.), length(.) == 1L)
   invisible()
 }
 
-as_monad <- function(task, name) {
+as_monad <- function(task, name, controller) {
   out <- .subset2(task, "data")
-  if (!is.list(out)) {
-    out <- monad_init(
-      name = name,
-      status = if_any(
-        identical(as.integer(out), 20L),
-        "canceled",
-        "error"
-      ),
-      code = as.integer(out),
-      error = paste(
-        utils::capture.output(print(out), type = "output"),
-        collapse = "\n"
-      )
-    )
+  if (is.list(out)) {
+    return(out)
   }
-  monad_tibble(out)
+  if (!is.integer(out) || length(out) != 1L || anyNA(out)) {
+    status <- "error"
+    error <- as.character(out)
+    code <- -1L
+  } else {
+    code <- as.integer(out)
+    error <- nanonext::nng_error(code)
+    if (identical(code, code_crash)) {
+      status <- "crash"
+    } else if (identical(code, code_cancel)) {
+      status <- "cancel"
+    }
+  }
+  monad_init(
+    name = name,
+    status = status,
+    error = error,
+    code = code,
+    controller = controller
+  )
 }
 
-monad_tibble <- function(monad) {
-  attributes(monad) <- list(
+as_monad_tibble <- function(object) {
+  attributes(object) <- list(
     names = monad_names,
     class = c("tbl_df", "tbl", "data.frame"),
     row.names = monad_rownames
   )
-  monad
+  object
 }
 
 monad_names <- names(formals(monad_new))
 monad_names_n <- length(monad_names)
 monad_rownames <- .set_row_names(1L)
+
+code_crash <- 19L
+code_cancel <- 20L

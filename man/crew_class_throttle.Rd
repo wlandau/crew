@@ -10,7 +10,7 @@
 See \code{\link[=crew_throttle]{crew_throttle()}}.
 }
 \examples{
-throttle <- crew_throttle(seconds_interval = 0.5)
+throttle <- crew_throttle(seconds_max = 1)
 throttle$poll()
 throttle$poll()
 
@@ -18,7 +18,7 @@ throttle$poll()
 ## Method `crew_class_throttle$new`
 ## ------------------------------------------------
 
-throttle <- crew_throttle(seconds_interval = 0.5)
+throttle <- crew_throttle(seconds_max = 1)
 throttle$poll()
 throttle$poll()
 }
@@ -30,8 +30,15 @@ Other throttle:
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{seconds_interval}}{Positive numeric of length 1,
-throttling interval in seconds.}
+\item{\code{seconds_max}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+
+\item{\code{seconds_min}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+
+\item{\code{seconds_start}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+
+\item{\code{base}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+
+\item{\code{seconds_interval}}{Current wait time interval.}
 
 \item{\code{polled}}{Positive numeric of length 1,
 millisecond timestamp of the last time \code{poll()} returned \code{TRUE}.
@@ -45,7 +52,10 @@ millisecond timestamp of the last time \code{poll()} returned \code{TRUE}.
 \item \href{#method-crew_class_throttle-new}{\code{crew_class_throttle$new()}}
 \item \href{#method-crew_class_throttle-validate}{\code{crew_class_throttle$validate()}}
 \item \href{#method-crew_class_throttle-poll}{\code{crew_class_throttle$poll()}}
+\item \href{#method-crew_class_throttle-accelerate}{\code{crew_class_throttle$accelerate()}}
+\item \href{#method-crew_class_throttle-decelerate}{\code{crew_class_throttle$decelerate()}}
 \item \href{#method-crew_class_throttle-reset}{\code{crew_class_throttle$reset()}}
+\item \href{#method-crew_class_throttle-update}{\code{crew_class_throttle$update()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -54,13 +64,24 @@ millisecond timestamp of the last time \code{poll()} returned \code{TRUE}.
 \subsection{Method \code{new()}}{
 Throttle constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$new(seconds_interval = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$new(
+  seconds_max = NULL,
+  seconds_min = NULL,
+  seconds_start = NULL,
+  base = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{seconds_interval}}{Throttling interval in seconds.}
+\item{\code{seconds_max}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+
+\item{\code{seconds_min}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+
+\item{\code{seconds_start}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+
+\item{\code{base}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -69,7 +90,7 @@ An \code{R6} object with throttle configuration.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{throttle <- crew_throttle(seconds_interval = 0.5)
+\preformatted{throttle <- crew_throttle(seconds_max = 1)
 throttle$poll()
 throttle$poll()
 }
@@ -102,7 +123,33 @@ Poll the throttler.
 
 \subsection{Returns}{
 \code{TRUE} if \code{poll()} did not return \code{TRUE} in the last
-\code{seconds_interval} seconds, \code{FALSE} otherwise.
+\code{max} seconds, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_throttle-accelerate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_throttle-accelerate}{}}}
+\subsection{Method \code{accelerate()}}{
+Divide \code{seconds_interval} by \code{base}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$accelerate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly). Called for its side effects.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_throttle-decelerate"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_throttle-decelerate}{}}}
+\subsection{Method \code{decelerate()}}{
+Multiply \code{seconds_interval} by \code{base}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$decelerate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly). Called for its side effects.
 }
 }
 \if{html}{\out{<hr>}}
@@ -110,11 +157,32 @@ Poll the throttler.
 \if{latex}{\out{\hypertarget{method-crew_class_throttle-reset}{}}}
 \subsection{Method \code{reset()}}{
 Reset the throttle object so the next \code{poll()} returns
-\code{TRUE}.
+\code{TRUE}, and reset the wait time interval to its initial value.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$reset()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_throttle-update"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_throttle-update}{}}}
+\subsection{Method \code{update()}}{
+Reset the throttle when there is activity and
+decelerate it gradually when there is no activity.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$update(activity)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{activity}}{\code{TRUE} if there is activity, \code{FALSE} otherwise.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

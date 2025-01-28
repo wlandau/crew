@@ -9,7 +9,7 @@ crew_test("custom launcher", {
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,
     public = list(
-      launch_worker = function(call, name, launcher, worker, instance) {
+      launch_worker = function(call, name, launcher, worker) {
         bin <- if_any(
           tolower(Sys.info()[["sysname"]]) == "windows",
           "R.exe",
@@ -43,8 +43,6 @@ crew_test("custom launcher", {
     crashes_error = 5L
   ) {
     client <- crew::crew_client(
-      name = name,
-      workers = workers,
       host = host,
       port = port,
       tls = tls,
@@ -53,6 +51,7 @@ crew_test("custom launcher", {
     )
     launcher <- custom_launcher_class$new(
       name = name,
+      workers = workers,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout,
       seconds_launch = seconds_launch,
@@ -67,10 +66,7 @@ crew_test("custom launcher", {
       crashes_error = crashes_error,
       tls = tls
     )
-    controller <- crew::crew_controller(
-      client = client,
-      launcher = launcher
-    )
+    controller <- crew::crew_controller(client = client, launcher = launcher)
     controller$validate()
     controller
   }
@@ -83,9 +79,9 @@ crew_test("custom launcher", {
     crew_test_sleep()
   })
   controller$push(name = "pid", command = ps::ps_pid())
-  controller$wait(seconds_timeout = 10, seconds_interval = 0.5)
+  controller$wait(seconds_timeout = 10)
   out <- controller$pop()$result[[1]]
-  handle <- controller$launcher$workers$handle[[1]]
+  handle <- controller$launcher$instances$handle[[1]]
   exp <- handle$get_pid()
   expect_equal(out, exp)
   expect_true(handle$is_alive())
@@ -96,14 +92,10 @@ crew_test("custom launcher", {
     seconds_timeout = 5
   )
   expect_false(handle$is_alive())
-  controller$launcher$rotate()
-  controller$launcher$tally()
-  out <- controller$launcher$summary()
-  expect_equal(out$launches, 1L)
   controller$terminate()
 })
 
-crew_test("custom launcher with local async errors", {
+crew_test("custom launcher with local asyncs launch errors", {
   skip_on_cran()
   skip_on_covr() # Avoid clashes with NNG and covr child processes.
   skip_on_os("windows")
@@ -115,17 +107,13 @@ crew_test("custom launcher with local async errors", {
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,
     public = list(
-      launch_worker = function(call, name, launcher, worker, instance) {
+      launch_worker = function(call, name, launcher, worker) {
         self$async$eval(
           command = "okay value",
           packages = "this package does not exist"
         )
       },
       terminate_worker = function(handle) {
-        self$async$eval(
-          command = stop("termination error"),
-          packages = "processx"
-        )
       }
     )
   )
@@ -150,8 +138,6 @@ crew_test("custom launcher with local async errors", {
     processes = NULL
   ) {
     client <- crew::crew_client(
-      name = name,
-      workers = workers,
       host = host,
       port = port,
       tls = tls,
@@ -160,6 +146,7 @@ crew_test("custom launcher with local async errors", {
     )
     launcher <- custom_launcher_class$new(
       name = name,
+      workers = workers,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout,
       seconds_launch = seconds_launch,
@@ -190,35 +177,110 @@ crew_test("custom launcher with local async errors", {
     gc()
     crew_test_sleep()
   })
-  expect_equal(controller$launcher$errors(), NULL)
-  controller$launcher$launch(index = 1L)
-  controller$launcher$wait()
-  expect_crew_error(controller$launcher$launch(index = 1L))
-  expect_crew_error(
-    controller$launcher$forward(index = 1L, condition = "error")
+  envir <- new.env(parent = emptyenv())
+  crew_retry(
+    ~ tryCatch(
+      expr = {
+        controller$push(command = TRUE)
+        envir$result <- FALSE
+        FALSE
+      },
+      crew_error = function(condition) {
+        envir$result <- TRUE
+        TRUE
+      }
+    ),
+    seconds_interval = 1,
+    seconds_timeout = 30
   )
-  expect_warning(
-    controller$launcher$forward(index = 1L, condition = "warning"),
-    class = "crew_warning"
-  )
-  expect_message(
-    controller$launcher$forward(index = 1L, condition = "message"),
-    class = "crew_message"
-  )
-  out <- controller$launcher$forward(index = 1L, condition = "character")
-  expect_equal(out, controller$launcher$errors())
-  expect_equal(length(out), 1L)
-  expect_true(any(grepl("Worker 1 launch", out)))
-  suppressWarnings(
-    expect_crew_error(
-      expect_warning(controller$terminate(), class = "crew_warning")
+  expect_true(envir$result)
+})
+
+crew_test("custom launcher with local asyncs termination errors", {
+  skip_on_cran()
+  skip_on_covr() # Avoid clashes with NNG and covr child processes.
+  skip_on_os("windows")
+  skip_if_not_installed("processx")
+  if (isTRUE(as.logical(Sys.getenv("CI", "false")))) {
+    skip_on_os("mac")
+  }
+  custom_launcher_class <- R6::R6Class(
+    classname = "custom_launcher_class",
+    inherit = crew::crew_class_launcher,
+    public = list(
+      launch_worker = function(call, name, launcher, worker) {
+        list(abstract = TRUE)
+      },
+      terminate_worker = function(handle) {
+        self$async$eval(
+          command = stop("termination error"),
+          packages = "processx"
+        )
+      }
     )
   )
-  out <- controller$launcher$forward(index = 1L, condition = "character")
-  expect_equal(out, controller$launcher$errors())
-  expect_equal(length(out), 2L)
-  expect_true(any(grepl("Worker 1 launch", out)))
-  expect_true(any(grepl("Worker 1 termination", out)))
+  crew_controller_custom <- function(
+    name = "custom controller name",
+    workers = 1L,
+    host = "127.0.0.1",
+    port = NULL,
+    tls = crew::crew_tls(mode = "none"),
+    seconds_interval = 0.5,
+    seconds_timeout = 5,
+    seconds_launch = 30,
+    seconds_idle = Inf,
+    seconds_wall = Inf,
+    tasks_max = Inf,
+    tasks_timers = 0L,
+    reset_globals = TRUE,
+    reset_packages = FALSE,
+    reset_options = FALSE,
+    garbage_collection = FALSE,
+    crashes_error = 5L,
+    processes = NULL
+  ) {
+    client <- crew::crew_client(
+      host = host,
+      port = port,
+      tls = tls,
+      seconds_interval = seconds_interval,
+      seconds_timeout = seconds_timeout
+    )
+    launcher <- custom_launcher_class$new(
+      name = name,
+      workers = workers,
+      seconds_interval = seconds_interval,
+      seconds_timeout = seconds_timeout,
+      seconds_launch = seconds_launch,
+      seconds_idle = seconds_idle,
+      seconds_wall = seconds_wall,
+      tasks_max = tasks_max,
+      tasks_timers = tasks_timers,
+      reset_globals = reset_globals,
+      reset_packages = reset_packages,
+      reset_options = reset_options,
+      garbage_collection = garbage_collection,
+      crashes_error = crashes_error,
+      tls = tls,
+      processes = processes
+    )
+    controller <- crew::crew_controller(
+      client = client,
+      launcher = launcher
+    )
+    controller$validate()
+    controller
+  }
+  controller <- crew_controller_custom(processes = 1L)
+  controller$start()
+  on.exit({
+    try(suppressWarnings(controller$terminate()), silent = TRUE)
+    rm(controller)
+    gc()
+    crew_test_sleep()
+  })
+  controller$launch(n = 1L)
+  expect_warning(controller$terminate(), class = "crew_warning")
 })
 
 crew_test("custom launcher with async internal launcher tasks", {
@@ -240,7 +302,11 @@ crew_test("custom launcher with async internal launcher tasks", {
         path <- file.path(R.home("bin"), bin)
         self$async$eval(
           command = {
-            handle <- process$new(command = path, args = c("-e", call))
+            handle <- process$new(
+              command = path,
+              args = c("-e", call),
+              cleanup = FALSE
+            )
             while (!handle$is_alive()) {
               Sys.sleep(0.025)
             }
@@ -254,7 +320,7 @@ crew_test("custom launcher with async internal launcher tasks", {
         )
       },
       terminate_worker = function(handle) {
-        pid <- handle$data$pid
+        pid <- handle$pid
         self$async$eval(
           command = {
             crew::crew_terminate_process(pid)
@@ -286,8 +352,6 @@ crew_test("custom launcher with async internal launcher tasks", {
     processes = NULL
   ) {
     client <- crew::crew_client(
-      name = name,
-      workers = workers,
       host = host,
       port = port,
       tls = tls,
@@ -296,6 +360,7 @@ crew_test("custom launcher with async internal launcher tasks", {
     )
     launcher <- custom_launcher_class$new(
       name = name,
+      workers = workers,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout,
       seconds_launch = seconds_launch,
@@ -327,7 +392,7 @@ crew_test("custom launcher with async internal launcher tasks", {
     crew_test_sleep()
   })
   controller$push(name = "pid", command = ps::ps_pid())
-  controller$wait(seconds_timeout = 10, seconds_interval = 0.5)
+  controller$wait(seconds_timeout = 10)
   envir <- new.env(parent = emptyenv())
   crew_retry(
     ~ {
@@ -337,12 +402,138 @@ crew_test("custom launcher with async internal launcher tasks", {
     seconds_interval = 0.25,
     seconds_timeout = 15
   )
-  handle <- controller$launcher$workers$handle[[1L]]
-  pid <- handle$data$pid
+  handle <- controller$launcher$instances$handle[[1L]]
+  pid <- handle$pid
   expect_equal(envir$pid, pid)
-  expect_equal(handle$data$status, "started")
+  expect_equal(handle$status, "started")
   controller$launcher$terminate()
-  handle <- controller$launcher$workers$termination[[1L]]
-  expect_equal(handle$data$pid, pid)
-  expect_equal(handle$data$status, "terminated")
+})
+
+crew_test("can terminate a lost worker with an async launch", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_covr() # Avoid clashes with NNG and covr child processes.
+  if (isTRUE(as.logical(Sys.getenv("CI", "false")))) {
+    skip_on_os("mac")
+  }
+  custom_launcher_class <- R6::R6Class(
+    classname = "custom_launcher_class",
+    inherit = crew::crew_class_launcher,
+    public = list(
+      launch_worker = function(call, name, launcher, worker) {
+      },
+      terminate_worker = function(handle) {
+        ps::ps_kill(p = ps::ps_handle(handle$pid))
+      }
+    )
+  )
+  crew_controller_custom <- function(
+    name = "custom controller name",
+    workers = 1L,
+    host = "127.0.0.1",
+    port = NULL,
+    tls = crew::crew_tls(mode = "none"),
+    seconds_interval = 0.5,
+    seconds_timeout = 5,
+    seconds_launch = 30,
+    seconds_idle = Inf,
+    seconds_wall = Inf,
+    tasks_max = Inf,
+    tasks_timers = 0L,
+    reset_globals = TRUE,
+    reset_packages = FALSE,
+    reset_options = FALSE,
+    garbage_collection = FALSE,
+    crashes_error = 5L
+  ) {
+    client <- crew::crew_client(
+      host = host,
+      port = port,
+      tls = tls,
+      seconds_interval = seconds_interval,
+      seconds_timeout = seconds_timeout
+    )
+    launcher <- custom_launcher_class$new(
+      name = name,
+      workers = workers,
+      seconds_interval = seconds_interval,
+      seconds_timeout = seconds_timeout,
+      seconds_launch = seconds_launch,
+      seconds_idle = seconds_idle,
+      seconds_wall = seconds_wall,
+      tasks_max = tasks_max,
+      tasks_timers = tasks_timers,
+      reset_globals = reset_globals,
+      reset_packages = reset_packages,
+      reset_options = reset_options,
+      garbage_collection = garbage_collection,
+      crashes_error = crashes_error,
+      tls = tls
+    )
+    controller <- crew::crew_controller(
+      client = client,
+      launcher = launcher
+    )
+    controller$validate()
+    controller
+  }
+  x <- crew_controller_custom()
+  x$start()
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  private <- crew_private(x$launcher)
+  bin <- ifelse(
+    tolower(Sys.info()[["sysname"]]) == "windows",
+    "R.exe",
+    "R"
+  )
+  path <- file.path(R.home("bin"), bin)
+  handle <- mirai::mirai(
+    .expr = {
+      Sys.sleep(0.5)
+      handle <- processx::process$new(
+        command = path,
+        args = c("-e", "Sys.sleep(90)"),
+        cleanup = FALSE
+      )
+      list(pid = handle$get_pid())
+    },
+    .args = list(path = path)
+  )
+  private$.instances <- tibble::add_row(
+    private$.instances,
+    handle = list(handle),
+    id = 99L,
+    start = - Inf,
+    online = FALSE,
+    discovered = FALSE
+  )
+  crew_retry(
+    ~ {
+      x$scale()
+      !nanonext::.unresolved(handle)
+    },
+    seconds_interval = 0.1,
+    seconds_timeout = 15
+  )
+  expect_true(is.integer(handle$data$pid))
+  crew_retry(
+    ~ {
+      x$scale()
+      tryCatch(
+        !ps::ps_is_running(p = ps::ps_handle(handle$data$pid)),
+        error = function(condition) {
+          TRUE
+        }
+      )
+    },
+    seconds_interval = 0.1,
+    seconds_timeout = 15
+  )
+  expect_equal(nrow(x$launcher$instances), 0L)
+  x$client$terminate()
 })

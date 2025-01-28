@@ -9,15 +9,15 @@ crew_test("backlog of tasks for transient workers", {
   time <- system.time({
     for (index in seq_len(n)) {
       name <- paste0("task_", index)
-      x$push(name = name, command = Sys.getenv("CREW_INSTANCE"))
+      x$push(name = name, command = Sys.getenv("CREW_WORKER"))
     }
   })
   message(time["elapsed"])
   # Launch many more tasks.
   time <- system.time({
     for (index in seq_len(n)) {
-      name <- paste0("task_", index)
-      x$push(name = name, command = Sys.getenv("CREW_INSTANCE"))
+      name <- paste0("task_", index + 1000L)
+      x$push(name = name, command = Sys.getenv("CREW_WORKER"))
     }
   })
   message(time["elapsed"])
@@ -26,19 +26,7 @@ crew_test("backlog of tasks for transient workers", {
   testthat::expect_equal(x$unresolved(), 0L)
   testthat::expect_equal(length(x$tasks), 200L)
   # All results should now be available.
-  results <- list()
-  time <- system.time({
-    while (length(results) < 2 * n) {
-      out <- x$pop()
-      if (!is.null(out)) {
-        results[[length(results) + 1L]] <- out
-      }
-    }
-  })
-  message(time["elapsed"])
-  testthat::expect_equal(sum(x$launcher$summary()$launches), 2 * n)
-  results <- tibble::as_tibble(do.call(rbind, results))
-  results$result <- as.character(results$result)
-  testthat::expect_equal(length(unique(results$result)), 2 * n)
+  results <- unlist(x$collect()$result)
+  testthat::expect_equal(length(unique(results)), 2 * n)
   x$terminate()
 })

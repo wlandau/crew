@@ -270,7 +270,7 @@ crew_class_controller <- R6::R6Class(
       if (!is.null(private$.crashes_max)) {
         crew_assert(
           private$.crashes_max,
-          is.integer(.),
+          is.numeric(.),
           length(.) == 1L,
           is.finite(.),
           . >= 0L,
@@ -805,7 +805,7 @@ crew_class_controller <- R6::R6Class(
       )
       crew_assert(
         seed %|||% 1L,
-        is.integer(.),
+        is.numeric(.),
         length(.) == 1L,
         !anyNA(seed),
         message = "seed must be an integer of length 1"

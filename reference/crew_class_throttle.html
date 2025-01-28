@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,9 +62,24 @@
     </div>
     <div class="section level2">
     <h2 id="active-bindings">Active bindings<a class="anchor" aria-label="anchor" href="#active-bindings"></a></h2>
-    <p></p><div class="r6-active-bindings"><dl><dt><code>seconds_interval</code></dt>
-<dd><p>Positive numeric of length 1,
-throttling interval in seconds.</p></dd>
+    <p></p><div class="r6-active-bindings"><dl><dt><code>seconds_max</code></dt>
+<dd><p>See <code><a href="crew_throttle.html">crew_throttle()</a></code>.</p></dd>
+
+
+<dt><code>seconds_min</code></dt>
+<dd><p>See <code><a href="crew_throttle.html">crew_throttle()</a></code>.</p></dd>
+
+
+<dt><code>seconds_start</code></dt>
+<dd><p>See <code><a href="crew_throttle.html">crew_throttle()</a></code>.</p></dd>
+
+
+<dt><code>base</code></dt>
+<dd><p>See <code><a href="crew_throttle.html">crew_throttle()</a></code>.</p></dd>
+
+
+<dt><code>seconds_interval</code></dt>
+<dd><p>Current wait time interval.</p></dd>
 
 
 <dt><code>polled</code></dt>
@@ -84,18 +99,38 @@ millisecond timestamp of the last time <code>poll()</code> returned <code>TRUE</
 <ul><li><p><a href="#method-crew_class_throttle-new"><code>crew_class_throttle$new()</code></a></p></li>
 <li><p><a href="#method-crew_class_throttle-validate"><code>crew_class_throttle$validate()</code></a></p></li>
 <li><p><a href="#method-crew_class_throttle-poll"><code>crew_class_throttle$poll()</code></a></p></li>
+<li><p><a href="#method-crew_class_throttle-accelerate"><code>crew_class_throttle$accelerate()</code></a></p></li>
+<li><p><a href="#method-crew_class_throttle-decelerate"><code>crew_class_throttle$decelerate()</code></a></p></li>
 <li><p><a href="#method-crew_class_throttle-reset"><code>crew_class_throttle$reset()</code></a></p></li>
+<li><p><a href="#method-crew_class_throttle-update"><code>crew_class_throttle$update()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-crew_class_throttle-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Throttle constructor.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/crew_class_throttle.html">crew_class_throttle</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>seconds_interval <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/crew_class_throttle.html">crew_class_throttle</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  seconds_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  seconds_min <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  seconds_start <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  base <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>seconds_interval</code></dt>
-<dd><p>Throttling interval in seconds.</p></dd>
+<p></p><div class="arguments"><dl><dt><code>seconds_max</code></dt>
+<dd><p>See <code><a href="crew_throttle.html">crew_throttle()</a></code>.</p></dd>
+
+
+<dt><code>seconds_min</code></dt>
+<dd><p>See <code><a href="crew_throttle.html">crew_throttle()</a></code>.</p></dd>
+
+
+<dt><code>seconds_start</code></dt>
+<dd><p>See <code><a href="crew_throttle.html">crew_throttle()</a></code>.</p></dd>
+
+
+<dt><code>base</code></dt>
+<dd><p>See <code><a href="crew_throttle.html">crew_throttle()</a></code>.</p></dd>
 
 
 </dl><p></p></div>
@@ -106,7 +141,7 @@ millisecond timestamp of the last time <code>poll()</code> returned <code>TRUE</
 </div>
 <div class="section">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h4>
-<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="va">throttle</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_throttle.html">crew_throttle</a></span><span class="op">(</span>seconds_interval <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="va">throttle</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_throttle.html">crew_throttle</a></span><span class="op">(</span>seconds_max <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">throttle</span><span class="op">$</span><span class="fu">poll</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">throttle</span><span class="op">$</span><span class="fu">poll</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -134,19 +169,64 @@ millisecond timestamp of the last time <code>poll()</code> returned <code>TRUE</
 <div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
 <p><code>TRUE</code> if <code>poll()</code> did not return <code>TRUE</code> in the last
-<code>seconds_interval</code> seconds, <code>FALSE</code> otherwise.</p>
+<code>max</code> seconds, <code>FALSE</code> otherwise.</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_throttle-accelerate"></a><div class="section">
+<h3 id="method-accelerate-">Method <code>accelerate()</code><a class="anchor" aria-label="anchor" href="#method-accelerate-"></a></h3>
+<p>Divide <code>seconds_interval</code> by <code>base</code>.</p><div class="section">
+<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_throttle</span><span class="op">$</span><span class="fu">accelerate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
+<p><code>NULL</code> (invisibly). Called for its side effects.</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_throttle-decelerate"></a><div class="section">
+<h3 id="method-decelerate-">Method <code>decelerate()</code><a class="anchor" aria-label="anchor" href="#method-decelerate-"></a></h3>
+<p>Multiply <code>seconds_interval</code> by <code>base</code>.</p><div class="section">
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_throttle</span><span class="op">$</span><span class="fu">decelerate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
+<p><code>NULL</code> (invisibly). Called for its side effects.</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_throttle-reset"></a><div class="section">
 <h3 id="method-reset-">Method <code>reset()</code><a class="anchor" aria-label="anchor" href="#method-reset-"></a></h3>
 <p>Reset the throttle object so the next <code>poll()</code> returns
-<code>TRUE</code>.</p><div class="section">
-<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<code>TRUE</code>, and reset the wait time interval to its initial value.</p><div class="section">
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_throttle</span><span class="op">$</span><span class="fu">reset</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
+<h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
+<p><code>NULL</code> (invisibly).</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_throttle-update"></a><div class="section">
+<h3 id="method-update-">Method <code><a href="https://rdrr.io/r/stats/update.html" class="external-link">update()</a></code><a class="anchor" aria-label="anchor" href="#method-update-"></a></h3>
+<p>Reset the throttle when there is activity and
+decelerate it gradually when there is no activity.</p><div class="section">
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_throttle</span><span class="op">$</span><span class="fu">update</span><span class="op">(</span><span class="va">activity</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>activity</code></dt>
+<dd><p><code>TRUE</code> if there is activity, <code>FALSE</code> otherwise.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-6">Returns<a class="anchor" aria-label="anchor" href="#returns-6"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
@@ -156,7 +236,7 @@ millisecond timestamp of the last time <code>poll()</code> returned <code>TRUE</
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">throttle</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_throttle.html">crew_throttle</a></span><span class="op">(</span>seconds_interval <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">throttle</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_throttle.html">crew_throttle</a></span><span class="op">(</span>seconds_max <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">throttle</span><span class="op">$</span><span class="fu">poll</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="va">throttle</span><span class="op">$</span><span class="fu">poll</span><span class="op">(</span><span class="op">)</span></span></span>
@@ -166,7 +246,7 @@ millisecond timestamp of the last time <code>poll()</code> returned <code>TRUE</
 <span class="r-in"><span><span class="co">## Method `crew_class_throttle$new`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">throttle</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_throttle.html">crew_throttle</a></span><span class="op">(</span>seconds_interval <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">throttle</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_throttle.html">crew_throttle</a></span><span class="op">(</span>seconds_max <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">throttle</span><span class="op">$</span><span class="fu">poll</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="va">throttle</span><span class="op">$</span><span class="fu">poll</span><span class="op">(</span><span class="op">)</span></span></span>

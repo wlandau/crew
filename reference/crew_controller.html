@@ -11,7 +11,7 @@ crew_controller_local()."><meta property="og:image" content="https://wlandau.git
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,7 +58,13 @@ Users should use a specific controller helper such as
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_controller</span><span class="op">(</span><span class="va">client</span>, <span class="va">launcher</span>, auto_scale <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_controller</span><span class="op">(</span></span>
+<span>  <span class="va">client</span>,</span>
+<span>  <span class="va">launcher</span>,</span>
+<span>  crashes_max <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  backup <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  auto_scale <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -72,6 +78,41 @@ Users should use a specific controller helper such as
 <dt id="arg-launcher">launcher<a class="anchor" aria-label="anchor" href="#arg-launcher"></a></dt>
 <dd><p>An <code>R6</code> launcher object created by one of the
 <code>crew_launcher_*()</code> functions such as <code><a href="crew_launcher_local.html">crew_launcher_local()</a></code>.</p></dd>
+
+
+<dt id="arg-crashes-max">crashes_max<a class="anchor" aria-label="anchor" href="#arg-crashes-max"></a></dt>
+<dd><p>In rare cases, a worker may exit unexpectedly
+before it completes its current task. If this happens, <code>pop()</code>
+returns a status of <code>"crash"</code> instead of <code>"error"</code> for the task.
+The controller does not automatically retry the task, but
+you can retry it manually by calling <code>push()</code> again and using the same
+task name as before. (However, <code>targets</code> pipelines running <code>crew</code>
+do automatically retry tasks whose workers crashed.)</p>
+<p><code>crashes_max</code> is a non-negative integer, and it sets the maximum number of
+allowable consecutive crashes for a given task.
+If a task's worker crashes more than <code>crashes_max</code> times in a row,
+then <code>pop()</code> throws an error when it tries to return the results
+of the task.</p></dd>
+
+
+<dt id="arg-backup">backup<a class="anchor" aria-label="anchor" href="#arg-backup"></a></dt>
+<dd><p>An optional <code>crew</code> controller object, or <code>NULL</code> to omit.
+If supplied, the <code>backup</code> controller runs any pushed tasks that have
+already reached <code>crashes_max</code> consecutive crashes.
+Using <code>backup</code>, you can create
+a chain of controllers with different levels of resources
+(such as worker memory and CPUs) so that a task that fails on
+one controller can retry using incrementally more powerful workers.
+All controllers in a backup chain should be part of the same
+controller group (see <code><a href="crew_controller_group.html">crew_controller_group()</a></code>) so you can call the
+group-level <code>pop()</code> and <code>collect()</code> methods to make sure you get results
+regardless of which controller actually ended up running the task.</p>
+<p>Limitations of <code>backup</code>:
+* <code>crashes_max</code> needs to be positive in order for <code>backup</code> to be used.
+Otherwise, every task would always skip the current controller and
+go to <code>backup</code>.
+* <code>backup</code> cannot be a controller group. It must be an ordinary
+controller.</p></dd>
 
 
 <dt id="arg-auto-scale">auto_scale<a class="anchor" aria-label="anchor" href="#arg-auto-scale"></a></dt>

@@ -9,7 +9,7 @@ and exit the loop when it returns TRUE"><meta property="og:image" content="https
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,8 @@ and exit the loop when it returns <code>TRUE</code></p>
 <span>  max_tries <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  error <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  message <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
-<span>  envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  envir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  assertions <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -106,6 +107,11 @@ if the wait times out.</p></dd>
 
 <dt id="arg-envir">envir<a class="anchor" aria-label="anchor" href="#arg-envir"></a></dt>
 <dd><p>Environment to evaluate <code>fun</code>.</p></dd>
+
+
+<dt id="arg-assertions">assertions<a class="anchor" aria-label="anchor" href="#arg-assertions"></a></dt>
+<dd><p><code>TRUE</code> to run assertions to check if arguments are
+valid, <code>FALSE</code> otherwise. <code>TRUE</code> is recommended for users.</p></dd>
 
 </dl></div>
     <div class="section level2">

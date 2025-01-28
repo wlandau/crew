@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,17 +52,40 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_throttle</span><span class="op">(</span>seconds_interval <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_throttle</span><span class="op">(</span></span>
+<span>  seconds_max <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  seconds_min <span class="op">=</span> <span class="fl">0.001</span>,</span>
+<span>  seconds_start <span class="op">=</span> <span class="va">seconds_min</span>,</span>
+<span>  base <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-seconds-interval">seconds_interval<a class="anchor" aria-label="anchor" href="#arg-seconds-interval"></a></dt>
-<dd><p>Positive numeric of length 1, throttling interval.
-The <code>poll()</code> method returns <code>TRUE</code> if and only if it was not called
-in the last <code>seconds_interval</code> seconds.</p></dd>
+<dl><dt id="arg-seconds-max">seconds_max<a class="anchor" aria-label="anchor" href="#arg-seconds-max"></a></dt>
+<dd><p>Positive numeric scalar, maximum throttling interval</p></dd>
+
+
+<dt id="arg-seconds-min">seconds_min<a class="anchor" aria-label="anchor" href="#arg-seconds-min"></a></dt>
+<dd><p>Positive numeric scalar, minimum throttling interval.</p></dd>
+
+
+<dt id="arg-seconds-start">seconds_start<a class="anchor" aria-label="anchor" href="#arg-seconds-start"></a></dt>
+<dd><p>Positive numeric scalar,
+the initial wait time interval in seconds.
+The default is <code>min</code> because there is almost always
+auto-scaling to be done when the controller is created.
+<code>reset()</code> always sets the current wait interval back to <code>seconds_start</code>.</p></dd>
+
+
+<dt id="arg-base">base<a class="anchor" aria-label="anchor" href="#arg-base"></a></dt>
+<dd><p>Numeric scalar greater than 1, base of the exponential
+backoff algorithm. <code>increment()</code> multiplies the waiting interval by
+<code>base</code> and <code>decrement()</code> divides the waiting interval by <code>base</code>.
+The default <code>base</code> is 2, which specifies a binary exponential
+backoff algorithm.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -74,8 +97,18 @@ in the last <code>seconds_interval</code> seconds.</p></dd>
     <p>Throttling is a technique that limits how often a function is
 called in a given period of time. <code>crew_throttle()</code> objects support
 the <code>throttle</code> argument of controller methods, which ensures auto-scaling
-only happen every <code>seconds_interval</code> seconds. This helps avoid
-overburdening the <code>mirai</code> dispatcher and other resources.</p>
+does not induce superfluous overhead.
+The throttle uses deterministic exponential backoff algorithm
+(<a href="https://en.wikipedia.org/wiki/Exponential_backoff" class="external-link">https://en.wikipedia.org/wiki/Exponential_backoff</a>) which
+increases wait times when there is nothing to do and decreases
+wait times when there is something to do. The controller decreases
+or increases the wait time with methods <code>accelerate()</code> and <code>decelerate()</code>
+in the throttle object, respectively,
+by dividing or multiplying by <code>base</code> (but keeping the wait time
+between <code>seconds_min</code> and <code>seconds_max</code>).
+In practice, <code>crew</code> calls <code>reset()</code> instead of <code><a href="https://rdrr.io/r/stats/update.html" class="external-link">update()</a></code>
+in order to respond quicker to surges of activity (see the
+<code><a href="https://rdrr.io/r/stats/update.html" class="external-link">update()</a></code> method).</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -85,7 +118,7 @@ overburdening the <code>mirai</code> dispatcher and other resources.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">throttle</span> <span class="op">&lt;-</span> <span class="fu">crew_throttle</span><span class="op">(</span>seconds_interval <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">throttle</span> <span class="op">&lt;-</span> <span class="fu">crew_throttle</span><span class="op">(</span>seconds_max <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">throttle</span><span class="op">$</span><span class="fu">poll</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="va">throttle</span><span class="op">$</span><span class="fu">poll</span><span class="op">(</span><span class="op">)</span></span></span>

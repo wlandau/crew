@@ -13,7 +13,7 @@ crew_launcher_local()."><meta property="og:image" content="https://wlandau.githu
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,8 @@ in functions that create custom third-party launchers. See
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_launcher</span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  seconds_interval <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  workers <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  seconds_interval <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  seconds_timeout <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>  seconds_launch <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  seconds_idle <span class="op">=</span> <span class="fl">300</span>,</span>
@@ -75,7 +76,7 @@ in functions that create custom third-party launchers. See
 <span>  reset_packages <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  reset_options <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  garbage_collection <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  crashes_error <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  crashes_error <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  launch_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tls <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_tls.html">crew_tls</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  processes <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -89,14 +90,26 @@ in functions that create custom third-party launchers. See
 
 
 <dl><dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p>Name of the launcher.</p></dd>
+<dd><p>Character string, name of the launcher. If the name is
+<code>NULL</code>, then a name is automatically generated when the launcher starts.</p></dd>
+
+
+<dt id="arg-workers">workers<a class="anchor" aria-label="anchor" href="#arg-workers"></a></dt>
+<dd><p>Maximum number of workers to run concurrently
+when auto-scaling, excluding task retries and manual calls to <code>launch()</code>.
+Special workers allocated for task retries
+do not count towards this limit, so the number of workers running at a
+given time may exceed this maximum.
+A smaller number of workers may run if the number of executing tasks
+is smaller than the supplied value of the <code>workers</code> argument.</p></dd>
 
 
 <dt id="arg-seconds-interval">seconds_interval<a class="anchor" aria-label="anchor" href="#arg-seconds-interval"></a></dt>
 <dd><p>Number of seconds between
 polling intervals waiting for certain internal
-synchronous operations to complete,
-such as checking <code><a href="https://shikokuchuo.net/mirai/reference/status.html" class="external-link">mirai::status()</a></code>.</p></dd>
+synchronous operations to complete. In certain cases, exponential
+backoff is used with this argument passed to <code>seconds_max</code>
+in a <code><a href="crew_throttle.html">crew_throttle()</a></code> object.</p></dd>
 
 
 <dt id="arg-seconds-timeout">seconds_timeout<a class="anchor" aria-label="anchor" href="#arg-seconds-timeout"></a></dt>
@@ -174,18 +187,11 @@ tasks, <code>FALSE</code> to skip.</p></dd>
 
 
 <dt id="arg-crashes-error">crashes_error<a class="anchor" aria-label="anchor" href="#arg-crashes-error"></a></dt>
-<dd><p>Positive integer scalar. If a worker exits
-<code>crashes_error</code> times in a row without completing all its assigned
-tasks, then the launcher throws an informative error.
-The reason for <code>crashes_error</code>
-is to avoid an infinite loop where a task crashes a worker
-(through a segfault, maxing out memory, etc) but the worker always
-relaunches. To monitor the resources of <code>crew</code> workers,
-please see <a href="https://wlandau.github.io/crew/articles/logging.html">https://wlandau.github.io/crew/articles/logging.html</a>.</p></dd>
+<dd><p>Deprecated on 2025-01-13 (<code>crew</code> version 0.10.2.9002).</p></dd>
 
 
 <dt id="arg-launch-max">launch_max<a class="anchor" aria-label="anchor" href="#arg-launch-max"></a></dt>
-<dd><p>Deprecated on 2024-11-04 (version 0.10.1.9000).
+<dd><p>Deprecated on 2024-11-04 (<code>crew</code> version 0.10.2.9002).
 Use <code>crashes_error</code> instead.</p></dd>
 
 
@@ -231,10 +237,10 @@ must be installed.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"CREW_EXAMPLES"</span><span class="op">)</span>, <span class="st">"true"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="va">client</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_client.html">crew_client</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">client</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">launcher</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_launcher_local.html">crew_launcher_local</a></span><span class="op">(</span>name <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span>sockets <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">socket</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">launch</span><span class="op">(</span>index <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">task</span> <span class="op">&lt;-</span> <span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://shikokuchuo.net/mirai/reference/mirai.html" class="external-link">mirai</a></span><span class="op">(</span><span class="st">"result"</span>, .compute <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">launcher</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_launcher_local.html">crew_launcher_local</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span>url <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">url</span>, profile <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">profile</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">launch</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">task</span> <span class="op">&lt;-</span> <span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://shikokuchuo.net/mirai/reference/mirai.html" class="external-link">mirai</a></span><span class="op">(</span><span class="st">"result"</span>, .compute <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">profile</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://shikokuchuo.net/mirai/reference/call_mirai.html" class="external-link">call_mirai_</a></span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">task</span><span class="op">$</span><span class="va">data</span></span></span>
 <span class="r-in"><span><span class="va">client</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></span>

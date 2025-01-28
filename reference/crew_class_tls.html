@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,6 +90,7 @@
 <li><p><a href="#method-crew_class_tls-validate"><code>crew_class_tls$validate()</code></a></p></li>
 <li><p><a href="#method-crew_class_tls-client"><code>crew_class_tls$client()</code></a></p></li>
 <li><p><a href="#method-crew_class_tls-worker"><code>crew_class_tls$worker()</code></a></p></li>
+<li><p><a href="#method-crew_class_tls-url"><code>crew_class_tls$url()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-crew_class_tls-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>TLS configuration constructor.</p><div class="section">
@@ -169,12 +170,12 @@ with <code><a href="https://shikokuchuo.net/nanonext/reference/tls_config.html" 
 <h3 id="method-worker-">Method <code>worker()</code><a class="anchor" aria-label="anchor" href="#method-worker-"></a></h3>
 <p>TLS credentials for <code>crew</code> workers.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_tls</span><span class="op">$</span><span class="fu">worker</span><span class="op">(</span><span class="va">name</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_tls</span><span class="op">$</span><span class="fu">worker</span><span class="op">(</span><span class="va">profile</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>name</code></dt>
+<p></p><div class="arguments"><dl><dt><code>profile</code></dt>
 <dd><p>Character of length 1 with the <code>mirai</code> compute profile.</p></dd>
 
 
@@ -183,6 +184,31 @@ with <code><a href="https://shikokuchuo.net/nanonext/reference/tls_config.html" 
 <div class="section">
 <h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
 <p><code>NULL</code> or character vector, depending on the mode.</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_tls-url"></a><div class="section">
+<h3 id="method-url-">Method <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">url()</a></code><a class="anchor" aria-label="anchor" href="#method-url-"></a></h3>
+<p>Form the URL for <code>crew</code> worker connections.</p><div class="section">
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_tls</span><span class="op">$</span><span class="fu">url</span><span class="op">(</span><span class="va">host</span>, <span class="va">port</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>host</code></dt>
+<dd><p>Character string with the host name or IP address.</p></dd>
+
+
+<dt><code>port</code></dt>
+<dd><p>Non-negative integer with the port number
+(0 to let NNG select a random ephemeral port).</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
+<p>Character string with the URL.</p>
 </div>
 
 </div>
@@ -200,8 +226,9 @@ with <code><a href="https://shikokuchuo.net/nanonext/reference/tls_config.html" 
 <span class="r-out co"><span class="r-pr">#&gt;</span>     key: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     mode: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     password: active binding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     url: function (host, port) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     validate: function (test = TRUE) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     worker: function (name) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     worker: function (profile) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Private:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .certificates: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .key: NULL</span>
@@ -226,8 +253,9 @@ with <code><a href="https://shikokuchuo.net/nanonext/reference/tls_config.html" 
 <span class="r-out co"><span class="r-pr">#&gt;</span>     key: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     mode: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     password: active binding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     url: function (host, port) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     validate: function (test = TRUE) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     worker: function (name) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     worker: function (profile) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Private:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .certificates: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .key: NULL</span>

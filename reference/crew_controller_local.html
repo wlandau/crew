@@ -9,7 +9,7 @@ launch workers on local processes."><meta property="og:image" content="https://w
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,22 +63,24 @@ launch workers on local processes.</p>
 <span>  tls <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_tls.html">crew_tls</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  tls_enable <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tls_config <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  seconds_interval <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  seconds_interval <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  seconds_timeout <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>  seconds_launch <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  seconds_idle <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  seconds_wall <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  seconds_exit <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  retry_tasks <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  retry_tasks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tasks_max <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  tasks_timers <span class="op">=</span> <span class="fl">0L</span>,</span>
 <span>  reset_globals <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  reset_packages <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  reset_options <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  garbage_collection <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  crashes_error <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  crashes_error <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  launch_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  r_arguments <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"--no-save"</span>, <span class="st">"--no-restore"</span><span class="op">)</span>,</span>
+<span>  crashes_max <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  backup <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  options_metrics <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_options_metrics.html">crew_options_metrics</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  options_local <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_options_local.html">crew_options_local</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  local_log_directory <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -91,12 +93,11 @@ launch workers on local processes.</p>
 
 
 <dl><dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p>Name of the client object. If <code>NULL</code>, a name is automatically
-generated.</p></dd>
+<dd><p>Deprecated on 2025-01-14 (<code>crew</code> version 0.10.2.9002).</p></dd>
 
 
 <dt id="arg-workers">workers<a class="anchor" aria-label="anchor" href="#arg-workers"></a></dt>
-<dd><p>Integer, maximum number of parallel workers to run.</p></dd>
+<dd><p>Deprecated on 2025-01-13 (<code>crew</code> version 0.10.2.9002).</p></dd>
 
 
 <dt id="arg-host">host<a class="anchor" aria-label="anchor" href="#arg-host"></a></dt>
@@ -106,7 +107,9 @@ If <code>NULL</code>, the host defaults to the local IP address.</p></dd>
 
 <dt id="arg-port">port<a class="anchor" aria-label="anchor" href="#arg-port"></a></dt>
 <dd><p>TCP port to listen for the workers. If <code>NULL</code>,
-then an available ephemeral port is automatically chosen.</p></dd>
+then an available ephemeral port is automatically chosen.
+Controllers running simultaneously on the same computer
+(as in a controller group) must not share the same TCP port.</p></dd>
 
 
 <dt id="arg-tls">tls<a class="anchor" aria-label="anchor" href="#arg-tls"></a></dt>
@@ -168,12 +171,7 @@ No longer necessary.</p></dd>
 
 
 <dt id="arg-retry-tasks">retry_tasks<a class="anchor" aria-label="anchor" href="#arg-retry-tasks"></a></dt>
-<dd><p><code>TRUE</code> to automatically retry a task in the event of
-an unexpected worker exit. <code>FALSE</code> to give up on the first exit and
-return a <code>mirai</code> error code (code number 19).
-<code>TRUE</code> (default) is recommended in most situations.
-Use <code>FALSE</code> for debugging purposes, e.g. to confirm that a task
-is causing a worker to run out of memory or crash in some other way.</p></dd>
+<dd><p>Deprecated on 2025-01-13 (<code>crew</code> version 0.10.2.9002).</p></dd>
 
 
 <dt id="arg-tasks-max">tasks_max<a class="anchor" aria-label="anchor" href="#arg-tasks-max"></a></dt>
@@ -214,18 +212,11 @@ tasks, <code>FALSE</code> to skip.</p></dd>
 
 
 <dt id="arg-crashes-error">crashes_error<a class="anchor" aria-label="anchor" href="#arg-crashes-error"></a></dt>
-<dd><p>Positive integer scalar. If a worker exits
-<code>crashes_error</code> times in a row without completing all its assigned
-tasks, then the launcher throws an informative error.
-The reason for <code>crashes_error</code>
-is to avoid an infinite loop where a task crashes a worker
-(through a segfault, maxing out memory, etc) but the worker always
-relaunches. To monitor the resources of <code>crew</code> workers,
-please see <a href="https://wlandau.github.io/crew/articles/logging.html">https://wlandau.github.io/crew/articles/logging.html</a>.</p></dd>
+<dd><p>Deprecated on 2025-01-13 (<code>crew</code> version 0.10.2.9002).</p></dd>
 
 
 <dt id="arg-launch-max">launch_max<a class="anchor" aria-label="anchor" href="#arg-launch-max"></a></dt>
-<dd><p>Deprecated on 2024-11-04 (version 0.10.1.9000).
+<dd><p>Deprecated on 2024-11-04 (<code>crew</code> version 0.10.2.9002).
 Use <code>crashes_error</code> instead.</p></dd>
 
 
@@ -234,6 +225,41 @@ Use <code>crashes_error</code> instead.</p></dd>
 to pass to <code>Rscript</code> (non-Windows) or <code>Rscript.exe</code> (Windows)
 when starting a worker. Example:
 <code>r_arguments = c("--vanilla", "--max-connections=32")</code>.</p></dd>
+
+
+<dt id="arg-crashes-max">crashes_max<a class="anchor" aria-label="anchor" href="#arg-crashes-max"></a></dt>
+<dd><p>In rare cases, a worker may exit unexpectedly
+before it completes its current task. If this happens, <code>pop()</code>
+returns a status of <code>"crash"</code> instead of <code>"error"</code> for the task.
+The controller does not automatically retry the task, but
+you can retry it manually by calling <code>push()</code> again and using the same
+task name as before. (However, <code>targets</code> pipelines running <code>crew</code>
+do automatically retry tasks whose workers crashed.)</p>
+<p><code>crashes_max</code> is a non-negative integer, and it sets the maximum number of
+allowable consecutive crashes for a given task.
+If a task's worker crashes more than <code>crashes_max</code> times in a row,
+then <code>pop()</code> throws an error when it tries to return the results
+of the task.</p></dd>
+
+
+<dt id="arg-backup">backup<a class="anchor" aria-label="anchor" href="#arg-backup"></a></dt>
+<dd><p>An optional <code>crew</code> controller object, or <code>NULL</code> to omit.
+If supplied, the <code>backup</code> controller runs any pushed tasks that have
+already reached <code>crashes_max</code> consecutive crashes.
+Using <code>backup</code>, you can create
+a chain of controllers with different levels of resources
+(such as worker memory and CPUs) so that a task that fails on
+one controller can retry using incrementally more powerful workers.
+All controllers in a backup chain should be part of the same
+controller group (see <code><a href="crew_controller_group.html">crew_controller_group()</a></code>) so you can call the
+group-level <code>pop()</code> and <code>collect()</code> methods to make sure you get results
+regardless of which controller actually ended up running the task.</p>
+<p>Limitations of <code>backup</code>:
+* <code>crashes_max</code> needs to be positive in order for <code>backup</code> to be used.
+Otherwise, every task would always skip the current controller and
+go to <code>backup</code>.
+* <code>backup</code> cannot be a controller group. It must be an ordinary
+controller.</p></dd>
 
 
 <dt id="arg-options-metrics">options_metrics<a class="anchor" aria-label="anchor" href="#arg-options-metrics"></a></dt>

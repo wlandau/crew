@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,8 +46,19 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.10.2.9001" id="crew-01029001-development">crew 0.10.2.9001 (development)<a class="anchor" aria-label="anchor" href="#crew-01029001-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.0.0" id="crew-100">crew 1.0.0<a class="anchor" aria-label="anchor" href="#crew-100"></a></h2>
 <ul><li>Avoid partial match in a call to <code><a href="../reference/crew_terminate_process.html">crew_terminate_process()</a></code>.</li>
+<li>Migrate to <code>mirai</code> 2.0.0 with the pair 1 poly protocol (<a href="https://github.com/wlandau/crew/issues/193" class="external-link">#193</a>). Most notably, all workers now share the same URL instead of having different web sockets for different workers. This gets rid of <code>crew</code>’s previous “slotted” model for workers.</li>
+<li>Prohibit duplicated task names in <code>push()</code>. (The task must be popped first before another task of the same name can be submitted.) This allows controllers to use hash tables to track tasks, which makes <code>push()</code> and <code>pop()</code> orders of magnitude faster. It is also needed for the new retry mechanism based on backup controllers and controller groups.</li>
+<li>Use exponential backoff in throttles.</li>
+<li>Share throttles between <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> and <code>wait()</code> to increase responsiveness.</li>
+<li>Use a unified throttle for controller groups, which requires refactoring <code>wait(mode = "all")</code> for controller groups.</li>
+<li>Name every task and record every command.</li>
+<li>Switch URLs from <code>ws://</code> (and <code>wss://</code>) to <code>tcp://</code> (and <code>tls+tcp://</code>) (<a href="https://github.com/wlandau/crew/issues/193" class="external-link">#193</a>).</li>
+<li>Change R-level error status code to -1 (previously 1).</li>
+<li>Add a queue class for resolved tasks to make <code>pop()</code> and <code>collect()</code> more efficient. <code>pop()</code> is 64 times faster.</li>
+<li>For clarity, rename the <code>"launcher"</code> column of the results to <code>"controller"</code>.</li>
+<li>Log crashes and cancellations separately from ordinary errors in <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.10.2" id="crew-0102">crew 0.10.2<a class="anchor" aria-label="anchor" href="#crew-0102"></a></h2><p class="text-muted">CRAN release: 2024-11-15</p>

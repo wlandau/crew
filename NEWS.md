@@ -1,6 +1,6 @@
-# crew 1.0.0.9000 (development)
+# crew 1.0.0.9001 (development)
 
-
+* Change prefix in `name_worker()` from `crew-` to `crew-worker-`.
 
 # crew 1.0.0
 

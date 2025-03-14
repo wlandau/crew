@@ -23,6 +23,11 @@
 #'   out while waiting for certain synchronous operations to complete,
 #'   such as checking `mirai::status()`.
 #' @param retry_tasks Deprecated on 2025-01-13 (`crew` version 0.10.2.9002).
+#' @param options_ssh An options list produced by [crew_options_ssh()].
+#'   Configures SSH connections to `crew` workers on remote machines.
+#'   Those remote machines must already be running before the controller
+#'   starts, and [crew_options_ssh()] needs the IP addresses of those
+#'   running machines.
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' client <- crew_client()
@@ -40,6 +45,7 @@ crew_client <- function(
   tls_config = NULL,
   seconds_interval = 1,
   seconds_timeout = 60,
+  options_ssh = NULL,
   retry_tasks = NULL
 ) {
   crew_deprecate(
@@ -92,6 +98,7 @@ crew_client <- function(
     tls = tls,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
+    options_ssh = options_ssh,
     relay = crew_relay()
   )
   client$validate()
@@ -119,6 +126,7 @@ crew_class_client <- R6::R6Class(
     .tls = NULL,
     .seconds_interval = NULL,
     .seconds_timeout = NULL,
+    .options_ssh = NULL,
     .relay = NULL,
     .started = FALSE,
     .url = NULL,
@@ -146,6 +154,10 @@ crew_class_client <- R6::R6Class(
     #' @field seconds_timeout See [crew_client()].
     seconds_timeout = function() {
       .subset2(private, ".seconds_timeout")
+    },
+    #' @field options_ssh SSH options.
+    options_ssh = function() {
+      .subset2(private, ".options_ssh")
     },
     #' @field relay Relay object for event-driven programming on a downstream
     #'   condition variable.
@@ -181,6 +193,7 @@ crew_class_client <- R6::R6Class(
     #' @param tls Argument passed from [crew_client()].
     #' @param seconds_interval Argument passed from [crew_client()].
     #' @param seconds_timeout Argument passed from [crew_client()].
+    #' @param options_ssh Argument passed from [crew_client()].
     #' @param relay Argument passed from [crew_client()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -195,6 +208,7 @@ crew_class_client <- R6::R6Class(
       tls = NULL,
       seconds_interval = NULL,
       seconds_timeout = NULL,
+      options_ssh = NULL,
       relay = NULL
     ) {
       private$.host <- host
@@ -202,6 +216,7 @@ crew_class_client <- R6::R6Class(
       private$.tls <- tls
       private$.seconds_interval <- seconds_interval
       private$.seconds_timeout <- seconds_timeout
+      private$.options_ssh <- options_ssh
       private$.relay <- relay
     },
     #' @description Validate the client.
@@ -244,6 +259,9 @@ crew_class_client <- R6::R6Class(
         crew_assert(inherits(private$.dispatcher, "ps_handle"))
       )
       crew_assert(private$.seconds_timeout >= private$.seconds_interval)
+      if (!is.null(private$.options_ssh)) {
+        crew_options_ssh_validate(private$.options_ssh)
+      }
       crew_assert(inherits(private$.relay, "crew_class_relay"))
       private$.relay$validate()
       invisible()
@@ -255,14 +273,34 @@ crew_class_client <- R6::R6Class(
         return(invisible())
       }
       private$.profile <- crew_random_name()
-      mirai::daemons(
-        url = private$.tls$url(host = private$.host, port = private$.port),
+      args <- list(
         dispatcher = TRUE,
         seed = NULL,
         tls = private$.tls$client(),
         pass = private$.tls$password,
         .compute = private$.profile
       )
+      if (is.null(private$.options_ssh)) {
+        args$url <- private$.tls$url(
+          host = private$.host,
+          port = private$.port
+        )
+      } else {
+        # Not possible to test without a machine that allows SSH tunneling.
+        # nocov start
+        args$url <- private$.tls$url(host = "127.0.0.1", port = private$.port)
+        args$remote <- mirai::ssh_config(
+          remotes = sprintf(
+            "ssh://%s:%s",
+            private$.options_ssh$host, private$.options_ssh$port
+          ),
+          timeout = private$.options_ssh$seconds_timeout,
+          command = private$.options_ssh$command
+        )
+        args$n <- 1L
+        # nocov end
+      }
+      do.call(what = mirai::daemons, args = args)
       private$.url <- self$status()$daemons
       private$.client <- ps::ps_handle()
       # TODO: remove code that gets the dispatcher PID if the dispatcher

@@ -46,6 +46,8 @@ Other client:
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_client]{crew_client()}}.}
 
+\item{\code{options_ssh}}{SSH options.}
+
 \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
 
@@ -86,6 +88,7 @@ condition variable.}
   tls = NULL,
   seconds_interval = NULL,
   seconds_timeout = NULL,
+  options_ssh = NULL,
   relay = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -102,6 +105,8 @@ condition variable.}
 \item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{seconds_timeout}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+
+\item{\code{options_ssh}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{relay}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 }

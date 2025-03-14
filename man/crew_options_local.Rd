@@ -31,6 +31,7 @@ Options for the local \code{crew} launcher.
 }
 \seealso{
 Other options: 
-\code{\link{crew_options_metrics}()}
+\code{\link{crew_options_metrics}()},
+\code{\link{crew_options_ssh}()}
 }
 \concept{options}

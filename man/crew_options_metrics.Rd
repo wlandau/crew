@@ -33,7 +33,8 @@ A classed list of options for logging resource usage metrics.
 }
 \description{
 \code{\link[=crew_options_metrics]{crew_options_metrics()}} configures the
-\code{crew} to record resource usage metrics (such as CPU and memory usage)
+\code{crew} controller
+to record resource usage metrics (such as CPU and memory usage)
 for each running worker.
 To be activate resource usage logging,
 the \code{autometric} R package version 0.1.0 or higher
@@ -53,6 +54,7 @@ if those files are mixed with other messages.
 }
 \seealso{
 Other options: 
-\code{\link{crew_options_local}()}
+\code{\link{crew_options_local}()},
+\code{\link{crew_options_ssh}()}
 }
 \concept{options}

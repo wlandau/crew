@@ -2,7 +2,8 @@
 #' @export
 #' @family options
 #' @description [crew_options_metrics()] configures the
-#'   `crew` to record resource usage metrics (such as CPU and memory usage)
+#'   `crew` controller
+#'   to record resource usage metrics (such as CPU and memory usage)
 #'   for each running worker.
 #'   To be activate resource usage logging,
 #'   the `autometric` R package version 0.1.0 or higher

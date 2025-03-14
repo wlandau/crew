@@ -14,6 +14,7 @@ crew_client(
   tls_config = NULL,
   seconds_interval = 1,
   seconds_timeout = 60,
+  options_ssh = NULL,
   retry_tasks = NULL
 )
 }
@@ -46,6 +47,12 @@ such as checking \code{mirai::status()}}
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete,
 such as checking \code{mirai::status()}.}
+
+\item{options_ssh}{An options list produced by \code{\link[=crew_options_ssh]{crew_options_ssh()}}.
+Configures SSH connections to \code{crew} workers on remote machines.
+Those remote machines must already be running before the controller
+starts, and \code{\link[=crew_options_ssh]{crew_options_ssh()}} needs the IP addresses of those
+running machines.}
 
 \item{retry_tasks}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 }

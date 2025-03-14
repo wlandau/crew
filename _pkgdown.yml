@@ -52,6 +52,7 @@ reference:
   contents:
   - crew_options_local
   - crew_options_metrics
+  - crew_options_ssh
 - title: TLS configuration
   contents:
   - crew_tls

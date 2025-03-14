@@ -1,6 +1,6 @@
 linters: linters_with_defaults(
-  cyclocomp_linter = NULL,
   object_length_linter = NULL,
   object_name_linter = NULL,
-  object_usage_linter = NULL)
+  object_usage_linter = NULL,
+  return_linter = NULL)
 exclusions: list("vignettes/launcher_plugins.Rmd")

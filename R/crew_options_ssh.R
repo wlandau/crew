@@ -21,6 +21,7 @@
 #'   The length of `host` equals the number of workers that
 #'   will launch, and you can repeat the same IP addresses if you want
 #'   to launch multiple workers on the same machine.
+#'   In fact, `host` overrides the `workers` argument of the launcher.
 #' @param port Positive integer of length 1, port number to use for SSH.
 #' @param seconds_timeout Positive numeric of length 1,
 #'   number of seconds to allow before timing out.

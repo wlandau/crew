@@ -13,7 +13,8 @@ These IPs/hosts must be known and already running before you
 start the controller.
 The length of \code{host} equals the number of workers that
 will launch, and you can repeat the same IP addresses if you want
-to launch multiple workers on the same machine.}
+to launch multiple workers on the same machine.
+In fact, \code{host} overrides the \code{workers} argument of the launcher.}
 
 \item{port}{Positive integer of length 1, port number to use for SSH.}
 

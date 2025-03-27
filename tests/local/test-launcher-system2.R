@@ -21,6 +21,7 @@ crew_test("custom launcher plugin based on system2()", {
     host = NULL,
     port = NULL,
     tls = crew::crew_tls(),
+    serialization = NULL,
     seconds_interval = 0.5,
     seconds_timeout = 10,
     seconds_launch = 30,
@@ -37,6 +38,7 @@ crew_test("custom launcher plugin based on system2()", {
       host = host,
       port = port,
       tls = tls,
+      serialization = serialization,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout
     )

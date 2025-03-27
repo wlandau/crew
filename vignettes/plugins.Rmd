@@ -114,6 +114,7 @@ crew_controller_custom <- function(
   host = NULL,
   port = NULL,
   tls = crew::crew_tls(),
+  serialization = NULL,
   seconds_interval = 0.5,
   seconds_timeout = 30,
   seconds_launch = 30,
@@ -134,6 +135,7 @@ crew_controller_custom <- function(
     host = host,
     port = port,
     tls = tls,
+    serialization = serialization,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout
   )

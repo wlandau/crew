@@ -29,6 +29,7 @@ crew_test("custom launcher", {
     host = "127.0.0.1",
     port = NULL,
     tls = crew::crew_tls(mode = "none"),
+    serialization = NULL,
     seconds_interval = 0.5,
     seconds_timeout = 5,
     seconds_launch = 30,
@@ -46,6 +47,7 @@ crew_test("custom launcher", {
       host = host,
       port = port,
       tls = tls,
+      serialization = serialization,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout
     )
@@ -123,6 +125,7 @@ crew_test("custom launcher with local asyncs launch errors", {
     host = "127.0.0.1",
     port = NULL,
     tls = crew::crew_tls(mode = "none"),
+    serialization = NULL,
     seconds_interval = 0.5,
     seconds_timeout = 5,
     seconds_launch = 30,
@@ -141,6 +144,7 @@ crew_test("custom launcher with local asyncs launch errors", {
       host = host,
       port = port,
       tls = tls,
+      serialization = serialization,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout
     )
@@ -225,6 +229,7 @@ crew_test("custom launcher with local asyncs termination errors", {
     host = "127.0.0.1",
     port = NULL,
     tls = crew::crew_tls(mode = "none"),
+    serialization = NULL,
     seconds_interval = 0.5,
     seconds_timeout = 5,
     seconds_launch = 30,
@@ -243,6 +248,7 @@ crew_test("custom launcher with local asyncs termination errors", {
       host = host,
       port = port,
       tls = tls,
+      serialization = serialization,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout
     )
@@ -337,6 +343,7 @@ crew_test("custom launcher with async internal launcher tasks", {
     host = "127.0.0.1",
     port = NULL,
     tls = crew::crew_tls(mode = "none"),
+    serialization = NULL,
     seconds_interval = 0.5,
     seconds_timeout = 5,
     seconds_launch = 30,
@@ -355,6 +362,7 @@ crew_test("custom launcher with async internal launcher tasks", {
       host = host,
       port = port,
       tls = tls,
+      serialization = serialization,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout
     )
@@ -433,6 +441,7 @@ crew_test("can terminate a lost worker with an async launch", {
     host = "127.0.0.1",
     port = NULL,
     tls = crew::crew_tls(mode = "none"),
+    serialization = NULL,
     seconds_interval = 0.5,
     seconds_timeout = 5,
     seconds_launch = 30,
@@ -450,6 +459,7 @@ crew_test("can terminate a lost worker with an async launch", {
       host = host,
       port = port,
       tls = tls,
+      serialization = serialization,
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout
     )

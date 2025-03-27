@@ -123,7 +123,7 @@ crew_class_client <- R6::R6Class(
     .started = FALSE,
     .url = NULL,
     .profile = NULL,
-    .condition = nanonext::cv(),
+    .condition = NULL,
     .client = NULL, # TODO: remove if/when the dispatcher becomes a thread.
     .dispatcher = NULL # TODO: remove if/when the dispatcher becomes a thread.
   ),
@@ -207,6 +207,9 @@ crew_class_client <- R6::R6Class(
       private$.tls <- tls
       private$.seconds_interval <- seconds_interval
       private$.seconds_timeout <- seconds_timeout
+      # Creating the CV here instead of as a default R6 field value
+      # somehow appeases covr and R CMD check.
+      private$.condition <- nanonext::cv()
       private$.relay <- relay
     },
     #' @description Validate the client.

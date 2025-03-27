@@ -23,6 +23,7 @@ crew_controller_local <- function(
   tls = crew::crew_tls(),
   tls_enable = NULL,
   tls_config = NULL,
+  serialization = NULL,
   seconds_interval = 1,
   seconds_timeout = 60,
   seconds_launch = 30,
@@ -104,6 +105,7 @@ crew_controller_local <- function(
     tls = tls,
     tls_enable = tls_enable,
     tls_config = tls_config,
+    serialization = serialization,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout
   )

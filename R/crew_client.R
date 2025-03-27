@@ -22,6 +22,12 @@
 #' @param seconds_timeout Number of seconds until timing
 #'   out while waiting for certain synchronous operations to complete,
 #'   such as checking `mirai::status()`.
+#' @param serialization Either `NULL` (default) or an object produced by
+#'   [mirai::serial_config()] to control the serialization
+#'   of data sent to workers. This can help with either more efficient
+#'   data transfers or to preserve attributes of otherwise
+#'   non-exportable objects (such as `torch` tensors or `arrow` tables).
+#'   See `?mirai::serial_config` for details.
 #' @param retry_tasks Deprecated on 2025-01-13 (`crew` version 0.10.2.9002).
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -38,6 +44,7 @@ crew_client <- function(
   tls = crew::crew_tls(),
   tls_enable = NULL,
   tls_config = NULL,
+  serialization = NULL,
   seconds_interval = 1,
   seconds_timeout = 60,
   retry_tasks = NULL
@@ -90,6 +97,7 @@ crew_client <- function(
     host = host,
     port = port,
     tls = tls,
+    serialization = serialization,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
     relay = crew_relay()
@@ -117,6 +125,7 @@ crew_class_client <- R6::R6Class(
     .host = NULL,
     .port = NULL,
     .tls = NULL,
+    .serialization = NULL,
     .seconds_interval = NULL,
     .seconds_timeout = NULL,
     .relay = NULL,
@@ -139,6 +148,10 @@ crew_class_client <- R6::R6Class(
     #' @field tls See [crew_client()].
     tls = function() {
       .subset2(private, ".tls")
+    },
+    #' @field serialization See [crew_client()].
+    serialization = function() {
+      .subset2(private, ".serialization")
     },
     #' @field seconds_interval See [crew_client()].
     seconds_interval = function() {
@@ -184,6 +197,7 @@ crew_class_client <- R6::R6Class(
     #' @param host Argument passed from [crew_client()].
     #' @param port Argument passed from [crew_client()].
     #' @param tls Argument passed from [crew_client()].
+    #' @param serialization Argument passed from [crew_client()].
     #' @param seconds_interval Argument passed from [crew_client()].
     #' @param seconds_timeout Argument passed from [crew_client()].
     #' @param relay Argument passed from [crew_client()].
@@ -198,6 +212,7 @@ crew_class_client <- R6::R6Class(
       host = NULL,
       port = NULL,
       tls = NULL,
+      serialization = NULL,
       seconds_interval = NULL,
       seconds_timeout = NULL,
       relay = NULL
@@ -205,6 +220,7 @@ crew_class_client <- R6::R6Class(
       private$.host <- host
       private$.port <- port
       private$.tls <- tls
+      private$.serialization <- serialization
       private$.seconds_interval <- seconds_interval
       private$.seconds_timeout <- seconds_timeout
       # Creating the CV here instead of as a default R6 field value
@@ -253,6 +269,11 @@ crew_class_client <- R6::R6Class(
       )
       crew_assert(private$.seconds_timeout >= private$.seconds_interval)
       crew_assert(inherits(private$.relay, "crew_class_relay"))
+      if_any(
+        is.null(private$.serialization),
+        NULL,
+        crew_assert(is.list(private$.serialization))
+      )
       private$.relay$validate()
       invisible()
     },
@@ -275,6 +296,7 @@ crew_class_client <- R6::R6Class(
         url = private$.tls$url(host = private$.host, port = private$.port),
         dispatcher = TRUE,
         seed = NULL,
+        serial = private$.serialization,
         tls = private$.tls$client(),
         pass = private$.tls$password,
         .compute = private$.profile

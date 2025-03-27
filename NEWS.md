@@ -1,8 +1,9 @@
-# crew 1.0.0.9003 (development)
+# crew 1.0.0.9004 (development)
 
 * Change prefix in `name_worker()` from `crew-` to `crew-worker-`.
 * Use `call_mirai()` instead of the now deprecated `call_mirai_()` (@shikokuchuo, #198).
 * Add `crew_controller_sequential()` (#205).
+* Add a `serialization` argument to `crew_client()` (#204).
 
 # crew 1.0.0
 

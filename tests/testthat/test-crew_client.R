@@ -22,6 +22,7 @@ crew_test("crew_client() active bindings", {
   expect_null(client$profile)
   expect_null(client$client)
   expect_null(client$dispatcher)
+  expect_null(client$serialization)
   expect_silent(client$validate())
 })
 

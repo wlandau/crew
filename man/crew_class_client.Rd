@@ -66,6 +66,8 @@ condition variable.}
 \itemize{
 \item \href{#method-crew_class_client-new}{\code{crew_class_client$new()}}
 \item \href{#method-crew_class_client-validate}{\code{crew_class_client$validate()}}
+\item \href{#method-crew_class_client-set_started}{\code{crew_class_client$set_started()}}
+\item \href{#method-crew_class_client-set_terminated}{\code{crew_class_client$set_terminated()}}
 \item \href{#method-crew_class_client-start}{\code{crew_class_client$start()}}
 \item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
 \item \href{#method-crew_class_client-condition}{\code{crew_class_client$condition()}}
@@ -131,6 +133,44 @@ client$terminate()
 Validate the client.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_client$validate()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_client-set_started"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-set_started}{}}}
+\subsection{Method \code{set_started()}}{
+Register the client as started.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$set_started()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Exported to implement the sequential controller.
+Only meant to be called manually inside the client or
+the sequential controller.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_client-set_terminated"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-set_terminated}{}}}
+\subsection{Method \code{set_terminated()}}{
+Register the client as terminated.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$set_terminated()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Exported to implement the sequential controller.
+Only meant to be called manually inside the client or
+the sequential controller.
 }
 
 \subsection{Returns}{

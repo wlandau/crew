@@ -1,6 +1,6 @@
 #' @title Create a controller object from a client and launcher.
 #' @export
-#' @family controller
+#' @family general controllers
 #' @description This function is for developers of `crew` launcher plugins.
 #'   Users should use a specific controller helper such as
 #'   [crew_controller_local()].
@@ -78,7 +78,7 @@ crew_controller <- function(
 
 #' @title Controller class
 #' @export
-#' @family controller
+#' @family general controllers
 #' @description `R6` class for controllers.
 #' @details See [crew_controller()].
 #' @examples
@@ -131,6 +131,29 @@ crew_class_controller <- R6::R6Class(
       .subset2(queue, "set")(names = resolved)
       private$.resolved <- observed
     },
+    .name_new_task = function(name) {
+      tasks <- .subset2(private, ".tasks")
+      if (is.null(name)) {
+        name <- name_task_tempfile()
+        name <- if_any(
+          is.null(.subset2(tasks, name)),
+          name,
+          name_task_nanonext()
+        )
+      }
+      if (!is.null(.subset2(tasks, name))) {
+        crew_error(
+          message = paste(
+            "crew task name",
+            name,
+            "already found in the task list. Before pushing a task",
+            "of the same name, please wait for it to resolve, then",
+            "use pop() or collect() to remove it from the controller."
+          )
+        )
+      }
+      name
+    },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
         private$.client$relay$wait(throttle = private$.launcher$throttle)
@@ -180,7 +203,7 @@ crew_class_controller <- R6::R6Class(
     }
   ),
   active = list(
-    #' @field client Router object.
+    #' @field client Client object.
     client = function() {
       .subset2(private, ".client")
     },
@@ -231,7 +254,7 @@ crew_class_controller <- R6::R6Class(
   public = list(
     #' @description `mirai` controller constructor.
     #' @return An `R6` controller object.
-    #' @param client Router object. See [crew_controller()].
+    #' @param client Client object. See [crew_controller()].
     #' @param launcher Launcher object. See [crew_controller()].
     #' @param crashes_max See [crew_controller()].
     #' @param backup See [crew_controller()].
@@ -603,6 +626,7 @@ crew_class_controller <- R6::R6Class(
       controller = NULL
     ) {
       .subset2(self, "start")()
+      name <- private$.name_new_task(name)
       if (substitute) {
         command <- substitute(command)
       }
@@ -610,26 +634,6 @@ crew_class_controller <- R6::R6Class(
         .timeout <- NULL
       } else {
         .timeout <- seconds_timeout * 1000
-      }
-      tasks <- .subset2(private, ".tasks")
-      if (is.null(name)) {
-        name <- name_task_tempfile()
-        name <- if_any(
-          is.null(.subset2(tasks, name)),
-          name,
-          name_task_nanonext()
-        )
-      }
-      if (!is.null(.subset2(tasks, name))) {
-        crew_error(
-          message = paste(
-            "crew task name",
-            name,
-            "already found in the task list. Before pushing a task",
-            "of the same name, please wait for it to resolve, then",
-            "use pop() or collect() to remove it from the controller."
-          )
-        )
       }
       backup <- .subset2(private, ".backup")
       if (!is.null(backup)) {
@@ -669,6 +673,7 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = .subset2(.subset2(private, ".client"), "profile")
       )
+      tasks <- .subset2(private, ".tasks")
       tasks[[name]] <- task
       private$.pushed <- .subset2(self, "pushed") + 1L
       if (scale) {
@@ -1624,6 +1629,7 @@ crew_class_controller <- R6::R6Class(
       out
     },
     #' @description Cancel one or more tasks.
+    #' @return `NULL` (invisibly).
     #' @param names Character vector of names of tasks to cancel.
     #'   Those names must have been manually supplied by `push()`.
     #' @param all `TRUE` to cancel all tasks, `FALSE` otherwise.

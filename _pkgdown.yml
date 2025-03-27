@@ -3,7 +3,6 @@ template:
   bootstrap: 5
   bslib:
     primary: "#152640"
-
 articles:
 - title: How to use `crew`
   navbar: How to use `crew`
@@ -18,7 +17,6 @@ articles:
   contents:
   - plugins
   - risks
-
 reference:
 - title: Package help
   contents:
@@ -32,7 +30,11 @@ reference:
   - crew_controller_local
   - crew_launcher_local
   - crew_class_launcher_local
-- title: Controllers
+- title: Sequential controller
+  contents:
+  - crew_controller_sequential
+  - crew_class_controller_sequential
+- title: General controllers
   contents:
   - crew_controller
   - crew_class_controller

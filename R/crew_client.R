@@ -248,6 +248,22 @@ crew_class_client <- R6::R6Class(
       private$.relay$validate()
       invisible()
     },
+    #' @description Register the client as started.
+    #' @details Exported to implement the sequential controller.
+    #'   Only meant to be called manually inside the client or
+    #'   the sequential controller.
+    #' @return `NULL` (invisibly).
+    set_started = function() {
+      private$.started <- TRUE
+    },
+    #' @description Register the client as terminated.
+    #' @details Exported to implement the sequential controller.
+    #'   Only meant to be called manually inside the client or
+    #'   the sequential controller.
+    #' @return `NULL` (invisibly).
+    set_terminated = function() {
+      private$.started <- FALSE
+    },
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
     start = function() {
@@ -275,7 +291,7 @@ crew_class_client <- R6::R6Class(
       # End dispatcher code.
       private$.relay$set_from(self$condition())
       private$.relay$start()
-      private$.started <- TRUE
+      self$set_started()
       invisible()
     },
     #' @description Stop the mirai client and disconnect from the
@@ -289,7 +305,7 @@ crew_class_client <- R6::R6Class(
       private$.profile <- NULL
       private$.relay$terminate()
       private$.url <- NULL
-      private$.started <- FALSE
+      self$set_terminated()
       # TODO: if the dispatcher process becomes a C thread,
       # delete these superfluous checks on the dispatcher.
       # Begin dispatcher checks.

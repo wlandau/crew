@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,6 +99,10 @@ condition variable.</p></dd>
 <dd><p>Compute profile of the client.</p></dd>
 
 
+<dt><code>condition</code></dt>
+<dd><p>Condition variable of the client.</p></dd>
+
+
 <dt><code>client</code></dt>
 <dd><p>Process ID of the local process running the client.</p></dd>
 
@@ -117,9 +121,9 @@ condition variable.</p></dd>
 
 <ul><li><p><a href="#method-crew_class_client-new"><code>crew_class_client$new()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-validate"><code>crew_class_client$validate()</code></a></p></li>
+<li><p><a href="#method-crew_class_client-set_started"><code>crew_class_client$set_started()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-start"><code>crew_class_client$start()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-terminate"><code>crew_class_client$terminate()</code></a></p></li>
-<li><p><a href="#method-crew_class_client-condition"><code>crew_class_client$condition()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-resolved"><code>crew_class_client$resolved()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-status"><code>crew_class_client$status()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-pids"><code>crew_class_client$pids()</code></a></p></li>
@@ -192,11 +196,18 @@ condition variable.</p></dd>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_client-start"></a><div class="section">
-<h3 id="method-start-">Method <code><a href="https://rdrr.io/r/stats/start.html" class="external-link">start()</a></code><a class="anchor" aria-label="anchor" href="#method-start-"></a></h3>
-<p>Start listening for workers on the available sockets.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_client-set_started"></a><div class="section">
+<h3 id="method-set-started-">Method <code>set_started()</code><a class="anchor" aria-label="anchor" href="#method-set-started-"></a></h3>
+<p>Register the client as started.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">set_started</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="details-1">Details<a class="anchor" aria-label="anchor" href="#details-1"></a></h4>
+<p>Exported to implement the sequential controller.
+Only meant to be called manually inside the client or
+the sequential controller.</p>
 </div>
 
 <div class="section">
@@ -204,12 +215,11 @@ condition variable.</p></dd>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_client-terminate"></a><div class="section">
-<h3 id="method-terminate-">Method <code>terminate()</code><a class="anchor" aria-label="anchor" href="#method-terminate-"></a></h3>
-<p>Stop the mirai client and disconnect from the
-worker websockets.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_client-start"></a><div class="section">
+<h3 id="method-start-">Method <code><a href="https://rdrr.io/r/stats/start.html" class="external-link">start()</a></code><a class="anchor" aria-label="anchor" href="#method-start-"></a></h3>
+<p>Start listening for workers on the available sockets.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -217,19 +227,17 @@ worker websockets.</p><div class="section">
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_client-condition"></a><div class="section">
-<h3 id="method-condition-">Method <code>condition()</code><a class="anchor" aria-label="anchor" href="#method-condition-"></a></h3>
-<p>Get the <code>nanonext</code> condition variable which tasks signal
-on resolution.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_client-terminate"></a><div class="section">
+<h3 id="method-terminate-">Method <code>terminate()</code><a class="anchor" aria-label="anchor" href="#method-terminate-"></a></h3>
+<p>Stop the mirai client and disconnect from the
+worker websockets.</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">condition</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
-<p>The <code>nanonext</code> condition variable which tasks signal
-on resolution. The return value is <code>NULL</code> if the client
-is not running.</p>
+<p><code>NULL</code> (invisibly).</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_client-resolved"></a><div class="section">
@@ -253,7 +261,7 @@ return the <code>mirai</code> status of the compute profile.</p><div class="sect
 </div>
 
 <div class="section">
-<h4 id="details-1">Details<a class="anchor" aria-label="anchor" href="#details-1"></a></h4>
+<h4 id="details-2">Details<a class="anchor" aria-label="anchor" href="#details-2"></a></h4>
 <p>Should only be called by the launcher, never by the user.
 The returned <code>events</code> field changes on every call and must be
 interpreted by the launcher before it vanishes.</p>

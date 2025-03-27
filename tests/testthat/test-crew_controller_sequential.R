@@ -1,3 +1,17 @@
+crew_test("crew_controller_sequential() method and signature compatibility", {
+  x <- crew_controller_local()
+  y <- crew_controller_sequential()
+  expect_equal(sort(names(x)), sort(names(y)))
+  for (field in names(x)) {
+    function_x <- is.function(x[[field]])
+    function_y <- is.function(y[[field]])
+    expect_equal(function_x, function_y)
+    if (function_x) {
+      expect_equal(names(formals(x[[field]])), names(formals(y[[field]])))
+    }
+  }
+})
+
 test_that("basic methods", {
   x <- crew_controller_sequential()
   expect_null(x$start())

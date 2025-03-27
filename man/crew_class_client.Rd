@@ -55,6 +55,8 @@ condition variable.}
 
 \item{\code{profile}}{Compute profile of the client.}
 
+\item{\code{condition}}{Condition variable of the client.}
+
 \item{\code{client}}{Process ID of the local process running the client.}
 
 \item{\code{dispatcher}}{Process ID of the \code{mirai} dispatcher}
@@ -66,9 +68,9 @@ condition variable.}
 \itemize{
 \item \href{#method-crew_class_client-new}{\code{crew_class_client$new()}}
 \item \href{#method-crew_class_client-validate}{\code{crew_class_client$validate()}}
+\item \href{#method-crew_class_client-set_started}{\code{crew_class_client$set_started()}}
 \item \href{#method-crew_class_client-start}{\code{crew_class_client$start()}}
 \item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
-\item \href{#method-crew_class_client-condition}{\code{crew_class_client$condition()}}
 \item \href{#method-crew_class_client-resolved}{\code{crew_class_client$resolved()}}
 \item \href{#method-crew_class_client-status}{\code{crew_class_client$status()}}
 \item \href{#method-crew_class_client-pids}{\code{crew_class_client$pids()}}
@@ -138,6 +140,25 @@ Validate the client.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_client-set_started"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-set_started}{}}}
+\subsection{Method \code{set_started()}}{
+Register the client as started.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$set_started()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+Exported to implement the sequential controller.
+Only meant to be called manually inside the client or
+the sequential controller.
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_client-start"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-start}{}}}
 \subsection{Method \code{start()}}{
@@ -162,22 +183,6 @@ worker websockets.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-condition"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-condition}{}}}
-\subsection{Method \code{condition()}}{
-Get the \code{nanonext} condition variable which tasks signal
-on resolution.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$condition()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-The \code{nanonext} condition variable which tasks signal
-on resolution. The return value is \code{NULL} if the client
-is not running.
 }
 }
 \if{html}{\out{<hr>}}

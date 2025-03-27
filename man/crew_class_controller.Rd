@@ -44,7 +44,7 @@ Other controller:
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{client}}{Router object.}
+\item{\code{client}}{Client object.}
 
 \item{\code{launcher}}{Launcher object.}
 
@@ -121,7 +121,7 @@ auto-scaling is currently running}
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{client}}{Router object. See \code{\link[=crew_controller]{crew_controller()}}.}
+\item{\code{client}}{Client object. See \code{\link[=crew_controller]{crew_controller()}}.}
 
 \item{\code{launcher}}{Launcher object. See \code{\link[=crew_controller]{crew_controller()}}.}
 
@@ -1306,6 +1306,9 @@ Those names must have been manually supplied by \code{push()}.}
 \code{all = TRUE} supersedes the \code{names} argument.}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}

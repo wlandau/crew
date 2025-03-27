@@ -12,6 +12,7 @@ crew_controller_local(
   tls = crew::crew_tls(),
   tls_enable = NULL,
   tls_config = NULL,
+  serialization = NULL,
   seconds_interval = 1,
   seconds_timeout = 60,
   seconds_launch = 30,
@@ -56,6 +57,13 @@ Use argument \code{tls} instead.}
 
 \item{tls_config}{Deprecated on 2023-09-15 in version 0.4.1.
 Use argument \code{tls} instead.}
+
+\item{serialization}{Either \code{NULL} (default) or an object produced by
+\code{\link[mirai:serial_config]{mirai::serial_config()}} to control the serialization
+of data sent to workers. This can help with either more efficient
+data transfers or to preserve attributes of otherwise
+non-exportable objects (such as \code{torch} tensors or \code{arrow} tables).
+See \code{?mirai::serial_config} for details.}
 
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal

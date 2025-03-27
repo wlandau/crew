@@ -860,3 +860,34 @@ crew_test("backup cannot be a controller group", {
   b <- crew_controller_group(a)
   expect_crew_error(crew_controller_local(backup = b))
 })
+
+crew_test("serialization", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(
+    workers = 1L,
+    seconds_idle = 360,
+    crashes_max = 2L,
+    serialization = mirai::serial_config(
+      class = "custom",
+      sfunc = function(x) {
+        "serialization successful"
+      },
+      ufunc = identity
+    )
+  )
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  x$start()
+  x$push(
+    object,
+    data = list(object = structure(list("abc"), class = "custom"))
+  )
+  x$wait(seconds_timeout = 30)
+  out <- x$pop()
+  expect_equal(out$status, "success")
+})

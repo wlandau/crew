@@ -42,6 +42,8 @@ Other client:
 
 \item{\code{tls}}{See \code{\link[=crew_client]{crew_client()}}.}
 
+\item{\code{serialization}}{See \code{\link[=crew_client]{crew_client()}}.}
+
 \item{\code{seconds_interval}}{See \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_client]{crew_client()}}.}
@@ -86,6 +88,7 @@ condition variable.}
   host = NULL,
   port = NULL,
   tls = NULL,
+  serialization = NULL,
   seconds_interval = NULL,
   seconds_timeout = NULL,
   relay = NULL
@@ -100,6 +103,8 @@ condition variable.}
 \item{\code{port}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{tls}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+
+\item{\code{serialization}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 

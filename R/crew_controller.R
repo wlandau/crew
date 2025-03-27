@@ -1,6 +1,6 @@
 #' @title Create a controller object from a client and launcher.
 #' @export
-#' @family general controllers
+#' @family controller
 #' @description This function is for developers of `crew` launcher plugins.
 #'   Users should use a specific controller helper such as
 #'   [crew_controller_local()].
@@ -78,7 +78,7 @@ crew_controller <- function(
 
 #' @title Controller class
 #' @export
-#' @family general controllers
+#' @family controller
 #' @description `R6` class for controllers.
 #' @details See [crew_controller()].
 #' @examples
@@ -110,26 +110,24 @@ crew_class_controller <- R6::R6Class(
     .autoscaling = FALSE,
     .queue = NULL,
     .resolved = -1L,
-    .resolve = function(force) {
-      queue <- .subset2(private, ".queue")
-      if ((!force) && .subset2(queue, "nonempty")()) {
-        return()
-      }
-      observed <- .subset2(.subset2(private, ".client"), "resolved")()
-      expected <- .subset2(private, ".resolved")
-      if ((!force) && (observed == expected)) {
-        return()
-      }
-      tasks <- .subset2(private, ".tasks")
-      status <- eapply(
-        env = tasks,
-        FUN = nanonext::.unresolved,
-        all.names = TRUE,
-        USE.NAMES = TRUE
+    .register_started = function() {
+      private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
+      private$.pushed <- 0L
+      private$.popped <- 0L
+      private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
+      private$.summary <- list(
+        controller = private$.launcher$name,
+        tasks = 0L,
+        seconds = 0,
+        success = 0L,
+        error = 0L,
+        crash = 0L,
+        cancel = 0L,
+        warning = 0L
       )
-      resolved <- names(status)[!as.logical(status)]
-      .subset2(queue, "set")(names = resolved)
-      private$.resolved <- observed
+      private$.backlog <- character(0L)
+      private$.queue <- crew_queue()
+      private$.resolved <- -1L
     },
     .name_new_task = function(name) {
       tasks <- .subset2(private, ".tasks")
@@ -153,6 +151,32 @@ crew_class_controller <- R6::R6Class(
         )
       }
       name
+    },
+    .push_task = function(name, task) {
+      tasks <- .subset2(private, ".tasks")
+      tasks[[name]] <- task
+      private$.pushed <- .subset2(private, ".pushed") + 1L
+    },
+    .resolve = function(force) {
+      queue <- .subset2(private, ".queue")
+      if ((!force) && .subset2(queue, "nonempty")()) {
+        return()
+      }
+      observed <- .subset2(.subset2(private, ".client"), "resolved")()
+      expected <- .subset2(private, ".resolved")
+      if ((!force) && (observed == expected)) {
+        return()
+      }
+      tasks <- .subset2(private, ".tasks")
+      status <- eapply(
+        env = tasks,
+        FUN = nanonext::.unresolved,
+        all.names = TRUE,
+        USE.NAMES = TRUE
+      )
+      resolved <- names(status)[!as.logical(status)]
+      .subset2(queue, "set")(names = resolved)
+      private$.resolved <- observed
     },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
@@ -431,23 +455,7 @@ crew_class_controller <- R6::R6Class(
           url = private$.client$url,
           profile = private$.client$profile
         )
-        private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
-        private$.pushed <- 0L
-        private$.popped <- 0L
-        private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
-        private$.summary <- list(
-          controller = private$.launcher$name,
-          tasks = 0L,
-          seconds = 0,
-          success = 0L,
-          error = 0L,
-          crash = 0L,
-          cancel = 0L,
-          warning = 0L
-        )
-        private$.backlog <- character(0L)
-        private$.queue <- crew_queue()
-        private$.resolved <- -1L
+        private$.register_started()
       }
       invisible()
     },
@@ -673,9 +681,7 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = .subset2(.subset2(private, ".client"), "profile")
       )
-      tasks <- .subset2(private, ".tasks")
-      tasks[[name]] <- task
-      private$.pushed <- .subset2(self, "pushed") + 1L
+      .subset2(private, ".push_task")(name, task)
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
       }

@@ -123,6 +123,7 @@ crew_class_client <- R6::R6Class(
     .started = FALSE,
     .url = NULL,
     .profile = NULL,
+    .condition = nanonext::cv(),
     .client = NULL, # TODO: remove if/when the dispatcher becomes a thread.
     .dispatcher = NULL # TODO: remove if/when the dispatcher becomes a thread.
   ),
@@ -163,6 +164,10 @@ crew_class_client <- R6::R6Class(
     #' @field profile Compute profile of the client.
     profile = function() {
       .subset2(private, ".profile")
+    },
+    #' @field condition Condition variable of the client.
+    condition = function() {
+      .subset2(private, ".condition")
     },
     #' @field client Process ID of the local process running the client.
     client = function() {
@@ -256,14 +261,6 @@ crew_class_client <- R6::R6Class(
     set_started = function() {
       private$.started <- TRUE
     },
-    #' @description Register the client as terminated.
-    #' @details Exported to implement the sequential controller.
-    #'   Only meant to be called manually inside the client or
-    #'   the sequential controller.
-    #' @return `NULL` (invisibly).
-    set_terminated = function() {
-      private$.started <- FALSE
-    },
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
     start = function() {
@@ -289,9 +286,13 @@ crew_class_client <- R6::R6Class(
         private$.dispatcher <- ps::ps_handle(pid = pid)
       }
       # End dispatcher code.
-      private$.relay$set_from(self$condition())
+      private$.condition <- mirai::nextget(
+        x = "cv",
+        .compute = private$.profile
+      )
+      private$.relay$set_from(.subset2(private, ".condition"))
       private$.relay$start()
-      self$set_started()
+      private$.started <- TRUE
       invisible()
     },
     #' @description Stop the mirai client and disconnect from the
@@ -301,11 +302,14 @@ crew_class_client <- R6::R6Class(
       if (!isTRUE(private$.started)) {
         return(invisible())
       }
-      mirai::daemons(n = 0L, .compute = private$.profile)
+      if (!is.null(private$.profile)) {
+        mirai::daemons(n = 0L, .compute = private$.profile)
+      }
       private$.profile <- NULL
+      private$.condition <- nanonext::cv()
       private$.relay$terminate()
       private$.url <- NULL
-      self$set_terminated()
+      private$.started <- FALSE
       # TODO: if the dispatcher process becomes a C thread,
       # delete these superfluous checks on the dispatcher.
       # Begin dispatcher checks.
@@ -339,28 +343,10 @@ crew_class_client <- R6::R6Class(
       # End dispatcher checks.
       invisible()
     },
-    #' @description Get the `nanonext` condition variable which tasks signal
-    #'   on resolution.
-    #' @return The `nanonext` condition variable which tasks signal
-    #'   on resolution. The return value is `NULL` if the client
-    #'   is not running.
-    condition = function() {
-      profile <- .subset2(private, ".profile")
-      if (is.null(profile)) {
-        NULL
-      } else {
-        mirai::nextget(x = "cv", .compute = profile)
-      }
-    },
     #' @description Get the true value of the `nanonext` condition variable.
     #' @return The value of the `nanonext` condition variable.
     resolved = function() {
-      condition <- .subset2(self, "condition")()
-      if (is.null(condition)) {
-        0L
-      } else {
-        nanonext::cv_value(condition)
-      }
+      nanonext::cv_value(.subset2(private, ".condition"))
     },
     #' @description Internal function:
     #'   return the `mirai` status of the compute profile.

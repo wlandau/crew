@@ -36,34 +36,6 @@ crew_class_controller_sequential <- R6::R6Class(
   inherit = crew_class_controller,
   cloneable = FALSE,
   public = list(
-    #' @description Number of resolved tasks.
-    #' @details `resolved()` is cumulative: it counts all the resolved
-    #'   tasks over the entire lifetime of the controller session.
-    #' @return Non-negative integer of length 1,
-    #'   number of resolved tasks.
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
-    resolved = function(controllers = NULL) {
-      .subset2(private, ".pushed")
-    },
-    #' @description Number of unresolved `mirai()` tasks.
-    #' @return Non-negative integer of length 1,
-    #'   number of unresolved `mirai()` tasks.
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
-    unresolved = function(controllers = NULL) {
-      0L
-    },
-    #' @description Check if the controller is saturated.
-    #' @details The sequential controller is never saturated.
-    #' @return Always `FALSE` for the sequential controller.
-    #' @param collect Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
-    #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
-    #' @param controller Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
-    saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
-      FALSE
-    },
     #' @description Start the controller if it is not already started.
     #' @details For the sequential controller, there is nothing to do
     #'   except register the client as started.
@@ -71,7 +43,10 @@ crew_class_controller_sequential <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     start = function(controllers = NULL) {
-      .subset2(.subset2(self, "client"), "set_started")()
+      if (!.subset2(.subset2(self, "client"), "started")) {
+        private$.client$set_started()
+        private$.register_started()
+      }
       invisible()
     },
     #' @description Does nothing for the sequential controller.
@@ -192,9 +167,9 @@ crew_class_controller_sequential <- R6::R6Class(
         ),
         class = "mirai"
       )
-      tasks <- .subset2(private, ".tasks")
-      tasks[[name]] <- task
-      private$.pushed <- .subset2(self, "pushed") + 1L
+      .subset2(private, ".push_task")(name, task)
+      client <- .subset2(private, ".client")
+      nanonext::cv_signal(.subset2(client, "condition"))
       invisible(task)
     },
     #' @description Not applicable to the sequential controller.
@@ -237,14 +212,6 @@ crew_class_controller_sequential <- R6::R6Class(
     #' @param names Not applicable to the sequential controller.
     #' @param all Not applicable to the sequential controller.
     cancel = function(names = character(0L), all = FALSE) {
-      invisible()
-    },
-    #' @description Register the sequential controller as terminated.
-    #' @return `NULL` (invisibly).
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
-    terminate = function(controllers = NULL) {
-      .subset2(.subset2(self, "client"), "set_terminated")()
       invisible()
     }
   )

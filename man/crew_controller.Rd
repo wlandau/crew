@@ -72,7 +72,7 @@ controller$terminate()
 }
 }
 \seealso{
-Other general controllers: 
+Other controller: 
 \code{\link{crew_class_controller}}
 }
-\concept{general controllers}
+\concept{controller}

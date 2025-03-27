@@ -37,10 +37,10 @@ controller$terminate()
 }
 }
 \seealso{
-Other general controllers: 
+Other controller: 
 \code{\link{crew_controller}()}
 }
-\concept{general controllers}
+\concept{controller}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{

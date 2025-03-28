@@ -6,7 +6,8 @@ load_packages <- function(packages, library) {
     quietly = TRUE,
     character.only = TRUE
   )
-  if (!all(as.logical(unlist(out)))) {
+  out <- as.logical(unlist(out))
+  if (!all(out)) {
     msg <- paste(
       "could not find packages",
       paste(packages[!out], collapse = ", "),

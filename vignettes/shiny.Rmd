@@ -15,7 +15,7 @@ vignette: >
 
 `crew` is efficient to use in Shiny apps, and the [centralized controller](https://wlandau.github.io/crew/reference/crew_class_controller.html) makes the programming easy, even if there are thousands of tasks.
 
-This vignette shows two versions of an example app. The first version is simple to code but choppily. The second version feels snappier because it uses integration between [`promises`](https://rstudio.github.io/promises/) and [`mirai`](https://github.com/shikokuchuo/mirai).
+This vignette shows two versions of an example app. The first version is simple to code but choppily. The second version feels snappier because it uses integration between [`promises`](https://rstudio.github.io/promises/) and [`mirai`](https://mirai.r-lib.org/).
 
 # Example: coin flips, no promises
 
@@ -165,7 +165,7 @@ shinyApp(ui = ui, server = server)
 
 # Example: coin flips, with promises
 
-The previous app feels choppy because it only refreshes every half second. Using the powerful integration between [`promises`](https://rstudio.github.io/promises/) and [`mirai`](https://github.com/shikokuchuo/mirai), we can make the UI respond as soon as a task finishes. Watch the video below to see the difference:
+The previous app feels choppy because it only refreshes every half second. Using the powerful integration between [`promises`](https://rstudio.github.io/promises/) and [`mirai`](https://mirai.r-lib.org/), we can make the UI respond as soon as a task finishes. Watch the video below to see the difference:
 
 [![](./figures/coins.png)](https://vimeo.com/954134172)
 

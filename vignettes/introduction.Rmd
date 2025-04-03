@@ -11,7 +11,7 @@ vignette: >
 
 # Tasks vs workers
 
-A *task* is a piece of R code, such as an expression or a function call. A *worker* is a [non-interactive](https://stat.ethz.ch/R-manual/R-devel/library/base/html/interactive.html) R process that runs one or more tasks. When tasks run on workers, the local R session is free and responsive, and work gets done faster. For example, [this vignette](https://wlandau.github.io/crew/articles/shiny.html) shows how `crew` and [`mirai`](https://github.com/shikokuchuo/mirai) work together to speed up [Shiny](https://rstudio.github.io/shiny/) apps.
+A *task* is a piece of R code, such as an expression or a function call. A *worker* is a [non-interactive](https://stat.ethz.ch/R-manual/R-devel/library/base/html/interactive.html) R process that runs one or more tasks. When tasks run on workers, the local R session is free and responsive, and work gets done faster. For example, [this vignette](https://wlandau.github.io/crew/articles/shiny.html) shows how `crew` and [`mirai`](https://mirai.r-lib.org/) work together to speed up [Shiny](https://rstudio.github.io/shiny/) apps.
 
 # How to use `crew`
 
@@ -26,7 +26,7 @@ controller <- crew_controller_local(
 )
 ```
 
-Next, start the controller to create the [`mirai`](https://github.com/shikokuchuo/mirai) client. Later, when you are done with the controller, call `controller$terminate()` to clean up your resources.
+Next, start the controller to create the [`mirai`](https://mirai.r-lib.org/) client. Later, when you are done with the controller, call `controller$terminate()` to clean up your resources.
 
 ```r
 controller$start()
@@ -194,7 +194,7 @@ controller$summary()
 
 # Termination
 
-Call `terminate()` on the controller after you finish using it. `terminate()` tries to close the the [`mirai`](https://github.com/shikokuchuo/mirai) dispatcher and any workers that may still be running. It is important to free up these resources.
+Call `terminate()` on the controller after you finish using it. `terminate()` tries to close the the [`mirai`](https://mirai.r-lib.org/) dispatcher and any workers that may still be running. It is important to free up these resources.
 
 ```r
 controller$terminate()
@@ -211,7 +211,7 @@ crew_clean()
 
 A `crew` controller creates different types of local processes. These include:
 
-* Dispatchers: every controller has a special local process called a "dispatcher". [`mirai`](https://github.com/shikokuchuo/mirai) needs this process to orchestrate tasks.
+* Dispatchers: every controller has a special local process called a "dispatcher". [`mirai`](https://mirai.r-lib.org/) needs this process to orchestrate tasks.
 * Workers: the R processes that `crew` launches to run tasks. These may be local processes as in the case of `crew_controller_local()`, or they may be processes on different computers if you are using a third-party [launcher plugin](https://wlandau.github.io/crew/articles/plugins.html) like `crew.cluster` or `crew.aws.batch`. launches processes.
 * Daemons: R processes created by `mirai` outside of `crew` to run tasks. Such processes may spawn automatically if you set the `processes` argument of e.g. `crew.aws.batch::crew_controller_aws_batch()` to a positive integer.
 

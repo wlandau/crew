@@ -15,12 +15,12 @@ In computationally demanding analysis projects, statisticians and data
 scientists asynchronously deploy long-running tasks to distributed
 systems, ranging from traditional clusters to cloud services. The
 [NNG](https://nng.nanomsg.org)-powered
-[`mirai`](https://github.com/shikokuchuo/mirai) R package is a sleek and
+[`mirai`](https://github.com/r-lib/mirai) R package is a sleek and
 sophisticated scheduler that efficiently processes these intense
 workloads. The `crew` package extends
-[`mirai`](https://github.com/shikokuchuo/mirai) with a unifying
-interface for third-party worker launchers. Inspiration also comes from
-packages [`future`](https://future.futureverse.org/),
+[`mirai`](https://github.com/r-lib/mirai) with a unifying interface for
+third-party worker launchers. Inspiration also comes from packages
+[`future`](https://future.futureverse.org/),
 [`rrq`](https://mrc-ide.github.io/rrq/),
 [`clustermq`](https://mschubert.github.io/clustermq/), and
 [`batchtools`](https://mllg.github.io/batchtools/).
@@ -61,10 +61,10 @@ risks](https://wlandau.github.io/crew/articles/risks.html).
 
 # Similar work
 
-- [`mirai`](https://github.com/shikokuchuo/mirai): a powerful R
-  framework for asynchronous tasks built on
-  [NNG](https://nng.nanomsg.org). The purpose of `crew` is to extend
-  [`mirai`](https://github.com/shikokuchuo/mirai) to different computing
+- [`mirai`](https://github.com/r-lib/mirai): a powerful R framework for
+  asynchronous tasks built on [NNG](https://nng.nanomsg.org). The
+  purpose of `crew` is to extend
+  [`mirai`](https://github.com/r-lib/mirai) to different computing
   platforms for distributed workers.
 - [`rrq`](https://mrc-ide.github.io/rrq/): a task queue for R based on
   [Redis](https://redis.io).
@@ -95,8 +95,8 @@ The `crew` package incorporates insightful ideas from the following
 people.
 
 - [Charlie Gao](https://github.com/shikokuchuo) created
-  [`mirai`](https://github.com/shikokuchuo/mirai) and
-  [`nanonext`](https://github.com/shikokuchuo/nanonext) and graciously
+  [`mirai`](https://github.com/r-lib/mirai) and
+  [`nanonext`](https://github.com/r-lib/nanonext) and graciously
   accommodated the complicated and demanding feature requests that made
   `crew` possible.
 - [Rich FitzJohn](https://github.com/richfitz) and [Robert

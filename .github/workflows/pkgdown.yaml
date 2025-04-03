@@ -19,6 +19,9 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - name: System dependencies
+        run: sudo apt-get install -y libharfbuzz-dev libfribidi-dev
+    
       - uses: actions/checkout@v4.2.1
 
       - uses: r-lib/actions/setup-pandoc@v2

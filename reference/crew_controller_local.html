@@ -9,7 +9,7 @@ launch workers on local processes."><meta property="og:image" content="https://w
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,11 +94,18 @@ launch workers on local processes.</p>
 
 
 <dl><dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p>Deprecated on 2025-01-14 (<code>crew</code> version 0.10.2.9002).</p></dd>
+<dd><p>Character string, name of the launcher. If the name is
+<code>NULL</code>, then a name is automatically generated when the launcher starts.</p></dd>
 
 
 <dt id="arg-workers">workers<a class="anchor" aria-label="anchor" href="#arg-workers"></a></dt>
-<dd><p>Deprecated on 2025-01-13 (<code>crew</code> version 0.10.2.9002).</p></dd>
+<dd><p>Maximum number of workers to run concurrently
+when auto-scaling, excluding task retries and manual calls to <code>launch()</code>.
+Special workers allocated for task retries
+do not count towards this limit, so the number of workers running at a
+given time may exceed this maximum.
+A smaller number of workers may run if the number of executing tasks
+is smaller than the supplied value of the <code>workers</code> argument.</p></dd>
 
 
 <dt id="arg-host">host<a class="anchor" aria-label="anchor" href="#arg-host"></a></dt>
@@ -139,8 +146,9 @@ See <code><a href="https://nanonext.r-lib.org/reference/serial_config.html" clas
 <dt id="arg-seconds-interval">seconds_interval<a class="anchor" aria-label="anchor" href="#arg-seconds-interval"></a></dt>
 <dd><p>Number of seconds between
 polling intervals waiting for certain internal
-synchronous operations to complete,
-such as checking <code><a href="https://mirai.r-lib.org/reference/status.html" class="external-link">mirai::status()</a></code></p></dd>
+synchronous operations to complete. In certain cases, exponential
+backoff is used with this argument passed to <code>seconds_max</code>
+in a <code><a href="crew_throttle.html">crew_throttle()</a></code> object.</p></dd>
 
 
 <dt id="arg-seconds-timeout">seconds_timeout<a class="anchor" aria-label="anchor" href="#arg-seconds-timeout"></a></dt>

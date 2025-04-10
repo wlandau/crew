@@ -38,9 +38,16 @@ crew_controller_local(
 )
 }
 \arguments{
-\item{name}{Deprecated on 2025-01-14 (\code{crew} version 0.10.2.9002).}
+\item{name}{Character string, name of the launcher. If the name is
+\code{NULL}, then a name is automatically generated when the launcher starts.}
 
-\item{workers}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
+\item{workers}{Maximum number of workers to run concurrently
+when auto-scaling, excluding task retries and manual calls to \code{launch()}.
+Special workers allocated for task retries
+do not count towards this limit, so the number of workers running at a
+given time may exceed this maximum.
+A smaller number of workers may run if the number of executing tasks
+is smaller than the supplied value of the \code{workers} argument.}
 
 \item{host}{IP address of the \code{mirai} client to send and receive tasks.
 If \code{NULL}, the host defaults to the local IP address.}
@@ -67,8 +74,9 @@ See \code{?mirai::serial_config} for details.}
 
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal
-synchronous operations to complete,
-such as checking \code{mirai::status()}}
+synchronous operations to complete. In certain cases, exponential
+backoff is used with this argument passed to \code{seconds_max}
+in a \code{\link[=crew_throttle]{crew_throttle()}} object.}
 
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete,

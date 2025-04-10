@@ -1,6 +1,6 @@
-# crew 1.1.0.9000 (development)
+# crew 1.1.0.9001 (development)
 
-
+* Fix incorrect messages in documentation about deprecating the `name` and `workers` arguments of controllers. They are not deprecated at the controller level. They are only deprecated in `crew_client()`.
 
 # crew 1.1.0
 

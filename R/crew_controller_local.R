@@ -3,8 +3,8 @@
 #' @family plugin_local
 #' @description Create an `R6` object to submit tasks and
 #'   launch workers on local processes.
-#' @inheritParams crew_client
 #' @inheritParams crew_launcher_local
+#' @inheritParams crew_client
 #' @inheritParams crew_controller
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {

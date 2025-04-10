@@ -1,4 +1,4 @@
-# crew 1.0.0.9004 (development)
+# crew 1.1.0
 
 * Change prefix in `name_worker()` from `crew-` to `crew-worker-`.
 * Use `call_mirai()` instead of the now deprecated `call_mirai_()` (@shikokuchuo, #198).

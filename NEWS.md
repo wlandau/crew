@@ -1,4 +1,4 @@
-# crew 1.1.0.9001 (development)
+# crew 1.1.1
 
 * Fix incorrect messages in documentation about deprecating the `name` and `workers` arguments of controllers. They are not deprecated at the controller level. They are only deprecated in `crew_client()`.
 
@@ -89,7 +89,7 @@
 # crew 0.9.0
 
 * Require `nanonext` >= 0.12.0 and `mirai` >= 0.12.0.
-* Return to always re-launching backlogged inactive workers (#79, https://github.com/shikokuchuo/mirai/discussions/95).
+* Return to always re-launching backlogged inactive workers (#79, https://github.com/r-lib/mirai/discussions/95).
 * Implement `push_backlog()` and `pop_backlog()` to manage cases when it is not desirable to push to saturated controllers (https://github.com/ropensci/targets/issues/1220).
 * Invisibly return the `mirai` object of a task pushed to the controller. This allows users to interact with the task directly, e.g. to create a promise object with `promises::as.promise()` (#146, @jcheng5).
 * Add a new `walk()` method for controllers and controller groups to submit tasks in batch and return control immediately without waiting for any task to complete (#148, @jcheng5).
@@ -99,7 +99,7 @@
 
 # crew 0.8.0
 
-* Configure workers to send themselves a termination signal if the connection to the dispatcher is broken (#141, @psychelzh). Huge thanks to @shikokuchuo for the support through https://github.com/shikokuchuo/mirai/issues/87, https://github.com/shikokuchuo/mirai/pull/88, and https://github.com/shikokuchuo/nanonext/pull/25! The signal itself is platform-dependent and determined by the new function `crew_terminate_signal()`.
+* Configure workers to send themselves a termination signal if the connection to the dispatcher is broken (#141, @psychelzh). Huge thanks to @shikokuchuo for the support through https://github.com/r-lib/mirai/issues/87, https://github.com/r-lib/mirai/pull/88, and https://github.com/r-lib/nanonext/pull/25! The signal itself is platform-dependent and determined by the new function `crew_terminate_signal()`.
 * Implement `crew_monitor_local()` to help users monitor and terminate local R processes created by `crew` and `mirai`.
 * Implement new utility function `crew_terminate_process()` to terminate a process manually without resorting to `SIGKILL` on Windows.
 * Throw a warning from `controller$map()` if at least one task threw one. `warnings = FALSE` suppresses this behavior.
@@ -122,7 +122,7 @@
 # crew 0.6.0
 
 * Migrate checks to enforce features in version 0.5.0 for reverse dependencies.
-* Drop check of backlogged workers, c.f. https://github.com/shikokuchuo/mirai/discussions/63#discussioncomment-7051889 (#79, #124, @shikokuchuo).
+* Drop check of backlogged workers, c.f. https://github.com/r-lib/mirai/discussions/63#discussioncomment-7051889 (#79, #124, @shikokuchuo).
 * Deprecate `seconds_exit` because `exitlinger` in `mirai` is now obsolete (#125, @shikokuchuo).
 * Use `mirai::nextget("cv")` to count unresolved tasks instead of looping through all the task objects (#131).
 * Remove throttling and `collect()` in auto-scaling. Simplifies much of the code. Made possible by the efficiency gains in #131.

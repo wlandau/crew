@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.1.0.9001" id="crew-1109001-development">crew 1.1.0.9001 (development)<a class="anchor" aria-label="anchor" href="#crew-1109001-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.1.1" id="crew-111">crew 1.1.1<a class="anchor" aria-label="anchor" href="#crew-111"></a></h2>
 <ul><li>Fix incorrect messages in documentation about deprecating the <code>name</code> and <code>workers</code> arguments of controllers. They are not deprecated at the controller level. They are only deprecated in <code><a href="../reference/crew_client.html">crew_client()</a></code>.</li>
 </ul></div>
     <div class="section level2">
@@ -137,7 +137,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.0" id="crew-090">crew 0.9.0<a class="anchor" aria-label="anchor" href="#crew-090"></a></h2><p class="text-muted">CRAN release: 2024-02-08</p>
 <ul><li>Require <code>nanonext</code> &gt;= 0.12.0 and <code>mirai</code> &gt;= 0.12.0.</li>
-<li>Return to always re-launching backlogged inactive workers (<a href="https://github.com/wlandau/crew/issues/79" class="external-link">#79</a>, <a href="https://github.com/shikokuchuo/mirai/discussions/95" class="external-link uri">https://github.com/shikokuchuo/mirai/discussions/95</a>).</li>
+<li>Return to always re-launching backlogged inactive workers (<a href="https://github.com/wlandau/crew/issues/79" class="external-link">#79</a>, <a href="https://github.com/r-lib/mirai/discussions/95" class="external-link uri">https://github.com/r-lib/mirai/discussions/95</a>).</li>
 <li>Implement <code>push_backlog()</code> and <code>pop_backlog()</code> to manage cases when it is not desirable to push to saturated controllers (<a href="https://github.com/ropensci/targets/issues/1220" class="external-link uri">https://github.com/ropensci/targets/issues/1220</a>).</li>
 <li>Invisibly return the <code>mirai</code> object of a task pushed to the controller. This allows users to interact with the task directly, e.g. to create a promise object with <code><a href="https://rstudio.github.io/promises/reference/is.promise.html" class="external-link">promises::as.promise()</a></code> (<a href="https://github.com/wlandau/crew/issues/146" class="external-link">#146</a>, <a href="https://github.com/jcheng5" class="external-link">@jcheng5</a>).</li>
 <li>Add a new <code>walk()</code> method for controllers and controller groups to submit tasks in batch and return control immediately without waiting for any task to complete (<a href="https://github.com/wlandau/crew/issues/148" class="external-link">#148</a>, <a href="https://github.com/jcheng5" class="external-link">@jcheng5</a>).</li>
@@ -147,7 +147,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.0" id="crew-080">crew 0.8.0<a class="anchor" aria-label="anchor" href="#crew-080"></a></h2><p class="text-muted">CRAN release: 2024-01-09</p>
-<ul><li>Configure workers to send themselves a termination signal if the connection to the dispatcher is broken (<a href="https://github.com/wlandau/crew/issues/141" class="external-link">#141</a>, <a href="https://github.com/psychelzh" class="external-link">@psychelzh</a>). Huge thanks to <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a> for the support through <a href="https://github.com/shikokuchuo/mirai/issues/87" class="external-link uri">https://github.com/shikokuchuo/mirai/issues/87</a>, <a href="https://github.com/shikokuchuo/mirai/pull/88" class="external-link uri">https://github.com/shikokuchuo/mirai/pull/88</a>, and <a href="https://github.com/shikokuchuo/nanonext/pull/25" class="external-link uri">https://github.com/shikokuchuo/nanonext/pull/25</a>! The signal itself is platform-dependent and determined by the new function <code><a href="../reference/crew_terminate_signal.html">crew_terminate_signal()</a></code>.</li>
+<ul><li>Configure workers to send themselves a termination signal if the connection to the dispatcher is broken (<a href="https://github.com/wlandau/crew/issues/141" class="external-link">#141</a>, <a href="https://github.com/psychelzh" class="external-link">@psychelzh</a>). Huge thanks to <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a> for the support through <a href="https://github.com/r-lib/mirai/issues/87" class="external-link uri">https://github.com/r-lib/mirai/issues/87</a>, <a href="https://github.com/r-lib/mirai/pull/88" class="external-link uri">https://github.com/r-lib/mirai/pull/88</a>, and <a href="https://github.com/r-lib/nanonext/pull/25" class="external-link uri">https://github.com/r-lib/nanonext/pull/25</a>! The signal itself is platform-dependent and determined by the new function <code><a href="../reference/crew_terminate_signal.html">crew_terminate_signal()</a></code>.</li>
 <li>Implement <code><a href="../reference/crew_monitor_local.html">crew_monitor_local()</a></code> to help users monitor and terminate local R processes created by <code>crew</code> and <code>mirai</code>.</li>
 <li>Implement new utility function <code><a href="../reference/crew_terminate_process.html">crew_terminate_process()</a></code> to terminate a process manually without resorting to <code>SIGKILL</code> on Windows.</li>
 <li>Throw a warning from <code>controller$map()</code> if at least one task threw one. <code>warnings = FALSE</code> suppresses this behavior.</li>
@@ -170,7 +170,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.0" id="crew-060">crew 0.6.0<a class="anchor" aria-label="anchor" href="#crew-060"></a></h2><p class="text-muted">CRAN release: 2023-10-12</p>
 <ul><li>Migrate checks to enforce features in version 0.5.0 for reverse dependencies.</li>
-<li>Drop check of backlogged workers, c.f. <a href="https://github.com/shikokuchuo/mirai/discussions/63#discussioncomment-7051889" class="external-link uri">https://github.com/shikokuchuo/mirai/discussions/63#discussioncomment-7051889</a> (<a href="https://github.com/wlandau/crew/issues/79" class="external-link">#79</a>, <a href="https://github.com/wlandau/crew/issues/124" class="external-link">#124</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
+<li>Drop check of backlogged workers, c.f. <a href="https://github.com/r-lib/mirai/discussions/63#discussioncomment-7051889" class="external-link uri">https://github.com/r-lib/mirai/discussions/63#discussioncomment-7051889</a> (<a href="https://github.com/wlandau/crew/issues/79" class="external-link">#79</a>, <a href="https://github.com/wlandau/crew/issues/124" class="external-link">#124</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 <li>Deprecate <code>seconds_exit</code> because <code>exitlinger</code> in <code>mirai</code> is now obsolete (<a href="https://github.com/wlandau/crew/issues/125" class="external-link">#125</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 <li>Use <code>mirai::nextget("cv")</code> to count unresolved tasks instead of looping through all the task objects (<a href="https://github.com/wlandau/crew/issues/131" class="external-link">#131</a>).</li>
 <li>Remove throttling and <code>collect()</code> in auto-scaling. Simplifies much of the code. Made possible by the efficiency gains in <a href="https://github.com/wlandau/crew/issues/131" class="external-link">#131</a>.</li>

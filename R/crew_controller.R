@@ -1301,34 +1301,36 @@ crew_class_controller <- R6::R6Class(
         name = name,
         controller = .subset2(.subset2(private, ".launcher"), "name")
       )
-      .subset2(private, ".scan_crash")(name = name, task = out)
-      seconds <- .subset2(out, "seconds")
-      summary <- .subset2(private, ".summary")
-      summary$tasks <- .subset2(summary, "tasks") + 1L
-      if (!anyNA(seconds)) {
-        summary$seconds <- .subset2(summary, "seconds") + seconds
+      suppressWarnings({
+        .subset2(private, ".scan_crash")(name = name, task = out)
+        seconds <- .subset2(out, "seconds")
+        summary <- .subset2(private, ".summary")
+        summary$tasks <- .subset2(summary, "tasks") + 1L
+        if (!anyNA(seconds)) {
+          summary$seconds <- .subset2(summary, "seconds") + seconds
+        }
+      })
+      status <- .subset2(out, "status")
+      summary[[status]] <- .subset2(summary, status) + 1L
+      if (!anyNA(.subset2(out, "warnings"))) {
+        summary$warning <- .subset2(summary, "warning") + 1L
       }
-      for (status in c("success", "error", "crash", "cancel")) {
-        summary[[status]] <- .subset2(summary, status) +
-          (.subset2(out, "status") == status)
-      }
-      summary$warning <- .subset2(summary, "warning") +
-        !anyNA(.subset2(out, "warnings"))
       private$.summary <- summary
-      has_error <- !is.null(error) &&
-        any(.subset2(out, "status") != "success")
-      throw_error <- has_error && identical(error, "stop")
-      throw_warning <- has_error && identical(error, "warn")
-      if_any(
-        throw_error,
-        crew_error(message = .subset2(out, "error")),
-        NULL
-      )
-      if_any(
-        throw_warning,
-        crew_warning(message = .subset2(out, "error")),
-        NULL
-      )
+      if (!is.null(error)) {
+        has_error <- any(status != "success")
+        throw_error <- has_error && all(error == "stop")
+        throw_warning <- has_error && all(error == "warn")
+        if_any(
+          throw_error,
+          crew_error(message = .subset2(out, "error")),
+          NULL
+        )
+        if_any(
+          throw_warning,
+          crew_warning(message = .subset2(out, "error")),
+          NULL
+        )
+      }
       out
     },
     #' @description Pop all available task results and return them in a tidy

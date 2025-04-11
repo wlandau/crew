@@ -1,6 +1,6 @@
-# crew 1.1.1.9000 (development)
+# crew 1.1.1.9001 (development)
 
-
+* Speedup for `targets`: avoid superfluous processing in `controller$pop()`.
 
 # crew 1.1.1
 

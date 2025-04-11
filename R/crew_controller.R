@@ -419,26 +419,6 @@ crew_class_controller <- R6::R6Class(
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
-      crew_deprecate(
-        name = "collect",
-        date = "2023-10-02",
-        version = "0.5.0.9003",
-        alternative = "none (no longer necessary)",
-        condition = "message",
-        value = collect,
-        skip_cran = TRUE,
-        frequency = "once"
-      )
-      crew_deprecate(
-        name = "throttle",
-        date = "2023-10-02",
-        version = "0.5.0.9003",
-        alternative = "none (no longer necessary)",
-        condition = "message",
-        value = throttle,
-        skip_cran = TRUE,
-        frequency = "once"
-      )
       .subset2(self, "unresolved")() >=
         .subset2(.subset2(self, "launcher"), "workers")
     },
@@ -1580,14 +1560,6 @@ crew_class_controller <- R6::R6Class(
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     push_backlog = function(name, controller = NULL) {
-      crew_assert(
-        name,
-        is.character(.),
-        length(.) == 1L,
-        !anyNA(.),
-        nzchar(.),
-        message = "'name' in push_backlog() must be a valid character string"
-      )
       n <- length(.subset2(private, ".backlog")) + 1L
       private$.backlog[[n]] <- name
       invisible()

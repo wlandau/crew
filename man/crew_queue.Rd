@@ -17,9 +17,11 @@ A queue object.
 Create an \code{R6} \code{crew} queue object.
 }
 \details{
-A \code{crew} queue object efficiently tracks the names of resolved
-tasks so the controller can pop them efficiently.
-It is also used to track backlogged tasks.
+A \code{crew} queue is a classical first-in-first-out data structure
+that extends itself in chunks (of size \code{step}) to avoid
+overhead.
+\code{crew} uses queues to efficiently track the names of resolved
+tasks and backlogged tasks.
 }
 \seealso{
 Other queue: 

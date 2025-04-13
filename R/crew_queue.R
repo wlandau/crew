@@ -56,10 +56,8 @@ crew_class_queue <- R6::R6Class(
     #' @return A queue object.
     #' @param step See [crew_queue()].
     initialize = function(step = NULL) {
-      private$.data <- character(0L)
-      private$.head <- 1L
-      private$.tail <- 0L
       private$.step <- step
+      self$reset()
     },
     #' @description Validate the queue.
     #' @return `NULL` (invisibly). Called for its side effects.
@@ -81,10 +79,27 @@ crew_class_queue <- R6::R6Class(
         )
       }
     },
+    #' @description Check if the queue is empty.
+    #' @return `TRUE` if the queue is empty, `FALSE` otherwise.
+    empty = function() {
+      head <- .subset2(private, ".head")
+      tail <- .subset2(private, ".tail")
+      tail <= 0L || head > tail
+    },
+    #' @description Check if the queue is empty.
+    #' @return `TRUE` if the queue is nonempty, `FALSE` otherwise.
+    nonempty = function() {
+      head <- .subset2(private, ".head")
+      tail <- .subset2(private, ".tail")
+      tail > 0L && head <= tail
+    },
     #' @description Reset the queue.
     #' @return `NULL` (invisibly). Called for its side effects.
     reset = function() {
-      .subset2(self, "set")(data = character(0L))
+      private$.data <- character(0L)
+      private$.head <- 1L
+      private$.tail <- 0L
+      invisible()
     },
     #' @description Set the data in the queue.
     #' @return `NULL` (invisibly). Called for its side effects.
@@ -92,18 +107,18 @@ crew_class_queue <- R6::R6Class(
     set = function(data = character(0L)) {
       private$.data <- data
       private$.head <- 1L
+      private$.tail <- length(data)
       invisible()
     },
     #' @description Pop an element off the queue.
     #' @return Character string, an element popped off the queue.
     #'   `NULL` if there are no more elements available to pop.
     pop = function() {
-      data <- .subset2(private, ".data")
-      head <- .subset2(private, ".head")
-      if (head > length(data)) {
+      if (.subset2(self, "empty")()) {
         return(NULL)
       }
-      out <- data[head]
+      head <- .subset2(private, ".head")
+      out <- .subset(.subset2(private, ".data"), head)
       private$.head <- head + 1L
       out
     },
@@ -111,27 +126,17 @@ crew_class_queue <- R6::R6Class(
     #' @return Character vector, elements collected from the queue.
     #'   `NULL` if there are no more elements available to collect.
     collect = function() {
-      head <- .subset2(private, ".head")
-      data <- .subset2(private, ".data")
-      if (head > length(data)) {
-        out <- NULL
-      } else if (head > 1L) {
-        out <- data[-seq_len(head - 1L)]
-      } else {
-        out <- data
+      on.exit(.subset2(self, "reset")())
+      if (.subset2(self, "empty")()) {
+        return(NULL)
       }
-      .subset2(self, "reset")()
-      out
-    },
-    #' @description Report if the queue is empty.
-    #' @return `TRUE` if the queue is empty, `FALSE` otherwise.
-    empty = function() {
-      .subset2(private, ".head") > length(.subset2(private, ".data"))
-    },
-    #' @description Report if the queue is nonempty.
-    #' @return `TRUE` if the queue is nonempty, `FALSE` otherwise.
-    nonempty = function() {
-      .subset2(private, ".head") <= length(.subset2(private, ".data"))
+      data <- .subset2(private, ".data")
+      head <- .subset2(private, ".head")
+      tail <- .subset2(private, ".tail")
+      if (head > tail) {
+        return(NULL)
+      }
+      data[seq(from = head, to = tail)]
     },
     #' @description List the data already popped.
     #' @details `set()`, `reset()`, and `collect()` remove this data.

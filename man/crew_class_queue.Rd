@@ -36,12 +36,12 @@ next element to pop.}
 \itemize{
 \item \href{#method-crew_class_queue-new}{\code{crew_class_queue$new()}}
 \item \href{#method-crew_class_queue-validate}{\code{crew_class_queue$validate()}}
+\item \href{#method-crew_class_queue-empty}{\code{crew_class_queue$empty()}}
+\item \href{#method-crew_class_queue-nonempty}{\code{crew_class_queue$nonempty()}}
 \item \href{#method-crew_class_queue-reset}{\code{crew_class_queue$reset()}}
 \item \href{#method-crew_class_queue-set}{\code{crew_class_queue$set()}}
 \item \href{#method-crew_class_queue-pop}{\code{crew_class_queue$pop()}}
 \item \href{#method-crew_class_queue-collect}{\code{crew_class_queue$collect()}}
-\item \href{#method-crew_class_queue-empty}{\code{crew_class_queue$empty()}}
-\item \href{#method-crew_class_queue-nonempty}{\code{crew_class_queue$nonempty()}}
 \item \href{#method-crew_class_queue-popped}{\code{crew_class_queue$popped()}}
 }
 }
@@ -76,6 +76,32 @@ Validate the queue.
 
 \subsection{Returns}{
 \code{NULL} (invisibly). Called for its side effects.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-empty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-empty}{}}}
+\subsection{Method \code{empty()}}{
+Check if the queue is empty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$empty()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} if the queue is empty, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-nonempty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-nonempty}{}}}
+\subsection{Method \code{nonempty()}}{
+Check if the queue is empty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$nonempty()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} if the queue is nonempty, \code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}
@@ -115,13 +141,13 @@ Set the data in the queue.
 \if{html}{\out{<a id="method-crew_class_queue-pop"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_queue-pop}{}}}
 \subsection{Method \code{pop()}}{
-Pop a name off the queue.
+Pop an element off the queue.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$pop()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-Character string, a name popped off the queue.
+Character string, an element popped off the queue.
 \code{NULL} if there are no more elements available to pop.
 }
 }
@@ -137,32 +163,6 @@ Remove and return all available elements off the queue.
 \subsection{Returns}{
 Character vector, elements collected from the queue.
 \code{NULL} if there are no more elements available to collect.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_queue-empty"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_queue-empty}{}}}
-\subsection{Method \code{empty()}}{
-Report if the queue is empty.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$empty()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{TRUE} if the queue is empty, \code{FALSE} otherwise.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_queue-nonempty"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_queue-nonempty}{}}}
-\subsection{Method \code{nonempty()}}{
-Report if the queue is nonempty.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$nonempty()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{TRUE} if the queue is nonempty, \code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}

@@ -4,7 +4,7 @@
 \alias{crew_class_queue}
 \title{\code{R6} queue class}
 \description{
-\code{R6} class for a queue of resolved task names.
+\code{R6} class for a queue.
 }
 \details{
 See \code{\link[=crew_queue]{crew_queue()}}.
@@ -20,16 +20,21 @@ Other queue:
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{names}}{Names of resolved tasks.}
+\item{\code{data}}{Character vector of elements.}
 
 \item{\code{head}}{Non-negative integer pointing to the location of the
-next name to pop.}
+next element to pop.}
+
+\item{\code{tail}}{Non-negative integer pointing to the tail of the queue.}
+
+\item{\code{step}}{See \code{\link[=crew_queue]{crew_queue()}}.}
 }
 \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-crew_class_queue-new}{\code{crew_class_queue$new()}}
 \item \href{#method-crew_class_queue-validate}{\code{crew_class_queue$validate()}}
 \item \href{#method-crew_class_queue-reset}{\code{crew_class_queue$reset()}}
 \item \href{#method-crew_class_queue-set}{\code{crew_class_queue$set()}}
@@ -38,6 +43,26 @@ next name to pop.}
 \item \href{#method-crew_class_queue-empty}{\code{crew_class_queue$empty()}}
 \item \href{#method-crew_class_queue-nonempty}{\code{crew_class_queue$nonempty()}}
 \item \href{#method-crew_class_queue-popped}{\code{crew_class_queue$popped()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-new"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-new}{}}}
+\subsection{Method \code{new()}}{
+Create a queue object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$new(step = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{step}}{See \code{\link[=crew_queue]{crew_queue()}}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A queue object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -70,15 +95,15 @@ Reset the queue.
 \if{html}{\out{<a id="method-crew_class_queue-set"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_queue-set}{}}}
 \subsection{Method \code{set()}}{
-Set the names in the queue.
+Set the data in the queue.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$set(names = character(0L))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$set(data = character(0L))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{names}}{Character vector of names to set.}
+\item{\code{data}}{Character vector of data to set.}
 }
 \if{html}{\out{</div>}}
 }
@@ -97,21 +122,21 @@ Pop a name off the queue.
 
 \subsection{Returns}{
 Character string, a name popped off the queue.
-\code{NULL} if there are no more names available to pop.
+\code{NULL} if there are no more elements available to pop.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_queue-collect"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_queue-collect}{}}}
 \subsection{Method \code{collect()}}{
-Remove and return all available names off the queue.
+Remove and return all available elements off the queue.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$collect()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-Character vector, names collected from the queue.
-\code{NULL} if there are no more names available to collect.
+Character vector, elements collected from the queue.
+\code{NULL} if there are no more elements available to collect.
 }
 }
 \if{html}{\out{<hr>}}
@@ -144,17 +169,17 @@ Report if the queue is nonempty.
 \if{html}{\out{<a id="method-crew_class_queue-popped"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_queue-popped}{}}}
 \subsection{Method \code{popped()}}{
-List the names already popped.
+List the data already popped.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$popped()}\if{html}{\out{</div>}}
 }
 
 \subsection{Details}{
-\code{set()}, \code{reset()}, and \code{collect()} remove these names.
+\code{set()}, \code{reset()}, and \code{collect()} remove this data.
 }
 
 \subsection{Returns}{
-Character vector of names already popped.
+Character vector of data already popped.
 }
 }
 }

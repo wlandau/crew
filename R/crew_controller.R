@@ -175,7 +175,7 @@ crew_class_controller <- R6::R6Class(
         USE.NAMES = TRUE
       )
       resolved <- names(status)[!as.logical(status)]
-      .subset2(queue, "set")(names = resolved)
+      .subset2(queue, "set")(data = resolved)
       private$.resolved <- observed
     },
     .wait_all_once = function() {
@@ -458,17 +458,8 @@ crew_class_controller <- R6::R6Class(
       invisible()
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
-    #' @details The `scale()` method re-launches all inactive backlogged
-    #'   workers, then any additional inactive workers needed to
-    #'   accommodate the demand of unresolved tasks. A worker is
-    #'   "backlogged" if it was assigned more tasks than it has completed
-    #'   so far.
-    #'
-    #'   Methods `push()`, `pop()`, and `wait()` already invoke
-    #'   `scale()` if the `scale` argument is `TRUE`.
-    #'   For finer control of the number of workers launched,
-    #'   call `launch()` on the controller with the exact desired
-    #'   number of workers.
+    #' @details The `scale()` method launches new workers to
+    #'   run tasks if needed.
     #' @return Invisibly returns `TRUE` if there was any relevant
     #'   auto-scaling activity (new worker launches or worker
     #'   connection/disconnection events) (`FALSE` otherwise).

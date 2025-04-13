@@ -425,17 +425,8 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-The \code{scale()} method re-launches all inactive backlogged
-workers, then any additional inactive workers needed to
-accommodate the demand of unresolved tasks. A worker is
-"backlogged" if it was assigned more tasks than it has completed
-so far.
-
-Methods \code{push()}, \code{pop()}, and \code{wait()} already invoke
-\code{scale()} if the \code{scale} argument is \code{TRUE}.
-For finer control of the number of workers launched,
-call \code{launch()} on the controller with the exact desired
-number of workers.
+The \code{scale()} method launches new workers to
+run tasks if needed.
 }
 
 \subsection{Returns}{

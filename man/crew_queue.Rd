@@ -4,14 +4,22 @@
 \alias{crew_queue}
 \title{Create a \code{crew} queue object.}
 \usage{
-crew_queue()
+crew_queue(step = 1000L)
+}
+\arguments{
+\item{step}{Positive integer with the number of elements to extend the
+queue on each call to the \code{extend()} method.}
+}
+\value{
+A queue object.
 }
 \description{
-Create an \code{R6} \code{crew} queue object for resolved task names.
+Create an \code{R6} \code{crew} queue object.
 }
 \details{
 A \code{crew} queue object efficiently tracks the names of resolved
 tasks so the controller can pop them efficiently.
+It is also used to track backlogged tasks.
 }
 \seealso{
 Other queue: 

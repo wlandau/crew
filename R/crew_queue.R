@@ -107,7 +107,7 @@ crew_class_queue <- R6::R6Class(
       head <- .subset2(private, ".head")
       if (head > 1L) {
         private$.data <- .subset2(private, ".data")[-seq(head - 1L)]
-        private$.tail <- tail - head + 1L
+        private$.tail <- .subset2(private, ".tail") - head + 1L
         private$.head <- 1L
       }
       invisible()
@@ -141,7 +141,7 @@ crew_class_queue <- R6::R6Class(
         .subset2(self, "extend")(n)
       }
       tail <- .subset2(private, ".tail")
-      private$.data[seq_along(x) + tail] <- x
+      private$.data[seq_len(n) + tail] <- x
       private$.tail <- tail + n
       invisible()
     },

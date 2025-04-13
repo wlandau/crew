@@ -1,8 +1,10 @@
 crew_test("new queue is valid", {
-  x <- crew_queue()
+  x <- crew_queue(step = 2e3L)
   expect_silent(x$validate())
   expect_equal(x$data, character(0L))
   expect_equal(x$head, 1L)
+  expect_equal(x$tail, 0L)
+  expect_equal(x$step, 2e3L)
 })
 
 crew_test("basic set()", {
@@ -14,6 +16,7 @@ crew_test("basic set()", {
   expect_true(x$nonempty())
   expect_equal(x$data, c("a", "b", "c"))
   expect_equal(x$head, 1L)
+  expect_equal(x$tail, 3L)
   expect_silent(x$validate())
 })
 
@@ -30,6 +33,7 @@ crew_test("basic reset()", {
   expect_false(x$nonempty())
   expect_equal(x$data, character(0L))
   expect_equal(x$head, 1L)
+  expect_equal(x$tail, 0L)
   expect_silent(x$validate())
 })
 
@@ -45,18 +49,21 @@ crew_test("basic pop()", {
   expect_silent(x$validate())
   expect_equal(x$data, c("a", "b", "c"))
   expect_equal(x$head, 2L)
+  expect_equal(x$tail, 3L)
   expect_equal(x$pop(), "b")
   expect_false(x$empty())
   expect_true(x$nonempty())
   expect_silent(x$validate())
   expect_equal(x$data, c("a", "b", "c"))
   expect_equal(x$head, 3L)
+  expect_equal(x$tail, 3L)
   expect_equal(x$pop(), "c")
   expect_true(x$empty())
   expect_false(x$nonempty())
   expect_silent(x$validate())
   expect_equal(x$data, c("a", "b", "c"))
   expect_equal(x$head, 4L)
+  expect_equal(x$tail, 3L)
   for (index in seq_len(3L)) {
     expect_null(x$pop())
     expect_true(x$empty())
@@ -64,11 +71,13 @@ crew_test("basic pop()", {
     expect_silent(x$validate())
     expect_equal(x$data, c("a", "b", "c"))
     expect_equal(x$head, 4L)
+    expect_equal(x$tail, 3L)
   }
   x$reset()
   expect_silent(x$validate())
   expect_equal(x$data, character(0L))
   expect_equal(x$head, 1L)
+  expect_equal(x$tail, 0L)
 })
 
 crew_test("set() resets the queue with entirely new data", {
@@ -80,14 +89,17 @@ crew_test("set() resets the queue with entirely new data", {
   expect_silent(x$validate())
   expect_equal(x$data, c("a", "b", "c", "d"))
   expect_equal(x$head, 3L)
+  expect_equal(x$tail, 4L)
   x$set(data = c("x", "y", "z"))
   expect_silent(x$validate())
   expect_equal(x$data, c("x", "y", "z"))
   expect_equal(x$head, 1L)
+  expect_equal(x$tail, 3L)
   x$reset()
   expect_silent(x$validate())
   expect_equal(x$data, character(0L))
   expect_equal(x$head, 1L)
+  expect_equal(x$tail, 0L)
 })
 
 crew_test("collect() without previous pop()", {
@@ -99,6 +111,7 @@ crew_test("collect() without previous pop()", {
   expect_false(x$nonempty())
   expect_equal(x$data, character(0L))
   expect_equal(x$head, 1L)
+  expect_equal(x$tail, 0L)
 })
 
 crew_test("collect() with previous pop()", {
@@ -109,4 +122,46 @@ crew_test("collect() with previous pop()", {
   expect_equal(x$collect(), c("c", "d"))
   expect_equal(x$data, character(0L))
   expect_equal(x$head, 1L)
+  expect_equal(x$tail, 0L)
+})
+
+crew_test("queue$clean()", {
+  q <- crew_queue(step = 100L)
+  for (index in seq_len(2L)) {
+    q$clean()
+    expect_equal(q$data, character(0L))
+    expect_equal(q$head, 1L)
+    expect_equal(q$tail, 0L)
+  }
+  q$push(letters)
+  for (index in seq_len(4L)) {
+    expect_equal(q$pop(), letters[index])
+  }
+  expect_equal(q$data, c(letters, rep(NA_character_, 74L)))
+  expect_equal(q$head, 5L)
+  expect_equal(q$data[q$head], "e")
+  expect_equal(q$data[q$tail], "z")
+  for (index in seq_len(2L)) {
+    q$clean()
+    expect_equal(q$head, 1L)
+    expect_equal(q$tail, 22L)
+    expect_equal(q$data[q$head], "e")
+    expect_equal(q$data[q$tail], "z")
+    expect_equal(q$data, c(letters[-seq_len(4L)], rep(NA_character_, 74L)))
+  }
+  while (q$nonempty()) {
+    expect_true(nzchar(q$pop()))
+  }
+  expect_equal(q$data, c(letters[-seq_len(4L)], rep(NA_character_, 74L)))
+  expect_equal(q$tail, 22L)
+  expect_equal(q$data[q$tail], "z")
+  expect_equal(q$head, 23L)
+  expect_true(is.na(q$data[q$head]))
+  expect_null(q$pop())
+  for (index in seq_len(2L)) {
+    q$clean()
+    expect_equal(q$data, rep(NA_character_, 74L))
+    expect_equal(q$head, 1L)
+    expect_equal(q$tail, 0L)
+  }
 })

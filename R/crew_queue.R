@@ -140,11 +140,9 @@ crew_class_queue <- R6::R6Class(
       if (length(data) - tail < n) {
         .subset2(self, "extend")(n)
       }
-      if (n > 1L) {
-        self$data[seq_along(x) + tail] <- x
-      } else {
-        self$data[tail + 1L] <- x # Avoids seq_along() for speed.
-      }
+      tail <- .subset2(private, ".tail")
+      private$.data[seq_along(x) + tail] <- x
+      private$.tail <- tail + n
       invisible()
     },
     #' @description Pop an element off the queue.

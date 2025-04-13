@@ -94,7 +94,7 @@ crew_test("queue$pop(n = 1)", {
   q$extend(n = 100L)
   expect_null(q$pop())
   q$push(letters)
-  for (index in seq_len(length(letters))) {
+  for (index in seq_along(letters)) {
     expect_equal(q$pop(), letters[index])
   }
   expect_null(q$pop())

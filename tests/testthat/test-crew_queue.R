@@ -80,6 +80,27 @@ crew_test("basic pop()", {
   expect_equal(x$tail, 0L)
 })
 
+crew_test("queue$pop()", {
+  q <- crew_queue(letters, step = 100L)
+  expect_equal(q$pop(), "a")
+  expect_equal(q$pop(), "b")
+  expect_equal(q$data[q$head], "c")
+  for (index in seq_len(length(letters) - 2L) + 2L) {
+    expect_equal(q$pop(), letters[index])
+  }
+  expect_null(q$pop())
+  q$extend(n = 100L)
+  expect_null(q$pop())
+  q$push(letters)
+  for (index in seq_len(length(letters))) {
+    expect_equal(q$pop(), letters[index])
+  }
+  expect_null(q$pop())
+  expect_equal(q$data, c(letters, rep(NA_character_, 74L)))
+  expect_equal(q$head, 27L)
+  expect_equal(q$tail, 26L)
+})
+
 crew_test("set() resets the queue with entirely new data", {
   x <- crew_queue()
   expect_null(x$pop())
@@ -182,4 +203,23 @@ crew_test("queue$extend()", {
   expect_equal(q$data, c(letters[-1L], rep(NA_character_, 200L)))
   expect_equal(q$head, 1L)
   expect_equal(q$tail, 25L)
+})
+
+crew_test("queue$push()", {
+  q <- crew_queue(step = 100L)
+  q$push(c("a", "b"))
+  q$push(c("x", "y"))
+  expect_equal(q$data, c("a", "b", "x", "y", rep(NA_character_, 96L)))
+  expect_equal(q$head, 1L)
+  expect_equal(q$tail, 4L)
+  expect_equal(q$pop(), "a")
+  expect_equal(q$data, c("a", "b", "x", "y", rep(NA_character_, 96L)))
+  expect_equal(q$head, 2L)
+  expect_equal(q$tail, 4L)
+  q$push("z")
+  expect_equal(q$data, c("a", "b", "x", "y", "z", rep(NA_character_, 95L)))
+  expect_equal(q$head, 2L)
+  expect_equal(q$tail, 5L)
+  expect_equal(q$data[q$head], "b")
+  expect_equal(q$data[q$tail], "z")
 })

@@ -62,7 +62,8 @@ since the controller was started.}
 \item{\code{error}}{Tibble of task results (with one result per row)
 from the last call to \verb{map(error = "stop)}.}
 
-\item{\code{backlog}}{Character vector of explicitly backlogged tasks.}
+\item{\code{backlog}}{A \code{\link[=crew_queue]{crew_queue()}} object tracking explicitly
+backlogged tasks.}
 
 \item{\code{autoscaling}}{\code{TRUE} or \code{FALSE}, whether async \code{later}-based
 auto-scaling is currently running}

@@ -97,6 +97,17 @@ crew_class_queue <- R6::R6Class(
       tail <- .subset2(private, ".tail")
       tail > 0L && head <= tail
     },
+    #' @description List available data.
+    #' @return Character vector of available data.
+    list = function() {
+      if (.subset2(self, "empty")()) {
+        return(character(0L))
+      }
+      data <- .subset2(private, ".data")
+      head <- .subset2(private, ".head")
+      tail <- .subset2(private, ".tail")
+      data[seq(from = head, to = tail)]
+    },
     #' @description Reset the queue.
     #' @return `NULL` (invisibly). Called for its side effects.
     reset = function() {
@@ -149,16 +160,21 @@ crew_class_queue <- R6::R6Class(
       private$.tail <- tail + n
       invisible()
     },
-    #' @description Pop an element off the queue.
-    #' @return Character string, an element popped off the queue.
+    #' @description Pop one or more elements off the queue.
+    #' @param n Positive integer, maximum number of elements to pop.
+    #'   Fewer than `n` are popped if fewer than `n` are available.
+    #' @return Character vector of elements popped off the queue.
     #'   `NULL` if there are no more elements available to pop.
-    pop = function() {
+    pop = function(n = 1L) {
       if (.subset2(self, "empty")()) {
         return(NULL)
       }
       head <- .subset2(private, ".head")
-      out <- .subset(.subset2(private, ".data"), head)
-      private$.head <- head + 1L
+      tail <- .subset2(private, ".tail")
+      n <- min(n, tail - head + 1L)
+      slice <- seq.int(from = head, length.out = n)
+      out <- .subset(.subset2(private, ".data"), slice)
+      private$.head <- head + n
       out
     },
     #' @description Remove and return all available elements off the queue.

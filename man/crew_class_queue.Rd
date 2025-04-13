@@ -38,6 +38,7 @@ next element to pop.}
 \item \href{#method-crew_class_queue-validate}{\code{crew_class_queue$validate()}}
 \item \href{#method-crew_class_queue-empty}{\code{crew_class_queue$empty()}}
 \item \href{#method-crew_class_queue-nonempty}{\code{crew_class_queue$nonempty()}}
+\item \href{#method-crew_class_queue-list}{\code{crew_class_queue$list()}}
 \item \href{#method-crew_class_queue-reset}{\code{crew_class_queue$reset()}}
 \item \href{#method-crew_class_queue-clean}{\code{crew_class_queue$clean()}}
 \item \href{#method-crew_class_queue-set}{\code{crew_class_queue$set()}}
@@ -106,6 +107,19 @@ Check if the queue is empty.
 
 \subsection{Returns}{
 \code{TRUE} if the queue is nonempty, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-list"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-list}{}}}
+\subsection{Method \code{list()}}{
+List available data.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$list()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character vector of available data.
 }
 }
 \if{html}{\out{<hr>}}
@@ -198,13 +212,21 @@ Append new elements to the queue.
 \if{html}{\out{<a id="method-crew_class_queue-pop"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_queue-pop}{}}}
 \subsection{Method \code{pop()}}{
-Pop an element off the queue.
+Pop one or more elements off the queue.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$pop()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$pop(n = 1L)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Positive integer, maximum number of elements to pop.
+Fewer than \code{n} are popped if fewer than \code{n} are available.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
-Character string, an element popped off the queue.
+Character vector of elements popped off the queue.
 \code{NULL} if there are no more elements available to pop.
 }
 }

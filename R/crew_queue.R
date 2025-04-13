@@ -101,6 +101,17 @@ crew_class_queue <- R6::R6Class(
       private$.tail <- 0L
       invisible()
     },
+    #' @description Remove popped elements from the data in the queue.
+    #' @return `NULL` (invisibly).
+    clean = function() {
+      head <- .subset2(private, ".head")
+      if (head > 1L) {
+        private$.data <- .subset2(private, ".data")[-seq(head - 1L)]
+        private$.tail <- tail - head + 1L
+        private$.head <- 1L
+      }
+      invisible()
+    },
     #' @description Set the data in the queue.
     #' @return `NULL` (invisibly). Called for its side effects.
     #' @param data Character vector of data to set.
@@ -108,6 +119,32 @@ crew_class_queue <- R6::R6Class(
       private$.data <- data
       private$.head <- 1L
       private$.tail <- length(data)
+      invisible()
+    },
+    #' @description Extend the queue data by `step` elements.
+    #' @param n Positive integer, number of elements to extend the queue data.
+    #' @return `NULL` (invisibly).
+    extend = function(n) {
+      .subset2(self, "clean")()
+      n <- max(n, .subset2(private, ".step"))
+      private$.data <- c(.subset2(private, ".data"), rep(NA_character_, n))
+      invisible()
+    },
+    #' @description Append new elements to the queue.
+    #' @return `NULL` (invisibly).
+    #' @param x Character vector of new data to append.
+    push = function(x) {
+      data <- .subset2(private, ".data")
+      tail <- .subset2(private, ".tail")
+      n <- length(x)
+      if (length(data) - tail < n) {
+        .subset2(self, "extend")(n)
+      }
+      if (n > 1L) {
+        self$data[seq_along(x) + tail] <- x
+      } else {
+        self$data[tail + 1L] <- x # Avoids seq_along() for speed.
+      }
       invisible()
     },
     #' @description Pop an element off the queue.
@@ -137,43 +174,6 @@ crew_class_queue <- R6::R6Class(
         return(NULL)
       }
       data[seq(from = head, to = tail)]
-    },
-    #' @description Remove popped elements from the data in the queue.
-    #' @return `NULL` (invisibly).
-    clean = function() {
-      head <- .subset2(private, ".head")
-      if (head > 1L) {
-        private$.data <- .subset2(private, ".data")[-seq(head - 1L)]
-        private$.tail <- tail - head + 1L
-        private$.head <- 1L
-      }
-      invisible()
-    },
-    #' @description Extend the queue data by `step` elements.
-    #' @param n Positive integer, number of elements to extend the queue data.
-    #' @return `NULL` (invisibly).
-    extend = function(n) {
-      .subset2(self, "clean")()
-      n <- max(n, .subset2(private, ".step"))
-      private$.data <- c(.subset2(private, ".data"), rep(NA_character_, n))
-      invisible()
-    },
-    #' @description Append new elements to the queue.
-    #' @return `NULL` (invisibly).
-    #' @param x Character vector of new data to append.
-    append = function(x) {
-      data <- .subset2(private, ".data")
-      tail <- .subset2(private, ".tail")
-      n <- length(x)
-      if (length(data) - tail < n) {
-        .subset2(self, "extend")(n)
-      }
-      if (n > 1L) {
-        self$data[seq_along(x) + tail] <- x
-      } else {
-        self$data[tail + 1L] <- x # Avoids seq_along() for speed.
-      }
-      invisible()
     }
   )
 )

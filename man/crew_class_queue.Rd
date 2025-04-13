@@ -39,12 +39,12 @@ next element to pop.}
 \item \href{#method-crew_class_queue-empty}{\code{crew_class_queue$empty()}}
 \item \href{#method-crew_class_queue-nonempty}{\code{crew_class_queue$nonempty()}}
 \item \href{#method-crew_class_queue-reset}{\code{crew_class_queue$reset()}}
+\item \href{#method-crew_class_queue-clean}{\code{crew_class_queue$clean()}}
 \item \href{#method-crew_class_queue-set}{\code{crew_class_queue$set()}}
+\item \href{#method-crew_class_queue-extend}{\code{crew_class_queue$extend()}}
+\item \href{#method-crew_class_queue-push}{\code{crew_class_queue$push()}}
 \item \href{#method-crew_class_queue-pop}{\code{crew_class_queue$pop()}}
 \item \href{#method-crew_class_queue-collect}{\code{crew_class_queue$collect()}}
-\item \href{#method-crew_class_queue-clean}{\code{crew_class_queue$clean()}}
-\item \href{#method-crew_class_queue-extend}{\code{crew_class_queue$extend()}}
-\item \href{#method-crew_class_queue-append}{\code{crew_class_queue$append()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -120,6 +120,19 @@ Reset the queue.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-clean"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-clean}{}}}
+\subsection{Method \code{clean()}}{
+Remove popped elements from the data in the queue.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$clean()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_queue-set"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_queue-set}{}}}
 \subsection{Method \code{set()}}{
@@ -137,6 +150,46 @@ Set the data in the queue.
 }
 \subsection{Returns}{
 \code{NULL} (invisibly). Called for its side effects.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-extend"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-extend}{}}}
+\subsection{Method \code{extend()}}{
+Extend the queue data by \code{step} elements.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$extend(n)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Positive integer, number of elements to extend the queue data.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-push"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-push}{}}}
+\subsection{Method \code{push()}}{
+Append new elements to the queue.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$push(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{Character vector of new data to append.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}
@@ -165,59 +218,6 @@ Remove and return all available elements off the queue.
 \subsection{Returns}{
 Character vector, elements collected from the queue.
 \code{NULL} if there are no more elements available to collect.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_queue-clean"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_queue-clean}{}}}
-\subsection{Method \code{clean()}}{
-Remove popped elements from the data in the queue.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$clean()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_queue-extend"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_queue-extend}{}}}
-\subsection{Method \code{extend()}}{
-Extend the queue data by \code{step} elements.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$extend(n)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{n}}{Positive integer, number of elements to extend the queue data.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_queue-append"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_queue-append}{}}}
-\subsection{Method \code{append()}}{
-Append new elements to the queue.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$append(x)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{x}}{Character vector of new data to append.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
 }
 }
 }

@@ -137,12 +137,6 @@ crew_class_queue <- R6::R6Class(
         return(NULL)
       }
       data[seq(from = head, to = tail)]
-    },
-    #' @description List the data already popped.
-    #' @details `set()`, `reset()`, and `collect()` remove this data.
-    #' @return Character vector of data already popped.
-    popped = function() {
-      .subset2(private, ".data")[seq_len(.subset2(private, ".head") - 1L)]
     }
   )
 )

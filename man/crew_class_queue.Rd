@@ -42,7 +42,6 @@ next element to pop.}
 \item \href{#method-crew_class_queue-set}{\code{crew_class_queue$set()}}
 \item \href{#method-crew_class_queue-pop}{\code{crew_class_queue$pop()}}
 \item \href{#method-crew_class_queue-collect}{\code{crew_class_queue$collect()}}
-\item \href{#method-crew_class_queue-popped}{\code{crew_class_queue$popped()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -163,23 +162,6 @@ Remove and return all available elements off the queue.
 \subsection{Returns}{
 Character vector, elements collected from the queue.
 \code{NULL} if there are no more elements available to collect.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_queue-popped"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_queue-popped}{}}}
-\subsection{Method \code{popped()}}{
-List the data already popped.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$popped()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-\code{set()}, \code{reset()}, and \code{collect()} remove this data.
-}
-
-\subsection{Returns}{
-Character vector of data already popped.
 }
 }
 }

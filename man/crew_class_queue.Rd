@@ -53,12 +53,14 @@ next element to pop.}
 \subsection{Method \code{new()}}{
 Create a queue object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$new(step = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$new(data = NULL, step = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{data}}{See \code{\link[=crew_queue]{crew_queue()}}.}
+
 \item{\code{step}}{See \code{\link[=crew_queue]{crew_queue()}}.}
 }
 \if{html}{\out{</div>}}

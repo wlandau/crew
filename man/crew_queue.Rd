@@ -4,9 +4,11 @@
 \alias{crew_queue}
 \title{Create a \code{crew} queue object.}
 \usage{
-crew_queue(step = 1000L)
+crew_queue(data = character(0L), step = 1000L)
 }
 \arguments{
+\item{data}{Character vector of initial queue data.}
+
 \item{step}{Positive integer with the number of elements to extend the
 queue on each call to the \code{extend()} method.}
 }

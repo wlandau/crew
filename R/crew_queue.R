@@ -8,10 +8,11 @@
 #'   `crew` uses queues to efficiently track the names of resolved
 #'   tasks and backlogged tasks.
 #' @return A queue object.
+#' @param data Character vector of initial queue data.
 #' @param step Positive integer with the number of elements to extend the
 #'   queue on each call to the `extend()` method.
-crew_queue <- function(step = 1e3L) {
-  queue <- crew_class_queue$new(step = step)
+crew_queue <- function(data = character(0L), step = 1e3L) {
+  queue <- crew_class_queue$new(data = data, step = step)
   queue$validate()
   queue
 }
@@ -54,10 +55,13 @@ crew_class_queue <- R6::R6Class(
   public = list(
     #' @description Create a queue object.
     #' @return A queue object.
+    #' @param data See [crew_queue()].
     #' @param step See [crew_queue()].
-    initialize = function(step = NULL) {
-      private$.step <- step
-      self$reset()
+    initialize = function(data = NULL, step = NULL) {
+      private$.data <- data
+      private$.head <- 1L
+      private$.tail <- length(data)
+      private$.step <- as.integer(step)
     },
     #' @description Validate the queue.
     #' @return `NULL` (invisibly). Called for its side effects.

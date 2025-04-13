@@ -165,3 +165,21 @@ crew_test("queue$clean()", {
     expect_equal(q$tail, 0L)
   }
 })
+
+crew_test("queue$extend()", {
+  q <- crew_queue(step = 100L)
+  q$extend(n = 50)
+  expect_equal(q$data, rep(NA_character_, 100L))
+  expect_equal(q$head, 1L)
+  expect_equal(q$tail, 0L)
+  q <- crew_queue(data = letters, step = 100L)
+  expect_equal(q$pop(), "a")
+  q$extend(n = 100L)
+  expect_equal(q$data, c(letters[-1L], rep(NA_character_, 100L)))
+  expect_equal(q$head, 1L)
+  expect_equal(q$tail, 25L)
+  q$extend(n = 100L)
+  expect_equal(q$data, c(letters[-1L], rep(NA_character_, 200L)))
+  expect_equal(q$head, 1L)
+  expect_equal(q$tail, 25L)
+})

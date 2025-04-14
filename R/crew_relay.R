@@ -29,7 +29,7 @@ crew_class_relay <- R6::R6Class(
     .from = NULL,
     .to = NULL,
     .throttle = NULL
-  ),  
+  ),
   active = list(
     #' @field condition Main condition variable.
     condition = function() {

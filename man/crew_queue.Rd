@@ -4,14 +4,26 @@
 \alias{crew_queue}
 \title{Create a \code{crew} queue object.}
 \usage{
-crew_queue()
+crew_queue(data = character(0L), step = 1000L)
+}
+\arguments{
+\item{data}{Character vector of initial queue data.}
+
+\item{step}{Positive integer with the number of elements to extend the
+queue on each call to the \code{extend()} method.}
+}
+\value{
+A queue object.
 }
 \description{
-Create an \code{R6} \code{crew} queue object for resolved task names.
+Create an \code{R6} \code{crew} queue object.
 }
 \details{
-A \code{crew} queue object efficiently tracks the names of resolved
-tasks so the controller can pop them efficiently.
+A \code{crew} queue is a classical first-in-first-out data structure
+that extends itself in chunks (of size \code{step}) to avoid
+overhead.
+\code{crew} uses queues to efficiently track the names of resolved
+tasks and backlogged tasks.
 }
 \seealso{
 Other queue: 

@@ -4,10 +4,18 @@
 \alias{crew_class_queue}
 \title{\code{R6} queue class}
 \description{
-\code{R6} class for a queue of resolved task names.
+\code{R6} class for a queue.
 }
 \details{
-See \code{\link[=crew_queue]{crew_queue()}}.
+See the Details section of \code{\link[=crew_queue]{crew_queue()}}.
+The \code{R6} \code{crew} queue class is not portable (for efficiency),
+so other packages should not inherit from it.
+The reason for non-portability is efficiency: elements can be
+directly accessed without \verb{self$} or \verb{private$}, and they can be
+directly modified with \verb{<<-}.
+This is especially important for \code{push()} because
+\code{envir$vector[slice] <- x} copies the entire vector in memory,
+which has O(n^2) complexity and is extremely slow for large vectors.
 }
 \examples{
 crew_queue()
@@ -20,24 +28,54 @@ Other queue:
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{names}}{Names of resolved tasks.}
+\item{\code{data}}{See \code{\link[=crew_queue]{crew_queue()}}.}
 
 \item{\code{head}}{Non-negative integer pointing to the location of the
-next name to pop.}
+next element to pop.}
+
+\item{\code{tail}}{Non-negative integer pointing to the tail of the queue.}
+
+\item{\code{step}}{See \code{\link[=crew_queue]{crew_queue()}}.}
 }
 \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-crew_class_queue-new}{\code{crew_class_queue$new()}}
 \item \href{#method-crew_class_queue-validate}{\code{crew_class_queue$validate()}}
-\item \href{#method-crew_class_queue-reset}{\code{crew_class_queue$reset()}}
-\item \href{#method-crew_class_queue-set}{\code{crew_class_queue$set()}}
-\item \href{#method-crew_class_queue-pop}{\code{crew_class_queue$pop()}}
-\item \href{#method-crew_class_queue-collect}{\code{crew_class_queue$collect()}}
 \item \href{#method-crew_class_queue-empty}{\code{crew_class_queue$empty()}}
 \item \href{#method-crew_class_queue-nonempty}{\code{crew_class_queue$nonempty()}}
-\item \href{#method-crew_class_queue-popped}{\code{crew_class_queue$popped()}}
+\item \href{#method-crew_class_queue-list}{\code{crew_class_queue$list()}}
+\item \href{#method-crew_class_queue-reset}{\code{crew_class_queue$reset()}}
+\item \href{#method-crew_class_queue-clean}{\code{crew_class_queue$clean()}}
+\item \href{#method-crew_class_queue-set}{\code{crew_class_queue$set()}}
+\item \href{#method-crew_class_queue-extend}{\code{crew_class_queue$extend()}}
+\item \href{#method-crew_class_queue-push}{\code{crew_class_queue$push()}}
+\item \href{#method-crew_class_queue-pop}{\code{crew_class_queue$pop()}}
+\item \href{#method-crew_class_queue-collect}{\code{crew_class_queue$collect()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-new"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-new}{}}}
+\subsection{Method \code{new()}}{
+Create a queue object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$new(data = NULL, step = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{data}}{See \code{\link[=crew_queue]{crew_queue()}}.}
+
+\item{\code{step}}{See \code{\link[=crew_queue]{crew_queue()}}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A queue object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -54,6 +92,45 @@ Validate the queue.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-empty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-empty}{}}}
+\subsection{Method \code{empty()}}{
+Check if the queue is empty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$empty()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} if the queue is empty, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-nonempty"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-nonempty}{}}}
+\subsection{Method \code{nonempty()}}{
+Check if the queue is empty.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$nonempty()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{TRUE} if the queue is nonempty, \code{FALSE} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-list"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-list}{}}}
+\subsection{Method \code{list()}}{
+List available data.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$list()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character vector of available data.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_queue-reset"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_queue-reset}{}}}
 \subsection{Method \code{reset()}}{
@@ -67,18 +144,31 @@ Reset the queue.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-clean"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-clean}{}}}
+\subsection{Method \code{clean()}}{
+Remove popped elements from the data in the queue.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$clean()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_queue-set"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_queue-set}{}}}
 \subsection{Method \code{set()}}{
-Set the names in the queue.
+Set the data in the queue.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$set(names = character(0L))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$set(data = character(0L))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{names}}{Character vector of names to set.}
+\item{\code{data}}{Character vector of data to set.}
 }
 \if{html}{\out{</div>}}
 }
@@ -87,74 +177,89 @@ Set the names in the queue.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_queue-pop"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_queue-pop}{}}}
-\subsection{Method \code{pop()}}{
-Pop a name off the queue.
+\if{html}{\out{<a id="method-crew_class_queue-extend"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-extend}{}}}
+\subsection{Method \code{extend()}}{
+Extend the queue data by \code{step} elements.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$pop()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$extend(n)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Positive integer, number of elements to extend the queue data.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-push"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-push}{}}}
+\subsection{Method \code{push()}}{
+Append new elements to the queue.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$push(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{Character vector of new data to append.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+\code{push()} is the reason the queue class is not portable.
+According to R6 documentation,
+members of non-portable classes
+can be accessed without \verb{self$} or \verb{private$},
+and assignment can be done with \verb{<<-}.
+In the case of \code{push()}, this prevents each assignment from
+deep-copying the entire contents of the vector.
 }
 
 \subsection{Returns}{
-Character string, a name popped off the queue.
-\code{NULL} if there are no more names available to pop.
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-pop"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-pop}{}}}
+\subsection{Method \code{pop()}}{
+Pop one or more elements off the queue.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$pop(n = 1L)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Positive integer, maximum number of elements to pop.
+Fewer than \code{n} are popped if fewer than \code{n} are available.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Character vector of elements popped off the queue.
+\code{NULL} if there are no more elements available to pop.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_queue-collect"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_queue-collect}{}}}
 \subsection{Method \code{collect()}}{
-Remove and return all available names off the queue.
+Remove and return all available elements off the queue.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$collect()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-Character vector, names collected from the queue.
-\code{NULL} if there are no more names available to collect.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_queue-empty"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_queue-empty}{}}}
-\subsection{Method \code{empty()}}{
-Report if the queue is empty.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$empty()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{TRUE} if the queue is empty, \code{FALSE} otherwise.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_queue-nonempty"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_queue-nonempty}{}}}
-\subsection{Method \code{nonempty()}}{
-Report if the queue is nonempty.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$nonempty()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{TRUE} if the queue is nonempty, \code{FALSE} otherwise.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_queue-popped"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_queue-popped}{}}}
-\subsection{Method \code{popped()}}{
-List the names already popped.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$popped()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-\code{set()}, \code{reset()}, and \code{collect()} remove these names.
-}
-
-\subsection{Returns}{
-Character vector of names already popped.
+Character vector, elements collected from the queue.
+\code{NULL} if there are no more elements available to collect.
 }
 }
 }

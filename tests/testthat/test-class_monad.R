@@ -16,6 +16,7 @@ crew_test("bad field", {
 
 crew_test("as_monad()", {
   skip_on_cran()
+  skip_on_os("windows")
   on.exit(mirai::daemons(n = 0L))
   task <- structure(list(data = list(2L)), class = c("mirai", "recvAio"))
   expect_equal(as_monad(task = task, name = "x", controller = "y"), list(2L))

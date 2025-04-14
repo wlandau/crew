@@ -5,6 +5,7 @@ crew_test("relay start, terminate, validate", {
   x$start()
   expect_silent(x$validate())
   expect_true(inherits(x$condition, "conditionVariable"))
+  expect_true(inherits(x$throttle, "crew_class_throttle"))
   x$terminate()
   expect_silent(x$validate())
   expect_null(x$condition)

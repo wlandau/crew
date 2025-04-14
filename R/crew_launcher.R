@@ -711,7 +711,7 @@ crew_class_launcher <- R6::R6Class(
           index <- index + 1L
         }
       }
-      activity <- increment > 0L
+      activity <- length(status$events) > 0L || increment > 0L
       private$.throttle$update(activity = activity)
       invisible(activity)
     },

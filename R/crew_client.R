@@ -100,7 +100,9 @@ crew_client <- function(
     serialization = serialization,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
-    relay = crew_relay()
+    relay = crew_relay(
+      throttle = crew_throttle(seconds_max = seconds_interval)
+    )
   )
   client$validate()
   client

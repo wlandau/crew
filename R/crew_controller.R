@@ -180,13 +180,13 @@ crew_class_controller <- R6::R6Class(
     },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
-        private$.client$relay$wait(throttle = private$.launcher$throttle)
+        private$.client$relay$wait()
       }
       .subset2(self, "unresolved")() < 1L
     },
     .wait_one_once = function() {
       if (.subset2(self, "unpopped")() < 1L) {
-        private$.client$relay$wait(throttle = private$.launcher$throttle)
+        private$.client$relay$wait()
       }
       .subset2(self, "unpopped")() > 0L
     },

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.9002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,7 +97,8 @@ from the last call to <code>map(error = "stop)</code>.</p></dd>
 
 
 <dt><code>backlog</code></dt>
-<dd><p>Character vector of explicitly backlogged tasks.</p></dd>
+<dd><p>A <code><a href="crew_queue.html">crew_queue()</a></code> object tracking explicitly
+backlogged tasks.</p></dd>
 
 
 <dt><code>autoscaling</code></dt>
@@ -482,16 +483,8 @@ compatible with the analogous method of controller groups.</p></dd>
 </div>
 <div class="section">
 <h4 id="details-7">Details<a class="anchor" aria-label="anchor" href="#details-7"></a></h4>
-<p>The <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> method re-launches all inactive backlogged
-workers, then any additional inactive workers needed to
-accommodate the demand of unresolved tasks. A worker is
-"backlogged" if it was assigned more tasks than it has completed
-so far.</p>
-<p>Methods <code>push()</code>, <code>pop()</code>, and <code>wait()</code> already invoke
-<code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> if the <code>scale</code> argument is <code>TRUE</code>.
-For finer control of the number of workers launched,
-call <code>launch()</code> on the controller with the exact desired
-number of workers.</p>
+<p>The <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> method launches new workers to
+run tasks if needed.</p>
 </div>
 
 <div class="section">

@@ -1051,7 +1051,6 @@ crew_class_controller <- R6::R6Class(
       names <- names(tasks)
       total <- length(tasks)
       relay <- .subset2(.subset2(self, "client"), "relay")
-      throttle_object <- .subset2(.subset2(self, "launcher"), "throttle")
       start <- nanonext::mclock()
       pushed <- private$.pushed
       this_envir <- environment()
@@ -1082,7 +1081,7 @@ crew_class_controller <- R6::R6Class(
           )
         }
         if (unresolved > 0L) {
-          .subset2(relay, "wait")(throttle = throttle_object)
+          .subset2(relay, "wait")()
         }
         .subset2(self, "unresolved")() < 1L
       }

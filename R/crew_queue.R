@@ -7,8 +7,6 @@
 #'   overhead.
 #'   `crew` uses queues to efficiently track the names of resolved
 #'   tasks and backlogged tasks.
-#'   The `R6` `crew` queue class is not portable (for efficiency),
-#'   so other packages should not inherit from it.
 #' @return A queue object.
 #' @param data Character vector of initial queue data.
 #' @param step Positive integer with the number of elements to extend the
@@ -24,6 +22,14 @@ crew_queue <- function(data = character(0L), step = 1e3L) {
 #' @family queue
 #' @description `R6` class for a queue.
 #' @details See the Details section of [crew_queue()].
+#'   The `R6` `crew` queue class is not portable (for efficiency),
+#'   so other packages should not inherit from it.
+#'   The reason for non-portability is efficiency: elements can be
+#'   directly accessed without `self$` or `private$`, and they can be
+#'   directly modified with `<<-`.
+#'   This is especially important for `push()` because
+#'   `envir$vector[slice] <- x` copies the entire vector in memory,
+#'   which has O(n^2) complexity and is extremely slow for large vectors.
 #' @examples
 #' crew_queue()
 crew_class_queue <- R6::R6Class(
@@ -39,20 +45,20 @@ crew_class_queue <- R6::R6Class(
   active = list(
     #' @field data See [crew_queue()].
     data = function() {
-      .subset2(private, ".data")
+      .data
     },
     #' @field head Non-negative integer pointing to the location of the
     #'   next element to pop.
     head = function() {
-      .subset2(private, ".head")
+      .head
     },
     #' @field tail Non-negative integer pointing to the tail of the queue.
     tail = function() {
-      .subset2(private, ".tail")
+      .tail
     },
     #' @field step See [crew_queue()].
     step = function() {
-      .subset2(private, ".step")
+      .step
     }
   ),
   public = list(
@@ -61,72 +67,64 @@ crew_class_queue <- R6::R6Class(
     #' @param data See [crew_queue()].
     #' @param step See [crew_queue()].
     initialize = function(data = NULL, step = NULL) {
-      private$.data <- data
-      private$.head <- 1L
-      private$.tail <- length(data)
-      private$.step <- as.integer(step)
+      .data <<- data
+      .head <<- 1L
+      .tail <<- length(data)
+      .step <<- as.integer(step)
     },
     #' @description Validate the queue.
     #' @return `NULL` (invisibly). Called for its side effects.
     validate = function() {
       crew_assert(
-        private$.data,
+        .data,
         is.character(.),
         message = "data in crew queue must be a character vector"
       )
-      for (field in c(".head", ".tail", ".step")) {
+      for (field in c("head", "tail", "step")) {
         crew_assert(
-          private[[field]],
+          self[[field]],
           is.integer(.),
           length(.) == 1L,
           !anyNA(.),
           is.finite(.),
           . >= 0L,
-          message = paste("invalid crew queue", field)
+          message = paste("invalid crew queue field", field)
         )
       }
     },
     #' @description Check if the queue is empty.
     #' @return `TRUE` if the queue is empty, `FALSE` otherwise.
     empty = function() {
-      head <- .subset2(private, ".head")
-      tail <- .subset2(private, ".tail")
-      tail <= 0L || head > tail
+      .tail <= 0L || .head > .tail
     },
     #' @description Check if the queue is empty.
     #' @return `TRUE` if the queue is nonempty, `FALSE` otherwise.
     nonempty = function() {
-      head <- .subset2(private, ".head")
-      tail <- .subset2(private, ".tail")
-      tail > 0L && head <= tail
+      .tail > 0L && .head <= .tail
     },
     #' @description List available data.
     #' @return Character vector of available data.
     list = function() {
-      if (.subset2(self, "empty")()) {
+      if (empty()) {
         return(character(0L))
       }
-      data <- .subset2(private, ".data")
-      head <- .subset2(private, ".head")
-      tail <- .subset2(private, ".tail")
-      data[seq(from = head, to = tail)]
+      .data[seq(from = .head, to = .tail)]
     },
     #' @description Reset the queue.
     #' @return `NULL` (invisibly). Called for its side effects.
     reset = function() {
-      private$.data <- character(0L)
-      private$.head <- 1L
-      private$.tail <- 0L
+      .data <<- character(0L)
+      .head <<- 1L
+      .tail <<- 0L
       invisible()
     },
     #' @description Remove popped elements from the data in the queue.
     #' @return `NULL` (invisibly).
     clean = function() {
-      head <- .subset2(private, ".head")
-      if (head > 1L) {
-        private$.data <- .subset2(private, ".data")[-seq(head - 1L)]
-        private$.tail <- .subset2(private, ".tail") - head + 1L
-        private$.head <- 1L
+      if (.head > 1L) {
+        .data <<- .data[-seq(.head - 1L)]
+        .tail <<- .tail - .head + 1L
+        .head <<- 1L
       }
       invisible()
     },
@@ -134,27 +132,27 @@ crew_class_queue <- R6::R6Class(
     #' @return `NULL` (invisibly). Called for its side effects.
     #' @param data Character vector of data to set.
     set = function(data = character(0L)) {
-      private$.data <- data
-      private$.head <- 1L
-      private$.tail <- length(data)
+      .data <<- data
+      .head <<- 1L
+      .tail <<- length(data)
       invisible()
     },
     #' @description Extend the queue data by `step` elements.
     #' @param n Positive integer, number of elements to extend the queue data.
     #' @return `NULL` (invisibly).
     extend = function(n) {
-      .subset2(self, "clean")()
-      n <- max(n, .subset2(private, ".step"))
-      private$.data <- c(.subset2(private, ".data"), rep(NA_character_, n))
+      clean()
+      .data <<- c(.data, rep(NA_character_, max(n, .step)))
       invisible()
     },
     #' @description Append new elements to the queue.
-    #' @details The queue class is not portable.
+    #' @details `push()` is the reason the queue class is not portable.
     #'   According to R6 documentation,
-    #'   that means members can be accessed without `self$` or `private$`,
-    #'   and assignment can be done with `<<-`. This is important because
-    #'   `envir$vector[slice] <- x`` copies the entire vector in memory,
-    #'   which has O(n^2) complexity and is extremely slow for large vectors.
+    #'   members of non-portable classes
+    #'   can be accessed without `self$` or `private$`,
+    #'   and assignment can be done with `<<-`.
+    #'   In the case of `push()`, this prevents each assignment from
+    #'   deep-copying the entire contents of the vector.
     #' @return `NULL` (invisibly).
     #' @param x Character vector of new data to append.
     push = function(x) {
@@ -172,32 +170,26 @@ crew_class_queue <- R6::R6Class(
     #' @return Character vector of elements popped off the queue.
     #'   `NULL` if there are no more elements available to pop.
     pop = function(n = 1L) {
-      if (.subset2(self, "empty")()) {
+      if (empty()) {
         return(NULL)
       }
-      head <- .subset2(private, ".head")
-      tail <- .subset2(private, ".tail")
-      n <- min(n, tail - head + 1L)
-      slice <- seq.int(from = head, length.out = n)
-      out <- .subset(.subset2(private, ".data"), slice)
-      private$.head <- head + n
+      n <- min(n, .tail - .head + 1L)
+      slice <- seq.int(from = .head, length.out = n)
+      out <- .subset(.data, slice)
+      private$.head <<- .head + n
       out
     },
     #' @description Remove and return all available elements off the queue.
     #' @return Character vector, elements collected from the queue.
     #'   `NULL` if there are no more elements available to collect.
     collect = function() {
-      on.exit(.subset2(self, "reset")())
-      if (.subset2(self, "empty")()) {
+      if (empty()) {
+        reset()
         return(NULL)
       }
-      data <- .subset2(private, ".data")
-      head <- .subset2(private, ".head")
-      tail <- .subset2(private, ".tail")
-      if (head > tail) {
-        return(NULL)
-      }
-      data[seq(from = head, to = tail)]
+      out <- .data[seq(from = .head, to = .tail)]
+      reset()
+      out
     }
   )
 )

@@ -166,6 +166,7 @@ crew_test("collect() without previous pop()", {
   expect_equal(x$collect(), c("a", "b", "c", "d"))
   expect_true(x$empty())
   expect_false(x$nonempty())
+  expect_null(x$collect())
   expect_equal(x$data, character(0L))
   expect_equal(x$head, 1L)
   expect_equal(x$tail, 0L)

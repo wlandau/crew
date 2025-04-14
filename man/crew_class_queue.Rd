@@ -8,6 +8,14 @@
 }
 \details{
 See the Details section of \code{\link[=crew_queue]{crew_queue()}}.
+The \code{R6} \code{crew} queue class is not portable (for efficiency),
+so other packages should not inherit from it.
+The reason for non-portability is efficiency: elements can be
+directly accessed without \verb{self$} or \verb{private$}, and they can be
+directly modified with \verb{<<-}.
+This is especially important for \code{push()} because
+\code{envir$vector[slice] <- x} copies the entire vector in memory,
+which has O(n^2) complexity and is extremely slow for large vectors.
 }
 \examples{
 crew_queue()
@@ -205,12 +213,13 @@ Append new elements to the queue.
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-The queue class is not portable.
+\code{push()} is the reason the queue class is not portable.
 According to R6 documentation,
-that means members can be accessed without \verb{self$} or \verb{private$},
-and assignment can be done with \verb{<<-}. This is important because
-`envir$vector\link{slice} <- x`` copies the entire vector in memory,
-which has O(n^2) complexity and is extremely slow for large vectors.
+members of non-portable classes
+can be accessed without \verb{self$} or \verb{private$},
+and assignment can be done with \verb{<<-}.
+In the case of \code{push()}, this prevents each assignment from
+deep-copying the entire contents of the vector.
 }
 
 \subsection{Returns}{

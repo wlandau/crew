@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,6 +74,10 @@
 <dd><p>Condition variable to relay to.</p></dd>
 
 
+<dt><code>throttle</code></dt>
+<dd><p>A <code><a href="crew_throttle.html">crew_throttle()</a></code> object for <code>wait()</code>.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -82,29 +86,38 @@
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
-<ul><li><p><a href="#method-crew_class_relay-validate"><code>crew_class_relay$validate()</code></a></p></li>
+<ul><li><p><a href="#method-crew_class_relay-new"><code>crew_class_relay$new()</code></a></p></li>
+<li><p><a href="#method-crew_class_relay-validate"><code>crew_class_relay$validate()</code></a></p></li>
 <li><p><a href="#method-crew_class_relay-start"><code>crew_class_relay$start()</code></a></p></li>
 <li><p><a href="#method-crew_class_relay-terminate"><code>crew_class_relay$terminate()</code></a></p></li>
 <li><p><a href="#method-crew_class_relay-set_from"><code>crew_class_relay$set_from()</code></a></p></li>
 <li><p><a href="#method-crew_class_relay-set_to"><code>crew_class_relay$set_to()</code></a></p></li>
 <li><p><a href="#method-crew_class_relay-wait"><code>crew_class_relay$wait()</code></a></p></li>
-</ul></div><p></p><hr><a id="method-crew_class_relay-validate"></a><div class="section">
-<h3 id="method-validate-">Method <code>validate()</code><a class="anchor" aria-label="anchor" href="#method-validate-"></a></h3>
-<p>Validate the object.</p><div class="section">
+</ul></div><p></p><hr><a id="method-crew_class_relay-new"></a><div class="section">
+<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+<p>Relay constructor.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">validate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/crew_class_relay.html">crew_class_relay</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">throttle</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
+<h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>throttle</code></dt>
+<dd><p>A <code><a href="crew_throttle.html">crew_throttle()</a></code> object.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
-<p><code>NULL</code> (invisibly).</p>
+<p>A <code><a href="crew_relay.html">crew_relay()</a></code> object.</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_relay-start"></a><div class="section">
-<h3 id="method-start-">Method <code><a href="https://rdrr.io/r/stats/start.html" class="external-link">start()</a></code><a class="anchor" aria-label="anchor" href="#method-start-"></a></h3>
-<p>Start the relay object.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_relay-validate"></a><div class="section">
+<h3 id="method-validate-">Method <code>validate()</code><a class="anchor" aria-label="anchor" href="#method-validate-"></a></h3>
+<p>Validate the object.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">validate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -112,11 +125,11 @@
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_relay-terminate"></a><div class="section">
-<h3 id="method-terminate-">Method <code>terminate()</code><a class="anchor" aria-label="anchor" href="#method-terminate-"></a></h3>
-<p>Terminate the relay object.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_relay-start"></a><div class="section">
+<h3 id="method-start-">Method <code><a href="https://rdrr.io/r/stats/start.html" class="external-link">start()</a></code><a class="anchor" aria-label="anchor" href="#method-start-"></a></h3>
+<p>Start the relay object.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -124,37 +137,29 @@
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_relay-set_from"></a><div class="section">
-<h3 id="method-set-from-">Method <code>set_from()</code><a class="anchor" aria-label="anchor" href="#method-set-from-"></a></h3>
-<p>Set the condition variable to relay from.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_relay-terminate"></a><div class="section">
+<h3 id="method-terminate-">Method <code>terminate()</code><a class="anchor" aria-label="anchor" href="#method-terminate-"></a></h3>
+<p>Terminate the relay object.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">set_from</span><span class="op">(</span><span class="va">from</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
-<div class="section">
-<h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>from</code></dt>
-<dd><p>Condition variable to relay from.</p></dd>
-
-
-</dl><p></p></div>
-</div>
 <div class="section">
 <h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_relay-set_to"></a><div class="section">
-<h3 id="method-set-to-">Method <code>set_to()</code><a class="anchor" aria-label="anchor" href="#method-set-to-"></a></h3>
-<p>Set the condition variable to relay to.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_relay-set_from"></a><div class="section">
+<h3 id="method-set-from-">Method <code>set_from()</code><a class="anchor" aria-label="anchor" href="#method-set-from-"></a></h3>
+<p>Set the condition variable to relay from.</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">set_to</span><span class="op">(</span><span class="va">to</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">set_from</span><span class="op">(</span><span class="va">from</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>to</code></dt>
-<dd><p>Condition variable to relay to.</p></dd>
+<p></p><div class="arguments"><dl><dt><code>from</code></dt>
+<dd><p>Condition variable to relay from.</p></dd>
 
 
 </dl><p></p></div>
@@ -164,25 +169,36 @@
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_relay-wait"></a><div class="section">
-<h3 id="method-wait-">Method <code>wait()</code><a class="anchor" aria-label="anchor" href="#method-wait-"></a></h3>
-<p>Wait until an unobserved task resolves or the timeout
-is reached. Use the throttle to determine the waiting time.</p><div class="section">
+</div><p></p><hr><a id="method-crew_class_relay-set_to"></a><div class="section">
+<h3 id="method-set-to-">Method <code>set_to()</code><a class="anchor" aria-label="anchor" href="#method-set-to-"></a></h3>
+<p>Set the condition variable to relay to.</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="va">throttle</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">set_to</span><span class="op">(</span><span class="va">to</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>throttle</code></dt>
-<dd><p>A <code><a href="crew_throttle.html">crew_throttle()</a></code> object to orchestrate the
-wait time intervals.</p></dd>
+<p></p><div class="arguments"><dl><dt><code>to</code></dt>
+<dd><p>Condition variable to relay to.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 <div class="section">
 <h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
+<p><code>NULL</code> (invisibly).</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_relay-wait"></a><div class="section">
+<h3 id="method-wait-">Method <code>wait()</code><a class="anchor" aria-label="anchor" href="#method-wait-"></a></h3>
+<p>Wait until an unobserved task resolves or the timeout
+is reached. Use the throttle to determine the waiting time.</p><div class="section">
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_relay</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="returns-6">Returns<a class="anchor" aria-label="anchor" href="#returns-6"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
@@ -197,16 +213,19 @@ wait time intervals.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Public:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     condition: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     from: active binding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (throttle) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     set_from: function (from) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     set_to: function (to) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     start: function () </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     terminate: function () </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     throttle: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     to: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     validate: function () </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     wait: function (throttle) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     wait: function () </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Private:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .condition: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .from: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     .throttle: crew_class_throttle, R6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .to: NULL</span>
 </code></pre></div>
     </div>

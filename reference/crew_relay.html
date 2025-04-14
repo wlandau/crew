@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,9 +52,17 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_relay</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_relay</span><span class="op">(</span>throttle <span class="op">=</span> <span class="fu"><a href="crew_throttle.html">crew_throttle</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-throttle">throttle<a class="anchor" aria-label="anchor" href="#arg-throttle"></a></dt>
+<dd><p>A <code><a href="crew_throttle.html">crew_throttle()</a></code> object.</p></dd>
+
+</dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An <code>R6</code> <code>crew</code> relay object.</p>
@@ -77,16 +85,19 @@ among condition variables.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Public:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     condition: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     from: active binding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (throttle) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     set_from: function (from) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     set_to: function (to) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     start: function () </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     terminate: function () </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     throttle: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     to: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     validate: function () </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     wait: function (throttle) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     wait: function () </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Private:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .condition: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .from: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     .throttle: crew_class_throttle, R6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .to: NULL</span>
 </code></pre></div>
     </div>

@@ -7,7 +7,7 @@
 \code{R6} class for a queue.
 }
 \details{
-See \code{\link[=crew_queue]{crew_queue()}}.
+See the Details section of \code{\link[=crew_queue]{crew_queue()}}.
 }
 \examples{
 crew_queue()
@@ -20,7 +20,7 @@ Other queue:
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{data}}{Character vector of elements.}
+\item{\code{data}}{See \code{\link[=crew_queue]{crew_queue()}}.}
 
 \item{\code{head}}{Non-negative integer pointing to the location of the
 next element to pop.}
@@ -204,6 +204,15 @@ Append new elements to the queue.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+The queue class is not portable.
+According to R6 documentation,
+that means members can be accessed without \verb{self$} or \verb{private$},
+and assignment can be done with \verb{<<-}. This is important because
+`envir$vector\link{slice} <- x`` copies the entire vector in memory,
+which has O(n^2) complexity and is extremely slow for large vectors.
+}
+
 \subsection{Returns}{
 \code{NULL} (invisibly).
 }

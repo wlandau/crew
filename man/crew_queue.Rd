@@ -24,6 +24,8 @@ that extends itself in chunks (of size \code{step}) to avoid
 overhead.
 \code{crew} uses queues to efficiently track the names of resolved
 tasks and backlogged tasks.
+The \code{R6} \code{crew} queue class is not portable (for efficiency),
+so other packages should not inherit from it.
 }
 \seealso{
 Other queue: 

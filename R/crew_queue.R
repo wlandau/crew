@@ -7,6 +7,8 @@
 #'   overhead.
 #'   `crew` uses queues to efficiently track the names of resolved
 #'   tasks and backlogged tasks.
+#'   The `R6` `crew` queue class is not portable (for efficiency),
+#'   so other packages should not inherit from it.
 #' @return A queue object.
 #' @param data Character vector of initial queue data.
 #' @param step Positive integer with the number of elements to extend the
@@ -21,12 +23,13 @@ crew_queue <- function(data = character(0L), step = 1e3L) {
 #' @export
 #' @family queue
 #' @description `R6` class for a queue.
-#' @details See [crew_queue()].
+#' @details See the Details section of [crew_queue()].
 #' @examples
 #' crew_queue()
 crew_class_queue <- R6::R6Class(
   classname = "crew_class_queue",
   cloneable = FALSE,
+  portable = FALSE,
   private = list(
     .data = NULL,
     .head = NULL,
@@ -34,7 +37,7 @@ crew_class_queue <- R6::R6Class(
     .step = NULL
   ),
   active = list(
-    #' @field data Character vector of elements.
+    #' @field data See [crew_queue()].
     data = function() {
       .subset2(private, ".data")
     },
@@ -146,18 +149,21 @@ crew_class_queue <- R6::R6Class(
       invisible()
     },
     #' @description Append new elements to the queue.
+    #' @details The queue class is not portable.
+    #'   According to R6 documentation,
+    #'   that means members can be accessed without `self$` or `private$`,
+    #'   and assignment can be done with `<<-`. This is important because
+    #'   `envir$vector[slice] <- x`` copies the entire vector in memory,
+    #'   which has O(n^2) complexity and is extremely slow for large vectors.
     #' @return `NULL` (invisibly).
     #' @param x Character vector of new data to append.
     push = function(x) {
-      data <- .subset2(private, ".data")
-      tail <- .subset2(private, ".tail")
       n <- length(x)
-      if (length(data) - tail < n) {
-        .subset2(self, "extend")(n)
+      if (length(.data) - .tail < n) {
+        extend(n)
       }
-      tail <- .subset2(private, ".tail")
-      private$.data[seq_len(n) + tail] <- x
-      private$.tail <- tail + n
+      .data[seq_len(n) + .tail] <<- x
+      .tail <<- .tail + n
       invisible()
     },
     #' @description Pop one or more elements off the queue.

@@ -22,7 +22,7 @@ crew_test("backlog of tasks for transient workers", {
   })
   message(time["elapsed"])
   # Call wait() on the controller to cycle through the rest of the tasks.
-  x$wait(mode = "all")
+  message(system.time(x$wait(mode = "all"))["elapsed"])
   testthat::expect_equal(x$unresolved(), 0L)
   testthat::expect_equal(length(x$tasks), 200L)
   # All results should now be available.

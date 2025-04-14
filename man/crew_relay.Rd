@@ -4,7 +4,10 @@
 \alias{crew_relay}
 \title{Create a \code{crew} relay object.}
 \usage{
-crew_relay()
+crew_relay(throttle = crew_throttle())
+}
+\arguments{
+\item{throttle}{A \code{\link[=crew_throttle]{crew_throttle()}} object.}
 }
 \value{
 An \code{R6} \code{crew} relay object.

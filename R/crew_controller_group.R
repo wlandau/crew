@@ -44,16 +44,18 @@ crew_controller_group <- function(..., seconds_interval = 1) {
       )
     )
   )
-  relay <- crew_relay()
+  relay <- crew_relay(
+    throttle = crew_throttle(seconds_max = seconds_interval)
+  )
   relay$start()
-  throttle <- crew_throttle(seconds_max = seconds_interval)
   for (controller in controllers) {
     controller$client$relay$set_to(relay$condition)
   }
   out <- crew_class_controller_group$new(
     controllers = controllers,
     relay = relay,
-    throttle = throttle
+    # For efficiency, controller groups and relays have different throttles.
+    throttle = crew_throttle(seconds_max = seconds_interval)
   )
   out$validate()
   out
@@ -139,7 +141,7 @@ crew_class_controller_group <- R6::R6Class(
             return(TRUE)
           }
         }
-        private$.relay$wait(throttle = private$.throttle)
+        private$.relay$wait()
         FALSE
       }
       crew_retry(
@@ -169,7 +171,7 @@ crew_class_controller_group <- R6::R6Class(
         }
         envir$result <- sum(map_int(control, ~.x$unresolved())) < 1L
         if (!envir$result) {
-          private$.relay$wait(throttle = private$.throttle)
+          private$.relay$wait()
         }
         envir$result
       }

@@ -30,7 +30,7 @@ crew_test("mirai client can start using custom credentials", {
     tmp <- mirai::daemons(
       n = 1L,
       url = "wss://127.0.0.1:0",
-      dispatcher = "process",
+      dispatcher = TRUE,
       seed = NULL,
       tls = c(
         paste(readLines("fd.crt"), collapse = "\n"),

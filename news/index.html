@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,10 +46,11 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.1.1.9003" id="crew-1119003-development">crew 1.1.1.9003 (development)<a class="anchor" aria-label="anchor" href="#crew-1119003-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.1.1.9004" id="crew-1119004-development">crew 1.1.1.9004 (development)<a class="anchor" aria-label="anchor" href="#crew-1119004-development"></a></h2>
 <ul><li>Speedup for <code>targets</code>: avoid superfluous processing in <code>controller$pop()</code>.</li>
 <li>Speedup queue methods, especially <code>queue$push()</code>, by making the queue non-portable and using direct access and direct assignment in <code>R6</code>.</li>
 <li>Reduce the frequency of calls to <code><a href="https://mirai.r-lib.org/reference/status.html" class="external-link">mirai::status()</a></code> in workloads with a large number of quick tasks. Instead of resetting the throttle every time there is task or worker activity, only reset if there is worker activity. This was achieved by giving relay objects their own throttles instead of having them use the launcher throttles.</li>
+<li>Revert to a logical value for the <code>dispatcher</code> argument of <code><a href="https://mirai.r-lib.org/reference/daemons.html" class="external-link">mirai::daemons()</a></code> (<a href="https://github.com/wlandau/crew/issues/215" class="external-link">#215</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.1" id="crew-111">crew 1.1.1<a class="anchor" aria-label="anchor" href="#crew-111"></a></h2>

@@ -1,8 +1,9 @@
-# crew 1.1.1.9003 (development)
+# crew 1.1.1.9004 (development)
 
 * Speedup for `targets`: avoid superfluous processing in `controller$pop()`.
 * Speedup queue methods, especially `queue$push()`, by making the queue non-portable and using direct access and direct assignment in `R6`.
 * Reduce the frequency of calls to `mirai::status()` in workloads with a large number of quick tasks. Instead of resetting the throttle every time there is task or worker activity, only reset if there is worker activity. This was achieved by giving relay objects their own throttles instead of having them use the launcher throttles.
+* Revert to a logical value for the `dispatcher` argument of `mirai::daemons()` (#215, @shikokuchuo).
 
 # crew 1.1.1
 

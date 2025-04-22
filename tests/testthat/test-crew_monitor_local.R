@@ -3,7 +3,7 @@ crew_test("monitor dispatchers", {
   skip_on_os("windows")
   x <- crew_monitor_local()
   expect_true(is.integer(x$dispatchers()))
-  mirai::daemons(n = 1L, dispatcher = "process")
+  mirai::daemons(n = 1L, dispatcher = TRUE)
   on.exit({
     mirai::daemons(n = 0L)
     gc()

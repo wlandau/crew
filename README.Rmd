@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 [![pkgdown](https://github.com/wlandau/crew/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Apkgdown)
 <!-- badges: end --->
 
-In computationally demanding analysis projects, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services. The [NNG](https://nng.nanomsg.org)-powered [`mirai`](https://github.com/r-lib/mirai) R package is a sleek and sophisticated scheduler that efficiently processes these intense workloads. The `crew` package extends [`mirai`](https://github.com/r-lib/mirai) with a unifying interface for third-party worker launchers. Inspiration also comes from packages [`future`](https://future.futureverse.org/), [`rrq`](https://mrc-ide.github.io/rrq/), [`clustermq`](https://mschubert.github.io/clustermq/), and [`batchtools`](https://mllg.github.io/batchtools/).
+In computationally demanding analysis projects, statisticians and data scientists asynchronously deploy long-running tasks to distributed systems, ranging from traditional clusters to cloud services. The [NNG](https://nng.nanomsg.org)-powered [`mirai`](https://github.com/r-lib/mirai) R package is a sleek and sophisticated scheduler that efficiently processes these intense workloads. The `crew` package extends [`mirai`](https://github.com/r-lib/mirai) with a unifying interface for third-party worker launchers. Inspiration also comes from packages [`future`](https://future.futureverse.org/), [`rrq`](https://mrc-ide.github.io/rrq/), [`clustermq`](https://mschubert.github.io/clustermq/), and [`batchtools`](https://github.com/mlr-org/batchtools).
 
 # Installation
 
@@ -54,7 +54,7 @@ The `crew` package has unavoidable risks, and the user is responsible for safety
 * [`rrqueue`](http://traitecoevo.github.io/rrqueue/): predecessor of [`rrq`](https://mrc-ide.github.io/rrq/).
 * [`clustermq`](https://mschubert.github.io/clustermq/): sends R function calls as jobs to computing clusters.
 * [`future`](https://future.futureverse.org/): a unified interface for asynchronous evaluation of single tasks and map-reduce calls on a wide variety of backend technologies.
-* [`batchtools`](https://mllg.github.io/batchtools/): tools for computation on batch systems.
+* [`batchtools`](https://github.com/mlr-org/batchtools): tools for computation on batch systems.
 * [`targets`](https://docs.ropensci.org/targets/): a Make-like pipeline tool for R.
 * [`later`](https://r-lib.github.io/later/): delayed evaluation of synchronous tasks.
 * [`promises`](https://rstudio.github.io/promises/): minimally-invasive asynchronous programming for a small number of tasks within Shiny apps.

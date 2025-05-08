@@ -23,7 +23,7 @@ third-party worker launchers. Inspiration also comes from packages
 [`future`](https://future.futureverse.org/),
 [`rrq`](https://mrc-ide.github.io/rrq/),
 [`clustermq`](https://mschubert.github.io/clustermq/), and
-[`batchtools`](https://mllg.github.io/batchtools/).
+[`batchtools`](https://github.com/mlr-org/batchtools).
 
 # Installation
 
@@ -75,7 +75,7 @@ risks](https://wlandau.github.io/crew/articles/risks.html).
 - [`future`](https://future.futureverse.org/): a unified interface for
   asynchronous evaluation of single tasks and map-reduce calls on a wide
   variety of backend technologies.
-- [`batchtools`](https://mllg.github.io/batchtools/): tools for
+- [`batchtools`](https://github.com/mlr-org/batchtools): tools for
   computation on batch systems.
 - [`targets`](https://docs.ropensci.org/targets/): a Make-like pipeline
   tool for R.

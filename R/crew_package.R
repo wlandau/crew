@@ -17,7 +17,7 @@
 #'   [`future`](https://future.futureverse.org/),
 #'   [`rrq`](https://mrc-ide.github.io/rrq/),
 #'   [`clustermq`](https://mschubert.github.io/clustermq/),
-#'   and [`batchtools`](https://mllg.github.io/batchtools/).
+#'   and [`batchtools`](https://github.com/mlr-org/batchtools).
 #' @importFrom cli cli_progress_bar cli_progress_done cli_progress_update
 #' @importFrom data.table rbindlist
 #' @importFrom getip getip

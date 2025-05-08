@@ -1,4 +1,4 @@
-# crew 1.1.1.9004 (development)
+# crew 1.1.2
 
 * Speedup for `targets`: avoid superfluous processing in `controller$pop()`.
 * Speedup queue methods, especially `queue$push()`, by making the queue non-portable and using direct access and direct assignment in `R6`.

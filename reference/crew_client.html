@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,7 +42,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Create a client object.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/wlandau/crew/blob/1.1.2/R/crew_client.R" class="external-link"><code>R/crew_client.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/wlandau/crew/blob/main/R/crew_client.R" class="external-link"><code>R/crew_client.R</code></a></small>
       <div class="d-none name"><code>crew_client.Rd</code></div>
     </div>
 
@@ -81,7 +81,7 @@
 
 <dt id="arg-host">host<a class="anchor" aria-label="anchor" href="#arg-host"></a></dt>
 <dd><p>IP address of the <code>mirai</code> client to send and receive tasks.
-If <code>NULL</code>, the host defaults to the local IP address.</p></dd>
+If <code>NULL</code>, the host defaults to <code>nanonext::ip_addr()[1]</code>.</p></dd>
 
 
 <dt id="arg-port">port<a class="anchor" aria-label="anchor" href="#arg-port"></a></dt>
@@ -107,24 +107,24 @@ Use argument <code>tls</code> instead.</p></dd>
 
 <dt id="arg-serialization">serialization<a class="anchor" aria-label="anchor" href="#arg-serialization"></a></dt>
 <dd><p>Either <code>NULL</code> (default) or an object produced by
-<code><a href="https://rdrr.io/pkg/nanonext/man/serial_config.html" class="external-link">mirai::serial_config()</a></code> to control the serialization
+<code><a href="https://mirai.r-lib.org/reference/serial_config.html" class="external-link">mirai::serial_config()</a></code> to control the serialization
 of data sent to workers. This can help with either more efficient
 data transfers or to preserve attributes of otherwise
 non-exportable objects (such as <code>torch</code> tensors or <code>arrow</code> tables).
-See <code><a href="https://rdrr.io/pkg/nanonext/man/serial_config.html" class="external-link">?mirai::serial_config</a></code> for details.</p></dd>
+See <code><a href="https://mirai.r-lib.org/reference/serial_config.html" class="external-link">?mirai::serial_config</a></code> for details.</p></dd>
 
 
 <dt id="arg-seconds-interval">seconds_interval<a class="anchor" aria-label="anchor" href="#arg-seconds-interval"></a></dt>
 <dd><p>Number of seconds between
 polling intervals waiting for certain internal
 synchronous operations to complete,
-such as checking <code><a href="https://rdrr.io/pkg/mirai/man/status.html" class="external-link">mirai::status()</a></code></p></dd>
+such as checking <code><a href="https://mirai.r-lib.org/reference/status.html" class="external-link">mirai::status()</a></code></p></dd>
 
 
 <dt id="arg-seconds-timeout">seconds_timeout<a class="anchor" aria-label="anchor" href="#arg-seconds-timeout"></a></dt>
 <dd><p>Number of seconds until timing
 out while waiting for certain synchronous operations to complete,
-such as checking <code><a href="https://rdrr.io/pkg/mirai/man/status.html" class="external-link">mirai::status()</a></code>.</p></dd>
+such as checking <code><a href="https://mirai.r-lib.org/reference/status.html" class="external-link">mirai::status()</a></code>.</p></dd>
 
 
 <dt id="arg-retry-tasks">retry_tasks<a class="anchor" aria-label="anchor" href="#arg-retry-tasks"></a></dt>
@@ -156,7 +156,7 @@ such as checking <code><a href="https://rdrr.io/pkg/mirai/man/status.html" class
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

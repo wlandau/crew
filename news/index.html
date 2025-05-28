@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,15 +42,19 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/wlandau/crew/blob/1.1.2/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/wlandau/crew/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.1.2" id="crew-112">crew 1.1.2<a class="anchor" aria-label="anchor" href="#crew-112"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.1.2.9001" id="crew-1129001-development">crew 1.1.2.9001 (development)<a class="anchor" aria-label="anchor" href="#crew-1129001-development"></a></h2>
+<ul><li>Use <code><a href="https://nanonext.r-lib.org/reference/ip_addr.html" class="external-link">nanonext::ip_addr()</a></code> instead of <code>getip::getip()</code> to get the default IP address of the host (<a href="https://github.com/wlandau/crew/issues/216" class="external-link">#216</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.1.2" id="crew-112">crew 1.1.2<a class="anchor" aria-label="anchor" href="#crew-112"></a></h2><p class="text-muted">CRAN release: 2025-05-08</p>
 <ul><li>Speedup for <code>targets</code>: avoid superfluous processing in <code>controller$pop()</code>.</li>
 <li>Speedup queue methods, especially <code>queue$push()</code>, by making the queue non-portable and using direct access and direct assignment in <code>R6</code>.</li>
-<li>Reduce the frequency of calls to <code><a href="https://rdrr.io/pkg/mirai/man/status.html" class="external-link">mirai::status()</a></code> in workloads with a large number of quick tasks. Instead of resetting the throttle every time there is task or worker activity, only reset if there is worker activity. This was achieved by giving relay objects their own throttles instead of having them use the launcher throttles.</li>
-<li>Revert to a logical value for the <code>dispatcher</code> argument of <code><a href="https://rdrr.io/pkg/mirai/man/daemons.html" class="external-link">mirai::daemons()</a></code> (<a href="https://github.com/wlandau/crew/issues/215" class="external-link">#215</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
+<li>Reduce the frequency of calls to <code><a href="https://mirai.r-lib.org/reference/status.html" class="external-link">mirai::status()</a></code> in workloads with a large number of quick tasks. Instead of resetting the throttle every time there is task or worker activity, only reset if there is worker activity. This was achieved by giving relay objects their own throttles instead of having them use the launcher throttles.</li>
+<li>Revert to a logical value for the <code>dispatcher</code> argument of <code><a href="https://mirai.r-lib.org/reference/daemons.html" class="external-link">mirai::daemons()</a></code> (<a href="https://github.com/wlandau/crew/issues/215" class="external-link">#215</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.1" id="crew-111">crew 1.1.1<a class="anchor" aria-label="anchor" href="#crew-111"></a></h2>
@@ -105,7 +109,7 @@
 <li>Use <code><a href="https://rdrr.io/r/base/path.expand.html" class="external-link">path.expand()</a></code> on local log files.</li>
 <li>Switch to <code>Rscript</code>.</li>
 <li>Print session info from <code><a href="../reference/crew_worker.html">crew_worker()</a></code> before attempting to dial into <code>mirai</code>.</li>
-<li>Add <code>asyncdial = FALSE</code> back to <code><a href="https://rdrr.io/pkg/mirai/man/daemon.html" class="external-link">mirai::daemon()</a></code> call.</li>
+<li>Add <code>asyncdial = FALSE</code> back to <code><a href="https://mirai.r-lib.org/reference/daemon.html" class="external-link">mirai::daemon()</a></code> call.</li>
 <li>Deprecate <code>local_log_directory</code> and <code>local_log_join</code> in favor of <code><a href="../reference/crew_options_local.html">crew_options_local()</a></code> and the <code>options_local</code> argument.</li>
 <li>Add <code><a href="../reference/crew_options_metrics.html">crew_options_metrics()</a></code> and the <code>options_metrics</code> argument for recording resource metrics (<a href="https://github.com/wlandau/crew/issues/178" class="external-link">#178</a>).</li>
 <li>Add a new <code>logging.Rmd</code> vignette to explain best practices for logging and resource usage metrics (<a href="https://github.com/wlandau/crew/issues/178" class="external-link">#178</a>).</li>
@@ -128,7 +132,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.2" id="crew-092">crew 0.9.2<a class="anchor" aria-label="anchor" href="#crew-092"></a></h2><p class="text-muted">CRAN release: 2024-04-24</p>
-<ul><li>Use <code>.args</code> rather than <code>...</code> in <code><a href="https://rdrr.io/pkg/mirai/man/mirai.html" class="external-link">mirai::mirai()</a></code> to make sure arguments continue to be passed as local variables in <code>mirai</code> &gt;= 0.13.1.9012.</li>
+<ul><li>Use <code>.args</code> rather than <code>...</code> in <code><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai::mirai()</a></code> to make sure arguments continue to be passed as local variables in <code>mirai</code> &gt;= 0.13.1.9012.</li>
 <li>Add new controller methods <code>autoscale()</code>, <code>descale()</code>, and <code>started()</code> to facilitate different kinds of Shiny apps.</li>
 <li>Deprecate the <code>scale</code> and <code>throttle</code> methods of <code>controller$promise()</code>. <code><a href="https://rstudio.github.io/promises/reference/promise.html" class="external-link">promise()</a></code> now always calls <code>autoscale()</code> to make sure one and only one auto-scaling loop is running asynchronously. Auto-scaling thus continues even after the promise resolves.</li>
 <li>Add a second example vignette that simulates coin flips.</li>
@@ -169,10 +173,10 @@
 <li>Because of <a href="https://github.com/wlandau/crew/issues/108" class="external-link">#108</a>, <code>controller$map()</code> can no longer be used if there are tasks waiting to be popped.</li>
 <li>Use a <code>cli</code> progress bar in <code>map()</code>.</li>
 <li>Encapsulate non-function <code>R6</code> members in the <code>private</code> list and add active bindings where interfaces are necessary (<a href="https://github.com/wlandau/crew/issues/137" class="external-link">#137</a>). Ad hoc tests that absolutely need to modify private objects can use <code>object$.__enclos_env__$private</code> trick, but these tests should be skipped on CRAN in case there is a change to <code>R6</code> that breaks this.</li>
-<li>Drop <code>.signal</code> from <code><a href="https://rdrr.io/pkg/mirai/man/mirai.html" class="external-link">mirai::mirai()</a></code> since all <code>mirai</code> tasks signal as of <code>mirai</code> version 0.11.2.9025.</li>
+<li>Drop <code>.signal</code> from <code><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai::mirai()</a></code> since all <code>mirai</code> tasks signal as of <code>mirai</code> version 0.11.2.9025.</li>
 <li>Implement <code><a href="../reference/crew_throttle.html">crew_throttle()</a></code>, a decoupled mechanism for throttling that can be applied to scaling.</li>
 <li>Bring back the <code>throttle</code> argument, powered by <code><a href="../reference/crew_throttle.html">crew_throttle()</a></code>.</li>
-<li>Retry <code><a href="https://rdrr.io/pkg/mirai/man/status.html" class="external-link">mirai::status()</a></code> again in <code>daemons_info()</code> and make it configurable using <code>seconds_interval</code> and <code>seconds_timeout</code> in both the client and the launcher (<a href="https://github.com/wlandau/crew/issues/128" class="external-link">#128</a>).</li>
+<li>Retry <code><a href="https://mirai.r-lib.org/reference/status.html" class="external-link">mirai::status()</a></code> again in <code>daemons_info()</code> and make it configurable using <code>seconds_interval</code> and <code>seconds_timeout</code> in both the client and the launcher (<a href="https://github.com/wlandau/crew/issues/128" class="external-link">#128</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.0" id="crew-060">crew 0.6.0<a class="anchor" aria-label="anchor" href="#crew-060"></a></h2><p class="text-muted">CRAN release: 2023-10-12</p>
@@ -196,7 +200,7 @@
 <li>Implement <code>launch_max</code> to error out if workers repeatedly launch without completing any tasks (<a href="https://github.com/wlandau/crew/issues/101" class="external-link">#101</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>, <a href="https://github.com/multimeric" class="external-link">@multimeric</a>).</li>
 <li>Detect discovered workers more robustly in <code>launcher$done()</code>.</li>
 <li>Add a new <code>algorithm</code> argument to the <code>push()</code>, <code>shove()</code>, and <code>map()</code> methods of controllers and controller groups, as well as arguments/fields in <code><a href="../reference/crew_eval.html">crew_eval()</a></code> and its return value (<a href="https://github.com/wlandau/crew/issues/113" class="external-link">#113</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
-<li>As a default for pseudo-random number generation, leverage widely-spaced L’Ecuyer streams as supported by <code><a href="https://rdrr.io/pkg/mirai/man/nextstream.html" class="external-link">mirai::nextstream()</a></code> (<a href="https://github.com/wlandau/crew/issues/115" class="external-link">#115</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
+<li>As a default for pseudo-random number generation, leverage widely-spaced L’Ecuyer streams as supported by <code><a href="https://mirai.r-lib.org/reference/nextstream.html" class="external-link">mirai::nextstream()</a></code> (<a href="https://github.com/wlandau/crew/issues/115" class="external-link">#115</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 <li>Move README documentation to vignettes.</li>
 <li>Add a new <code><a href="../reference/crew_tls.html">crew_tls()</a></code> function for TLS configuration (<a href="https://github.com/wlandau/crew/issues/120" class="external-link">#120</a>).</li>
 <li>Deprecate the <code>tls_enable</code> and <code>tls_config</code> arguments of <code><a href="../reference/crew_client.html">crew_client()</a></code> etc. in favor of a <code>tls</code> argument which accepts <code><a href="../reference/crew_tls.html">crew_tls()</a></code> objects (<a href="https://github.com/wlandau/crew/issues/120" class="external-link">#120</a>).</li>
@@ -241,7 +245,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="crew-020">crew 0.2.0<a class="anchor" aria-label="anchor" href="#crew-020"></a></h2>
-<ul><li>Use <code>.args</code> instead of <code>...</code> in <code><a href="https://rdrr.io/pkg/mirai/man/mirai.html" class="external-link">mirai::mirai()</a></code>.</li>
+<ul><li>Use <code>.args</code> instead of <code>...</code> in <code><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai::mirai()</a></code>.</li>
 <li>Use <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> instead of <code><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">withr::local_seed()</a></code> (<a href="https://github.com/wlandau/crew/issues/67" class="external-link">#67</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 <li>Add a vignette to showcase integration with Shiny, co-authored with <a href="https://github.com/dwoodie" class="external-link">@dwoodie</a> and with helpful suggestions by <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>.</li>
 <li>Drop <code><a href="https://rlang.r-lib.org/reference/duplicate.html" class="external-link">rlang::duplicate()</a></code> (<a href="https://github.com/wlandau/crew/issues/72" class="external-link">#72</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
@@ -262,14 +266,14 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="crew-010">crew 0.1.0<a class="anchor" aria-label="anchor" href="#crew-010"></a></h2><p class="text-muted">CRAN release: 2023-04-19</p>
-<ul><li>Remove <code>asyncdial</code> from call to <code><a href="https://rdrr.io/pkg/mirai/man/daemons.html" class="external-link">mirai::daemons()</a></code>.</li>
+<ul><li>Remove <code>asyncdial</code> from call to <code><a href="https://mirai.r-lib.org/reference/daemons.html" class="external-link">mirai::daemons()</a></code>.</li>
 <li>Explain vision in the launcher plugin vignette.</li>
 <li>Remove the superfluous <code>clean()</code> controller method.</li>
 <li>Clean up logic for <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> and <code>launch()</code> controller methods.</li>
 <li>Add a new <code>inactive()</code> launcher method to help with the above.</li>
 <li>Eliminate superfluous worker launches: clean up the controller logic, and check worker discoveries before worker connections (<a href="https://github.com/wlandau/crew/issues/51" class="external-link">#51</a>).</li>
 <li>Simplify the launcher plugin interface (<a href="https://github.com/wlandau/crew/issues/54" class="external-link">#54</a>).</li>
-<li>Commit to using the fast <code><a href="https://rdrr.io/pkg/nanonext/man/dot-unresolved.html" class="external-link">nanonext::.unresolved()</a></code> (<a href="https://github.com/wlandau/crew/issues/49" class="external-link">#49</a>).</li>
+<li>Commit to using the fast <code><a href="https://nanonext.r-lib.org/reference/dot-unresolved.html" class="external-link">nanonext::.unresolved()</a></code> (<a href="https://github.com/wlandau/crew/issues/49" class="external-link">#49</a>).</li>
 <li>Rename the <code>callr</code> launcher to the local process launcher (<a href="https://github.com/wlandau/crew/issues/56" class="external-link">#56</a>).</li>
 <li>Switch from SHA224 to SHA1 as the hash for random tokens and names (<a href="https://github.com/wlandau/crew/issues/59" class="external-link">#59</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 <li>Open and confirm bus socket listeners asynchronously in the launcher abstract class (<a href="https://github.com/wlandau/crew/issues/58" class="external-link">#58</a>).</li>
@@ -278,7 +282,7 @@
 <li>Add a <code>substitute</code> argument to <code>push()</code> (<a href="https://github.com/wlandau/crew/issues/63" class="external-link">#63</a>).</li>
 <li>Remove dependency on custom NNG bus sockets, which significantly simplifies the internals, improves robustness, and smooths the integration with <code>mirai</code> (<a href="https://github.com/wlandau/crew/issues/61" class="external-link">#61</a>).</li>
 <li>Use <code>processx</code> instead of <code>callr</code> for the local process launcher (<a href="https://github.com/wlandau/crew/issues/64" class="external-link">#64</a>”).</li>
-<li>Speed up <code><a href="../reference/crew_eval.html">crew_eval()</a></code> by e.g. relying on <code><a href="https://rdrr.io/pkg/nanonext/man/mclock.html" class="external-link">nanonext::mclock()</a></code> for the time.</li>
+<li>Speed up <code><a href="../reference/crew_eval.html">crew_eval()</a></code> by e.g. relying on <code><a href="https://nanonext.r-lib.org/reference/mclock.html" class="external-link">nanonext::mclock()</a></code> for the time.</li>
 <li>Add an <code>empty()</code> method to check if the controller or controller group is empty.</li>
 <li>Rely on <code>mirai</code> for globals cleanup, garbage collection, and global option resets (<a href="https://github.com/wlandau/crew/issues/65" class="external-link">#65</a>).</li>
 <li>Expose the package unloading capabilities of <code>mirai</code> (<a href="https://github.com/wlandau/crew/issues/65" class="external-link">#65</a>).</li>
@@ -286,7 +290,7 @@
 <li>Rename <code>crew_wait()</code> to <code><a href="../reference/crew_retry.html">crew_retry()</a></code>.</li>
 <li>Export <code><a href="../reference/crew_assert.html">crew_assert()</a></code> and <code><a href="../reference/crew_random_name.html">crew_random_name()</a></code> to help launcher plugins.</li>
 <li>Rename the <code>listen()</code> method to <code><a href="https://rdrr.io/r/stats/start.html" class="external-link">start()</a></code> in the router class.</li>
-<li>The <code>poll()</code> method now retries <code><a href="https://rdrr.io/pkg/mirai/man/daemons.html" class="external-link">mirai::daemons()</a></code> for robustness.</li>
+<li>The <code>poll()</code> method now retries <code><a href="https://mirai.r-lib.org/reference/daemons.html" class="external-link">mirai::daemons()</a></code> for robustness.</li>
 <li>
 <code><a href="../reference/crew_retry.html">crew_retry()</a></code> gains a <code>max_tries</code> argument.</li>
 <li>Bug fix: stop setting <code>router$daemons</code> to <code>NULL</code> in <code>poll()</code> when the connection has a momentary problem.</li>
@@ -317,7 +321,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

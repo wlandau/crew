@@ -9,7 +9,7 @@ which launch and manage workers."><meta property="og:image" content="https://wla
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@ which launch and manage workers."><meta property="og:image" content="https://wla
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Launcher abstract class</h1>
-      <small class="dont-index">Source: <a href="https://github.com/wlandau/crew/blob/1.1.2/R/crew_launcher.R" class="external-link"><code>R/crew_launcher.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/wlandau/crew/blob/main/R/crew_launcher.R" class="external-link"><code>R/crew_launcher.R</code></a></small>
       <div class="d-none name"><code>crew_class_launcher.Rd</code></div>
     </div>
 
@@ -303,8 +303,8 @@ asynchronously.</p></dd>
 <span><span class="va">launcher</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_launcher_local.html">crew_launcher_local</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">launcher</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span>url <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">url</span>, profile <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">profile</span><span class="op">)</span></span>
 <span><span class="va">launcher</span><span class="op">$</span><span class="fu">launch</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">task</span> <span class="op">&lt;-</span> <span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mirai/man/mirai.html" class="external-link">mirai</a></span><span class="op">(</span><span class="st">"result"</span>, .compute <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">profile</span><span class="op">)</span></span>
-<span><span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mirai/man/call_mirai.html" class="external-link">call_mirai</a></span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span>
+<span><span class="va">task</span> <span class="op">&lt;-</span> <span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai</a></span><span class="op">(</span><span class="st">"result"</span>, .compute <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">profile</span><span class="op">)</span></span>
+<span><span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://mirai.r-lib.org/reference/call_mirai.html" class="external-link">call_mirai</a></span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span>
 <span><span class="va">task</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="va">client</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div><p></p></div>
@@ -338,14 +338,14 @@ until the appropriate time.</p>
 
 </div><p></p><hr><a id="method-crew_class_launcher-settings"></a><div class="section">
 <h3 id="method-settings-">Method <code>settings()</code><a class="anchor" aria-label="anchor" href="#method-settings-"></a></h3>
-<p>List of arguments for <code><a href="https://rdrr.io/pkg/mirai/man/daemon.html" class="external-link">mirai::daemon()</a></code>.</p><div class="section">
+<p>List of arguments for <code><a href="https://mirai.r-lib.org/reference/daemon.html" class="external-link">mirai::daemon()</a></code>.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">settings</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
-<p>List of arguments for <code><a href="https://rdrr.io/pkg/mirai/man/daemon.html" class="external-link">mirai::daemon()</a></code>.</p>
+<p>List of arguments for <code><a href="https://mirai.r-lib.org/reference/daemon.html" class="external-link">mirai::daemon()</a></code>.</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-call"></a><div class="section">
@@ -639,8 +639,8 @@ of the worker.</p></dd>
 <span class="r-in"><span><span class="va">launcher</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_launcher_local.html">crew_launcher_local</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span>url <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">url</span>, profile <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">profile</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">launch</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">task</span> <span class="op">&lt;-</span> <span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mirai/man/mirai.html" class="external-link">mirai</a></span><span class="op">(</span><span class="st">"result"</span>, .compute <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">profile</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mirai/man/call_mirai.html" class="external-link">call_mirai</a></span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">task</span> <span class="op">&lt;-</span> <span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai</a></span><span class="op">(</span><span class="st">"result"</span>, .compute <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">profile</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://mirai.r-lib.org/reference/call_mirai.html" class="external-link">call_mirai</a></span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">task</span><span class="op">$</span><span class="va">data</span></span></span>
 <span class="r-in"><span><span class="va">client</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
@@ -655,8 +655,8 @@ of the worker.</p></dd>
 <span class="r-in"><span><span class="va">launcher</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_launcher_local.html">crew_launcher_local</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span>url <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">url</span>, profile <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">profile</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">launch</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">task</span> <span class="op">&lt;-</span> <span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mirai/man/mirai.html" class="external-link">mirai</a></span><span class="op">(</span><span class="st">"result"</span>, .compute <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">profile</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mirai/man/call_mirai.html" class="external-link">call_mirai</a></span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">task</span> <span class="op">&lt;-</span> <span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai</a></span><span class="op">(</span><span class="st">"result"</span>, .compute <span class="op">=</span> <span class="va">client</span><span class="op">$</span><span class="va">profile</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mirai</span><span class="fu">::</span><span class="fu"><a href="https://mirai.r-lib.org/reference/call_mirai.html" class="external-link">call_mirai</a></span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">task</span><span class="op">$</span><span class="va">data</span></span></span>
 <span class="r-in"><span><span class="va">client</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
@@ -668,7 +668,7 @@ of the worker.</p></dd>
 <span class="r-in"><span><span class="va">launcher</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_launcher_local.html">crew_launcher_local</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span>url <span class="op">=</span> <span class="st">"tcp://127.0.0.1:57000"</span>, profile <span class="op">=</span> <span class="st">"profile"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">call</span><span class="op">(</span>worker <span class="op">=</span> <span class="st">"worker_name"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tls = NULL, rs = NULL), launcher = \"b66338f0\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tls = NULL, rs = NULL), launcher = \"007f6ddf\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
@@ -681,7 +681,7 @@ of the worker.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

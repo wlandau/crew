@@ -24,7 +24,7 @@ crew_client(
 \item{workers}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
 \item{host}{IP address of the \code{mirai} client to send and receive tasks.
-If \code{NULL}, the host defaults to the local IP address.}
+If \code{NULL}, the host defaults to \code{nanonext::ip_addr()[1]}.}
 
 \item{port}{TCP port to listen for the workers. If \code{NULL},
 then an available ephemeral port is automatically chosen.

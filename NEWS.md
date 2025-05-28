@@ -1,6 +1,6 @@
-# crew 1.1.2.9000 (development)
+# crew 1.1.2.9001 (development)
 
-
+* Use `nanonext::ip_addr()` instead of `getip::getip()` to get the default IP address of the host (#216, @shikokuchuo).
 
 # crew 1.1.2
 

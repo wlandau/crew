@@ -187,7 +187,7 @@ Try pushing a task that gets the local IP address and process ID of the worker i
 ```r
 controller$push(
   name = "get worker IP address and process ID",
-  command = paste(getip::getip(type = "local"), ps::ps_pid())
+  command = paste(nanonext::ip_addr()[1], ps::ps_pid())
 )
 ```
 
@@ -203,7 +203,7 @@ result$result[[1]]
 Please use the result to verify that the task really ran on a worker as intended. The process ID above should agree with the one from the handle ([except on Windows](https://github.com/r-lib/processx/issues/364) because the actual R process may be different from the `Rscript.exe` process created first). In addition, if the worker is running on a different computer, the worker IP address should be different than the local IP address. Since our custom launcher creates local processes, the IP addresses are the same in this case, but they should be different for a [SLURM](https://slurm.schedmd.com/) or [AWS Batch](https://aws.amazon.com/batch/) launcher. 
 
 ```r
-getip::getip(type = "local")
+as.character(nanonext::ip_addr())[1]
 #> "192.168.0.2"
 controller$launcher$instances$handle[[1]]$get_pid()
 #> [1] 27336

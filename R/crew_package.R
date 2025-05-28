@@ -20,12 +20,11 @@
 #'   and [`batchtools`](https://github.com/mlr-org/batchtools).
 #' @importFrom cli cli_progress_bar cli_progress_done cli_progress_update
 #' @importFrom data.table rbindlist
-#' @importFrom getip getip
 #' @importFrom later create_loop current_loop destroy_loop exists_loop later
 #' @importFrom mirai call_mirai daemon daemons is_mirai is_mirai_error
 #'   mirai nextcode nextget nextstream status stop_mirai
-#' @importFrom nanonext %~>% cv cv_value mclock msleep nng_error random
-#'   .unresolved until_ tls_config
+#' @importFrom nanonext %~>% cv cv_value ip_addr mclock msleep nng_error
+#'   random .unresolved until_ tls_config
 #' @importFrom processx process
 #' @importFrom promises promise
 #' @importFrom ps ps_cmdline ps_handle ps_pid ps_is_running

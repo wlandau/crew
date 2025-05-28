@@ -5,7 +5,7 @@
 #' @param name Deprecated on 2025-01-14 (`crew` version 0.10.2.9002).
 #' @param workers Deprecated on 2025-01-13 (`crew` version 0.10.2.9002).
 #' @param host IP address of the `mirai` client to send and receive tasks.
-#'   If `NULL`, the host defaults to the local IP address.
+#'   If `NULL`, the host defaults to `nanonext::ip_addr()[1]`.
 #' @param port TCP port to listen for the workers. If `NULL`,
 #'   then an available ephemeral port is automatically chosen.
 #'   Controllers running simultaneously on the same computer
@@ -87,7 +87,22 @@ crew_client <- function(
     value = retry_tasks,
     condition = "message"
   )
-  host <- as.character(host %|||% getip::getip(type = "local"))
+  host <- as.character(host %|||% utils::head(nanonext::ip_addr(), n = 1L))
+  crew_assert(
+    host,
+    is.character(.),
+    length(.) == 1L,
+    nzchar(.),
+    !anyNA(.),
+    message = paste0(
+      "invalid host: ",
+      host,
+      ". In {crew} controllers, the `host` argument should have the ",
+      "(local) IP address or host name of the local machine. ",
+      "The default value of nanonext::ip_addr()[1] is usually enough ",
+      "for most situations."
+    )
+  )
   port <- as.integer(port %|||% 0L)
   crew_assert(
     inherits(tls, "crew_class_tls"),

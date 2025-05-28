@@ -1056,13 +1056,13 @@ crew_class_controller <- R6::R6Class(
       this_envir <- environment()
       progress_envir <- new.env(parent = this_envir)
       if (verbose) {
-        cli::cli_progress_bar(
+        bar <- cli::cli_progress_bar(
           total = total,
           type = "custom",
           format = paste(
             "{cli::pb_current}/{cli::pb_total}",
             "{cli::pb_bar}",
-            "{cli::pb_percent}"
+            "{cli::pb_elapsed}"
           ),
           format_done = "{cli::pb_total} tasks in {cli::pb_elapsed}",
           clear = FALSE,
@@ -1077,6 +1077,7 @@ crew_class_controller <- R6::R6Class(
         if (verbose) {
           cli::cli_progress_update(
             set = total - unresolved,
+            id = bar,
             .envir = progress_envir
           )
         }
@@ -1093,7 +1094,7 @@ crew_class_controller <- R6::R6Class(
         assertions = FALSE
       )
       if (verbose) {
-        cli::cli_progress_done(.envir = progress_envir)
+        cli::cli_progress_done(id = bar, .envir = progress_envir)
       }
       out <- list()
       controller_name <- .subset2(.subset2(private, ".launcher"), "name")

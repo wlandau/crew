@@ -863,11 +863,11 @@ crew_class_controller <- R6::R6Class(
       if (!is.null(seed)) {
         seed <- 1L
       }
-      tasks <- vector(mode = "list", length = 1e6)
+      total <- length(names)
+      tasks <- vector(mode = "list", length = total)
       names(tasks) <- names
       push <- self$push
       if (verbose) {
-        total <- length(names)
         this_envir <- environment()
         progress_envir <- new.env(parent = this_envir)
         bar <- cli::cli_progress_bar(
@@ -883,7 +883,8 @@ crew_class_controller <- R6::R6Class(
           .envir = progress_envir
         )
       }
-      for (index in seq_along(names)) {
+      index <- 1L
+      while (index <= total) {
         if (verbose) {
           cli::cli_progress_update(id = bar, .envir = progress_envir)
         }
@@ -905,8 +906,10 @@ crew_class_controller <- R6::R6Class(
           packages = packages,
           library = library,
           seconds_timeout = seconds_timeout,
+          scale = FALSE,
           name = .subset(names, index)
         )
+        index <- index + 1L
       }
       if (verbose) {
         cli::cli_progress_done(id = bar, .envir = progress_envir)
@@ -1124,9 +1127,10 @@ crew_class_controller <- R6::R6Class(
       if (verbose) {
         cli::cli_progress_done(id = bar, .envir = progress_envir)
       }
-      out <- list()
+      out <- vector(mode = "list", length = total)
       controller_name <- .subset2(.subset2(private, ".launcher"), "name")
-      for (index in seq_along(tasks)) {
+      index <- 1L
+      while (index <= total) {
         task <- .subset2(tasks, index)
         name <- .subset(names, index)
         monad <- as_monad(
@@ -1135,7 +1139,8 @@ crew_class_controller <- R6::R6Class(
           controller = controller_name
         )
         .subset2(private, ".scan_crash")(name = name, task = monad)
-        out[[length(out) + 1L]] <- monad
+        out[[index]] <- monad
+        index <- index + 1L
       }
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
       out <- out[match(x = names, table = out$name),, drop = FALSE] # nolint

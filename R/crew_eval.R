@@ -32,6 +32,17 @@
 #' @param packages Character vector of packages to load for the task.
 #' @param library Library path to load the packages. See the `lib.loc`
 #'   argument of `require()`.
+#' @param reset_globals `TRUE` to reset global environment
+#'   variables between tasks, `FALSE` to leave them alone.
+#' @param reset_packages `TRUE` to detach any packages loaded during
+#'   a task (runs between each task), `FALSE` to leave packages alone.
+#'   In either case, the namespaces are not detached.
+#' @param reset_options `TRUE` to reset global options to their original
+#'   state between each task, `FALSE` otherwise. It is recommended to
+#'   only set `reset_options = TRUE` if `reset_packages` is also `TRUE`
+#'   because packages sometimes rely on options they set at loading time.
+#' @param garbage_collection `TRUE` to run garbage collection after each task
+#'   task, `FALSE` to skip.
 #' @examples
 #' crew_eval(quote(1 + 1), name = "task_name")
 crew_eval <- function(
@@ -42,15 +53,43 @@ crew_eval <- function(
   seed = NULL,
   algorithm = NULL,
   packages = character(0),
-  library = NULL
+  library = NULL,
+  reset_globals = TRUE,
+  reset_packages = FALSE,
+  reset_options = FALSE,
+  garbage_collection = FALSE
 ) {
-  if (package_installed("autometric (>= 0.1.0)")) {
-    autometric::log_phase_set(phase = name)
-    on.exit(autometric::log_phase_reset())
+  if (reset_globals) {
+    old_globals <- names(.GlobalEnv)
+    on.exit({
+      new_globals <- names(.GlobalEnv)
+      rm(list = setdiff_chr(new_globals, old_globals), envir = .GlobalEnv)
+    }, add = TRUE)
   }
-  old_algorithm <- RNGkind()[1L]
-  old_seed <- .subset2(.GlobalEnv, ".Random.seed")
+  if (reset_packages) {
+    old_packages <- search()
+    on.exit({
+      new_packages <- search()
+      detach_packages <- setdiff_chr(new_packages, old_packages)
+      lapply(detach_packages, detach, character.only = TRUE)
+    }, add = TRUE)
+  }
+  if (reset_options) {
+    old_options <- options()
+    on.exit({
+      options(old_options) # Does not remove entirely new options.
+      new_options <- setdiff_chr(names(options()), names(old_options))
+      empty_options <- vector(mode = "list", length = length(new_options))
+      names(empty_options) <- new_options
+      do.call(options, empty_options)
+    }, add = TRUE)
+  }
+  if (garbage_collection) {
+    on.exit(gc(verbose = FALSE), add = TRUE)
+  }
   if (!is.null(algorithm) || !is.null(seed)) {
+    old_algorithm <- RNGkind()[1L]
+    old_seed <- .subset2(.GlobalEnv, ".Random.seed")
     if (!is.null(algorithm)) {
       RNGkind(kind = algorithm)
     }
@@ -59,6 +98,10 @@ crew_eval <- function(
     }
     on.exit(RNGkind(kind = old_algorithm), add = TRUE)
     on.exit(.GlobalEnv$.Random.seed <- old_seed, add = TRUE)
+  }
+  if (package_installed("autometric (>= 0.1.0)")) {
+    autometric::log_phase_set(phase = name)
+    on.exit(autometric::log_phase_reset(), add = TRUE)
   }
   load_packages(packages = packages, library = library)
   list2env(x = globals, envir = globalenv())

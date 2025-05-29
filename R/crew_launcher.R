@@ -521,16 +521,12 @@ crew_class_launcher <- R6::R6Class(
     #' @return List of arguments for `mirai::daemon()`.
     settings = function() {
       private$.id <- private$.id + 1L
-      cleanup <- as.integer(isTRUE(private$.reset_globals)) +
-        (2L * as.integer(isTRUE(private$.reset_packages))) +
-        (4L * as.integer(isTRUE(private$.reset_options))) +
-        (8L * as.integer(isTRUE(private$.garbage_collection)))
       list(
         url = private$.url,
         dispatcher = TRUE,
         asyncdial = FALSE,
         autoexit = crew_terminate_signal(),
-        cleanup = cleanup,
+        cleanup = FALSE,
         output = TRUE,
         maxtasks = private$.tasks_max,
         idletime = private$.seconds_idle * 1000,

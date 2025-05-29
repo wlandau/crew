@@ -35,3 +35,7 @@ crew_null <- structure(list("crew_null"), class = "crew_null")
 is_crew_null <- function(x) {
   class(x)[1L] == "crew_null" # For performance, we avoid inherits(). # nolint
 }
+
+setdiff_chr <- function(x, y) {
+  x[!duplicated.default(x) & (match(x, y, 0L) == 0L)]
+}

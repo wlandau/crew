@@ -38,3 +38,9 @@ crew_test("crew_null", {
   expect_false(is_crew_null("null"))
   expect_false(is_crew_null("NULL"))
 })
+
+crew_test("setdiff_chr()", {
+  expect_equal(setdiff_chr("x", character(0L)), "x")
+  expect_equal(setdiff_chr(character(0L), "x"), character(0L))
+  expect_equal(setdiff(c("d", "a", "b"), "a"), c("d", "b"))
+})

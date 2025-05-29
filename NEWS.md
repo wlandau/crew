@@ -1,6 +1,7 @@
-# crew 1.1.2.9001 (development)
+# crew 1.1.2.9002 (development)
 
 * Use `nanonext::ip_addr()` instead of `getip::getip()` to get the default IP address of the host (#216, @shikokuchuo).
+* Add a progress bar to `walk()` report progress when pushing tasks.
 
 # crew 1.1.2
 

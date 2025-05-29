@@ -563,6 +563,8 @@ crew_class_controller_group <- R6::R6Class(
     #'   then `iterate[[names]]` must be a character vector.
     #' @param save_command Deprecated on 2025-01-22
     #'   (`crew` version 0.10.2.9004).
+    #' @param verbose Logical of length 1, whether to print to a progress bar
+    #'   when pushing tasks.
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
@@ -586,6 +588,7 @@ crew_class_controller_group <- R6::R6Class(
       seconds_timeout = NULL,
       names = NULL,
       save_command = NULL,
+      verbose = interactive(),
       scale = TRUE,
       throttle = TRUE,
       controller = NULL
@@ -607,6 +610,7 @@ crew_class_controller_group <- R6::R6Class(
         library = library,
         seconds_timeout = seconds_timeout,
         names = names,
+        verbose = verbose,
         scale = scale,
         throttle = throttle
       )

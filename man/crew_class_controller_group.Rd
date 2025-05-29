@@ -623,6 +623,7 @@ waiting for any task to complete.
   seconds_timeout = NULL,
   names = NULL,
   save_command = NULL,
+  verbose = interactive(),
   scale = TRUE,
   throttle = TRUE,
   controller = NULL
@@ -701,6 +702,9 @@ then \code{iterate[[names]]} must be a character vector.}
 
 \item{\code{save_command}}{Deprecated on 2025-01-22
 (\code{crew} version 0.10.2.9004).}
+
+\item{\code{verbose}}{Logical of length 1, whether to print to a progress bar
+when pushing tasks.}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
 demand. See also the \code{throttle} argument.}

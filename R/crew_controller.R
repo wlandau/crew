@@ -728,6 +728,8 @@ crew_class_controller <- R6::R6Class(
     #'   then `iterate[[names]]` must be a character vector.
     #' @param save_command Deprecated on 2025-01-22 (`crew` version
     #'   0.10.2.9004). The command is always saved now.
+    #' @param verbose Logical of length 1, whether to print to a progress bar
+    #'   when pushing tasks.
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
@@ -749,6 +751,7 @@ crew_class_controller <- R6::R6Class(
       seconds_timeout = NULL,
       names = NULL,
       save_command = NULL,
+      verbose = interactive(),
       scale = TRUE,
       throttle = TRUE,
       controller = NULL
@@ -832,6 +835,7 @@ crew_class_controller <- R6::R6Class(
         . %in% names(iterate),
         message = "names argument must be NULL or an element of names(iterate)"
       )
+      crew_assert(verbose, isTRUE(.) || isFALSE(.))
       crew_assert(scale, isTRUE(.) || isFALSE(.))
       crew_assert(throttle, isTRUE(.) || isFALSE(.))
       names <- if_any(
@@ -861,7 +865,27 @@ crew_class_controller <- R6::R6Class(
       }
       tasks <- list()
       push <- self$push
+      if (verbose) {
+        total <- length(names)
+        this_envir <- environment()
+        progress_envir <- new.env(parent = this_envir)
+        bar <- cli::cli_progress_bar(
+          total = total,
+          type = "custom",
+          format = paste(
+            "walk() {cli::pb_current}/{cli::pb_total}",
+            "{cli::pb_bar}",
+            "{cli::pb_elapsed}"
+          ),
+          format_done = "{cli::pb_total} tasks pushed in {cli::pb_elapsed}",
+          clear = FALSE,
+          .envir = progress_envir
+        )
+      }
       for (index in seq_along(names)) {
+        if (verbose) {
+          cli::cli_progress_update(id = bar, .envir = progress_envir)
+        }
         for (name in names_iterate) {
           data[[name]] <- .subset2(.subset2(iterate, name), index)
         }
@@ -883,6 +907,9 @@ crew_class_controller <- R6::R6Class(
           seconds_timeout = seconds_timeout,
           name = name
         )
+      }
+      if (verbose) {
+        cli::cli_progress_done(id = bar, .envir = progress_envir)
       }
       if (scale) {
         self$scale(throttle = throttle)
@@ -978,7 +1005,8 @@ crew_class_controller <- R6::R6Class(
     #'   and not trigger an error in `map()` unless `crashes_max` is reached.
     #' @param warnings Logical of length 1, whether to throw a warning in the
     #'   interactive session if at least one task encounters an error.
-    #' @param verbose Logical of length 1, whether to print progress messages.
+    #' @param verbose Logical of length 1, whether to print to a progress bar
+    #'   as tasks resolve.
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
@@ -1053,18 +1081,18 @@ crew_class_controller <- R6::R6Class(
       relay <- .subset2(.subset2(self, "client"), "relay")
       start <- nanonext::mclock()
       pushed <- private$.pushed
-      this_envir <- environment()
-      progress_envir <- new.env(parent = this_envir)
       if (verbose) {
+        this_envir <- environment()
+        progress_envir <- new.env(parent = this_envir)
         bar <- cli::cli_progress_bar(
           total = total,
           type = "custom",
           format = paste(
-            "{cli::pb_current}/{cli::pb_total}",
+            "map() {cli::pb_current}/{cli::pb_total}",
             "{cli::pb_bar}",
             "{cli::pb_elapsed}"
           ),
-          format_done = "{cli::pb_total} tasks in {cli::pb_elapsed}",
+          format_done = "{cli::pb_total} tasks resolved in {cli::pb_elapsed}",
           clear = FALSE,
           .envir = progress_envir
         )

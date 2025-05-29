@@ -640,6 +640,7 @@ waiting for any task to complete.
   seconds_timeout = NULL,
   names = NULL,
   save_command = NULL,
+  verbose = interactive(),
   scale = TRUE,
   throttle = TRUE,
   controller = NULL
@@ -718,6 +719,9 @@ then \code{iterate[[names]]} must be a character vector.}
 
 \item{\code{save_command}}{Deprecated on 2025-01-22 (\code{crew} version
 0.10.2.9004). The command is always saved now.}
+
+\item{\code{verbose}}{Logical of length 1, whether to print to a progress bar
+when pushing tasks.}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
 demand. See also the \code{throttle} argument.}
@@ -873,7 +877,8 @@ and not trigger an error in \code{map()} unless \code{crashes_max} is reached.
 \item{\code{warnings}}{Logical of length 1, whether to throw a warning in the
 interactive session if at least one task encounters an error.}
 
-\item{\code{verbose}}{Logical of length 1, whether to print progress messages.}
+\item{\code{verbose}}{Logical of length 1, whether to print to a progress bar
+as tasks resolve.}
 
 \item{\code{scale}}{Logical, whether to automatically scale workers to meet
 demand. See also the \code{throttle} argument.}

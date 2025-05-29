@@ -863,7 +863,8 @@ crew_class_controller <- R6::R6Class(
       if (!is.null(seed)) {
         seed <- 1L
       }
-      tasks <- list()
+      tasks <- vector(mode = "list", length = 1e6)
+      names(tasks) <- names
       push <- self$push
       if (verbose) {
         total <- length(names)
@@ -894,8 +895,7 @@ crew_class_controller <- R6::R6Class(
         } else {
           task_seed <- seed - (sign * index)
         }
-        name <- .subset(names, index)
-        tasks[[name]] <- push(
+        tasks[[index]] <- push(
           command = command,
           substitute = FALSE,
           data = data,
@@ -905,7 +905,7 @@ crew_class_controller <- R6::R6Class(
           packages = packages,
           library = library,
           seconds_timeout = seconds_timeout,
-          name = name
+          name = .subset(names, index)
         )
       }
       if (verbose) {

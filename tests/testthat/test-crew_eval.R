@@ -194,3 +194,59 @@ crew_test("crew_eval() environment variables", {
   expect_equal(out$controller, "x1")
   expect_equal(out$worker, "x2")
 })
+
+crew_test("crew_eval() reset_globals", {
+  skip_on_cran()
+  out <- crew_eval(
+    quote({
+      assign(x = "crew_globalenv_test", value = "result", envir = .GlobalEnv)
+      get(x = "crew_globalenv_test", envir = .GlobalEnv)
+    }),
+    name = "test",
+    reset_globals = TRUE
+  )
+  expect_equal(out$result[[1L]], "result")
+  expect_false(exists(x = "crew_globalenv_test", envir = .GlobalEnv))
+})
+
+crew_test("crew_eval() reset_packages", {
+  skip_on_cran()
+  skip_if_not_installed("autometric")
+  try(
+    detach(name = "package:autometric", character.only = TRUE),
+    silent = TRUE
+  )
+  expect_false("package:autometric" %in% search())
+  out <- crew_eval(
+    quote({
+      library(autometric)
+      "package:autometric" %in% search()
+    }),
+    name = "test",
+    reset_packages = TRUE
+  )
+  expect_true(out$result[[1L]])
+  expect_false("package:autometric" %in% search())
+})
+
+crew_test("crew_eval() reset_options", {
+  skip_on_cran()
+  old_options <- options()
+  on.exit(options(old_options))
+  out <- crew_eval(
+    quote({
+      options(warn = 10L)
+      getOption("warn")
+    }),
+    name = "test",
+    reset_options = TRUE
+  )
+  expect_equal(out$result[[1L]], 10L)
+  expect_equal(getOption("warn"), old_options$warn)
+})
+
+crew_test("crew_eval() garbage_collection", {
+  skip_on_cran()
+  crew_eval(quote(NULL), name = "test", garbage_collection = TRUE)
+  expect_true(TRUE)
+})

@@ -62,7 +62,11 @@ In either case, the namespaces are not detached.}
 \item{reset_options}{\code{TRUE} to reset global options to their original
 state between each task, \code{FALSE} otherwise. It is recommended to
 only set \code{reset_options = TRUE} if \code{reset_packages} is also \code{TRUE}
-because packages sometimes rely on options they set at loading time.}
+because packages sometimes rely on options they set at loading time.
+for this and other reasons, \code{reset_options} only resets options
+that were nonempty at the beginning of the task.
+If your task sets an entirely new option not already in \code{options()},
+then \code{reset_options = TRUE} does not delete the option.}
 
 \item{garbage_collection}{\code{TRUE} to run garbage collection after each task
 task, \code{FALSE} to skip.}

@@ -41,6 +41,10 @@
 #'   state between each task, `FALSE` otherwise. It is recommended to
 #'   only set `reset_options = TRUE` if `reset_packages` is also `TRUE`
 #'   because packages sometimes rely on options they set at loading time.
+#'   for this and other reasons, `reset_options` only resets options
+#'   that were nonempty at the beginning of the task.
+#'   If your task sets an entirely new option not already in `options()`,
+#'   then `reset_options = TRUE` does not delete the option.
 #' @param garbage_collection `TRUE` to run garbage collection after each task
 #'   task, `FALSE` to skip.
 #' @examples
@@ -59,6 +63,9 @@ crew_eval <- function(
   reset_options = FALSE,
   garbage_collection = FALSE
 ) {
+  # Begin cleanup.
+  # Cleanup partially borrowed from mirai under MIT license:
+  # do_cleanup() in https://github.com/r-lib/mirai/blob/main/R/daemon.R
   if (reset_globals) {
     old_globals <- names(.GlobalEnv)
     on.exit({
@@ -71,22 +78,24 @@ crew_eval <- function(
     on.exit({
       new_packages <- search()
       detach_packages <- setdiff_chr(new_packages, old_packages)
-      lapply(detach_packages, detach, character.only = TRUE)
+      try(
+        lapply(detach_packages, detach, character.only = TRUE),
+        silent = TRUE
+      )
     }, add = TRUE)
   }
   if (reset_options) {
     old_options <- options()
-    on.exit({
-      options(old_options) # Does not remove entirely new options.
-      new_options <- setdiff_chr(names(options()), names(old_options))
-      empty_options <- vector(mode = "list", length = length(new_options))
-      names(empty_options) <- new_options
-      do.call(options, empty_options)
-    }, add = TRUE)
+    # options(old_options) does not remove newly set options, only
+    # the values of previously nonempty options.
+    # However, a more invasive approach causes mysterious errors, including
+    # false positives in targets:::compare_working_directories().
+    on.exit(options(old_options), add = TRUE)
   }
   if (garbage_collection) {
     on.exit(gc(verbose = FALSE), add = TRUE)
   }
+  # End cleanup.
   if (!is.null(algorithm) || !is.null(seed)) {
     old_algorithm <- RNGkind()[1L]
     old_seed <- .subset2(.GlobalEnv, ".Random.seed")

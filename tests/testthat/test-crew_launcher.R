@@ -1,7 +1,7 @@
 crew_test("abstract launcher class", {
   skip_on_cran()
-  out <- crew_launcher(reset_options = -1)
-  expect_crew_error(out$validate())
+  expect_silent(crew_launcher())
+  expect_crew_error(crew_launcher(seconds_idle = -1))
 })
 
 crew_test("validate a started launcher", {
@@ -30,10 +30,6 @@ crew_test("active bindings for covr", {
   expect_true(is.numeric(out$seconds_wall))
   expect_true(is.numeric(out$tasks_max))
   expect_true(is.numeric(out$tasks_timers))
-  expect_true(is.logical(out$reset_globals))
-  expect_true(is.logical(out$reset_packages))
-  expect_true(is.logical(out$reset_options))
-  expect_true(is.logical(out$garbage_collection))
   expect_true(inherits(out$tls, "crew_class_tls"))
   expect_equal(out$processes, 1L)
   expect_equal(out$r_arguments, "--vanilla")
@@ -89,10 +85,6 @@ crew_test("launcher settings", {
     seconds_wall = 3,
     tasks_max = 7,
     tasks_timers = 8,
-    reset_globals = TRUE,
-    reset_packages = TRUE,
-    reset_options = TRUE,
-    garbage_collection = TRUE,
     tls = crew_tls()
   )
   launcher$start(url = "url", profile = "profile")
@@ -104,71 +96,8 @@ crew_test("launcher settings", {
   expect_equal(settings$idletime, 2000)
   expect_equal(settings$walltime, 3000)
   expect_equal(settings$timerstart, 8)
-  expect_equal(settings$cleanup, 15L)
+  expect_false(settings$cleanup)
   expect_equal(settings$id, 1L)
-})
-
-crew_test("launcher alternative cleanup", {
-  launcher <- crew_class_launcher$new(
-    name = "my_launcher_name",
-    seconds_interval = 0.5,
-    seconds_launch = 1,
-    seconds_idle = 2,
-    seconds_wall = 3,
-    tasks_max = 7,
-    tasks_timers = 8,
-    reset_globals = FALSE,
-    reset_packages = TRUE,
-    reset_options = FALSE,
-    garbage_collection = TRUE,
-    tls = crew_tls()
-  )
-  launcher$start(url = "url", profile = "profile")
-  on.exit(launcher$terminate())
-  settings <- launcher$settings()
-  expect_equal(settings$cleanup, 10L)
-})
-
-crew_test("launcher alternative cleanup 2", {
-  launcher <- crew_class_launcher$new(
-    name = "my_launcher_name",
-    seconds_interval = 0.5,
-    seconds_launch = 1,
-    seconds_idle = 2,
-    seconds_wall = 3,
-    tasks_max = 7,
-    tasks_timers = 8,
-    reset_globals = TRUE,
-    reset_packages = FALSE,
-    reset_options = TRUE,
-    garbage_collection = FALSE,
-    tls = crew_tls()
-  )
-  launcher$start(url = "url", profile = "profile")
-  on.exit(launcher$terminate())
-  settings <- launcher$settings()
-  expect_equal(settings$cleanup, 5L)
-})
-
-crew_test("launcher alternative cleanup 3", {
-  launcher <- crew_class_launcher$new(
-    name = "my_launcher_name",
-    seconds_interval = 0.5,
-    seconds_launch = 1,
-    seconds_idle = 2,
-    seconds_wall = 3,
-    tasks_max = 7,
-    tasks_timers = 8,
-    reset_globals = FALSE,
-    reset_packages = FALSE,
-    reset_options = FALSE,
-    garbage_collection = FALSE,
-    tls = crew_tls()
-  )
-  launcher$start(url = "url", profile = "profile")
-  on.exit(launcher$terminate())
-  settings <- launcher$settings()
-  expect_equal(settings$cleanup, 0L)
 })
 
 crew_test("launcher call", {
@@ -182,10 +111,6 @@ crew_test("launcher call", {
     seconds_wall = 3,
     tasks_max = 7,
     tasks_timers = 8,
-    reset_globals = TRUE,
-    reset_packages = FALSE,
-    reset_options = FALSE,
-    garbage_collection = FALSE,
     tls = crew_tls()
   )
   launcher$start(url = "url", profile = "profile")

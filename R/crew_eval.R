@@ -88,7 +88,7 @@ crew_eval <- function(
     old_options <- options()
     # options(old_options) does not remove newly set options, only
     # the values of previously nonempty options.
-    # However, a more invasive approach causes mysterious errors, including
+    # However, a more aggressive approach causes mysterious errors, including
     # false positives in targets:::compare_working_directories().
     on.exit(options(old_options), add = TRUE)
   }

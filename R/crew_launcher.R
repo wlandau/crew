@@ -139,7 +139,7 @@ crew_launcher <- function(
     condition = "warning",
     value = launch_max
   )
-  crew_class_launcher$new(
+  launcher <- crew_class_launcher$new(
     name = name,
     workers = workers,
     seconds_interval = seconds_interval,
@@ -158,6 +158,8 @@ crew_launcher <- function(
     r_arguments = r_arguments,
     options_metrics = options_metrics
   )
+  launcher$validate()
+  launcher
 }
 
 launcher_empty_instances <- tibble::tibble(

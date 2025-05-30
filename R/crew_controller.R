@@ -926,6 +926,8 @@ crew_class_controller <- R6::R6Class(
       tasks <- vector(mode = "list", length = total)
       names(tasks) <- names
       push <- self$push
+      # covered in tests/local/test-map.R
+      # nocov start
       if (verbose) {
         this_envir <- environment()
         progress_envir <- new.env(parent = this_envir)
@@ -942,11 +944,15 @@ crew_class_controller <- R6::R6Class(
           .envir = progress_envir
         )
       }
+      # nocov end
       index <- 1L
       while (index <= total) {
+        # covered in tests/local/test-map.R
+        # nocov start
         if (verbose) {
           cli::cli_progress_update(id = bar, .envir = progress_envir)
         }
+        # nocov end
         for (name in names_iterate) {
           data[[name]] <- .subset2(.subset2(iterate, name), index)
         }
@@ -970,9 +976,12 @@ crew_class_controller <- R6::R6Class(
         )
         index <- index + 1L
       }
+      # covered in tests/local/test-map.R
+      # nocov start
       if (verbose) {
         cli::cli_progress_done(id = bar, .envir = progress_envir)
       }
+      # nocov end
       if (scale) {
         self$scale(throttle = throttle)
       }

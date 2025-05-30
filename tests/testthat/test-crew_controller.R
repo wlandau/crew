@@ -1,5 +1,7 @@
 crew_test("active bindings", {
   x <- crew_controller_local(crashes_max = 1L)
+  expect_null(x$queue_resolved)
+  expect_null(x$queue_unresolved)
   expect_equal(x$crashes_max, 1L)
   expect_null(x$backup)
 })
@@ -249,8 +251,8 @@ crew_test("controller collect() success", {
   expect_equal(length(x$tasks), 4L)
   out <- x$collect()
   expect_equal(length(x$tasks), 2L)
-  expect_equal(x$queue$data, character(0L))
-  expect_equal(x$queue$head, 1L)
+  expect_equal(x$queue_resolved$data, character(0L))
+  expect_equal(x$queue_resolved$head, 1L)
   expect_equal(nrow(out), 2L)
   expect_equal(as.character(out$result), rep("done", 2))
   expect_null(x$collect())

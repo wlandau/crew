@@ -80,7 +80,9 @@ backlogged tasks.}
 \item{\code{autoscaling}}{\code{TRUE} or \code{FALSE}, whether async \code{later}-based
 auto-scaling is currently running}
 
-\item{\code{queue}}{Queue of resolved unpopped/uncollected tasks.}
+\item{\code{queue_resolved}}{Queue of resolved unpopped/uncollected tasks.}
+
+\item{\code{queue_unresolved}}{Queue of unresolved tasks.}
 }
 \if{html}{\out{</div>}}
 }

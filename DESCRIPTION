@@ -43,7 +43,7 @@ Imports:
   cli (>= 3.1.0),
   data.table,
   later,
-  mirai (>= 2.0.1),
+  mirai (>= 2.3.0.9000),
   nanonext (>= 1.6.0),
   processx,
   promises,
@@ -67,3 +67,4 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Remotes: r-lib/mirai

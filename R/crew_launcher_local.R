@@ -33,11 +33,11 @@ crew_launcher_local <- function(
   seconds_exit = NULL,
   tasks_max = Inf,
   tasks_timers = 0L,
-  reset_globals = TRUE,
-  reset_packages = FALSE,
-  reset_options = FALSE,
-  garbage_collection = FALSE,
-  crashes_error = 5L,
+  reset_globals = NULL,
+  reset_packages = NULL,
+  reset_options = NULL,
+  garbage_collection = NULL,
+  crashes_error = NULL,
   launch_max = NULL,
   tls = crew::crew_tls(),
   r_arguments = c("--no-save", "--no-restore"),
@@ -74,9 +74,52 @@ crew_launcher_local <- function(
     name = "launch_max",
     date = "2024-11-04",
     version = "0.10.1.9000",
-    alternative = "crashes_error",
+    alternative = "none",
     condition = "warning",
     value = launch_max
+  )
+  crew_deprecate(
+    name = "crashes_error",
+    date = "2025-01-13",
+    version = "0.10.2.9002",
+    alternative = "none",
+    condition = "warning",
+    value = crashes_error
+  )
+  crew_deprecate(
+    name = "The reset_globals argument in crew launchers",
+    date = "2025-05-30",
+    version = "1.1.2.9004",
+    alternative = "reset_globals argument of crew::crew_controller()",
+    condition = "message",
+    value = reset_globals
+  )
+  crew_deprecate(
+    name = "The reset_packages argument in crew launchers",
+    date = "2025-05-30",
+    version = "1.1.2.9004",
+    alternative = "reset_packages argument of crew::crew_controller()",
+    condition = "message",
+    value = reset_packages
+  )
+  crew_deprecate(
+    name = "The reset_options argument in crew launchers",
+    date = "2025-05-30",
+    version = "1.1.2.9004",
+    alternative = "reset_options argument of crew::crew_controller()",
+    condition = "message",
+    value = reset_options
+  )
+  crew_deprecate(
+    name = "The garbage_collection argument in crew launchers",
+    date = "2025-05-30",
+    version = "1.1.2.9004",
+    alternative = paste(
+      "garbage_collection argument of",
+      "crew::crew_controller()"
+    ),
+    condition = "message",
+    value = garbage_collection
   )
   options_local$log_directory <- local_log_directory %|||%
     options_local$log_directory
@@ -92,10 +135,6 @@ crew_launcher_local <- function(
     seconds_wall = seconds_wall,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
-    reset_globals = reset_globals,
-    reset_packages = reset_packages,
-    reset_options = reset_options,
-    garbage_collection = garbage_collection,
     crashes_error = crashes_error,
     tls = tls,
     r_arguments = r_arguments,
@@ -175,10 +214,10 @@ crew_class_launcher_local <- R6::R6Class(
     #' @param seconds_exit See [crew_launcher()].
     #' @param tasks_max See [crew_launcher()].
     #' @param tasks_timers See [crew_launcher()].
-    #' @param reset_globals See [crew_launcher()].
-    #' @param reset_packages See [crew_launcher()].
-    #' @param reset_options See [crew_launcher()].
-    #' @param garbage_collection See [crew_launcher()].
+    #' @param reset_globals Deprecated. See [crew_launcher()].
+    #' @param reset_packages Deprecated. See [crew_launcher()].
+    #' @param reset_options Deprecated. See [crew_launcher()].
+    #' @param garbage_collection Deprecated. See [crew_launcher()].
     #' @param crashes_error See [crew_launcher()].
     #' @param tls See [crew_launcher()].
     #' @param processes See [crew_launcher()].
@@ -208,10 +247,6 @@ crew_class_launcher_local <- R6::R6Class(
       seconds_exit = NULL,
       tasks_max = NULL,
       tasks_timers = NULL,
-      reset_globals = NULL,
-      reset_packages = NULL,
-      reset_options = NULL,
-      garbage_collection = NULL,
       crashes_error = NULL,
       tls = NULL,
       processes = NULL,
@@ -230,10 +265,6 @@ crew_class_launcher_local <- R6::R6Class(
         seconds_exit = seconds_exit,
         tasks_max = tasks_max,
         tasks_timers = tasks_timers,
-        reset_globals = reset_globals,
-        reset_packages = reset_packages,
-        reset_options = reset_options,
-        garbage_collection = garbage_collection,
         crashes_error = crashes_error,
         tls = tls,
         processes = processes,

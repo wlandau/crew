@@ -67,7 +67,6 @@
 #'   [crew::crew_controller()] instead.
 #' @param crashes_error Deprecated on 2025-01-13 (`crew` version 0.10.2.9002).
 #' @param launch_max Deprecated on 2024-11-04 (`crew` version 0.10.2.9002).
-#'   Use `crashes_error` instead.
 #' @param processes `NULL` or positive integer of length 1,
 #'   number of local processes to
 #'   launch to allow worker launches to happen asynchronously. If `NULL`,

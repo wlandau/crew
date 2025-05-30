@@ -15,11 +15,11 @@ crew_launcher_local(
   seconds_exit = NULL,
   tasks_max = Inf,
   tasks_timers = 0L,
-  reset_globals = TRUE,
-  reset_packages = FALSE,
-  reset_options = FALSE,
-  garbage_collection = FALSE,
-  crashes_error = 5L,
+  reset_globals = NULL,
+  reset_packages = NULL,
+  reset_options = NULL,
+  garbage_collection = NULL,
+  crashes_error = NULL,
   launch_max = NULL,
   tls = crew::crew_tls(),
   r_arguments = c("--no-save", "--no-restore"),
@@ -104,8 +104,7 @@ Please use the \code{garbage_collection} option of
 
 \item{crashes_error}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
-\item{launch_max}{Deprecated on 2024-11-04 (\code{crew} version 0.10.2.9002).
-Use \code{crashes_error} instead.}
+\item{launch_max}{Deprecated on 2024-11-04 (\code{crew} version 0.10.2.9002).}
 
 \item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
 

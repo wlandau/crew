@@ -98,10 +98,6 @@ Local launcher constructor.
   seconds_exit = NULL,
   tasks_max = NULL,
   tasks_timers = NULL,
-  reset_globals = NULL,
-  reset_packages = NULL,
-  reset_options = NULL,
-  garbage_collection = NULL,
   crashes_error = NULL,
   tls = NULL,
   processes = NULL,
@@ -134,14 +130,6 @@ Local launcher constructor.
 
 \item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{reset_globals}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{reset_packages}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{reset_options}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
 \item{\code{crashes_error}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
@@ -153,6 +141,14 @@ Local launcher constructor.
 \item{\code{options_metrics}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
 
 \item{\code{options_local}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+
+\item{\code{reset_globals}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{reset_packages}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{reset_options}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
+
+\item{\code{garbage_collection}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
 }
 \if{html}{\out{</div>}}
 }

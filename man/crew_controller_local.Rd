@@ -139,8 +139,7 @@ task, \code{FALSE} to skip.}
 
 \item{crashes_error}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
-\item{launch_max}{Deprecated on 2024-11-04 (\code{crew} version 0.10.2.9002).
-Use \code{crashes_error} instead.}
+\item{launch_max}{Deprecated on 2024-11-04 (\code{crew} version 0.10.2.9002).}
 
 \item{r_arguments}{Optional character vector of command line arguments
 to pass to \code{Rscript} (non-Windows) or \code{Rscript.exe} (Windows)

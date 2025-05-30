@@ -74,11 +74,11 @@ since the controller was started.}
 \item{\code{error}}{Tibble of task results (with one result per row)
 from the last call to \verb{map(error = "stop)}.}
 
-\item{\code{backlog}}{A \code{\link[=crew_queue]{crew_queue()}} object tracking explicitly
-backlogged tasks.}
-
 \item{\code{autoscaling}}{\code{TRUE} or \code{FALSE}, whether async \code{later}-based
 auto-scaling is currently running}
+
+\item{\code{queue_backlog}}{Queue of explicitly
+backlogged tasks (see methods \code{push_backlog()} and \code{pop_backlog()}).}
 
 \item{\code{queue_resolved}}{Queue of resolved unpopped/uncollected tasks.}
 

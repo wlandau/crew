@@ -318,7 +318,7 @@ crew_class_client <- R6::R6Class(
         pass = private$.tls$password,
         .compute = private$.profile
       )
-      private$.url <- self$status()$daemons
+      private$.url <- mirai::nextget("urls", .compute = private$.profile)
       private$.client <- ps::ps_handle()
       # TODO: remove code that gets the dispatcher PID if the dispatcher
       # process becomes a C thread.

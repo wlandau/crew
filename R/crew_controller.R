@@ -170,10 +170,12 @@ crew_class_controller <- R6::R6Class(
     .push_task = function(name, task) {
       tasks <- .subset2(private, ".tasks")
       tasks[[name]] <- task
+      .subset2(.subset2(private, ".queue_unresolved"), "push")(name)
       private$.pushed <- .subset2(private, ".pushed") + 1L
     },
     .resolve = function(force) {
       queue_resolved <- .subset2(private, ".queue_resolved")
+      queue_unresolved <- .subset2(private, ".queue_unresolved")
       if ((!force) && .subset2(queue_resolved, "nonempty")()) {
         return()
       }
@@ -183,14 +185,17 @@ crew_class_controller <- R6::R6Class(
         return()
       }
       tasks <- .subset2(private, ".tasks")
-      status <- eapply(
-        env = tasks,
-        FUN = nanonext::.unresolved,
-        all.names = TRUE,
-        USE.NAMES = TRUE
-      )
-      resolved <- names(status)[!as.logical(status)]
-      .subset2(queue_resolved, "set")(data = resolved)
+      names <- .subset2(queue_unresolved, "list")()
+      n <- length(names)
+      is_unresolved <- logical(n)
+      index <- 1L
+      f <- nanonext::.unresolved
+      while (index <= n) {
+        is_unresolved[index] <- f(.subset2(tasks, .subset(names, index)))
+        index <- index + 1L
+      }
+      .subset2(queue_resolved, "push")(names[!is_unresolved])
+      .subset2(queue_unresolved, "set")(names[is_unresolved])
       private$.resolved <- observed
     },
     .wait_all_once = function() {
@@ -1219,6 +1224,8 @@ crew_class_controller <- R6::R6Class(
       out <- out[!is.na(out$name),, drop = FALSE] # nolint
       on.exit({
         private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
+        private$.queue_resolved <- crew_queue()
+        private$.queue_unresolved <- crew_queue()
         private$.popped <- .subset2(private, ".popped") + nrow(out)
         summary <- private$.summary
         summary$tasks <- .subset2(summary, "tasks") + nrow(out)

@@ -85,19 +85,22 @@ the assignment of tasks to workers, it is recommended to set
 the timers for \code{seconds_idle} and \code{seconds_wall}.
 See the \code{timerstart} argument of \code{mirai::daemon()}.}
 
-\item{reset_globals}{\code{TRUE} to reset global environment
-variables between tasks, \code{FALSE} to leave them alone.}
+\item{reset_globals}{Deprecated on 2025-05-30 (\code{crew} version 1.1.2.9004).
+Please use the \code{reset_globals} option of \code{\link[=crew_controller]{crew_controller()}}
+instead.}
 
-\item{reset_packages}{\code{TRUE} to unload any packages loaded during
-a task (runs between each task), \code{FALSE} to leave packages alone.}
+\item{reset_packages}{Deprecated on 2025-05-30 (\code{crew} version 1.1.2.9004).
+Please use the \code{reset_packages} option of \code{\link[=crew_controller]{crew_controller()}}
+instead.}
 
-\item{reset_options}{\code{TRUE} to reset global options to their original
-state between each task, \code{FALSE} otherwise. It is recommended to
-only set \code{reset_options = TRUE} if \code{reset_packages} is also \code{TRUE}
-because packages sometimes rely on options they set at loading time.}
+\item{reset_options}{Deprecated on 2025-05-30 (\code{crew} version 1.1.2.9004).
+Please use the \code{reset_options} option of \code{\link[=crew_controller]{crew_controller()}}
+instead.}
 
-\item{garbage_collection}{\code{TRUE} to run garbage collection between
-tasks, \code{FALSE} to skip.}
+\item{garbage_collection}{Deprecated on 2025-05-30
+(\code{crew} version 1.1.2.9004).
+Please use the \code{garbage_collection} option of
+\code{\link[=crew_controller]{crew_controller()}} instead.}
 
 \item{crashes_error}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 

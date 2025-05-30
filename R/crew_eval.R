@@ -227,6 +227,10 @@ expr_crew_eval <- quote(
     seed = seed,
     algorithm = algorithm,
     packages = packages,
-    library = library
+    library = library,
+    reset_globals = reset_globals,
+    reset_packages = reset_packages,
+    reset_options = reset_options,
+    garbage_collection = garbage_collection
   )
 )

@@ -3,9 +3,9 @@
 #' @family plugin_local
 #' @description Create an `R6` object to submit tasks and
 #'   launch workers on local processes.
+#' @inheritParams crew_controller
 #' @inheritParams crew_launcher_local
 #' @inheritParams crew_client
-#' @inheritParams crew_controller
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' controller <- crew_controller_local()
@@ -119,10 +119,6 @@ crew_controller_local <- function(
     seconds_wall = seconds_wall,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
-    reset_globals = reset_globals,
-    reset_packages = reset_packages,
-    reset_options = reset_options,
-    garbage_collection = garbage_collection,
     tls = tls,
     r_arguments = r_arguments,
     options_metrics = options_metrics,
@@ -133,6 +129,10 @@ crew_controller_local <- function(
   controller <- crew_controller(
     client = client,
     launcher = launcher,
+    reset_globals = reset_globals,
+    reset_packages = reset_packages,
+    reset_options = reset_options,
+    garbage_collection = garbage_collection,
     crashes_max = crashes_max,
     backup = backup
   )

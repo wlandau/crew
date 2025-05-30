@@ -7,6 +7,10 @@
 crew_controller(
   client,
   launcher,
+  reset_globals = TRUE,
+  reset_packages = FALSE,
+  reset_options = FALSE,
+  garbage_collection = FALSE,
   crashes_max = 5L,
   backup = NULL,
   auto_scale = NULL
@@ -17,6 +21,25 @@ crew_controller(
 
 \item{launcher}{An \code{R6} launcher object created by one of the
 \verb{crew_launcher_*()} functions such as \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+
+\item{reset_globals}{\code{TRUE} to reset global environment
+variables between tasks, \code{FALSE} to leave them alone.}
+
+\item{reset_packages}{\code{TRUE} to detach any packages loaded during
+a task (runs between each task), \code{FALSE} to leave packages alone.
+In either case, the namespaces are not detached.}
+
+\item{reset_options}{\code{TRUE} to reset global options to their original
+state between each task, \code{FALSE} otherwise. It is recommended to
+only set \code{reset_options = TRUE} if \code{reset_packages} is also \code{TRUE}
+because packages sometimes rely on options they set at loading time.
+for this and other reasons, \code{reset_options} only resets options
+that were nonempty at the beginning of the task.
+If your task sets an entirely new option not already in \code{options()},
+then \code{reset_options = TRUE} does not delete the option.}
+
+\item{garbage_collection}{\code{TRUE} to run garbage collection after each task
+task, \code{FALSE} to skip.}
 
 \item{crashes_max}{In rare cases, a worker may exit unexpectedly
 before it completes its current task. If this happens, \code{pop()}

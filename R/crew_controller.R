@@ -4,6 +4,7 @@
 #' @description This function is for developers of `crew` launcher plugins.
 #'   Users should use a specific controller helper such as
 #'   [crew_controller_local()].
+#' @inheritParams crew_eval
 #' @param client An `R6` client object created by [crew_client()].
 #' @param launcher An `R6` launcher object created by one of the
 #'   `crew_launcher_*()` functions such as [crew_launcher_local()].
@@ -54,6 +55,10 @@
 crew_controller <- function(
   client,
   launcher,
+  reset_globals = TRUE,
+  reset_packages = FALSE,
+  reset_options = FALSE,
+  garbage_collection = FALSE,
   crashes_max = 5L,
   backup = NULL,
   auto_scale = NULL
@@ -69,6 +74,10 @@ crew_controller <- function(
   controller <- crew_class_controller$new(
     client = client,
     launcher = launcher,
+    reset_globals = reset_globals,
+    reset_packages = reset_packages,
+    reset_options = reset_options,
+    garbage_collection = garbage_collection,
     crashes_max = crashes_max,
     backup = backup
   )
@@ -101,6 +110,10 @@ crew_class_controller <- R6::R6Class(
     .tasks = new.env(parent = emptyenv(), hash = TRUE),
     .pushed = 0L,
     .popped = 0L,
+    .reset_globals = NULL,
+    .reset_packages = NULL,
+    .reset_options = NULL,
+    .garbage_collection = NULL,
     .crashes_max = NULL,
     .crash_log = new.env(parent = emptyenv(), hash = TRUE),
     .backup = NULL,
@@ -248,6 +261,26 @@ crew_class_controller <- R6::R6Class(
     popped = function() {
       .subset2(private, ".popped")
     },
+    #' @field reset_globals See [crew_controller()].
+    #' since the controller was started.
+    reset_globals = function() {
+      .subset2(private, ".reset_globals")
+    },
+    #' @field reset_packages See [crew_controller()].
+    #' since the controller was started.
+    reset_packages = function() {
+      .subset2(private, ".reset_packages")
+    },
+    #' @field reset_options See [crew_controller()].
+    #' since the controller was started.
+    reset_options = function() {
+      .subset2(private, ".reset_options")
+    },
+    #' @field garbage_collection See [crew_controller()].
+    #' since the controller was started.
+    garbage_collection = function() {
+      .subset2(private, ".garbage_collection")
+    },
     #' @field crashes_max See [crew_controller()].
     crashes_max = function() {
       .subset2(private, ".crashes_max")
@@ -281,6 +314,10 @@ crew_class_controller <- R6::R6Class(
     #' @return An `R6` controller object.
     #' @param client Client object. See [crew_controller()].
     #' @param launcher Launcher object. See [crew_controller()].
+    #' @param reset_globals See [crew_controller()].
+    #' @param reset_packages See [crew_controller()].
+    #' @param reset_options See [crew_controller()].
+    #' @param garbage_collection See [crew_controller()].
     #' @param crashes_max See [crew_controller()].
     #' @param backup See [crew_controller()].
     #' @examples
@@ -297,11 +334,19 @@ crew_class_controller <- R6::R6Class(
     initialize = function(
       client = NULL,
       launcher = NULL,
+      reset_globals = NULL,
+      reset_packages = NULL,
+      reset_options = NULL,
+      garbage_collection = NULL,
       crashes_max = NULL,
       backup = NULL
     ) {
       private$.client <- client
       private$.launcher <- launcher
+      private$.reset_globals <- reset_globals
+      private$.reset_packages <- reset_packages
+      private$.reset_options <- reset_options
+      private$.garbage_collection <- garbage_collection
       private$.crashes_max <- crashes_max
       private$.backup <- backup
       invisible()
@@ -313,20 +358,30 @@ crew_class_controller <- R6::R6Class(
       crew_assert(inherits(private$.launcher, "crew_class_launcher"))
       private$.client$validate()
       private$.launcher$validate()
-      # TODO: re-enable checks on crashes_max and crashes
-      # when reverse dependencies catch up.
-      if (!is.null(private$.crashes_max)) {
+      fields <- c(
+        "reset_globals",
+        "reset_packages",
+        "reset_options",
+        "garbage_collection"
+      )
+      # TODO: re-enable checks on these 4 logical fields
+      # when reverse dependencies catch up:
+      for (field in fields) {
         crew_assert(
-          private$.crashes_max,
-          is.numeric(.),
-          length(.) == 1L,
-          is.finite(.),
-          . >= 0L,
-          message = c(
-            "crashes_max must be a finite non-negative integer scalar."
-          )
+          self[[field]], is.null(.) || isTRUE(.) || isFALSE(.),
+          message = paste(field, "must be a non-missing logical of length 1")
         )
       }
+      crew_assert(
+        private$.crashes_max,
+        is.numeric(.),
+        length(.) == 1L,
+        is.finite(.),
+        . >= 0L,
+        message = c(
+          "crashes_max must be a finite non-negative integer scalar."
+        )
+      )
       if (!is.null(private$.crash_log)) {
         crew_assert(is.environment(private$.crash_log))
       }
@@ -651,7 +706,11 @@ crew_class_controller <- R6::R6Class(
           seed = seed,
           algorithm = algorithm,
           packages = packages,
-          library = library
+          library = library,
+          reset_globals = .subset2(private, ".reset_globals"),
+          reset_packages = .subset2(private, ".reset_packages"),
+          reset_options = .subset2(private, ".reset_options"),
+          garbage_collection = .subset2(private, ".garbage_collection")
         ),
         .timeout = .timeout,
         .compute = .subset2(.subset2(private, ".client"), "profile")

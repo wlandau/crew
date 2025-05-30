@@ -52,16 +52,19 @@
 #' @param tasks_timers Number of tasks to do before activating
 #'   the timers for `seconds_idle` and `seconds_wall`.
 #'   See the `timerstart` argument of `mirai::daemon()`.
-#' @param reset_globals `TRUE` to reset global environment
-#'   variables between tasks, `FALSE` to leave them alone.
-#' @param reset_packages `TRUE` to unload any packages loaded during
-#'   a task (runs between each task), `FALSE` to leave packages alone.
-#' @param reset_options `TRUE` to reset global options to their original
-#'   state between each task, `FALSE` otherwise. It is recommended to
-#'   only set `reset_options = TRUE` if `reset_packages` is also `TRUE`
-#'   because packages sometimes rely on options they set at loading time.
-#' @param garbage_collection `TRUE` to run garbage collection between
-#'   tasks, `FALSE` to skip.
+#' @param reset_globals Deprecated on 2025-05-30 (`crew` version 1.1.2.9004).
+#'   Please use the `reset_globals` option of [crew::crew_controller()]
+#'   instead.
+#' @param reset_packages Deprecated on 2025-05-30 (`crew` version 1.1.2.9004).
+#'   Please use the `reset_packages` option of [crew::crew_controller()]
+#'   instead.
+#' @param reset_options Deprecated on 2025-05-30 (`crew` version 1.1.2.9004).
+#'   Please use the `reset_options` option of [crew::crew_controller()]
+#'   instead.
+#' @param garbage_collection Deprecated on 2025-05-30
+#'   (`crew` version 1.1.2.9004).
+#'   Please use the `garbage_collection` option of
+#'   [crew::crew_controller()] instead.
 #' @param crashes_error Deprecated on 2025-01-13 (`crew` version 0.10.2.9002).
 #' @param launch_max Deprecated on 2024-11-04 (`crew` version 0.10.2.9002).
 #'   Use `crashes_error` instead.
@@ -100,10 +103,10 @@ crew_launcher <- function(
   seconds_exit = NULL,
   tasks_max = Inf,
   tasks_timers = 0L,
-  reset_globals = TRUE,
-  reset_packages = FALSE,
-  reset_options = FALSE,
-  garbage_collection = FALSE,
+  reset_globals = NULL,
+  reset_packages = NULL,
+  reset_options = NULL,
+  garbage_collection = NULL,
   crashes_error = NULL,
   launch_max = NULL,
   tls = crew::crew_tls(),
@@ -111,34 +114,6 @@ crew_launcher <- function(
   r_arguments = c("--no-save", "--no-restore"),
   options_metrics = crew::crew_options_metrics()
 ) {
-  crew_deprecate(
-    name = "seconds_exit",
-    date = "2023-09-21",
-    version = "0.5.0.9002",
-    alternative = "none (no longer necessary)",
-    condition = "warning",
-    value = seconds_exit
-  )
-  crew_assert(
-    inherits(tls, "crew_class_tls"),
-    message = "argument tls must be an object created by crew_tls()"
-  )
-  crew_deprecate(
-    name = "crashes_error",
-    date = "2025-01-13",
-    version = "0.10.2.9002",
-    alternative = "none",
-    condition = "message",
-    value = crashes_error
-  )
-  crew_deprecate(
-    name = "launch_max",
-    date = "2024-11-04",
-    version = "0.10.1.9000",
-    alternative = "none",
-    condition = "warning",
-    value = launch_max
-  )
   launcher <- crew_class_launcher$new(
     name = name,
     workers = workers,
@@ -149,10 +124,6 @@ crew_launcher <- function(
     seconds_wall = seconds_wall,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
-    reset_globals = reset_globals,
-    reset_packages = reset_packages,
-    reset_options = reset_options,
-    garbage_collection = garbage_collection,
     tls = tls,
     processes = processes,
     r_arguments = r_arguments,
@@ -202,10 +173,6 @@ crew_class_launcher <- R6::R6Class(
     .seconds_wall = NULL,
     .tasks_max = NULL,
     .tasks_timers = NULL,
-    .reset_globals = NULL,
-    .reset_packages = NULL,
-    .reset_options = NULL,
-    .garbage_collection = NULL,
     .tls = NULL,
     .processes = NULL,
     .r_arguments = NULL,
@@ -253,22 +220,6 @@ crew_class_launcher <- R6::R6Class(
     #' @field tasks_timers See [crew_launcher()].
     tasks_timers = function() {
       .subset2(private, ".tasks_timers")
-    },
-    #' @field reset_globals See [crew_launcher()].
-    reset_globals = function() {
-      .subset2(private, ".reset_globals")
-    },
-    #' @field reset_packages See [crew_launcher()].
-    reset_packages = function() {
-      .subset2(private, ".reset_packages")
-    },
-    #' @field reset_options See [crew_launcher()].
-    reset_options = function() {
-      .subset2(private, ".reset_options")
-    },
-    #' @field garbage_collection See [crew_launcher()].
-    garbage_collection = function() {
-      .subset2(private, ".garbage_collection")
     },
     #' @field tls See [crew_launcher()].
     tls = function() {
@@ -326,10 +277,10 @@ crew_class_launcher <- R6::R6Class(
     #' @param seconds_exit See [crew_launcher()].
     #' @param tasks_max See [crew_launcher()].
     #' @param tasks_timers See [crew_launcher()].
-    #' @param reset_globals See [crew_launcher()].
-    #' @param reset_packages See [crew_launcher()].
-    #' @param reset_options See [crew_launcher()].
-    #' @param garbage_collection See [crew_launcher()].
+    #' @param reset_globals Deprecated. See [crew_launcher()].
+    #' @param reset_packages Deprecated. See [crew_launcher()].
+    #' @param reset_options Deprecated. See [crew_launcher()].
+    #' @param garbage_collection Deprecated. See [crew_launcher()].
     #' @param crashes_error See [crew_launcher()].
     #' @param launch_max Deprecated.
     #' @param tls See [crew_launcher()].
@@ -364,12 +315,71 @@ crew_class_launcher <- R6::R6Class(
       reset_options = NULL,
       garbage_collection = NULL,
       crashes_error = NULL,
-      launch_max = NULL, # TODO: remove after deprecation period
+      launch_max = NULL,
       tls = NULL,
       processes = NULL,
       r_arguments = NULL,
       options_metrics = NULL
     ) {
+      crew_deprecate(
+        name = "The reset_globals argument in crew launchers",
+        date = "2025-05-30",
+        version = "1.1.2.9004",
+        alternative = "reset_globals argument of crew::crew_controller()",
+        condition = "message",
+        value = reset_globals
+      )
+      crew_deprecate(
+        name = "The reset_packages argument in crew launchers",
+        date = "2025-05-30",
+        version = "1.1.2.9004",
+        alternative = "reset_packages argument of crew::crew_controller()",
+        condition = "message",
+        value = reset_packages
+      )
+      crew_deprecate(
+        name = "The reset_options argument in crew launchers",
+        date = "2025-05-30",
+        version = "1.1.2.9004",
+        alternative = "reset_options argument of crew::crew_controller()",
+        condition = "message",
+        value = reset_options
+      )
+      crew_deprecate(
+        name = "The garbage_collection argument in crew launchers",
+        date = "2025-05-30",
+        version = "1.1.2.9004",
+        alternative = paste(
+          "garbage_collection argument of",
+          "crew::crew_controller()"
+        ),
+        condition = "message",
+        value = garbage_collection
+      )
+      crew_deprecate(
+        name = "launch_max",
+        date = "2024-11-04",
+        version = "0.10.1.9000",
+        alternative = "none",
+        condition = "warning",
+        value = launch_max
+      )
+      crew_deprecate(
+        name = "seconds_exit",
+        date = "2023-09-21",
+        version = "0.5.0.9002",
+        alternative = "none (no longer necessary)",
+        condition = "warning",
+        value = seconds_exit
+      )
+      crew_deprecate(
+        name = "crashes_error",
+        date = "2025-01-13",
+        version = "0.10.2.9002",
+        alternative = "none",
+        condition = "message",
+        value = crashes_error
+      )
       private$.name <- name %|||% crew_random_name(n = 4L)
       private$.workers <- workers
       private$.seconds_interval <- seconds_interval
@@ -379,10 +389,6 @@ crew_class_launcher <- R6::R6Class(
       private$.seconds_wall <- seconds_wall
       private$.tasks_max <- tasks_max
       private$.tasks_timers <- tasks_timers
-      private$.reset_globals <- reset_globals
-      private$.reset_packages <- reset_packages
-      private$.reset_options <- reset_options
-      private$.garbage_collection <- garbage_collection
       private$.tls <- tls
       private$.processes <- processes
       private$.r_arguments <- r_arguments
@@ -432,12 +438,9 @@ crew_class_launcher <- R6::R6Class(
         "seconds_idle",
         "seconds_wall",
         "tasks_max",
-        "tasks_timers"
+        "tasks_timers",
+        "workers"
       )
-      # TODO: require non-null workers field when plugins catch up.
-      if (!is.null(self[["workers"]])) {
-        fields <- c(fields, "workers")
-      }
       for (field in fields) {
         crew_assert(
           self[[field]],
@@ -456,31 +459,14 @@ crew_class_launcher <- R6::R6Class(
         !anyNA(.),
         message = "processes must be NULL or a positive integer of length 1"
       )
-      fields <- c(
-        "reset_globals",
-        "reset_packages",
-        "reset_options",
-        "garbage_collection"
-      )
-      for (field in fields) {
+      if (!is.null(private$.url)) {
         crew_assert(
-          self[[field]], isTRUE(.) || isFALSE(.),
-          message = paste(field, "must be a non-missing logical of length 1")
+          private$.url,
+          is.character(.),
+          !anyNA(.),
+          length(.) == 1L,
+          nzchar(.)
         )
-      }
-      # TODO: validate these fields when revdeps catch up.
-      # nocov start
-      if (FALSE) {
-        if (!is.null(private$.url)) {
-          crew_assert(
-            private$.url,
-            is.character(.),
-            !anyNA(.),
-            length(.) == 1L,
-            nzchar(.)
-          )
-        }
-        # nocov end
       }
       crew_assert(private$.instances, is.data.frame(.))
       if (!is.null(private$.r_arguments)) {

@@ -55,6 +55,18 @@ Other controller:
 \item{\code{popped}}{Number of tasks popped
 since the controller was started.}
 
+\item{\code{reset_globals}}{See \code{\link[=crew_controller]{crew_controller()}}.
+since the controller was started.}
+
+\item{\code{reset_packages}}{See \code{\link[=crew_controller]{crew_controller()}}.
+since the controller was started.}
+
+\item{\code{reset_options}}{See \code{\link[=crew_controller]{crew_controller()}}.
+since the controller was started.}
+
+\item{\code{garbage_collection}}{See \code{\link[=crew_controller]{crew_controller()}}.
+since the controller was started.}
+
 \item{\code{crashes_max}}{See \code{\link[=crew_controller]{crew_controller()}}.}
 
 \item{\code{backup}}{See \code{\link[=crew_controller]{crew_controller()}}.}
@@ -114,6 +126,10 @@ auto-scaling is currently running}
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$new(
   client = NULL,
   launcher = NULL,
+  reset_globals = NULL,
+  reset_packages = NULL,
+  reset_options = NULL,
+  garbage_collection = NULL,
   crashes_max = NULL,
   backup = NULL
 )}\if{html}{\out{</div>}}
@@ -125,6 +141,14 @@ auto-scaling is currently running}
 \item{\code{client}}{Client object. See \code{\link[=crew_controller]{crew_controller()}}.}
 
 \item{\code{launcher}}{Launcher object. See \code{\link[=crew_controller]{crew_controller()}}.}
+
+\item{\code{reset_globals}}{See \code{\link[=crew_controller]{crew_controller()}}.}
+
+\item{\code{reset_packages}}{See \code{\link[=crew_controller]{crew_controller()}}.}
+
+\item{\code{reset_options}}{See \code{\link[=crew_controller]{crew_controller()}}.}
+
+\item{\code{garbage_collection}}{See \code{\link[=crew_controller]{crew_controller()}}.}
 
 \item{\code{crashes_max}}{See \code{\link[=crew_controller]{crew_controller()}}.}
 

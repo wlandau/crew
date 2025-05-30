@@ -52,13 +52,16 @@ crew_test("custom launcher plugin based on system2()", {
       seconds_wall = seconds_wall,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
+      tls = tls
+    )
+    controller <- crew::crew_controller(
+      client = client,
+      launcher = launcher,
       reset_globals = reset_globals,
       reset_packages = reset_packages,
       reset_options = reset_options,
-      garbage_collection = garbage_collection,
-      tls = tls
+      garbage_collection = garbage_collection
     )
-    controller <- crew::crew_controller(client = client, launcher = launcher)
     controller$validate()
     controller
   }

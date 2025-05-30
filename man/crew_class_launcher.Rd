@@ -71,14 +71,6 @@ Other launcher:
 
 \item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{reset_globals}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{reset_packages}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{reset_options}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.
@@ -177,13 +169,13 @@ Launcher constructor.
 
 \item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{reset_globals}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{reset_globals}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{reset_packages}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{reset_packages}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{reset_options}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{reset_options}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{garbage_collection}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{garbage_collection}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{crashes_error}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 

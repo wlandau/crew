@@ -61,14 +61,17 @@ crew_test("custom launcher", {
       seconds_wall = seconds_wall,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
+      crashes_error = crashes_error,
+      tls = tls
+    )
+    controller <- crew::crew_controller(
+      client = client,
+      launcher = launcher,
       reset_globals = reset_globals,
       reset_packages = reset_packages,
       reset_options = reset_options,
       garbage_collection = garbage_collection,
-      crashes_error = crashes_error,
-      tls = tls
     )
-    controller <- crew::crew_controller(client = client, launcher = launcher)
     controller$validate()
     controller
   }
@@ -158,17 +161,17 @@ crew_test("custom launcher with local asyncs launch errors", {
       seconds_wall = seconds_wall,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
-      reset_globals = reset_globals,
-      reset_packages = reset_packages,
-      reset_options = reset_options,
-      garbage_collection = garbage_collection,
       crashes_error = crashes_error,
       tls = tls,
       processes = processes
     )
     controller <- crew::crew_controller(
       client = client,
-      launcher = launcher
+      launcher = launcher,
+      reset_globals = reset_globals,
+      reset_packages = reset_packages,
+      reset_options = reset_options,
+      garbage_collection = garbage_collection
     )
     controller$validate()
     controller
@@ -262,17 +265,17 @@ crew_test("custom launcher with local asyncs termination errors", {
       seconds_wall = seconds_wall,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
-      reset_globals = reset_globals,
-      reset_packages = reset_packages,
-      reset_options = reset_options,
-      garbage_collection = garbage_collection,
       crashes_error = crashes_error,
       tls = tls,
       processes = processes
     )
     controller <- crew::crew_controller(
       client = client,
-      launcher = launcher
+      launcher = launcher,
+      reset_globals = reset_globals,
+      reset_packages = reset_packages,
+      reset_options = reset_options,
+      garbage_collection = garbage_collection
     )
     controller$validate()
     controller
@@ -376,17 +379,17 @@ crew_test("custom launcher with async internal launcher tasks", {
       seconds_wall = seconds_wall,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
-      reset_globals = reset_globals,
-      reset_packages = reset_packages,
-      reset_options = reset_options,
-      garbage_collection = garbage_collection,
       crashes_error = crashes_error,
       tls = tls,
       processes = processes
     )
     controller <- crew::crew_controller(
       client = client,
-      launcher = launcher
+      launcher = launcher,
+      reset_globals = reset_globals,
+      reset_packages = reset_packages,
+      reset_options = reset_options,
+      garbage_collection = garbage_collection
     )
     controller$validate()
     controller

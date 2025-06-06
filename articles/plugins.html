@@ -290,10 +290,6 @@ workers take a long time to launch.</p>
 <span>    seconds_wall <span class="op">=</span> <span class="va">seconds_wall</span>,</span>
 <span>    tasks_max <span class="op">=</span> <span class="va">tasks_max</span>,</span>
 <span>    tasks_timers <span class="op">=</span> <span class="va">tasks_timers</span>,</span>
-<span>    reset_globals <span class="op">=</span> <span class="va">reset_globals</span>,</span>
-<span>    reset_packages <span class="op">=</span> <span class="va">reset_packages</span>,</span>
-<span>    reset_options <span class="op">=</span> <span class="va">reset_options</span>,</span>
-<span>    garbage_collection <span class="op">=</span> <span class="va">garbage_collection</span>,</span>
 <span>    tls <span class="op">=</span> <span class="va">tls</span>,</span>
 <span>    r_arguments <span class="op">=</span> <span class="va">r_arguments</span>,</span>
 <span>    options_metrics <span class="op">=</span> <span class="va">options_metrics</span></span>
@@ -301,6 +297,10 @@ workers take a long time to launch.</p>
 <span>  <span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_controller.html">crew_controller</a></span><span class="op">(</span></span>
 <span>    client <span class="op">=</span> <span class="va">client</span>,</span>
 <span>    launcher <span class="op">=</span> <span class="va">launcher</span>,</span>
+<span>    reset_globals <span class="op">=</span> <span class="va">reset_globals</span>,</span>
+<span>    reset_packages <span class="op">=</span> <span class="va">reset_packages</span>,</span>
+<span>    reset_options <span class="op">=</span> <span class="va">reset_options</span>,</span>
+<span>    garbage_collection <span class="op">=</span> <span class="va">garbage_collection</span>,</span>
 <span>    crashes_max <span class="op">=</span> <span class="va">crashes_max</span>,</span>
 <span>    backup <span class="op">=</span> <span class="va">backup</span></span>
 <span>  <span class="op">)</span></span>
@@ -476,58 +476,65 @@ internally resolves launch tasks so the handles you accept in
 which sets how many asynchronous <code>mirai</code> daemons to create.
 Set <code>processes</code> to <code>NULL</code> to disable async and use
 it like an ordinary synchronous controller.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">crew_controller_async</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
-<span>  <span class="va">name</span> <span class="op">=</span> <span class="st">"async controller name"</span>,</span>
-<span>  <span class="va">workers</span> <span class="op">=</span> <span class="fl">1L</span>,</span>
-<span>  <span class="va">host</span> <span class="op">=</span> <span class="st">"127.0.0.1"</span>,</span>
-<span>  <span class="va">port</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">tls</span> <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_tls.html">crew_tls</a></span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span>,</span>
-<span>  <span class="va">seconds_interval</span> <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  <span class="va">seconds_timeout</span> <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  <span class="va">seconds_launch</span> <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  <span class="va">seconds_idle</span> <span class="op">=</span> <span class="cn">Inf</span>,</span>
-<span>  <span class="va">seconds_wall</span> <span class="op">=</span> <span class="cn">Inf</span>,</span>
-<span>  <span class="va">tasks_max</span> <span class="op">=</span> <span class="cn">Inf</span>,</span>
-<span>  <span class="va">tasks_timers</span> <span class="op">=</span> <span class="fl">0L</span>,</span>
-<span>  <span class="va">reset_globals</span> <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">reset_packages</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">reset_options</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">garbage_collection</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">processes</span> <span class="op">=</span> <span class="cn">NULL</span> <span class="co"># Number of local async daemons for worker launches etc.</span></span>
-<span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">client</span> <span class="op">&lt;-</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_client.html">crew_client</a></span><span class="op">(</span></span>
-<span>    host <span class="op">=</span> <span class="va">host</span>,</span>
-<span>    port <span class="op">=</span> <span class="va">port</span>,</span>
-<span>    tls <span class="op">=</span> <span class="va">tls</span>,</span>
-<span>    seconds_interval <span class="op">=</span> <span class="va">seconds_interval</span>,</span>
-<span>    seconds_timeout <span class="op">=</span> <span class="va">seconds_timeout</span></span>
-<span>  <span class="op">)</span></span>
-<span>  <span class="va">launcher</span> <span class="op">&lt;-</span> <span class="va">async_launcher_class</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
-<span>    name <span class="op">=</span> <span class="va">name</span>,</span>
-<span>    workers <span class="op">=</span> <span class="va">workers</span>,</span>
-<span>    seconds_interval <span class="op">=</span> <span class="va">seconds_interval</span>,</span>
-<span>    seconds_timeout <span class="op">=</span> <span class="va">seconds_timeout</span>,</span>
-<span>    seconds_launch <span class="op">=</span> <span class="va">seconds_launch</span>,</span>
-<span>    seconds_idle <span class="op">=</span> <span class="va">seconds_idle</span>,</span>
-<span>    seconds_wall <span class="op">=</span> <span class="va">seconds_wall</span>,</span>
-<span>    tasks_max <span class="op">=</span> <span class="va">tasks_max</span>,</span>
-<span>    tasks_timers <span class="op">=</span> <span class="va">tasks_timers</span>,</span>
-<span>    reset_globals <span class="op">=</span> <span class="va">reset_globals</span>,</span>
-<span>    reset_packages <span class="op">=</span> <span class="va">reset_packages</span>,</span>
-<span>    reset_options <span class="op">=</span> <span class="va">reset_options</span>,</span>
-<span>    garbage_collection <span class="op">=</span> <span class="va">garbage_collection</span>,</span>
-<span>    crashes_error <span class="op">=</span> <span class="va">crashes_error</span>,</span>
-<span>    tls <span class="op">=</span> <span class="va">tls</span>,</span>
-<span>    processes <span class="op">=</span> <span class="va">processes</span></span>
-<span>  <span class="op">)</span></span>
-<span>  <span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_controller.html">crew_controller</a></span><span class="op">(</span></span>
-<span>    client <span class="op">=</span> <span class="va">client</span>,</span>
-<span>    launcher <span class="op">=</span> <span class="va">launcher</span></span>
-<span>  <span class="op">)</span></span>
-<span>  <span class="va">controller</span><span class="op">$</span><span class="fu">validate</span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">controller</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>crew_controller_async <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"async controller name"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="at">workers =</span> <span class="dv">1</span><span class="dt">L</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="at">host =</span> <span class="st">"127.0.0.1"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="at">port =</span> <span class="cn">NULL</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="at">tls =</span> crew<span class="sc">::</span><span class="fu">crew_tls</span>(<span class="at">mode =</span> <span class="st">"none"</span>),</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  <span class="at">seconds_interval =</span> <span class="fl">0.5</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="at">seconds_timeout =</span> <span class="dv">30</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>  <span class="at">seconds_launch =</span> <span class="dv">30</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>  <span class="at">seconds_idle =</span> <span class="cn">Inf</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>  <span class="at">seconds_wall =</span> <span class="cn">Inf</span>,</span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>  <span class="at">tasks_max =</span> <span class="cn">Inf</span>,</span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>  <span class="at">tasks_timers =</span> <span class="dv">0</span><span class="dt">L</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>  <span class="at">reset_globals =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>  <span class="at">reset_packages =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>  <span class="at">reset_options =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a>  <span class="at">garbage_collection =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a>  <span class="at">r_arguments =</span> <span class="cn">NULL</span>,</span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a>  <span class="at">options_metrics =</span> crew<span class="sc">::</span><span class="fu">crew_options_metrics</span>(),</span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a>  <span class="at">crashes_max =</span> <span class="dv">5</span><span class="dt">L</span>,</span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a>  <span class="at">backup =</span> <span class="cn">NULL</span>,</span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a>  <span class="at">processes =</span> <span class="cn">NULL</span> <span class="co"># Number of local async daemons for worker launches etc.</span></span>
+<span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a>) {</span>
+<span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a>  client <span class="ot">&lt;-</span> crew<span class="sc">::</span><span class="fu">crew_client</span>(</span>
+<span id="cb12-25"><a href="#cb12-25" tabindex="-1"></a>    <span class="at">host =</span> host,</span>
+<span id="cb12-26"><a href="#cb12-26" tabindex="-1"></a>    <span class="at">port =</span> port,</span>
+<span id="cb12-27"><a href="#cb12-27" tabindex="-1"></a>    <span class="at">tls =</span> tls,</span>
+<span id="cb12-28"><a href="#cb12-28" tabindex="-1"></a>    <span class="at">seconds_interval =</span> seconds_interval,</span>
+<span id="cb12-29"><a href="#cb12-29" tabindex="-1"></a>    <span class="at">seconds_timeout =</span> seconds_timeout</span>
+<span id="cb12-30"><a href="#cb12-30" tabindex="-1"></a>  )</span>
+<span id="cb12-31"><a href="#cb12-31" tabindex="-1"></a>  launcher <span class="ot">&lt;-</span> async_launcher_class<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb12-32"><a href="#cb12-32" tabindex="-1"></a>    <span class="at">name =</span> name,</span>
+<span id="cb12-33"><a href="#cb12-33" tabindex="-1"></a>    <span class="at">workers =</span> workers,</span>
+<span id="cb12-34"><a href="#cb12-34" tabindex="-1"></a>    <span class="at">seconds_interval =</span> seconds_interval,</span>
+<span id="cb12-35"><a href="#cb12-35" tabindex="-1"></a>    <span class="at">seconds_timeout =</span> seconds_timeout,</span>
+<span id="cb12-36"><a href="#cb12-36" tabindex="-1"></a>    <span class="at">seconds_launch =</span> seconds_launch,</span>
+<span id="cb12-37"><a href="#cb12-37" tabindex="-1"></a>    <span class="at">seconds_idle =</span> seconds_idle,</span>
+<span id="cb12-38"><a href="#cb12-38" tabindex="-1"></a>    <span class="at">seconds_wall =</span> seconds_wall,</span>
+<span id="cb12-39"><a href="#cb12-39" tabindex="-1"></a>    <span class="at">tasks_max =</span> tasks_max,</span>
+<span id="cb12-40"><a href="#cb12-40" tabindex="-1"></a>    <span class="at">tasks_timers =</span> tasks_timers</span>
+<span id="cb12-41"><a href="#cb12-41" tabindex="-1"></a>    <span class="at">crashes_error =</span> crashes_error,</span>
+<span id="cb12-42"><a href="#cb12-42" tabindex="-1"></a>    <span class="at">tls =</span> tls,</span>
+<span id="cb12-43"><a href="#cb12-43" tabindex="-1"></a>    <span class="at">r_arguments =</span> r_arguments,</span>
+<span id="cb12-44"><a href="#cb12-44" tabindex="-1"></a>    <span class="at">options_metrics =</span> options_metrics,</span>
+<span id="cb12-45"><a href="#cb12-45" tabindex="-1"></a>    <span class="at">processes =</span> processes</span>
+<span id="cb12-46"><a href="#cb12-46" tabindex="-1"></a>  )</span>
+<span id="cb12-47"><a href="#cb12-47" tabindex="-1"></a>  controller <span class="ot">&lt;-</span> crew<span class="sc">::</span><span class="fu">crew_controller</span>(</span>
+<span id="cb12-48"><a href="#cb12-48" tabindex="-1"></a>    <span class="at">client =</span> client,</span>
+<span id="cb12-49"><a href="#cb12-49" tabindex="-1"></a>    <span class="at">launcher =</span> launcher,</span>
+<span id="cb12-50"><a href="#cb12-50" tabindex="-1"></a>    <span class="at">reset_globals =</span> reset_globals,</span>
+<span id="cb12-51"><a href="#cb12-51" tabindex="-1"></a>    <span class="at">reset_packages =</span> reset_packages,</span>
+<span id="cb12-52"><a href="#cb12-52" tabindex="-1"></a>    <span class="at">reset_options =</span> reset_options,</span>
+<span id="cb12-53"><a href="#cb12-53" tabindex="-1"></a>    <span class="at">garbage_collection =</span> garbage_collection,</span>
+<span id="cb12-54"><a href="#cb12-54" tabindex="-1"></a>    <span class="at">crashes_max =</span> crashes_max,</span>
+<span id="cb12-55"><a href="#cb12-55" tabindex="-1"></a>    <span class="at">backup =</span> backup</span>
+<span id="cb12-56"><a href="#cb12-56" tabindex="-1"></a>  )</span>
+<span id="cb12-57"><a href="#cb12-57" tabindex="-1"></a>  controller<span class="sc">$</span><span class="fu">validate</span>()</span>
+<span id="cb12-58"><a href="#cb12-58" tabindex="-1"></a>  controller</span>
+<span id="cb12-59"><a href="#cb12-59" tabindex="-1"></a>}</span></code></pre></div>
 <p>Creating a controller is the same as before, except the user sets
 both the <code>workers</code> and <code>processes</code> arguments.
 Remember, these are two different things: <code>workers</code> is the

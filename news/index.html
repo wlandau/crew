@@ -49,7 +49,7 @@
 <h2 class="pkg-version" data-toc-text="1.2.0.9000" id="crew-1209000-development">crew 1.2.0.9000 (development)<a class="anchor" aria-label="anchor" href="#crew-1209000-development"></a></h2>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.2.0" id="crew-120">crew 1.2.0<a class="anchor" aria-label="anchor" href="#crew-120"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.2.0" id="crew-120">crew 1.2.0<a class="anchor" aria-label="anchor" href="#crew-120"></a></h2><p class="text-muted">CRAN release: 2025-06-06</p>
 <ul><li>22.7x speedup in <code>controller$walk()</code> with 100000 tasks: pre-compute the task list and defer auto-scaling until all tasks are pushed. Pushing a million tasks in <code>walk()</code> now takes just under 70 seconds on a local M2 Macbook.</li>
 <li>Use <code><a href="https://nanonext.r-lib.org/reference/ip_addr.html" class="external-link">nanonext::ip_addr()</a></code> instead of <code>getip::getip()</code> to get the default IP address of the host (<a href="https://github.com/wlandau/crew/issues/216" class="external-link">#216</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 <li>Add a progress bar to <code>walk()</code> report progress when pushing tasks.</li>

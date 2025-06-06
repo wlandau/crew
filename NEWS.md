@@ -1,3 +1,7 @@
+# crew 1.2.0.9000 (development)
+
+
+
 # crew 1.2.0
 
 * 22.7x speedup in `controller$walk()` with 100000 tasks: pre-compute the task list and defer auto-scaling until all tasks are pushed. Pushing a million tasks in `walk()` now takes just under 70 seconds on a local M2 Macbook.

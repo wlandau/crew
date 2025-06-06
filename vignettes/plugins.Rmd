@@ -149,10 +149,6 @@ crew_controller_custom <- function(
     seconds_wall = seconds_wall,
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
-    reset_globals = reset_globals,
-    reset_packages = reset_packages,
-    reset_options = reset_options,
-    garbage_collection = garbage_collection,
     tls = tls,
     r_arguments = r_arguments,
     options_metrics = options_metrics
@@ -160,6 +156,10 @@ crew_controller_custom <- function(
   controller <- crew::crew_controller(
     client = client,
     launcher = launcher,
+    reset_globals = reset_globals,
+    reset_packages = reset_packages,
+    reset_options = reset_options,
+    garbage_collection = garbage_collection,
     crashes_max = crashes_max,
     backup = backup
   )
@@ -324,6 +324,10 @@ crew_controller_async <- function(
   reset_packages = FALSE,
   reset_options = FALSE,
   garbage_collection = FALSE,
+  r_arguments = NULL,
+  options_metrics = crew::crew_options_metrics(),
+  crashes_max = 5L,
+  backup = NULL,
   processes = NULL # Number of local async daemons for worker launches etc.
 ) {
   client <- crew::crew_client(
@@ -342,18 +346,22 @@ crew_controller_async <- function(
     seconds_idle = seconds_idle,
     seconds_wall = seconds_wall,
     tasks_max = tasks_max,
-    tasks_timers = tasks_timers,
-    reset_globals = reset_globals,
-    reset_packages = reset_packages,
-    reset_options = reset_options,
-    garbage_collection = garbage_collection,
+    tasks_timers = tasks_timers
     crashes_error = crashes_error,
     tls = tls,
+    r_arguments = r_arguments,
+    options_metrics = options_metrics,
     processes = processes
   )
   controller <- crew::crew_controller(
     client = client,
-    launcher = launcher
+    launcher = launcher,
+    reset_globals = reset_globals,
+    reset_packages = reset_packages,
+    reset_options = reset_options,
+    garbage_collection = garbage_collection,
+    crashes_max = crashes_max,
+    backup = backup
   )
   controller$validate()
   controller

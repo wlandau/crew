@@ -1,9 +1,10 @@
-# crew 1.1.2.9004 (development, targeting 1.2.0)
+# crew 1.2.0
 
 * 22.7x speedup in `controller$walk()` with 100000 tasks: pre-compute the task list and defer auto-scaling until all tasks are pushed. Pushing a million tasks in `walk()` now takes just under 70 seconds on a local M2 Macbook.
 * Use `nanonext::ip_addr()` instead of `getip::getip()` to get the default IP address of the host (#216, @shikokuchuo).
 * Add a progress bar to `walk()` report progress when pushing tasks.
 * Move arguments `reset_globals`, `reset_packages`, `reset_options`, and `garbage_collection` from the launcher to the controller (#217). `crew_eval()` now handles cleanup directly, and workflows running `mirai` 2.0.0 should mostly run faster because not all cleanup steps are automatically enabled.
+* Avoid `mirai::call_mirai_()` in tests (#222, @shikokuchuo).
 
 # crew 1.1.2
 

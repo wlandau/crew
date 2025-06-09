@@ -320,46 +320,41 @@ crew_class_launcher <- R6::R6Class(
       r_arguments = NULL,
       options_metrics = NULL
     ) {
-      # TODO: activate when plugins use these arguments correctly:
-      # nocov start
-      if (FALSE) {
-        crew_deprecate(
-          name = "The reset_globals argument in crew launchers",
-          date = "2025-05-30",
-          version = "1.1.2.9004",
-          alternative = "reset_globals argument of crew::crew_controller()",
-          condition = "message",
-          value = reset_globals
-        )
-        crew_deprecate(
-          name = "The reset_packages argument in crew launchers",
-          date = "2025-05-30",
-          version = "1.1.2.9004",
-          alternative = "reset_packages argument of crew::crew_controller()",
-          condition = "message",
-          value = reset_packages
-        )
-        crew_deprecate(
-          name = "The reset_options argument in crew launchers",
-          date = "2025-05-30",
-          version = "1.1.2.9004",
-          alternative = "reset_options argument of crew::crew_controller()",
-          condition = "message",
-          value = reset_options
-        )
-        crew_deprecate(
-          name = "The garbage_collection argument in crew launchers",
-          date = "2025-05-30",
-          version = "1.1.2.9004",
-          alternative = paste(
-            "garbage_collection argument of",
-            "crew::crew_controller()"
-          ),
-          condition = "message",
-          value = garbage_collection
-        )
-      }
-      # nocov end
+      crew_deprecate(
+        name = "The reset_globals argument in crew launchers",
+        date = "2025-05-30",
+        version = "1.1.2.9004",
+        alternative = "reset_globals argument of crew::crew_controller()",
+        condition = "message",
+        value = reset_globals
+      )
+      crew_deprecate(
+        name = "The reset_packages argument in crew launchers",
+        date = "2025-05-30",
+        version = "1.1.2.9004",
+        alternative = "reset_packages argument of crew::crew_controller()",
+        condition = "message",
+        value = reset_packages
+      )
+      crew_deprecate(
+        name = "The reset_options argument in crew launchers",
+        date = "2025-05-30",
+        version = "1.1.2.9004",
+        alternative = "reset_options argument of crew::crew_controller()",
+        condition = "message",
+        value = reset_options
+      )
+      crew_deprecate(
+        name = "The garbage_collection argument in crew launchers",
+        date = "2025-05-30",
+        version = "1.1.2.9004",
+        alternative = paste(
+          "garbage_collection argument of",
+          "crew::crew_controller()"
+        ),
+        condition = "message",
+        value = garbage_collection
+      )
       crew_deprecate(
         name = "launch_max",
         date = "2024-11-04",

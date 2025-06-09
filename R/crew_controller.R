@@ -364,11 +364,9 @@ crew_class_controller <- R6::R6Class(
         "reset_options",
         "garbage_collection"
       )
-      # TODO: re-enable checks on these 4 logical fields
-      # when reverse dependencies catch up:
       for (field in fields) {
         crew_assert(
-          self[[field]], is.null(.) || isTRUE(.) || isFALSE(.),
+          self[[field]], isTRUE(.) || isFALSE(.),
           message = paste(field, "must be a non-missing logical of length 1")
         )
       }

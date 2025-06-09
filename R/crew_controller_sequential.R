@@ -4,16 +4,26 @@
 #' @description The sequential controller runs tasks on the same R process
 #'   where the controller object exists. Tasks run sequentially
 #'   rather than in parallel.
+#' @inheritParams crew_eval
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 #' controller <- crew_controller_sequential()
 #' controller$push(name = "task", command = sqrt(4))
 #' controller$pop()
 #' }
-crew_controller_sequential <- function() {
+crew_controller_sequential <- function(
+  reset_globals = TRUE,
+  reset_packages = FALSE,
+  reset_options = FALSE,
+  garbage_collection = FALSE
+) {
   controller <- crew_class_controller_sequential$new(
     client = crew_client(),
     launcher = crew_launcher(),
+    reset_globals = reset_globals,
+    reset_packages = reset_packages,
+    reset_options = reset_options,
+    garbage_collection = garbage_collection,
     crashes_max = 0L
   )
   controller$validate()

@@ -1,6 +1,6 @@
-# crew 1.2.0.9000 (development)
+# crew 1.2.1
 
-
+* CRAN patch (address MKL "Additional issues").
 
 # crew 1.2.0
 

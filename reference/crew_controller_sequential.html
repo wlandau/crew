@@ -11,7 +11,7 @@ rather than in parallel."><meta property="og:image" content="https://wlandau.git
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@ rather than in parallel."><meta property="og:image" content="https://wlandau.git
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Create a sequential controller.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/wlandau/crew/blob/1.2.1/R/crew_controller_sequential.R" class="external-link"><code>R/crew_controller_sequential.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/wlandau/crew/blob/main/R/crew_controller_sequential.R" class="external-link"><code>R/crew_controller_sequential.R</code></a></small>
       <div class="d-none name"><code>crew_controller_sequential.Rd</code></div>
     </div>
 
@@ -58,9 +58,45 @@ rather than in parallel.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_controller_sequential</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_controller_sequential</span><span class="op">(</span></span>
+<span>  reset_globals <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  reset_packages <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  reset_options <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  garbage_collection <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-reset-globals">reset_globals<a class="anchor" aria-label="anchor" href="#arg-reset-globals"></a></dt>
+<dd><p><code>TRUE</code> to reset global environment
+variables between tasks, <code>FALSE</code> to leave them alone.</p></dd>
+
+
+<dt id="arg-reset-packages">reset_packages<a class="anchor" aria-label="anchor" href="#arg-reset-packages"></a></dt>
+<dd><p><code>TRUE</code> to detach any packages loaded during
+a task (runs between each task), <code>FALSE</code> to leave packages alone.
+In either case, the namespaces are not detached.</p></dd>
+
+
+<dt id="arg-reset-options">reset_options<a class="anchor" aria-label="anchor" href="#arg-reset-options"></a></dt>
+<dd><p><code>TRUE</code> to reset global options to their original
+state between each task, <code>FALSE</code> otherwise. It is recommended to
+only set <code>reset_options = TRUE</code> if <code>reset_packages</code> is also <code>TRUE</code>
+because packages sometimes rely on options they set at loading time.
+for this and other reasons, <code>reset_options</code> only resets options
+that were nonempty at the beginning of the task.
+If your task sets an entirely new option not already in <code><a href="https://rdrr.io/r/base/options.html" class="external-link">options()</a></code>,
+then <code>reset_options = TRUE</code> does not delete the option.</p></dd>
+
+
+<dt id="arg-garbage-collection">garbage_collection<a class="anchor" aria-label="anchor" href="#arg-garbage-collection"></a></dt>
+<dd><p><code>TRUE</code> to run garbage collection after each task
+task, <code>FALSE</code> to skip.</p></dd>
+
+</dl></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other sequential controllers:

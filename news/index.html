@@ -51,7 +51,7 @@
 <li>Support <code>reset_globals</code>, <code>reset_packages</code>, <code>reset_options</code>, and <code>garbage_collection</code> in <code><a href="../reference/crew_controller_sequential.html">crew_controller_sequential()</a></code> (<a href="https://github.com/wlandau/crew/issues/217" class="external-link">#217</a>).</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.2.1" id="crew-121">crew 1.2.1<a class="anchor" aria-label="anchor" href="#crew-121"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.2.1" id="crew-121">crew 1.2.1<a class="anchor" aria-label="anchor" href="#crew-121"></a></h2><p class="text-muted">CRAN release: 2025-06-09</p>
 <ul><li>CRAN patch (address MKL “Additional issues”).</li>
 </ul></div>
     <div class="section level2">
@@ -60,7 +60,7 @@
 <li>Use <code><a href="https://nanonext.r-lib.org/reference/ip_addr.html" class="external-link">nanonext::ip_addr()</a></code> instead of <code>getip::getip()</code> to get the default IP address of the host (<a href="https://github.com/wlandau/crew/issues/216" class="external-link">#216</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 <li>Add a progress bar to <code>walk()</code> report progress when pushing tasks.</li>
 <li>Move arguments <code>reset_globals</code>, <code>reset_packages</code>, <code>reset_options</code>, and <code>garbage_collection</code> from the launcher to the controller (<a href="https://github.com/wlandau/crew/issues/217" class="external-link">#217</a>). <code><a href="../reference/crew_eval.html">crew_eval()</a></code> now handles cleanup directly, and workflows running <code>mirai</code> 2.0.0 should mostly run faster because not all cleanup steps are automatically enabled.</li>
-<li>Avoid <code><a href="https://mirai.r-lib.org/reference/call_mirai_.html" class="external-link">mirai::call_mirai_()</a></code> in tests (<a href="https://github.com/wlandau/crew/issues/222" class="external-link">#222</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
+<li>Avoid <code>mirai::call_mirai_()</code> in tests (<a href="https://github.com/wlandau/crew/issues/222" class="external-link">#222</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.2" id="crew-112">crew 1.1.2<a class="anchor" aria-label="anchor" href="#crew-112"></a></h2><p class="text-muted">CRAN release: 2025-05-08</p>

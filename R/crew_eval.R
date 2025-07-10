@@ -106,7 +106,11 @@ crew_eval <- function(
       set.seed(seed = seed)
     }
     on.exit(RNGkind(kind = old_algorithm), add = TRUE)
-    on.exit(.GlobalEnv$.Random.seed <- old_seed, add = TRUE)
+    if (is.null(old_seed)) {
+      set.seed(seed = NULL)
+    } else {
+      on.exit(.GlobalEnv$.Random.seed <- old_seed, add = TRUE)
+    }
   }
   if (package_installed("autometric (>= 0.1.0)")) {
     autometric::log_phase_set(phase = name)

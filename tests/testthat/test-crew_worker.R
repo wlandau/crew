@@ -21,7 +21,7 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     ),
     .compute = profile
   )
-  url <- mirai::status(.compute = profile)$daemons
+  url <- mirai::nextget("url", .compute = profile)
   settings <- list(url = url, maxtasks = 1L, cleanup = 0L, dispatcher = TRUE)
   crew_worker(
     settings = settings,
@@ -66,7 +66,7 @@ crew_test("crew_worker() metrics logging to a directory", {
     )
   })
   envir <- new.env(parent = emptyenv())
-  url <- mirai::status()$daemons
+  url <- mirai::nextget("url")
   settings <- list(url = url, maxtasks = 1L, cleanup = 0L, dispatcher = TRUE)
   log <- tempfile()
   crew_worker(

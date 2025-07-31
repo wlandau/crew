@@ -107,7 +107,8 @@ crew_eval <- function(
     }
     on.exit(RNGkind(kind = old_algorithm), add = TRUE)
     if (is.null(old_seed)) {
-      set.seed(seed = NULL)
+      # Testing this case depends on having a fresh R session outside RStudio.
+      set.seed(seed = NULL) # nocov
     } else {
       on.exit(.GlobalEnv$.Random.seed <- old_seed, add = TRUE)
     }

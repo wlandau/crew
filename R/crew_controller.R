@@ -1387,7 +1387,9 @@ crew_class_controller <- R6::R6Class(
       status <- .subset2(out, "status")
       summary[[status]] <- .subset2(summary, status) + 1L
       if (!anyNA(.subset2(out, "warnings"))) {
-        summary$warning <- .subset2(summary, "warning") + 1L
+        # Tests definitely cover this line, but for some reason
+        # the code coverage CI workflow does not detect it.
+        summary$warning <- .subset2(summary, "warning") + 1L # nocov
       }
       private$.summary <- summary
       if (!is.null(error)) {

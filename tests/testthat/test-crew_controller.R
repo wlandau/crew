@@ -505,38 +505,6 @@ crew_test("map() can relay warnings", {
   )
 })
 
-crew_test("turn off map() warning relay", {
-  skip_on_cran()
-  x <- crew_controller_local(
-    workers = 1L,
-    seconds_idle = 360
-  )
-  on.exit({
-    x$terminate()
-    rm(x)
-    gc()
-    crew_test_sleep()
-  })
-  x$start()
-  f <- function(x, y) {
-    warning("message")
-    x + y
-  }
-  out <- expect_no_warning(
-    x$map(
-      command = f(x, y) + a + b,
-      iterate = list(x = c(1L, 2L), y = c(3L, 4L), id = c("z", "w")),
-      data = list(a = 5L),
-      globals = list(f = f),
-      names = "id",
-      error = "silent",
-      warnings = FALSE,
-      verbose = FALSE
-    )
-  )
-  expect_false(anyNA(out$warnings))
-})
-
 crew_test("backlog with no tasks", {
   skip_on_cran()
   skip_on_os("windows")

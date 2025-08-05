@@ -52,11 +52,10 @@ Other controller_group:
 \describe{
 \item{\code{controllers}}{List of \code{R6} controller objects.}
 
-\item{\code{relay}}{Relay object for event-driven programming on a downstream
-condition variable.}
+\item{\code{seconds_interval}}{Timeout interval for \code{wait()}.}
 
 \item{\code{throttle}}{\code{\link[=crew_throttle]{crew_throttle()}} object to orchestrate exponential
-backoff in the relay and auto-scaling.}
+backoff in auto-scaling.}
 }
 \if{html}{\out{</div>}}
 }
@@ -100,7 +99,7 @@ Multi-controller constructor.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$new(
   controllers = NULL,
-  relay = NULL,
+  seconds_interval = NULL,
   throttle = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -110,11 +109,11 @@ Multi-controller constructor.
 \describe{
 \item{\code{controllers}}{List of \code{R6} controller objects.}
 
-\item{\code{relay}}{Relay object for event-driven programming on a downstream
-condition variable.}
+\item{\code{seconds_interval}}{Positive numeric scalar, polling interval
+(in seconds) for \code{wait()}.}
 
 \item{\code{throttle}}{\code{\link[=crew_throttle]{crew_throttle()}} object to orchestrate exponential
-backoff in the relay and auto-scaling.}
+backoff in auto-scaling.}
 }
 \if{html}{\out{</div>}}
 }

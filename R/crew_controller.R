@@ -165,31 +165,26 @@ crew_class_controller <- R6::R6Class(
       }
       name
     },
-    .later_callback = function(x) {
-      name <- .subset2(.subset2(x, "data"), "name")
-      .subset2(.subset2(private, ".queue"), "push")(name)
-      private$.resolved <- .subset2(private, ".resolved") + 1L
-    },
-    .later_context = NULL,
-    .push_task = function(name, task, now = FALSE) {
+    .register_task = function(name, task) {
       tasks <- .subset2(private, ".tasks")
       tasks[[name]] <- task
       private$.pushed <- .subset2(private, ".pushed") + 1L
-      if (now) {
-        .subset2(private, ".later_callback")(task)
-      } else {
-        nanonext::.keep(task, .subset2(private, ".later_context"))
-      }
     },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
-        private$.client$relay$wait()
+        client <- .subset2(private, ".client")
+        seconds_interval <- .subset2(client, ".seconds_interval")
+        later::run_now(timeoutSecs = seconds_interval, all = FALSE)
       }
       .subset2(self, "unresolved")() < 1L
     },
     .wait_one_once = function() {
-      if (.subset2(self, "unpopped")() < 1L) {
-        private$.client$relay$wait()
+      should_wait <- .subset2(self, "unresolved")() > 0L &&
+        .subset2(self, "unpopped")() < 1L
+      if (should_wait) {
+        client <- .subset2(private, ".client")
+        seconds_interval <- .subset2(client, ".seconds_interval")
+        later::run_now(timeoutSecs = seconds_interval, all = FALSE)
       }
       .subset2(self, "unpopped")() > 0L
     },
@@ -291,6 +286,7 @@ crew_class_controller <- R6::R6Class(
     },
     #' @field queue Queue of tasks which are resolved but not collected.
     queue = function() {
+      later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
       .subset2(private, ".queue")
     },
     #' @field backlog A [crew_queue()] object tracking explicitly
@@ -339,9 +335,6 @@ crew_class_controller <- R6::R6Class(
       private$.garbage_collection <- garbage_collection
       private$.crashes_max <- crashes_max
       private$.backup <- backup
-      private$.later_context <- list2env(
-        list(resolved = .subset2(private, ".later_callback"))
-      )
       invisible()
     },
     #' @description Validate the controller.
@@ -438,6 +431,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     resolved = function(controllers = NULL) {
+      later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
       .subset2(private, ".resolved")
     },
     #' @description Number of unresolved `mirai()` tasks.
@@ -446,6 +440,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     unresolved = function(controllers = NULL) {
+      later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
       .subset2(private, ".pushed") - .subset2(private, ".resolved")
     },
     #' @description Number of resolved `mirai()` tasks available via `pop()`.
@@ -655,7 +650,7 @@ crew_class_controller <- R6::R6Class(
       controller = NULL
     ) {
       .subset2(self, "start")()
-      name <- private$.name_new_task(name)
+      name <- .subset2(private, ".name_new_task")(name)
       if (substitute) {
         command <- substitute(command)
       }
@@ -687,6 +682,29 @@ crew_class_controller <- R6::R6Class(
           )
         }
       }
+      # A manually created closure hopefully reduces memory usage
+      # when many callbacks are created.
+      closure <- list2env(
+        list(
+          name = name,
+          queue = .subset2(private, ".queue"),
+          private = private
+        ),
+        parent = baseenv()
+      )
+      # The callback runs when the task completes because nanonext::.keep()
+      # registers callbacks (intended for the promises packages).
+      callback <- local(
+        function(x) {
+          .subset2(queue, "push")(name)
+          private$.resolved <- .subset2(private, ".resolved") + 1L
+          
+          print(name)
+          
+        },
+        envir = closure
+      )
+      context <- list2env(list(resolve = callback), parent = baseenv())
       task <- mirai::mirai(
         .expr = expr_crew_eval,
         .args = list(
@@ -706,7 +724,11 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = .subset2(.subset2(private, ".client"), "profile")
       )
-      .subset2(private, ".push_task")(name, task)
+      # Should call .keep() right after the task is created
+      # because .keep() only registers the callback if the task did not
+      # already complete.
+      nanonext::.keep(x = task, ctx = context)
+      .subset2(private, ".register_task")(name, task)
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
       }
@@ -1140,7 +1162,6 @@ crew_class_controller <- R6::R6Class(
       )
       names <- names(tasks)
       total <- length(tasks)
-      relay <- .subset2(.subset2(self, "client"), "relay")
       start <- nanonext::mclock()
       pushed <- private$.pushed
       if (verbose) {
@@ -1159,6 +1180,8 @@ crew_class_controller <- R6::R6Class(
           .envir = progress_envir
         )
       }
+      client <- .subset2(private, ".client")
+      seconds_interval <- .subset2(client, ".seconds_interval")
       iterate <- function() {
         if (scale) {
           .subset2(self, "scale")(throttle = throttle)
@@ -1172,7 +1195,8 @@ crew_class_controller <- R6::R6Class(
           )
         }
         if (unresolved > 0L) {
-          .subset2(relay, "wait")()
+          # TODO: set `all = TRUE` if nanonext supports custom later loops:
+          later::run_now(timeoutSecs = seconds_interval, all = FALSE)
         }
         .subset2(self, "unresolved")() < 1L
       }
@@ -1354,6 +1378,9 @@ crew_class_controller <- R6::R6Class(
       if (.subset2(self, "empty")()) {
         return(NULL)
       }
+      if (.subset2(self, "unpopped")() < 1L) {
+        later::run_now(timeoutSecs = 0, all = FALSE)
+      }
       name <- .subset2(.subset2(private, ".queue"), "pop")()
       if (is.null(name)) {
         return(NULL)
@@ -1449,6 +1476,8 @@ crew_class_controller <- R6::R6Class(
       if (.subset2(self, "empty")()) {
         return(NULL)
       }
+      # TODO: set `all = TRUE` if nanonext supports custom later loops:
+      later::run_now(timeoutSecs = 0, all = FALSE)
       queue <- .subset2(private, ".queue")
       names <- .subset2(queue, "collect")()
       if (!length(names)) {
@@ -1639,7 +1668,7 @@ crew_class_controller <- R6::R6Class(
       invisible(envir$result)
     },
     #' @description Push the name of a task to the backlog.
-    #' @details `pop_backlog()` pops the tasks that can be pushed
+    #' @details `pop_backlog()` pops the names of tasks that can be pushed
     #'   without saturating the controller.
     #' @param name Character of length 1 with the task name to push to
     #'   the backlog.

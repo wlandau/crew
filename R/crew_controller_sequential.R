@@ -177,7 +177,8 @@ crew_class_controller_sequential <- R6::R6Class(
         ),
         class = "mirai"
       )
-      .subset2(private, ".push_task")(name, task, now = TRUE)
+      .subset2(private, ".later_callback")(task)
+      .subset2(private, ".push_task")(name, task)
       invisible(task)
     },
     #' @description Not applicable to the sequential controller.

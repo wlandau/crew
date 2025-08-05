@@ -44,17 +44,11 @@ crew_controller_group <- function(..., seconds_interval = 1) {
       )
     )
   )
-  relay <- crew_relay(
-    throttle = crew_throttle(seconds_max = seconds_interval)
-  )
-  relay$start()
-  for (controller in controllers) {
-    controller$client$relay$set_to(relay$condition)
-  }
   out <- crew_class_controller_group$new(
     controllers = controllers,
-    relay = relay,
-    # For efficiency, controller groups and relays have different throttles.
+    seconds_interval = seconds_interval,
+    # For efficiency, controller groups and individual controllers
+    # have different throttles.
     throttle = crew_throttle(seconds_max = seconds_interval)
   )
   out$validate()
@@ -85,7 +79,7 @@ crew_class_controller_group <- R6::R6Class(
   cloneable = FALSE,
   private = list(
     .controllers = NULL,
-    .relay = NULL,
+    .seconds_interval = NULL,
     .throttle = NULL,
     .select_controllers = function(names) {
       if (is.null(names)) {
@@ -141,7 +135,8 @@ crew_class_controller_group <- R6::R6Class(
             return(TRUE)
           }
         }
-        private$.relay$wait()
+        seconds_interval <- .subset2(private, ".seconds_interval")
+        later::run_now(timeoutSecs = seconds_interval, all = FALSE)
         FALSE
       }
       crew_retry(
@@ -171,7 +166,9 @@ crew_class_controller_group <- R6::R6Class(
         }
         envir$result <- sum(map_int(control, ~.x$unresolved())) < 1L
         if (!envir$result) {
-          private$.relay$wait()
+          seconds_interval <- .subset2(private, ".seconds_interval")
+          # TODO: set `all = TRUE` if nanonext supports custom later loops:
+          later::run_now(timeoutSecs = seconds_interval, all = FALSE)
         }
         envir$result
       }
@@ -190,13 +187,12 @@ crew_class_controller_group <- R6::R6Class(
     controllers = function() {
       .subset2(private, ".controllers")
     },
-    #' @field relay Relay object for event-driven programming on a downstream
-    #'   condition variable.
-    relay = function() {
-      .subset2(private, ".relay")
+    #' @field seconds_interval Timeout interval for `wait()`.
+    seconds_interval = function() {
+      .subset2(private, ".seconds_interval")
     },
     #' @field throttle [crew_throttle()] object to orchestrate exponential
-    #'  backoff in the relay and auto-scaling.
+    #'  backoff in auto-scaling.
     throttle = function() {
       .subset2(private, ".throttle")
     }
@@ -205,10 +201,10 @@ crew_class_controller_group <- R6::R6Class(
     #' @description Multi-controller constructor.
     #' @return An `R6` object with the controller group object.
     #' @param controllers List of `R6` controller objects.
-    #' @param relay Relay object for event-driven programming on a downstream
-    #'   condition variable.
+    #' @param seconds_interval Positive numeric scalar, polling interval
+    #'   (in seconds) for `wait()`.
     #' @param throttle [crew_throttle()] object to orchestrate exponential
-    #'  backoff in the relay and auto-scaling.
+    #'  backoff in auto-scaling.
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' persistent <- crew_controller_local(name = "persistent")
@@ -225,11 +221,11 @@ crew_class_controller_group <- R6::R6Class(
     #' }
     initialize = function(
       controllers = NULL,
-      relay = NULL,
+      seconds_interval = NULL,
       throttle = NULL
     ) {
       private$.controllers <- controllers
-      private$.relay <- relay
+      private$.seconds_interval <- seconds_interval
       private$.throttle <- throttle
       invisible()
     },
@@ -243,8 +239,14 @@ crew_class_controller_group <- R6::R6Class(
       out <- unname(map_chr(private$.controllers, ~.x$launcher$name))
       exp <- names(private$.controllers)
       crew_assert(identical(out, exp), message = "bad controller names")
-      crew_assert(inherits(private$.relay, "crew_class_relay"))
-      private$.relay$validate()
+      crew_assert(
+        .subset2(private, ".seconds_interval"),
+        is.numeric(.),
+        length(.) == 1L,
+        !is.na(.),
+        . >= 0,
+        message = "seconds_interval must be a finite positive numeric scalar"
+      )
       private$.throttle$validate()
       invisible()
     },

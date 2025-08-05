@@ -12,7 +12,7 @@ crew_test("crew_controller_group() method and signature compatibility", {
 crew_test("crew_controller_group() active bindings for covr", {
   x <- crew_controller_local()
   y <- crew_controller_group(x = x)
-  expect_true(inherits(y$relay, "crew_class_relay"))
+  expect_true(is.numeric(y$seconds_interval))
   expect_true(inherits(y$throttle, "crew_class_throttle"))
 })
 

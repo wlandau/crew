@@ -47,6 +47,7 @@ next element to pop.}
 \item \href{#method-crew_class_queue-empty}{\code{crew_class_queue$empty()}}
 \item \href{#method-crew_class_queue-nonempty}{\code{crew_class_queue$nonempty()}}
 \item \href{#method-crew_class_queue-list}{\code{crew_class_queue$list()}}
+\item \href{#method-crew_class_queue-size}{\code{crew_class_queue$size()}}
 \item \href{#method-crew_class_queue-reset}{\code{crew_class_queue$reset()}}
 \item \href{#method-crew_class_queue-clean}{\code{crew_class_queue$clean()}}
 \item \href{#method-crew_class_queue-set}{\code{crew_class_queue$set()}}
@@ -124,6 +125,19 @@ Check if the queue is empty.
 List available data.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$list()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character vector of available data.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_queue-size"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_queue-size}{}}}
+\subsection{Method \code{size()}}{
+Get the size of the queue.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_queue$size()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

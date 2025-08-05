@@ -173,7 +173,7 @@ crew_class_controller <- R6::R6Class(
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
         client <- .subset2(private, ".client")
-        seconds_interval <- .subset2(client, ".seconds_interval")
+        seconds_interval <- .subset2(client, "seconds_interval")
         later::run_now(timeoutSecs = seconds_interval, all = FALSE)
       }
       .subset2(self, "unresolved")() < 1L

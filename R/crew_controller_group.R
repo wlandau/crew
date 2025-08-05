@@ -243,7 +243,7 @@ crew_class_controller_group <- R6::R6Class(
         .subset2(private, ".seconds_interval"),
         is.numeric(.),
         length(.) == 1L,
-        !is.na(.),
+        is.finite(.),
         . >= 0,
         message = "seconds_interval must be a finite positive numeric scalar"
       )

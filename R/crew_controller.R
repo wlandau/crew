@@ -1178,7 +1178,7 @@ crew_class_controller <- R6::R6Class(
         )
       }
       client <- .subset2(private, ".client")
-      seconds_interval <- .subset2(client, ".seconds_interval")
+      seconds_interval <- .subset2(client, "seconds_interval")
       iterate <- function() {
         if (scale) {
           .subset2(self, "scale")(throttle = throttle)

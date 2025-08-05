@@ -250,7 +250,7 @@ crew_class_client <- R6::R6Class(
           private[[field]],
           is.numeric(.),
           length(.) == 1L,
-          !is.na(.),
+          is.finite(.),
           . >= 0
         )
       }

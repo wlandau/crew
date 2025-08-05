@@ -113,7 +113,7 @@ crew_test("queue$pop(n = 1)", {
   expect_equal(q$data, c(letters, rep(NA_character_, 74L)))
   expect_equal(q$head, 27L)
   expect_equal(q$tail, 26L)
-  expect_equal(x$size(), 0L)
+  expect_equal(q$size(), 0L)
 })
 
 crew_test("queue$pop() with n > 1", {

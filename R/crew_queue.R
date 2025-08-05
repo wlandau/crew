@@ -110,6 +110,11 @@ crew_class_queue <- R6::R6Class(
       }
       .data[seq(from = .head, to = .tail)]
     },
+    #' @description Get the size of the queue.
+    #' @return Character vector of available data.
+    size = function() {
+      .tail - .head + 1L
+    },
     #' @description Reset the queue.
     #' @return `NULL` (invisibly). Called for its side effects.
     reset = function() {

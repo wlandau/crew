@@ -122,7 +122,6 @@ crew_class_controller <- R6::R6Class(
     .backlog = NULL,
     .autoscaling = FALSE,
     .queue = NULL,
-    .resolved = -1L,
     .register_started = function() {
       private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
       private$.pushed <- 0L
@@ -140,7 +139,6 @@ crew_class_controller <- R6::R6Class(
       )
       private$.backlog <- crew_queue()
       private$.queue <- crew_queue()
-      private$.resolved <- -1L
     },
     .name_new_task = function(name) {
       tasks <- .subset2(private, ".tasks")
@@ -165,31 +163,16 @@ crew_class_controller <- R6::R6Class(
       }
       name
     },
+    .later_callback = function(x) {
+      name <- .subset2(.subset2(x, "data"), "name")
+      .subset2(.subset2(private, ".queue"), "push")(name)
+    },
+    .later_context = NULL,
     .push_task = function(name, task) {
       tasks <- .subset2(private, ".tasks")
       tasks[[name]] <- task
       private$.pushed <- .subset2(private, ".pushed") + 1L
-    },
-    .resolve = function(force) {
-      queue <- .subset2(private, ".queue")
-      if ((!force) && .subset2(queue, "nonempty")()) {
-        return()
-      }
-      observed <- .subset2(.subset2(private, ".client"), "resolved")()
-      expected <- .subset2(private, ".resolved")
-      if ((!force) && (observed == expected)) {
-        return()
-      }
-      tasks <- .subset2(private, ".tasks")
-      status <- eapply(
-        env = tasks,
-        FUN = nanonext::.unresolved,
-        all.names = TRUE,
-        USE.NAMES = TRUE
-      )
-      resolved <- names(status)[!as.logical(status)]
-      .subset2(queue, "set")(data = resolved)
-      private$.resolved <- observed
+      nanonext::.keep(task, .subset2(private, ".later_context"))
     },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
@@ -304,7 +287,7 @@ crew_class_controller <- R6::R6Class(
     autoscaling = function() {
       .subset2(private, ".autoscaling")
     },
-    #' @field queue Queue of resolved unpopped/uncollected tasks.
+    #' @field queue Queue of tasks which are resolved but not collected.
     queue = function() {
       .subset2(private, ".queue")
     }
@@ -349,6 +332,9 @@ crew_class_controller <- R6::R6Class(
       private$.garbage_collection <- garbage_collection
       private$.crashes_max <- crashes_max
       private$.backup <- backup
+      private$.later_context <- list2env(
+        list(resolved = .subset2(private, ".later_callback"))
+      )
       invisible()
     },
     #' @description Validate the controller.
@@ -401,12 +387,6 @@ crew_class_controller <- R6::R6Class(
       crew_assert(private$.tasks, is.null(.) || is.environment(.))
       crew_assert(private$.summary, is.null(.) || is.list(.))
       crew_assert(private$.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
-      crew_assert(
-        private$.resolved,
-        is.integer(.),
-        length(.) == 1L,
-        is.finite(.)
-      )
       if (!is.null(private$.queue)) {
         crew_assert(private$.queue, inherits(., "crew_class_queue"))
         private$.queue$validate()
@@ -435,33 +415,13 @@ crew_class_controller <- R6::R6Class(
     nonempty = function(controllers = NULL) {
       .subset2(private, ".pushed") > .subset2(private, ".popped")
     },
-    #' @description Number of resolved `mirai()` tasks.
-    #' @details `resolved()` is cumulative: it counts all the resolved
-    #'   tasks over the entire lifetime of the controller session.
-    #' @return Non-negative integer of length 1,
-    #'   number of resolved `mirai()` tasks.
-    #'   The return value is 0 if the condition variable does not exist
-    #'   (i.e. if the client is not running).
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
-    resolved = function(controllers = NULL) {
-      .subset2(.subset2(self, "client"), "resolved")()
-    },
-    #' @description Number of unresolved `mirai()` tasks.
-    #' @return Non-negative integer of length 1,
-    #'   number of unresolved `mirai()` tasks.
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
-    unresolved = function(controllers = NULL) {
-      .subset2(private, ".pushed") - .subset2(self, "resolved")()
-    },
     #' @description Number of resolved `mirai()` tasks available via `pop()`.
     #' @return Non-negative integer of length 1,
     #'   number of resolved `mirai()` tasks available via `pop()`.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     unpopped = function(controllers = NULL) {
-      .subset2(self, "resolved")() - .subset2(private, ".popped")
+      .subset2(.subset2(private, ".queue"), "size")()
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -1361,7 +1321,6 @@ crew_class_controller <- R6::R6Class(
       if (.subset2(self, "empty")()) {
         return(NULL)
       }
-      .subset2(private, ".resolve")(force = FALSE)
       name <- .subset2(.subset2(private, ".queue"), "pop")()
       if (is.null(name)) {
         return(NULL)
@@ -1458,7 +1417,6 @@ crew_class_controller <- R6::R6Class(
         return(NULL)
       }
       queue <- .subset2(private, ".queue")
-      .subset2(private, ".resolve")(force = TRUE)
       names <- .subset2(queue, "collect")()
       if (!length(names)) {
         return(NULL)

@@ -119,9 +119,10 @@ crew_class_controller <- R6::R6Class(
     .backup = NULL,
     .summary = NULL,
     .error = NULL,
-    .backlog = NULL,
     .autoscaling = FALSE,
+    .resolved = 0L,
     .queue = NULL,
+    .backlog = NULL,
     .register_started = function() {
       private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
       private$.pushed <- 0L
@@ -139,6 +140,7 @@ crew_class_controller <- R6::R6Class(
       )
       private$.backlog <- crew_queue()
       private$.queue <- crew_queue()
+      private$.resolved <- 0L
     },
     .name_new_task = function(name) {
       tasks <- .subset2(private, ".tasks")
@@ -166,6 +168,7 @@ crew_class_controller <- R6::R6Class(
     .later_callback = function(x) {
       name <- .subset2(.subset2(x, "data"), "name")
       .subset2(.subset2(private, ".queue"), "push")(name)
+      private$.resolved <- .subset2(private, ".resolved") + 1L
     },
     .later_context = NULL,
     .push_task = function(name, task) {
@@ -277,11 +280,6 @@ crew_class_controller <- R6::R6Class(
     error = function() {
       .subset2(private, ".error")
     },
-    #' @field backlog A [crew_queue()] object tracking explicitly
-    #'   backlogged tasks.
-    backlog = function() {
-      .subset2(private, ".backlog")
-    },
     #' @field autoscaling `TRUE` or `FALSE`, whether async `later`-based
     #'   auto-scaling is currently running
     autoscaling = function() {
@@ -290,6 +288,11 @@ crew_class_controller <- R6::R6Class(
     #' @field queue Queue of tasks which are resolved but not collected.
     queue = function() {
       .subset2(private, ".queue")
+    },
+    #' @field backlog A [crew_queue()] object tracking explicitly
+    #'   backlogged tasks.
+    backlog = function() {
+      .subset2(private, ".backlog")
     }
   ),
   public = list(
@@ -387,6 +390,12 @@ crew_class_controller <- R6::R6Class(
       crew_assert(private$.tasks, is.null(.) || is.environment(.))
       crew_assert(private$.summary, is.null(.) || is.list(.))
       crew_assert(private$.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
+      crew_assert(
+        private$.resolved,
+        is.integer(.),
+        length(.) == 1L,
+        is.finite(.)
+      )
       if (!is.null(private$.queue)) {
         crew_assert(private$.queue, inherits(., "crew_class_queue"))
         private$.queue$validate()
@@ -414,6 +423,26 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     nonempty = function(controllers = NULL) {
       .subset2(private, ".pushed") > .subset2(private, ".popped")
+    },
+    #' @description Number of resolved `mirai()` tasks.
+    #' @details `resolved()` is cumulative: it counts all the resolved
+    #'   tasks over the entire lifetime of the controller session.
+    #' @return Non-negative integer of length 1,
+    #'   number of resolved `mirai()` tasks.
+    #'   The return value is 0 if the condition variable does not exist
+    #'   (i.e. if the client is not running).
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    resolved = function(controllers = NULL) {
+      .subset2(private, ".resolved")
+    },
+    #' @description Number of unresolved `mirai()` tasks.
+    #' @return Non-negative integer of length 1,
+    #'   number of unresolved `mirai()` tasks.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    unresolved = function(controllers = NULL) {
+      .subset2(private, ".pushed") - .subset2(private, ".resolved")
     },
     #' @description Number of resolved `mirai()` tasks available via `pop()`.
     #' @return Non-negative integer of length 1,
@@ -1328,7 +1357,7 @@ crew_class_controller <- R6::R6Class(
       tasks <- .subset2(self, "tasks")
       task <- .subset2(tasks, name)
       remove(list = name, envir = tasks)
-      private$.popped <- .subset2(self, "popped") + 1L
+      private$.popped <- .subset2(private, ".popped") + 1L
       out <- as_monad(
         task = task,
         name = name,
@@ -1722,8 +1751,9 @@ crew_class_controller <- R6::R6Class(
       private$.popped <- 0L
       private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
       private$.autoscaling <- FALSE
+      private$.resolved <- 0L
       private$.queue <- crew_queue()
-      private$.resolved <- -1L
+      private$.backlog <- crew_queue()
       invisible()
     }
   )

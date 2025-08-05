@@ -698,9 +698,6 @@ crew_class_controller <- R6::R6Class(
         function(x) {
           .subset2(queue, "push")(name)
           private$.resolved <- .subset2(private, ".resolved") + 1L
-          
-          print(name)
-          
         },
         envir = closure
       )

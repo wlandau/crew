@@ -48,16 +48,11 @@ Other client:
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_client]{crew_client()}}.}
 
-\item{\code{relay}}{Relay object for event-driven programming on a downstream
-condition variable.}
-
 \item{\code{started}}{Whether the client is started.}
 
 \item{\code{url}}{Client websocket URL.}
 
 \item{\code{profile}}{Compute profile of the client.}
-
-\item{\code{condition}}{Condition variable of the client.}
 
 \item{\code{client}}{Process ID of the local process running the client.}
 
@@ -73,7 +68,6 @@ condition variable.}
 \item \href{#method-crew_class_client-set_started}{\code{crew_class_client$set_started()}}
 \item \href{#method-crew_class_client-start}{\code{crew_class_client$start()}}
 \item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
-\item \href{#method-crew_class_client-resolved}{\code{crew_class_client$resolved()}}
 \item \href{#method-crew_class_client-status}{\code{crew_class_client$status()}}
 \item \href{#method-crew_class_client-pids}{\code{crew_class_client$pids()}}
 }
@@ -90,8 +84,7 @@ condition variable.}
   tls = NULL,
   serialization = NULL,
   seconds_interval = NULL,
-  seconds_timeout = NULL,
-  relay = NULL
+  seconds_timeout = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -109,8 +102,6 @@ condition variable.}
 \item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{seconds_timeout}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{relay}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -188,19 +179,6 @@ worker websockets.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-resolved"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-resolved}{}}}
-\subsection{Method \code{resolved()}}{
-Get the true value of the \code{nanonext} condition variable.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$resolved()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-The value of the \code{nanonext} condition variable.
 }
 }
 \if{html}{\out{<hr>}}

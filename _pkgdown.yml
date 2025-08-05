@@ -62,10 +62,6 @@ reference:
   contents:
   - crew_throttle
   - crew_class_throttle
-- title: Relays
-  contents:
-  - crew_relay
-  - crew_class_relay
 - title: Queues
   contents:
   - crew_queue

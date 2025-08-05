@@ -114,10 +114,7 @@ crew_client <- function(
     tls = tls,
     serialization = serialization,
     seconds_interval = seconds_interval,
-    seconds_timeout = seconds_timeout,
-    relay = crew_relay(
-      throttle = crew_throttle(seconds_max = seconds_interval)
-    )
+    seconds_timeout = seconds_timeout
   )
   client$validate()
   client
@@ -145,11 +142,9 @@ crew_class_client <- R6::R6Class(
     .serialization = NULL,
     .seconds_interval = NULL,
     .seconds_timeout = NULL,
-    .relay = NULL,
     .started = FALSE,
     .url = NULL,
     .profile = NULL,
-    .condition = NULL,
     .client = NULL, # TODO: remove if/when the dispatcher becomes a thread.
     .dispatcher = NULL # TODO: remove if/when the dispatcher becomes a thread.
   ),
@@ -178,11 +173,6 @@ crew_class_client <- R6::R6Class(
     seconds_timeout = function() {
       .subset2(private, ".seconds_timeout")
     },
-    #' @field relay Relay object for event-driven programming on a downstream
-    #'   condition variable.
-    relay = function() {
-      .subset2(private, ".relay")
-    },
     #' @field started Whether the client is started.
     started = function() {
       .subset2(private, ".started")
@@ -194,10 +184,6 @@ crew_class_client <- R6::R6Class(
     #' @field profile Compute profile of the client.
     profile = function() {
       .subset2(private, ".profile")
-    },
-    #' @field condition Condition variable of the client.
-    condition = function() {
-      .subset2(private, ".condition")
     },
     #' @field client Process ID of the local process running the client.
     client = function() {
@@ -217,7 +203,6 @@ crew_class_client <- R6::R6Class(
     #' @param serialization Argument passed from [crew_client()].
     #' @param seconds_interval Argument passed from [crew_client()].
     #' @param seconds_timeout Argument passed from [crew_client()].
-    #' @param relay Argument passed from [crew_client()].
     #' @examples
     #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
     #' client <- crew_client()
@@ -231,8 +216,7 @@ crew_class_client <- R6::R6Class(
       tls = NULL,
       serialization = NULL,
       seconds_interval = NULL,
-      seconds_timeout = NULL,
-      relay = NULL
+      seconds_timeout = NULL
     ) {
       private$.host <- host
       private$.port <- port
@@ -240,10 +224,6 @@ crew_class_client <- R6::R6Class(
       private$.serialization <- serialization
       private$.seconds_interval <- seconds_interval
       private$.seconds_timeout <- seconds_timeout
-      # Creating the CV here instead of as a default R6 field value
-      # somehow appeases covr and R CMD check.
-      private$.condition <- nanonext::cv()
-      private$.relay <- relay
     },
     #' @description Validate the client.
     #' @return `NULL` (invisibly).
@@ -285,13 +265,11 @@ crew_class_client <- R6::R6Class(
         crew_assert(inherits(private$.dispatcher, "ps_handle"))
       )
       crew_assert(private$.seconds_timeout >= private$.seconds_interval)
-      crew_assert(inherits(private$.relay, "crew_class_relay"))
       if_any(
         is.null(private$.serialization),
         NULL,
         crew_assert(is.list(private$.serialization))
       )
-      private$.relay$validate()
       invisible()
     },
     #' @description Register the client as started.
@@ -328,12 +306,6 @@ crew_class_client <- R6::R6Class(
         private$.dispatcher <- ps::ps_handle(pid = pid)
       }
       # End dispatcher code.
-      private$.condition <- mirai::nextget(
-        x = "cv",
-        .compute = private$.profile
-      )
-      private$.relay$set_from(.subset2(private, ".condition"))
-      private$.relay$start()
       private$.started <- TRUE
       invisible()
     },
@@ -348,8 +320,6 @@ crew_class_client <- R6::R6Class(
         mirai::daemons(n = 0L, .compute = private$.profile)
       }
       private$.profile <- NULL
-      private$.condition <- nanonext::cv()
-      private$.relay$terminate()
       private$.url <- NULL
       private$.started <- FALSE
       # TODO: if the dispatcher process becomes a C thread,
@@ -384,11 +354,6 @@ crew_class_client <- R6::R6Class(
       )
       # End dispatcher checks.
       invisible()
-    },
-    #' @description Get the true value of the `nanonext` condition variable.
-    #' @return The value of the `nanonext` condition variable.
-    resolved = function() {
-      nanonext::cv_value(.subset2(private, ".condition"))
     },
     #' @description Internal function:
     #'   return the `mirai` status of the compute profile.

@@ -247,7 +247,7 @@ crew_test("exit status and code", {
   task <- x$pop()
   expect_equal(task$status, "cancel")
   expect_equal(task$code, 20L)
-  expect_equal(x$client$resolved(), 3L)
+  expect_equal(x$resolved(), 3L)
 })
 
 crew_test("crew_controller_local() resource usage metric logging", {

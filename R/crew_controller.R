@@ -171,11 +171,15 @@ crew_class_controller <- R6::R6Class(
       private$.resolved <- .subset2(private, ".resolved") + 1L
     },
     .later_context = NULL,
-    .push_task = function(name, task) {
+    .push_task = function(name, task, now = FALSE) {
       tasks <- .subset2(private, ".tasks")
       tasks[[name]] <- task
       private$.pushed <- .subset2(private, ".pushed") + 1L
-      nanonext::.keep(task, .subset2(private, ".later_context"))
+      if (now) {
+        .subset2(private, ".later_callback")(task)
+      } else {
+        nanonext::.keep(task, .subset2(private, ".later_context"))
+      }
     },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {

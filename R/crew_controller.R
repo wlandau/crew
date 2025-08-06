@@ -120,7 +120,6 @@ crew_class_controller <- R6::R6Class(
     .summary = NULL,
     .error = NULL,
     .autoscaling = FALSE,
-    .resolved = 0L,
     .queue = NULL,
     .backlog = NULL,
     .register_started = function() {
@@ -140,7 +139,6 @@ crew_class_controller <- R6::R6Class(
       )
       private$.backlog <- crew_queue()
       private$.queue <- crew_queue()
-      private$.resolved <- 0L
     },
     .name_new_task = function(name) {
       tasks <- .subset2(private, ".tasks")
@@ -173,7 +171,6 @@ crew_class_controller <- R6::R6Class(
     .register_callback = function(name, task, queue) {
       resolve <- reject <- function(x) {
         .subset2(queue, "push")(name)
-        private$.resolved <- .subset2(private, ".resolved") + 1L
       }
       nanonext::.keep(task, environment())
     },
@@ -187,13 +184,13 @@ crew_class_controller <- R6::R6Class(
     },
     .wait_one_once = function() {
       should_wait <- .subset2(self, "unresolved")() > 0L &&
-        .subset2(self, "unpopped")() < 1L
+        .subset2(self, "resolved")() < 1L
       if (should_wait) {
         client <- .subset2(private, ".client")
         seconds_interval <- .subset2(client, "seconds_interval")
         later::run_now(timeoutSecs = seconds_interval, all = FALSE)
       }
-      .subset2(self, "unpopped")() > 0L
+      .subset2(self, "resolved")() > 0L
     },
     .scan_crash = function(name, task) {
       code <- .subset2(task, "code")
@@ -394,12 +391,6 @@ crew_class_controller <- R6::R6Class(
       crew_assert(private$.tasks, is.null(.) || is.environment(.))
       crew_assert(private$.summary, is.null(.) || is.list(.))
       crew_assert(private$.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
-      crew_assert(
-        private$.resolved,
-        is.integer(.),
-        length(.) == 1L,
-        is.finite(.)
-      )
       if (!is.null(private$.queue)) {
         crew_assert(private$.queue, inherits(., "crew_class_queue"))
         private$.queue$validate()
@@ -439,7 +430,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     resolved = function(controllers = NULL) {
       later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
-      .subset2(private, ".resolved")
+      .subset2(.subset2(private, ".queue"), "size")()
     },
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
@@ -448,15 +439,8 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     unresolved = function(controllers = NULL) {
       later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
-      .subset2(private, ".pushed") - .subset2(private, ".resolved")
-    },
-    #' @description Number of resolved `mirai()` tasks available via `pop()`.
-    #' @return Non-negative integer of length 1,
-    #'   number of resolved `mirai()` tasks available via `pop()`.
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
-    unpopped = function(controllers = NULL) {
-      .subset2(.subset2(private, ".queue"), "size")()
+      .subset2(private, ".pushed") -
+        .subset2(.subset2(private, ".queue"), "size")()
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -1359,7 +1343,7 @@ crew_class_controller <- R6::R6Class(
       if (.subset2(self, "empty")()) {
         return(NULL)
       }
-      if (.subset2(self, "unpopped")() < 1L) {
+      if (.subset2(self, "resolved")() < 1L) {
         later::run_now(timeoutSecs = 0, all = FALSE)
       }
       name <- .subset2(.subset2(private, ".queue"), "pop")()
@@ -1764,7 +1748,6 @@ crew_class_controller <- R6::R6Class(
       private$.popped <- 0L
       private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
       private$.autoscaling <- FALSE
-      private$.resolved <- 0L
       private$.queue <- crew_queue()
       private$.backlog <- crew_queue()
       invisible()

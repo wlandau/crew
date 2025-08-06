@@ -34,7 +34,7 @@ controller_promise <- function(
       mode_one <- identical(mode, "one")
       ready <- if_any(
         mode_one,
-        .subset2(controller, "unpopped")() > 0L,
+        .subset2(controller, "resolved")() > 0L,
         .subset2(controller, "unresolved")() < 1L
       )
       if (ready) {

@@ -4,6 +4,7 @@
 * Support `reset_globals`, `reset_packages`, `reset_options`, and `garbage_collection` in `crew_controller_sequential()` (#217).
 * Change argument `tls` to `tlscert` in the call to `mirai::daemon()` (#227, @shikokuchuo).
 * Use `nanonext::.keep()` instead of condition variables to identify resolved tasks in constant time (#221, #223).
+* In controllers, remove `unpopped()` because `later` callbacks make it identical to `resolved()` (#221, #223).
 
 # crew 1.2.1
 

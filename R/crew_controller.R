@@ -701,7 +701,10 @@ crew_class_controller <- R6::R6Class(
         },
         envir = closure
       )
-      context <- list2env(list(resolve = callback), parent = baseenv())
+      context <- list2env(
+        list(resolve = callback, reject = callback),
+        parent = baseenv()
+      )
       task <- mirai::mirai(
         .expr = expr_crew_eval,
         .args = list(
@@ -1192,8 +1195,7 @@ crew_class_controller <- R6::R6Class(
           )
         }
         if (unresolved > 0L) {
-          # TODO: set `all = TRUE` if nanonext supports custom later loops:
-          later::run_now(timeoutSecs = seconds_interval, all = FALSE)
+          later::run_now(timeoutSecs = seconds_interval, all = TRUE)
         }
         .subset2(self, "unresolved")() < 1L
       }
@@ -1473,8 +1475,7 @@ crew_class_controller <- R6::R6Class(
       if (.subset2(self, "empty")()) {
         return(NULL)
       }
-      # TODO: set `all = TRUE` if nanonext supports custom later loops:
-      later::run_now(timeoutSecs = 0, all = FALSE)
+      later::run_now(timeoutSecs = 0, all = TRUE)
       queue <- .subset2(private, ".queue")
       names <- .subset2(queue, "collect")()
       if (!length(names)) {

@@ -167,8 +167,7 @@ crew_class_controller_group <- R6::R6Class(
         envir$result <- sum(map_int(control, ~.x$unresolved())) < 1L
         if (!envir$result) {
           seconds_interval <- .subset2(private, ".seconds_interval")
-          # TODO: set `all = TRUE` if nanonext supports custom later loops:
-          later::run_now(timeoutSecs = seconds_interval, all = FALSE)
+          later::run_now(timeoutSecs = seconds_interval, all = TRUE)
         }
         envir$result
       }

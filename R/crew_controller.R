@@ -170,6 +170,13 @@ crew_class_controller <- R6::R6Class(
       tasks[[name]] <- task
       private$.pushed <- .subset2(private, ".pushed") + 1L
     },
+    .register_callback = function(name, task, queue) {
+      resolve <- reject <- function(x) {
+        .subset2(queue, "push")(name)
+        private$.resolved <- .subset2(private, ".resolved") + 1L
+      }
+      nanonext::.keep(task, environment())
+    },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
         client <- .subset2(private, ".client")
@@ -682,29 +689,6 @@ crew_class_controller <- R6::R6Class(
           )
         }
       }
-      # A manually created closure hopefully reduces memory usage
-      # when many callbacks are created.
-      closure <- list2env(
-        list(
-          name = name,
-          queue = .subset2(private, ".queue"),
-          private = private
-        ),
-        parent = baseenv()
-      )
-      # The callback runs when the task completes because nanonext::.keep()
-      # registers callbacks (intended for the promises packages).
-      callback <- local(
-        function(x) {
-          .subset2(queue, "push")(name)
-          private$.resolved <- .subset2(private, ".resolved") + 1L
-        },
-        envir = closure
-      )
-      context <- list2env(
-        list(resolve = callback, reject = callback),
-        parent = baseenv()
-      )
       task <- mirai::mirai(
         .expr = expr_crew_eval,
         .args = list(
@@ -724,10 +708,8 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = .subset2(.subset2(private, ".client"), "profile")
       )
-      # Should call .keep() right after the task is created
-      # because .keep() only registers the callback if the task did not
-      # already complete.
-      nanonext::.keep(x = task, ctx = context)
+      queue <- .subset2(private, ".queue")
+      .subset2(private, ".register_callback")(name, task, queue)
       .subset2(private, ".register_task")(name, task)
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)

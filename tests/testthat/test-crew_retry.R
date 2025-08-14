@@ -50,7 +50,7 @@ crew_test("crew_retry() max_tries", {
   envir$count <- 0L
   expect_error(
     crew_retry(
-      fun = ~{
+      fun = ~ {
         envir$count <- envir$count + 1L
         FALSE
       },
@@ -69,7 +69,7 @@ crew_test("crew_retry() max_tries and error = FALSE", {
   envir$count <- 0L
   expect_silent(
     crew_retry(
-      fun = ~{
+      fun = ~ {
         envir$count <- envir$count + 1L
         FALSE
       },

@@ -92,7 +92,7 @@ crew_test("custom launcher", {
   expect_true(handle$is_alive())
   controller$launcher$terminate()
   crew_retry(
-    ~!handle$is_alive(),
+    ~ !handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
@@ -118,8 +118,7 @@ crew_test("custom launcher with local asyncs launch errors", {
           packages = "this package does not exist"
         )
       },
-      terminate_worker = function(handle) {
-      }
+      terminate_worker = function(handle) {}
     )
   )
   crew_controller_custom <- function(
@@ -431,8 +430,7 @@ crew_test("can terminate a lost worker with an async launch", {
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,
     public = list(
-      launch_worker = function(call, name, launcher, worker) {
-      },
+      launch_worker = function(call, name, launcher, worker) {},
       terminate_worker = function(handle) {
         ps::ps_kill(p = ps::ps_handle(handle$pid))
       }
@@ -521,7 +519,7 @@ crew_test("can terminate a lost worker with an async launch", {
     private$.instances,
     handle = list(handle),
     id = 99L,
-    start = - Inf,
+    start = -Inf,
     online = FALSE,
     discovered = FALSE
   )

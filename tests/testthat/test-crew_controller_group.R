@@ -2,7 +2,7 @@ crew_test("crew_controller_group() method and signature compatibility", {
   x <- crew_controller_local()
   y <- crew_controller_group(x = x)
   common <- intersect(names(x), names(y))
-  methods <- fltr(common, ~is.function(x[[.x]]))
+  methods <- fltr(common, ~ is.function(x[[.x]]))
   methods <- setdiff(methods, "initialize")
   for (method in methods) {
     expect_equal(names(formals(x[[method]])), names(formals(y[[method]])))
@@ -53,7 +53,7 @@ crew_test("crew_controller_group()", {
     expect_true(x$controllers[[index]]$client$started)
   }
   crew_retry(
-    ~{
+    ~ {
       x$wait(seconds_timeout = 30)
       TRUE
     },
@@ -126,7 +126,7 @@ crew_test("crew_controller_group()", {
   x$wait(seconds_timeout = 5)
   envir <- new.env(parent = emptyenv())
   crew_retry(
-    ~{
+    ~ {
       envir$out <- x$pop(scale = TRUE)
       !is.null(envir$out)
     },
@@ -155,7 +155,7 @@ crew_test("crew_controller_group()", {
   for (index in seq_len(2)) {
     expect_false(x$controllers[[index]]$client$started)
     crew_retry(
-      ~!handle$is_alive(),
+      ~ !handle$is_alive(),
       seconds_interval = 0.1,
       seconds_timeout = 5
     )
@@ -176,7 +176,7 @@ crew_test("crew_controller_group() can relay task errors as local errors", {
     crew_test_sleep()
   })
   x$start()
-  x$push(command =  stop("this is an error"), name = "warnings_and_errors")
+  x$push(command = stop("this is an error"), name = "warnings_and_errors")
   x$wait(seconds_timeout = 5)
   expect_silent(
     if_any(
@@ -204,7 +204,7 @@ crew_test("crew_controller_group() can relay task errors as local warnings", {
     crew_test_sleep()
   })
   x$start()
-  x$push(command =  stop("this is an error"), name = "warnings_and_errors")
+  x$push(command = stop("this is an error"), name = "warnings_and_errors")
   x$wait(seconds_timeout = 5)
   expect_silent(
     if_any(
@@ -274,7 +274,7 @@ crew_test("crew_controller_group() launch method", {
   )
   for (index in seq_len(2L)) {
     crew_retry(
-      ~handles[[index]]$is_alive(),
+      ~ handles[[index]]$is_alive(),
       seconds_interval = 0.1,
       seconds_timeout = 5
     )
@@ -282,7 +282,7 @@ crew_test("crew_controller_group() launch method", {
   x$terminate()
   for (index in seq_len(2L)) {
     crew_retry(
-      ~!handles[[index]]$is_alive(),
+      ~ !handles[[index]]$is_alive(),
       seconds_interval = 0.1,
       seconds_timeout = 5
     )
@@ -307,19 +307,19 @@ crew_test("crew_controller_group() scale method", {
   a$push(command = "x", scale = FALSE)
   x$scale()
   crew_retry(
-    ~nrow(a$launcher$instances) > 0L,
+    ~ nrow(a$launcher$instances) > 0L,
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
   handle <- a$launcher$instances$handle[[1L]]
   crew_retry(
-    fun = ~handle$is_alive(),
+    fun = ~ handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
   x$terminate()
   crew_retry(
-    fun = ~!handle$is_alive(),
+    fun = ~ !handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
@@ -386,7 +386,9 @@ crew_test("controller group collect() with one active controller", {
   x$push("done", controller = "a")
   x$push("done", controller = "a")
   x$wait(mode = "all")
-  for (index in seq_len(2L)) x$push(Sys.sleep(120))
+  for (index in seq_len(2L)) {
+    x$push(Sys.sleep(120))
+  }
   out <- x$collect()
   expect_equal(nrow(out), 2L)
   expect_equal(as.character(out$result), rep("done", 2))
@@ -416,7 +418,9 @@ crew_test("controller group collect() with two active controllers", {
   x$push("done", controller = "a")
   x$push("done", controller = "b")
   x$wait(mode = "all")
-  for (index in seq_len(2L)) x$push(Sys.sleep(120))
+  for (index in seq_len(2L)) {
+    x$push(Sys.sleep(120))
+  }
   out <- x$collect()
   expect_equal(nrow(out), 2L)
   expect_equal(as.character(out$result), rep("done", 2))

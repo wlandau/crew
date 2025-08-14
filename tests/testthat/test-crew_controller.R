@@ -25,10 +25,13 @@ crew_test("warnings and errors", {
   expect_equal(x$summary()$tasks, 0L)
   expect_equal(x$summary()$error, 0L)
   expect_equal(x$summary()$warning, 0L)
-  x$push(command = {
-    warning("this is a warning")
-    stop("this is an error")
-  }, name = "warnings_and_errors")
+  x$push(
+    command = {
+      warning("this is a warning")
+      stop("this is an error")
+    },
+    name = "warnings_and_errors"
+  )
   x$wait(seconds_timeout = 5)
   out <- x$pop(scale = FALSE)
   skip_on_covr() # error handling is mysteriously messed up with covr
@@ -46,7 +49,7 @@ crew_test("warnings and errors", {
   x$terminate()
   expect_false(x$client$started)
   crew_retry(
-    ~!handle$is_alive(),
+    ~ !handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 10
   )
@@ -65,7 +68,7 @@ crew_test("can relay task errors as local errors", {
     crew_test_sleep()
   })
   x$start()
-  x$push(command =  stop("this is an error"), name = "warnings_and_errors")
+  x$push(command = stop("this is an error"), name = "warnings_and_errors")
   x$wait(seconds_timeout = 30)
   expect_silent(
     if_any(
@@ -94,7 +97,7 @@ crew_test("can relay task errors as local warnings", {
     crew_test_sleep()
   })
   x$start()
-  x$push(command =  stop("this is an error"), name = "warnings_and_errors")
+  x$push(command = stop("this is an error"), name = "warnings_and_errors")
   x$wait(seconds_timeout = 30)
   expect_silent(
     if_any(
@@ -132,7 +135,7 @@ crew_test("can terminate a lost worker", {
   call <- "Sys.sleep(300)"
   handle <- processx::process$new(command = path, args = c("-e", call))
   crew_retry(
-    ~handle$is_alive(),
+    ~ handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
@@ -140,13 +143,13 @@ crew_test("can terminate a lost worker", {
     private$.instances,
     handle = list(handle),
     id = 99L,
-    start = - Inf,
+    start = -Inf,
     online = FALSE,
     discovered = FALSE
   )
   x$scale()
   crew_retry(
-    ~!handle$is_alive(),
+    ~ !handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 60
   )
@@ -243,9 +246,13 @@ crew_test("controller collect() success", {
   })
   x <- crew_controller_local(workers = 1L, seconds_idle = 30L)
   x$start()
-  for (index in seq_len(2L)) x$push("done")
+  for (index in seq_len(2L)) {
+    x$push("done")
+  }
   x$wait(mode = "all")
-  for (index in seq_len(2L)) x$push(Sys.sleep(120))
+  for (index in seq_len(2L)) {
+    x$push(Sys.sleep(120))
+  }
   expect_equal(length(x$tasks), 4L)
   out <- x$collect()
   expect_equal(length(x$tasks), 2L)

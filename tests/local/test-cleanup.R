@@ -8,7 +8,7 @@ crew_test("workers signal themselves to exit when connection breaks", {
   dispatcher <- x$client$dispatcher
   crew_terminate_process(ps::ps_pid(dispatcher))
   crew_retry(
-    ~!ps::ps_is_running(dispatcher),
+    ~ !ps::ps_is_running(dispatcher),
     seconds_interval = 0.5,
     seconds_timeout = 60
   )

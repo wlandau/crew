@@ -52,13 +52,15 @@ crew_clean <- function(
     pattern = "mirai::dispatcher(",
     x = ps$command,
     fixed = TRUE
-  ) & rep(dispatchers, nrow(ps))
+  ) &
+    rep(dispatchers, nrow(ps))
   ps$worker <- grepl(
     pattern = "crew::crew_worker(",
     x = ps$command,
     fixed = TRUE
-  ) & rep(workers, nrow(ps))
-  ps <- ps[ps$dispatcher | ps$worker,, drop = FALSE] # nolint
+  ) &
+    rep(workers, nrow(ps))
+  ps <- ps[ps$dispatcher | ps$worker, , drop = FALSE] # nolint
   if (verbose && nrow(ps) < 1L) {
     crew_message("nothing to clean up")
     return(invisible())
@@ -67,7 +69,7 @@ crew_clean <- function(
     handle <- ps$ps_handle[[index]]
     crew_terminate_process(ps::ps_pid(p = handle))
     crew_retry(
-      fun = ~!ps::ps_is_running(p = handle),
+      fun = ~ !ps::ps_is_running(p = handle),
       seconds_interval = seconds_interval,
       seconds_timeout = seconds_timeout
     )

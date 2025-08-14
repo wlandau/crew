@@ -79,13 +79,13 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   expect_s3_class(launcher$instances$handle[[1L]], "process")
   expect_silent(launcher$validate())
   crew::crew_retry(
-    ~launcher$instances$handle[[1L]]$is_alive(),
+    ~ launcher$instances$handle[[1L]]$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
   task <- mirai::mirai(ps::ps_pid(), .compute = client$profile)
   crew_retry(
-    ~!nanonext::.unresolved(task),
+    ~ !nanonext::.unresolved(task),
     seconds_interval = 0.5,
     seconds_timeout = 10
   )
@@ -93,7 +93,7 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   client$terminate()
   tryCatch(
     crew::crew_retry(
-      ~!launcher$instances$handle[[1L]]$is_alive(),
+      ~ !launcher$instances$handle[[1L]]$is_alive(),
       seconds_interval = 0.1,
       seconds_timeout = 5
     ),
@@ -128,7 +128,7 @@ crew_test("crew_launcher_local() worker tasks_max", {
   launcher$start(url = client$url, profile = client$profile)
   launcher$launch()
   crew::crew_retry(
-    ~{
+    ~ {
       handle <- launcher$instances$handle[[1]]
       !is_crew_null(handle) && handle$is_alive()
     },
@@ -137,13 +137,13 @@ crew_test("crew_launcher_local() worker tasks_max", {
   )
   task <- mirai::mirai(ps::ps_pid(), .compute = client$profile)
   crew::crew_retry(
-    ~!nanonext::.unresolved(task),
+    ~ !nanonext::.unresolved(task),
     seconds_interval = 0.5,
     seconds_timeout = 30
   )
   expect_equal(task$data, launcher$instances$handle[[1]]$get_pid())
   crew::crew_retry(
-    ~!launcher$instances$handle[[1]]$is_alive(),
+    ~ !launcher$instances$handle[[1]]$is_alive(),
     seconds_interval = 0.5,
     seconds_timeout = 30
   )
@@ -175,13 +175,13 @@ crew_test("crew_launcher_local() can terminate a worker", {
   handle <- launcher$instances$handle[[1L]]
   expect_s3_class(handle, "process")
   crew::crew_retry(
-    ~handle$is_alive(),
+    ~ handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
   expect_silent(launcher$terminate())
   crew::crew_retry(
-    ~!handle$is_alive(),
+    ~ !handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )

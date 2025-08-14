@@ -31,10 +31,10 @@ crew_controller_group <- function(..., seconds_interval = 1) {
     map_lgl(controllers, inherits, what = "crew_class_controller"),
     message = "Found invalid controllers while creating a controller group."
   )
-  names(controllers) <- map_chr(controllers, ~.x$launcher$name)
+  names(controllers) <- map_chr(controllers, ~ .x$launcher$name)
   walk(
     names(controllers),
-    ~crew_assert(
+    ~ crew_assert(
       !isTRUE(controllers[[.x]]$client$started),
       message = paste(
         "controller",
@@ -120,7 +120,7 @@ crew_class_controller_group <- R6::R6Class(
       scale,
       throttle
     ) {
-      if (sum(map_int(control, ~length(.x$tasks))) < 1L) {
+      if (sum(map_int(control, ~ length(.x$tasks))) < 1L) {
         return(FALSE)
       }
       envir <- new.env(parent = emptyenv())
@@ -155,7 +155,7 @@ crew_class_controller_group <- R6::R6Class(
       scale,
       throttle
     ) {
-      if (sum(map_int(control, ~length(.x$tasks))) < 1L) {
+      if (sum(map_int(control, ~ length(.x$tasks))) < 1L) {
         return(TRUE)
       }
       envir <- new.env(parent = emptyenv())
@@ -164,7 +164,7 @@ crew_class_controller_group <- R6::R6Class(
         if (scale) {
           self$scale(throttle = throttle, controllers = controllers)
         }
-        envir$result <- sum(map_int(control, ~.x$unresolved())) < 1L
+        envir$result <- sum(map_int(control, ~ .x$unresolved())) < 1L
         if (!envir$result) {
           seconds_interval <- .subset2(private, ".seconds_interval")
           later::run_now(timeoutSecs = seconds_interval, all = TRUE)
@@ -232,10 +232,10 @@ crew_class_controller_group <- R6::R6Class(
     #' @return `NULL` (invisibly).
     validate = function() {
       crew_assert(
-        map_lgl(private$.controllers, ~inherits(.x, "crew_class_controller")),
+        map_lgl(private$.controllers, ~ inherits(.x, "crew_class_controller")),
         message = "All objects in a controller group must be controllers."
       )
-      out <- unname(map_chr(private$.controllers, ~.x$launcher$name))
+      out <- unname(map_chr(private$.controllers, ~ .x$launcher$name))
       exp <- names(private$.controllers)
       crew_assert(identical(out, exp), message = "bad controller names")
       crew_assert(
@@ -258,7 +258,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     empty = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      all(map_lgl(control, ~.x$empty()))
+      all(map_lgl(control, ~ .x$empty()))
     },
     #' @description Check if the controller group is nonempty.
     #' @details A controller is empty if it has no running tasks
@@ -268,7 +268,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     nonempty = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      any(map_lgl(control, ~.x$nonempty()))
+      any(map_lgl(control, ~ .x$nonempty()))
     },
     #' @description Number of resolved `mirai()` tasks.
     #' @details `resolved()` is cumulative: it counts all the resolved
@@ -281,7 +281,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     resolved = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      sum(map_int(control, ~.x$resolved()))
+      sum(map_int(control, ~ .x$resolved()))
     },
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
@@ -290,7 +290,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     unresolved = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      sum(map_int(control, ~.x$unresolved()))
+      sum(map_int(control, ~ .x$unresolved()))
     },
     #' @description Check if a controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -316,7 +316,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     start = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      walk(control, ~.x$start())
+      walk(control, ~ .x$start())
     },
     #' @description Check whether all the given controllers are started.
     #' @details Actually checks whether all the given clients are started.
@@ -325,7 +325,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     started = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      all(map_lgl(control, ~.x$started()))
+      all(map_lgl(control, ~ .x$started()))
     },
     #' @description Launch one or more workers on one or more controllers.
     #' @return `NULL` (invisibly).
@@ -334,7 +334,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     launch = function(n = 1L, controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      walk(control, ~.x$launch(n = n))
+      walk(control, ~ .x$launch(n = n))
     },
     #' @description Automatically scale up the number of workers if needed
     #'   in one or more controller objects.
@@ -353,7 +353,7 @@ crew_class_controller_group <- R6::R6Class(
       if (throttle && !private$.throttle$poll()) {
         return(invisible())
       }
-      activity <- any(map_lgl(control, ~.x$scale(throttle = FALSE)))
+      activity <- any(map_lgl(control, ~ .x$scale(throttle = FALSE)))
       private$.throttle$update(activity = activity)
       invisible(activity)
     },
@@ -366,7 +366,7 @@ crew_class_controller_group <- R6::R6Class(
       # Tested in tests/interactive/test-promises.R
       # nocov start
       control <- private$.select_controllers(controllers)
-      walk(control, ~.x$autoscale())
+      walk(control, ~ .x$autoscale())
       # nocov end
     },
     #' @description Terminate the auto-scaling loop started by
@@ -376,7 +376,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @return `NULL` (invisibly).
     descale = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      walk(control, ~.x$descale())
+      walk(control, ~ .x$descale())
     },
     #' @description Report the number of consecutive crashes of a task,
     #'   summed over all selected controllers in the group.
@@ -388,7 +388,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     crashes = function(name, controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      sum(map_int(control, ~.x$crashes(name = name)))
+      sum(map_int(control, ~ .x$crashes(name = name)))
     },
     #' @description Push a task to the head of the task list.
     #' @return Invisibly return the `mirai` object of the pushed task.
@@ -821,7 +821,7 @@ crew_class_controller_group <- R6::R6Class(
       control <- private$.select_controllers(controllers)
       out <- map(
         control,
-        ~.x$collect(
+        ~ .x$collect(
           scale = scale,
           throttle = throttle,
           error = error
@@ -1001,7 +1001,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     pop_backlog = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      out <- map(control, ~.subset2(.x, "pop_backlog")())
+      out <- map(control, ~ .subset2(.x, "pop_backlog")())
       unlist(out, use.names = FALSE)
     },
     #' @description Summarize the workers of one or more controllers.
@@ -1014,7 +1014,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     summary = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      out <- map(control, ~.x$summary())
+      out <- map(control, ~ .x$summary())
       if (all(map_lgl(out, is.null))) {
         return(NULL) # nocov
       }
@@ -1028,8 +1028,8 @@ crew_class_controller_group <- R6::R6Class(
     #'   Set to `NULL` to select all controllers.
     pids = function(controllers = NULL) {
       control <- private$.select_controllers(controllers)
-      out <- map(control, ~.x$pids())
-      out <- map(unname(out), ~.x[names(.x) != "local"])
+      out <- map(control, ~ .x$pids())
+      out <- map(unname(out), ~ .x[names(.x) != "local"])
       c(local = Sys.getpid(), unlist(out))
     },
     #' @description Terminate the workers and disconnect the client
@@ -1038,7 +1038,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     terminate = function(controllers = NULL) {
-      walk(private$.select_controllers(controllers), ~.x$terminate())
+      walk(private$.select_controllers(controllers), ~ .x$terminate())
     }
   )
 )

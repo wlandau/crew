@@ -11,14 +11,14 @@ crew_test("monitor dispatchers", {
   })
   pid <- as.integer(nextget("pid"))
   crew_retry(
-    ~inherits(ps::ps_handle(pid = pid), "ps_handle"),
+    ~ inherits(ps::ps_handle(pid = pid), "ps_handle"),
     seconds_interval = 0.01
   )
   handle <- ps::ps_handle(pid = pid)
   expect_true(ps::ps_is_running(handle))
   expect_true(pid %in% x$dispatchers())
   expect_silent(x$terminate(pid))
-  crew::crew_retry(~!ps::ps_is_running(handle), seconds_interval = 0.01)
+  crew::crew_retry(~ !ps::ps_is_running(handle), seconds_interval = 0.01)
   expect_true(is.integer(x$dispatchers()))
   expect_false(ps::ps_is_running(handle))
 })
@@ -35,7 +35,7 @@ crew_test("monitor daemons", {
     gc()
     crew_test_sleep()
   })
-  crew::crew_retry(~length(x$daemons()) > first, seconds_interval = 0.01)
+  crew::crew_retry(~ length(x$daemons()) > first, seconds_interval = 0.01)
   expect_true(is.integer(x$daemons()))
   expect_true(length(x$daemons()) > first)
 })
@@ -56,7 +56,7 @@ crew_test("monitor workers", {
   })
   controller$start()
   controller$launch(n = 1L)
-  crew::crew_retry(~length(x$workers()) > first, seconds_interval = 0.01)
+  crew::crew_retry(~ length(x$workers()) > first, seconds_interval = 0.01)
   expect_true(is.integer(x$workers()))
   expect_true(length(x$workers()) > first)
 })

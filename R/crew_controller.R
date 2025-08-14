@@ -366,7 +366,8 @@ crew_class_controller <- R6::R6Class(
       )
       for (field in fields) {
         crew_assert(
-          self[[field]], isTRUE(.) || isFALSE(.),
+          self[[field]],
+          isTRUE(.) || isFALSE(.),
           message = paste(field, "must be a non-missing logical of length 1")
         )
       }
@@ -676,7 +677,7 @@ crew_class_controller <- R6::R6Class(
         max <- .subset2(private, ".crashes_max")
         if ((max > 0L) && (.subset2(self, "crashes")(name = name) == max)) {
           return(
-            .subset2(backup, "push") (
+            .subset2(backup, "push")(
               command = command,
               data = data,
               globals = globals,
@@ -1209,8 +1210,8 @@ crew_class_controller <- R6::R6Class(
         index <- index + 1L
       }
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
-      out <- out[match(x = names, table = out$name),, drop = FALSE] # nolint
-      out <- out[!is.na(out$name),, drop = FALSE] # nolint
+      out <- out[match(x = names, table = out$name), , drop = FALSE] # nolint
+      out <- out[!is.na(out$name), , drop = FALSE] # nolint
       on.exit({
         private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
         private$.popped <- .subset2(private, ".popped") + nrow(out)
@@ -1496,7 +1497,7 @@ crew_class_controller <- R6::R6Class(
         if (identical(error, "stop")) {
           crew_error(message = errors[1L])
         } else if (identical(error, "warn")) {
-          crew_warning(message =  errors[1L])
+          crew_warning(message = errors[1L])
         }
       }
       out

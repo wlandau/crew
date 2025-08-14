@@ -50,7 +50,7 @@ crew_test("crew_client() works", {
   expect_equal(length(client$dispatcher), 1L)
   handle <- client$dispatcher
   crew_retry(
-    ~ps::ps_is_running(handle),
+    ~ ps::ps_is_running(handle),
     seconds_interval = 0.01,
     seconds_timeout = 30
   )
@@ -59,7 +59,7 @@ crew_test("crew_client() works", {
   call <- sprintf("mirai::daemon('%s', dispatcher = TRUE)", url)
   px <- processx::process$new(command = path, args = c("-e", call))
   crew_retry(
-    ~{
+    ~ {
       identical(
         as.integer(mirai::status(.compute = client$profile)$connections),
         1L
@@ -70,7 +70,7 @@ crew_test("crew_client() works", {
   )
   task <- mirai::mirai(ps::ps_pid(), .compute = client$profile)
   crew_retry(
-    ~!nanonext::.unresolved(task),
+    ~ !nanonext::.unresolved(task),
     seconds_interval = 0.5,
     seconds_timeout = 10
   )
@@ -83,7 +83,7 @@ crew_test("crew_client() works", {
     expect_silent(client$terminate())
     expect_false(client$started)
     crew_retry(
-      ~!ps::ps_is_running(handle),
+      ~ !ps::ps_is_running(handle),
       seconds_interval = 0.01,
       seconds_timeout = 30
     )

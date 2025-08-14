@@ -360,7 +360,7 @@ crew_class_client <- R6::R6Class(
       }
       tryCatch(
         crew_retry(
-          fun = ~!ps::ps_is_running(p = private$.dispatcher),
+          fun = ~ !ps::ps_is_running(p = private$.dispatcher),
           seconds_interval = private$.seconds_interval,
           seconds_timeout = private$.seconds_timeout
         ),
@@ -376,7 +376,7 @@ crew_class_client <- R6::R6Class(
       )
       tryCatch(
         crew_retry(
-          fun = ~!ps::ps_is_running(p = ps::ps_pid(private$.dispatcher)),
+          fun = ~ !ps::ps_is_running(p = ps::ps_pid(private$.dispatcher)),
           seconds_interval = private$.seconds_interval,
           seconds_timeout = private$.seconds_timeout
         ),

@@ -20,7 +20,7 @@ crew_test("crew_controller_local()", {
   expect_true(x$empty())
   expect_false(x$saturated())
   crew_retry(
-    ~{
+    ~ {
       x$wait(mode = "all", seconds_timeout = 30)
       TRUE
     },
@@ -66,7 +66,7 @@ crew_test("crew_controller_local()", {
   expect_true(x$nonempty())
   envir <- new.env(parent = emptyenv())
   crew_retry(
-    ~{
+    ~ {
       envir$out <- x$pop(scale = TRUE)
       !is.null(envir$out)
     },
@@ -130,7 +130,7 @@ crew_test("crew_controller_local()", {
   expect_false(x$client$started)
   expect_false(x$started())
   crew_retry(
-    ~!handle$is_alive(),
+    ~ !handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
@@ -184,7 +184,7 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
   x$terminate()
   expect_false(x$client$started)
   crew_retry(
-    ~!handle$is_alive(),
+    ~ !handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
@@ -206,14 +206,14 @@ crew_test("crew_controller_local() launch method", {
   x$launch(n = 1L)
   handle <- x$launcher$instances$handle[[1]]
   crew_retry(
-    ~handle$is_alive(),
+    ~ handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
   expect_true(handle$is_alive())
   x$terminate()
   crew_retry(
-    ~!handle$is_alive(),
+    ~ !handle$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )

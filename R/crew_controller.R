@@ -124,6 +124,7 @@ crew_class_controller <- R6::R6Class(
     .autoscaling = FALSE,
     .queue_resolved = NULL,
     .queue_backlog = NULL,
+    .context = NULL,
     .register_started = function() {
       private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
       private$.pushed <- 0L
@@ -142,6 +143,9 @@ crew_class_controller <- R6::R6Class(
       )
       private$.queue_backlog <- collections::queue()
       private$.queue_resolved <- collectrions::queue()
+      private$.context <- list2env(
+        list(resolve = private$.callback, reject = private$.callback)
+      )
     },
     .name_new_task = function(name) {
       tasks <- .subset2(private, ".tasks")
@@ -171,12 +175,8 @@ crew_class_controller <- R6::R6Class(
       tasks[[name]] <- task
       private$.pushed <- .subset2(private, ".pushed") + 1L
     },
-    .register_callback = function(name, task, queue) {
-      resolve <- reject <- function(x) {
-        .subset2(queue, "push")(name)
-        private$.resolved <- .subset2(private, ".resolved") + 1L
-      }
-      nanonext::.keep(task, environment())
+    .callback <- function(x) {
+      private$.resolved <<- .subset2(private, ".resolved") + 1L
     },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
@@ -694,8 +694,7 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = .subset2(.subset2(private, ".client"), "profile")
       )
-      queue <- .subset2(private, ".queue_resolved")
-      .subset2(private, ".register_callback")(name, task, queue)
+      nanonext::.keep(task, .subset2(private, ".context"))
       .subset2(private, ".register_task")(name, task)
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)

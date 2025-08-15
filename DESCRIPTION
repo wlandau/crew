@@ -16,7 +16,7 @@ Description: In computationally demanding analysis projects,
   'clustermq' by Schubert (2019) <doi:10.1093/bioinformatics/btz284>),
   and 'batchtools' by Lang, Bischel, and Surmann (2017)
   <doi:10.21105/joss.00135>.
-Version: 1.2.1.9002
+Version: 1.2.1.9003
 License: MIT + file LICENSE
 URL: https://wlandau.github.io/crew/, https://github.com/wlandau/crew
 BugReports: https://github.com/wlandau/crew/issues
@@ -41,6 +41,7 @@ Depends:
   R (>= 4.0.0)
 Imports:
   cli (>= 3.1.0),
+  collections,
   data.table,
   later,
   mirai (>= 2.4.1.9000),

@@ -141,8 +141,8 @@ crew_class_controller <- R6::R6Class(
         cancel = 0L,
         warning = 0L
       )
-      private$.queue_backlog <- collections::queue()
-      private$.queue_resolved <- collections::queue()
+      private$.queue_backlog <- collections::priority_queue()
+      private$.queue_resolved <- collections::priority_queue()
       private$.context <- list2env(
         list(resolve = private$.callback, reject = private$.callback)
       )
@@ -181,7 +181,7 @@ crew_class_controller <- R6::R6Class(
     # TODO: remove if/when callbacks can efficiently push to .queue_resolved.
     .resolve = function(force) {
       queue <- .subset2(private, ".queue_resolved")
-      if (!(force || is.null(.subset2(queue, "q")))) {
+      if (!(force || .subset2(queue, "n") < 1L)) {
         return()
       }
       status <- eapply(
@@ -191,7 +191,7 @@ crew_class_controller <- R6::R6Class(
         USE.NAMES = TRUE
       )
       resolved <- names(status)[!as.logical(status)]
-      private$.queue_resolved <- collections::queue(items = resolved)
+      private$.queue_resolved <- collections::priority_queue(items = resolved)
     },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
@@ -307,13 +307,13 @@ crew_class_controller <- R6::R6Class(
     autoscaling = function() {
       .subset2(private, ".autoscaling")
     },
-    #' @field queue_resolved A `collections::queue()` queue
+    #' @field queue_resolved A `collections::priority_queue()` queue
     #'   of tasks which are resolved but not collected.
     queue_resolved = function() {
       later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
       .subset2(private, ".queue_resolved")
     },
-    #' @field queue_backlog A `collections::queue()` queue
+    #' @field queue_backlog A `collections::priority_queue()` queue
     #'   of explicitly backlogged tasks.
     queue_backlog = function() {
       .subset2(private, ".queue_backlog")
@@ -1364,10 +1364,11 @@ crew_class_controller <- R6::R6Class(
         later::run_now(timeoutSecs = 0, all = FALSE)
       }
       .subset2(private, ".resolve")(force = FALSE)
-      name <- .subset2(.subset2(private, ".queue_resolved"), "pop")()
-      if (is.null(name)) {
+      queue <- .subset2(private, ".queue_resolved")
+      if (.subset2(queue, "n") < 1L) {
         return(NULL)
       }
+      name <- .subset2(queue, "pop")()
       tasks <- .subset2(self, "tasks")
       task <- .subset2(tasks, name)
       remove(list = name, envir = tasks)
@@ -1462,7 +1463,9 @@ crew_class_controller <- R6::R6Class(
       later::run_now(timeoutSecs = 0, all = TRUE)
       .subset2(private, ".resolve")(force = TRUE)
       queue <- .subset2(private, ".queue_resolved")
-      names <- .subset2(queue, "collect")()
+      queue_pop <- .subset2(queue, "pop")
+      n <- .subset2(queue, "n")
+      names <- as.character(replicate(n, queue_pop(), simplify = FALSE))
       if (!length(names)) {
         return(NULL)
       }
@@ -1670,13 +1673,15 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop_backlog = function(controllers = NULL) {
+      backlog <- .subset2(private, ".queue_backlog")
       n <- .subset2(.subset2(self, "launcher"), "workers") -
         .subset2(self, "unresolved")()
-      backlog <- .subset2(private, ".queue_backlog")
-      if (n < 1L || is.null(backlog, "q")) {
+      n <- min(n, .subset2(backlog, "n"))
+      if (n < 1L) {
         return(character(0L))
       }
-      .subset2(backlog, "pop")(n)
+      backlog_pop <- .subset2(backlog, "pop")
+      as.character(replicate(n, backlog_pop(), simplify = FALSE))
     },
     #' @description Summarize the workers and tasks of the controller.
     #' @return A data frame of summary statistics on the tasks
@@ -1768,8 +1773,8 @@ crew_class_controller <- R6::R6Class(
       private$.resolved <- 0L
       private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
       private$.autoscaling <- FALSE
-      private$.queue_resolved <- collections::queue()
-      private$.queue_backlog <- collections::queue()
+      private$.queue_resolved <- collections::priority_queue()
+      private$.queue_backlog <- collections::priority_queue()
       invisible()
     }
   )

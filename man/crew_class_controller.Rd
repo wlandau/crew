@@ -77,10 +77,10 @@ from the last call to \verb{map(error = "stop)}.}
 \item{\code{autoscaling}}{\code{TRUE} or \code{FALSE}, whether async \code{later}-based
 auto-scaling is currently running}
 
-\item{\code{queue_resolved}}{A \code{collections::queue()} queue
+\item{\code{queue_resolved}}{A \code{collections::priority_queue()} queue
 of tasks which are resolved but not collected.}
 
-\item{\code{queue_backlog}}{A \code{collections::queue()} queue
+\item{\code{queue_backlog}}{A \code{collections::priority_queue()} queue
 of explicitly backlogged tasks.}
 }
 \if{html}{\out{</div>}}

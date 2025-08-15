@@ -1,11 +1,11 @@
-# crew 1.2.1.9002 (development)
+# crew 1.2.1.9003 (development)
 
 * Reinstate checks that were temporarily suppressed to help plugins transition to #217.
 * Support `reset_globals`, `reset_packages`, `reset_options`, and `garbage_collection` in `crew_controller_sequential()` (#217).
 * Change argument `tls` to `tlscert` in the call to `mirai::daemon()` (#227, @shikokuchuo).
 * Use `nanonext::.keep()` instead of condition variables to identify resolved tasks in constant time (#221, #223).
 * In controllers, remove `unpopped()` because `later` callbacks make it identical to `resolved()` (#221, #223).
-* Replace `crew_queue()` with `collections::queue()` (#229).
+* Replace `crew_queue()` with `collections::priority_queue()` (#229). Faster than `collections::queue()` for `crew`'s purposes because the `size()` method is O(1) and not O(n).
 
 # crew 1.2.1
 

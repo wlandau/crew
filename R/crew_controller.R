@@ -178,6 +178,21 @@ crew_class_controller <- R6::R6Class(
     .callback <- function(x) {
       private$.resolved <<- .subset2(private, ".resolved") + 1L
     },
+    # TODO: remove if/when callbacks can efficiently push to .queue_resolved.
+    .resolve = function(force) {
+      if (!(force || is.null(.subset2(queue, "q")))) {
+        return()
+      }
+      status <- eapply(
+        env = tasks,
+        FUN = nanonext::.unresolved,
+        all.names = TRUE,
+        USE.NAMES = TRUE
+      )
+      resolved <- names(status)[!as.logical(status)]
+      queue <- .subset2(private, ".queue_resolved")
+      lapply(resolved, function(name) .subset2(queue, "push")(name))
+    },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {
         client <- .subset2(private, ".client")
@@ -1347,6 +1362,7 @@ crew_class_controller <- R6::R6Class(
       if (.subset2(self, "resolved")() < 1L) {
         later::run_now(timeoutSecs = 0, all = FALSE)
       }
+      .subset2(private, ".resolve")(force = FALSE)
       name <- .subset2(.subset2(private, ".queue_resolved"), "pop")()
       if (is.null(name)) {
         return(NULL)
@@ -1443,6 +1459,7 @@ crew_class_controller <- R6::R6Class(
         return(NULL)
       }
       later::run_now(timeoutSecs = 0, all = TRUE)
+      .subset2(private, ".resolve")(force = TRUE)
       queue <- .subset2(private, ".queue_resolved")
       names <- .subset2(queue, "collect")()
       if (!length(names)) {

@@ -536,7 +536,10 @@ crew_test("backlog with no tasks", {
   expect_equal(length(out), 2L)
   expect_equal(length(unique(out)), 2L)
   expect_true(all(out %in% tasks))
-  expect_equal(sort(as.character(x$queue_backlog$as_list())), sort(setdiff(tasks, out)))
+  expect_equal(
+    sort(as.character(x$queue_backlog$as_list())),
+    sort(setdiff(tasks, out))
+  )
   expect_equal(sort(x$pop_backlog()), sort(setdiff(tasks, out)))
   expect_equal(as.character(x$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))

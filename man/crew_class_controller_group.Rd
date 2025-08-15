@@ -68,6 +68,7 @@ backoff in auto-scaling.}
 \item \href{#method-crew_class_controller_group-nonempty}{\code{crew_class_controller_group$nonempty()}}
 \item \href{#method-crew_class_controller_group-resolved}{\code{crew_class_controller_group$resolved()}}
 \item \href{#method-crew_class_controller_group-unresolved}{\code{crew_class_controller_group$unresolved()}}
+\item \href{#method-crew_class_controller_group-unpopped}{\code{crew_class_controller_group$unpopped()}}
 \item \href{#method-crew_class_controller_group-saturated}{\code{crew_class_controller_group$saturated()}}
 \item \href{#method-crew_class_controller_group-start}{\code{crew_class_controller_group$start()}}
 \item \href{#method-crew_class_controller_group-started}{\code{crew_class_controller_group$started()}}
@@ -255,6 +256,28 @@ Set to \code{NULL} to select all controllers.}
 \subsection{Returns}{
 Non-negative integer of length 1,
 number of unresolved \code{mirai()} tasks.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-unpopped"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-unpopped}{}}}
+\subsection{Method \code{unpopped()}}{
+Number of resolved \code{mirai()} tasks available via \code{pop()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$unpopped(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Non-negative integer of length 1,
+number of resolved \code{mirai()} tasks available via \code{pop()}.
 }
 }
 \if{html}{\out{<hr>}}

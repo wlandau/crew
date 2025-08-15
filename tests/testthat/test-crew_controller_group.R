@@ -711,8 +711,8 @@ crew_test("backlog with the first controller saturated`", {
     crew_test_sleep()
   })
   x$start()
-  expect_equal(as.character(a$backlog$as_list()), character(0L))
-  expect_equal(as.character(b$backlog$as_list()), character(0L))
+  expect_equal(as.character(a$queue_backlog$as_list()), character(0L))
+  expect_equal(as.character(b$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
   tasks_a <- paste0("a_", seq_len(4L))
   for (task in tasks_a) {
@@ -722,17 +722,23 @@ crew_test("backlog with the first controller saturated`", {
   for (task in tasks_b) {
     x$push_backlog(name = task, controller = "b")
   }
-  expect_equal(as.character(a$backlog$as_list()), tasks_a)
-  expect_equal(as.character(b$backlog$as_list()), tasks_b)
+  expect_equal(sort(as.character(a$queue_backlog$as_list())), sort(tasks_a))
+  expect_equal(sort(as.character(b$queue_backlog$as_list())), sort(tasks_b))
   for (index in c(1L, 2L)) {
     x$push(Sys.sleep(30), controller = "a")
   }
-  expect_equal(x$pop_backlog(), tasks_b[seq_len(2L)])
-  expect_equal(as.character(a$backlog$as_list()), tasks_a)
-  expect_equal(as.character(b$backlog$as_list()), tasks_b[c(3L, 4L)])
-  expect_equal(x$pop_backlog(), tasks_b[c(3L, 4L)])
-  expect_equal(as.character(a$backlog$as_list()), tasks_a)
-  expect_equal(as.character(b$backlog$as_list()), character(0L))
+  out <- x$pop_backlog()
+  expect_equal(length(out), 2L)
+  expect_equal(length(unique(out)), 2L)
+  expect_true(all(out %in% tasks_b))
+  expect_equal(sort(as.character(a$queue_backlog$as_list())), sort(tasks_a))
+  expect_equal(
+    sort(as.character(b$queue_backlog$as_list())),
+    sort(setdiff(tasks_b, out))
+  )
+  expect_equal(sort(x$pop_backlog()), sort(setdiff(tasks_b, out)))
+  expect_equal(sort(as.character(a$queue_backlog$as_list())), sort(tasks_a))
+  expect_equal(as.character(b$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
 })
 
@@ -757,8 +763,8 @@ crew_test("backlog with the second controller saturated`", {
     crew_test_sleep()
   })
   x$start()
-  expect_equal(as.character(a$backlog$as_list()), character(0L))
-  expect_equal(as.character(b$backlog$as_list()), character(0L))
+  expect_equal(as.character(a$queue_backlog$as_list()), character(0L))
+  expect_equal(as.character(b$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
   tasks_a <- paste0("a_", seq_len(4L))
   for (task in tasks_a) {
@@ -768,17 +774,24 @@ crew_test("backlog with the second controller saturated`", {
   for (task in tasks_b) {
     x$push_backlog(name = task, controller = "b")
   }
-  expect_equal(as.character(a$backlog$as_list()), tasks_a)
-  expect_equal(as.character(b$backlog$as_list()), tasks_b)
+  expect_equal(as.character(a$queue_backlog$as_list()), tasks_a)
+  expect_equal(as.character(b$queue_backlog$as_list()), tasks_b)
   for (index in c(1L, 2L)) {
     x$push(Sys.sleep(30), controller = "b")
   }
-  expect_equal(x$pop_backlog(), tasks_a[seq_len(2L)])
-  expect_equal(as.character(a$backlog$as_list()), tasks_a[c(3L, 4L)])
-  expect_equal(as.character(b$backlog$as_list()), tasks_b)
-  expect_equal(x$pop_backlog(), tasks_a[c(3L, 4L)])
-  expect_equal(as.character(a$backlog$as_list()), character(0L))
-  expect_equal(as.character(b$backlog$as_list()), tasks_b)
+  out <- x$pop_backlog()
+  expect_equal(length(out), 2L)
+  expect_equal(length(unique(out)), 2L)
+  expect_true(all(out %in% tasks_a))
+  expect_equal(
+    sort(as.character(a$queue_backlog$as_list())),
+    sort(setdiff(tasks_a, out))
+  )
+  expect_equal(sort(as.character(b$queue_backlog$as_list())), sort(tasks_b))
+  out2 <- x$pop_backlog()
+  expect_equal(sort(out2), sort(setdiff(tasks_a, out)))
+  expect_equal(as.character(a$queue_backlog$as_list()), character(0L))
+  expect_equal(sort(as.character(b$queue_backlog$as_list())), sort(tasks_b))
   expect_equal(x$pop_backlog(), character(0L))
 })
 

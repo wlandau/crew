@@ -24,7 +24,7 @@
 #' @importFrom later later run_now
 #' @importFrom mirai call_mirai daemon daemons is_mirai is_mirai_error
 #'   mirai nextcode nextget nextstream status stop_mirai
-#' @importFrom nanonext .keep ip_addr mclock msleep nng_error
+#' @importFrom nanonext .keep .unresolved ip_addr mclock msleep nng_error
 #'   random tls_config
 #' @importFrom processx process
 #' @importFrom promises promise

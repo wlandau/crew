@@ -451,6 +451,14 @@ crew_class_controller <- R6::R6Class(
       later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
       .subset2(private, ".resolved")
     },
+    #' @description Number of resolved `mirai()` tasks available via `pop()`.
+    #' @return Non-negative integer of length 1,
+    #'   number of resolved `mirai()` tasks available via `pop()`.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    unpopped = function(controllers = NULL) {
+      .subset2(self, "resolved")() - .subset2(private, ".popped")
+    },
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
     #'   number of unresolved `mirai()` tasks.

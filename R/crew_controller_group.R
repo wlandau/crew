@@ -292,6 +292,15 @@ crew_class_controller_group <- R6::R6Class(
       control <- private$.select_controllers(controllers)
       sum(map_int(control, ~ .x$unresolved()))
     },
+    #' @description Number of resolved `mirai()` tasks available via `pop()`.
+    #' @return Non-negative integer of length 1,
+    #'   number of resolved `mirai()` tasks available via `pop()`.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    unpopped = function(controllers = NULL) {
+      control <- private$.select_controllers(controllers)
+      sum(map_int(control, ~ .x$unpopped()))
+    },
     #' @description Check if a controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
     #'   is greater than or equal to the maximum number of workers.

@@ -238,10 +238,6 @@ crew_test("exit status and code", {
   expect_equal(task$code, 0L)
   x$push(stop("message"), name = "broken")
   x$wait(mode = "one")
-
-  x$pop()
-  x$terminate()
-
   task <- x$pop()
   expect_equal(task$status, "error")
   expect_equal(task$code, -1L)

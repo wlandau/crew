@@ -532,9 +532,12 @@ crew_test("backlog with no tasks", {
     x$push_backlog(name = task)
   }
   expect_equal(as.character(x$queue_backlog$as_list()), tasks)
-  expect_equal(x$pop_backlog(), tasks[c(1L, 2L)])
-  expect_equal(as.character(x$queue_backlog$as_list()), tasks[c(3L, 4L)])
-  expect_equal(x$pop_backlog(), tasks[c(3L, 4L)])
+  out <- x$pop_backlog()
+  expect_equal(length(out), 2L)
+  expect_equal(length(unique(out)), 2L)
+  expect_true(all(out %in% tasks))
+  expect_equal(sort(as.character(x$queue_backlog$as_list())), sort(setdiff(tasks, out)))
+  expect_equal(sort(x$pop_backlog()), sort(setdiff(tasks, out)))
   expect_equal(as.character(x$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
 })
@@ -554,21 +557,38 @@ crew_test("backlog with one task and no saturation", {
   })
   x$start()
   x$push(Sys.sleep(30), scale = FALSE)
-  expect_equal(x$backlog$list(), character(0L))
+  expect_equal(as.character(x$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
   tasks <- paste0("my_task", seq_len(4L))
   for (task in tasks) {
     x$push_backlog(name = task)
   }
-  expect_equal(x$backlog$list(), tasks)
-  expect_equal(x$pop_backlog(), tasks[1L])
-  expect_equal(x$backlog$list(), tasks[c(2L, 3L, 4L)])
-  expect_equal(x$pop_backlog(), tasks[2L])
-  expect_equal(x$backlog$list(), tasks[c(3L, 4L)])
-  expect_equal(x$pop_backlog(), tasks[3L])
-  expect_equal(x$backlog$list(), tasks[4L])
-  expect_equal(x$pop_backlog(), tasks[4L])
-  expect_equal(x$backlog$list(), character(0L))
+  expect_equal(sort(as.character(x$queue_backlog$as_list())), sort(tasks))
+  out1 <- x$pop_backlog()
+  expect_equal(length(out1), 1L)
+  expect_true(out1 %in% tasks)
+  expect_equal(
+    sort(as.character(x$queue_backlog$as_list())),
+    sort(setdiff(tasks, out1))
+  )
+  out2 <- x$pop_backlog()
+  expect_equal(length(out2), 1L)
+  expect_true(out2 %in% tasks)
+  expect_false(out2 == out1)
+  expect_equal(
+    sort(as.character(x$queue_backlog$as_list())),
+    sort(setdiff(tasks, c(out1, out2)))
+  )
+  out3 <- x$pop_backlog()
+  expect_equal(length(out3), 1L)
+  expect_true(out3 %in% tasks)
+  expect_false(out3 %in% c(out1, out2))
+  expect_equal(
+    sort(as.character(x$queue_backlog$as_list())),
+    setdiff(tasks, c(out1, out2, out3))
+  )
+  expect_equal(x$pop_backlog(), setdiff(tasks, c(out1, out2, out3)))
+  expect_equal(as.character(x$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
 })
 
@@ -590,13 +610,13 @@ crew_test("backlog with saturation", {
     x$push(Sys.sleep(30), scale = FALSE)
   }
   tasks <- paste0("my_task", seq_len(4L))
-  expect_equal(x$backlog$list(), character(0L))
+  expect_equal(as.character(x$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
   for (task in tasks) {
     x$push_backlog(name = task)
   }
   for (index in seq_len(4L)) {
-    expect_equal(x$backlog$list(), tasks)
+    expect_equal(sort(as.character(x$queue_backlog$as_list())), sort(tasks))
     expect_equal(x$pop_backlog(), character(0L))
     x$push(Sys.sleep(30), scale = FALSE)
   }

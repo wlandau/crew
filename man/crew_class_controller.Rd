@@ -93,8 +93,8 @@ of explicitly backlogged tasks.}
 \item \href{#method-crew_class_controller-empty}{\code{crew_class_controller$empty()}}
 \item \href{#method-crew_class_controller-nonempty}{\code{crew_class_controller$nonempty()}}
 \item \href{#method-crew_class_controller-resolved}{\code{crew_class_controller$resolved()}}
-\item \href{#method-crew_class_controller-unpopped}{\code{crew_class_controller$unpopped()}}
 \item \href{#method-crew_class_controller-unresolved}{\code{crew_class_controller$unresolved()}}
+\item \href{#method-crew_class_controller-unpopped}{\code{crew_class_controller$unpopped()}}
 \item \href{#method-crew_class_controller-saturated}{\code{crew_class_controller$saturated()}}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
 \item \href{#method-crew_class_controller-started}{\code{crew_class_controller$started()}}
@@ -273,28 +273,6 @@ The return value is 0 if the condition variable does not exist
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-unpopped"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-unpopped}{}}}
-\subsection{Method \code{unpopped()}}{
-Number of resolved \code{mirai()} tasks available via \code{pop()}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unpopped(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Non-negative integer of length 1,
-number of resolved \code{mirai()} tasks available via \code{pop()}.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-unresolved"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-unresolved}{}}}
 \subsection{Method \code{unresolved()}}{
@@ -314,6 +292,28 @@ compatible with the analogous method of controller groups.}
 \subsection{Returns}{
 Non-negative integer of length 1,
 number of unresolved \code{mirai()} tasks.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-unpopped"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-unpopped}{}}}
+\subsection{Method \code{unpopped()}}{
+Number of resolved \code{mirai()} tasks available via \code{pop()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unpopped(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Non-negative integer of length 1,
+number of resolved \code{mirai()} tasks available via \code{pop()}.
 }
 }
 \if{html}{\out{<hr>}}

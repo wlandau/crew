@@ -176,7 +176,7 @@ crew_class_controller <- R6::R6Class(
       private$.pushed <- .subset2(private, ".pushed") + 1L
     },
     .callback = function(x) {
-      private$.resolved <<- .subset2(private, ".resolved") + 1L
+      private$.resolved <- .subset2(private, ".resolved") + 1L
     },
     # TODO: remove if/when callbacks can efficiently push to .queue_resolved.
     .resolve = function(force) {
@@ -203,13 +203,13 @@ crew_class_controller <- R6::R6Class(
     },
     .wait_one_once = function() {
       should_wait <- .subset2(self, "unresolved")() > 0L &&
-        .subset2(self, "resolved")() < 1L
+        .subset2(self, "unpopped")() < 1L
       if (should_wait) {
         client <- .subset2(private, ".client")
         seconds_interval <- .subset2(client, "seconds_interval")
         later::run_now(timeoutSecs = seconds_interval, all = FALSE)
       }
-      .subset2(self, "resolved")() > 0L
+      .subset2(self, "unpopped")() > 0L
     },
     .scan_crash = function(name, task) {
       code <- .subset2(task, "code")
@@ -451,14 +451,6 @@ crew_class_controller <- R6::R6Class(
       later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
       .subset2(private, ".resolved")
     },
-    #' @description Number of resolved `mirai()` tasks available via `pop()`.
-    #' @return Non-negative integer of length 1,
-    #'   number of resolved `mirai()` tasks available via `pop()`.
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
-    unpopped = function(controllers = NULL) {
-      .subset2(self, "resolved")() - .subset2(private, ".popped")
-    },
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
     #'   number of unresolved `mirai()` tasks.
@@ -467,6 +459,14 @@ crew_class_controller <- R6::R6Class(
     unresolved = function(controllers = NULL) {
       later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
       .subset2(private, ".pushed") - .subset2(private, ".resolved")
+    },
+    #' @description Number of resolved `mirai()` tasks available via `pop()`.
+    #' @return Non-negative integer of length 1,
+    #'   number of resolved `mirai()` tasks available via `pop()`.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    unpopped = function(controllers = NULL) {
+      .subset2(self, "resolved")() - .subset2(private, ".popped")
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks

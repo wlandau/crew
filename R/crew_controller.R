@@ -142,7 +142,7 @@ crew_class_controller <- R6::R6Class(
         warning = 0L
       )
       private$.queue_backlog <- collections::queue()
-      private$.queue_resolved <- collectrions::queue()
+      private$.queue_resolved <- collections::queue()
       private$.context <- list2env(
         list(resolve = private$.callback, reject = private$.callback)
       )
@@ -175,11 +175,12 @@ crew_class_controller <- R6::R6Class(
       tasks[[name]] <- task
       private$.pushed <- .subset2(private, ".pushed") + 1L
     },
-    .callback <- function(x) {
+    .callback = function(x) {
       private$.resolved <<- .subset2(private, ".resolved") + 1L
     },
     # TODO: remove if/when callbacks can efficiently push to .queue_resolved.
     .resolve = function(force) {
+      queue <- .subset2(private, ".queue_resolved")
       if (!(force || is.null(.subset2(queue, "q")))) {
         return()
       }
@@ -190,8 +191,7 @@ crew_class_controller <- R6::R6Class(
         USE.NAMES = TRUE
       )
       resolved <- names(status)[!as.logical(status)]
-      queue <- .subset2(private, ".queue_resolved")
-      lapply(resolved, function(name) .subset2(queue, "push")(name))
+      private$.queue_resolved <- collections::queue(items = resolved)
     },
     .wait_all_once = function() {
       if (.subset2(self, "unresolved")() > 0L) {

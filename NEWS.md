@@ -5,6 +5,7 @@
 * Change argument `tls` to `tlscert` in the call to `mirai::daemon()` (#227, @shikokuchuo).
 * Use `nanonext::.keep()` instead of condition variables to identify resolved tasks in constant time (#221, #223).
 * In controllers, remove `unpopped()` because `later` callbacks make it identical to `resolved()` (#221, #223).
+* Replace `crew_queue()` with `collections::queue()` (#229).
 
 # crew 1.2.1
 

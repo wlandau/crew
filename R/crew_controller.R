@@ -307,13 +307,14 @@ crew_class_controller <- R6::R6Class(
     autoscaling = function() {
       .subset2(private, ".autoscaling")
     },
-    #' @field queue_resolved Queue of tasks which are resolved but not collected.
+    #' @field queue_resolved A `collections::queue()` queue
+    #'   of tasks which are resolved but not collected.
     queue_resolved = function() {
       later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
       .subset2(private, ".queue_resolved")
     },
-    #' @field queue_backlog A [crew_queue()] object tracking explicitly
-    #'   backlogged tasks.
+    #' @field queue_backlog A `collections::queue()` queue
+    #'   of explicitly backlogged tasks.
     queue_backlog = function() {
       .subset2(private, ".queue_backlog")
     }

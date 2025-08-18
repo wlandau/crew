@@ -139,7 +139,6 @@ crew_test("custom launcher with local asyncs launch errors", {
     reset_packages = FALSE,
     reset_options = FALSE,
     garbage_collection = FALSE,
-    crashes_error = 5L,
     processes = NULL
   ) {
     client <- crew::crew_client(
@@ -160,7 +159,6 @@ crew_test("custom launcher with local asyncs launch errors", {
       seconds_wall = seconds_wall,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
-      crashes_error = crashes_error,
       tls = tls,
       processes = processes
     )
@@ -243,7 +241,6 @@ crew_test("custom launcher with local asyncs termination errors", {
     reset_packages = FALSE,
     reset_options = FALSE,
     garbage_collection = FALSE,
-    crashes_error = 5L,
     processes = NULL
   ) {
     client <- crew::crew_client(
@@ -264,7 +261,6 @@ crew_test("custom launcher with local asyncs termination errors", {
       seconds_wall = seconds_wall,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
-      crashes_error = crashes_error,
       tls = tls,
       processes = processes
     )

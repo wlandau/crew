@@ -1640,7 +1640,7 @@ crew_class_controller <- R6::R6Class(
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
       seconds_interval <- min(
-        .subset2(private, "seconds_interval"),
+        .subset2(.subset2(private, ".client"), "seconds_interval"),
         seconds_timeout
       )
       iterate <- function() {

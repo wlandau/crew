@@ -967,7 +967,7 @@ crew_class_controller_group <- R6::R6Class(
       crew_assert(mode, identical(., "all") || identical(., "one"))
       control <- private$.select_controllers(controllers)
       seconds_interval <- min(
-        .subset2(private, "seconds_interval"),
+        .subset2(private, ".seconds_interval"),
         seconds_timeout
       )
       out <- if_any(

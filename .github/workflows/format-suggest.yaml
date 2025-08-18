@@ -29,8 +29,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Install
         uses: posit-dev/setup-air@v1

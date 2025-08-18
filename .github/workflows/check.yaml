@@ -38,7 +38,7 @@ jobs:
 
       - name: R-universe
         run: |
-          echo 'options(repos = c(shikokuchuo = "https://shikokuchuo.r-universe.dev", CRAN = "https://cloud.r-project.org"))' >> ~/.Rprofile
+          echo 'options(repos = c("https://wlandau.r-universe.dev", "https://cloud.r-project.org"))' >> ~/.Rprofile
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:

@@ -76,7 +76,8 @@ crew_test("single controller, one long task, time out", {
           )
         )
       )["elapsed"]
-      expect_true(time < 1)
+      expect_true(is.null(x$pop()))
+      print(time)
     }
     x$terminate()
     crew_test_sleep()

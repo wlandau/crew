@@ -1186,11 +1186,11 @@ complete, \code{"one"} to wait for a single task to complete.}
 
 \item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
 0.10.2.9003). Instead, the \code{seconds_interval} argument passed
-to \code{\link[=crew_controller_group]{crew_controller_group()}} is used as \code{seconds_max}
-in a \code{\link[=crew_throttle]{crew_throttle()}} object which orchestrates exponential
-backoff.}
+to the controller is used.}
 
-\item{\code{seconds_timeout}}{Timeout length in seconds waiting for tasks.}
+\item{\code{seconds_timeout}}{Timeout length in seconds waiting for tasks.
+Waiting actually happens in whole multiples of \code{seconds_interval},
+which may cause \code{wait()} to wait longer than \code{seconds_timeout}.}
 
 \item{\code{scale}}{Logical, whether to automatically call \code{scale()}
 to auto-scale workers to meet the demand of the task load.

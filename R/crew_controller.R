@@ -193,20 +193,18 @@ crew_class_controller <- R6::R6Class(
       resolved <- names(status)[!as.logical(status)]
       private$.queue_resolved <- collections::priority_queue(items = resolved)
     },
-    .wait_all_once = function() {
+    .wait_all_once = function(seconds_interval) {
       if (.subset2(self, "unresolved")() > 0L) {
         client <- .subset2(private, ".client")
-        seconds_interval <- .subset2(client, "seconds_interval")
         later::run_now(timeoutSecs = seconds_interval, all = FALSE)
       }
       .subset2(self, "unresolved")() < 1L
     },
-    .wait_one_once = function() {
+    .wait_one_once = function(seconds_interval) {
       should_wait <- .subset2(self, "unresolved")() > 0L &&
         .subset2(self, "unpopped")() < 1L
       if (should_wait) {
         client <- .subset2(private, ".client")
-        seconds_interval <- .subset2(client, "seconds_interval")
         later::run_now(timeoutSecs = seconds_interval, all = FALSE)
       }
       .subset2(self, "unpopped")() > 0L
@@ -1605,10 +1603,10 @@ crew_class_controller <- R6::R6Class(
     #'   complete, `"one"` to wait for a single task to complete.
     #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
     #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
-    #'   to [crew_controller_group()] is used as `seconds_max`
-    #'   in a [crew_throttle()] object which orchestrates exponential
-    #'   backoff.
+    #'   to the controller is used.
     #' @param seconds_timeout Timeout length in seconds waiting for tasks.
+    #'   Waiting actually happens in whole multiples of `seconds_interval`,
+    #'   which may cause `wait()` to wait longer than `seconds_timeout`.
     #' @param scale Logical, whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
     #'   See also the `throttle` argument.
@@ -1641,14 +1639,18 @@ crew_class_controller <- R6::R6Class(
       }
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
+      seconds_interval <- min(
+        .subset2(private, "seconds_interval"),
+        seconds_timeout
+      )
       iterate <- function() {
         if (!envir$result && scale) {
           self$scale(throttle = throttle)
         }
         envir$result <- if_any(
           mode_all,
-          private$.wait_all_once(),
-          private$.wait_one_once()
+          private$.wait_all_once(seconds_interval),
+          private$.wait_one_once(seconds_interval)
         )
         envir$result
       }

@@ -116,6 +116,7 @@ crew_class_controller_group <- R6::R6Class(
     .wait_one = function(
       controllers,
       control,
+      seconds_interval,
       seconds_timeout,
       scale,
       throttle
@@ -135,7 +136,6 @@ crew_class_controller_group <- R6::R6Class(
             return(TRUE)
           }
         }
-        seconds_interval <- .subset2(private, ".seconds_interval")
         later::run_now(timeoutSecs = seconds_interval, all = FALSE)
         FALSE
       }
@@ -151,6 +151,7 @@ crew_class_controller_group <- R6::R6Class(
     .wait_all = function(
       controllers,
       control,
+      seconds_interval,
       seconds_timeout,
       scale,
       throttle
@@ -166,7 +167,6 @@ crew_class_controller_group <- R6::R6Class(
         }
         envir$result <- sum(map_int(control, ~ .x$unresolved())) < 1L
         if (!envir$result) {
-          seconds_interval <- .subset2(private, ".seconds_interval")
           later::run_now(timeoutSecs = seconds_interval, all = TRUE)
         }
         envir$result
@@ -966,11 +966,16 @@ crew_class_controller_group <- R6::R6Class(
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
       control <- private$.select_controllers(controllers)
+      seconds_interval <- min(
+        .subset2(private, "seconds_interval"),
+        seconds_timeout
+      )
       out <- if_any(
         identical(mode, "one"),
         private$.wait_one(
           controllers = controllers,
           control = control,
+          seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,
           scale = scale,
           throttle = throttle
@@ -978,6 +983,7 @@ crew_class_controller_group <- R6::R6Class(
         private$.wait_all(
           controllers = controllers,
           control = control,
+          seconds_interval = seconds_interval,
           seconds_timeout = seconds_timeout,
           scale = scale,
           throttle = throttle

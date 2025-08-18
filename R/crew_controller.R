@@ -176,7 +176,7 @@ crew_class_controller <- R6::R6Class(
       private$.pushed <- .subset2(private, ".pushed") + 1L
     },
     .callback = function(x) {
-      private$.resolved <- .subset2(private, ".resolved") + 1L
+      .resolved <<- .resolved + 1L
     },
     # TODO: remove if/when callbacks can efficiently push to .queue_resolved.
     .resolve = function(force) {

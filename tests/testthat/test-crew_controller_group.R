@@ -42,7 +42,7 @@ crew_test("crew_controller_group()", {
   expect_false(x$started())
   expect_equal(length(x$pids()), 1L)
   x$start()
-  expect_true(x$wait(mode = "all"))
+  expect_true(x$wait(mode = "all", seconds_timeout = 30))
   expect_true(x$started())
   expect_true(x$empty())
   expect_false(x$saturated())
@@ -60,7 +60,7 @@ crew_test("crew_controller_group()", {
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
-  expect_true(x$wait(mode = "all"))
+  expect_true(x$wait(mode = "all", seconds_timeout = 30))
   s <- x$summary()
   expect_equal(nrow(s), 2L)
   expect_equal(s$controller, c("a", "b"))
@@ -352,7 +352,7 @@ crew_test("controller walk()", {
   expect_true(is.list(out))
   expect_s3_class(out[[1L]], "mirai")
   expect_s3_class(out[[2L]], "mirai")
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   task1 <- x$pop()
   task2 <- x$pop()
   expect_true(tibble::is_tibble(task1))
@@ -385,7 +385,7 @@ crew_test("controller group collect() with one active controller", {
   x <- crew_controller_group(a, b)
   x$push("done", controller = "a")
   x$push("done", controller = "a")
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   for (index in seq_len(2L)) {
     x$push(Sys.sleep(120))
   }
@@ -417,7 +417,7 @@ crew_test("controller group collect() with two active controllers", {
   x <- crew_controller_group(a, b)
   x$push("done", controller = "a")
   x$push("done", controller = "b")
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   for (index in seq_len(2L)) {
     x$push(Sys.sleep(120))
   }
@@ -442,7 +442,7 @@ crew_test("controller group collect() silent error", {
   x$push("success")
   x$push(stop("failure 1"))
   x$push(stop("failure 2"))
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   expect_silent(out <- x$collect(error = "silent"))
   expect_true("failure 1" %in% out$error)
 })
@@ -462,7 +462,7 @@ crew_test("controller group collect() error as warning", {
   x$push("success")
   x$push(stop("failure 1"))
   x$push(stop("failure 2"))
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   expect_silent(
     if_any(
       isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
@@ -489,7 +489,7 @@ crew_test("controller group collect() stop on error", {
   x$push("success")
   x$push(stop("failure 1"))
   x$push(stop("failure 2"))
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   expect_silent(
     if_any(
       isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
@@ -823,7 +823,7 @@ crew_test("group helper methods (non)empty, (un)resolved, unpopped", {
   expect_equal(x$unpopped(), 0L)
   x$push(TRUE, controller = "a")
   x$push(TRUE, controller = "b")
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   expect_false(x$empty())
   expect_true(x$nonempty())
   expect_equal(x$resolved(), 2L)
@@ -904,7 +904,7 @@ crew_test("crash detection with backup controllers in a group", {
     a$launcher$terminate_workers()
     b$launcher$terminate_workers()
     c$launcher$terminate_workers()
-    x$wait()
+    x$wait(seconds_timeout = 30)
     x$pop()
   }
   out <- crash()

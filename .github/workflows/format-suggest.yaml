@@ -28,9 +28,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/checkout@v5
 
       - name: Install
         uses: posit-dev/setup-air@v1

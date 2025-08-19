@@ -160,7 +160,7 @@ launcher_empty_instances <- tibble::tibble(
 #' }
 crew_class_launcher <- R6::R6Class(
   classname = "crew_class_launcher",
-  cloneable = FALSE,
+  cloneable = TRUE,
   portable = TRUE,
   private = list(
     .name = NULL,

@@ -178,7 +178,7 @@ crew_class_controller_sequential <- R6::R6Class(
         ),
         class = "mirai"
       )
-      private$.resolved <- .subset2(private, ".resolved") + 1L
+      .subset2(private, ".callback")()
       .subset2(private, ".register_task")(name, task)
       invisible(task)
     },

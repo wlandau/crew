@@ -111,7 +111,6 @@ crew_class_controller <- R6::R6Class(
     .tasks = new.env(parent = emptyenv(), hash = TRUE),
     .pushed = 0L,
     .popped = 0L,
-    .resolved = 0L,
     .reset_globals = NULL,
     .reset_packages = NULL,
     .reset_options = NULL,
@@ -124,12 +123,12 @@ crew_class_controller <- R6::R6Class(
     .autoscaling = FALSE,
     .queue_resolved = NULL,
     .queue_backlog = NULL,
+    .callback = NULL,
     .context = NULL,
     .register_started = function() {
       private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
       private$.pushed <- 0L
       private$.popped <- 0L
-      private$.resolved <- 0L
       private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
       private$.summary <- list(
         controller = private$.launcher$name,
@@ -143,9 +142,7 @@ crew_class_controller <- R6::R6Class(
       )
       private$.queue_backlog <- collections::priority_queue()
       private$.queue_resolved <- collections::priority_queue()
-      private$.context <- list2env(
-        list(resolve = private$.callback, reject = private$.callback)
-      )
+      environment(private$.callback)$.resolved <- 0L
     },
     .name_new_task = function(name) {
       tasks <- .subset2(private, ".tasks")
@@ -174,9 +171,6 @@ crew_class_controller <- R6::R6Class(
       tasks <- .subset2(private, ".tasks")
       tasks[[name]] <- task
       private$.pushed <- .subset2(private, ".pushed") + 1L
-    },
-    .callback = function(x) {
-      .resolved <<- .resolved + 1L
     },
     # TODO: remove if/when callbacks can efficiently push to .queue_resolved.
     .resolve = function(force) {
@@ -357,6 +351,14 @@ crew_class_controller <- R6::R6Class(
       private$.garbage_collection <- garbage_collection
       private$.crashes_max <- crashes_max
       private$.backup <- backup
+      private$.callback <- local(
+        function(x) .resolved <<- .resolved + 1L,
+        envir = new.env(parent = baseenv())
+      )
+      private$.context <- list2env(
+        list(resolve = private$.callback, reject = private$.callback),
+        parent = baseenv()
+      )
       invisible()
     },
     #' @description Validate the controller.
@@ -425,7 +427,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     empty = function(controllers = NULL) {
-      .subset2(private, ".pushed") == .subset2(private, ".popped")
+      .pushed == .popped
     },
     #' @description Check if the controller is nonempty.
     #' @details A controller is empty if it has no running tasks
@@ -434,7 +436,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     nonempty = function(controllers = NULL) {
-      .subset2(private, ".pushed") > .subset2(private, ".popped")
+      .pushed > .popped
     },
     #' @description Number of resolved `mirai()` tasks.
     #' @details `resolved()` is cumulative: it counts all the resolved
@@ -447,7 +449,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     resolved = function(controllers = NULL) {
       later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
-      .subset2(private, ".resolved")
+      .subset2(environment(.callback), ".resolved")
     },
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
@@ -456,7 +458,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     unresolved = function(controllers = NULL) {
       later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
-      .subset2(private, ".pushed") - .subset2(private, ".resolved")
+      pushed - .subset2(environment(.callback), ".resolved")
     },
     #' @description Number of resolved `mirai()` tasks available via `pop()`.
     #' @return Non-negative integer of length 1,
@@ -464,7 +466,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     unpopped = function(controllers = NULL) {
-      .subset2(self, "resolved")() - .subset2(private, ".popped")
+      resolved() - .popped
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -479,8 +481,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
-      .subset2(self, "unresolved")() >=
-        .subset2(.subset2(self, "launcher"), "workers")
+      unresolved() >= .subset2(.launcher, "workers")
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
@@ -489,7 +490,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     start = function(controllers = NULL) {
-      if (!.subset2(.subset2(self, "client"), "started")) {
+      if (!.subset2(.client, "started")) {
         private$.client$start()
         private$.launcher$start(
           url = private$.client$url,
@@ -505,7 +506,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     started = function(controllers = NULL) {
-      .subset2(.subset2(self, "client"), "started")
+      .subset2(.client, "started")
     },
     #' @description Launch one or more workers.
     #' @return `NULL` (invisibly).
@@ -1780,7 +1781,7 @@ crew_class_controller <- R6::R6Class(
       private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
       private$.pushed <- 0L
       private$.popped <- 0L
-      private$.resolved <- 0L
+      environment(private$.callback)$.resolved <- 0L
       private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
       private$.autoscaling <- FALSE
       private$.queue_resolved <- collections::priority_queue()

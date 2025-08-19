@@ -142,7 +142,7 @@ crew_class_controller <- R6::R6Class(
       )
       private$.queue_backlog <- collections::priority_queue()
       private$.queue_resolved <- collections::priority_queue()
-      environment(private$.callback)$.resolved <- 0L
+      environment(private$.callback)$.queue_resolved <- .queue_resolved
     },
     .name_new_task = function(name) {
       if (is.null(name)) {
@@ -170,21 +170,6 @@ crew_class_controller <- R6::R6Class(
       tasks <- .subset2(private, ".tasks")
       tasks[[name]] <- task
       private$.pushed <- .subset2(private, ".pushed") + 1L
-    },
-    # TODO: remove if/when callbacks can efficiently push to .queue_resolved.
-    .resolve = function(force) {
-      queue <- .subset2(private, ".queue_resolved")
-      if (!(force || .subset2(queue, "size")() < 1L)) {
-        return()
-      }
-      status <- eapply(
-        env = tasks,
-        FUN = nanonext::.unresolved,
-        all.names = TRUE,
-        USE.NAMES = TRUE
-      )
-      resolved <- names(status)[!as.logical(status)]
-      private$.queue_resolved <- collections::priority_queue(items = resolved)
     },
     .wait_all_once = function(seconds_interval) {
       if (.subset2(self, "unresolved")() > 0L) {
@@ -351,7 +336,7 @@ crew_class_controller <- R6::R6Class(
       private$.crashes_max <- crashes_max
       private$.backup <- backup
       private$.callback <- local(
-        function(x) .resolved <<- .resolved + 1L,
+        function(x) .subset2(.queue_resolved, "push")(.subset2(x, "name")),
         envir = new.env(parent = baseenv())
       )
       private$.context <- list2env(
@@ -448,7 +433,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     resolved = function(controllers = NULL) {
       later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
-      .subset2(environment(.callback), ".resolved")
+      .subset2(.queue_resolved, "size")()
     },
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
@@ -457,7 +442,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     unresolved = function(controllers = NULL) {
       later::run_now(timeoutSecs = 0, all = FALSE) # data depends on `later`
-      pushed - .subset2(environment(.callback), ".resolved")
+      pushed - .subset2(.queue_resolved, "size")()
     },
     #' @description Number of resolved `mirai()` tasks available via `pop()`.
     #' @return Non-negative integer of length 1,
@@ -1367,7 +1352,6 @@ crew_class_controller <- R6::R6Class(
       if (.subset2(self, "resolved")() < 1L) {
         later::run_now(timeoutSecs = 0, all = FALSE)
       }
-      .subset2(private, ".resolve")(force = FALSE)
       queue <- .subset2(private, ".queue_resolved")
       if (.subset2(queue, "size")() < 1L) {
         return(NULL)
@@ -1465,7 +1449,6 @@ crew_class_controller <- R6::R6Class(
         return(NULL)
       }
       later::run_now(timeoutSecs = 0, all = TRUE)
-      .subset2(private, ".resolve")(force = TRUE)
       queue <- .subset2(private, ".queue_resolved")
       queue_pop <- .subset2(queue, "pop")
       n <- .subset2(queue, "size")()
@@ -1778,11 +1761,11 @@ crew_class_controller <- R6::R6Class(
       private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
       private$.pushed <- 0L
       private$.popped <- 0L
-      environment(private$.callback)$.resolved <- 0L
       private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
       private$.autoscaling <- FALSE
       private$.queue_resolved <- collections::priority_queue()
       private$.queue_backlog <- collections::priority_queue()
+      environment(private$.callback)$.resolved <- private$.queue_resolved
       invisible()
     }
   )

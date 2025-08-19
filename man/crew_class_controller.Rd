@@ -74,13 +74,13 @@ since the controller was started.}
 \item{\code{error}}{Tibble of task results (with one result per row)
 from the last call to \verb{map(error = "stop)}.}
 
-\item{\code{backlog}}{A \code{\link[=crew_queue]{crew_queue()}} object tracking explicitly
-backlogged tasks.}
-
 \item{\code{autoscaling}}{\code{TRUE} or \code{FALSE}, whether async \code{later}-based
 auto-scaling is currently running}
 
-\item{\code{queue}}{Queue of resolved unpopped/uncollected tasks.}
+\item{\code{queue_resolved}}{Queue of resolved unpopped/uncollected tasks.}
+
+\item{\code{queue_backlog}}{A \code{\link[=crew_queue]{crew_queue()}} object tracking explicitly
+backlogged tasks.}
 }
 \if{html}{\out{</div>}}
 }

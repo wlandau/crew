@@ -657,8 +657,8 @@ crew_test("backlog with no tasks", {
     crew_test_sleep()
   })
   x$start()
-  expect_equal(a$backlog$list(), character(0L))
-  expect_equal(b$backlog$list(), character(0L))
+  expect_equal(a$queue_backlog$list(), character(0L))
+  expect_equal(b$queue_backlog$list(), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
   tasks_a <- paste0("a_", seq_len(4L))
   for (task in tasks_a) {
@@ -668,20 +668,20 @@ crew_test("backlog with no tasks", {
   for (task in tasks_b) {
     x$push_backlog(name = task, controller = "b")
   }
-  expect_equal(a$backlog$list(), tasks_a)
-  expect_equal(b$backlog$list(), tasks_b)
+  expect_equal(a$queue_backlog$list(), tasks_a)
+  expect_equal(b$queue_backlog$list(), tasks_b)
   expect_equal(
     sort(x$pop_backlog()),
     sort(c(tasks_a[seq_len(2L)], tasks_b[seq_len(2L)]))
   )
-  expect_equal(a$backlog$list(), tasks_a[c(3L, 4L)])
-  expect_equal(b$backlog$list(), tasks_b[c(3L, 4L)])
+  expect_equal(a$queue_backlog$list(), tasks_a[c(3L, 4L)])
+  expect_equal(b$queue_backlog$list(), tasks_b[c(3L, 4L)])
   expect_equal(
     sort(x$pop_backlog()),
     sort(c(tasks_a[c(3L, 4L)], tasks_b[c(3L, 4L)]))
   )
-  expect_equal(a$backlog$list(), character(0L))
-  expect_equal(b$backlog$list(), character(0L))
+  expect_equal(a$queue_backlog$list(), character(0L))
+  expect_equal(b$queue_backlog$list(), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
 })
 
@@ -706,8 +706,8 @@ crew_test("backlog with the first controller saturated`", {
     crew_test_sleep()
   })
   x$start()
-  expect_equal(a$backlog$list(), character(0L))
-  expect_equal(b$backlog$list(), character(0L))
+  expect_equal(a$queue_backlog$list(), character(0L))
+  expect_equal(b$queue_backlog$list(), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
   tasks_a <- paste0("a_", seq_len(4L))
   for (task in tasks_a) {
@@ -717,17 +717,17 @@ crew_test("backlog with the first controller saturated`", {
   for (task in tasks_b) {
     x$push_backlog(name = task, controller = "b")
   }
-  expect_equal(a$backlog$list(), tasks_a)
-  expect_equal(b$backlog$list(), tasks_b)
+  expect_equal(a$queue_backlog$list(), tasks_a)
+  expect_equal(b$queue_backlog$list(), tasks_b)
   for (index in c(1L, 2L)) {
     x$push(Sys.sleep(30), controller = "a")
   }
   expect_equal(x$pop_backlog(), tasks_b[seq_len(2L)])
-  expect_equal(a$backlog$list(), tasks_a)
-  expect_equal(b$backlog$list(), tasks_b[c(3L, 4L)])
+  expect_equal(a$queue_backlog$list(), tasks_a)
+  expect_equal(b$queue_backlog$list(), tasks_b[c(3L, 4L)])
   expect_equal(x$pop_backlog(), tasks_b[c(3L, 4L)])
-  expect_equal(a$backlog$list(), tasks_a)
-  expect_equal(b$backlog$list(), character(0L))
+  expect_equal(a$queue_backlog$list(), tasks_a)
+  expect_equal(b$queue_backlog$list(), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
 })
 
@@ -752,8 +752,8 @@ crew_test("backlog with the second controller saturated`", {
     crew_test_sleep()
   })
   x$start()
-  expect_equal(a$backlog$list(), character(0L))
-  expect_equal(b$backlog$list(), character(0L))
+  expect_equal(a$queue_backlog$list(), character(0L))
+  expect_equal(b$queue_backlog$list(), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
   tasks_a <- paste0("a_", seq_len(4L))
   for (task in tasks_a) {
@@ -763,17 +763,17 @@ crew_test("backlog with the second controller saturated`", {
   for (task in tasks_b) {
     x$push_backlog(name = task, controller = "b")
   }
-  expect_equal(a$backlog$list(), tasks_a)
-  expect_equal(b$backlog$list(), tasks_b)
+  expect_equal(a$queue_backlog$list(), tasks_a)
+  expect_equal(b$queue_backlog$list(), tasks_b)
   for (index in c(1L, 2L)) {
     x$push(Sys.sleep(30), controller = "b")
   }
   expect_equal(x$pop_backlog(), tasks_a[seq_len(2L)])
-  expect_equal(a$backlog$list(), tasks_a[c(3L, 4L)])
-  expect_equal(b$backlog$list(), tasks_b)
+  expect_equal(a$queue_backlog$list(), tasks_a[c(3L, 4L)])
+  expect_equal(b$queue_backlog$list(), tasks_b)
   expect_equal(x$pop_backlog(), tasks_a[c(3L, 4L)])
-  expect_equal(a$backlog$list(), character(0L))
-  expect_equal(b$backlog$list(), tasks_b)
+  expect_equal(a$queue_backlog$list(), character(0L))
+  expect_equal(b$queue_backlog$list(), tasks_b)
   expect_equal(x$pop_backlog(), character(0L))
 })
 

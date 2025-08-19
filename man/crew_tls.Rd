@@ -45,7 +45,7 @@ directly signed by a certificate authority (CA),
 then only the certificate of the CA is needed. But if you have a whole
 certificate chain which begins at your own certificate and ends with the
 CA, then you can supply the whole certificate chain as a character vector
-which begins at your own certificate and ends with
+of file paths, beginning at your own certificate and ending with
 the certificate of the CA.}
 
 \item{validate}{Logical of length 1, whether to validate the configuration

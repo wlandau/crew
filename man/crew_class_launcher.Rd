@@ -114,6 +114,7 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
 \item \href{#method-crew_class_launcher-crashes}{\code{crew_class_launcher$crashes()}}
 \item \href{#method-crew_class_launcher-set_name}{\code{crew_class_launcher$set_name()}}
+\item \href{#method-crew_class_launcher-clone}{\code{crew_class_launcher$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -517,6 +518,23 @@ Deprecated on 2025-01-28 (\code{crew} version 1.0.0).
 }
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-clone}{}}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
 }
 }
 }

@@ -82,3 +82,8 @@ crew_test("mirai_assert()", {
     class = "crew_warning"
   )
 })
+
+crew_test("mirai_condition_message()", {
+  out <- mirai_condition_message(structure(new.env(), message = "123"))
+  expect_equal(out, "123")
+})

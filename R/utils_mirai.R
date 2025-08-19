@@ -115,16 +115,23 @@ mirai_assert <- function(task, launching) {
       crew_error(
         message = paste(
           "Error asynchronously launching a worker:",
-          as.character(data)
+          mirai_condition_message(data)
         )
       )
     } else {
       crew_warning(
         message = paste(
           "Error asynchronously terminating a worker:",
-          as.character(data)
+          mirai_condition_message(data)
         )
       )
     }
   }
+}
+
+mirai_condition_message <- function(data) {
+  tryCatch(
+    as.character(data),
+    error = function(condition) attr(data, "message")
+  )
 }

@@ -9,7 +9,7 @@ which launch and manage workers."><meta property="og:image" content="https://wla
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -652,7 +652,7 @@ of the worker.</p></dd>
 <span class="r-in"><span><span class="va">launcher</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_launcher_local.html">crew_launcher_local</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span>url <span class="op">=</span> <span class="st">"tcp://127.0.0.1:57000"</span>, profile <span class="op">=</span> <span class="st">"profile"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">call</span><span class="op">(</span>worker <span class="op">=</span> <span class="st">"worker_name"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tls = NULL, rs = NULL), launcher = \"0f52dffe\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tlscert = NULL, rs = NULL), launcher = \"90f91afc\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>

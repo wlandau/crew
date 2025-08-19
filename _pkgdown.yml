@@ -62,10 +62,6 @@ reference:
   contents:
   - crew_throttle
   - crew_class_throttle
-- title: Queues
-  contents:
-  - crew_queue
-  - crew_class_queue
 - title: Local asynchronicity
   contents:
   - crew_async

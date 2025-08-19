@@ -174,7 +174,7 @@ crew_class_controller <- R6::R6Class(
     # TODO: remove if/when callbacks can efficiently push to .queue_resolved.
     .resolve = function(force) {
       queue <- .subset2(private, ".queue_resolved")
-      if (!(force || .subset2(queue, "n") < 1L)) {
+      if (!(force || .subset2(queue, "size")() < 1L)) {
         return()
       }
       status <- eapply(
@@ -1369,7 +1369,7 @@ crew_class_controller <- R6::R6Class(
       }
       .subset2(private, ".resolve")(force = FALSE)
       queue <- .subset2(private, ".queue_resolved")
-      if (.subset2(queue, "n") < 1L) {
+      if (.subset2(queue, "size")() < 1L) {
         return(NULL)
       }
       name <- .subset2(queue, "pop")()
@@ -1468,7 +1468,7 @@ crew_class_controller <- R6::R6Class(
       .subset2(private, ".resolve")(force = TRUE)
       queue <- .subset2(private, ".queue_resolved")
       queue_pop <- .subset2(queue, "pop")
-      n <- .subset2(queue, "n")
+      n <- .subset2(queue, "size")()
       names <- as.character(replicate(n, queue_pop(), simplify = FALSE))
       if (!length(names)) {
         return(NULL)
@@ -1684,7 +1684,7 @@ crew_class_controller <- R6::R6Class(
       backlog <- .subset2(private, ".queue_backlog")
       n <- .subset2(.subset2(self, "launcher"), "workers") -
         .subset2(self, "unresolved")()
-      n <- min(n, .subset2(backlog, "n"))
+      n <- min(n, .subset2(backlog, "size")())
       if (n < 1L) {
         return(character(0L))
       }

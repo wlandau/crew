@@ -145,16 +145,15 @@ crew_class_controller <- R6::R6Class(
       environment(private$.callback)$.resolved <- 0L
     },
     .name_new_task = function(name) {
-      tasks <- .subset2(private, ".tasks")
       if (is.null(name)) {
         name <- name_task_tempfile()
         name <- if_any(
-          is.null(.subset2(tasks, name)),
+          is.null(.subset2(.tasks, name)),
           name,
           name_task_nanonext()
         )
       }
-      if (!is.null(.subset2(tasks, name))) {
+      if (!is.null(.subset2(.tasks, name))) {
         crew_error(
           message = paste(
             "crew task name",
@@ -665,8 +664,8 @@ crew_class_controller <- R6::R6Class(
       save_command = NULL,
       controller = NULL
     ) {
-      .subset2(self, "start")()
-      name <- .subset2(private, ".name_new_task")(name)
+      start()
+      name <- .name_new_task(name)
       if (substitute) {
         command <- substitute(command)
       }
@@ -675,12 +674,10 @@ crew_class_controller <- R6::R6Class(
       } else {
         .timeout <- seconds_timeout * 1000
       }
-      backup <- .subset2(private, ".backup")
-      if (!is.null(backup)) {
-        max <- .subset2(private, ".crashes_max")
-        if ((max > 0L) && (.subset2(self, "crashes")(name = name) == max)) {
+      if (!is.null(.backup)) {
+        if ((.crashes_max > 0L) && (crashes(name = name) == .crashes_max)) {
           return(
-            .subset2(backup, "push")(
+            .subset2(.backup, "push")(
               command = command,
               data = data,
               globals = globals,
@@ -709,18 +706,18 @@ crew_class_controller <- R6::R6Class(
           algorithm = algorithm,
           packages = packages,
           library = library,
-          reset_globals = .subset2(private, ".reset_globals"),
-          reset_packages = .subset2(private, ".reset_packages"),
-          reset_options = .subset2(private, ".reset_options"),
-          garbage_collection = .subset2(private, ".garbage_collection")
+          reset_globals = .reset_globals,
+          reset_packages = .reset_packages,
+          reset_options = .reset_options,
+          garbage_collection = .garbage_collection
         ),
         .timeout = .timeout,
-        .compute = .subset2(.subset2(private, ".client"), "profile")
+        .compute = .subset2(.client, "profile")
       )
-      nanonext::.keep(task, .subset2(private, ".context"))
-      .subset2(private, ".register_task")(name, task)
+      nanonext::.keep(task, .context)
+      .register_task(name, task)
       if (scale) {
-        .subset2(self, "scale")(throttle = throttle)
+        scale(throttle = throttle)
       }
       invisible(task)
     },

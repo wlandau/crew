@@ -79,8 +79,7 @@ auto-scaling is currently running}
 
 \item{\code{queue_resolved}}{Queue of resolved unpopped/uncollected tasks.}
 
-\item{\code{queue_backlog}}{A \code{\link[=crew_queue]{crew_queue()}} object tracking explicitly
-backlogged tasks.}
+\item{\code{queue_backlog}}{Queue tracking explicitly backlogged tasks.}
 }
 \if{html}{\out{</div>}}
 }

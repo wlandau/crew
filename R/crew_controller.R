@@ -139,9 +139,9 @@ crew_class_controller <- R6::R6Class(
         cancel = 0L,
         warning = 0L
       )
-      .queue_backlog <<- crew_queue()
-      .queue_resolved <<- crew_queue()
-      .resolved <<- -1L
+      .queue_backlog <<- collection::queue()
+      .queue_resolved <<- collection::queue()
+      .resolved <<- 0L
     },
     .name_new_task = function(name) {
       if (is.null(name)) {
@@ -170,23 +170,17 @@ crew_class_controller <- R6::R6Class(
       .pushed <<- .pushed + 1L
     },
     .resolve = function(force) {
-      if ((!force) && .subset2(.queue_resolved, "nonempty")()) {
-        return()
-      }
-      observed <- .subset2(.client, "resolved")()
-      expected <- .resolved
-      if ((!force) && (observed == expected)) {
+      if (!(force || .subset2(.queue_resolved, "size")() < 1L)) {
         return()
       }
       status <- eapply(
-        env = .tasks,
+        env = tasks,
         FUN = nanonext::.unresolved,
         all.names = TRUE,
         USE.NAMES = TRUE
       )
       resolved <- names(status)[!as.logical(status)]
-      .subset2(.queue_resolved, "set")(data = resolved)
-      .resolved <<- observed
+      .queue_resolved <<- collections::queue(items = resolved)
     },
     .wait_all_once = function() {
       if (unresolved() > 0L) {
@@ -299,8 +293,7 @@ crew_class_controller <- R6::R6Class(
     queue_resolved = function() {
       .queue_resolved
     },
-    #' @field queue_backlog A [crew_queue()] object tracking explicitly
-    #'   backlogged tasks.
+    #' @field queue_backlog Queue tracking explicitly backlogged tasks.
     queue_backlog = function() {
       .queue_backlog
     }
@@ -405,12 +398,10 @@ crew_class_controller <- R6::R6Class(
         is.finite(.)
       )
       if (!is.null(.queue_resolved)) {
-        crew_assert(.queue_resolved, inherits(., "crew_class_queue"))
-        .queue_resolved$validate()
+        crew_assert(is.environment(.queue_resolved))
       }
       if (!is.null(.queue_backlog)) {
-        crew_assert(.queue_backlog, inherits(., "crew_class_queue"))
-        .queue_backlog$validate()
+        crew_assert(is.environment(.queue_backlog))
       }
       invisible()
     },
@@ -1349,10 +1340,10 @@ crew_class_controller <- R6::R6Class(
         return(NULL)
       }
       .resolve(force = FALSE)
-      name <- .subset2(.queue_resolved, "pop")()
-      if (is.null(name)) {
+      if (.subset2(.queue_resolved, "size")() < 1L) {
         return(NULL)
       }
+      name <- .subset2(.queue_resolved, "pop")()
       task <- .subset2(.tasks, name)
       remove(list = name, envir = tasks)
       .popped <<- .popped + 1L
@@ -1442,7 +1433,9 @@ crew_class_controller <- R6::R6Class(
         return(NULL)
       }
       .resolve(force = TRUE)
-      names <- .subset2(.queue_resolved, "collect")()
+      queue_pop <- .subset2(.queue_resolved, "pop")
+      n <- .subset2(.queue_resolved, "size")()
+      names <- as.character(replicate(n, queue_pop(), simplify = FALSE))
       if (!length(names)) {
         return(NULL)
       }
@@ -1644,10 +1637,12 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     pop_backlog = function(controllers = NULL) {
       n <- .subset2(.launcher, "workers") - unresolved()
-      if (n < 1L || .subset2(.queue_backlog, "empty")()) {
+      n <- min(n, .subset2(backlog, "size")())
+      if (n < 1L) {
         return(character(0L))
       }
-      .subset2(.queue_backlog, "pop")(n)
+      backlog_pop <- .subset2(backlog, "pop")
+      as.character(replicate(n, backlog_pop(), simplify = FALSE))
     },
     #' @description Summarize the workers and tasks of the controller.
     #' @return A data frame of summary statistics on the tasks
@@ -1733,7 +1728,8 @@ crew_class_controller <- R6::R6Class(
       .popped <<- 0L
       .crash_log <<- new.env(parent = emptyenv(), hash = TRUE)
       .autoscaling <<- FALSE
-      .queue_resolved <<- crew_queue()
+      .queue_resolved <<- collections::queue()
+      .queue_backlog <<- collections::queue()
       .resolved <<- -1L
       invisible()
     }

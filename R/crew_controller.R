@@ -92,7 +92,7 @@ crew_controller <- function(
 #' @details See [crew_controller()].
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-#' client <- crew_client() d
+#' client <- crew_client()
 #' launcher <- crew_launcher_local()
 #' controller <- crew_controller(client = client, launcher = launcher)
 #' controller$start()

@@ -61,6 +61,7 @@ Other plugin_local:
 \item \href{#method-crew_class_launcher_local-validate}{\code{crew_class_launcher_local$validate()}}
 \item \href{#method-crew_class_launcher_local-launch_worker}{\code{crew_class_launcher_local$launch_worker()}}
 \item \href{#method-crew_class_launcher_local-terminate_worker}{\code{crew_class_launcher_local$terminate_worker()}}
+\item \href{#method-crew_class_launcher_local-clone}{\code{crew_class_launcher_local$clone()}}
 }
 }
 \if{html}{\out{
@@ -244,6 +245,23 @@ returned by \code{launch_worker()}.}
 }
 \subsection{Returns}{
 A list with the process ID of the worker.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher_local-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher_local-clone}{}}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
 }
 }
 }

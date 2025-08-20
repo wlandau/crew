@@ -11,7 +11,7 @@ See \code{\link[=crew_controller]{crew_controller()}}.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
-client <- crew_client()
+client <- crew_client() d
 launcher <- crew_launcher_local()
 controller <- crew_controller(client = client, launcher = launcher)
 controller$start()

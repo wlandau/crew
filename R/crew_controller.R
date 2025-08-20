@@ -543,11 +543,11 @@ crew_class_controller <- R6::R6Class(
       }
       poll <- function() {
         if (isTRUE(.client$started) && isTRUE(.autoscaling)) {
-          scale(throttle = FALSE)
+          self$scale(throttle = FALSE) # necessary reference to self
           later::later(func = poll, delay = .client$seconds_interval)
         }
       }
-      start()
+      self$start() # necessary reference to self
       .autoscaling <<- TRUE
       poll()
       invisible()

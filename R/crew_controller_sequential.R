@@ -54,9 +54,9 @@ crew_class_controller_sequential <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     start = function(controllers = NULL) {
-      if (!.subset2(.subset2(self, "client"), "started")) {
-        private$.client$set_started()
-        private$.register_started()
+      if (!.subset2(.client, "started")) {
+        .client$set_started()
+        .register_started()
       }
       invisible()
     },
@@ -158,8 +158,8 @@ crew_class_controller_sequential <- R6::R6Class(
       save_command = NULL,
       controller = NULL
     ) {
-      .subset2(self, "start")()
-      name <- private$.name_new_task(name)
+      start()
+      name <- .name_new_task(name)
       if (substitute) {
         command <- substitute(command)
       }
@@ -178,9 +178,8 @@ crew_class_controller_sequential <- R6::R6Class(
         ),
         class = "mirai"
       )
-      .subset2(private, ".register_task")(name, task)
-      client <- .subset2(private, ".client")
-      nanonext::cv_signal(.subset2(client, "condition"))
+      .register_task(name, task)
+      nanonext::cv_signal(.subset2(.client, "condition"))
       invisible(task)
     },
     #' @description Not applicable to the sequential controller.

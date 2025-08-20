@@ -24,6 +24,7 @@ crew_relay <- function(throttle = crew_throttle()) {
 crew_class_relay <- R6::R6Class(
   classname = "crew_class_relay",
   cloneable = FALSE,
+  portable = FALSE,
   private = list(
     .condition = NULL,
     .from = NULL,
@@ -33,19 +34,19 @@ crew_class_relay <- R6::R6Class(
   active = list(
     #' @field condition Main condition variable.
     condition = function() {
-      .subset2(private, ".condition")
+      .condition
     },
     #' @field from Condition variable to relay from.
     from = function() {
-      .subset2(private, ".from")
+      .from
     },
     #' @field to Condition variable to relay to.
     to = function() {
-      .subset2(private, ".to")
+      .to
     },
     #' @field throttle A [crew_throttle()] object for `wait()`.
     throttle = function() {
-      .subset2(private, ".throttle")
+      .throttle
     }
   ),
   public = list(
@@ -53,7 +54,7 @@ crew_class_relay <- R6::R6Class(
     #' @return A [crew_relay()] object.
     #' @param throttle A [crew_throttle()] object.
     initialize = function(throttle) {
-      private$.throttle <- throttle
+      .throttle <<- throttle
     },
     #' @description Validate the object.
     #' @return `NULL` (invisibly).
@@ -63,19 +64,19 @@ crew_class_relay <- R6::R6Class(
           crew_assert(inherits(private[[field]], "conditionVariable"))
         }
       }
-      private$.throttle$validate()
+      .throttle$validate()
       invisible()
     },
     #' @description Start the relay object.
     #' @return `NULL` (invisibly).
     start = function() {
-      if (is.null(private$.condition)) {
-        private$.condition <- nanonext::cv()
-        if (!is.null(private$.from)) {
-          nanonext::`%~>%`(cv = private$.from, cv2 = private$.condition)
+      if (is.null(.condition)) {
+        .condition <<- nanonext::cv()
+        if (!is.null(.from)) {
+          nanonext::`%~>%`(cv = .from, cv2 = .condition)
         }
-        if (!is.null(private$.to)) {
-          nanonext::`%~>%`(cv = private$.condition, cv2 = private$.to)
+        if (!is.null(.to)) {
+          nanonext::`%~>%`(cv = .condition, cv2 = .to)
         }
       }
       invisible()
@@ -83,32 +84,30 @@ crew_class_relay <- R6::R6Class(
     #' @description Terminate the relay object.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      private$.condition <- NULL
+      .condition <<- NULL
       invisible()
     },
     #' @description Set the condition variable to relay from.
     #' @return `NULL` (invisibly).
     #' @param from Condition variable to relay from.
     set_from = function(from) {
-      private$.from <- from
+      .from <<- from
       invisible()
     },
     #' @description Set the condition variable to relay to.
     #' @return `NULL` (invisibly).
     #' @param to Condition variable to relay to.
     set_to = function(to) {
-      private$.to <- to
+      .to <<- to
       invisible()
     },
     #' @description Wait until an unobserved task resolves or the timeout
     #'   is reached. Use the throttle to determine the waiting time.
     #' @return `NULL` (invisibly).
     wait = function() {
-      condition <- .subset2(self, "condition")
-      throttle <- .subset2(private, ".throttle")
-      timeout <- .subset2(throttle, "seconds_interval") * 1000
+      timeout <- .subset2(.throttle, "seconds_interval") * 1000
       signal <- nanonext::until_(cv = condition, msec = timeout)
-      .subset2(throttle, "update")(signal)
+      .subset2(.throttle, "update")(signal)
       signal
     }
   )

@@ -69,6 +69,7 @@ crew_tls <- function(
 crew_class_tls <- R6::R6Class(
   classname = "crew_class_tls",
   cloneable = FALSE,
+  portable = FALSE,
   private = list(
     .mode = NULL,
     .key = NULL,
@@ -89,7 +90,7 @@ crew_class_tls <- R6::R6Class(
     },
     .validate_mode_custom = function() {
       crew_assert(
-        private$.key,
+        .key,
         is.character(.),
         length(.) == 1L,
         nzchar(.),
@@ -100,7 +101,7 @@ crew_class_tls <- R6::R6Class(
         )
       )
       crew_assert(
-        private$.password %|||% "x",
+        .password %|||% "x",
         is.character(.),
         length(.) == 1L,
         nzchar(.),
@@ -111,7 +112,7 @@ crew_class_tls <- R6::R6Class(
         )
       )
       crew_assert(
-        private$.certificates,
+        .certificates,
         is.character(.),
         length(.) >= 1L,
         nzchar(.),
@@ -121,15 +122,15 @@ crew_class_tls <- R6::R6Class(
           "must a nonempty nonmissing character vector of length >= 1."
         )
       )
-      files <- c(private$.key, private$.certificates)
+      files <- c(.key, .certificates)
       for (file in files) {
         crew_assert(
           file.exists(file),
           message = paste("file not found:", file)
         )
       }
-      crew_tls_assert_key(private$.key)
-      for (certificate in private$.certificates) {
+      crew_tls_assert_key(.key)
+      for (certificate in .certificates) {
         crew_tls_assert_certificate(certificate)
       }
       invisible()
@@ -146,28 +147,28 @@ crew_class_tls <- R6::R6Class(
       paste(lines, collapse = "\n")
     },
     .read_key = function() {
-      private$.read_files(files = private$.key)
+      .read_files(files = .key)
     },
     .read_certificates = function() {
-      private$.read_files(files = private$.certificates)
+      .read_files(files = .certificates)
     }
   ),
   active = list(
     #' @field mode See [crew_tls()].
     mode = function() {
-      .subset2(private, ".mode")
+      .mode
     },
     #' @field key See [crew_tls()].
     key = function() {
-      .subset2(private, ".key")
+      .key
     },
     #' @field password See [crew_tls()].
     password = function() {
-      .subset2(private, ".password")
+      .password
     },
     #' @field certificates See [crew_tls()].
     certificates = function() {
-      .subset2(private, ".certificates")
+      .certificates
     }
   ),
   public = list(
@@ -185,10 +186,10 @@ crew_class_tls <- R6::R6Class(
       password = NULL,
       certificates = NULL
     ) {
-      private$.mode <- mode
-      private$.key <- key
-      private$.password <- password
-      private$.certificates <- certificates
+      .mode <<- mode
+      .key <<- key
+      .password <<- password
+      .certificates <<- certificates
     },
     #' @description Validate the object.
     #' @return `NULL` (invisibly).
@@ -196,7 +197,7 @@ crew_class_tls <- R6::R6Class(
     #'   with `nanonext::tls_config()`.
     validate = function(test = TRUE) {
       crew_assert(
-        private$.mode,
+        .mode,
         is.character(.),
         length(.) == 1L,
         nzchar(.),
@@ -208,18 +209,18 @@ crew_class_tls <- R6::R6Class(
         )
       )
       if_any(
-        private$.mode %in% c("none", "automatic"),
-        private$.validate_mode_automatic(),
-        private$.validate_mode_custom()
+        .mode %in% c("none", "automatic"),
+        .validate_mode_automatic(),
+        .validate_mode_custom()
       )
       # Cannot test in unit tests because custom TLS configuration
       # is platform-dependent and low-level.
       # nocov start
       if (isTRUE(test)) {
         nanonext::tls_config(
-          client = self$worker(profile = "default"),
-          server = self$client(),
-          pass = private$.password
+          client = worker(profile = "default"),
+          server = client(),
+          pass = .password
         )
       }
       # nocov end
@@ -228,22 +229,22 @@ crew_class_tls <- R6::R6Class(
     #' @description TLS credentials for the `crew` client.
     #' @return `NULL` or character vector, depending on the mode.
     client = function() {
-      if (private$.mode != "custom") {
+      if (.mode != "custom") {
         return(NULL)
-      } else if (private$.mode == "custom") {
-        return(c(private$.read_certificates(), private$.read_key()))
+      } else if (.mode == "custom") {
+        return(c(.read_certificates(), .read_key()))
       }
     },
     #' @description TLS credentials for `crew` workers.
     #' @return `NULL` or character vector, depending on the mode.
     #' @param profile Character of length 1 with the `mirai` compute profile.
     worker = function(profile) {
-      if (private$.mode == "none") {
+      if (.mode == "none") {
         return(NULL)
-      } else if (private$.mode == "automatic") {
+      } else if (.mode == "automatic") {
         return(mirai::nextget(x = "tls", .compute = profile))
-      } else if (private$.mode == "custom") {
-        return(c(private$.read_certificates(), ""))
+      } else if (.mode == "custom") {
+        return(c(.read_certificates(), ""))
       }
     },
     #' @description Form the URL for `crew` worker connections.
@@ -252,7 +253,7 @@ crew_class_tls <- R6::R6Class(
     #' @param port Non-negative integer with the port number
     #'   (0 to let NNG select a random ephemeral port).
     url = function(host, port) {
-      prefix <- if_any(private$.mode == "none", "tcp", "tls+tcp")
+      prefix <- if_any(.mode == "none", "tcp", "tls+tcp")
       sprintf("%s://%s:%s", prefix, host, port)
     }
   )

@@ -138,6 +138,7 @@ crew_client <- function(
 crew_class_client <- R6::R6Class(
   classname = "crew_class_client",
   cloneable = FALSE,
+  portable = FALSE,
   private = list(
     .host = NULL,
     .port = NULL,
@@ -156,56 +157,56 @@ crew_class_client <- R6::R6Class(
   active = list(
     #' @field host See [crew_client()].
     host = function() {
-      .subset2(private, ".host")
+      .host
     },
     #' @field port See [crew_client()].
     port = function() {
-      .subset2(private, ".port")
+      .port
     },
     #' @field tls See [crew_client()].
     tls = function() {
-      .subset2(private, ".tls")
+      .tls
     },
     #' @field serialization See [crew_client()].
     serialization = function() {
-      .subset2(private, ".serialization")
+      .serialization
     },
     #' @field seconds_interval See [crew_client()].
     seconds_interval = function() {
-      .subset2(private, ".seconds_interval")
+      .seconds_interval
     },
     #' @field seconds_timeout See [crew_client()].
     seconds_timeout = function() {
-      .subset2(private, ".seconds_timeout")
+      .seconds_timeout
     },
     #' @field relay Relay object for event-driven programming on a downstream
     #'   condition variable.
     relay = function() {
-      .subset2(private, ".relay")
+      .relay
     },
     #' @field started Whether the client is started.
     started = function() {
-      .subset2(private, ".started")
+      .started
     },
     #' @field url Client websocket URL.
     url = function() {
-      .subset2(private, ".url")
+      .url
     },
     #' @field profile Compute profile of the client.
     profile = function() {
-      .subset2(private, ".profile")
+      .profile
     },
     #' @field condition Condition variable of the client.
     condition = function() {
-      .subset2(private, ".condition")
+      .condition
     },
     #' @field client Process ID of the local process running the client.
     client = function() {
-      .subset2(private, ".client")
+      .client
     },
     #' @field dispatcher Process ID of the `mirai` dispatcher
     dispatcher = function() {
-      .subset2(private, ".dispatcher")
+      .dispatcher
     }
   ),
   public = list(
@@ -234,31 +235,39 @@ crew_class_client <- R6::R6Class(
       seconds_timeout = NULL,
       relay = NULL
     ) {
-      private$.host <- host
-      private$.port <- port
-      private$.tls <- tls
-      private$.serialization <- serialization
-      private$.seconds_interval <- seconds_interval
-      private$.seconds_timeout <- seconds_timeout
+      .host <<- host
+      .port <<- port
+      .tls <<- tls
+      .serialization <<- serialization
+      .seconds_interval <<- seconds_interval
+      .seconds_timeout <<- seconds_timeout
       # Creating the CV here instead of as a default R6 field value
       # somehow appeases covr and R CMD check.
-      private$.condition <- nanonext::cv()
-      private$.relay <- relay
+      .condition <<- nanonext::cv()
+      .relay <<- relay
     },
     #' @description Validate the client.
     #' @return `NULL` (invisibly).
     validate = function() {
       crew_assert(
-        private$.host,
+        .host,
         is.character(.),
         length(.) == 1L,
         !anyNA(.),
-        nzchar(.)
+        nzchar(.),
+        message = "host must be a valid nonempty character string."
       )
-      crew_assert(private$.port, is.integer(.), length(.) == 1L, !anyNA(.))
-      crew_assert(private$.port, . >= 0L, . <= 65535L)
       crew_assert(
-        inherits(private$.tls, "crew_class_tls"),
+        .port,
+        is.integer(.),
+        length(.) == 1L,
+        is.finite(.),
+        . >= 0L,
+        . <= 65535L,
+        message = "port must be a single finite integer between 0 and 65536."
+      )
+      crew_assert(
+        inherits(.tls, "crew_class_tls"),
         message = "argument tls must be an object created by crew_tls()"
       )
       fields <- c(
@@ -271,27 +280,34 @@ crew_class_client <- R6::R6Class(
           is.numeric(.),
           length(.) == 1L,
           !is.na(.),
-          . >= 0
+          . >= 0,
+          message = paste(
+            field,
+            "must be a valid nonempty non-missing number"
+          )
         )
       }
       if_any(
-        is.null(private$.client),
+        is.null(.client),
         NULL,
-        crew_assert(inherits(private$.client, "ps_handle"))
+        crew_assert(inherits(.client, "ps_handle"))
       )
       if_any(
-        is.null(private$.dispatcher),
+        is.null(.dispatcher),
         NULL,
-        crew_assert(inherits(private$.dispatcher, "ps_handle"))
+        crew_assert(inherits(.dispatcher, "ps_handle"))
       )
-      crew_assert(private$.seconds_timeout >= private$.seconds_interval)
-      crew_assert(inherits(private$.relay, "crew_class_relay"))
+      crew_assert(
+        .seconds_timeout >= .seconds_interval,
+        message = "seconds_timeout cannot be less than seconds_interval"
+      )
+      crew_assert(inherits(.relay, "crew_class_relay"))
       if_any(
-        is.null(private$.serialization),
+        is.null(.serialization),
         NULL,
-        crew_assert(is.list(private$.serialization))
+        crew_assert(is.list(.serialization))
       )
-      private$.relay$validate()
+      .relay$validate()
       invisible()
     },
     #' @description Register the client as started.
@@ -300,85 +316,82 @@ crew_class_client <- R6::R6Class(
     #'   the sequential controller.
     #' @return `NULL` (invisibly).
     set_started = function() {
-      private$.started <- TRUE
+      .started <<- TRUE
     },
     #' @description Start listening for workers on the available sockets.
     #' @return `NULL` (invisibly).
     start = function() {
-      if (isTRUE(private$.started)) {
+      if (!is.null(.started) && .started) {
         return(invisible())
       }
-      private$.profile <- crew_random_name()
+      .profile <<- crew_random_name()
       mirai::daemons(
-        url = private$.tls$url(host = private$.host, port = private$.port),
+        url = .tls$url(host = .host, port = .port),
         dispatcher = TRUE,
         seed = NULL,
-        serial = private$.serialization,
-        tls = private$.tls$client(),
-        pass = private$.tls$password,
-        .compute = private$.profile
+        serial = .serialization,
+        tls = .tls$client(),
+        pass = .tls$password,
+        .compute = .profile
       )
-      private$.url <- mirai::nextget("url", .compute = private$.profile)
-      private$.client <- ps::ps_handle()
+      .url <<- mirai::nextget("url", .compute = .profile)
+      .client <<- ps::ps_handle()
       # TODO: remove code that gets the dispatcher PID if the dispatcher
       # process becomes a C thread.
       # Begin dispatcher code.
-      pid <- mirai::nextget("pid", .compute = private$.profile)
+      pid <- mirai::nextget("pid", .compute = .profile)
       if (!is.null(pid)) {
-        private$.dispatcher <- ps::ps_handle(pid = pid)
+        .dispatcher <<- ps::ps_handle(pid = pid)
       }
       # End dispatcher code.
-      private$.condition <- mirai::nextget(
-        x = "cv",
-        .compute = private$.profile
-      )
-      private$.relay$set_from(.subset2(private, ".condition"))
-      private$.relay$start()
-      private$.started <- TRUE
+      .condition <<- mirai::nextget(x = "cv", .compute = .profile)
+      .relay$set_from(.condition)
+      .relay$start()
+      .started <<- TRUE
       invisible()
     },
     #' @description Stop the mirai client and disconnect from the
     #'   worker websockets.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      if (!isTRUE(private$.started)) {
+      if (!isTRUE(.started)) {
         return(invisible())
       }
-      if (!is.null(private$.profile)) {
-        mirai::daemons(n = 0L, .compute = private$.profile)
+      if (!is.null(.profile)) {
+        mirai::daemons(n = 0L, .compute = .profile)
       }
-      private$.profile <- NULL
-      private$.condition <- nanonext::cv()
-      private$.relay$terminate()
-      private$.url <- NULL
-      private$.started <- FALSE
+      .profile <<- NULL
+      .condition <<- nanonext::cv()
+      .relay$terminate()
+      .url <<- NULL
+      .started <<- FALSE
       # TODO: if the dispatcher process becomes a C thread,
       # delete these superfluous checks on the dispatcher.
       # Begin dispatcher checks.
-      if (is.null(private$.dispatcher)) {
+      if (is.null(.dispatcher)) {
         return(invisible())
       }
       tryCatch(
         crew_retry(
-          fun = ~ !ps::ps_is_running(p = private$.dispatcher),
-          seconds_interval = private$.seconds_interval,
-          seconds_timeout = private$.seconds_timeout
+          fun = ~ !ps::ps_is_running(p = .dispatcher),
+          seconds_interval = .seconds_interval,
+          seconds_timeout = .seconds_timeout
         ),
         error = function(condition) NULL
       )
       if_any(
-        ps::ps_is_running(p = private$.dispatcher),
+        ps::ps_is_running(p = .dispatcher),
         try(
-          crew_terminate_process(pid = ps::ps_pid(private$.dispatcher)),
+          crew_terminate_process(pid = ps::ps_pid(.dispatcher)),
           silent = TRUE
         ),
         NULL
       )
       tryCatch(
         crew_retry(
-          fun = ~ !ps::ps_is_running(p = ps::ps_pid(private$.dispatcher)),
-          seconds_interval = private$.seconds_interval,
-          seconds_timeout = private$.seconds_timeout
+          fun = ~ !ps::ps_is_running(p = ps::ps_pid(.dispatcher)),
+          seconds_interval = .seconds_interval,
+          seconds_timeout = .seconds_timeout
         ),
         error = function(condition) NULL
       )
@@ -388,7 +401,7 @@ crew_class_client <- R6::R6Class(
     #' @description Get the true value of the `nanonext` condition variable.
     #' @return The value of the `nanonext` condition variable.
     resolved = function() {
-      nanonext::cv_value(.subset2(private, ".condition"))
+      nanonext::cv_value(.condition)
     },
     #' @description Internal function:
     #'   return the `mirai` status of the compute profile.
@@ -398,9 +411,9 @@ crew_class_client <- R6::R6Class(
     #' @return A list with status information.
     status = function() {
       mirai_status(
-        profile = private$.profile,
-        seconds_interval = private$.seconds_interval,
-        seconds_timeout = private$.seconds_timeout
+        profile = .profile,
+        seconds_interval = .seconds_interval,
+        seconds_timeout = .seconds_timeout
       )
     },
     #' @description Get the process IDs of the local process and the
@@ -410,10 +423,9 @@ crew_class_client <- R6::R6Class(
     pids = function() {
       # TODO: remove this function if/when the dispatcher becomes a thread.
       out <- c(local = Sys.getpid())
-      dispatcher <- private$.dispatcher
-      if (!is.null(dispatcher)) {
-        out <- c(out, ps::ps_pid(dispatcher))
-        names(out)[2L] <- paste0("dispatcher-", private$.profile)
+      if (!is.null(.dispatcher)) {
+        out <- c(out, ps::ps_pid(.dispatcher))
+        names(out)[2L] <- paste0("dispatcher-", .profile)
       }
       out
     }

@@ -139,8 +139,8 @@ crew_class_controller <- R6::R6Class(
         cancel = 0L,
         warning = 0L
       )
-      .queue_backlog <<- collection::queue()
-      .queue_resolved <<- collection::queue()
+      .queue_backlog <<- collections::queue()
+      .queue_resolved <<- collections::queue()
       .resolved <<- 0L
     },
     .name_new_task = function(name) {
@@ -1637,11 +1637,11 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     pop_backlog = function(controllers = NULL) {
       n <- .subset2(.launcher, "workers") - unresolved()
-      n <- min(n, .subset2(backlog, "size")())
+      n <- min(n, .subset2(.queue_backlog, "size")())
       if (n < 1L) {
         return(character(0L))
       }
-      backlog_pop <- .subset2(backlog, "pop")
+      backlog_pop <- .subset2(.queue_backlog, "pop")
       as.character(replicate(n, backlog_pop(), simplify = FALSE))
     },
     #' @description Summarize the workers and tasks of the controller.

@@ -40,8 +40,7 @@ crew_test("custom launcher", {
     reset_globals = TRUE,
     reset_packages = FALSE,
     reset_options = FALSE,
-    garbage_collection = FALSE,
-    crashes_error = 5L
+    garbage_collection = FALSE
   ) {
     client <- crew::crew_client(
       host = host,
@@ -61,7 +60,6 @@ crew_test("custom launcher", {
       seconds_wall = seconds_wall,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
-      crashes_error = crashes_error,
       tls = tls
     )
     controller <- crew::crew_controller(
@@ -139,7 +137,6 @@ crew_test("custom launcher with local asyncs launch errors", {
     reset_packages = FALSE,
     reset_options = FALSE,
     garbage_collection = FALSE,
-    crashes_error = 5L,
     processes = NULL
   ) {
     client <- crew::crew_client(
@@ -160,7 +157,6 @@ crew_test("custom launcher with local asyncs launch errors", {
       seconds_wall = seconds_wall,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
-      crashes_error = crashes_error,
       tls = tls,
       processes = processes
     )
@@ -243,7 +239,6 @@ crew_test("custom launcher with local asyncs termination errors", {
     reset_packages = FALSE,
     reset_options = FALSE,
     garbage_collection = FALSE,
-    crashes_error = 5L,
     processes = NULL
   ) {
     client <- crew::crew_client(
@@ -264,7 +259,6 @@ crew_test("custom launcher with local asyncs termination errors", {
       seconds_wall = seconds_wall,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
-      crashes_error = crashes_error,
       tls = tls,
       processes = processes
     )
@@ -357,7 +351,6 @@ crew_test("custom launcher with async internal launcher tasks", {
     reset_packages = FALSE,
     reset_options = FALSE,
     garbage_collection = FALSE,
-    crashes_error = 5L,
     processes = NULL
   ) {
     client <- crew::crew_client(
@@ -378,7 +371,6 @@ crew_test("custom launcher with async internal launcher tasks", {
       seconds_wall = seconds_wall,
       tasks_max = tasks_max,
       tasks_timers = tasks_timers,
-      crashes_error = crashes_error,
       tls = tls,
       processes = processes
     )
@@ -453,8 +445,7 @@ crew_test("can terminate a lost worker with an async launch", {
     reset_globals = TRUE,
     reset_packages = FALSE,
     reset_options = FALSE,
-    garbage_collection = FALSE,
-    crashes_error = 5L
+    garbage_collection = FALSE
   ) {
     client <- crew::crew_client(
       host = host,
@@ -478,7 +469,6 @@ crew_test("can terminate a lost worker with an async launch", {
       reset_packages = reset_packages,
       reset_options = reset_options,
       garbage_collection = garbage_collection,
-      crashes_error = crashes_error,
       tls = tls
     )
     controller <- crew::crew_controller(

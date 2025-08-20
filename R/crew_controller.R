@@ -165,7 +165,7 @@ crew_class_controller <- R6::R6Class(
       }
       name
     },
-    .push_task = function(name, task) {
+    .register_task = function(name, task) {
       tasks <- .subset2(private, ".tasks")
       tasks[[name]] <- task
       private$.pushed <- .subset2(private, ".pushed") + 1L
@@ -714,7 +714,7 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = .subset2(.subset2(private, ".client"), "profile")
       )
-      .subset2(private, ".push_task")(name, task)
+      .subset2(private, ".register_task")(name, task)
       if (scale) {
         .subset2(self, "scale")(throttle = throttle)
       }

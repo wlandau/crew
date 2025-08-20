@@ -646,7 +646,7 @@ crew_class_launcher <- R6::R6Class(
       lost <- !active & !discovered
       handles <- instances$handle[lost]
       handles <- lapply(handles, mirai_resolve, launching = TRUE)
-      mirai_wait(map(handles, self$terminate_worker), launching = FALSE)
+      mirai_wait(lapply(handles, self$terminate_worker), launching = FALSE)
       private$.instances <- instances[active, ]
       invisible()
     },

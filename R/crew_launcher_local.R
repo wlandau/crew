@@ -165,7 +165,8 @@ crew_launcher_local <- function(
 crew_class_launcher_local <- R6::R6Class(
   classname = "crew_class_launcher_local",
   inherit = crew_class_launcher,
-  cloneable = FALSE,
+  cloneable = TRUE,
+  portable = TRUE,
   private = list(
     .options_local = NULL,
     .log_prepare = function() {

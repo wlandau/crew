@@ -104,6 +104,7 @@ crew_controller <- function(
 crew_class_controller <- R6::R6Class(
   classname = "crew_class_controller",
   cloneable = FALSE,
+  portable = FALSE,
   private = list(
     .client = NULL,
     .launcher = NULL,
@@ -124,12 +125,12 @@ crew_class_controller <- R6::R6Class(
     .queue_backlog = NULL,
     .resolved = -1L,
     .register_started = function() {
-      private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
-      private$.pushed <- 0L
-      private$.popped <- 0L
-      private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
-      private$.summary <- list(
-        controller = private$.launcher$name,
+      .tasks <<- new.env(parent = emptyenv(), hash = TRUE)
+      .pushed <<- 0L
+      .popped <<- 0L
+      .crash_log <<- new.env(parent = emptyenv(), hash = TRUE)
+      .summary <<- list(
+        controller = .launcher$name,
         tasks = 0L,
         seconds = 0,
         success = 0L,
@@ -138,21 +139,20 @@ crew_class_controller <- R6::R6Class(
         cancel = 0L,
         warning = 0L
       )
-      private$.queue_backlog <- crew_queue()
-      private$.queue_resolved <- crew_queue()
-      private$.resolved <- -1L
+      .queue_backlog <<- crew_queue()
+      .queue_resolved <<- crew_queue()
+      .resolved <<- -1L
     },
     .name_new_task = function(name) {
-      tasks <- .subset2(private, ".tasks")
       if (is.null(name)) {
         name <- name_task_tempfile()
         name <- if_any(
-          is.null(.subset2(tasks, name)),
+          is.null(.subset2(.tasks, name)),
           name,
           name_task_nanonext()
         )
       }
-      if (!is.null(.subset2(tasks, name))) {
+      if (!is.null(.subset2(.tasks, name))) {
         crew_error(
           message = paste(
             "crew task name",
@@ -166,60 +166,56 @@ crew_class_controller <- R6::R6Class(
       name
     },
     .register_task = function(name, task) {
-      tasks <- .subset2(private, ".tasks")
-      tasks[[name]] <- task
-      private$.pushed <- .subset2(private, ".pushed") + 1L
+      .tasks[[name]] <<- task
+      .pushed <<- .pushed + 1L
     },
     .resolve = function(force) {
-      queue <- .subset2(private, ".queue_resolved")
-      if ((!force) && .subset2(queue, "nonempty")()) {
+      if ((!force) && .subset2(.queue_resolved, "nonempty")()) {
         return()
       }
-      observed <- .subset2(.subset2(private, ".client"), "resolved")()
-      expected <- .subset2(private, ".resolved")
+      observed <- .subset2(.client, "resolved")()
+      expected <- .resolved
       if ((!force) && (observed == expected)) {
         return()
       }
-      tasks <- .subset2(private, ".tasks")
       status <- eapply(
-        env = tasks,
+        env = .tasks,
         FUN = nanonext::.unresolved,
         all.names = TRUE,
         USE.NAMES = TRUE
       )
       resolved <- names(status)[!as.logical(status)]
-      .subset2(queue, "set")(data = resolved)
-      private$.resolved <- observed
+      .subset2(.queue_resolved, "set")(data = resolved)
+      .resolved <<- observed
     },
     .wait_all_once = function() {
-      if (.subset2(self, "unresolved")() > 0L) {
-        private$.client$relay$wait()
+      if (unresolved() > 0L) {
+        .client$relay$wait()
       }
-      .subset2(self, "unresolved")() < 1L
+      unresolved() < 1L
     },
     .wait_one_once = function() {
-      if (.subset2(self, "unpopped")() < 1L) {
-        private$.client$relay$wait()
+      if (unpopped() < 1L) {
+        .client$relay$wait()
       }
-      .subset2(self, "unpopped")() > 0L
+      unpopped() > 0L
     },
     .scan_crash = function(name, task) {
       code <- .subset2(task, "code")
-      log <- .subset2(private, ".crash_log")
       if (code != code_crash) {
-        if (!is.null(.subset2(log, name))) {
-          private$.crash_log[[name]] <- NULL
+        if (!is.null(.subset2(.crash_log, name))) {
+          .crash_log[[name]] <<- NULL
         }
         return()
       }
-      previous <- .subset2(log, name)
+      previous <- .subset2(.crash_log, name)
       if (is.null(previous)) {
         previous <- 0L
       }
       count <- previous + 1L
-      private$.crash_log[[name]] <- count
-      if (count > .subset2(private, ".crashes_max")) {
-        private$.summary$crash <- private$.summary$crash + 1L
+      .crash_log[[name]] <<- count
+      if (count > .crashes_max) {
+        .summary$crash <<- .summary$crash + 1L
         crew_error(
           message = paste(
             "the crew worker of task",
@@ -228,7 +224,7 @@ crew_class_controller <- R6::R6Class(
             count,
             sprintf(
               "consecutive time(s) in controller %s.",
-              shQuote(private$.launcher$name)
+              shQuote(.launcher$name)
             ),
             "For details and advice, please see the",
             "crashes_max argument of crew::crew_controller(), as well as",
@@ -242,71 +238,71 @@ crew_class_controller <- R6::R6Class(
   active = list(
     #' @field client Client object.
     client = function() {
-      .subset2(private, ".client")
+      .client
     },
     #' @field launcher Launcher object.
     launcher = function() {
-      .subset2(private, ".launcher")
+      .launcher
     },
     #' @field tasks A list of `mirai::mirai()` task objects.
     tasks = function() {
-      .subset2(private, ".tasks")
+      .tasks
     },
     #' @field pushed Number of tasks pushed since the controller was started.
     pushed = function() {
-      .subset2(private, ".pushed")
+      .pushed
     },
     #' @field popped Number of tasks popped
     #' since the controller was started.
     popped = function() {
-      .subset2(private, ".popped")
+      .popped
     },
     #' @field reset_globals See [crew_controller()].
     #' since the controller was started.
     reset_globals = function() {
-      .subset2(private, ".reset_globals")
+      .reset_globals
     },
     #' @field reset_packages See [crew_controller()].
     #' since the controller was started.
     reset_packages = function() {
-      .subset2(private, ".reset_packages")
+      .reset_packages
     },
     #' @field reset_options See [crew_controller()].
     #' since the controller was started.
     reset_options = function() {
-      .subset2(private, ".reset_options")
+      .reset_options
     },
     #' @field garbage_collection See [crew_controller()].
     #' since the controller was started.
     garbage_collection = function() {
-      .subset2(private, ".garbage_collection")
+      .garbage_collection
     },
     #' @field crashes_max See [crew_controller()].
     crashes_max = function() {
-      .subset2(private, ".crashes_max")
+      .crashes_max
     },
     #' @field backup See [crew_controller()].
     backup = function() {
-      .subset2(private, ".backup")
+      .backup
     },
     #' @field error Tibble of task results (with one result per row)
     #'   from the last call to `map(error = "stop)`.
     error = function() {
-      .subset2(private, ".error")
+      .error
     },
     #' @field autoscaling `TRUE` or `FALSE`, whether async `later`-based
     #'   auto-scaling is currently running
     autoscaling = function() {
-      .subset2(private, ".autoscaling")
+      .autoscaling
     },
     #' @field queue_resolved Queue of resolved unpopped/uncollected tasks.
     queue_resolved = function() {
-      .subset2(private, ".queue_resolved")
+      .queue_resolved
     },
     #' @field queue_backlog A [crew_queue()] object tracking explicitly
     #'   backlogged tasks.
     queue_backlog = function() {
-      .subset2(private, ".queue_backlog")
+      .queue_backlog
     }
   ),
   public = list(
@@ -341,23 +337,23 @@ crew_class_controller <- R6::R6Class(
       crashes_max = NULL,
       backup = NULL
     ) {
-      private$.client <- client
-      private$.launcher <- launcher
-      private$.reset_globals <- reset_globals
-      private$.reset_packages <- reset_packages
-      private$.reset_options <- reset_options
-      private$.garbage_collection <- garbage_collection
-      private$.crashes_max <- crashes_max
-      private$.backup <- backup
+      .client <<- client
+      .launcher <<- launcher
+      .reset_globals <<- reset_globals
+      .reset_packages <<- reset_packages
+      .reset_options <<- reset_options
+      .garbage_collection <<- garbage_collection
+      .crashes_max <<- crashes_max
+      .backup <<- backup
       invisible()
     },
     #' @description Validate the controller.
     #' @return `NULL` (invisibly).
     validate = function() {
-      crew_assert(inherits(private$.client, "crew_class_client"))
-      crew_assert(inherits(private$.launcher, "crew_class_launcher"))
-      private$.client$validate()
-      private$.launcher$validate()
+      crew_assert(inherits(.client, "crew_class_client"))
+      crew_assert(inherits(.launcher, "crew_class_launcher"))
+      .client$validate()
+      .launcher$validate()
       fields <- c(
         "reset_globals",
         "reset_packages",
@@ -372,7 +368,7 @@ crew_class_controller <- R6::R6Class(
         )
       }
       crew_assert(
-        private$.crashes_max,
+        .crashes_max,
         is.numeric(.),
         length(.) == 1L,
         is.finite(.),
@@ -381,12 +377,12 @@ crew_class_controller <- R6::R6Class(
           "crashes_max must be a finite non-negative integer scalar."
         )
       )
-      if (!is.null(private$.crash_log)) {
-        crew_assert(is.environment(private$.crash_log))
+      if (!is.null(.crash_log)) {
+        crew_assert(is.environment(.crash_log))
       }
-      if (!is.null(private$.backup)) {
+      if (!is.null(.backup)) {
         crew_assert(
-          private$.backup,
+          .backup,
           inherits(., "crew_class_controller"),
           !inherits(., "crew_class_controller_group"),
           message = paste(
@@ -395,26 +391,26 @@ crew_class_controller <- R6::R6Class(
           )
         )
         crew_assert(
-          private$.crashes_max > 0L,
+          .crashes_max > 0L,
           message = "crashes_max must be positive if backup is not NULL."
         )
       }
-      crew_assert(private$.tasks, is.null(.) || is.environment(.))
-      crew_assert(private$.summary, is.null(.) || is.list(.))
-      crew_assert(private$.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
+      crew_assert(.tasks, is.null(.) || is.environment(.))
+      crew_assert(.summary, is.null(.) || is.list(.))
+      crew_assert(.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
       crew_assert(
-        private$.resolved,
+        .resolved,
         is.integer(.),
         length(.) == 1L,
         is.finite(.)
       )
-      if (!is.null(private$.queue_resolved)) {
-        crew_assert(private$.queue_resolved, inherits(., "crew_class_queue"))
-        private$.queue_resolved$validate()
+      if (!is.null(.queue_resolved)) {
+        crew_assert(.queue_resolved, inherits(., "crew_class_queue"))
+        .queue_resolved$validate()
       }
-      if (!is.null(private$.queue_backlog)) {
-        crew_assert(private$.queue_backlog, inherits(., "crew_class_queue"))
-        private$.queue_backlog$validate()
+      if (!is.null(.queue_backlog)) {
+        crew_assert(.queue_backlog, inherits(., "crew_class_queue"))
+        .queue_backlog$validate()
       }
       invisible()
     },
@@ -425,7 +421,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     empty = function(controllers = NULL) {
-      .subset2(private, ".pushed") == .subset2(private, ".popped")
+      .pushed == .popped
     },
     #' @description Check if the controller is nonempty.
     #' @details A controller is empty if it has no running tasks
@@ -434,7 +430,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     nonempty = function(controllers = NULL) {
-      .subset2(private, ".pushed") > .subset2(private, ".popped")
+      .pushed > .popped
     },
     #' @description Number of resolved `mirai()` tasks.
     #' @details `resolved()` is cumulative: it counts all the resolved
@@ -446,7 +442,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     resolved = function(controllers = NULL) {
-      .subset2(.subset2(self, "client"), "resolved")()
+      .subset2(.client, "resolved")()
     },
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
@@ -454,7 +450,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     unresolved = function(controllers = NULL) {
-      .subset2(private, ".pushed") - .subset2(self, "resolved")()
+      .pushed - resolved()
     },
     #' @description Number of resolved `mirai()` tasks available via `pop()`.
     #' @return Non-negative integer of length 1,
@@ -462,7 +458,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     unpopped = function(controllers = NULL) {
-      .subset2(self, "resolved")() - .subset2(private, ".popped")
+      resolved() - .popped
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -477,8 +473,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
-      .subset2(self, "unresolved")() >=
-        .subset2(.subset2(self, "launcher"), "workers")
+      unresolved() >= .subset2(.launcher, "workers")
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
@@ -487,13 +482,10 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     start = function(controllers = NULL) {
-      if (!.subset2(.subset2(self, "client"), "started")) {
-        private$.client$start()
-        private$.launcher$start(
-          url = private$.client$url,
-          profile = private$.client$profile
-        )
-        private$.register_started()
+      if (!.subset2(.client, "started")) {
+        .client$start()
+        .launcher$start(url = .client$url, profile = .client$profile)
+        .register_started()
       }
       invisible()
     },
@@ -503,7 +495,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     started = function(controllers = NULL) {
-      .subset2(.subset2(self, "client"), "started")
+      .subset2(.client, "started")
     },
     #' @description Launch one or more workers.
     #' @return `NULL` (invisibly).
@@ -511,8 +503,8 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     launch = function(n = 1L, controllers = NULL) {
-      self$start()
-      replicate(n, private$.launcher$launch(), simplify = FALSE)
+      start()
+      replicate(n, .launcher$launch(), simplify = FALSE)
       invisible()
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
@@ -528,12 +520,12 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(throttle = TRUE, controllers = NULL) {
-      if (throttle && !private$.launcher$poll()) {
+      if (throttle && !.launcher$poll()) {
         return(invisible())
       }
-      .subset2(self, "start")()
-      status <- private$.client$status()
-      activity <- private$.launcher$scale(status = status, throttle = throttle)
+      start()
+      status <- .client$status()
+      activity <- .launcher$scale(status = status, throttle = throttle)
       invisible(activity)
     },
     #' @description Run worker auto-scaling in a private `later` loop
@@ -546,17 +538,17 @@ crew_class_controller <- R6::R6Class(
     autoscale = function(controllers = NULL) {
       # Tested in tests/interactive/test-promises.R
       # nocov start
-      if (isTRUE(private$.autoscaling)) {
+      if (isTRUE(.autoscaling)) {
         return(invisible())
       }
       poll <- function() {
-        if (isTRUE(private$.client$started) && isTRUE(private$.autoscaling)) {
-          self$scale(throttle = FALSE)
-          later::later(func = poll, delay = self$client$seconds_interval)
+        if (isTRUE(.client$started) && isTRUE(.autoscaling)) {
+          self$scale(throttle = FALSE) # necessary reference to self
+          later::later(func = poll, delay = .client$seconds_interval)
         }
       }
-      self$start()
-      private$.autoscaling <- TRUE
+      self$start() # necessary reference to self
+      .autoscaling <<- TRUE
       poll()
       invisible()
       # nocov end
@@ -567,7 +559,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     #' @return `NULL` (invisibly).
     descale = function(controllers = NULL) {
-      private$.autoscaling <- FALSE
+      .autoscaling <<- FALSE
       invisible()
     },
     #' @description Report the number of consecutive crashes of a task.
@@ -578,7 +570,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     crashes = function(name, controllers = NULL) {
-      count <- .subset2(.subset2(private, ".crash_log"), name)
+      count <- .subset2(.crash_log, name)
       if (is.null(count)) {
         0L
       } else {
@@ -662,8 +654,8 @@ crew_class_controller <- R6::R6Class(
       save_command = NULL,
       controller = NULL
     ) {
-      .subset2(self, "start")()
-      name <- private$.name_new_task(name)
+      start()
+      name <- .name_new_task(name)
       if (substitute) {
         command <- substitute(command)
       }
@@ -672,12 +664,10 @@ crew_class_controller <- R6::R6Class(
       } else {
         .timeout <- seconds_timeout * 1000
       }
-      backup <- .subset2(private, ".backup")
-      if (!is.null(backup)) {
-        max <- .subset2(private, ".crashes_max")
-        if ((max > 0L) && (.subset2(self, "crashes")(name = name) == max)) {
+      if (!is.null(.backup)) {
+        if ((.crashes_max > 0L) && (crashes(name = name) == .crashes_max)) {
           return(
-            .subset2(backup, "push")(
+            .subset2(.backup, "push")(
               command = command,
               data = data,
               globals = globals,
@@ -706,17 +696,17 @@ crew_class_controller <- R6::R6Class(
           algorithm = algorithm,
           packages = packages,
           library = library,
-          reset_globals = .subset2(private, ".reset_globals"),
-          reset_packages = .subset2(private, ".reset_packages"),
-          reset_options = .subset2(private, ".reset_options"),
-          garbage_collection = .subset2(private, ".garbage_collection")
+          reset_globals = .reset_globals,
+          reset_packages = .reset_packages,
+          reset_options = .reset_options,
+          garbage_collection = .garbage_collection
         ),
         .timeout = .timeout,
-        .compute = .subset2(.subset2(private, ".client"), "profile")
+        .compute = .subset2(.client, "profile")
       )
-      .subset2(private, ".register_task")(name, task)
+      .register_task(name, task)
       if (scale) {
-        .subset2(self, "scale")(throttle = throttle)
+        scale(throttle = throttle)
       }
       invisible(task)
     },
@@ -814,7 +804,7 @@ crew_class_controller <- R6::R6Class(
       throttle = TRUE,
       controller = NULL
     ) {
-      .subset2(self, "start")()
+      start()
       crew_deprecate(
         name = "save_command",
         date = "2025-01-22",
@@ -831,11 +821,11 @@ crew_class_controller <- R6::R6Class(
         iterate,
         is.list(.),
         rlang::is_named(.),
-        message = "the 'iterate' arg of map() must be a nonempty named list"
+        message = "the 'iterate' argument must be a nonempty named list"
       )
       crew_assert(
         length(iterate) > 0L,
-        message = "the \"iterate\" arg of map() must be a nonempty named list"
+        message = "the \"iterate\" argument must be a nonempty named list"
       )
       crew_assert(
         length(unique(map_dbl(iterate, length))) == 1L,
@@ -849,13 +839,13 @@ crew_class_controller <- R6::R6Class(
         data,
         is.list(.),
         rlang::is_named(.) || length(.) < 1L,
-        message = "the \"data\" argument of map() must be a named list"
+        message = "the \"data\" argument must be a named list"
       )
       crew_assert(
         globals,
         is.list(.),
         rlang::is_named(.) || length(.) < 1L,
-        message = "the \"globals\" argument of map() must be a named list"
+        message = "the \"globals\" argument must be a named list"
       )
       crew_assert(
         seed %|||% 1L,
@@ -916,7 +906,7 @@ crew_class_controller <- R6::R6Class(
         message = "task names in map() must not have duplicates"
       )
       names_iterate <- names(iterate)
-      self$start()
+      start()
       sign <- if_any(!is.null(seed) && seed > 0L, 1L, -1L)
       if (!is.null(seed)) {
         seed <- 1L
@@ -924,7 +914,6 @@ crew_class_controller <- R6::R6Class(
       total <- length(names)
       tasks <- vector(mode = "list", length = total)
       names(tasks) <- names
-      push <- self$push
       # covered in tests/local/test-map.R
       # nocov start
       if (verbose) {
@@ -982,7 +971,7 @@ crew_class_controller <- R6::R6Class(
       }
       # nocov end
       if (scale) {
-        self$scale(throttle = throttle)
+        scale(throttle = throttle)
       }
       invisible(tasks)
     },
@@ -1123,7 +1112,7 @@ crew_class_controller <- R6::R6Class(
         value = save_command
       )
       crew_assert(
-        length(private$.tasks) < 1L,
+        length(.tasks) < 1L,
         message = "cannot map() until all prior tasks are completed and popped"
       )
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
@@ -1131,7 +1120,7 @@ crew_class_controller <- R6::R6Class(
       if (substitute) {
         command <- substitute(command)
       }
-      tasks <- self$walk(
+      tasks <- walk(
         command = command,
         iterate = iterate,
         data = data,
@@ -1148,9 +1137,8 @@ crew_class_controller <- R6::R6Class(
       )
       names <- names(tasks)
       total <- length(tasks)
-      relay <- .subset2(.subset2(self, "client"), "relay")
+      relay <- .subset2(.client, "relay")
       start <- nanonext::mclock()
-      pushed <- private$.pushed
       if (verbose) {
         this_envir <- environment()
         progress_envir <- new.env(parent = this_envir)
@@ -1169,9 +1157,9 @@ crew_class_controller <- R6::R6Class(
       }
       iterate <- function() {
         if (scale) {
-          .subset2(self, "scale")(throttle = throttle)
+          scale(throttle = throttle)
         }
-        unresolved <- .subset2(self, "unresolved")()
+        unresolved <- unresolved()
         if (verbose) {
           cli::cli_progress_update(
             set = total - unresolved,
@@ -1182,7 +1170,7 @@ crew_class_controller <- R6::R6Class(
         if (unresolved > 0L) {
           .subset2(relay, "wait")()
         }
-        .subset2(self, "unresolved")() < 1L
+        unresolved() < 1L
       }
       crew_retry(
         fun = iterate,
@@ -1195,7 +1183,7 @@ crew_class_controller <- R6::R6Class(
         cli::cli_progress_done(id = bar, .envir = progress_envir)
       }
       out <- vector(mode = "list", length = total)
-      controller_name <- .subset2(.subset2(private, ".launcher"), "name")
+      controller_name <- .subset2(.launcher, "name")
       index <- 1L
       while (index <= total) {
         task <- .subset2(tasks, index)
@@ -1205,7 +1193,7 @@ crew_class_controller <- R6::R6Class(
           name = name,
           controller = controller_name
         )
-        .subset2(private, ".scan_crash")(name = name, task = monad)
+        .scan_crash(name = name, task = monad)
         out[[index]] <- monad
         index <- index + 1L
       }
@@ -1213,19 +1201,17 @@ crew_class_controller <- R6::R6Class(
       out <- out[match(x = names, table = out$name), , drop = FALSE] # nolint
       out <- out[!is.na(out$name), , drop = FALSE] # nolint
       on.exit({
-        private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
-        private$.popped <- .subset2(private, ".popped") + nrow(out)
-        summary <- private$.summary
-        summary$tasks <- .subset2(summary, "tasks") + nrow(out)
-        summary$seconds <- .subset2(summary, "seconds") +
+        .tasks <<- new.env(parent = emptyenv(), hash = TRUE)
+        .popped <<- .popped + nrow(out)
+        .summary$tasks <<- .subset2(.summary, "tasks") + nrow(out)
+        .summary$seconds <<- .subset2(.summary, "seconds") +
           sum(out$seconds)
         for (status in c("success", "error", "crash", "cancel")) {
-          summary[[status]] <- .subset2(summary, status) +
+          .summary[[status]] <<- .subset2(.summary, status) +
             sum(.subset2(out, "status") == status)
         }
-        summary$warning <- .subset2(summary, "warning") +
+        .summary$warning <<- .subset2(.summary, "warning") +
           sum(!is.na(out$warnings))
-        private$.summary <- summary
       })
       warning_messages <- out$warnings
       if (!all(is.na(warning_messages)) && isTRUE(warnings)) {
@@ -1247,7 +1233,7 @@ crew_class_controller <- R6::R6Class(
           error_messages[min(which(!is.na(error_messages)))]
         )
         if (identical(error, "stop")) {
-          private$.error <- out
+          .error <<- out
           message <- paste(
             message,
             "\nSee the \"error\" field of your controller object",
@@ -1333,7 +1319,7 @@ crew_class_controller <- R6::R6Class(
       error = NULL,
       controllers = NULL
     ) {
-      if (!.subset2(.subset2(self, "client"), "started")) {
+      if (!.subset2(.client, "started")) {
         return(NULL)
       }
       crew_deprecate(
@@ -1357,42 +1343,39 @@ crew_class_controller <- R6::R6Class(
         )
       }
       if (scale) {
-        .subset2(self, "scale")(throttle = throttle)
+        scale(throttle = throttle)
       }
-      if (.subset2(self, "empty")()) {
+      if (empty()) {
         return(NULL)
       }
-      .subset2(private, ".resolve")(force = FALSE)
-      name <- .subset2(.subset2(private, ".queue_resolved"), "pop")()
+      .resolve(force = FALSE)
+      name <- .subset2(.queue_resolved, "pop")()
       if (is.null(name)) {
         return(NULL)
       }
-      tasks <- .subset2(self, "tasks")
-      task <- .subset2(tasks, name)
+      task <- .subset2(.tasks, name)
       remove(list = name, envir = tasks)
-      private$.popped <- .subset2(self, "popped") + 1L
+      .popped <<- .popped + 1L
       out <- as_monad(
         task = task,
         name = name,
-        controller = .subset2(.subset2(private, ".launcher"), "name")
+        controller = .subset2(.launcher, "name")
       )
       suppressWarnings({
-        .subset2(private, ".scan_crash")(name = name, task = out)
+        .scan_crash(name = name, task = out)
+        .summary$tasks <<- .subset2(.summary, "tasks") + 1L
         seconds <- .subset2(out, "seconds")
-        summary <- .subset2(private, ".summary")
-        summary$tasks <- .subset2(summary, "tasks") + 1L
         if (!anyNA(seconds)) {
-          summary$seconds <- .subset2(summary, "seconds") + seconds
+          .summary$seconds <<- .subset2(.summary, "seconds") + seconds
         }
       })
       status <- .subset2(out, "status")
-      summary[[status]] <- .subset2(summary, status) + 1L
+      .summary[[status]] <<- .subset2(.summary, status) + 1L
       if (!anyNA(.subset2(out, "warnings"))) {
         # Tests definitely cover this line, but for some reason
         # the code coverage CI workflow does not detect it.
-        summary$warning <- .subset2(summary, "warning") + 1L # nocov
+        .summary$warning <<- .subset2(.summary, "warning") + 1L # nocov
       }
-      private$.summary <- summary
       if (!is.null(error)) {
         has_error <- any(status != "success")
         throw_error <- has_error && all(error == "stop")
@@ -1453,44 +1436,40 @@ crew_class_controller <- R6::R6Class(
         )
       }
       if (scale) {
-        .subset2(self, "scale")(throttle = throttle)
+        scale(throttle = throttle)
       }
-      if (.subset2(self, "empty")()) {
+      if (empty()) {
         return(NULL)
       }
-      queue <- .subset2(private, ".queue_resolved")
-      .subset2(private, ".resolve")(force = TRUE)
-      names <- .subset2(queue, "collect")()
+      .resolve(force = TRUE)
+      names <- .subset2(.queue_resolved, "collect")()
       if (!length(names)) {
         return(NULL)
       }
-      tasks <- .subset2(private, ".tasks")
-      scan_crash <- .subset2(private, ".scan_crash")
-      controller_name <- .subset2(.subset2(private, ".launcher"), "name")
+      controller_name <- .subset2(.launcher, "name")
       out <- lapply(names, function(name) {
         out <- as_monad(
-          task = .subset2(tasks, name),
+          task = .subset2(.tasks, name),
           name = name,
           controller = controller_name
         )
-        scan_crash(name = name, task = out)
+        .scan_crash(name = name, task = out)
         out
       })
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
-      remove(list = names, envir = tasks)
-      popped <- length(names)
-      private$.popped <- .subset2(self, "popped") + popped
-      summary <- .subset2(private, ".summary")
-      summary$tasks <- .subset2(summary, "tasks") + popped
-      summary$seconds <- .subset2(summary, "seconds") +
+      remove(list = names, envir = .tasks)
+      new_popped <- length(names)
+      .popped <<- .popped + new_popped
+
+      .summary$tasks <<- .subset2(.summary, "tasks") + new_popped
+      .summary$seconds <<- .subset2(.summary, "seconds") +
         sum(.subset2(out, "seconds"), na.rm = TRUE)
       for (status in c("success", "error", "crash", "cancel")) {
-        summary[[status]] <- .subset2(summary, status) +
+        .summary[[status]] <<- .subset2(.summary, status) +
           sum(.subset2(out, "status") == status)
       }
-      summary$warning <- .subset2(summary, "warning") +
+      .summary$warning <<- .subset2(.summary, "warning") +
         sum(!is.na(.subset2(out, "warnings")))
-      private$.summary <- summary
       errors <- .subset2(out, "error")
       errors <- errors[!is.na(errors)]
       if (!is.null(error) && length(errors)) {
@@ -1572,7 +1551,7 @@ crew_class_controller <- R6::R6Class(
         value = TRUE,
         frequency = "once"
       )
-      self$autoscale(controllers = controllers)
+      autoscale(controllers = controllers)
       controller_promise(
         controller = self,
         mode = mode,
@@ -1623,20 +1602,16 @@ crew_class_controller <- R6::R6Class(
       )
       crew_assert(mode, identical(., "all") || identical(., "one"))
       mode_all <- identical(mode, "all")
-      if (length(private$.tasks) < 1L) {
+      if (length(.tasks) < 1L) {
         return(invisible(mode_all))
       }
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
       iterate <- function() {
         if (!envir$result && scale) {
-          self$scale(throttle = throttle)
+          scale(throttle = throttle)
         }
-        envir$result <- if_any(
-          mode_all,
-          private$.wait_all_once(),
-          private$.wait_one_once()
-        )
+        envir$result <- if_any(mode_all, .wait_all_once(), .wait_one_once())
         envir$result
       }
       crew_retry(
@@ -1657,7 +1632,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     push_backlog = function(name, controller = NULL) {
-      .subset2(.subset2(private, ".queue_backlog"), "push")(name)
+      .subset2(.queue_backlog, "push")(name)
       invisible()
     },
     #' @description Pop the task names from the head of the backlog which
@@ -1668,13 +1643,11 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop_backlog = function(controllers = NULL) {
-      n <- .subset2(.subset2(self, "launcher"), "workers") -
-        .subset2(self, "unresolved")()
-      backlog <- .subset2(private, ".queue_backlog")
-      if (n < 1L || .subset2(backlog, "empty")()) {
+      n <- .subset2(.launcher, "workers") - unresolved()
+      if (n < 1L || .subset2(.queue_backlog, "empty")()) {
         return(character(0L))
       }
-      .subset2(backlog, "pop")(n)
+      .subset2(.queue_backlog, "pop")(n)
     },
     #' @description Summarize the workers and tasks of the controller.
     #' @return A data frame of summary statistics on the tasks
@@ -1696,11 +1669,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     summary = function(controllers = NULL) {
-      out <- .subset2(private, ".summary")
-      if (!is.null(out)) {
-        out <- tibble::new_tibble(out)
-      }
-      out
+      if_any(is.null(.summary), NULL, tibble::new_tibble(.summary))
     },
     #' @description Cancel one or more tasks.
     #' @return `NULL` (invisibly).
@@ -1724,13 +1693,12 @@ crew_class_controller <- R6::R6Class(
           "with no missing or empty strings"
         )
       )
-      tasks <- .subset2(private, ".tasks")
       if (all) {
-        mirai::stop_mirai(as.list(tasks))
+        mirai::stop_mirai(as.list(.tasks))
       }
-      names <- intersect(names, names(tasks))
+      names <- intersect(names, names(.tasks))
       for (name in names) {
-        mirai::stop_mirai(.subset2(tasks, name))
+        mirai::stop_mirai(.subset2(.tasks, name))
       }
       invisible()
     },
@@ -1741,7 +1709,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pids = function(controllers = NULL) {
-      private$.client$pids()
+      .client$pids()
     },
     #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).
@@ -1752,21 +1720,21 @@ crew_class_controller <- R6::R6Class(
       if_any(
         condition = isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
         true = {
-          private$.launcher$terminate()
-          private$.client$terminate()
+          .launcher$terminate()
+          .client$terminate()
         },
         false = {
-          private$.client$terminate() # nocov
-          private$.launcher$terminate() # nocov
+          .client$terminate() # nocov
+          .launcher$terminate() # nocov
         }
       )
-      private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
-      private$.pushed <- 0L
-      private$.popped <- 0L
-      private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
-      private$.autoscaling <- FALSE
-      private$.queue_resolved <- crew_queue()
-      private$.resolved <- -1L
+      .tasks <<- new.env(parent = emptyenv(), hash = TRUE)
+      .pushed <<- 0L
+      .popped <<- 0L
+      .crash_log <<- new.env(parent = emptyenv(), hash = TRUE)
+      .autoscaling <<- FALSE
+      .queue_resolved <<- crew_queue()
+      .resolved <<- -1L
       invisible()
     }
   )

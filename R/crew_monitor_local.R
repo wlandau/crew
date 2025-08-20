@@ -63,7 +63,7 @@ crew_class_monitor_local <- R6::R6Class(
     #' @param pids Integer vector of process IDs of local processes to
     #'   terminate.
     terminate = function(pids) {
-      walk(as.integer(pids), crew_terminate_process)
+      lapply(as.integer(pids), crew_terminate_process)
     }
   )
 )

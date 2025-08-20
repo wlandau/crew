@@ -104,6 +104,7 @@ crew_controller <- function(
 crew_class_controller <- R6::R6Class(
   classname = "crew_class_controller",
   cloneable = FALSE,
+  portable = FALSE,
   private = list(
     .client = NULL,
     .launcher = NULL,
@@ -124,12 +125,12 @@ crew_class_controller <- R6::R6Class(
     .queue_backlog = NULL,
     .resolved = -1L,
     .register_started = function() {
-      private$.tasks <- new.env(parent = emptyenv(), hash = TRUE)
-      private$.pushed <- 0L
-      private$.popped <- 0L
-      private$.crash_log <- new.env(parent = emptyenv(), hash = TRUE)
-      private$.summary <- list(
-        controller = private$.launcher$name,
+      .tasks <<- new.env(parent = emptyenv(), hash = TRUE)
+      .pushed <<- 0L
+      .popped <<- 0L
+      .crash_log <<- new.env(parent = emptyenv(), hash = TRUE)
+      .summary <<- list(
+        controller = .launcher$name,
         tasks = 0L,
         seconds = 0,
         success = 0L,
@@ -138,21 +139,20 @@ crew_class_controller <- R6::R6Class(
         cancel = 0L,
         warning = 0L
       )
-      private$.queue_backlog <- crew_queue()
-      private$.queue_resolved <- crew_queue()
-      private$.resolved <- -1L
+      .queue_backlog <<- crew_queue()
+      .queue_resolved <<- crew_queue()
+      .resolved <<- -1L
     },
     .name_new_task = function(name) {
-      tasks <- .subset2(private, ".tasks")
       if (is.null(name)) {
         name <- name_task_tempfile()
         name <- if_any(
-          is.null(.subset2(tasks, name)),
+          is.null(.subset2(.tasks, name)),
           name,
           name_task_nanonext()
         )
       }
-      if (!is.null(.subset2(tasks, name))) {
+      if (!is.null(.subset2(.tasks, name))) {
         crew_error(
           message = paste(
             "crew task name",
@@ -166,60 +166,56 @@ crew_class_controller <- R6::R6Class(
       name
     },
     .register_task = function(name, task) {
-      tasks <- .subset2(private, ".tasks")
-      tasks[[name]] <- task
-      private$.pushed <- .subset2(private, ".pushed") + 1L
+      .tasks[[name]] <<- task
+      .pushed <<- .pushed + 1L
     },
     .resolve = function(force) {
-      queue <- .subset2(private, ".queue_resolved")
-      if ((!force) && .subset2(queue, "nonempty")()) {
+      if ((!force) && .subset2(.queue_resolved, "nonempty")()) {
         return()
       }
-      observed <- .subset2(.subset2(private, ".client"), "resolved")()
-      expected <- .subset2(private, ".resolved")
+      observed <- .subset2(.client, "resolved")()
+      expected <- .resolved
       if ((!force) && (observed == expected)) {
         return()
       }
-      tasks <- .subset2(private, ".tasks")
       status <- eapply(
-        env = tasks,
+        env = .tasks,
         FUN = nanonext::.unresolved,
         all.names = TRUE,
         USE.NAMES = TRUE
       )
       resolved <- names(status)[!as.logical(status)]
-      .subset2(queue, "set")(data = resolved)
-      private$.resolved <- observed
+      .subset2(.queue_resolved, "set")(data = resolved)
+      .resolved <<- observed
     },
     .wait_all_once = function() {
-      if (.subset2(self, "unresolved")() > 0L) {
-        private$.client$relay$wait()
+      if (unresolved() > 0L) {
+        .client$relay$wait()
       }
-      .subset2(self, "unresolved")() < 1L
+      unresolved() < 1L
     },
     .wait_one_once = function() {
-      if (.subset2(self, "unpopped")() < 1L) {
-        private$.client$relay$wait()
+      if (unpopped() < 1L) {
+        .client$relay$wait()
       }
-      .subset2(self, "unpopped")() > 0L
+      unpopped() > 0L
     },
     .scan_crash = function(name, task) {
       code <- .subset2(task, "code")
-      log <- .subset2(private, ".crash_log")
       if (code != code_crash) {
-        if (!is.null(.subset2(log, name))) {
-          private$.crash_log[[name]] <- NULL
+        if (!is.null(.subset2(.crash_log, name))) {
+          .crash_log[[name]] <<- NULL
         }
         return()
       }
-      previous <- .subset2(log, name)
+      previous <- .subset2(.crash_log, name)
       if (is.null(previous)) {
         previous <- 0L
       }
       count <- previous + 1L
-      private$.crash_log[[name]] <- count
-      if (count > .subset2(private, ".crashes_max")) {
-        private$.summary$crash <- private$.summary$crash + 1L
+      .crash_log[[name]] <<- count
+      if (count > .crashes_max) {
+        .summary$crash <<- .summary$crash + 1L
         crew_error(
           message = paste(
             "the crew worker of task",
@@ -228,7 +224,7 @@ crew_class_controller <- R6::R6Class(
             count,
             sprintf(
               "consecutive time(s) in controller %s.",
-              shQuote(private$.launcher$name)
+              shQuote(.launcher$name)
             ),
             "For details and advice, please see the",
             "crashes_max argument of crew::crew_controller(), as well as",
@@ -831,11 +827,11 @@ crew_class_controller <- R6::R6Class(
         iterate,
         is.list(.),
         rlang::is_named(.),
-        message = "the 'iterate' arg of map() must be a nonempty named list"
+        message = "the 'iterate' argument must be a nonempty named list"
       )
       crew_assert(
         length(iterate) > 0L,
-        message = "the \"iterate\" arg of map() must be a nonempty named list"
+        message = "the \"iterate\" argument must be a nonempty named list"
       )
       crew_assert(
         length(unique(map_dbl(iterate, length))) == 1L,
@@ -849,13 +845,13 @@ crew_class_controller <- R6::R6Class(
         data,
         is.list(.),
         rlang::is_named(.) || length(.) < 1L,
-        message = "the \"data\" argument of map() must be a named list"
+        message = "the \"data\" argument must be a named list"
       )
       crew_assert(
         globals,
         is.list(.),
         rlang::is_named(.) || length(.) < 1L,
-        message = "the \"globals\" argument of map() must be a named list"
+        message = "the \"globals\" argument must be a named list"
       )
       crew_assert(
         seed %|||% 1L,

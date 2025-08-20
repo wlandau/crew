@@ -45,6 +45,7 @@ crew_class_controller_sequential <- R6::R6Class(
   classname = "crew_class_controller_sequential",
   inherit = crew_class_controller,
   cloneable = FALSE,
+  portable = FALSE,
   public = list(
     #' @description Start the controller if it is not already started.
     #' @details For the sequential controller, there is nothing to do

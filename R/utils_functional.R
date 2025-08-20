@@ -3,10 +3,6 @@ fltr <- function(x, f, ...) {
   x[index]
 }
 
-map <- function(x, f, ...) {
-  lapply(X = x, FUN = as_function(f), ...)
-}
-
 map_chr <- function(x, f, ...) {
   vapply(X = x, FUN = as_function(f), FUN.VALUE = character(1), ...)
 }
@@ -25,9 +21,4 @@ map_lgl <- function(x, f, ...) {
 
 map_rows <- function(x, f, ...) {
   apply(X = x, MARGIN = 1L, FUN = as_function(f), ...)
-}
-
-walk <- function(x, f, ...) {
-  lapply(X = x, FUN = as_function(f), ...)
-  invisible()
 }

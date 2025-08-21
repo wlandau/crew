@@ -19,12 +19,12 @@ load_packages <- function(packages, library) {
 }
 
 package_installed <- function(package) {
-  result <- .subset2(packages_installed, package)
+  result <- .subset2(packages_installed, "get")(package, default = NULL)
   if (is.null(result)) {
     result <- rlang::is_installed(pkg = package)
-    packages_installed[[package]] <- result
+    .subset2(packages_installed, "set")(key = package, value = result)
   }
   result
 }
 
-packages_installed <- new.env(parent = emptyenv(), hash = TRUE)
+packages_installed <- collections::dict()

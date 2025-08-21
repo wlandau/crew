@@ -48,7 +48,9 @@ Other controller:
 
 \item{\code{launcher}}{Launcher object.}
 
-\item{\code{tasks}}{A list of \code{mirai::mirai()} task objects.}
+\item{\code{tasks}}{A list of \code{mirai::mirai()} task objects.
+The list of tasks is dynamically generated from an internal,
+dictionary, so it is not as fast as a simple lookup.}
 
 \item{\code{pushed}}{Number of tasks pushed since the controller was started.}
 
@@ -79,8 +81,7 @@ auto-scaling is currently running}
 
 \item{\code{queue_resolved}}{Queue of resolved unpopped/uncollected tasks.}
 
-\item{\code{queue_backlog}}{A \code{\link[=crew_queue]{crew_queue()}} object tracking explicitly
-backlogged tasks.}
+\item{\code{queue_backlog}}{Queue tracking explicitly backlogged tasks.}
 }
 \if{html}{\out{</div>}}
 }

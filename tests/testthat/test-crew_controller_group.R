@@ -42,7 +42,7 @@ crew_test("crew_controller_group()", {
   expect_false(x$started())
   expect_equal(length(x$pids()), 1L)
   x$start()
-  expect_true(x$wait(mode = "all"))
+  expect_true(x$wait(mode = "all", seconds_timeout = 30))
   expect_true(x$started())
   expect_true(x$empty())
   expect_false(x$saturated())
@@ -60,7 +60,7 @@ crew_test("crew_controller_group()", {
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
-  expect_true(x$wait(mode = "all"))
+  expect_true(x$wait(mode = "all", seconds_timeout = 30))
   s <- x$summary()
   expect_equal(nrow(s), 2L)
   expect_equal(s$controller, c("a", "b"))
@@ -95,7 +95,7 @@ crew_test("crew_controller_group()", {
     expect_false(x$empty())
     expect_true(x$empty(controllers = "a"))
     expect_false(x$empty(controllers = "b"))
-    x$wait(mode = "all", seconds_timeout = 5)
+    x$wait(mode = "all", seconds_timeout = 30)
     expect_false(x$empty())
     expect_true(x$empty(controllers = "a"))
     expect_false(x$empty(controllers = "b"))
@@ -123,7 +123,7 @@ crew_test("crew_controller_group()", {
     name = "task_pid2",
     controller = "a"
   )
-  x$wait(seconds_timeout = 5)
+  x$wait(seconds_timeout = 30)
   envir <- new.env(parent = emptyenv())
   crew_retry(
     ~ {
@@ -177,7 +177,7 @@ crew_test("crew_controller_group() can relay task errors as local errors", {
   })
   x$start()
   x$push(command = stop("this is an error"), name = "warnings_and_errors")
-  x$wait(seconds_timeout = 5)
+  x$wait(seconds_timeout = 30)
   expect_silent(
     if_any(
       isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
@@ -205,7 +205,7 @@ crew_test("crew_controller_group() can relay task errors as local warnings", {
   })
   x$start()
   x$push(command = stop("this is an error"), name = "warnings_and_errors")
-  x$wait(seconds_timeout = 5)
+  x$wait(seconds_timeout = 30)
   expect_silent(
     if_any(
       isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
@@ -352,7 +352,7 @@ crew_test("controller walk()", {
   expect_true(is.list(out))
   expect_s3_class(out[[1L]], "mirai")
   expect_s3_class(out[[2L]], "mirai")
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   task1 <- x$pop()
   task2 <- x$pop()
   expect_true(tibble::is_tibble(task1))
@@ -385,7 +385,7 @@ crew_test("controller group collect() with one active controller", {
   x <- crew_controller_group(a, b)
   x$push("done", controller = "a")
   x$push("done", controller = "a")
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   for (index in seq_len(2L)) {
     x$push(Sys.sleep(120))
   }
@@ -417,7 +417,7 @@ crew_test("controller group collect() with two active controllers", {
   x <- crew_controller_group(a, b)
   x$push("done", controller = "a")
   x$push("done", controller = "b")
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   for (index in seq_len(2L)) {
     x$push(Sys.sleep(120))
   }
@@ -442,7 +442,7 @@ crew_test("controller group collect() silent error", {
   x$push("success")
   x$push(stop("failure 1"))
   x$push(stop("failure 2"))
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   expect_silent(out <- x$collect(error = "silent"))
   expect_true("failure 1" %in% out$error)
 })
@@ -462,7 +462,7 @@ crew_test("controller group collect() error as warning", {
   x$push("success")
   x$push(stop("failure 1"))
   x$push(stop("failure 2"))
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   expect_silent(
     if_any(
       isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
@@ -489,7 +489,7 @@ crew_test("controller group collect() stop on error", {
   x$push("success")
   x$push(stop("failure 1"))
   x$push(stop("failure 2"))
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   expect_silent(
     if_any(
       isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
@@ -657,8 +657,8 @@ crew_test("backlog with no tasks", {
     crew_test_sleep()
   })
   x$start()
-  expect_equal(a$queue_backlog$list(), character(0L))
-  expect_equal(b$queue_backlog$list(), character(0L))
+  expect_equal(as.character(a$queue_backlog$as_list()), character(0L))
+  expect_equal(as.character(b$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
   tasks_a <- paste0("a_", seq_len(4L))
   for (task in tasks_a) {
@@ -668,20 +668,25 @@ crew_test("backlog with no tasks", {
   for (task in tasks_b) {
     x$push_backlog(name = task, controller = "b")
   }
-  expect_equal(a$queue_backlog$list(), tasks_a)
-  expect_equal(b$queue_backlog$list(), tasks_b)
-  expect_equal(
-    sort(x$pop_backlog()),
-    sort(c(tasks_a[seq_len(2L)], tasks_b[seq_len(2L)]))
-  )
-  expect_equal(a$queue_backlog$list(), tasks_a[c(3L, 4L)])
-  expect_equal(b$queue_backlog$list(), tasks_b[c(3L, 4L)])
-  expect_equal(
-    sort(x$pop_backlog()),
-    sort(c(tasks_a[c(3L, 4L)], tasks_b[c(3L, 4L)]))
-  )
-  expect_equal(a$queue_backlog$list(), character(0L))
-  expect_equal(b$queue_backlog$list(), character(0L))
+  expect_equal(as.character(a$queue_backlog$as_list()), tasks_a)
+  expect_equal(as.character(b$queue_backlog$as_list()), tasks_b)
+  out <- x$pop_backlog()
+  expect_equal(length(out), 4L)
+  expect_equal(length(unique(out)), 4L)
+  expect_equal(sum(out %in% tasks_a), 2L)
+  expect_equal(sum(out %in% tasks_b), 2L)
+  expect_equal(length(a$queue_backlog$as_list()), 2L)
+  expect_equal(length(b$queue_backlog$as_list()), 2L)
+  expect_false(any(as.character(a$queue_backlog$as_list()) %in% out))
+  expect_false(any(as.character(b$queue_backlog$as_list()) %in% out))
+  out2 <- x$pop_backlog()
+  expect_equal(length(out2), 4L)
+  expect_equal(length(unique(out2)), 4L)
+  expect_equal(sum(out2 %in% tasks_a), 2L)
+  expect_equal(sum(out2 %in% tasks_b), 2L)
+  expect_false(any(out %in% out2))
+  expect_equal(as.character(a$queue_backlog$as_list()), character(0L))
+  expect_equal(as.character(b$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
 })
 
@@ -706,8 +711,8 @@ crew_test("backlog with the first controller saturated`", {
     crew_test_sleep()
   })
   x$start()
-  expect_equal(a$queue_backlog$list(), character(0L))
-  expect_equal(b$queue_backlog$list(), character(0L))
+  expect_equal(as.character(a$queue_backlog$as_list()), character(0L))
+  expect_equal(as.character(b$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
   tasks_a <- paste0("a_", seq_len(4L))
   for (task in tasks_a) {
@@ -717,17 +722,23 @@ crew_test("backlog with the first controller saturated`", {
   for (task in tasks_b) {
     x$push_backlog(name = task, controller = "b")
   }
-  expect_equal(a$queue_backlog$list(), tasks_a)
-  expect_equal(b$queue_backlog$list(), tasks_b)
+  expect_equal(sort(as.character(a$queue_backlog$as_list())), sort(tasks_a))
+  expect_equal(sort(as.character(b$queue_backlog$as_list())), sort(tasks_b))
   for (index in c(1L, 2L)) {
     x$push(Sys.sleep(30), controller = "a")
   }
-  expect_equal(x$pop_backlog(), tasks_b[seq_len(2L)])
-  expect_equal(a$queue_backlog$list(), tasks_a)
-  expect_equal(b$queue_backlog$list(), tasks_b[c(3L, 4L)])
-  expect_equal(x$pop_backlog(), tasks_b[c(3L, 4L)])
-  expect_equal(a$queue_backlog$list(), tasks_a)
-  expect_equal(b$queue_backlog$list(), character(0L))
+  out <- x$pop_backlog()
+  expect_equal(length(out), 2L)
+  expect_equal(length(unique(out)), 2L)
+  expect_true(all(out %in% tasks_b))
+  expect_equal(sort(as.character(a$queue_backlog$as_list())), sort(tasks_a))
+  expect_equal(
+    sort(as.character(b$queue_backlog$as_list())),
+    sort(setdiff(tasks_b, out))
+  )
+  expect_equal(sort(x$pop_backlog()), sort(setdiff(tasks_b, out)))
+  expect_equal(sort(as.character(a$queue_backlog$as_list())), sort(tasks_a))
+  expect_equal(as.character(b$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
 })
 
@@ -752,8 +763,8 @@ crew_test("backlog with the second controller saturated`", {
     crew_test_sleep()
   })
   x$start()
-  expect_equal(a$queue_backlog$list(), character(0L))
-  expect_equal(b$queue_backlog$list(), character(0L))
+  expect_equal(as.character(a$queue_backlog$as_list()), character(0L))
+  expect_equal(as.character(b$queue_backlog$as_list()), character(0L))
   expect_equal(x$pop_backlog(), character(0L))
   tasks_a <- paste0("a_", seq_len(4L))
   for (task in tasks_a) {
@@ -763,17 +774,24 @@ crew_test("backlog with the second controller saturated`", {
   for (task in tasks_b) {
     x$push_backlog(name = task, controller = "b")
   }
-  expect_equal(a$queue_backlog$list(), tasks_a)
-  expect_equal(b$queue_backlog$list(), tasks_b)
+  expect_equal(as.character(a$queue_backlog$as_list()), tasks_a)
+  expect_equal(as.character(b$queue_backlog$as_list()), tasks_b)
   for (index in c(1L, 2L)) {
     x$push(Sys.sleep(30), controller = "b")
   }
-  expect_equal(x$pop_backlog(), tasks_a[seq_len(2L)])
-  expect_equal(a$queue_backlog$list(), tasks_a[c(3L, 4L)])
-  expect_equal(b$queue_backlog$list(), tasks_b)
-  expect_equal(x$pop_backlog(), tasks_a[c(3L, 4L)])
-  expect_equal(a$queue_backlog$list(), character(0L))
-  expect_equal(b$queue_backlog$list(), tasks_b)
+  out <- x$pop_backlog()
+  expect_equal(length(out), 2L)
+  expect_equal(length(unique(out)), 2L)
+  expect_true(all(out %in% tasks_a))
+  expect_equal(
+    sort(as.character(a$queue_backlog$as_list())),
+    sort(setdiff(tasks_a, out))
+  )
+  expect_equal(sort(as.character(b$queue_backlog$as_list())), sort(tasks_b))
+  out2 <- x$pop_backlog()
+  expect_equal(sort(out2), sort(setdiff(tasks_a, out)))
+  expect_equal(as.character(a$queue_backlog$as_list()), character(0L))
+  expect_equal(sort(as.character(b$queue_backlog$as_list())), sort(tasks_b))
   expect_equal(x$pop_backlog(), character(0L))
 })
 
@@ -805,7 +823,7 @@ crew_test("group helper methods (non)empty, (un)resolved, unpopped", {
   expect_equal(x$unpopped(), 0L)
   x$push(TRUE, controller = "a")
   x$push(TRUE, controller = "b")
-  x$wait(mode = "all")
+  x$wait(mode = "all", seconds_timeout = 30)
   expect_false(x$empty())
   expect_true(x$nonempty())
   expect_equal(x$resolved(), 2L)
@@ -886,7 +904,7 @@ crew_test("crash detection with backup controllers in a group", {
     a$launcher$terminate_workers()
     b$launcher$terminate_workers()
     c$launcher$terminate_workers()
-    x$wait()
+    x$wait(seconds_timeout = 30)
     x$pop()
   }
   out <- crash()

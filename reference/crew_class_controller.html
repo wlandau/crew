@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,9 @@
 
 
 <dt><code>tasks</code></dt>
-<dd><p>A list of <code><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai::mirai()</a></code> task objects.</p></dd>
+<dd><p>A list of <code><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai::mirai()</a></code> task objects.
+The list of tasks is dynamically generated from an internal,
+dictionary, so it is not as fast as a simple lookup.</p></dd>
 
 
 <dt><code>pushed</code></dt>
@@ -126,8 +128,7 @@ auto-scaling is currently running</p></dd>
 
 
 <dt><code>queue_backlog</code></dt>
-<dd><p>A <code><a href="crew_queue.html">crew_queue()</a></code> object tracking explicitly
-backlogged tasks.</p></dd>
+<dd><p>Queue tracking explicitly backlogged tasks.</p></dd>
 
 
 </dl><p></p></div>

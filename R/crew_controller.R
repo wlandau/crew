@@ -116,7 +116,7 @@ crew_class_controller <- R6::R6Class(
     .reset_options = NULL,
     .garbage_collection = NULL,
     .crashes_max = NULL,
-    .crash_log = new.env(parent = emptyenv(), hash = TRUE),
+    .crash_log = collections::dict(),
     .backup = NULL,
     .summary = NULL,
     .error = NULL,
@@ -128,7 +128,7 @@ crew_class_controller <- R6::R6Class(
       .tasks <<- collections::dict()
       .pushed <<- 0L
       .popped <<- 0L
-      .crash_log <<- new.env(parent = emptyenv(), hash = TRUE)
+      .crash_log <<- collections::dict()
       .summary <<- list(
         controller = .launcher$name,
         tasks = 0L,
@@ -195,17 +195,14 @@ crew_class_controller <- R6::R6Class(
     .scan_crash = function(name, task) {
       code <- .subset2(task, "code")
       if (code != code_crash) {
-        if (!is.null(.subset2(.crash_log, name))) {
-          .crash_log[[name]] <<- NULL
+        if (.subset2(.crash_log, "has")(name)) {
+          .subset2(.crash_log, "remove")(name)
         }
         return()
       }
-      previous <- .subset2(.crash_log, name)
-      if (is.null(previous)) {
-        previous <- 0L
-      }
+      previous <- .subset2(.crash_log, "get")(name, default = 0L)
       count <- previous + 1L
-      .crash_log[[name]] <<- count
+      .subset2(.crash_log, "set")(key = name, value = count)
       if (count > .crashes_max) {
         .summary$crash <<- .summary$crash + 1L
         crew_error(
@@ -237,6 +234,8 @@ crew_class_controller <- R6::R6Class(
       .launcher
     },
     #' @field tasks A list of `mirai::mirai()` task objects.
+    #'   The list of tasks is dynamically generated from an internal,
+    #'   dictionary, so it is not as fast as a simple lookup.
     tasks = function() {
       .subset2(.tasks, "as_list")()
     },
@@ -559,12 +558,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     crashes = function(name, controllers = NULL) {
-      count <- .subset2(.crash_log, name)
-      if (is.null(count)) {
-        0L
-      } else {
-        count
-      }
+      .subset2(.crash_log, "get")(key = name, default = 0L)
     },
     #' @description Push a task to the head of the task list.
     #' @return Invisibly return the `mirai` object of the pushed task.
@@ -1723,7 +1717,7 @@ crew_class_controller <- R6::R6Class(
       .tasks <<- collections::dict()
       .pushed <<- 0L
       .popped <<- 0L
-      .crash_log <<- new.env(parent = emptyenv(), hash = TRUE)
+      .crash_log <<- collections::dict()
       .autoscaling <<- FALSE
       .queue_resolved <<- collections::queue()
       .queue_backlog <<- collections::queue()

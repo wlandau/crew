@@ -48,7 +48,9 @@ Other controller:
 
 \item{\code{launcher}}{Launcher object.}
 
-\item{\code{tasks}}{A list of \code{mirai::mirai()} task objects.}
+\item{\code{tasks}}{A list of \code{mirai::mirai()} task objects.
+The list of tasks is dynamically generated from an internal,
+dictionary, so it is not as fast as a simple lookup.}
 
 \item{\code{pushed}}{Number of tasks pushed since the controller was started.}
 

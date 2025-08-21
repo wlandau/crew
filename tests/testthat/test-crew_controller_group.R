@@ -791,7 +791,7 @@ crew_test("backlog with the second controller saturated`", {
   out2 <- x$pop_backlog()
   expect_equal(sort(out2), sort(setdiff(tasks_a, out)))
   expect_equal(as.character(a$queue_backlog$as_list()), character(0L))
-   expect_equal(sort(as.character(b$queue_backlog$as_list())), sort(tasks_b))
+  expect_equal(sort(as.character(b$queue_backlog$as_list())), sort(tasks_b))
   expect_equal(x$pop_backlog(), character(0L))
 })
 

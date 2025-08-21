@@ -108,7 +108,7 @@ crew_class_controller <- R6::R6Class(
   private = list(
     .client = NULL,
     .launcher = NULL,
-    .tasks = new.env(parent = emptyenv(), hash = TRUE),
+    .tasks = collections::dict(),
     .pushed = 0L,
     .popped = 0L,
     .reset_globals = NULL,
@@ -125,7 +125,7 @@ crew_class_controller <- R6::R6Class(
     .queue_backlog = NULL,
     .resolved = -1L,
     .register_started = function() {
-      .tasks <<- new.env(parent = emptyenv(), hash = TRUE)
+      .tasks <<- collections::dict()
       .pushed <<- 0L
       .popped <<- 0L
       .crash_log <<- new.env(parent = emptyenv(), hash = TRUE)
@@ -144,15 +144,13 @@ crew_class_controller <- R6::R6Class(
       .resolved <<- 0L
     },
     .name_new_task = function(name) {
+      tasks_has <- .subset2(.tasks, "has")
       if (is.null(name)) {
-        name <- name_task_tempfile()
-        name <- if_any(
-          is.null(.subset2(.tasks, name)),
-          name,
-          name_task_nanonext()
-        )
+        while (is.null(name) || tasks_has(name)) {
+          name <- name_task_tempfile()
+        }
       }
-      if (!is.null(.subset2(.tasks, name))) {
+      if (tasks_has(name)) {
         crew_error(
           message = paste(
             "crew task name",
@@ -166,20 +164,20 @@ crew_class_controller <- R6::R6Class(
       name
     },
     .register_task = function(name, task) {
-      .tasks[[name]] <<- task
+      .subset2(.tasks, "set")(key = name, value = task)
       .pushed <<- .pushed + 1L
     },
     .resolve = function(force) {
       if (!(force || .subset2(.queue_resolved, "size")() < 1L)) {
         return()
       }
-      status <- eapply(
-        env = tasks,
-        FUN = nanonext::.unresolved,
-        all.names = TRUE,
-        USE.NAMES = TRUE
+      keys <- .subset2(.tasks, "keys")()
+      get <- .subset2(.tasks, "get")
+      is_unresolved <- lapply(
+        keys,
+        function(key) nanonext::.unresolved(get(key))
       )
-      resolved <- names(status)[!as.logical(status)]
+      resolved <- as.character(keys)[!as.logical(is_unresolved)]
       .queue_resolved <<- collections::queue(items = resolved)
     },
     .wait_all_once = function() {
@@ -240,7 +238,7 @@ crew_class_controller <- R6::R6Class(
     },
     #' @field tasks A list of `mirai::mirai()` task objects.
     tasks = function() {
-      .tasks
+      .subset2(.tasks, "as_list")()
     },
     #' @field pushed Number of tasks pushed since the controller was started.
     pushed = function() {
@@ -1103,7 +1101,7 @@ crew_class_controller <- R6::R6Class(
         value = save_command
       )
       crew_assert(
-        length(.tasks) < 1L,
+        .subset2(.tasks, "size")() < 1L,
         message = "cannot map() until all prior tasks are completed and popped"
       )
       crew_assert(substitute, isTRUE(.) || isFALSE(.))
@@ -1192,7 +1190,7 @@ crew_class_controller <- R6::R6Class(
       out <- out[match(x = names, table = out$name), , drop = FALSE] # nolint
       out <- out[!is.na(out$name), , drop = FALSE] # nolint
       on.exit({
-        .tasks <<- new.env(parent = emptyenv(), hash = TRUE)
+        .tasks <<- collections::dict()
         .popped <<- .popped + nrow(out)
         .summary$tasks <<- .subset2(.summary, "tasks") + nrow(out)
         .summary$seconds <<- .subset2(.summary, "seconds") +
@@ -1344,8 +1342,8 @@ crew_class_controller <- R6::R6Class(
         return(NULL)
       }
       name <- .subset2(.queue_resolved, "pop")()
-      task <- .subset2(.tasks, name)
-      remove(list = name, envir = tasks)
+      task <- .subset2(.tasks, "get")(name)
+      .subset2(.tasks, "remove")(name)
       .popped <<- .popped + 1L
       out <- as_monad(
         task = task,
@@ -1442,7 +1440,7 @@ crew_class_controller <- R6::R6Class(
       controller_name <- .subset2(.launcher, "name")
       out <- lapply(names, function(name) {
         out <- as_monad(
-          task = .subset2(.tasks, name),
+          task = .subset2(.tasks, "get")(name),
           name = name,
           controller = controller_name
         )
@@ -1450,10 +1448,9 @@ crew_class_controller <- R6::R6Class(
         out
       })
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
-      remove(list = names, envir = .tasks)
+      lapply(names, .subset2(.tasks, "remove"))
       new_popped <- length(names)
       .popped <<- .popped + new_popped
-
       .summary$tasks <<- .subset2(.summary, "tasks") + new_popped
       .summary$seconds <<- .subset2(.summary, "seconds") +
         sum(.subset2(out, "seconds"), na.rm = TRUE)
@@ -1595,7 +1592,7 @@ crew_class_controller <- R6::R6Class(
       )
       crew_assert(mode, identical(., "all") || identical(., "one"))
       mode_all <- identical(mode, "all")
-      if (length(.tasks) < 1L) {
+      if (.subset2(.tasks, "size")() < 1L) {
         return(invisible(mode_all))
       }
       envir <- new.env(parent = emptyenv())
@@ -1689,11 +1686,11 @@ crew_class_controller <- R6::R6Class(
         )
       )
       if (all) {
-        mirai::stop_mirai(as.list(.tasks))
+        mirai::stop_mirai(.subset2(.tasks, "as_list")())
       }
-      names <- intersect(names, names(.tasks))
+      names <- intersect(names, .subset2(.tasks, "keys")())
       for (name in names) {
-        mirai::stop_mirai(.subset2(.tasks, name))
+        mirai::stop_mirai(.subset2(.tasks, "get")(name))
       }
       invisible()
     },
@@ -1723,7 +1720,7 @@ crew_class_controller <- R6::R6Class(
           .launcher$terminate() # nocov
         }
       )
-      .tasks <<- new.env(parent = emptyenv(), hash = TRUE)
+      .tasks <<- collections::dict()
       .pushed <<- 0L
       .popped <<- 0L
       .crash_log <<- new.env(parent = emptyenv(), hash = TRUE)

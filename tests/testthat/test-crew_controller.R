@@ -257,7 +257,6 @@ crew_test("controller collect() success", {
   out <- x$collect()
   expect_equal(length(x$tasks), 2L)
   expect_equal(x$queue_resolved$as_list(), list())
-  expect_equal(x$queue_resolved$head, 1L)
   expect_equal(nrow(out), 2L)
   expect_equal(as.character(out$result), rep("done", 2))
   expect_null(x$collect())

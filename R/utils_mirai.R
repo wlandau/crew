@@ -22,7 +22,15 @@ mirai_status <- function(profile, seconds_interval, seconds_timeout) {
   )
   status <- .subset2(envir, "status")
   valid <- .subset2(envir, "valid")
-  if_any(valid, status, mirai_status_error(status, profile))
+  if_any(
+    valid,
+    mirai_status_summary(status),
+    mirai_status_error(status, profile)
+  )
+}
+
+mirai_status_summary <- function(status) {
+  c(.subset2(status, "mirai"), connections = .subset2(status, "connections"))
 }
 
 mirai_status_error <- function(status, profile) {

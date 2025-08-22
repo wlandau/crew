@@ -286,7 +286,7 @@ crew_class_controller <- R6::R6Class(
     autoscaling = function() {
       .autoscaling
     },
-    #' @field queue_resolved Queue of resolved unpopped/uncollected tasks.
+    #' @field queue_resolved Queue of resolved tasks.
     queue_resolved = function() {
       .queue_resolved
     },
@@ -439,14 +439,6 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     unresolved = function(controllers = NULL) {
       .pushed - resolved()
-    },
-    #' @description Number of resolved `mirai()` tasks available via `pop()`.
-    #' @return Non-negative integer of length 1,
-    #'   number of resolved `mirai()` tasks available via `pop()`.
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
-    unpopped = function(controllers = NULL) {
-      resolved() - .popped
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks

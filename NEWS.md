@@ -8,6 +8,7 @@
 * Improve interoperability of `crew`'s workers by removing internal counters `.pushed` and `.popped` (#225, #232).
 * As a consequence of #225 and #232, controllers no longer have a `unpopped()` method.
 * As another consequence of #225 and #232, `wait(mode = "all")` no longer guarantees that a task is available for `pop()`. It just consumes a condition variable signal. `pop()` should always be checked for `NULL` return values.
+* Remove the long-deprecated `promise()` method of the controller.
 
 # crew 1.2.1
 

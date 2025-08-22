@@ -1578,14 +1578,11 @@ crew_class_controller <- R6::R6Class(
           }
           unresolved() < 1L
         }
-        else
-        {
-          wait_event <- function() {
-            .client$relay$wait()
-          }
+      } else {
+        wait_event <- function() {
+          .client$relay$wait()
         }
       }
-
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
       iterate <- function() {

@@ -126,7 +126,6 @@ crew_class_controller <- R6::R6Class(
       .crash_log <<- collections::dict()
       .summary <<- list(
         controller = .launcher$name,
-        tasks = 0L,
         seconds = 0,
         success = 0L,
         error = 0L,
@@ -410,7 +409,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     unresolved = function(controllers = NULL) {
       status <- .subset(.subset2(.client, "status")())
-      .subset(status, "awaiting") + .subset2(status, "executing")
+      as.integer(.subset(status, "awaiting") + .subset2(status, "executing"))
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -1150,8 +1149,6 @@ crew_class_controller <- R6::R6Class(
       out <- out[match(x = names, table = out$name), , drop = FALSE] # nolint
       out <- out[!is.na(out$name), , drop = FALSE] # nolint
       on.exit({
-        .tasks <<- collections::dict()
-        .summary$tasks <<- .subset2(.summary, "tasks") + nrow(out)
         .summary$seconds <<- .subset2(.summary, "seconds") +
           sum(out$seconds)
         for (status in c("success", "error", "crash", "cancel")) {
@@ -1310,7 +1307,6 @@ crew_class_controller <- R6::R6Class(
       )
       suppressWarnings({
         .scan_crash(name = name, task = out)
-        .summary$tasks <<- .subset2(.summary, "tasks") + 1L
         seconds <- .subset2(out, "seconds")
         if (!anyNA(seconds)) {
           .summary$seconds <<- .subset2(.summary, "seconds") + seconds

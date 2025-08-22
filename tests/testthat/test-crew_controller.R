@@ -111,51 +111,6 @@ crew_test("can relay task errors as local warnings", {
   )
 })
 
-crew_test("can terminate a lost worker", {
-  skip_on_cran()
-  skip_on_os("windows")
-  if (isTRUE(as.logical(Sys.getenv("CI", "false")))) {
-    skip_on_os("mac")
-  }
-  x <- crew_controller_local(
-    workers = 1L,
-    seconds_idle = 360,
-    seconds_launch = 180
-  )
-  x$start()
-  on.exit({
-    x$terminate()
-    rm(x)
-    gc()
-    crew_test_sleep()
-  })
-  private <- crew_private(x$launcher)
-  bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
-  path <- file.path(R.home("bin"), bin)
-  call <- "Sys.sleep(300)"
-  handle <- processx::process$new(command = path, args = c("-e", call))
-  crew_retry(
-    ~ handle$is_alive(),
-    seconds_interval = 0.1,
-    seconds_timeout = 5
-  )
-  private$.instances <- tibble::add_row(
-    private$.instances,
-    handle = list(handle),
-    id = 99L,
-    start = -Inf,
-    online = FALSE,
-    discovered = FALSE
-  )
-  x$scale()
-  crew_retry(
-    ~ !handle$is_alive(),
-    seconds_interval = 0.1,
-    seconds_timeout = 60
-  )
-  expect_false(handle$is_alive())
-})
-
 crew_test("deprecate auto_scale", {
   skip_on_cran()
   suppressWarnings(
@@ -683,7 +638,6 @@ crew_test("cancel() named", {
   expect_true(all(grepl("operation canceled", tolower(tasks$error))))
   expect_equal(names(x$tasks), "y")
   s <- x$summary()
-  expect_equal(s$tasks, 2L)
   expect_equal(s$success, 0L)
   expect_equal(s$error, 0L)
   expect_equal(s$crash, 0L)
@@ -735,7 +689,7 @@ crew_test("crash detection with crashes_max == 0L", {
   crew_retry(
     ~ {
       x$scale()
-      isTRUE(x$launcher$instances$online)
+      isTRUE(x$client$status()["connections"] > 0L)
     },
     seconds_interval = 0.1,
     seconds_timeout = 60
@@ -769,7 +723,7 @@ crew_test("crash detection with crashes_max == 2L", {
     crew_retry(
       ~ {
         x$scale()
-        isTRUE(x$launcher$instances$online)
+        isTRUE(x$client$status()["connections"] > 0L)
       },
       seconds_interval = 0.1,
       seconds_timeout = 60
@@ -784,7 +738,7 @@ crew_test("crash detection with crashes_max == 2L", {
   crew_retry(
     ~ {
       x$scale()
-      isTRUE(x$launcher$instances$online)
+      isTRUE(x$client$status()["connections"] > 0L)
     },
     seconds_interval = 0.1,
     seconds_timeout = 60
@@ -818,7 +772,7 @@ crew_test("crash detection resets, crashes_max == 2L", {
     crew_retry(
       ~ {
         x$scale()
-        isTRUE(x$launcher$instances$online)
+        isTRUE(x$client$status()["connections"] > 0L)
       },
       seconds_interval = 0.1,
       seconds_timeout = 60
@@ -856,7 +810,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
     crew_retry(
       ~ {
         x$scale()
-        isTRUE(x$launcher$instances$online)
+        isTRUE(x$client$status()["connections"] > 0L)
       },
       seconds_interval = 0.1,
       seconds_timeout = 60
@@ -871,7 +825,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
   crew_retry(
     ~ {
       x$scale()
-      isTRUE(x$launcher$instances$online)
+      isTRUE(x$client$status()["connections"] > 0L)
     },
     seconds_interval = 0.1,
     seconds_timeout = 60

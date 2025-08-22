@@ -69,7 +69,6 @@ crew_test("crew_controller_group()", {
     sort(
       c(
         "controller",
-        "tasks",
         "seconds",
         "success",
         "error",
@@ -893,9 +892,9 @@ crew_test("crash detection with backup controllers in a group", {
     crew_retry(
       ~ {
         x$scale()
-        isTRUE(a$launcher$instances$online) ||
-          isTRUE(b$launcher$instances$online) ||
-          isTRUE(c$launcher$instances$online)
+        isTRUE(a$client$status()["connections"] > 0L) ||
+          isTRUE(b$client$status()["connections"] > 0L) ||
+          isTRUE(c$client$status()["connections"] > 0L)
       },
       seconds_interval = 0.1,
       seconds_timeout = 60

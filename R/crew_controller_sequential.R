@@ -178,8 +178,7 @@ crew_class_controller_sequential <- R6::R6Class(
         ),
         class = "mirai"
       )
-      .register_task(name, task)
-      nanonext::cv_signal(.subset2(.client, "condition"))
+      .subset2(.tasks, "set")(key = name, value = task)
       invisible(task)
     },
     #' @description Not applicable to the sequential controller.

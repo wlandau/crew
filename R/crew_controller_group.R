@@ -138,14 +138,7 @@ crew_class_controller_group <- R6::R6Class(
         if (scale) {
           scale(throttle = throttle, controllers = controllers)
         }
-        for (controller in control) {
-          if (controller$unpopped() > 0L) {
-            envir$result <- TRUE
-            return(TRUE)
-          }
-        }
-        .relay$wait()
-        FALSE
+        envir$result <- .relay$wait()
       }
       crew_retry(
         fun = iterate,
@@ -163,7 +156,7 @@ crew_class_controller_group <- R6::R6Class(
       scale,
       throttle
     ) {
-      if (sum(map_int(control, ~ length(.x$tasks))) < 1L) {
+      if (sum(map_int(control, ~ .x$tasks$size())) < 1L) {
         return(TRUE)
       }
       envir <- new.env(parent = emptyenv())
@@ -172,10 +165,10 @@ crew_class_controller_group <- R6::R6Class(
         if (scale) {
           scale(throttle = throttle, controllers = controllers)
         }
-        envir$result <- sum(map_int(control, ~ .x$unresolved())) < 1L
-        if (!envir$result) {
+        if (unresolved() > 0L) {
           .relay$wait()
         }
+        envir$result <- unresolved() < 1L
         envir$result
       }
       crew_retry(
@@ -293,15 +286,6 @@ crew_class_controller_group <- R6::R6Class(
     unresolved = function(controllers = NULL) {
       control <- .select_controllers(controllers)
       sum(map_int(control, ~ .x$unresolved()))
-    },
-    #' @description Number of resolved `mirai()` tasks available via `pop()`.
-    #' @return Non-negative integer of length 1,
-    #'   number of resolved `mirai()` tasks available via `pop()`.
-    #' @param controllers Character vector of controller names.
-    #'   Set to `NULL` to select all controllers.
-    unpopped = function(controllers = NULL) {
-      control <- .select_controllers(controllers)
-      sum(map_int(control, ~ .x$unpopped()))
     },
     #' @description Check if a controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks

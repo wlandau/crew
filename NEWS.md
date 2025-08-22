@@ -1,10 +1,13 @@
-# crew 1.2.1.9002 (development)
+# crew 1.2.1.9004 (development)
 
 * Reinstate checks that were temporarily suppressed to help plugins transition to #217.
 * Support `reset_globals`, `reset_packages`, `reset_options`, and `garbage_collection` in `crew_controller_sequential()` (#217).
 * Change argument `tls` to `tlscert` in the call to `mirai::daemon()` (#227, @shikokuchuo).
 * Use `collections` queues instead of custom queues (#229).
 * Use `collections` dictionaries instead of hash environments to track tasks (#229).
+* Improve interoperability of `crew`'s workers by removing internal counters `.pushed` and `.popped` (#225).
+* As a consequence of #225, controllers no longer have a `unpopped()` method.
+* As another consequence of #225, `wait(mode = "all")` no longer guarantees that a task is available for `pop()`. It just consumes a condition variable signal. `pop()` should always be checked for `NULL` return values.
 
 # crew 1.2.1
 

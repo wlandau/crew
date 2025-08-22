@@ -109,8 +109,6 @@ crew_class_controller <- R6::R6Class(
     .client = NULL,
     .launcher = NULL,
     .tasks = collections::dict(),
-    .pushed = 0L,
-    .popped = 0L,
     .reset_globals = NULL,
     .reset_packages = NULL,
     .reset_options = NULL,
@@ -123,11 +121,8 @@ crew_class_controller <- R6::R6Class(
     .autoscaling = FALSE,
     .queue_resolved = NULL,
     .queue_backlog = NULL,
-    .resolved = -1L,
     .register_started = function() {
       .tasks <<- collections::dict()
-      .pushed <<- 0L
-      .popped <<- 0L
       .crash_log <<- collections::dict()
       .summary <<- list(
         controller = .launcher$name,
@@ -141,7 +136,6 @@ crew_class_controller <- R6::R6Class(
       )
       .queue_backlog <<- collections::queue()
       .queue_resolved <<- collections::queue()
-      .resolved <<- 0L
     },
     .name_new_task = function(name) {
       tasks_has <- .subset2(.tasks, "has")
@@ -163,10 +157,6 @@ crew_class_controller <- R6::R6Class(
       }
       name
     },
-    .register_task = function(name, task) {
-      .subset2(.tasks, "set")(key = name, value = task)
-      .pushed <<- .pushed + 1L
-    },
     .resolve = function(force) {
       if (!(force || .subset2(.queue_resolved, "size")() < 1L)) {
         return()
@@ -179,18 +169,6 @@ crew_class_controller <- R6::R6Class(
       )
       resolved <- as.character(keys)[!as.logical(is_unresolved)]
       .queue_resolved <<- collections::queue(items = resolved)
-    },
-    .wait_all_once = function() {
-      if (unresolved() > 0L) {
-        .client$relay$wait()
-      }
-      unresolved() < 1L
-    },
-    .wait_one_once = function() {
-      if (unpopped() < 1L) {
-        .client$relay$wait()
-      }
-      unpopped() > 0L
     },
     .scan_crash = function(name, task) {
       code <- .subset2(task, "code")
@@ -238,15 +216,6 @@ crew_class_controller <- R6::R6Class(
     #'   dictionary, so it is not as fast as a simple lookup.
     tasks = function() {
       .subset2(.tasks, "as_list")()
-    },
-    #' @field pushed Number of tasks pushed since the controller was started.
-    pushed = function() {
-      .pushed
-    },
-    #' @field popped Number of tasks popped
-    #' since the controller was started.
-    popped = function() {
-      .popped
     },
     #' @field reset_globals See [crew_controller()].
     #' since the controller was started.
@@ -388,12 +357,6 @@ crew_class_controller <- R6::R6Class(
       crew_assert(.tasks, is.null(.) || is.environment(.))
       crew_assert(.summary, is.null(.) || is.list(.))
       crew_assert(.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
-      crew_assert(
-        .resolved,
-        is.integer(.),
-        length(.) == 1L,
-        is.finite(.)
-      )
       if (!is.null(.queue_resolved)) {
         crew_assert(is.environment(.queue_resolved))
       }
@@ -403,22 +366,30 @@ crew_class_controller <- R6::R6Class(
       invisible()
     },
     #' @description Check if the controller is empty.
-    #' @details A controller is empty if it has no running tasks
-    #'   or completed tasks waiting to be retrieved with `push()`.
+    #' @details A controller is empty if it has no [mirai::mirai()]
+    #'   task objects in the controller.
+    #'   There may still be other tasks running on the workers
+    #'   of an empty controller, but those tasks were not submitted with
+    #'   `push()` or `collect()`,
+    #'   and they are not part of the controller task queue.
     #' @return `TRUE` if the controller is empty, `FALSE` otherwise.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     empty = function(controllers = NULL) {
-      .pushed == .popped
+      .subset2(.tasks, "size")() < 1L
     },
     #' @description Check if the controller is nonempty.
-    #' @details A controller is empty if it has no running tasks
-    #'   or completed tasks waiting to be retrieved with `push()`.
+    #' @details A controller is empty if it has no [mirai::mirai()]
+    #'   task objects in the controller.
+    #'   There may still be other tasks running on the workers
+    #'   of an empty controller, but those tasks were not submitted with
+    #'   `push()` or `collect()`,
+    #'   and they are not part of the controller task queue.
     #' @return `TRUE` if the controller is empty, `FALSE` otherwise.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     nonempty = function(controllers = NULL) {
-      .pushed > .popped
+      .subset2(.tasks, "size")() > 0L
     },
     #' @description Number of resolved `mirai()` tasks.
     #' @details `resolved()` is cumulative: it counts all the resolved
@@ -430,7 +401,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     resolved = function(controllers = NULL) {
-      .subset2(.client, "resolved")()
+      as.integer(.subset(.subset2(.client, "status")(), "completed"))
     },
     #' @description Number of unresolved `mirai()` tasks.
     #' @return Non-negative integer of length 1,
@@ -438,7 +409,8 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     unresolved = function(controllers = NULL) {
-      .pushed - resolved()
+      status <- .subset(.subset2(.client, "status")())
+      .subset(status, "awaiting") + .subset2(status, "executing")
     },
     #' @description Check if the controller is saturated.
     #' @details A controller is saturated if the number of unresolved tasks
@@ -453,7 +425,9 @@ crew_class_controller <- R6::R6Class(
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
-      unresolved() >= .subset2(.launcher, "workers")
+      status <- .subset(.subset2(.client, "status")())
+      unresolved <- .subset(status, "awaiting") + .subset2(status, "executing")
+      unresolved >= .subset2(status, "connections")
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
@@ -679,7 +653,7 @@ crew_class_controller <- R6::R6Class(
         .timeout = .timeout,
         .compute = .subset2(.client, "profile")
       )
-      .register_task(name, task)
+      .subset2(.tasks, "set")(key = name, value = task)
       if (scale) {
         scale(throttle = throttle)
       }
@@ -1177,7 +1151,6 @@ crew_class_controller <- R6::R6Class(
       out <- out[!is.na(out$name), , drop = FALSE] # nolint
       on.exit({
         .tasks <<- collections::dict()
-        .popped <<- .popped + nrow(out)
         .summary$tasks <<- .subset2(.summary, "tasks") + nrow(out)
         .summary$seconds <<- .subset2(.summary, "seconds") +
           sum(out$seconds)
@@ -1330,7 +1303,6 @@ crew_class_controller <- R6::R6Class(
       name <- .subset2(.queue_resolved, "pop")()
       task <- .subset2(.tasks, "get")(name)
       .subset2(.tasks, "remove")(name)
-      .popped <<- .popped + 1L
       out <- as_monad(
         task = task,
         name = name,
@@ -1435,9 +1407,6 @@ crew_class_controller <- R6::R6Class(
       })
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
       lapply(names, .subset2(.tasks, "remove"))
-      new_popped <- length(names)
-      .popped <<- .popped + new_popped
-      .summary$tasks <<- .subset2(.summary, "tasks") + new_popped
       .summary$seconds <<- .subset2(.summary, "seconds") +
         sum(.subset2(out, "seconds"), na.rm = TRUE)
       for (status in c("success", "error", "crash", "cancel")) {
@@ -1537,14 +1506,39 @@ crew_class_controller <- R6::R6Class(
       # nocov end
     },
     #' @description Wait for tasks.
-    #' @details The `wait()` method blocks the calling R session and
-    #'   repeatedly auto-scales workers for tasks that need them.
-    #'   The function runs until it either times out or the condition
-    #'   in `mode` is met.
-    #' @return A logical of length 1, invisibly. `TRUE` if the condition
-    #'   in `mode` was met, `FALSE` otherwise.
-    #' @param mode Character of length 1: `"all"` to wait for all tasks to
-    #'   complete, `"one"` to wait for a single task to complete.
+    #' @details The `wait()` method blocks the calling R session
+    #'   until the condition in the `mode` argument is met.
+    #'   During the wait, `wait()` iteratively auto-scales the workers.
+    #' @return A logical of length 1, invisibly.
+    #'   `wait(mode = "all")` returns `TRUE` if all tasks resolved
+    #'   at some point during the wait (`FALSE` otherwise).
+    #'   `wait(mode = "one")` returns `TRUE` if a task resolution event
+    #'   was consumed, `FALSE` otherwise.
+    #' @param mode Character of length 1, condition for waiting.
+    #'   `wait(mode = "all")` detects when all tasks are finished, and
+    #'   `wait(mode = "one")` helps iterate through individual tasks
+    #'   in a way that reduces CPU load.
+    #' @section `mode = "all"`
+    #'   `wait(mode = "all")` waits for
+    #'   all tasks in the compute profile to complete,
+    #'   including tasks that were submitted to the controller's workers
+    #'   directly through [mirai::mirai()] (bypassing `push()` etc.).
+    #'   If all tasks are resolved at some point during the wait,
+    #'   then `wait(mode = "all")` returns `TRUE`.
+    #'   Otherwise, `wait(mode = "all")` returns `FALSE`.
+    #' @section `mode = "one"`
+    #'   `wait(mode = "one")` waits until the internal condition variable has
+    #'   at least one unconsumed task resolution event.
+    #'   A task resolution event occurs when any task resolves in the
+    #'   controller's compute profile, whether it was originally
+    #'   submitted through the
+    #'   controller itself (e.g. `push()`) or
+    #'   it bypassed the controller object
+    #'   with [mirai::mirai()].
+    #'   Such an event is consumed (if available)
+    #'   each time `wait()` completes a single polling iteration.
+    #'   `wait(mode = "one")` returns `TRUE` if an event was consumed,
+    #'   `FALSE` otherwise.
     #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
     #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
     #'   to [crew_controller_group()] is used as `seconds_max`
@@ -1577,17 +1571,28 @@ crew_class_controller <- R6::R6Class(
         value = seconds_interval
       )
       crew_assert(mode, identical(., "all") || identical(., "one"))
-      mode_all <- identical(mode, "all")
-      if (.subset2(.tasks, "size")() < 1L) {
-        return(invisible(mode_all))
+      if (identical(mode, "all")) {
+        wait_event <- function() {
+          if (unresolved() > 0L) {
+            .client$relay$wait()
+          }
+          unresolved() < 1L
+        }
+        else
+        {
+          wait_event <- function() {
+            .client$relay$wait()
+          }
+        }
       }
+
       envir <- new.env(parent = emptyenv())
       envir$result <- FALSE
       iterate <- function() {
         if (!envir$result && scale) {
           scale(throttle = throttle)
         }
-        envir$result <- if_any(mode_all, .wait_all_once(), .wait_one_once())
+        envir$result <- wait_event()
         envir$result
       }
       crew_retry(
@@ -1627,15 +1632,14 @@ crew_class_controller <- R6::R6Class(
       backlog_pop <- .subset2(.queue_backlog, "pop")
       as.character(replicate(n, backlog_pop(), simplify = FALSE))
     },
-    #' @description Summarize the workers and tasks of the controller.
-    #' @return A data frame of summary statistics on the tasks
-    #'   that ran on a worker and then were returned by `pop()` or
-    #'   `collect()`.
+    #' @description Summarize the collected tasks of the controller.
+    #' @return A data frame of cumulative summary statistics on the tasks
+    #'   collected through `pop()` and `collect()`.
     #'   It has one row and the following columns:
     #'   * `controller`: name of the controller.
-    #'   * `tasks`: number of tasks.
     #'   * `seconds`: total number of runtime in seconds.
-    #'   * `success`: total number of successful tasks.
+    #'   * `success`: total number of tasks that did not crash or
+    #'     return an error.
     #'   * `error`: total number of tasks with errors, either in the R code
     #'     of the task or an NNG-level error that is not a cancellation
     #'     or crash.
@@ -1707,13 +1711,10 @@ crew_class_controller <- R6::R6Class(
         }
       )
       .tasks <<- collections::dict()
-      .pushed <<- 0L
-      .popped <<- 0L
       .crash_log <<- collections::dict()
       .autoscaling <<- FALSE
       .queue_resolved <<- collections::queue()
       .queue_backlog <<- collections::queue()
-      .resolved <<- -1L
       invisible()
     }
   )

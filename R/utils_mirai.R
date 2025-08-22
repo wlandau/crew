@@ -30,7 +30,11 @@ mirai_status <- function(profile, seconds_interval, seconds_timeout) {
 }
 
 mirai_status_summary <- function(status) {
-  c(.subset2(status, "mirai"), connections = .subset2(status, "connections"))
+  tasks <- .subset2(status, "mirai")
+  if (is.null(tasks)) {
+    tasks <- c(awaiting = 0L, executing = 0L, completed = 0L)
+  }
+  c(tasks, connections = .subset2(status, "connections"))
 }
 
 mirai_status_error <- function(status, profile) {

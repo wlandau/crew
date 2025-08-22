@@ -65,6 +65,7 @@ backoff in the relay and auto-scaling.}
 \itemize{
 \item \href{#method-crew_class_controller_group-new}{\code{crew_class_controller_group$new()}}
 \item \href{#method-crew_class_controller_group-validate}{\code{crew_class_controller_group$validate()}}
+\item \href{#method-crew_class_controller_group-size}{\code{crew_class_controller_group$size()}}
 \item \href{#method-crew_class_controller_group-empty}{\code{crew_class_controller_group$empty()}}
 \item \href{#method-crew_class_controller_group-nonempty}{\code{crew_class_controller_group$nonempty()}}
 \item \href{#method-crew_class_controller_group-resolved}{\code{crew_class_controller_group$resolved()}}
@@ -151,6 +152,27 @@ Validate the client.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-size"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-size}{}}}
+\subsection{Method \code{size()}}{
+Number of tasks in the controller.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$size(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Non-negative integer, number of tasks in the controller.
 }
 }
 \if{html}{\out{<hr>}}

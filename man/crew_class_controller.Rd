@@ -85,6 +85,7 @@ auto-scaling is currently running}
 \itemize{
 \item \href{#method-crew_class_controller-new}{\code{crew_class_controller$new()}}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
+\item \href{#method-crew_class_controller-size}{\code{crew_class_controller$size()}}
 \item \href{#method-crew_class_controller-empty}{\code{crew_class_controller$empty()}}
 \item \href{#method-crew_class_controller-nonempty}{\code{crew_class_controller$nonempty()}}
 \item \href{#method-crew_class_controller-resolved}{\code{crew_class_controller$resolved()}}
@@ -182,6 +183,27 @@ Validate the controller.
 
 \subsection{Returns}{
 \code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-size"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-size}{}}}
+\subsection{Method \code{size()}}{
+Number of tasks in the controller.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$size(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Non-negative integer, number of tasks in the controller.
 }
 }
 \if{html}{\out{<hr>}}

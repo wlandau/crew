@@ -599,9 +599,11 @@ crew_class_launcher <- R6::R6Class(
       supply <- status["connections"] + launching
       demand <- max(private$.workers, status["awaiting"] + status["executing"])
       activity <- FALSE
-      for (index in seq_len(demand - supply)) {
-        self$launch()
-        activity <- TRUE
+      if (demand > supply) {
+        for (index in seq_len(demand - supply)) {
+          self$launch()
+          activity <- TRUE
+        }
       }
       private$.throttle$update(activity = activity)
       invisible(activity)

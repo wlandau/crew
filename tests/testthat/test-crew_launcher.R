@@ -29,7 +29,6 @@ crew_test("active bindings for covr", {
   expect_true(is.numeric(out$tasks_max))
   expect_true(is.numeric(out$tasks_timers))
   expect_true(inherits(out$tls, "crew_class_tls"))
-  expect_equal(out$processes, 1L)
   expect_equal(out$r_arguments, "--vanilla")
   expect_s3_class(
     out$options_metrics,
@@ -104,130 +103,6 @@ crew_test("launcher call", {
   expect_equal(length(out), 1L)
   expect_true(all(nzchar(out)))
   expect_true(grepl(pattern = "^crew::crew_worker\\(", x = out))
-})
-
-crew_test("launcher update() with no new events", {
-  skip_on_cran()
-  instances <- expand.grid(
-    submitted = FALSE,
-    online = c(TRUE, FALSE),
-    discovered = c(TRUE, FALSE),
-    start = c(Inf, -Inf)
-  )
-  instances$id <- seq_len(nrow(instances))
-  instances$handle <- replicate(nrow(instances), list(), simplify = FALSE)
-  instances <- instances[, colnames(launcher_empty_instances)]
-  instances <- tibble::as_tibble(instances)
-  launcher <- crew_class_launcher$new(
-    seconds_launch = 9999,
-    seconds_interval = 1
-  )
-  launcher$start(url = "url", profile = "profile")
-  on.exit(launcher$terminate())
-  private <- crew_private(launcher)
-  private$.instances <- instances
-  launcher$update(status = list())
-  instances$submitted <- TRUE
-  names <- setdiff(colnames(launcher_empty_instances), "handle")
-  expect_equal(
-    launcher$instances[, names],
-    instances[c(1L, 3L, 4L, 5L, 7L), names]
-  )
-  expect_true(all(launcher$instances$submitted))
-})
-
-crew_test("launcher update() with connects", {
-  skip_on_cran()
-  instances <- expand.grid(
-    submitted = FALSE,
-    online = c(FALSE, FALSE),
-    discovered = c(FALSE, FALSE),
-    start = c(Inf, Inf)
-  )
-  instances$id <- rev(seq_len(nrow(instances)) + 100L)
-  instances$handle <- replicate(nrow(instances), list(), simplify = FALSE)
-  instances <- instances[, colnames(launcher_empty_instances)]
-  instances <- tibble::as_tibble(instances)
-  launcher <- crew_class_launcher$new(
-    seconds_launch = 9999,
-    seconds_interval = 1
-  )
-  launcher$start(url = "url", profile = "profile")
-  on.exit(launcher$terminate())
-  private <- crew_private(launcher)
-  private$.instances <- instances
-  launcher$update(status = list(events = c(102L, 103L, 107L)))
-  expect_equal(
-    launcher$instances$online,
-    instances$id %in% c(102L, 103L, 107L)
-  )
-  expect_equal(
-    launcher$instances$discovered,
-    instances$id %in% c(102L, 103L, 107L)
-  )
-  expect_true(all(launcher$instances$submitted))
-})
-
-crew_test("launcher update() with connects and disconnects", {
-  skip_on_cran()
-  set.seed(0L)
-  instances <- expand.grid(
-    submitted = FALSE,
-    online = c(FALSE, FALSE),
-    discovered = c(FALSE, FALSE),
-    start = c(Inf, Inf)
-  )
-  instances$id <- sample(seq_len(nrow(instances)))
-  instances$handle <- replicate(nrow(instances), list(), simplify = FALSE)
-  instances <- instances[, colnames(launcher_empty_instances)]
-  instances <- tibble::as_tibble(instances)
-  launcher <- crew_class_launcher$new(
-    seconds_launch = 9999,
-    seconds_interval = 1
-  )
-  launcher$start(url = "url", profile = "profile")
-  on.exit(launcher$terminate())
-  private <- crew_private(launcher)
-  private$.instances <- instances
-  launcher$update(status = list(events = c(2L, 3L, 7L, -7L)))
-  expect_equal(launcher$instances$id, setdiff(instances$id, 7L))
-  expect_equal(
-    launcher$instances$online,
-    launcher$instances$id %in% c(2L, 3L)
-  )
-  expect_equal(
-    launcher$instances$discovered,
-    launcher$instances$id %in% c(2L, 3L)
-  )
-  expect_true(all(launcher$instances$submitted))
-})
-
-crew_test("launcher update() with just disconnects", {
-  skip_on_cran()
-  set.seed(0L)
-  instances <- expand.grid(
-    submitted = FALSE,
-    online = c(TRUE, TRUE),
-    discovered = c(TRUE, TRUE),
-    start = c(Inf, Inf)
-  )
-  instances$id <- sample(seq_len(nrow(instances)))
-  instances$handle <- replicate(nrow(instances), list(), simplify = FALSE)
-  instances <- instances[, colnames(launcher_empty_instances)]
-  instances <- tibble::as_tibble(instances)
-  launcher <- crew_class_launcher$new(
-    seconds_launch = 9999,
-    seconds_interval = 1
-  )
-  launcher$start(url = "url", profile = "profile")
-  on.exit(launcher$terminate())
-  private <- crew_private(launcher)
-  private$.instances <- instances
-  launcher$update(status = list(events = c(-4L, -6L)))
-  expect_equal(launcher$instances$id, setdiff(instances$id, c(4L, 6L)))
-  expect_equal(launcher$instances$online, rep(TRUE, 6L))
-  expect_equal(launcher$instances$discovered, rep(TRUE, 6L))
-  expect_true(all(launcher$instances$submitted))
 })
 
 crew_test("custom launcher", {

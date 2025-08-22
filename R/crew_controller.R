@@ -1430,24 +1430,15 @@ crew_class_controller <- R6::R6Class(
     #' @details The `wait()` method blocks the calling R session
     #'   until the condition in the `mode` argument is met.
     #'   During the wait, `wait()` iteratively auto-scales the workers.
-    #' @return A logical of length 1, invisibly.
-    #'   `wait(mode = "all")` returns `TRUE` if all tasks resolved
-    #'   at some point during the wait (`FALSE` otherwise).
-    #'   `wait(mode = "one")` returns `TRUE` if a task resolution event
-    #'   was consumed, `FALSE` otherwise.
-    #' @param mode Character of length 1, condition for waiting.
-    #'   `wait(mode = "all")` detects when all tasks are finished, and
-    #'   `wait(mode = "one")` helps iterate through individual tasks
-    #'   in a way that reduces CPU load.
-    #' @section `mode = "all"`
-    #'   `wait(mode = "all")` waits for
+    #'   Details on the modes:
+    #' * `wait(mode = "all")` waits for
     #'   all tasks in the compute profile to complete,
     #'   including tasks that were submitted to the controller's workers
     #'   directly through [mirai::mirai()] (bypassing `push()` etc.).
     #'   If all tasks are resolved at some point during the wait,
     #'   then `wait(mode = "all")` returns `TRUE`.
     #'   Otherwise, `wait(mode = "all")` returns `FALSE`.
-    #' @section `mode = "one"`
+    #' * `mode = "one"`:
     #'   `wait(mode = "one")` waits until the internal condition variable has
     #'   at least one unconsumed task resolution event.
     #'   A task resolution event occurs when any task resolves in the
@@ -1460,6 +1451,15 @@ crew_class_controller <- R6::R6Class(
     #'   each time `wait()` completes a single polling iteration.
     #'   `wait(mode = "one")` returns `TRUE` if an event was consumed,
     #'   `FALSE` otherwise.
+    #' @return A logical of length 1, invisibly.
+    #'   `wait(mode = "all")` returns `TRUE` if all tasks resolved
+    #'   at some point during the wait (`FALSE` otherwise).
+    #'   `wait(mode = "one")` returns `TRUE` if a task resolution event
+    #'   was consumed, `FALSE` otherwise.
+    #' @param mode Character of length 1, condition for waiting.
+    #'   `wait(mode = "all")` detects when all tasks are finished, and
+    #'   `wait(mode = "one")` helps iterate through individual tasks
+    #'   in a way that reduces CPU load.
     #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
     #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
     #'   to [crew_controller_group()] is used as `seconds_max`

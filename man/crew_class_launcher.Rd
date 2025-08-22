@@ -73,9 +73,6 @@ Other launcher:
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.
-asynchronously.}
-
 \item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{options_metrics}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
@@ -87,9 +84,6 @@ asynchronously.}
 \item{\code{instances}}{Data frame of worker instance information.}
 
 \item{\code{id}}{Integer worker ID from the last call to \code{settings()}.}
-
-\item{\code{async}}{A \code{\link[=crew_async]{crew_async()}} object to run low-level launcher tasks
-asynchronously.}
 
 \item{\code{throttle}}{A \code{\link[=crew_throttle]{crew_throttle()}} object to throttle scaling.}
 }
@@ -105,8 +99,6 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
-\item \href{#method-crew_class_launcher-resolve}{\code{crew_class_launcher$resolve()}}
-\item \href{#method-crew_class_launcher-update}{\code{crew_class_launcher$update()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
@@ -184,7 +176,7 @@ Launcher constructor.
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{processes}}{Deprecated on 2025-08-22 (\code{crew} version 1.2.1.9004).}
 
 \item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
@@ -335,41 +327,6 @@ Terminate the whole launcher, including all workers.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-resolve"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-resolve}{}}}
-\subsection{Method \code{resolve()}}{
-Resolve asynchronous worker submissions.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$resolve()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly). Throw an error if there were any
-asynchronous worker submission errors.'
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-update"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-update}{}}}
-\subsection{Method \code{update()}}{
-Update worker metadata, resolve asynchronous
-worker submissions, and terminate lost workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$update(status)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{status}}{A \code{mirai} status list.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-launch}{}}}
 \subsection{Method \code{launch()}}{
@@ -402,9 +359,8 @@ as of 2025-01-16 (\code{crew} version 0.10.2.9003).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Invisibly returns \code{TRUE} if there was any relevant
-auto-scaling activity (new worker launches or worker
-connection/disconnection events) (\code{FALSE} otherwise).
+Invisibly returns \code{TRUE} if workers were launched and \code{FALSE}
+otherwise
 }
 }
 \if{html}{\out{<hr>}}

@@ -106,14 +106,6 @@ crew_launcher <- function(
   r_arguments = c("--no-save", "--no-restore"),
   options_metrics = crew::crew_options_metrics()
 ) {
-  crew_deprecate(
-    name = "processes",
-    date = "2025-08-22",
-    version = "1.2.1.9004",
-    alternative = "none (no longer supported)",
-    condition = "warning",
-    value = processes
-  )
   launcher <- crew_class_launcher$new(
     name = name,
     workers = workers,
@@ -125,6 +117,7 @@ crew_launcher <- function(
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
     tls = tls,
+    processes = processes,
     r_arguments = r_arguments,
     options_metrics = options_metrics
   )
@@ -175,7 +168,6 @@ crew_class_launcher <- R6::R6Class(
     .profile = NULL,
     .instances = launcher_empty_instances,
     .id = NULL,
-    .async = NULL,
     .throttle = NULL
   ),
   active = list(
@@ -243,11 +235,6 @@ crew_class_launcher <- R6::R6Class(
     id = function() {
       .subset2(private, ".id")
     },
-    #' @field async A [crew_async()] object to run low-level launcher tasks
-    #'   asynchronously.
-    async = function() {
-      .subset2(private, ".async")
-    },
     #' @field throttle A [crew_throttle()] object to throttle scaling.
     throttle = function() {
       .subset2(private, ".throttle")
@@ -273,6 +260,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param crashes_error See [crew_launcher()].
     #' @param launch_max Deprecated.
     #' @param tls See [crew_launcher()].
+    #' @param processes Deprecated on 2025-08-22 (`crew` version 1.2.1.9004).
     #' @param r_arguments See [crew_launcher()].
     #' @param options_metrics See [crew_launcher()].
     #' @examples
@@ -305,6 +293,7 @@ crew_class_launcher <- R6::R6Class(
       crashes_error = NULL,
       launch_max = NULL,
       tls = NULL,
+      processes = NULL,
       r_arguments = NULL,
       options_metrics = NULL
     ) {
@@ -366,6 +355,14 @@ crew_class_launcher <- R6::R6Class(
         alternative = "none",
         condition = "message",
         value = crashes_error
+      )
+      crew_deprecate(
+        name = "processes",
+        date = "2025-08-22",
+        version = "1.2.1.9004",
+        alternative = "none (no longer supported)",
+        condition = "message",
+        value = processes
       )
       private$.name <- name %|||% crew_random_name(n = 4L)
       private$.workers <- workers
@@ -458,13 +455,6 @@ crew_class_launcher <- R6::R6Class(
         message = "field 'tls' must be an object created by crew_tls()"
       )
       private$.tls$validate()
-      if (!is.null(private$.async)) {
-        crew_assert(
-          inherits(private$.async, "crew_class_async"),
-          message = "field 'async' must be an object created by crew_async()"
-        )
-        private$.async$validate()
-      }
       if (!is.null(private$.throttle)) {
         crew_assert(
           inherits(private$.throttle, "crew_class_throttle"),
@@ -559,9 +549,6 @@ crew_class_launcher <- R6::R6Class(
       )
       url <- url %|||% sockets[1L]
       profile <- profile %|||% crew_random_name()
-      if (!is.null(private$.async)) {
-        private$.async$terminate()
-      }
       private$.throttle <- crew_throttle(seconds_max = self$seconds_interval)
       private$.url <- url
       private$.profile <- profile
@@ -577,54 +564,7 @@ crew_class_launcher <- R6::R6Class(
       if (!is.null(private$.throttle)) {
         private$.throttle$reset()
       }
-      using_async <- !is.null(private$.async) &&
-        private$.async$asynchronous() &&
-        private$.async$started()
-      if (using_async) {
-        on.exit(private$.async$terminate())
-      }
       self$terminate_workers()
-      invisible()
-    },
-    #' @description Resolve asynchronous worker submissions.
-    #' @return `NULL` (invisibly). Throw an error if there were any
-    #'   asynchronous worker submission errors.'
-    resolve = function() {
-      unresolved <- which(!private$.instances$submitted)
-      handles <- private$.instances$handle
-      for (index in unresolved) {
-        handle <- .subset2(handles, index)
-        if (mirai_resolved(handle)) {
-          handle <- mirai_resolve(handle, launching = TRUE)
-          private$.instances$handle[[index]] <- handle %||% crew_null
-          private$.instances$submitted[index] <- TRUE
-        }
-      }
-    },
-    #' @description Update worker metadata, resolve asynchronous
-    #'   worker submissions, and terminate lost workers.
-    #' @return `NULL` (invisibly).
-    #' @param status A `mirai` status list.
-    update = function(status) {
-      self$resolve()
-      instances <- private$.instances
-      id <- instances$id
-      events <- as.integer(status$events)
-      connected <- id %in% (events[events > 0L])
-      disconnected <- id %in% (-events[events < 0L])
-      instances$online[connected] <- TRUE
-      instances$online[disconnected] <- FALSE
-      instances$discovered[connected] <- TRUE
-      online <- instances$online
-      discovered <- instances$discovered
-      start <- instances$start
-      awaiting <- (now() - start) < private$.seconds_launch
-      active <- online | (!discovered & awaiting)
-      lost <- !active & !discovered
-      handles <- instances$handle[lost]
-      handles <- lapply(handles, mirai_resolve, launching = TRUE)
-      mirai_wait(lapply(handles, self$terminate_worker), launching = FALSE)
-      private$.instances <- instances[active, ]
       invisible()
     },
     #' @description Launch a worker.
@@ -643,35 +583,26 @@ crew_class_launcher <- R6::R6Class(
       private$.instances <- tibble::add_row(
         private$.instances,
         handle = list(handle) %||% crew_null,
-        id = private$.id,
-        start = now(),
-        submitted = FALSE,
-        online = FALSE,
-        discovered = FALSE
+        start = now()
       )
       invisible()
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
-    #' @return Invisibly returns `TRUE` if there was any relevant
-    #'   auto-scaling activity (new worker launches or worker
-    #'   connection/disconnection events) (`FALSE` otherwise).
+    #' @return Invisibly returns `TRUE` if workers were launched and `FALSE`
+    #'   otherwise
     #' @param status A `mirai` status list with worker and task information.
     #' @param throttle Deprecated, only used in the controller
     #'   as of 2025-01-16 (`crew` version 0.10.2.9003).
     scale = function(status, throttle = NULL) {
-      self$update(status = status)
-      supply <- nrow(private$.instances)
-      demand <- status$mirai["awaiting"] + status$mirai["executing"]
-      increment <- 0L
-      if (!anyNA(demand)) {
-        increment <- min(self$workers - supply, max(0L, demand - supply))
-        index <- 1L
-        while (index <= increment) {
-          self$launch()
-          index <- index + 1L
-        }
+      elapsed <- (now() - private$.instances$start)
+      launching <- sum(elapsed < private$.seconds_launch)
+      supply <- status["connections"] + launching
+      demand <- max(private$.workers, status["awaiting"] + status["executing"])
+      activity <- FALSE
+      for (index in seq_len(demand - supply)) {
+        self$launch()
+        activity <- TRUE
       }
-      activity <- length(status$events) > 0L || increment > 0L
       private$.throttle$update(activity = activity)
       invisible(activity)
     },
@@ -708,12 +639,9 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly).
     terminate_workers = function() {
       instances <- .subset2(self, "instances")
-      tasks <- list()
       for (index in seq_len(nrow(instances))) {
-        handle <- mirai_resolve(instances$handle[[index]], launching = TRUE)
-        tasks[[index]] <- self$terminate_worker(handle = handle)
+        self$terminate_worker(handle = instances$handle[[index]])
       }
-      mirai_wait(tasks = tasks, launching = FALSE)
       private$.instances <- launcher_empty_instances
       invisible()
     },

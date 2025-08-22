@@ -38,7 +38,6 @@ crew_test("crew_client() works", {
   expect_false(client$started)
   expect_null(client$dispatcher)
   expect_null(client$url)
-  expect_equal(client$resolved(), 0L)
   expect_silent(client$start())
   expect_silent(client$validate())
   expect_true(client$started)

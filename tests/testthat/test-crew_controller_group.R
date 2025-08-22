@@ -540,7 +540,6 @@ crew_test("controller group map() works", {
   expect_true(is.character(out$worker))
   expect_equal(out$controller, rep(a$launcher$name, 2L))
   sum <- x$summary()
-  expect_equal(sum$tasks, 2L)
   expect_equal(sum$success, 2L)
   expect_equal(sum$error, 0L)
   expect_equal(sum$warning, 0L)

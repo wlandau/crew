@@ -67,14 +67,7 @@
 #'   [crew::crew_controller()] instead.
 #' @param crashes_error Deprecated on 2025-01-13 (`crew` version 0.10.2.9002).
 #' @param launch_max Deprecated on 2024-11-04 (`crew` version 0.10.2.9002).
-#' @param processes `NULL` or positive integer of length 1,
-#'   number of local processes to
-#'   launch to allow worker launches to happen asynchronously. If `NULL`,
-#'   then no local processes are launched. If 1 or greater, then the launcher
-#'   starts the processes on `start()` and ends them on `terminate()`.
-#'   Plugins that may use these processes should run asynchronous calls
-#'   using `launcher$async$eval()` and expect a `mirai` task object
-#'   as the return value.
+#' @param processes Deprecated on 2025-08-22 (`crew` version 1.2.1.9004).
 #' @param r_arguments Optional character vector of command line arguments
 #'   to pass to `Rscript` (non-Windows) or `Rscript.exe` (Windows)
 #'   when starting a worker. Example:
@@ -113,6 +106,14 @@ crew_launcher <- function(
   r_arguments = c("--no-save", "--no-restore"),
   options_metrics = crew::crew_options_metrics()
 ) {
+  crew_deprecate(
+    name = "processes",
+    date = "2025-08-22",
+    version = "1.2.1.9004",
+    alternative = "none (no longer supported)",
+    condition = "warning",
+    value = processes
+  )
   launcher <- crew_class_launcher$new(
     name = name,
     workers = workers,
@@ -124,7 +125,6 @@ crew_launcher <- function(
     tasks_max = tasks_max,
     tasks_timers = tasks_timers,
     tls = tls,
-    processes = processes,
     r_arguments = r_arguments,
     options_metrics = options_metrics
   )
@@ -134,11 +134,7 @@ crew_launcher <- function(
 
 launcher_empty_instances <- tibble::tibble(
   handle = list(),
-  id = integer(0L),
-  start = numeric(0L),
-  submitted = logical(0L),
-  online = logical(0L),
-  discovered = logical(0L)
+  start = numeric(0L)
 )
 
 #' @title Launcher abstract class
@@ -173,7 +169,6 @@ crew_class_launcher <- R6::R6Class(
     .tasks_max = NULL,
     .tasks_timers = NULL,
     .tls = NULL,
-    .processes = NULL,
     .r_arguments = NULL,
     .options_metrics = NULL,
     .url = NULL,
@@ -223,11 +218,6 @@ crew_class_launcher <- R6::R6Class(
     #' @field tls See [crew_launcher()].
     tls = function() {
       .subset2(private, ".tls")
-    },
-    #' @field processes See [crew_launcher()].
-    #'   asynchronously.
-    processes = function() {
-      .subset2(private, ".processes")
     },
     #' @field r_arguments See [crew_launcher()].
     r_arguments = function() {
@@ -283,7 +273,6 @@ crew_class_launcher <- R6::R6Class(
     #' @param crashes_error See [crew_launcher()].
     #' @param launch_max Deprecated.
     #' @param tls See [crew_launcher()].
-    #' @param processes See [crew_launcher()].
     #' @param r_arguments See [crew_launcher()].
     #' @param options_metrics See [crew_launcher()].
     #' @examples
@@ -316,7 +305,6 @@ crew_class_launcher <- R6::R6Class(
       crashes_error = NULL,
       launch_max = NULL,
       tls = NULL,
-      processes = NULL,
       r_arguments = NULL,
       options_metrics = NULL
     ) {
@@ -389,7 +377,6 @@ crew_class_launcher <- R6::R6Class(
       private$.tasks_max <- tasks_max
       private$.tasks_timers <- tasks_timers
       private$.tls <- tls
-      private$.processes <- processes
       private$.r_arguments <- r_arguments
       private$.options_metrics <- options_metrics
     },
@@ -450,14 +437,6 @@ crew_class_launcher <- R6::R6Class(
           message = paste(field, "must be a non-missing numeric of length 1")
         )
       }
-      crew_assert(
-        private$.processes %|||% 1L,
-        is.numeric(.),
-        . > 0L,
-        length(.) == 1L,
-        !anyNA(.),
-        message = "processes must be NULL or a positive integer of length 1"
-      )
       if (!is.null(private$.url)) {
         crew_assert(
           private$.url,
@@ -583,8 +562,6 @@ crew_class_launcher <- R6::R6Class(
       if (!is.null(private$.async)) {
         private$.async$terminate()
       }
-      private$.async <- crew_async(workers = private$.processes)
-      private$.async$start()
       private$.throttle <- crew_throttle(seconds_max = self$seconds_interval)
       private$.url <- url
       private$.profile <- profile

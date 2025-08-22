@@ -44,8 +44,9 @@ crew_test("crew_controller_group()", {
   x$start()
   expect_true(x$wait(mode = "all", seconds_timeout = 30))
   expect_true(x$started())
+  expect_equal(x$size(), 0L)
   expect_true(x$empty())
-  expect_false(x$saturated())
+  expect_false(x$saturated()) # ERROR
   expect_true(x$empty(controllers = "a"))
   expect_true(x$empty(controllers = "b"))
   expect_equal(length(x$pids()), 3L)

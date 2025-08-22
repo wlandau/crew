@@ -364,6 +364,13 @@ crew_class_controller <- R6::R6Class(
       }
       invisible()
     },
+    #' @description Number of tasks in the controller.
+    #' @return Non-negative integer, number of tasks in the controller.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    size = function(controllers = NULL) {
+      .subset2(.tasks, "size")()
+    },
     #' @description Check if the controller is empty.
     #' @details A controller is empty if it has no [mirai::mirai()]
     #'   task objects in the controller.
@@ -426,7 +433,7 @@ crew_class_controller <- R6::R6Class(
     saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
       status <- .subset(.subset2(.client, "status")())
       unresolved <- .subset(status, "awaiting") + .subset2(status, "executing")
-      unresolved >= .subset2(status, "connections")
+      unresolved >= .subset2(.launcher, "workers")
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets

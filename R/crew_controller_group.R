@@ -156,7 +156,7 @@ crew_class_controller_group <- R6::R6Class(
       scale,
       throttle
     ) {
-      if (sum(map_int(control, ~ .x$tasks$size())) < 1L) {
+      if (size(controllers = controllers) < 1L) {
         return(TRUE)
       }
       envir <- new.env(parent = emptyenv())
@@ -244,6 +244,14 @@ crew_class_controller_group <- R6::R6Class(
       .throttle$validate()
       invisible()
     },
+    #' @description Number of tasks in the controller.
+    #' @return Non-negative integer, number of tasks in the controller.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    size = function(controllers = NULL) {
+      control <- .select_controllers(controllers)
+      sum(map_int(control, ~ .x$size()))
+    },
     #' @description See if the controllers are empty.
     #' @details A controller is empty if it has no running tasks
     #'   or completed tasks waiting to be retrieved with `push()`.
@@ -312,6 +320,7 @@ crew_class_controller_group <- R6::R6Class(
     start = function(controllers = NULL) {
       control <- .select_controllers(controllers)
       lapply(control, function(controller) controller$start())
+      invisible()
     },
     #' @description Check whether all the given controllers are started.
     #' @details Actually checks whether all the given clients are started.
@@ -957,6 +966,7 @@ crew_class_controller_group <- R6::R6Class(
         .select_controllers(controllers),
         function(controller) controller$terminate()
       )
+      invisible()
     }
   )
 )

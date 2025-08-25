@@ -108,19 +108,19 @@ crew_class_controller <- R6::R6Class(
   private = list(
     .client = NULL,
     .launcher = NULL,
-    .tasks = NULL,
+    .tasks = collections::dict(),
     .reset_globals = NULL,
     .reset_packages = NULL,
     .reset_options = NULL,
     .garbage_collection = NULL,
     .crashes_max = NULL,
-    .crash_log = NULL,
+    .crash_log = collections::dict(),
     .backup = NULL,
     .summary = NULL,
     .error = NULL,
     .autoscaling = FALSE,
-    .queue_resolved = collections::queue(),
-    .queue_backlog = collections::queue(),
+    .queue_resolved = NULL,
+    .queue_backlog = NULL,
     .register_started = function() {
       .tasks <<- collections::dict()
       .crash_log <<- collections::dict()

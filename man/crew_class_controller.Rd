@@ -71,8 +71,8 @@ since the controller was started.}
 \item{\code{error}}{Tibble of task results (with one result per row)
 from the last call to \verb{map(error = "stop)}.}
 
-\item{\code{autoscaling}}{\code{TRUE} or \code{FALSE}, whether async \code{later}-based
-auto-scaling is currently running}
+\item{\code{loop}}{\code{later} loop if asynchronous auto-scaling is running,
+\code{NULL} otherwise.}
 
 \item{\code{queue_resolved}}{Queue of resolved tasks.}
 

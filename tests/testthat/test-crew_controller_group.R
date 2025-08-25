@@ -843,9 +843,9 @@ crew_test("group helper methods (non)empty and (un)resolved", {
 crew_test("descale", {
   controller <- crew_controller_local()
   x <- crew_controller_group(controller)
-  expect_false(controller$autoscaling)
+  expect_null(controller$loop)
   x$descale()
-  expect_false(controller$autoscaling)
+  expect_false(controller$loop)
 })
 
 crew_test("crash detection with backup controllers in a group", {

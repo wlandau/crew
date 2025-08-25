@@ -280,6 +280,7 @@ crew_class_controller_group <- R6::R6Class(
     launch = function(n = 1L, controllers = NULL) {
       control <- .select_controllers(controllers)
       lapply(control, function(controller) controller$launch(n = n))
+      invisible()
     },
     #' @description Automatically scale up the number of workers if needed
     #'   in one or more controller objects.
@@ -313,6 +314,7 @@ crew_class_controller_group <- R6::R6Class(
       # nocov start
       control <- .select_controllers(controllers)
       lapply(control, function(controller) controller$autoscale(loop = loop))
+      invisible()
       # nocov end
     },
     #' @description Terminate the auto-scaling loop started by
@@ -323,6 +325,7 @@ crew_class_controller_group <- R6::R6Class(
     descale = function(controllers = NULL) {
       control <- .select_controllers(controllers)
       lapply(control, function(controller) controller$descale())
+      invisible()
     },
     #' @description Report the number of consecutive crashes of a task,
     #'   summed over all selected controllers in the group.
@@ -931,6 +934,7 @@ crew_class_controller_group <- R6::R6Class(
         .select_controllers(controllers),
         function(controller) controller$terminate()
       )
+      invisible()
     }
   )
 )

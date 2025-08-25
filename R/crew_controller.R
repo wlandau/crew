@@ -118,7 +118,7 @@ crew_class_controller <- R6::R6Class(
     .backup = NULL,
     .summary = NULL,
     .error = NULL,
-    .autoscaling = FALSE,
+    .loop = NULL,
     .queue_resolved = NULL,
     .queue_backlog = NULL,
     .register_started = function() {
@@ -249,10 +249,10 @@ crew_class_controller <- R6::R6Class(
     error = function() {
       .error
     },
-    #' @field autoscaling `TRUE` or `FALSE`, whether async `later`-based
-    #'   auto-scaling is currently running
-    autoscaling = function() {
-      .autoscaling
+    #' @field loop `later` loop if asynchronous auto-scaling is running,
+    #'   `NULL` otherwise.
+    loop = function() {
+      .loop
     },
     #' @field queue_resolved Queue of resolved tasks.
     queue_resolved = function() {
@@ -355,7 +355,7 @@ crew_class_controller <- R6::R6Class(
       }
       crew_assert(.tasks, is.null(.) || is.environment(.))
       crew_assert(.summary, is.null(.) || is.list(.))
-      crew_assert(.autoscaling, is.null(.) || isTRUE(.) || isFALSE(.))
+      crew_assert(.loop, is.null(.) || inherits(., "event_loop"))
       if (!is.null(.queue_resolved)) {
         crew_assert(is.environment(.queue_resolved))
       }
@@ -515,23 +515,27 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     #' @return `NULL` (invisibly).
     autoscale = function(loop = later::current_loop(), controllers = NULL) {
+      crew_assert(
+        inherits(loop, "event_loop"),
+        message = "loop must be a valid later loop"
+      )
       # Tested in tests/interactive/test-autoscale.R
       # nocov start
-      if (isTRUE(.autoscaling)) {
+      if (inherits(.loop, "event_loop")) {
         return(invisible())
       }
       poll <- function() {
-        if (isTRUE(.client$started) && isTRUE(.autoscaling)) {
+        if (!is.null(.loop)) {
           self$scale(throttle = FALSE) # necessary reference to self
           later::later(
             func = poll,
             delay = .client$seconds_interval,
-            loop = loop
+            loop = .loop
           )
         }
       }
       self$start() # necessary reference to self
-      .autoscaling <<- TRUE
+      .loop <<- loop
       poll()
       invisible()
       # nocov end
@@ -542,7 +546,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     #' @return `NULL` (invisibly).
     descale = function(controllers = NULL) {
-      .autoscaling <<- FALSE
+      .loop <<- NULL
       invisible()
     },
     #' @description Report the number of consecutive crashes of a task.
@@ -1673,7 +1677,7 @@ crew_class_controller <- R6::R6Class(
       )
       .tasks <<- collections::dict()
       .crash_log <<- collections::dict()
-      .autoscaling <<- FALSE
+      .loop <<- FALSE
       .queue_resolved <<- collections::queue()
       .queue_backlog <<- collections::queue()
       invisible()

@@ -11,7 +11,8 @@
     * Until `mirai` gains a threaded dispatcher, `saturated()` needs to avoid the overhead of calling `status()` to get task counts. So the definition of "saturated" has changed: a controller is saturated if the number of *uncollected* tasks is greater than or equal to the maximum number of workers. Previously, it was the number of *unresolved* tasks.
     * Internal counters `.pushed` and `.popped` are safely removed.
     * Active bindings `pushed` and `popped` are removed.
-    * Controllers no longer have a `unpopped()` method. 
+* Controllers no longer have a `unpopped()` method because it is unnecessary to export and it assumes only the controller submits tasks to the compute profile (affecting interoperability).
+* Allow a custom `later` loop in `autoscale()`.
 
 # crew 1.2.1
 

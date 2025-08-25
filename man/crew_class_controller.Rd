@@ -270,7 +270,7 @@ and they are not part of the controller task queue.
 \if{html}{\out{<a id="method-crew_class_controller-resolved"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-resolved}{}}}
 \subsection{Method \code{resolved()}}{
-Number of resolved \code{mirai()} tasks.
+Cumulative number of resolved tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$resolved(controllers = NULL)}\if{html}{\out{</div>}}
 }
@@ -290,7 +290,7 @@ tasks over the entire lifetime of the controller session.
 
 \subsection{Returns}{
 Non-negative integer of length 1,
-number of resolved \code{mirai()} tasks.
+number of resolved tasks.
 The return value is 0 if the condition variable does not exist
 (i.e. if the client is not running).
 }
@@ -299,7 +299,7 @@ The return value is 0 if the condition variable does not exist
 \if{html}{\out{<a id="method-crew_class_controller-unresolved"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-unresolved}{}}}
 \subsection{Method \code{unresolved()}}{
-Number of unresolved \code{mirai()} tasks.
+Number of unresolved tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unresolved(controllers = NULL)}\if{html}{\out{</div>}}
 }
@@ -314,7 +314,7 @@ compatible with the analogous method of controller groups.}
 }
 \subsection{Returns}{
 Non-negative integer of length 1,
-number of unresolved \code{mirai()} tasks.
+number of unresolved tasks.
 }
 }
 \if{html}{\out{<hr>}}
@@ -465,15 +465,20 @@ connection/disconnection events) (\code{FALSE} otherwise).
 \if{html}{\out{<a id="method-crew_class_controller-autoscale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-autoscale}{}}}
 \subsection{Method \code{autoscale()}}{
-Run worker auto-scaling in a private \code{later} loop
+Run worker auto-scaling in a \code{later} loop
 every \code{controller$client$seconds_interval} seconds.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$autoscale(controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$autoscale(
+  loop = later::current_loop(),
+  controllers = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{loop}}{A \code{later} loop to run auto-scaling.}
+
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
 }
@@ -1100,9 +1105,13 @@ Wait for tasks.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{mode}}{Character string, name of the waiting condition.
-\code{wait(mode = "all")} detects when all tasks are finished, and
-\code{wait(mode = "one")} helps iterate through individual tasks
-in a way that reduces CPU load.}
+\code{wait(mode = "all")} waits until all tasks in the \code{mirai}
+compute profile resolve, and
+\code{wait(mode = "one")} waits until at least one task is available
+to \code{push()} or \code{collect()} from the controller.
+The former still works if the controller is not the only
+means of submitting tasks to the compute profile,
+whereas the latter assumes only the controller submits tasks.}
 
 \item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
 0.10.2.9003). Instead, the \code{seconds_interval} argument passed
@@ -1130,37 +1139,16 @@ compatible with the analogous method of controller groups.}
 The \code{wait()} method blocks the calling R session
 until the condition in the \code{mode} argument is met.
 During the wait, \code{wait()} iteratively auto-scales the workers.
-Details on the modes:
-\itemize{
-\item \code{wait(mode = "all")} waits for
-all tasks in the compute profile to complete,
-including tasks that were submitted to the controller's workers
-directly through \code{\link[mirai:mirai]{mirai::mirai()}} (bypassing \code{push()} etc.).
-If all tasks are resolved at some point during the wait,
-then \code{wait(mode = "all")} returns \code{TRUE}.
-Otherwise, \code{wait(mode = "all")} returns \code{FALSE}.
-\item \code{mode = "one"}:
-\code{wait(mode = "one")} waits until the internal condition variable has
-at least one unconsumed task resolution event.
-A task resolution event occurs when any task resolves in the
-controller's compute profile, whether it was originally
-submitted through the
-controller itself (e.g. \code{push()}) or
-it bypassed the controller object
-with \code{\link[mirai:mirai]{mirai::mirai()}}.
-Such an event is consumed (if available)
-each time \code{wait()} completes a single polling iteration.
-\code{wait(mode = "one")} returns \code{TRUE} if an event was consumed,
-\code{FALSE} otherwise.
-}
 }
 
 \subsection{Returns}{
 A logical of length 1, invisibly.
-\code{wait(mode = "all")} returns \code{TRUE} if all tasks resolved
-at some point during the wait (\code{FALSE} otherwise).
-\code{wait(mode = "one")} returns \code{TRUE} if a task resolution event
-was consumed, \code{FALSE} otherwise.
+\code{wait(mode = "all")} returns \code{TRUE} if all tasks in the \code{mirai}
+compute profile have resolved (\code{FALSE} otherwise).
+\code{wait(mode = "one")} returns \code{TRUE} if the controller is ready
+to pop or collect at least one resolved task (\code{FALSE} otherwise).
+\code{wait(mode = "one")} assumes all
+tasks were submitted through the controller and not by other means.
 }
 }
 \if{html}{\out{<hr>}}

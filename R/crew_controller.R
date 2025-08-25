@@ -397,11 +397,11 @@ crew_class_controller <- R6::R6Class(
     nonempty = function(controllers = NULL) {
       .subset2(.tasks, "size")() > 0L
     },
-    #' @description Number of resolved `mirai()` tasks.
+    #' @description Cumulative number of resolved tasks.
     #' @details `resolved()` is cumulative: it counts all the resolved
     #'   tasks over the entire lifetime of the controller session.
     #' @return Non-negative integer of length 1,
-    #'   number of resolved `mirai()` tasks.
+    #'   number of resolved tasks.
     #'   The return value is 0 if the condition variable does not exist
     #'   (i.e. if the client is not running).
     #' @param controllers Not used. Included to ensure the signature is
@@ -410,9 +410,9 @@ crew_class_controller <- R6::R6Class(
       counts <- .subset2(.subset2(.client, "status")(), "mirai")
       as.integer(.subset(counts, "completed"))
     },
-    #' @description Number of unresolved `mirai()` tasks.
+    #' @description Number of unresolved tasks.
     #' @return Non-negative integer of length 1,
-    #'   number of unresolved `mirai()` tasks.
+    #'   number of unresolved tasks.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     unresolved = function(controllers = NULL) {
@@ -506,15 +506,16 @@ crew_class_controller <- R6::R6Class(
       activity <- .launcher$scale(status = status, throttle = throttle)
       invisible(activity)
     },
-    #' @description Run worker auto-scaling in a private `later` loop
+    #' @description Run worker auto-scaling in a `later` loop
     #'   every `controller$client$seconds_interval` seconds.
     #' @details Call `controller$descale()` to terminate the
     #'   auto-scaling loop.
+    #' @param loop A `later` loop to run auto-scaling.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     #' @return `NULL` (invisibly).
-    autoscale = function(controllers = NULL) {
-      # Tested in tests/interactive/test-promises.R
+    autoscale = function(loop = later::current_loop(), controllers = NULL) {
+      # Tested in tests/interactive/test-autoscale.R
       # nocov start
       if (isTRUE(.autoscaling)) {
         return(invisible())
@@ -522,7 +523,11 @@ crew_class_controller <- R6::R6Class(
       poll <- function() {
         if (isTRUE(.client$started) && isTRUE(.autoscaling)) {
           self$scale(throttle = FALSE) # necessary reference to self
-          later::later(func = poll, delay = .client$seconds_interval)
+          later::later(
+            func = poll,
+            delay = .client$seconds_interval,
+            loop = loop
+          )
         }
       }
       self$start() # necessary reference to self
@@ -1452,36 +1457,21 @@ crew_class_controller <- R6::R6Class(
     #' @details The `wait()` method blocks the calling R session
     #'   until the condition in the `mode` argument is met.
     #'   During the wait, `wait()` iteratively auto-scales the workers.
-    #'   Details on the modes:
-    #' * `wait(mode = "all")` waits for
-    #'   all tasks in the compute profile to complete,
-    #'   including tasks that were submitted to the controller's workers
-    #'   directly through [mirai::mirai()] (bypassing `push()` etc.).
-    #'   If all tasks are resolved at some point during the wait,
-    #'   then `wait(mode = "all")` returns `TRUE`.
-    #'   Otherwise, `wait(mode = "all")` returns `FALSE`.
-    #' * `mode = "one"`:
-    #'   `wait(mode = "one")` waits until the internal condition variable has
-    #'   at least one unconsumed task resolution event.
-    #'   A task resolution event occurs when any task resolves in the
-    #'   controller's compute profile, whether it was originally
-    #'   submitted through the
-    #'   controller itself (e.g. `push()`) or
-    #'   it bypassed the controller object
-    #'   with [mirai::mirai()].
-    #'   Such an event is consumed (if available)
-    #'   each time `wait()` completes a single polling iteration.
-    #'   `wait(mode = "one")` returns `TRUE` if an event was consumed,
-    #'   `FALSE` otherwise.
     #' @return A logical of length 1, invisibly.
-    #'   `wait(mode = "all")` returns `TRUE` if all tasks resolved
-    #'   at some point during the wait (`FALSE` otherwise).
-    #'   `wait(mode = "one")` returns `TRUE` if a task resolution event
-    #'   was consumed, `FALSE` otherwise.
+    #'   `wait(mode = "all")` returns `TRUE` if all tasks in the `mirai`
+    #'   compute profile have resolved (`FALSE` otherwise).
+    #'   `wait(mode = "one")` returns `TRUE` if the controller is ready
+    #'   to pop or collect at least one resolved task (`FALSE` otherwise).
+    #'   `wait(mode = "one")` assumes all
+    #'   tasks were submitted through the controller and not by other means.
     #' @param mode Character string, name of the waiting condition.
-    #'   `wait(mode = "all")` detects when all tasks are finished, and
-    #'   `wait(mode = "one")` helps iterate through individual tasks
-    #'   in a way that reduces CPU load.
+    #'   `wait(mode = "all")` waits until all tasks in the `mirai`
+    #'   compute profile resolve, and
+    #'   `wait(mode = "one")` waits until at least one task is available
+    #'   to `push()` or `collect()` from the controller.
+    #'   The former still works if the controller is not the only
+    #'   means of submitting tasks to the compute profile,
+    #'   whereas the latter assumes only the controller submits tasks.
     #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
     #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
     #'   to [crew_controller_group()] is used as `seconds_max`
@@ -1514,6 +1504,9 @@ crew_class_controller <- R6::R6Class(
         value = seconds_interval
       )
       crew_assert(mode, identical(., "all") || identical(., "one"))
+      if (size() < 1L) {
+        return(identical(mode, "all"))
+      }
       if (identical(mode, "all")) {
         wait_event <- function() {
           if (unresolved() > 0L) {
@@ -1523,7 +1516,10 @@ crew_class_controller <- R6::R6Class(
         }
       } else {
         wait_event <- function() {
-          .client$relay$wait()
+          if (size() - unresolved() < 1L) {
+            .client$relay$wait()
+          }
+          size() - unresolved() > 0L
         }
       }
       envir <- new.env(parent = emptyenv())

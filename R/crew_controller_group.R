@@ -121,64 +121,6 @@ crew_class_controller_group <- R6::R6Class(
         message = sprintf("controller not found: %s", name)
       )
       .controllers[[name]]
-    },
-    .wait_one = function(
-      controllers,
-      control,
-      seconds_timeout,
-      scale,
-      throttle
-    ) {
-      if (sum(map_int(control, ~ length(.x$tasks))) < 1L) {
-        return(FALSE)
-      }
-      envir <- new.env(parent = emptyenv())
-      envir$result <- FALSE
-      iterate <- function() {
-        if (scale) {
-          scale(throttle = throttle, controllers = controllers)
-        }
-        envir$result <- .relay$wait()
-      }
-      crew_retry(
-        fun = iterate,
-        seconds_interval = 0,
-        seconds_timeout = seconds_timeout,
-        error = FALSE,
-        assertions = FALSE
-      )
-      envir$result
-    },
-    .wait_all = function(
-      controllers,
-      control,
-      seconds_timeout,
-      scale,
-      throttle
-    ) {
-      if (size(controllers = controllers) < 1L) {
-        return(TRUE)
-      }
-      envir <- new.env(parent = emptyenv())
-      envir$result <- FALSE
-      iterate <- function() {
-        if (scale) {
-          scale(throttle = throttle, controllers = controllers)
-        }
-        if (unresolved() > 0L) {
-          .relay$wait()
-        }
-        envir$result <- unresolved() < 1L
-        envir$result
-      }
-      crew_retry(
-        fun = iterate,
-        seconds_interval = 0,
-        seconds_timeout = seconds_timeout,
-        error = FALSE,
-        assertions = FALSE
-      )
-      envir$result
     }
   ),
   active = list(
@@ -360,16 +302,17 @@ crew_class_controller_group <- R6::R6Class(
       .throttle$update(activity = activity)
       invisible(activity)
     },
-    #' @description Run worker auto-scaling in a private `later` loop
+    #' @description Run worker auto-scaling in a `later` loop
     #'   every `controller$client$seconds_interval` seconds.
+    #' @param loop A `later` loop to run auto-scaling.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     #' @return `NULL` (invisibly).
-    autoscale = function(controllers = NULL) {
-      # Tested in tests/interactive/test-promises.R
+    autoscale = function(loop = later::current_loop(), controllers = NULL) {
+      # Tested in tests/interactive/test-autoscale.R
       # nocov start
       control <- .select_controllers(controllers)
-      lapply(control, function(controller) controller$autoscale())
+      lapply(control, function(controller) controller$autoscale(loop = loop))
       # nocov end
     },
     #' @description Terminate the auto-scaling loop started by
@@ -833,17 +776,24 @@ crew_class_controller_group <- R6::R6Class(
       if_any(nrow(out), out, NULL)
     },
     #' @description Wait for tasks.
-    #' @details The `wait()` method blocks the calling R session and
-    #'   repeatedly auto-scales workers for tasks that need them.
-    #'   The function runs until it either times out or the condition
-    #'   in `mode` is met.
-    #' @return A logical of length 1, invisibly. `TRUE` if the condition
-    #'   in `mode` was met, `FALSE` otherwise.
-    #' @param mode Character of length 1: `"all"` to wait for
-    #'   all tasks in all controllers to complete, `"one"` to wait for
-    #'   a single task in a single controller to complete. In this scheme,
-    #'   the timeout limit is applied to each controller sequentially,
-    #'   and a timeout is treated the same as a completed controller.
+    #' @details The `wait()` method blocks the calling R session
+    #'   until the condition in the `mode` argument is met.
+    #'   During the wait, `wait()` iteratively auto-scales the workers.
+    #' @return A logical of length 1, invisibly.
+    #'   `wait(mode = "all")` returns `TRUE` if all tasks in the `mirai`
+    #'   compute profile have resolved (`FALSE` otherwise).
+    #'   `wait(mode = "one")` returns `TRUE` if the controller is ready
+    #'   to pop or collect at least one resolved task (`FALSE` otherwise).
+    #'   `wait(mode = "one")` assumes all
+    #'   tasks were submitted through the controller and not by other means.
+    #' @param mode Character string, name of the waiting condition.
+    #'   `wait(mode = "all")` waits until all tasks in the `mirai`
+    #'   compute profile resolve, and
+    #'   `wait(mode = "one")` waits until at least one task is available
+    #'   to `push()` or `collect()` from the controller.
+    #'   The former still works if the controller is not the only
+    #'   means of submitting tasks to the compute profile,
+    #'   whereas the latter assumes only the controller submits tasks.
     #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
     #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
     #'   to [crew_controller_group()] is used as `seconds_max`
@@ -879,25 +829,41 @@ crew_class_controller_group <- R6::R6Class(
       )
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
-      control <- .select_controllers(controllers)
-      out <- if_any(
-        identical(mode, "one"),
-        .wait_one(
-          controllers = controllers,
-          control = control,
-          seconds_timeout = seconds_timeout,
-          scale = scale,
-          throttle = throttle
-        ),
-        .wait_all(
-          controllers = controllers,
-          control = control,
-          seconds_timeout = seconds_timeout,
-          scale = scale,
-          throttle = throttle
-        )
+      if (size() < 1L) {
+        return(identical(mode, "all"))
+      }
+      if (identical(mode, "all")) {
+        wait_event <- function() {
+          if (unresolved(controllers) > 0L) {
+            .relay$wait()
+          }
+          unresolved(controllers) < 1L
+        }
+      } else {
+        wait_event <- function() {
+          if (size(controllers) - unresolved(controllers) < 1L) {
+            .relay$wait()
+          }
+          size(controllers) - unresolved(controllers) > 0L
+        }
+      }
+      envir <- new.env(parent = emptyenv())
+      envir$result <- FALSE
+      iterate <- function() {
+        if (!envir$result && scale) {
+          scale(throttle = throttle)
+        }
+        envir$result <- wait_event()
+        envir$result
+      }
+      crew_retry(
+        fun = iterate,
+        seconds_interval = 0,
+        seconds_timeout = seconds_timeout,
+        error = FALSE,
+        assertions = FALSE
       )
-      invisible(out)
+      invisible(envir$result)
     },
     #' @description Push the name of a task to the backlog.
     #' @details `pop_backlog()` pops the tasks that can be pushed

@@ -424,15 +424,20 @@ connection/disconnection events) (\code{FALSE} otherwise).
 \if{html}{\out{<a id="method-crew_class_controller_group-autoscale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-autoscale}{}}}
 \subsection{Method \code{autoscale()}}{
-Run worker auto-scaling in a private \code{later} loop
+Run worker auto-scaling in a \code{later} loop
 every \code{controller$client$seconds_interval} seconds.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$autoscale(controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$autoscale(
+  loop = later::current_loop(),
+  controllers = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{loop}}{A \code{later} loop to run auto-scaling.}
+
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
 }
@@ -996,11 +1001,14 @@ Wait for tasks.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mode}}{Character of length 1: \code{"all"} to wait for
-all tasks in all controllers to complete, \code{"one"} to wait for
-a single task in a single controller to complete. In this scheme,
-the timeout limit is applied to each controller sequentially,
-and a timeout is treated the same as a completed controller.}
+\item{\code{mode}}{Character string, name of the waiting condition.
+\code{wait(mode = "all")} waits until all tasks in the \code{mirai}
+compute profile resolve, and
+\code{wait(mode = "one")} waits until at least one task is available
+to \code{push()} or \code{collect()} from the controller.
+The former still works if the controller is not the only
+means of submitting tasks to the compute profile,
+whereas the latter assumes only the controller submits tasks.}
 
 \item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
 0.10.2.9003). Instead, the \code{seconds_interval} argument passed
@@ -1027,15 +1035,19 @@ Set to \code{NULL} to select all controllers.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-The \code{wait()} method blocks the calling R session and
-repeatedly auto-scales workers for tasks that need them.
-The function runs until it either times out or the condition
-in \code{mode} is met.
+The \code{wait()} method blocks the calling R session
+until the condition in the \code{mode} argument is met.
+During the wait, \code{wait()} iteratively auto-scales the workers.
 }
 
 \subsection{Returns}{
-A logical of length 1, invisibly. \code{TRUE} if the condition
-in \code{mode} was met, \code{FALSE} otherwise.
+A logical of length 1, invisibly.
+\code{wait(mode = "all")} returns \code{TRUE} if all tasks in the \code{mirai}
+compute profile have resolved (\code{FALSE} otherwise).
+\code{wait(mode = "one")} returns \code{TRUE} if the controller is ready
+to pop or collect at least one resolved task (\code{FALSE} otherwise).
+\code{wait(mode = "one")} assumes all
+tasks were submitted through the controller and not by other means.
 }
 }
 \if{html}{\out{<hr>}}

@@ -845,7 +845,7 @@ crew_test("descale", {
   x <- crew_controller_group(controller)
   expect_null(controller$loop)
   x$descale()
-  expect_false(controller$loop)
+  expect_null(controller$loop)
 })
 
 crew_test("crash detection with backup controllers in a group", {

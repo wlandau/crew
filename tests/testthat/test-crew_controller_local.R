@@ -36,6 +36,7 @@ crew_test("crew_controller_local()", {
       c(
         "controller",
         "seconds",
+        "tasks",
         "success",
         "error",
         "crash",

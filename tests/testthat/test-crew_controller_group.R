@@ -71,6 +71,7 @@ crew_test("crew_controller_group()", {
       c(
         "controller",
         "seconds",
+        "tasks",
         "success",
         "error",
         "crash",

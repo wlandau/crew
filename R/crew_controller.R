@@ -1561,6 +1561,7 @@ crew_class_controller <- R6::R6Class(
     #'   It has one row and the following columns:
     #'   * `controller`: name of the controller.
     #'   * `seconds`: total number of runtime in seconds.
+    #'   * `tasks`: total number of tasks collected.
     #'   * `success`: total number of collected tasks that did not crash
     #'     or error.
     #'   * `error`: total number of tasks with errors, either in the R code
@@ -1570,11 +1571,26 @@ crew_class_controller <- R6::R6Class(
     #'     unexpectedly while it was running the task).
     #'   * `cancel`: total number of tasks interrupted with the `cancel()`
     #'     controller method.
-    #'   * `warnings`: total number of tasks with one or more warnings.
+    #'   * `warning`: total number of tasks with one or more warnings.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     summary = function(controllers = NULL) {
-      if_any(is.null(.summary), NULL, tibble::new_tibble(.summary))
+      if (is.null(.summary)) {
+        return(NULL)
+      }
+      out <- tibble::new_tibble(.summary)
+      out$tasks <- out$success + out$error + out$crash + out$cancel
+      columns <- c(
+        "controller",
+        "seconds",
+        "tasks",
+        "success",
+        "error",
+        "crash",
+        "cancel",
+        "warning"
+      )
+      out[, columns]
     },
     #' @description Cancel one or more tasks.
     #' @return `NULL` (invisibly).

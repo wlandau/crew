@@ -1241,6 +1241,7 @@ It has one row and the following columns:
 \itemize{
 \item \code{controller}: name of the controller.
 \item \code{seconds}: total number of runtime in seconds.
+\item \code{tasks}: total number of tasks collected.
 \item \code{success}: total number of collected tasks that did not crash
 or error.
 \item \code{error}: total number of tasks with errors, either in the R code
@@ -1250,7 +1251,7 @@ or crash.
 unexpectedly while it was running the task).
 \item \code{cancel}: total number of tasks interrupted with the \code{cancel()}
 controller method.
-\item \code{warnings}: total number of tasks with one or more warnings.
+\item \code{warning}: total number of tasks with one or more warnings.
 }
 }
 }

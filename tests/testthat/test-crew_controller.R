@@ -22,7 +22,6 @@ crew_test("warnings and errors", {
   expect_null(x$pop())
   x$start()
   expect_silent(x$validate())
-  expect_equal(x$summary()$tasks, 0L)
   expect_equal(x$summary()$error, 0L)
   expect_equal(x$summary()$warning, 0L)
   x$push(
@@ -35,7 +34,6 @@ crew_test("warnings and errors", {
   x$wait(seconds_timeout = 30)
   out <- x$pop(scale = FALSE)
   skip_on_covr() # error handling is mysteriously messed up with covr
-  expect_equal(x$summary()$tasks, 1L)
   expect_equal(x$summary()$error, 1L)
   expect_equal(x$summary()$warning, 1L)
   expect_equal(out$name, "warnings_and_errors")

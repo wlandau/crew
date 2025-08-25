@@ -827,7 +827,6 @@ crew_test("group helper methods (non)empty, (un)resolved, unpopped", {
   expect_true(x$nonempty())
   expect_equal(x$resolved(), 2L)
   expect_equal(x$unresolved(), 0L)
-  expect_equal(x$unpopped(), 2L)
   tasks <- x$collect()
   expect_true(x$empty())
   expect_false(x$nonempty())

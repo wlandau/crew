@@ -114,10 +114,13 @@ crew_class_controller_sequential <- R6::R6Class(
       invisible(FALSE)
     },
     #' @description Not applicable to the sequential controller.
-    #' @param controllers Not used. Included to ensure the signature is
+    #' @param loop Not used by sequential controllers.
+    #'   Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
-    #' @return `NULL` (invisibly).
-    autoscale = function(controllers = NULL) {
+    #' @param controllers Not used by sequential controllers.
+    #'   Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    autoscale = function(loop = NULL, controllers = NULL) {
       invisible()
     },
     #' @description Not applicable to the sequential controller.

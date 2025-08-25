@@ -224,19 +224,21 @@ Invisibly returns \code{FALSE}.
 \subsection{Method \code{autoscale()}}{
 Not applicable to the sequential controller.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$autoscale(controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$autoscale(loop = NULL, controllers = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
+\item{\code{loop}}{Not used by sequential controllers.
+Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+
+\item{\code{controllers}}{Not used by sequential controllers.
+Included to ensure the signature is
 compatible with the analogous method of controller groups.}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}

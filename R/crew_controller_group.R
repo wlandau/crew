@@ -296,12 +296,11 @@ crew_class_controller_group <- R6::R6Class(
       sum(map_int(control, ~ .x$unresolved()))
     },
     #' @description Check if a controller is saturated.
-    #' @details A controller is saturated if the number of unresolved tasks
+    #' @details A controller is saturated if the number of uncollected tasks
     #'   is greater than or equal to the maximum number of workers.
-    #'   In other words, in a saturated controller, every available worker
-    #'   has a task.
     #'   You can still push tasks to a saturated controller, but
-    #'   tools that use `crew` such as `targets` may choose not to.
+    #'   tools that use `crew` such as `targets` may choose not to
+    #'   (for performance and user-friendliness).
     #' @return `TRUE` if all the selected controllers are saturated,
     #'   `FALSE` otherwise.
     #' @param collect Deprecated in version 0.5.0.9003 (2023-10-02). Not used.

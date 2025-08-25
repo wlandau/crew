@@ -420,21 +420,36 @@ crew_class_controller <- R6::R6Class(
       as.integer(.subset(counts, "awaiting") + .subset2(counts, "executing"))
     },
     #' @description Check if the controller is saturated.
-    #' @details A controller is saturated if the number of unresolved tasks
+    #' @details A controller is saturated if the number of uncollected tasks
     #'   is greater than or equal to the maximum number of workers.
-    #'   In other words, in a saturated controller, every available worker
-    #'   has a task.
     #'   You can still push tasks to a saturated controller, but
-    #'   tools that use `crew` such as `targets` may choose not to.
+    #'   tools that use `crew` such as `targets` may choose not to
+    #'   (for performance and user-friendliness).
     #' @return `TRUE` if the controller is saturated, `FALSE` otherwise.
     #' @param collect Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
     #' @param throttle Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
-      counts <- .subset2(.subset2(.client, "status")(), "mirai")
-      unresolved <- .subset(counts, "awaiting") + .subset(counts, "executing")
-      as.logical(unresolved >= .subset2(.launcher, "workers"))
+      # TODO: when mirai gains a threaded dispatcher, reinstate the
+      # commented 4 lines of code below.
+      #
+      # "Saturated" really should mean that the number of *unresolved* tasks
+      # is equal to the maximum number of workers.
+      # To avoid potentially burdensome dispatcher queries, "saturated"
+      # for the time being means that the number of *uncollected* tasks
+      # is equal to the maximum number of workers.
+      # This shortcut avoids a bottleneck in {targets},
+      # but it isn't exactly what "saturated" should mean.
+      #
+      # counts <- .subset2(.subset2(.client, "status")(), "mirai")
+      # unresolved <- .subset(counts, "awaiting") +
+      #   .subset(counts, "executing")
+      # as.logical(unresolved >= .subset2(.launcher, "workers"))
+      #
+      # Here is the shortcut crew currently uses to reduce overhead
+      # from repeated calls to saturated():
+      as.logical(size() >= .subset2(.launcher, "workers"))
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets

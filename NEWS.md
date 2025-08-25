@@ -5,10 +5,13 @@
 * Change argument `tls` to `tlscert` in the call to `mirai::daemon()` (#227, @shikokuchuo).
 * Use `collections` queues instead of custom queues (#229).
 * Use `collections` dictionaries instead of hash environments to track tasks (#229).
-* Improve interoperability of `crew`'s workers by removing internal counters `.pushed` and `.popped` (#225, #232).
-* As a consequence of #225 and #232, controllers no longer have a `unpopped()` method. Likewise, active bindings `pushed` and `popped` have been removed.
-* As another consequence of #225 and #232, `wait(mode = "all")` no longer guarantees that a task is available for `pop()`. It just consumes a condition variable signal. `pop()` should always be checked for `NULL` return values.
 * Remove the long-deprecated `promise()` method of the controller.
+* Improve interoperability of `crew`'s workers by avoiding `nanonext::cv_value()` for condition variables (#225). Consequences:
+    * `wait(mode = "all")` no longer guarantees that a task is available for `pop()`. It just consumes a condition variable signal. `pop()` should always be checked for `NULL` return values.
+    * Until `mirai` gains a threaded dispatcher, `saturated()` needs to avoid the overhead of calling `status()` to get task counts. So the definition of "saturated" has changed: a controller is saturated if the number of *uncollected* tasks is greater than or equal to the maximum number of workers. Previously, it was the number of *unresolved* tasks.
+    * Internal counters `.pushed` and `.popped` are safely removed.
+    * Active bindings `pushed` and `popped` are removed.
+    * Controllers no longer have a `unpopped()` method. 
 
 # crew 1.2.1
 

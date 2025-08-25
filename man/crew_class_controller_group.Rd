@@ -306,12 +306,11 @@ would choose.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-A controller is saturated if the number of unresolved tasks
+A controller is saturated if the number of uncollected tasks
 is greater than or equal to the maximum number of workers.
-In other words, in a saturated controller, every available worker
-has a task.
 You can still push tasks to a saturated controller, but
-tools that use \code{crew} such as \code{targets} may choose not to.
+tools that use \code{crew} such as \code{targets} may choose not to
+(for performance and user-friendliness).
 }
 
 \subsection{Returns}{

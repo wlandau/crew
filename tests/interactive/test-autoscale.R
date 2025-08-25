@@ -26,7 +26,7 @@ crew_test("autoscale() and descale() for controller groups", {
   x$push(Sys.sleep(2L), scale = FALSE)
   expect_null(y$loop)
   x$autoscale()
-  expect_true(inherits(x$loop, "event_loop"))
+  expect_true(inherits(y$loop, "event_loop"))
   # Manually wait in the global event loop at least 10 seconds.
   expect_equal(x$resolved(), 3L)
   x$descale()

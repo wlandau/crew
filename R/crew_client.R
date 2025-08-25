@@ -398,17 +398,10 @@ crew_class_client <- R6::R6Class(
       # End dispatcher checks.
       invisible()
     },
-    #' @description Get the true value of the `nanonext` condition variable.
-    #' @return The value of the `nanonext` condition variable.
-    resolved = function() {
-      nanonext::cv_value(.condition)
-    },
-    #' @description Internal function:
-    #'   return the `mirai` status of the compute profile.
-    #' @details Should only be called by the launcher, never by the user.
-    #'   The returned `events` field changes on every call and must be
-    #'   interpreted by the launcher before it vanishes.
-    #' @return A list with status information.
+    #' @description Get the counters from `mirai::status()`.
+    #' @return A named integer vector of task counts
+    #'   (awaiting, executing, completed) as well as the number of
+    #'   worker connections.
     status = function() {
       mirai_status(
         profile = .profile,

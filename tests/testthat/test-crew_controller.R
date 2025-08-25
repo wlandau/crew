@@ -683,7 +683,6 @@ crew_test("cancel() named", {
   expect_true(all(grepl("operation canceled", tolower(tasks$error))))
   expect_equal(names(x$tasks), "y")
   s <- x$summary()
-  expect_equal(s$tasks, 2L)
   expect_equal(s$success, 0L)
   expect_equal(s$error, 0L)
   expect_equal(s$crash, 0L)
@@ -735,7 +734,7 @@ crew_test("crash detection with crashes_max == 0L", {
   crew_retry(
     ~ {
       x$scale()
-      isTRUE(x$launcher$instances$online)
+      isTRUE(x$client$status()["connections"] > 0L)
     },
     seconds_interval = 0.1,
     seconds_timeout = 60
@@ -769,7 +768,7 @@ crew_test("crash detection with crashes_max == 2L", {
     crew_retry(
       ~ {
         x$scale()
-        isTRUE(x$launcher$instances$online)
+        isTRUE(x$client$status()["connections"] > 0L)
       },
       seconds_interval = 0.1,
       seconds_timeout = 60
@@ -784,7 +783,7 @@ crew_test("crash detection with crashes_max == 2L", {
   crew_retry(
     ~ {
       x$scale()
-      isTRUE(x$launcher$instances$online)
+      isTRUE(x$client$status()["connections"] > 0L)
     },
     seconds_interval = 0.1,
     seconds_timeout = 60
@@ -818,7 +817,7 @@ crew_test("crash detection resets, crashes_max == 2L", {
     crew_retry(
       ~ {
         x$scale()
-        isTRUE(x$launcher$instances$online)
+        isTRUE(x$client$status()["connections"] > 0L)
       },
       seconds_interval = 0.1,
       seconds_timeout = 60
@@ -856,7 +855,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
     crew_retry(
       ~ {
         x$scale()
-        isTRUE(x$launcher$instances$online)
+        isTRUE(x$client$status()["connections"] > 0L)
       },
       seconds_interval = 0.1,
       seconds_timeout = 60
@@ -871,7 +870,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
   crew_retry(
     ~ {
       x$scale()
-      isTRUE(x$launcher$instances$online)
+      isTRUE(x$client$status()["connections"] > 0L)
     },
     seconds_interval = 0.1,
     seconds_timeout = 60

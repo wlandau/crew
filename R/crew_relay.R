@@ -106,7 +106,7 @@ crew_class_relay <- R6::R6Class(
     #' @return `NULL` (invisibly).
     wait = function() {
       timeout <- .subset2(.throttle, "seconds_interval") * 1000
-      signal <- nanonext::until_(cv = condition, msec = timeout)
+      signal <- nanonext::until_(cv = .condition, msec = timeout)
       .subset2(.throttle, "update")(signal)
       signal
     }

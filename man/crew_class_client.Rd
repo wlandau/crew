@@ -57,8 +57,6 @@ condition variable.}
 
 \item{\code{profile}}{Compute profile of the client.}
 
-\item{\code{condition}}{Condition variable of the client.}
-
 \item{\code{client}}{Process ID of the local process running the client.}
 
 \item{\code{dispatcher}}{Process ID of the \code{mirai} dispatcher}

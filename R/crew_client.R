@@ -150,7 +150,6 @@ crew_class_client <- R6::R6Class(
     .started = FALSE,
     .url = NULL,
     .profile = NULL,
-    .condition = NULL,
     .client = NULL, # TODO: remove if/when the dispatcher becomes a thread.
     .dispatcher = NULL, # TODO: remove if/when the dispatcher becomes a thread.
     # TODO: remove if/when mirai::status()$events
@@ -199,10 +198,6 @@ crew_class_client <- R6::R6Class(
     profile = function() {
       .profile
     },
-    #' @field condition Condition variable of the client.
-    condition = function() {
-      .condition
-    },
     #' @field client Process ID of the local process running the client.
     client = function() {
       .client
@@ -244,9 +239,6 @@ crew_class_client <- R6::R6Class(
       .serialization <<- serialization
       .seconds_interval <<- seconds_interval
       .seconds_timeout <<- seconds_timeout
-      # Creating the CV here instead of as a default R6 field value
-      # somehow appeases covr and R CMD check.
-      .condition <<- nanonext::cv()
       .relay <<- relay
       .queue_events <<- collections::queue()
     },
@@ -348,8 +340,7 @@ crew_class_client <- R6::R6Class(
         .dispatcher <<- ps::ps_handle(pid = pid)
       }
       # End dispatcher code.
-      .condition <<- mirai::nextget(x = "cv", .compute = .profile)
-      .relay$set_from(.condition)
+      .relay$set_from(mirai::nextget(x = "cv", .compute = .profile))
       .relay$start()
       .started <<- TRUE
       .queue_events <<- collections::queue()
@@ -366,7 +357,6 @@ crew_class_client <- R6::R6Class(
         mirai::daemons(n = 0L, .compute = .profile)
       }
       .profile <<- NULL
-      .condition <<- nanonext::cv()
       .relay$terminate()
       .url <<- NULL
       .started <<- FALSE

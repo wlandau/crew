@@ -515,12 +515,12 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     #' @return `NULL` (invisibly).
     autoscale = function(loop = later::current_loop(), controllers = NULL) {
+      # Tested in tests/interactive/test-autoscale.R
+      # nocov start
       crew_assert(
         inherits(loop, "event_loop"),
         message = "loop must be a valid later loop"
       )
-      # Tested in tests/interactive/test-autoscale.R
-      # nocov start
       if (inherits(.loop, "event_loop")) {
         return(invisible())
       }

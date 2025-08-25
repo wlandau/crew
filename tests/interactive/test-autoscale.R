@@ -3,10 +3,13 @@ crew_test("autoscale() and descale() for single controllers", {
   x$push(Sys.sleep(2L), scale = FALSE)
   x$push(Sys.sleep(2L), scale = FALSE)
   x$push(Sys.sleep(2L), scale = FALSE)
+  expect_null(x$loop)
   x$autoscale()
+  expect_true(inherits(x$loop, "event_loop"))
   # Manually wait in the global event loop at least 10 seconds.
   expect_equal(x$resolved(), 3L)
   x$descale()
+  expect_null(x$loop)
   x$push(4L, scale = FALSE)
   x$push(5L, scale = FALSE)
   # Manually wait to verify no new workers or tasks are running.
@@ -21,10 +24,13 @@ crew_test("autoscale() and descale() for controller groups", {
   x$push(Sys.sleep(2L), scale = FALSE)
   x$push(Sys.sleep(2L), scale = FALSE)
   x$push(Sys.sleep(2L), scale = FALSE)
+  expect_null(y$loop)
   x$autoscale()
+  expect_true(inherits(x$loop, "event_loop"))
   # Manually wait in the global event loop at least 10 seconds.
   expect_equal(x$resolved(), 3L)
   x$descale()
+  expect_null(y$loop)
   x$push(4L, scale = FALSE)
   x$push(5L, scale = FALSE)
   # Manually wait to verify no new workers or tasks are running.

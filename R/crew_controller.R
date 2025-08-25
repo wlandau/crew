@@ -108,19 +108,19 @@ crew_class_controller <- R6::R6Class(
   private = list(
     .client = NULL,
     .launcher = NULL,
-    .tasks = collections::dict(),
+    .tasks = NULL,
     .reset_globals = NULL,
     .reset_packages = NULL,
     .reset_options = NULL,
     .garbage_collection = NULL,
     .crashes_max = NULL,
-    .crash_log = collections::dict(),
+    .crash_log = NULL,
     .backup = NULL,
     .summary = NULL,
     .error = NULL,
     .autoscaling = FALSE,
-    .queue_resolved = NULL,
-    .queue_backlog = NULL,
+    .queue_resolved = collections::queue(),
+    .queue_backlog = collections::queue(),
     .register_started = function() {
       .tasks <<- collections::dict()
       .crash_log <<- collections::dict()
@@ -432,7 +432,8 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
       # TODO: when mirai gains a threaded dispatcher, reinstate the
-      # commented 4 lines of code below.
+      # commented 4 lines of code below and also follow the TODO
+      # comments in pop_backlog().
       #
       # "Saturated" really should mean that the number of *unresolved* tasks
       # is equal to the maximum number of workers.
@@ -501,6 +502,7 @@ crew_class_controller <- R6::R6Class(
       }
       start()
       status <- .client$status()
+      status$events <- .client$collect_events() # TODO: remove on #232
       activity <- .launcher$scale(status = status, throttle = throttle)
       invisible(activity)
     },
@@ -1562,7 +1564,16 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop_backlog = function(controllers = NULL) {
-      n <- .subset2(.launcher, "workers") - unresolved()
+      # TODO: when mirai gains a threaded dispatcher and status() is
+      # zero overhead, reinstate the following line of code:
+      #
+      # n <- .subset2(.launcher, "workers") - unresolved()
+      #
+      # In place of these 3 lines:
+      max_workers <- .subset2(.launcher, "workers")
+      uncollected_tasks <- .subset2(.tasks, "size")()
+      n <- max(0, max_workers - uncollected_tasks)
+      # The rest of pop_backlog() doesn't depend on the issue above:
       n <- min(n, .subset2(.queue_backlog, "size")())
       if (n < 1L) {
         return(character(0L))

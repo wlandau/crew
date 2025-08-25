@@ -90,6 +90,19 @@ crew_test("crew_client() works", {
   px$signal(signal = crew_terminate_signal())
 })
 
+crew_test("crew_client() push_events() and collect_events()", {
+  x <- crew_client()
+  x$start()
+  on.exit(x$terminate())
+  for (index in seq_len(3L)) {
+    expect_equal(x$collect_events(), integer(0L))
+    x$push_events(1L)
+    x$push_events(c(4L, 3L))
+    x$push_events(0L)
+    expect_equal(x$collect_events(), c(1L, 4L, 3L, 0L))
+  }
+})
+
 crew_test("crew_client() cover a line", {
   client <- crew_client(host = "127.0.0.1")
   private <- crew_private(client)

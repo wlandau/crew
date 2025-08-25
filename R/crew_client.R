@@ -152,7 +152,10 @@ crew_class_client <- R6::R6Class(
     .profile = NULL,
     .condition = NULL,
     .client = NULL, # TODO: remove if/when the dispatcher becomes a thread.
-    .dispatcher = NULL # TODO: remove if/when the dispatcher becomes a thread.
+    .dispatcher = NULL, # TODO: remove if/when the dispatcher becomes a thread.
+    # TODO: remove if/when mirai::status()$events
+    # becomes irrelevant (issue #232):
+    .queue_events = NULL
   ),
   active = list(
     #' @field host See [crew_client()].
@@ -245,6 +248,7 @@ crew_class_client <- R6::R6Class(
       # somehow appeases covr and R CMD check.
       .condition <<- nanonext::cv()
       .relay <<- relay
+      .queue_events <<- collections::queue()
     },
     #' @description Validate the client.
     #' @return `NULL` (invisibly).
@@ -348,6 +352,7 @@ crew_class_client <- R6::R6Class(
       .relay$set_from(.condition)
       .relay$start()
       .started <<- TRUE
+      .queue_events <<- collections::queue()
       invisible()
     },
     #' @description Stop the mirai client and disconnect from the
@@ -396,6 +401,7 @@ crew_class_client <- R6::R6Class(
         error = function(condition) NULL
       )
       # End dispatcher checks.
+      .queue_events <<- collections::queue()
       invisible()
     },
     #' @description Get the counters from `mirai::status()`.
@@ -403,10 +409,35 @@ crew_class_client <- R6::R6Class(
     #'   (awaiting, executing, completed) as well as the number of
     #'   worker connections.
     status = function() {
-      mirai_status(
+      status <- mirai_status(
         profile = .profile,
         seconds_interval = .seconds_interval,
         seconds_timeout = .seconds_timeout
+      )
+      push_events(.subset2(status, "events"))
+      status
+    },
+    #' @description Collect mirai worker-specific
+    #'   connection/disconnection events.
+    #' @return `NULL` (invisibly).
+    #' @param events Integer vector of connection/disconnection events.
+    push_events = function(events) {
+      # TODO: remove when issue #232 is fixed and crew no longer needs
+      # mirai::status()$events.
+      lapply(events, .subset2(.queue_events, "push"))
+      invisible()
+    },
+    #' @description Collect mirai worker-specific
+    #'   connection/disconnection events.
+    #' @return Integer vector of connection/disconnection events.
+    collect_events = function() {
+      # TODO: remove when issue #232 is fixed and crew no longer needs
+      # mirai::status()$events.
+      as.integer(
+        replicate(
+          .subset2(.queue_events, "size")(),
+          .subset2(.queue_events, "pop")()
+        )
       )
     },
     #' @description Get the process IDs of the local process and the

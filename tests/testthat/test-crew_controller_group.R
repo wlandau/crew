@@ -126,6 +126,7 @@ crew_test("crew_controller_group()", {
     controller = "a"
   )
   x$wait(seconds_timeout = 30)
+  expect_equal(x$crashes(name = "task_pid2"), 0L)
   envir <- new.env(parent = emptyenv())
   crew_retry(
     ~ {
@@ -897,11 +898,12 @@ crew_test("crash detection with backup controllers in a group", {
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
-    Sys.sleep(0.25)
-    a$launcher$terminate_workers()
-    b$launcher$terminate_workers()
-    c$launcher$terminate_workers()
-    x$wait(seconds_timeout = 30)
+    for (controller in list(a, b, c)) {
+      for (handle in controller$launcher$instances$handle) {
+        handle$kill()
+      }
+    }
+    x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
     x$pop()
   }
   out <- crash()

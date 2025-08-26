@@ -110,7 +110,6 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
-\item \href{#method-crew_class_launcher-terminate_worker}{\code{crew_class_launcher$terminate_worker()}}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
 \item \href{#method-crew_class_launcher-crashes}{\code{crew_class_launcher$crashes()}}
 \item \href{#method-crew_class_launcher-set_name}{\code{crew_class_launcher$set_name()}}
@@ -442,36 +441,11 @@ A handle to mock the worker launch.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-terminate_worker"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate_worker}{}}}
-\subsection{Method \code{terminate_worker()}}{
-Abstract worker termination method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate_worker(handle)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{handle}}{A handle object previously
-returned by \code{launch_worker()} which allows the termination
-of the worker.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Launcher plugins will overwrite this method.
-}
-
-\subsection{Returns}{
-A handle to mock worker termination.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-terminate_workers"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate_workers}{}}}
 \subsection{Method \code{terminate_workers()}}{
-Terminate all workers.
+Deprecated on 2025-08-26
+(\code{crew} version 1.2.1.9004).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate_workers()}\if{html}{\out{</div>}}
 }

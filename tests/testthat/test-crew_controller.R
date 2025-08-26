@@ -20,6 +20,8 @@ crew_test("warnings and errors", {
   expect_null(x$cancel())
   expect_false(x$client$started)
   expect_null(x$pop())
+  expect_equal(x$resolved(), 0L)
+  expect_equal(x$unresolved(), 0L)
   x$start()
   expect_silent(x$validate())
   expect_equal(x$summary()$error, 0L)
@@ -107,51 +109,6 @@ crew_test("can relay task errors as local warnings", {
       )
     )
   )
-})
-
-crew_test("can terminate a lost worker", {
-  skip_on_cran()
-  skip_on_os("windows")
-  if (isTRUE(as.logical(Sys.getenv("CI", "false")))) {
-    skip_on_os("mac")
-  }
-  x <- crew_controller_local(
-    workers = 1L,
-    seconds_idle = 360,
-    seconds_launch = 180
-  )
-  x$start()
-  on.exit({
-    x$terminate()
-    rm(x)
-    gc()
-    crew_test_sleep()
-  })
-  private <- crew_private(x$launcher)
-  bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
-  path <- file.path(R.home("bin"), bin)
-  call <- "Sys.sleep(300)"
-  handle <- processx::process$new(command = path, args = c("-e", call))
-  crew_retry(
-    ~ handle$is_alive(),
-    seconds_interval = 0.1,
-    seconds_timeout = 5
-  )
-  private$.instances <- tibble::add_row(
-    private$.instances,
-    handle = list(handle),
-    id = 99L,
-    start = -Inf,
-    online = FALSE,
-    discovered = FALSE
-  )
-  x$scale()
-  crew_retry(
-    ~ !handle$is_alive(),
-    seconds_interval = 0.1,
-    seconds_timeout = 60
-  )
-  expect_false(handle$is_alive())
 })
 
 crew_test("deprecate auto_scale", {
@@ -735,9 +692,8 @@ crew_test("crash detection with crashes_max == 0L", {
     seconds_interval = 0.1,
     seconds_timeout = 60
   )
-  Sys.sleep(0.25)
-  x$launcher$terminate_workers()
   x$wait(seconds_timeout = 30)
+  mirai::daemons(n = 0L, .compute = x$client$profile)
   expect_equal(x$crashes(name = "x"), 0L)
   expect_crew_error(x$pop())
   expect_equal(x$crashes(name = "x"), 1L)
@@ -748,7 +704,6 @@ crew_test("crash detection with crashes_max == 2L", {
   skip_on_os("windows")
   x <- crew_controller_local(
     workers = 1L,
-    seconds_idle = 360,
     crashes_max = 2L
   )
   on.exit({
@@ -762,30 +717,26 @@ crew_test("crash detection with crashes_max == 2L", {
     expect_equal(x$crashes(name = "x"), index - 1L)
     x$push(Sys.sleep(300L), name = "x", scale = TRUE)
     crew_retry(
-      ~ {
-        x$scale()
-        isTRUE(x$client$status()["connections"] > 0L)
-      },
+      ~ isTRUE(x$client$status()["connections"] > 0L),
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
-    Sys.sleep(0.25)
-    x$launcher$terminate_workers()
-    x$wait(seconds_timeout = 30)
+    for (handle in x$launcher$instances$handle) {
+      handle$kill()
+    }
+    x$wait(mode = "one", seconds_timeout = 30)
     expect_true(tibble::is_tibble(x$pop()))
     expect_equal(x$crashes(name = "x"), index)
   }
   x$push(Sys.sleep(300L), name = "x", scale = TRUE)
   crew_retry(
-    ~ {
-      x$scale()
-      isTRUE(x$client$status()["connections"] > 0L)
-    },
+    ~ isTRUE(x$client$status()["connections"] > 0L),
     seconds_interval = 0.1,
     seconds_timeout = 60
   )
-  Sys.sleep(0.25)
-  x$launcher$terminate_workers()
+  for (handle in x$launcher$instances$handle) {
+    handle$kill()
+  }
   x$wait(seconds_timeout = 30)
   expect_crew_error(x$pop())
   expect_equal(x$crashes(name = "x"), 3L)
@@ -797,7 +748,6 @@ crew_test("crash detection resets, crashes_max == 2L", {
   skip_on_os("windows")
   x <- crew_controller_local(
     workers = 1L,
-    seconds_idle = 360,
     crashes_max = 2L
   )
   on.exit({
@@ -811,22 +761,23 @@ crew_test("crash detection resets, crashes_max == 2L", {
     expect_equal(x$crashes(name = "x"), 0L)
     x$push(Sys.sleep(300L), name = "x", scale = TRUE)
     crew_retry(
-      ~ {
-        x$scale()
-        isTRUE(x$client$status()["connections"] > 0L)
-      },
+      ~ isTRUE(x$client$status()["connections"] > 0L),
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
-    Sys.sleep(0.25)
-    x$launcher$terminate_workers()
-    x$wait(seconds_timeout = 30)
+    for (handle in x$launcher$instances$handle) {
+      handle$kill()
+    }
+    x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
     expect_true(tibble::is_tibble(x$pop()))
     expect_equal(x$crashes(name = "x"), 1L)
-    x$push(TRUE, name = "x")
-    x$wait(seconds_timeout = 30)
+    x$push(TRUE, name = "x", scale = TRUE)
+    x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
     expect_true(tibble::is_tibble(x$pop()))
     expect_equal(x$crashes(name = "x"), 0L)
+    for (handle in x$launcher$instances$handle) {
+      handle$kill()
+    }
   }
 })
 
@@ -849,31 +800,28 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
     expect_equal(x$crashes(name = "x"), index - 1L)
     x$push(Sys.sleep(300L), name = "x", scale = TRUE)
     crew_retry(
-      ~ {
-        x$scale()
-        isTRUE(x$client$status()["connections"] > 0L)
-      },
+      ~ isTRUE(x$client$status()["connections"] > 0L),
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
     Sys.sleep(0.25)
-    x$launcher$terminate_workers()
-    x$wait(seconds_timeout = 30)
+    for (handle in x$launcher$instances$handle) {
+      handle$kill()
+    }
+    x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
     expect_true(tibble::is_tibble(x$collect()))
     expect_equal(x$crashes(name = "x"), index)
   }
   x$push(Sys.sleep(300L), name = "x", scale = TRUE)
   crew_retry(
-    ~ {
-      x$scale()
-      isTRUE(x$client$status()["connections"] > 0L)
-    },
+    ~ isTRUE(x$client$status()["connections"] > 0L),
     seconds_interval = 0.1,
     seconds_timeout = 60
   )
-  Sys.sleep(0.25)
-  x$launcher$terminate_workers()
-  x$wait(seconds_timeout = 30)
+  for (handle in x$launcher$instances$handle) {
+    handle$kill()
+  }
+  x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
   expect_crew_error(x$collect())
   expect_equal(x$crashes(name = "x"), 3L)
 })

@@ -149,45 +149,6 @@ crew_test("crew_launcher_local() worker tasks_max", {
   )
 })
 
-crew_test("crew_launcher_local() can terminate a worker", {
-  skip_on_cran()
-  skip_on_os("windows")
-  client <- crew_client(
-    host = "127.0.0.1",
-    workers = 1L
-  )
-  launcher <- crew_launcher_local(
-    name = client$profile,
-    tasks_max = 1L,
-    seconds_idle = 360
-  )
-  on.exit({
-    client$terminate()
-    launcher$terminate()
-    rm(client)
-    rm(launcher)
-    gc()
-    crew_test_sleep()
-  })
-  client$start()
-  launcher$start(url = client$url, profile = client$profile)
-  launcher$launch()
-  handle <- launcher$instances$handle[[1L]]
-  expect_s3_class(handle, "process")
-  crew::crew_retry(
-    ~ handle$is_alive(),
-    seconds_interval = 0.1,
-    seconds_timeout = 5
-  )
-  expect_silent(launcher$terminate())
-  crew::crew_retry(
-    ~ !handle$is_alive(),
-    seconds_interval = 0.1,
-    seconds_timeout = 5
-  )
-  expect_silent(launcher$terminate())
-})
-
 crew_test("deprecate seconds_exit", {
   suppressWarnings(crew_launcher_local(seconds_exit = 1))
   expect_true(TRUE)

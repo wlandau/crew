@@ -150,8 +150,6 @@ crew_class_client <- R6::R6Class(
     .started = FALSE,
     .url = NULL,
     .profile = NULL,
-    .client = NULL, # TODO: remove if/when the dispatcher becomes a thread.
-    .dispatcher = NULL, # TODO: remove if/when the dispatcher becomes a thread.
     # TODO: remove if/when mirai::status()$events
     # becomes irrelevant (issue #232):
     .queue_events = NULL
@@ -197,14 +195,6 @@ crew_class_client <- R6::R6Class(
     #' @field profile Compute profile of the client.
     profile = function() {
       .profile
-    },
-    #' @field client Process ID of the local process running the client.
-    client = function() {
-      .client
-    },
-    #' @field dispatcher Process ID of the `mirai` dispatcher
-    dispatcher = function() {
-      .dispatcher
     }
   ),
   public = list(
@@ -283,16 +273,6 @@ crew_class_client <- R6::R6Class(
           )
         )
       }
-      if_any(
-        is.null(.client),
-        NULL,
-        crew_assert(inherits(.client, "ps_handle"))
-      )
-      if_any(
-        is.null(.dispatcher),
-        NULL,
-        crew_assert(inherits(.dispatcher, "ps_handle"))
-      )
       crew_assert(
         .seconds_timeout >= .seconds_interval,
         message = "seconds_timeout cannot be less than seconds_interval"
@@ -331,15 +311,6 @@ crew_class_client <- R6::R6Class(
         .compute = .profile
       )
       .url <<- mirai::nextget("url", .compute = .profile)
-      .client <<- ps::ps_handle()
-      # TODO: remove code that gets the dispatcher PID if the dispatcher
-      # process becomes a C thread.
-      # Begin dispatcher code.
-      pid <- mirai::nextget("pid", .compute = .profile)
-      if (!is.null(pid)) {
-        .dispatcher <<- ps::ps_handle(pid = pid)
-      }
-      # End dispatcher code.
       .relay$set_from(mirai::nextget(x = "cv", .compute = .profile))
       .relay$start()
       .started <<- TRUE
@@ -360,37 +331,6 @@ crew_class_client <- R6::R6Class(
       .relay$terminate()
       .url <<- NULL
       .started <<- FALSE
-      # TODO: if the dispatcher process becomes a C thread,
-      # delete these superfluous checks on the dispatcher.
-      # Begin dispatcher checks.
-      if (is.null(.dispatcher)) {
-        return(invisible())
-      }
-      tryCatch(
-        crew_retry(
-          fun = ~ !ps::ps_is_running(p = .dispatcher),
-          seconds_interval = .seconds_interval,
-          seconds_timeout = .seconds_timeout
-        ),
-        error = function(condition) NULL
-      )
-      if_any(
-        ps::ps_is_running(p = .dispatcher),
-        try(
-          crew_terminate_process(pid = ps::ps_pid(.dispatcher)),
-          silent = TRUE
-        ),
-        NULL
-      )
-      tryCatch(
-        crew_retry(
-          fun = ~ !ps::ps_is_running(p = ps::ps_pid(.dispatcher)),
-          seconds_interval = .seconds_interval,
-          seconds_timeout = .seconds_timeout
-        ),
-        error = function(condition) NULL
-      )
-      # End dispatcher checks.
       .queue_events <<- collections::queue()
       invisible()
     },
@@ -430,18 +370,18 @@ crew_class_client <- R6::R6Class(
         )
       )
     },
-    #' @description Get the process IDs of the local process and the
-    #'   `mirai` dispatcher (if started).
-    #' @return An integer vector of process IDs of the local process and the
-    #'   `mirai` dispatcher (if started).
+    #' @description Deprecated on 2025-08-26 in `crew` version 1.2.1.9005.
+    #' @return The integer process ID of the current process.
     pids = function() {
-      # TODO: remove this function if/when the dispatcher becomes a thread.
-      out <- c(local = Sys.getpid())
-      if (!is.null(.dispatcher)) {
-        out <- c(out, ps::ps_pid(.dispatcher))
-        names(out)[2L] <- paste0("dispatcher-", .profile)
-      }
-      out
+      crew::crew_deprecate(
+        name = "pids()",
+        date = "2025-08-26",
+        version = "1.2.1.9006",
+        alternative = "none",
+        condition = "warning",
+        value = "x"
+      )
+      Sys.getpid()
     }
   )
 )

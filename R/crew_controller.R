@@ -1655,14 +1655,20 @@ crew_class_controller <- R6::R6Class(
       }
       invisible()
     },
-    #' @description Get the process IDs of the local process and the
-    #'   `mirai` dispatcher (if started).
-    #' @return An integer vector of process IDs of the local process and the
-    #'   `mirai` dispatcher (if started).
+    #' @description Deprecated on 2025-08-26 in `crew` version 1.2.1.9005.
+    #' @return The integer process ID of the current process.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pids = function(controllers = NULL) {
-      .client$pids()
+      crew::crew_deprecate(
+        name = "pids()",
+        date = "2025-08-26",
+        version = "1.2.1.9006",
+        alternative = "none",
+        condition = "warning",
+        value = "x"
+      )
+      Sys.getpid()
     },
     #' @description Terminate the workers and the `mirai` client.
     #' @return `NULL` (invisibly).

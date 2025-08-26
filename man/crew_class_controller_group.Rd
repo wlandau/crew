@@ -1133,8 +1133,7 @@ class for specific information about the columns in the output.
 \if{html}{\out{<a id="method-crew_class_controller_group-pids"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-pids}{}}}
 \subsection{Method \code{pids()}}{
-Get the process IDs of the local process and the
-\code{mirai} dispatchers (if started).
+Deprecated on 2025-08-26 in \code{crew} version 1.2.1.9005.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pids(controllers = NULL)}\if{html}{\out{</div>}}
 }
@@ -1148,8 +1147,7 @@ Set to \code{NULL} to select all controllers.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An integer vector of process IDs of the local process and the
-\code{mirai} dispatcher (if started).
+The integer process ID of the current process.
 }
 }
 \if{html}{\out{<hr>}}

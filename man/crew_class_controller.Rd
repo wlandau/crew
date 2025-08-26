@@ -1270,8 +1270,7 @@ Those names must have been manually supplied by \code{push()}.}
 \if{html}{\out{<a id="method-crew_class_controller-pids"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-pids}{}}}
 \subsection{Method \code{pids()}}{
-Get the process IDs of the local process and the
-\code{mirai} dispatcher (if started).
+Deprecated on 2025-08-26 in \code{crew} version 1.2.1.9005.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$pids(controllers = NULL)}\if{html}{\out{</div>}}
 }
@@ -1285,8 +1284,7 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An integer vector of process IDs of the local process and the
-\code{mirai} dispatcher (if started).
+The integer process ID of the current process.
 }
 }
 \if{html}{\out{<hr>}}

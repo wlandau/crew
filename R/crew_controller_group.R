@@ -912,17 +912,20 @@ crew_class_controller_group <- R6::R6Class(
       }
       tibble::as_tibble(do.call(what = rbind, args = out))
     },
-    #' @description Get the process IDs of the local process and the
-    #'   `mirai` dispatchers (if started).
-    #' @return An integer vector of process IDs of the local process and the
-    #'   `mirai` dispatcher (if started).
+    #' @description Deprecated on 2025-08-26 in `crew` version 1.2.1.9005.
+    #' @return The integer process ID of the current process.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     pids = function(controllers = NULL) {
-      control <- .select_controllers(controllers)
-      out <- lapply(control, function(controller) controller$pids())
-      out <- lapply(unname(out), function(x) x[names(x) != "local"])
-      c(local = Sys.getpid(), unlist(out))
+      crew::crew_deprecate(
+        name = "pids()",
+        date = "2025-08-26",
+        version = "1.2.1.9006",
+        alternative = "none",
+        condition = "warning",
+        value = "x"
+      )
+      Sys.getpid()
     },
     #' @description Terminate the workers and disconnect the client
     #'   for one or more controllers.

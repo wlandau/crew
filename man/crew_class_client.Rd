@@ -56,10 +56,6 @@ condition variable.}
 \item{\code{url}}{Client websocket URL.}
 
 \item{\code{profile}}{Compute profile of the client.}
-
-\item{\code{client}}{Process ID of the local process running the client.}
-
-\item{\code{dispatcher}}{Process ID of the \code{mirai} dispatcher}
 }
 \if{html}{\out{</div>}}
 }
@@ -243,15 +239,13 @@ Integer vector of connection/disconnection events.
 \if{html}{\out{<a id="method-crew_class_client-pids"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-pids}{}}}
 \subsection{Method \code{pids()}}{
-Get the process IDs of the local process and the
-\code{mirai} dispatcher (if started).
+Deprecated on 2025-08-26 in \code{crew} version 1.2.1.9005.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_client$pids()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-An integer vector of process IDs of the local process and the
-\code{mirai} dispatcher (if started).
+The integer process ID of the current process.
 }
 }
 }

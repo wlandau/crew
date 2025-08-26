@@ -832,22 +832,22 @@ crew_class_controller_group <- R6::R6Class(
       )
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
-      if (size() < 1L || !started()) {
+      if (self$size(controllers) < 1L) {
         return(identical(mode, "all"))
       }
       if (identical(mode, "all")) {
         wait_event <- function() {
-          if (unresolved(controllers) > 0L) {
-            .relay$wait()
+          if (self$unresolved(controllers) > 0L) {
+            private$.relay$wait()
           }
-          unresolved(controllers) < 1L
+          self$unresolved(controllers) < 1L
         }
       } else {
         wait_event <- function() {
-          if (size(controllers) - unresolved(controllers) < 1L) {
-            .relay$wait()
+          if (self$size(controllers) - self$unresolved(controllers) < 1L) {
+            private$.relay$wait()
           }
-          size(controllers) - unresolved(controllers) > 0L
+          self$size(controllers) - self$unresolved(controllers) > 0L
         }
       }
       envir <- new.env(parent = emptyenv())

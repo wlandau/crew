@@ -42,7 +42,7 @@ crew_test("active bindings for covr", {
   expect_true(is.data.frame(out$instances))
   expect_null(out$id, 0L)
   expect_null(out$async)
-  expect_null(out$throttle)
+  expect_s3_class(out$throttle, "crew_class_throttle")
 })
 
 crew_test("preemptive async termination for covr", {
@@ -71,9 +71,9 @@ crew_test("default launch_launcher() method", {
   expect_equal(out$abstract, TRUE)
 })
 
-crew_test("default terminate_launcher() method", {
+crew_test("deprecate terminate_worker() method", {
   launcher <- crew_class_launcher$new(seconds_interval = 0.5)
-  expect_equal(launcher$terminate_worker(handle = crew_null)$abstract, TRUE)
+  expect_equal(launcher$terminate_worker(handle = crew_null), crew_null)
 })
 
 crew_test("launcher settings", {

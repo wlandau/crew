@@ -392,6 +392,7 @@ crew_class_launcher <- R6::R6Class(
       private$.processes <- processes
       private$.r_arguments <- r_arguments
       private$.options_metrics <- options_metrics
+      private$.throttle <- crew_throttle(seconds_max = seconds_interval)
     },
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).

@@ -868,9 +868,9 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
   }
   x$push(Sys.sleep(300L), name = "x", scale = FALSE)
   process <- callr::r_bg(
-      function(url) mirai::daemon(url, idletime = 360000),
-      args = list(url = x$client$url)
-    )
+    function(url) mirai::daemon(url, idletime = 360000),
+    args = list(url = x$client$url)
+  )
   crew_retry(
     ~ isTRUE(x$client$status()["connections"] > 0L),
     seconds_interval = 0.1,

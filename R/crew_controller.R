@@ -653,8 +653,6 @@ crew_class_controller <- R6::R6Class(
         .timeout <- seconds_timeout * 1000
       }
       if (!is.null(.backup)) {
-        # Tested in tests/local/test-crashes.R.
-        # nocov start
         if ((.crashes_max > 0L) && (crashes(name = name) == .crashes_max)) {
           return(
             .subset2(.backup, "push")(
@@ -674,7 +672,6 @@ crew_class_controller <- R6::R6Class(
             )
           )
         }
-        # nocov end
       }
       task <- mirai::mirai(
         .expr = expr_crew_eval,

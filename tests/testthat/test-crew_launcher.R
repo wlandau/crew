@@ -71,11 +71,6 @@ crew_test("default launch_launcher() method", {
   expect_equal(out$abstract, TRUE)
 })
 
-crew_test("deprecate terminate_worker() method", {
-  launcher <- crew_class_launcher$new(seconds_interval = 0.5)
-  expect_equal(launcher$terminate_worker(handle = crew_null), crew_null)
-})
-
 crew_test("launcher settings", {
   launcher <- crew_class_launcher$new(
     name = "my_launcher_name",

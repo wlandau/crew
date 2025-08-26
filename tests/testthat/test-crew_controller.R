@@ -702,7 +702,6 @@ crew_test("crash detection with crashes_max == 0L", {
 crew_test("crash detection with crashes_max == 2L", {
   skip_on_cran()
   skip_on_os("windows")
-  skip_if_not_installed("callr")
   x <- crew_controller_local(
     workers = 1L,
     crashes_max = 2L
@@ -716,32 +715,28 @@ crew_test("crash detection with crashes_max == 2L", {
   x$start()
   for (index in seq_len(2L)) {
     expect_equal(x$crashes(name = "x"), index - 1L)
-    x$push(Sys.sleep(300L), name = "x", scale = FALSE)
-    process <- callr::r_bg(
-      function(url) mirai::daemon(url, idletime = 360000),
-      args = list(url = x$client$url)
-    )
+    x$push(Sys.sleep(300L), name = "x", scale = TRUE)
     crew_retry(
       ~ isTRUE(x$client$status()["connections"] > 0L),
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
-    process$kill()
+    for (handle in x$launcher$instances$handle) {
+      handle$kill()
+    }
     x$wait(mode = "one", seconds_timeout = 30)
     expect_true(tibble::is_tibble(x$pop()))
     expect_equal(x$crashes(name = "x"), index)
   }
-  x$push(Sys.sleep(300L), name = "x", scale = FALSE)
-  process <- callr::r_bg(
-    function(url) mirai::daemon(url, idletime = 360000),
-    args = list(url = x$client$url)
-  )
+  x$push(Sys.sleep(300L), name = "x", scale = TRUE)
   crew_retry(
     ~ isTRUE(x$client$status()["connections"] > 0L),
     seconds_interval = 0.1,
     seconds_timeout = 60
   )
-  process$kill()
+  for (handle in x$launcher$instances$handle) {
+    handle$kill()
+  }
   x$wait(seconds_timeout = 30)
   expect_crew_error(x$pop())
   expect_equal(x$crashes(name = "x"), 3L)
@@ -764,29 +759,25 @@ crew_test("crash detection resets, crashes_max == 2L", {
   x$start()
   for (index in seq_len(6L)) {
     expect_equal(x$crashes(name = "x"), 0L)
-    x$push(Sys.sleep(300L), name = "x", scale = FALSE)
-    process <- callr::r_bg(
-      function(url) mirai::daemon(url, idletime = 360000),
-      args = list(url = x$client$url)
-    )
+    x$push(Sys.sleep(300L), name = "x", scale = TRUE)
     crew_retry(
       ~ isTRUE(x$client$status()["connections"] > 0L),
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
-    process$kill()
+    for (handle in x$launcher$instances$handle) {
+      handle$kill()
+    }
     x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
     expect_true(tibble::is_tibble(x$pop()))
     expect_equal(x$crashes(name = "x"), 1L)
-    x$push(TRUE, name = "x", scale = FALSE)
-    process <- callr::r_bg(
-      function(url) mirai::daemon(url, idletime = 360000),
-      args = list(url = x$client$url)
-    )
+    x$push(TRUE, name = "x", scale = TRUE)
     x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
     expect_true(tibble::is_tibble(x$pop()))
     expect_equal(x$crashes(name = "x"), 0L)
-    process$kill()
+    for (handle in x$launcher$instances$handle) {
+      handle$kill()
+    }
   }
 })
 
@@ -807,33 +798,29 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
   x$start()
   for (index in seq_len(2L)) {
     expect_equal(x$crashes(name = "x"), index - 1L)
-    x$push(Sys.sleep(300L), name = "x", scale = FALSE)
-    process <- callr::r_bg(
-      function(url) mirai::daemon(url, idletime = 360000),
-      args = list(url = x$client$url)
-    )
+    x$push(Sys.sleep(300L), name = "x", scale = TRUE)
     crew_retry(
       ~ isTRUE(x$client$status()["connections"] > 0L),
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
     Sys.sleep(0.25)
-    process$kill()
+    for (handle in x$launcher$instances$handle) {
+      handle$kill()
+    }
     x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
     expect_true(tibble::is_tibble(x$collect()))
     expect_equal(x$crashes(name = "x"), index)
   }
-  x$push(Sys.sleep(300L), name = "x", scale = FALSE)
-  process <- callr::r_bg(
-    function(url) mirai::daemon(url, idletime = 360000),
-    args = list(url = x$client$url)
-  )
+  x$push(Sys.sleep(300L), name = "x", scale = TRUE)
   crew_retry(
     ~ isTRUE(x$client$status()["connections"] > 0L),
     seconds_interval = 0.1,
     seconds_timeout = 60
   )
-  process$kill()
+  for (handle in x$launcher$instances$handle) {
+    handle$kill()
+  }
   x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
   expect_crew_error(x$collect())
   expect_equal(x$crashes(name = "x"), 3L)

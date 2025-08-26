@@ -58,7 +58,6 @@ Imports:
   utils
 Suggests:
   autometric (>= 0.1.0),
-  callr,
   knitr (>= 1.30),
   markdown (>= 1.1),
   rmarkdown (>= 2.4),

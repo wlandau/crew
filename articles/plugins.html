@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -138,24 +138,6 @@ time to assess the network security risks of your computing environment.
 Use at your own risk.</p>
 </div>
 <div class="section level2">
-<h2 id="termination">Termination<a class="anchor" aria-label="anchor" href="#termination"></a>
-</h2>
-<p>We recommend you implement an optional <a href="https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-"><code>terminate_worker()</code></a>
-method. Although <code>mirai</code> has its own way of terminating
-workers, it only works if the worker already connected, and it cannot
-reach workers that fail to connect and hang in a crashed state. An
-optional <a href="https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-"><code>terminate_worker()</code></a>
-method in your <code>crew</code> launcher plugin is extra assurance that
-these workers will exit.</p>
-<p>If you implement a custom <a href="https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-terminate-worker-"><code>terminate_worker()</code></a>
-method, it must not throw an error (and should not throw a warning or
-message) if the worker is already terminated. In addition, it must
-accept a handle that identifies the worker, and this handle must be the
-return value of the previous call to <a href="https://wlandau.github.io/crew/reference/crew_class_launcher_local.html#method-launch-worker-"><code>launch_worker()</code></a>.
-A handle can be any kind of R object: a process ID, a job name, an
-<code>R6</code> object returned by <code><a href="https://callr.r-lib.org/reference/r_bg.html" class="external-link">callr::r_bg()</a></code>, etc.</p>
-</div>
-<div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p>The following is a custom custom launcher class whose workers are
@@ -165,16 +147,13 @@ local R processes on Unix-like systems.</p>
 <span>  classname <span class="op">=</span> <span class="st">"custom_launcher_class"</span>,</span>
 <span>  inherit <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="va"><a href="../reference/crew_class_launcher.html">crew_class_launcher</a></span>,</span>
 <span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    launch_worker <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span>, <span class="va">launcher</span>, <span class="va">worker</span>, <span class="va">instance</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    launch_worker <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span>, <span class="va">launcher</span>, <span class="va">worker</span><span class="op">)</span> <span class="op">{</span></span>
 <span>      <span class="va">bin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Rhome.html" class="external-link">R.home</a></span><span class="op">(</span><span class="st">"bin"</span><span class="op">)</span>, <span class="st">"Rscript"</span><span class="op">)</span></span>
 <span>      <span class="fu">processx</span><span class="fu">::</span><span class="va"><a href="http://processx.r-lib.org/reference/process.html" class="external-link">process</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>        command <span class="op">=</span> <span class="va">bin</span>,</span>
 <span>        args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">self</span><span class="op">$</span><span class="va">r_arguments</span>, <span class="st">"-e"</span>, <span class="va">call</span><span class="op">)</span>,</span>
 <span>        cleanup <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>      <span class="op">)</span></span>
-<span>    <span class="op">}</span>,</span>
-<span>    terminate_worker <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">handle</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="va">handle</span><span class="op">$</span><span class="fu">signal</span><span class="op">(</span><span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_terminate_signal.html">crew_terminate_signal</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">}</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -185,13 +164,7 @@ call in an external R process with the command line arguments from
 <code>r_arguments</code> (supplied when the launcher is created). This
 process runs in the background, connects back to <code>crew</code> and
 <code>mirai</code> over the local network, and accepts the tasks you
-push to the controller. <code>processx::process$new()</code> also
-returns a handle which the <code>terminate_worker()</code> method can
-use to force-terminate the process if appropriate. <code>mirai</code>
-has its own way to terminate workers, so a
-<code>terminate_worker()</code> method is not strictly required, but it
-is a useful safeguard in case a worker hangs in a crashed state before
-it establishes a connection.</p>
+push to the controller.</p>
 <p>Every <code>launch_worker()</code> method must accept arguments
 <code>call</code>, <code>launcher</code>, <code>worker</code>, and
 <code>instance</code>. The method does not actually need to use all
@@ -200,8 +173,8 @@ these arguments, but they must be present in the function signature.</p>
 <li>
 <code>call</code>: text string with a call to <a href="https://wlandau.github.io/crew/reference/crew_worker.html"><code>crew_worker()</code></a>.</li>
 <li>
-<code>name</code>: text string with an informative name for the
-worker instance.</li>
+<code>name</code>: text string with a unique informative name for
+the worker instance.</li>
 <li>
 <code>launcher</code>: text string with the name of the
 launcher.</li>
@@ -209,9 +182,6 @@ launcher.</li>
 <code>worker</code>: positive integer index of the worker. Ranges
 from 1 to the maximum number of simultaneous workers configured for the
 controller.</li>
-<li>
-<code>instance</code>: text string with the instance of the worker
-in the launcher at the given worker index.</li>
 </ul>
 <p>To see what the <code>call</code> object looks like, create a new
 launcher and run the <code><a href="https://rdrr.io/r/base/call.html" class="external-link">call()</a></code> method.</p>
@@ -362,14 +332,16 @@ did not need to launch.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="va">launcher</span><span class="op">$</span><span class="va">instances</span><span class="op">$</span><span class="va">handle</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">is_alive</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p>When you are done, terminate the controller. This terminates the
-<code>mirai</code> dispatcher process and the <code>crew</code>
-workers.</p>
+<p>When you are done, terminate the controller. This severs the
+underlying network connections of the controller, which terminates the
+workers and dispatcher.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, use the process monitoring interface of your computing
-platform or operating system to verify that all <code>mirai</code>
-dispatchers and <code>crew</code> workers are terminated.</p>
+platform or operating system
+(e.g. <code><a href="../reference/crew_monitor_local.html">crew::crew_monitor_local()</a></code> if using
+<code><a href="../reference/crew_controller_local.html">crew_controller_local()</a></code>) to verify that all
+<code>crew</code> workers are terminated.</p>
 </div>
 <div class="section level2">
 <h2 id="load-testing">Load testing<a class="anchor" aria-label="anchor" href="#load-testing"></a>
@@ -417,26 +389,25 @@ tasks.</p>
 <span><span class="co"># Terminate the controller.</span></span>
 <span><span class="va">controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Now outside crew, verify that the mirai dispatcher</span></span>
-<span><span class="co"># and crew workers successfully terminated.</span></span></code></pre></div>
+<span><span class="co"># Now outside crew, verify that all the</span></span>
+<span><span class="co"># crew workers successfully terminated.</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="asynchrony">Asynchrony<a class="anchor" aria-label="anchor" href="#asynchrony"></a>
 </h2>
-<p>Depending on the launcher plugin, worker launches and terminations
-can be time-consuming. For example, each HTTP request to AWS Batch can
-take a couple seconds, and this latency becomes burdensome when it there
-are hundreds of workers. Fortunately, <code>crew</code> launchers can
-run launches and terminations asynchronously. As a launcher plugin
-developer, all you need to do is:</p>
+<p>Depending on the launcher plugin, worker launches can be
+time-consuming. For example, each HTTP request to AWS Batch can take a
+couple seconds, and this latency becomes burdensome when it there are
+hundreds of workers. Fortunately, <code>crew</code> launchers can run
+launches asynchronously. As a launcher plugin developer, all you need to
+do is:</p>
 <ol style="list-style-type: decimal">
 <li>Expose the <code>processes</code> argument of
 <code>launcher$new()</code>. The <code>processes</code> field sets how
 many <code>mirai</code> daemons run locally and churn through quick
 requests.</li>
-<li>Execute launches and terminations inside
-<code>self$async$eval()</code>, and return the resulting value from
-<code>launch_worker()</code> and <code>terminate_worker()</code>.</li>
+<li>Execute launches inside <code>self$async$eval()</code>, and return
+the resulting value from <code>launch_worker()</code>.</li>
 </ol>
 <p>Let’s demonstrate on the simple <code>processx</code> example. The
 use case itself may silly because the workers are local
@@ -448,10 +419,7 @@ Batch and you replace the process IDs with AWS Batch job IDs.</p>
 send to local async <code>mirai</code> daemons. The
 <code>self$async$eval()</code> function accepts R code, data, and
 packages to run a quick local asynchronous task, and it returns a
-<code><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai::mirai()</a></code> task object as the handle. <code>crew</code>
-internally resolves launch tasks so the handles you accept in
-<code>terminate_worker()</code> are the exact objects returned from
-<code>async$eval()</code> in <code>launcher_worker()</code>.</p>
+<code><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai::mirai()</a></code> task object.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">async_launcher_class</span> <span class="op">&lt;-</span> <span class="fu">R6</span><span class="fu">::</span><span class="kw"><a href="https://r6.r-lib.org/reference/R6Class.html" class="external-link">R6Class</a></span><span class="op">(</span></span>
 <span>  classname <span class="op">=</span> <span class="st">"custom_launcher_class"</span>,</span>
@@ -462,12 +430,6 @@ internally resolves launch tasks so the handles you accept in
 <span>        command <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pid <span class="op">=</span> <span class="va">process</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">bin</span>, args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-e"</span>, <span class="va">call</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="fu">get_pid</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>        data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>bin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Rhome.html" class="external-link">R.home</a></span><span class="op">(</span><span class="st">"bin"</span><span class="op">)</span>, <span class="st">"R"</span><span class="op">)</span>, call <span class="op">=</span> <span class="va">call</span><span class="op">)</span>,</span>
 <span>        packages <span class="op">=</span> <span class="st">"processx"</span></span>
-<span>      <span class="op">)</span></span>
-<span>    <span class="op">}</span>,</span>
-<span>    terminate_worker <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">handle</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="va">self</span><span class="op">$</span><span class="va">async</span><span class="op">$</span><span class="fu">eval</span><span class="op">(</span></span>
-<span>        command <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="../reference/crew_terminate_process.html">crew_terminate_process</a></span><span class="op">(</span><span class="va">handle</span><span class="op">$</span><span class="va">pid</span><span class="op">)</span>,</span>
-<span>        data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pid <span class="op">=</span> <span class="va">handle</span><span class="op">$</span><span class="va">pid</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
 <span>    <span class="op">}</span></span>
 <span>  <span class="op">)</span></span>
@@ -540,9 +502,9 @@ both the <code>workers</code> and <code>processes</code> arguments.
 Remember, these are two different things: <code>workers</code> is the
 number of serious workers that run serious tasks from
 <code>push()</code>, whereas <code>processes</code> is the number of
-<code>mirai</code> daemons that asynchronously launch and terminate
-those serious workers. Workers may or may not be local, but
-<code>processes</code> are always local.</p>
+<code>mirai</code> daemons that asynchronously launch those serious
+workers. Workers may or may not be local, but <code>processes</code> are
+always local.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">async_controller</span> <span class="op">&lt;-</span> <span class="fu">crew_controller_async</span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">12</span>, processes <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 <p><code>async_controller$start()</code> automatically launches 4 local

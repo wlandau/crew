@@ -9,7 +9,7 @@ which launch and manage workers."><meta property="og:image" content="https://wla
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -495,7 +495,7 @@ connection/disconnection events) (<code>FALSE</code> otherwise).</p>
 <h3 id="method-launch-worker-">Method <code>launch_worker()</code><a class="anchor" aria-label="anchor" href="#method-launch-worker-"></a></h3>
 <p>Abstract worker launch method.</p><div class="section">
 <h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">launch_worker</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span>, <span class="va">launcher</span>, <span class="va">worker</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">launch_worker</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -507,17 +507,6 @@ connection/disconnection events) (<code>FALSE</code> otherwise).</p>
 
 <dt><code>name</code></dt>
 <dd><p>Character of length 1 with an informative worker name.</p></dd>
-
-
-<dt><code>launcher</code></dt>
-<dd><p>Character of length 1, name of the launcher.</p></dd>
-
-
-<dt><code>worker</code></dt>
-<dd><p>Positive integer of length 1, index of the worker.
-This worker index remains the same even when the current instance
-of the worker exits and a new instance launches.
-It is always between 1 and the maximum number of concurrent workers.</p></dd>
 
 
 </dl><p></p></div>
@@ -642,7 +631,7 @@ It is always between 1 and the maximum number of concurrent workers.</p></dd>
 <span class="r-in"><span><span class="va">launcher</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_launcher_local.html">crew_launcher_local</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span>url <span class="op">=</span> <span class="st">"tcp://127.0.0.1:57000"</span>, profile <span class="op">=</span> <span class="st">"profile"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">call</span><span class="op">(</span>worker <span class="op">=</span> <span class="st">"worker_name"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tlscert = NULL, rs = NULL), launcher = \"45b47eb8\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tlscert = NULL, rs = NULL), launcher = \"cd220582\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>

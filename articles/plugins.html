@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -147,7 +147,7 @@ local R processes on Unix-like systems.</p>
 <span>  classname <span class="op">=</span> <span class="st">"custom_launcher_class"</span>,</span>
 <span>  inherit <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="va"><a href="../reference/crew_class_launcher.html">crew_class_launcher</a></span>,</span>
 <span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    launch_worker <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span>, <span class="va">launcher</span>, <span class="va">worker</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    launch_worker <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span><span class="op">)</span> <span class="op">{</span></span>
 <span>      <span class="va">bin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Rhome.html" class="external-link">R.home</a></span><span class="op">(</span><span class="st">"bin"</span><span class="op">)</span>, <span class="st">"Rscript"</span><span class="op">)</span></span>
 <span>      <span class="fu">processx</span><span class="fu">::</span><span class="va"><a href="http://processx.r-lib.org/reference/process.html" class="external-link">process</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>        command <span class="op">=</span> <span class="va">bin</span>,</span>
@@ -166,25 +166,15 @@ process runs in the background, connects back to <code>crew</code> and
 <code>mirai</code> over the local network, and accepts the tasks you
 push to the controller.</p>
 <p>Every <code>launch_worker()</code> method must accept arguments
-<code>call</code>, <code>launcher</code>, <code>worker</code>, and
-<code>instance</code>. The method does not actually need to use all
-these arguments, but they must be present in the function signature.</p>
-<ul>
-<li>
-<code>call</code>: text string with a call to <a href="https://wlandau.github.io/crew/reference/crew_worker.html"><code>crew_worker()</code></a>.</li>
-<li>
-<code>name</code>: text string with a unique informative name for
-the worker instance.</li>
-<li>
-<code>launcher</code>: text string with the name of the
-launcher.</li>
-<li>
-<code>worker</code>: positive integer index of the worker. Ranges
-from 1 to the maximum number of simultaneous workers configured for the
-controller.</li>
-</ul>
-<p>To see what the <code>call</code> object looks like, create a new
-launcher and run the <code><a href="https://rdrr.io/r/base/call.html" class="external-link">call()</a></code> method.</p>
+<code>call</code> and <code>name</code>. The former is a text string
+with an R function call to <a href="https://wlandau.github.io/crew/reference/crew_worker.html"><code>crew_worker()</code></a>,
+and <code>name</code> is a text string with a unique informative name
+for the worker instance. <code>launch_worker()</code> must launch a
+worker that runs the R code in <code>call</code>, but <code>name</code>
+is purely for convenience.</p>
+<p>To see what the <code>call</code> argument will look like from inside
+<code>launch_worker()</code>, create a new launcher and run the
+<code><a href="https://rdrr.io/r/base/call.html" class="external-link">call()</a></code> method.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/crew/">crew</a></span><span class="op">)</span></span>
 <span><span class="va">launcher</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_launcher_local.html">crew_launcher_local</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -193,7 +183,7 @@ launcher and run the <code><a href="https://rdrr.io/r/base/call.html" class="ext
 <span><span class="co">#&gt; [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tls = NULL, rs = NULL), launcher = \"27548330\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="helper">Helper<a class="anchor" aria-label="anchor" href="#helper"></a>
+<h2 id="controllers">Controllers<a class="anchor" aria-label="anchor" href="#controllers"></a>
 </h2>
 <p>It is useful to have a helper function that creates controllers with
 your custom launcher. It should:</p>
@@ -393,7 +383,7 @@ tasks.</p>
 <span><span class="co"># crew workers successfully terminated.</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="asynchrony">Asynchrony<a class="anchor" aria-label="anchor" href="#asynchrony"></a>
+<h2 id="asynchronicity">Asynchronicity<a class="anchor" aria-label="anchor" href="#asynchronicity"></a>
 </h2>
 <p>Depending on the launcher plugin, worker launches can be
 time-consuming. For example, each HTTP request to AWS Batch can take a
@@ -425,7 +415,7 @@ packages to run a quick local asynchronous task, and it returns a
 <span>  classname <span class="op">=</span> <span class="st">"custom_launcher_class"</span>,</span>
 <span>  inherit <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="va"><a href="../reference/crew_class_launcher.html">crew_class_launcher</a></span>,</span>
 <span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    launch_worker <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span>, <span class="va">launcher</span>, <span class="va">worker</span>, <span class="va">instance</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    launch_worker <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span><span class="op">)</span> <span class="op">{</span></span>
 <span>      <span class="va">self</span><span class="op">$</span><span class="va">async</span><span class="op">$</span><span class="fu">eval</span><span class="op">(</span></span>
 <span>        command <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pid <span class="op">=</span> <span class="va">process</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">bin</span>, args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-e"</span>, <span class="va">call</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="fu">get_pid</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>        data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>bin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Rhome.html" class="external-link">R.home</a></span><span class="op">(</span><span class="st">"bin"</span><span class="op">)</span>, <span class="st">"R"</span><span class="op">)</span>, call <span class="op">=</span> <span class="va">call</span><span class="op">)</span>,</span>

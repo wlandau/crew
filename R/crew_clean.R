@@ -1,8 +1,8 @@
-#' @title Terminate dispatchers and/or workers
+#' @title Deprecated: terminate dispatchers and/or workers
 #' @export
 #' @family utility
-#' @description Terminate `mirai` dispatchers and/or `crew` workers
-#'   which may be lingering from previous workloads.
+#' @description Deprecated on 2025-08-26 in `crew` version 1.2.1.9006.
+#'   Please use [crew_monitor_local()] instead.
 #' @details Behind the scenes, `mirai` uses an external R process
 #'   called a "dispatcher" to send tasks to `crew` workers.
 #'   This dispatcher usually shuts down when you terminate the controller
@@ -42,6 +42,13 @@ crew_clean <- function(
   # Tests interfere with other processes.
   # Tested in tests/local/test-crew_clean.R.
   # nocov start
+  crew_deprecate(
+    name = "crew_clean()",
+    date = "2025-08-26",
+    version = "1.2.1.9006",
+    alternative = "crew_monitor_local()",
+    condition = "warning"
+  )
   crew_assert(dispatchers, isTRUE(.) || isFALSE(.))
   crew_assert(workers, isTRUE(.) || isFALSE(.))
   crew_assert(user, is.character(.), length(.) == 1L, nzchar(.), !anyNA(.))

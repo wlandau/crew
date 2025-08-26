@@ -1,19 +1,24 @@
 crew_test("workers signal themselves to exit when connection breaks", {
   x <- crew_controller_local(workers = 1L)
   x$start()
-  x$push(nanonext::until(nanonext::cv(), 600 * 1e3))
-  Sys.sleep(2)
-  x$scale()
-  Sys.sleep(2)
-  dispatcher <- x$client$dispatcher
-  crew_terminate_process(ps::ps_pid(dispatcher))
+  x$push(nanonext::until(nanonext::cv(), 600 * 1e3), scale = TRUE)
+  worker <- x$launcher$instances$handle[[1L]]
   crew_retry(
-    ~ !ps::ps_is_running(dispatcher),
+    ~ worker$is_alive(),
     seconds_interval = 0.5,
     seconds_timeout = 60
   )
-  Sys.sleep(5)
-  worker <- x$launcher$instances$handle[[1L]]
-  on.exit(worker$signal(signal = crew_terminate_signal()))
+  crew_retry(
+    ~ x$client$status()$connections > 0L,
+    seconds_interval = 0.5,
+    seconds_timeout = 60
+  )
+  expect_true(worker$is_alive())
+  mirai::daemons(n = 0L, .compute = x$client$profile)
+  crew_retry(
+    ~ !worker$is_alive(),
+    seconds_interval = 0.5,
+    seconds_timeout = 60
+  )
   expect_false(worker$is_alive())
 })

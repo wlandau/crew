@@ -2,7 +2,7 @@
 % Please edit documentation in R/crew_clean.R
 \name{crew_clean}
 \alias{crew_clean}
-\title{Terminate dispatchers and/or workers}
+\title{Deprecated: terminate dispatchers and/or workers}
 \usage{
 crew_clean(
   dispatchers = TRUE,
@@ -36,8 +36,8 @@ message every time a process is terminated.}
 print out a message for every terminated process.
 }
 \description{
-Terminate \code{mirai} dispatchers and/or \code{crew} workers
-which may be lingering from previous workloads.
+Deprecated on 2025-08-26 in \code{crew} version 1.2.1.9006.
+Please use \code{\link[=crew_monitor_local]{crew_monitor_local()}} instead.
 }
 \details{
 Behind the scenes, \code{mirai} uses an external R process

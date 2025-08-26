@@ -1,29 +1,21 @@
-crew_test("monitor dispatchers", {
+crew_test("detect dispatchers", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_monitor_local()
-  expect_true(is.integer(x$dispatchers()))
+  pids <- x$dispatchers()
+  expect_true(is.integer(pids))
   mirai::daemons(n = 1L, dispatcher = TRUE)
+  pids <- x$dispatchers()
+  expect_true(is.integer(pids))
+  expect_gt(length(pids), 0L)
   on.exit({
     mirai::daemons(n = 0L)
     gc()
     crew_test_sleep()
   })
-  pid <- as.integer(nextget("pid"))
-  crew_retry(
-    ~ inherits(ps::ps_handle(pid = pid), "ps_handle"),
-    seconds_interval = 0.01
-  )
-  handle <- ps::ps_handle(pid = pid)
-  expect_true(ps::ps_is_running(handle))
-  expect_true(pid %in% x$dispatchers())
-  expect_silent(x$terminate(pid))
-  crew::crew_retry(~ !ps::ps_is_running(handle), seconds_interval = 0.01)
-  expect_true(is.integer(x$dispatchers()))
-  expect_false(ps::ps_is_running(handle))
 })
 
-crew_test("monitor daemons", {
+crew_test("detect daemons", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_monitor_local()
@@ -40,7 +32,7 @@ crew_test("monitor daemons", {
   expect_true(length(x$daemons()) > first)
 })
 
-crew_test("monitor workers", {
+crew_test("detect workers", {
   skip_on_cran()
   skip_on_covr() # corrupt RDS files on covr
   skip_on_os("windows")
@@ -59,4 +51,34 @@ crew_test("monitor workers", {
   crew::crew_retry(~ length(x$workers()) > first, seconds_interval = 0.01)
   expect_true(is.integer(x$workers()))
   expect_true(length(x$workers()) > first)
+})
+
+crew_test("terminate a process", {
+  skip_on_cran()
+  skip_on_covr() # corrupt RDS files on covr
+  skip_on_os("windows")
+  monitor <- crew_monitor_local()
+  controller <- crew_controller_local()
+  on.exit({
+    controller$terminate()
+    rm(controller)
+    gc()
+    crew_test_sleep()
+  })
+  controller$start()
+  controller$launch()
+  handle <- controller$launcher$instances$handle[[1L]]
+  crew_retry(
+    ~ handle$is_alive(),
+    seconds_interval = 0.1,
+    seconds_timeout = 30
+  )
+  expect_true(handle$is_alive())
+  monitor$terminate(handle$get_pid())
+  crew_retry(
+    ~ !handle$is_alive(),
+    seconds_interval = 0.1,
+    seconds_timeout = 30
+  )
+  expect_false(handle$is_alive())
 })

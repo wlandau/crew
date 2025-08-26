@@ -436,8 +436,9 @@ crew_class_launcher <- R6::R6Class(
           "(for example, crew_monitor_local() for workers",
           "created from crew_controller_local())."
         ),
+        condition = "message",
         value = self$terminate_worker,
-        skip_cran = TRUE,
+        skip_cran = FALSE,
         frequency = "once"
       )
       fields <- c(
@@ -655,7 +656,6 @@ crew_class_launcher <- R6::R6Class(
       lost <- !active & !discovered
       handles <- instances$handle[lost]
       handles <- lapply(handles, mirai_resolve, launching = TRUE)
-      mirai_wait(lapply(handles, self$terminate_worker), launching = FALSE)
       private$.instances <- instances[active, ]
       invisible()
     },

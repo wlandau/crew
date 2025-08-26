@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,12 +46,22 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.2.1.9002" id="crew-1219002-development">crew 1.2.1.9002 (development)<a class="anchor" aria-label="anchor" href="#crew-1219002-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.2.1.9003" id="crew-1219003-development">crew 1.2.1.9003 (development)<a class="anchor" aria-label="anchor" href="#crew-1219003-development"></a></h2>
 <ul><li>Reinstate checks that were temporarily suppressed to help plugins transition to <a href="https://github.com/wlandau/crew/issues/217" class="external-link">#217</a>.</li>
 <li>Support <code>reset_globals</code>, <code>reset_packages</code>, <code>reset_options</code>, and <code>garbage_collection</code> in <code><a href="../reference/crew_controller_sequential.html">crew_controller_sequential()</a></code> (<a href="https://github.com/wlandau/crew/issues/217" class="external-link">#217</a>).</li>
 <li>Change argument <code>tls</code> to <code>tlscert</code> in the call to <code><a href="https://mirai.r-lib.org/reference/daemon.html" class="external-link">mirai::daemon()</a></code> (<a href="https://github.com/wlandau/crew/issues/227" class="external-link">#227</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 <li>Use <code>collections</code> queues instead of custom queues (<a href="https://github.com/wlandau/crew/issues/229" class="external-link">#229</a>).</li>
 <li>Use <code>collections</code> dictionaries instead of hash environments to track tasks (<a href="https://github.com/wlandau/crew/issues/229" class="external-link">#229</a>).</li>
+<li>Remove the long-deprecated <code><a href="https://rstudio.github.io/promises/reference/promise.html" class="external-link">promise()</a></code> method of the controller.</li>
+<li>Improve interoperability of <code>crew</code>’s workers by avoiding <code><a href="https://nanonext.r-lib.org/reference/cv.html" class="external-link">nanonext::cv_value()</a></code> for condition variables (<a href="https://github.com/wlandau/crew/issues/225" class="external-link">#225</a>). Consequences:
+<ul><li>
+<code>wait(mode = "all")</code> no longer guarantees that a task is available for <code>pop()</code>. It just consumes a condition variable signal. <code>pop()</code> should always be checked for <code>NULL</code> return values.</li>
+<li>Until <code>mirai</code> gains a threaded dispatcher, <code>saturated()</code> needs to avoid the overhead of calling <code>status()</code> to get task counts. So the definition of “saturated” has changed: a controller is saturated if the number of <em>uncollected</em> tasks is greater than or equal to the maximum number of workers. Previously, it was the number of <em>unresolved</em> tasks.</li>
+<li>Internal counters <code>.pushed</code> and <code>.popped</code> are safely removed.</li>
+<li>Active bindings <code>pushed</code> and <code>popped</code> are removed.</li>
+</ul></li>
+<li>Controllers no longer have a <code>unpopped()</code> method because it is unnecessary to export and it assumes only the controller submits tasks to the compute profile (affecting interoperability).</li>
+<li>Allow a custom <code>later</code> loop in <code>autoscale()</code>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.1" id="crew-121">crew 1.2.1<a class="anchor" aria-label="anchor" href="#crew-121"></a></h2><p class="text-muted">CRAN release: 2025-06-09</p>

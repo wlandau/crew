@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,10 +103,6 @@ condition variable.</p></dd>
 <dd><p>Compute profile of the client.</p></dd>
 
 
-<dt><code>condition</code></dt>
-<dd><p>Condition variable of the client.</p></dd>
-
-
 <dt><code>client</code></dt>
 <dd><p>Process ID of the local process running the client.</p></dd>
 
@@ -128,8 +124,9 @@ condition variable.</p></dd>
 <li><p><a href="#method-crew_class_client-set_started"><code>crew_class_client$set_started()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-start"><code>crew_class_client$start()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-terminate"><code>crew_class_client$terminate()</code></a></p></li>
-<li><p><a href="#method-crew_class_client-resolved"><code>crew_class_client$resolved()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-status"><code>crew_class_client$status()</code></a></p></li>
+<li><p><a href="#method-crew_class_client-push_events"><code>crew_class_client$push_events()</code></a></p></li>
+<li><p><a href="#method-crew_class_client-collect_events"><code>crew_class_client$collect_events()</code></a></p></li>
 <li><p><a href="#method-crew_class_client-pids"><code>crew_class_client$pids()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-crew_class_client-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
@@ -249,48 +246,64 @@ worker websockets.</p><div class="section">
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_client-resolved"></a><div class="section">
-<h3 id="method-resolved-">Method <code>resolved()</code><a class="anchor" aria-label="anchor" href="#method-resolved-"></a></h3>
-<p>Get the true value of the <code>nanonext</code> condition variable.</p><div class="section">
-<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">resolved</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
-<p>The value of the <code>nanonext</code> condition variable.</p>
-</div>
-
 </div><p></p><hr><a id="method-crew_class_client-status"></a><div class="section">
 <h3 id="method-status-">Method <code>status()</code><a class="anchor" aria-label="anchor" href="#method-status-"></a></h3>
-<p>Internal function:
-return the <code>mirai</code> status of the compute profile.</p><div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<p>Get the counters from <code><a href="https://mirai.r-lib.org/reference/status.html" class="external-link">mirai::status()</a></code>.</p><div class="section">
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="details-2">Details<a class="anchor" aria-label="anchor" href="#details-2"></a></h4>
-<p>Should only be called by the launcher, never by the user.
-The returned <code>events</code> field changes on every call and must be
-interpreted by the launcher before it vanishes.</p>
+<h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
+<p>A named integer vector of task counts
+(awaiting, executing, completed) as well as the number of
+worker connections.</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_client-push_events"></a><div class="section">
+<h3 id="method-push-events-">Method <code>push_events()</code><a class="anchor" aria-label="anchor" href="#method-push-events-"></a></h3>
+<p>Collect mirai worker-specific
+connection/disconnection events.</p><div class="section">
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">push_events</span><span class="op">(</span><span class="va">events</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
+<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>events</code></dt>
+<dd><p>Integer vector of connection/disconnection events.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
 <h4 id="returns-6">Returns<a class="anchor" aria-label="anchor" href="#returns-6"></a></h4>
-<p>A list with status information.</p>
+<p><code>NULL</code> (invisibly).</p>
+</div>
+
+</div><p></p><hr><a id="method-crew_class_client-collect_events"></a><div class="section">
+<h3 id="method-collect-events-">Method <code>collect_events()</code><a class="anchor" aria-label="anchor" href="#method-collect-events-"></a></h3>
+<p>Collect mirai worker-specific
+connection/disconnection events.</p><div class="section">
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">collect_events</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="returns-7">Returns<a class="anchor" aria-label="anchor" href="#returns-7"></a></h4>
+<p>Integer vector of connection/disconnection events.</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_client-pids"></a><div class="section">
 <h3 id="method-pids-">Method <code>pids()</code><a class="anchor" aria-label="anchor" href="#method-pids-"></a></h3>
 <p>Get the process IDs of the local process and the
 <code>mirai</code> dispatcher (if started).</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">pids</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="returns-7">Returns<a class="anchor" aria-label="anchor" href="#returns-7"></a></h4>
+<h4 id="returns-8">Returns<a class="anchor" aria-label="anchor" href="#returns-8"></a></h4>
 <p>An integer vector of process IDs of the local process and the
 <code>mirai</code> dispatcher (if started).</p>
 </div>

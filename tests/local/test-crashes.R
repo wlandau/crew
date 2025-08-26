@@ -49,9 +49,13 @@ crew_test("crash detection with backup controllers in a group", {
       seconds_timeout = 60
     )
     Sys.sleep(0.25)
-    a$launcher$terminate_workers()
-    b$launcher$terminate_workers()
-    c$launcher$terminate_workers()
+    processes <- ps::ps(columns = "command")
+
+    browser()
+
+    # a$launcher$terminate_workers()
+    # b$launcher$terminate_workers()
+    # c$launcher$terminate_workers()
     x$wait(seconds_timeout = 30)
     x$pop()
   }

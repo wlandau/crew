@@ -60,7 +60,6 @@ Other plugin_local:
 \item \href{#method-crew_class_launcher_local-new}{\code{crew_class_launcher_local$new()}}
 \item \href{#method-crew_class_launcher_local-validate}{\code{crew_class_launcher_local$validate()}}
 \item \href{#method-crew_class_launcher_local-launch_worker}{\code{crew_class_launcher_local$launch_worker()}}
-\item \href{#method-crew_class_launcher_local-terminate_worker}{\code{crew_class_launcher_local$terminate_worker()}}
 \item \href{#method-crew_class_launcher_local-clone}{\code{crew_class_launcher_local$clone()}}
 }
 }
@@ -224,27 +223,6 @@ constructing informative job names.
 \subsection{Returns}{
 A handle object to allow the termination of the worker
 later on.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher_local-terminate_worker"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher_local-terminate_worker}{}}}
-\subsection{Method \code{terminate_worker()}}{
-Terminate a local process worker.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$terminate_worker(handle)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{handle}}{A process handle object previously
-returned by \code{launch_worker()}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A list with the process ID of the worker.
 }
 }
 \if{html}{\out{<hr>}}

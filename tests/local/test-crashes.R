@@ -48,15 +48,21 @@ crew_test("crash detection with backup controllers in a group", {
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
-    Sys.sleep(0.25)
-    processes <- ps::ps(columns = "command")
-
-    browser()
-
-    # a$launcher$terminate_workers()
-    # b$launcher$terminate_workers()
-    # c$launcher$terminate_workers()
-    x$wait(seconds_timeout = 30)
+    processes <- ps::ps()
+    processes <- processes[processes$name == "R", ]
+    for (pid in processes$pid) {
+      try(
+        {
+          handle <- ps::ps_handle(pid)
+          command <- ps::ps_cmdline(handle)
+          if (any(grepl("crew::crew_worker(", command, fixed = TRUE))) {
+            ps::ps_kill(handle)
+          }
+        },
+        silent = TRUE
+      )
+    }
+    x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
     x$pop()
   }
   out <- crash()

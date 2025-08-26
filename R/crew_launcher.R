@@ -421,16 +421,25 @@ crew_class_launcher <- R6::R6Class(
           paste(sprintf("\"%s\"", fields), collapse = ", ")
         )
       )
-      if (!is.null(self$terminate_worker)) {
-        crew_assert(
-          is.function(self$terminate_worker),
-          message = "terminate_worker() must be a function or NULL."
-        )
-        crew_assert(
-          "handle" %in% names(formals(self$terminate_worker)),
-          message = "terminate_worker() must have a \"handle\" argument."
-        )
-      }
+      crew_deprecate(
+        name = "terminate_worker()",
+        date = "2025-08-26",
+        version = "1.2.1.9004",
+        alternative = paste(
+          "none. crew plugins no longer need (or use) terminate_worker()",
+          "because terminating the underlying network connection",
+          "with controller$teriminate() is enough to shut down the workers.",
+          "For 100% certainty that workers terminate correctly and do not",
+          "keep running indefinitely, please set a finite seconds_idle",
+          "value in the controller, and please watch worker processes",
+          "using the appropriate monitor for your cmoputing platform",
+          "(for example, crew_monitor_local() for workers",
+          "created from crew_controller_local())."
+        ),
+        value = self$terminate_worker,
+        skip_cran = TRUE,
+        frequency = "once"
+      )
       fields <- c(
         "seconds_interval",
         "seconds_timeout",
@@ -717,27 +726,6 @@ crew_class_launcher <- R6::R6Class(
         worker = worker,
         abstract = TRUE
       )
-    },
-    #' @description Deprecated on 2025-08-26
-    #'  (`crew` version 1.2.1.9004).
-    #' @details {crew} launchers no longer need or support
-    #'  a `terminate_worker()` method.
-    #' @return A special `crew_null` object (invisibly).
-    #' @param handle A handle object previously
-    #'   returned by `launch_worker()` which allows the termination
-    #'   of the worker.
-    terminate_worker = function(handle) {
-      crew_deprecate(
-        name = "terminate_worker()",
-        date = "2025-08-26",
-        version = "1.2.1.9004",
-        alternative = "none",
-        condition = "message",
-        value = "x",
-        skip_cran = TRUE,
-        frequency = "once"
-      )
-      invisible(crew_null)
     },
     #' @description Deprecated on 2025-08-26
     #'  (`crew` version 1.2.1.9004).

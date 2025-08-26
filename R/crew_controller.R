@@ -340,6 +340,10 @@ crew_class_controller <- R6::R6Class(
       }
       if (!is.null(.backup)) {
         crew_assert(
+          .crashes_max > 0L,
+          message = "crashes_max must be positive if backup is not NULL."
+        )
+        crew_assert(
           .backup,
           inherits(., "crew_class_controller"),
           !inherits(., "crew_class_controller_group"),
@@ -347,10 +351,6 @@ crew_class_controller <- R6::R6Class(
             "backup must be NULL or a crew controller, and",
             "it must not be a controller group."
           )
-        )
-        crew_assert(
-          .crashes_max > 0L,
-          message = "crashes_max must be positive if backup is not NULL."
         )
       }
       crew_assert(.tasks, is.null(.) || is.environment(.))
@@ -653,6 +653,8 @@ crew_class_controller <- R6::R6Class(
         .timeout <- seconds_timeout * 1000
       }
       if (!is.null(.backup)) {
+        # Tested in tests/local/test-crashes.R.
+        # nocov start
         if ((.crashes_max > 0L) && (crashes(name = name) == .crashes_max)) {
           return(
             .subset2(.backup, "push")(
@@ -672,6 +674,7 @@ crew_class_controller <- R6::R6Class(
             )
           )
         }
+        # nocov end
       }
       task <- mirai::mirai(
         .expr = expr_crew_eval,

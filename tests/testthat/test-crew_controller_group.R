@@ -126,6 +126,7 @@ crew_test("crew_controller_group()", {
     controller = "a"
   )
   x$wait(seconds_timeout = 30)
+  expect_equal(x$crashes(name = "task_pid2"), 0L)
   envir <- new.env(parent = emptyenv())
   crew_retry(
     ~ {

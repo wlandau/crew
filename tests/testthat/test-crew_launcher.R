@@ -262,3 +262,8 @@ crew_test("deprecated set_name() method", {
   x$set_name(name = "y")
   expect_equal(x$name, "y")
 })
+
+crew_test("deprecated terminate_workers()", {
+  x <- crew_launcher(name = "x")
+  expect_message(x$terminate_workers(), class = "crew_deprecate")
+})

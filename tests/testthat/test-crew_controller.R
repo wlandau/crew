@@ -20,6 +20,8 @@ crew_test("warnings and errors", {
   expect_null(x$cancel())
   expect_false(x$client$started)
   expect_null(x$pop())
+  expect_equal(x$resolved(), 0L)
+  expect_equal(x$unresolved(), 0L)
   x$start()
   expect_silent(x$validate())
   expect_equal(x$summary()$error, 0L)

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -101,14 +101,6 @@ condition variable.</p></dd>
 
 <dt><code>profile</code></dt>
 <dd><p>Compute profile of the client.</p></dd>
-
-
-<dt><code>client</code></dt>
-<dd><p>Process ID of the local process running the client.</p></dd>
-
-
-<dt><code>dispatcher</code></dt>
-<dd><p>Process ID of the <code>mirai</code> dispatcher</p></dd>
 
 
 </dl><p></p></div>
@@ -296,16 +288,14 @@ connection/disconnection events.</p><div class="section">
 
 </div><p></p><hr><a id="method-crew_class_client-pids"></a><div class="section">
 <h3 id="method-pids-">Method <code>pids()</code><a class="anchor" aria-label="anchor" href="#method-pids-"></a></h3>
-<p>Get the process IDs of the local process and the
-<code>mirai</code> dispatcher (if started).</p><div class="section">
+<p>Deprecated on 2025-08-26 in <code>crew</code> version 1.2.1.9005.</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_client</span><span class="op">$</span><span class="fu">pids</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="returns-8">Returns<a class="anchor" aria-label="anchor" href="#returns-8"></a></h4>
-<p>An integer vector of process IDs of the local process and the
-<code>mirai</code> dispatcher (if started).</p>
+<p>The integer process ID of the current process.</p>
 </div>
 
 </div>

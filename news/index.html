@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.2.1.9004" id="crew-1219004-development">crew 1.2.1.9004 (development)<a class="anchor" aria-label="anchor" href="#crew-1219004-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.2.1.9005" id="crew-1219005-development">crew 1.2.1.9005 (development)<a class="anchor" aria-label="anchor" href="#crew-1219005-development"></a></h2>
 <ul><li>Reinstate checks that were temporarily suppressed to help plugins transition to <a href="https://github.com/wlandau/crew/issues/217" class="external-link">#217</a>.</li>
 <li>Support <code>reset_globals</code>, <code>reset_packages</code>, <code>reset_options</code>, and <code>garbage_collection</code> in <code><a href="../reference/crew_controller_sequential.html">crew_controller_sequential()</a></code> (<a href="https://github.com/wlandau/crew/issues/217" class="external-link">#217</a>).</li>
 <li>Change argument <code>tls</code> to <code>tlscert</code> in the call to <code><a href="https://mirai.r-lib.org/reference/daemon.html" class="external-link">mirai::daemon()</a></code> (<a href="https://github.com/wlandau/crew/issues/227" class="external-link">#227</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
@@ -62,6 +62,7 @@
 </ul></li>
 <li>Controllers no longer have a <code>unpopped()</code> method because it is unnecessary to export and it assumes only the controller submits tasks to the compute profile (affecting interoperability).</li>
 <li>Allow a custom <code>later</code> loop in <code>autoscale()</code>.</li>
+<li>Deprecate the <code>pids()</code> methods in controllers and clients and stop babysitting the dispatcher process (<a href="https://github.com/wlandau/crew/issues/236" class="external-link">#236</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.1" id="crew-121">crew 1.2.1<a class="anchor" aria-label="anchor" href="#crew-121"></a></h2><p class="text-muted">CRAN release: 2025-06-09</p>

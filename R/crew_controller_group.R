@@ -121,71 +121,6 @@ crew_class_controller_group <- R6::R6Class(
         message = sprintf("controller not found: %s", name)
       )
       .controllers[[name]]
-    },
-    .wait_one = function(
-      controllers,
-      control,
-      seconds_timeout,
-      scale,
-      throttle
-    ) {
-      if (sum(map_int(control, ~ length(.x$tasks))) < 1L) {
-        return(FALSE)
-      }
-      envir <- new.env(parent = emptyenv())
-      envir$result <- FALSE
-      iterate <- function() {
-        if (scale) {
-          scale(throttle = throttle, controllers = controllers)
-        }
-        for (controller in control) {
-          if (controller$unpopped() > 0L) {
-            envir$result <- TRUE
-            return(TRUE)
-          }
-        }
-        .relay$wait()
-        FALSE
-      }
-      crew_retry(
-        fun = iterate,
-        seconds_interval = 0,
-        seconds_timeout = seconds_timeout,
-        error = FALSE,
-        assertions = FALSE
-      )
-      envir$result
-    },
-    .wait_all = function(
-      controllers,
-      control,
-      seconds_timeout,
-      scale,
-      throttle
-    ) {
-      if (sum(map_int(control, ~ length(.x$tasks))) < 1L) {
-        return(TRUE)
-      }
-      envir <- new.env(parent = emptyenv())
-      envir$result <- FALSE
-      iterate <- function() {
-        if (scale) {
-          scale(throttle = throttle, controllers = controllers)
-        }
-        envir$result <- sum(map_int(control, ~ .x$unresolved())) < 1L
-        if (!envir$result) {
-          .relay$wait()
-        }
-        envir$result
-      }
-      crew_retry(
-        fun = iterate,
-        seconds_interval = 0,
-        seconds_timeout = seconds_timeout,
-        error = FALSE,
-        assertions = FALSE
-      )
-      envir$result
     }
   ),
   active = list(
@@ -251,6 +186,14 @@ crew_class_controller_group <- R6::R6Class(
       .throttle$validate()
       invisible()
     },
+    #' @description Number of tasks in the selected controllers.
+    #' @return Non-negative integer, number of tasks in the controller.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    size = function(controllers = NULL) {
+      control <- .select_controllers(controllers)
+      sum(map_int(control, ~ .x$size()))
+    },
     #' @description See if the controllers are empty.
     #' @details A controller is empty if it has no running tasks
     #'   or completed tasks waiting to be retrieved with `push()`.
@@ -294,22 +237,12 @@ crew_class_controller_group <- R6::R6Class(
       control <- .select_controllers(controllers)
       sum(map_int(control, ~ .x$unresolved()))
     },
-    #' @description Number of resolved `mirai()` tasks available via `pop()`.
-    #' @return Non-negative integer of length 1,
-    #'   number of resolved `mirai()` tasks available via `pop()`.
-    #' @param controllers Character vector of controller names.
-    #'   Set to `NULL` to select all controllers.
-    unpopped = function(controllers = NULL) {
-      control <- .select_controllers(controllers)
-      sum(map_int(control, ~ .x$unpopped()))
-    },
     #' @description Check if a controller is saturated.
-    #' @details A controller is saturated if the number of unresolved tasks
+    #' @details A controller is saturated if the number of uncollected tasks
     #'   is greater than or equal to the maximum number of workers.
-    #'   In other words, in a saturated controller, every available worker
-    #'   has a task.
     #'   You can still push tasks to a saturated controller, but
-    #'   tools that use `crew` such as `targets` may choose not to.
+    #'   tools that use `crew` such as `targets` may choose not to
+    #'   (for performance and user-friendliness).
     #' @return `TRUE` if all the selected controllers are saturated,
     #'   `FALSE` otherwise.
     #' @param collect Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
@@ -328,6 +261,7 @@ crew_class_controller_group <- R6::R6Class(
     start = function(controllers = NULL) {
       control <- .select_controllers(controllers)
       lapply(control, function(controller) controller$start())
+      invisible()
     },
     #' @description Check whether all the given controllers are started.
     #' @details Actually checks whether all the given clients are started.
@@ -346,6 +280,7 @@ crew_class_controller_group <- R6::R6Class(
     launch = function(n = 1L, controllers = NULL) {
       control <- .select_controllers(controllers)
       lapply(control, function(controller) controller$launch(n = n))
+      invisible()
     },
     #' @description Automatically scale up the number of workers if needed
     #'   in one or more controller objects.
@@ -368,16 +303,18 @@ crew_class_controller_group <- R6::R6Class(
       .throttle$update(activity = activity)
       invisible(activity)
     },
-    #' @description Run worker auto-scaling in a private `later` loop
+    #' @description Run worker auto-scaling in a `later` loop
     #'   every `controller$client$seconds_interval` seconds.
+    #' @param loop A `later` loop to run auto-scaling.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     #' @return `NULL` (invisibly).
-    autoscale = function(controllers = NULL) {
-      # Tested in tests/interactive/test-promises.R
+    autoscale = function(loop = later::current_loop(), controllers = NULL) {
+      # Tested in tests/interactive/test-autoscale.R
       # nocov start
       control <- .select_controllers(controllers)
-      lapply(control, function(controller) controller$autoscale())
+      lapply(control, function(controller) controller$autoscale(loop = loop))
+      invisible()
       # nocov end
     },
     #' @description Terminate the auto-scaling loop started by
@@ -388,6 +325,7 @@ crew_class_controller_group <- R6::R6Class(
     descale = function(controllers = NULL) {
       control <- .select_controllers(controllers)
       lapply(control, function(controller) controller$descale())
+      invisible()
     },
     #' @description Report the number of consecutive crashes of a task,
     #'   summed over all selected controllers in the group.
@@ -840,97 +778,25 @@ crew_class_controller_group <- R6::R6Class(
       out <- tibble::new_tibble(data.table::rbindlist(out, use.names = FALSE))
       if_any(nrow(out), out, NULL)
     },
-    #' @description Create a `promises::promise()` object to asynchronously
-    #'   pop or collect one or more tasks.
-    #' @details Please be aware that `pop()` or `collect()` will happen
-    #'   asynchronously at a some unpredictable time after the promise object
-    #'   is created, even if your local R process appears to be doing
-    #'   something completely different. This behavior is highly desirable
-    #'   in a Shiny reactive context, but please be careful as it may be
-    #'   surprising in other situations.
-    #' @return A `promises::promise()` object whose eventual value will
-    #'   be a `tibble` with results from one or more popped tasks.
-    #'   If `mode = "one"`, only one task is popped and returned (one row).
-    #'   If `mode = "all"`, then all the tasks are returned in a `tibble`
-    #'   with one row per task (or `NULL` is returned if there are no
-    #'   tasks to pop).
-    #' @param mode Character of length 1, what kind of promise to create.
-    #'   `mode` must be `"one"` or `"all"`. Details:
-    #'   * If `mode` is `"one"`, then the promise is fulfilled (or rejected)
-    #'     when at least one task is resolved and available to `pop()`.
-    #'     When that happens, `pop()` runs asynchronously, pops a result off
-    #'     the task list, and returns a value.
-    #'     If the task succeeded, then the promise
-    #'     is fulfilled and its value is the result of `pop()` (a one-row
-    #'     `tibble` with the result and metadata). If the task threw an error,
-    #'     the error message of the task is forwarded to any error callbacks
-    #'     registered with the promise.
-    #'   * If `mode` is `"all"`, then the promise is fulfilled (or rejected)
-    #'     when there are no unresolved tasks left in the controller.
-    #'     (Be careful: this condition is trivially met in the moment
-    #'     if the controller is empty and you have not submitted any tasks,
-    #'     so it is best to create this kind of promise only after you
-    #'     submit tasks.)
-    #'     When there are no unresolved tasks left,
-    #'     `collect()` runs asynchronously, pops all available results
-    #'     off the task list, and returns a value.
-    #'     If the task succeeded, then the promise
-    #'     is fulfilled and its value is the result of `collect()`
-    #'     (a `tibble` with one row per task result). If any of the tasks
-    #'     threw an error, then the first error message detected is forwarded
-    #'     to any error callbacks registered with the promise.
-    #' @param seconds_interval Positive numeric of length 1, delay in the
-    #'   `later::later()` polling interval to asynchronously check if
-    #'   the promise can be resolved.
-    #' @param scale Deprecated on 2024-04-10 (version 0.9.1.9003)
-    #'   and no longer used. Now, `promise()` always turns on auto-scaling
-    #'   in a private `later` loop (if not already activated).
-    #' @param throttle Deprecated on 2024-04-10 (version 0.9.1.9003)
-    #'   and no longer used. Now, `promise()` always turns on auto-scaling
-    #'   in a private `later` loop (if not already activated).
-    #' @param controllers Not used. Included to ensure the signature is
-    #'   compatible with the analogous method of controller groups.
-    promise = function(
-      mode = "one",
-      seconds_interval = 0.1,
-      scale = NULL,
-      throttle = NULL,
-      controllers = NULL
-    ) {
-      # Tested in tests/interactive/test-promises.R.
-      # nocov start
-      crew_deprecate(
-        name = "controller$promise()",
-        date = "2024-04-19",
-        version = "> 0.9.2",
-        alternative = paste(
-          "see https://wlandau.github.io/crew/articles/shiny.html for the",
-          "latest on using {crew} in promise-driven Shiny apps"
-        ),
-        value = TRUE,
-        frequency = "once"
-      )
-      autoscale(controllers = controllers)
-      controller_promise(
-        controller = self,
-        mode = mode,
-        seconds_interval = seconds_interval,
-        controllers = controllers
-      )
-      # nocov end
-    },
     #' @description Wait for tasks.
-    #' @details The `wait()` method blocks the calling R session and
-    #'   repeatedly auto-scales workers for tasks that need them.
-    #'   The function runs until it either times out or the condition
-    #'   in `mode` is met.
-    #' @return A logical of length 1, invisibly. `TRUE` if the condition
-    #'   in `mode` was met, `FALSE` otherwise.
-    #' @param mode Character of length 1: `"all"` to wait for
-    #'   all tasks in all controllers to complete, `"one"` to wait for
-    #'   a single task in a single controller to complete. In this scheme,
-    #'   the timeout limit is applied to each controller sequentially,
-    #'   and a timeout is treated the same as a completed controller.
+    #' @details The `wait()` method blocks the calling R session
+    #'   until the condition in the `mode` argument is met.
+    #'   During the wait, `wait()` iteratively auto-scales the workers.
+    #' @return A logical of length 1, invisibly.
+    #'   `wait(mode = "all")` returns `TRUE` if all tasks in the `mirai`
+    #'   compute profile have resolved (`FALSE` otherwise).
+    #'   `wait(mode = "one")` returns `TRUE` if the controller is ready
+    #'   to pop or collect at least one resolved task (`FALSE` otherwise).
+    #'   `wait(mode = "one")` assumes all
+    #'   tasks were submitted through the controller and not by other means.
+    #' @param mode Character string, name of the waiting condition.
+    #'   `wait(mode = "all")` waits until all tasks in the `mirai`
+    #'   compute profile resolve, and
+    #'   `wait(mode = "one")` waits until at least one task is available
+    #'   to `push()` or `collect()` from the controller.
+    #'   The former still works if the controller is not the only
+    #'   means of submitting tasks to the compute profile,
+    #'   whereas the latter assumes only the controller submits tasks.
     #' @param seconds_interval Deprecated on 2025-01-17 (`crew` version
     #'   0.10.2.9003). Instead, the `seconds_interval` argument passed
     #'   to [crew_controller_group()] is used as `seconds_max`
@@ -966,25 +832,41 @@ crew_class_controller_group <- R6::R6Class(
       )
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
-      control <- .select_controllers(controllers)
-      out <- if_any(
-        identical(mode, "one"),
-        .wait_one(
-          controllers = controllers,
-          control = control,
-          seconds_timeout = seconds_timeout,
-          scale = scale,
-          throttle = throttle
-        ),
-        .wait_all(
-          controllers = controllers,
-          control = control,
-          seconds_timeout = seconds_timeout,
-          scale = scale,
-          throttle = throttle
-        )
+      if (size() < 1L) {
+        return(identical(mode, "all"))
+      }
+      if (identical(mode, "all")) {
+        wait_event <- function() {
+          if (unresolved(controllers) > 0L) {
+            .relay$wait()
+          }
+          unresolved(controllers) < 1L
+        }
+      } else {
+        wait_event <- function() {
+          if (size(controllers) - unresolved(controllers) < 1L) {
+            .relay$wait()
+          }
+          size(controllers) - unresolved(controllers) > 0L
+        }
+      }
+      envir <- new.env(parent = emptyenv())
+      envir$result <- FALSE
+      iterate <- function() {
+        if (!envir$result && scale) {
+          scale(throttle = throttle)
+        }
+        envir$result <- wait_event()
+        envir$result
+      }
+      crew_retry(
+        fun = iterate,
+        seconds_interval = 0,
+        seconds_timeout = seconds_timeout,
+        error = FALSE,
+        assertions = FALSE
       )
-      invisible(out)
+      invisible(envir$result)
     },
     #' @description Push the name of a task to the backlog.
     #' @details `pop_backlog()` pops the tasks that can be pushed
@@ -1052,6 +934,7 @@ crew_class_controller_group <- R6::R6Class(
         .select_controllers(controllers),
         function(controller) controller$terminate()
       )
+      invisible()
     }
   )
 )

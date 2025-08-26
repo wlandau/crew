@@ -1,0 +1,40 @@
+crew_test("autoscale() and descale() for single controllers", {
+  x <- crew_controller_local(seconds_interval = 0.5, tasks_max = 1L)
+  x$push(Sys.sleep(2L), scale = FALSE)
+  x$push(Sys.sleep(2L), scale = FALSE)
+  x$push(Sys.sleep(2L), scale = FALSE)
+  expect_null(x$loop)
+  x$autoscale()
+  expect_true(inherits(x$loop, "event_loop"))
+  # Manually wait in the global event loop at least 10 seconds.
+  expect_equal(x$resolved(), 3L)
+  x$descale()
+  expect_null(x$loop)
+  x$push(4L, scale = FALSE)
+  x$push(5L, scale = FALSE)
+  # Manually wait to verify no new workers or tasks are running.
+  expect_equal(as.integer(x$client$status()$mirai["awaiting"]), 2L)
+  expect_equal(x$resolved(), 3L)
+  x$terminate()
+})
+
+crew_test("autoscale() and descale() for controller groups", {
+  y <- crew_controller_local(seconds_interval = 0.5, tasks_max = 1L)
+  x <- crew::crew_controller_group(y, seconds_interval = 0.5)
+  x$push(Sys.sleep(2L), scale = FALSE)
+  x$push(Sys.sleep(2L), scale = FALSE)
+  x$push(Sys.sleep(2L), scale = FALSE)
+  expect_null(y$loop)
+  x$autoscale()
+  expect_true(inherits(y$loop, "event_loop"))
+  # Manually wait in the global event loop at least 10 seconds.
+  expect_equal(x$resolved(), 3L)
+  x$descale()
+  expect_null(y$loop)
+  x$push(4L, scale = FALSE)
+  x$push(5L, scale = FALSE)
+  # Manually wait to verify no new workers or tasks are running.
+  expect_equal(as.integer(y$client$status()$mirai["awaiting"]), 2L)
+  expect_equal(x$resolved(), 3L)
+  x$terminate()
+})

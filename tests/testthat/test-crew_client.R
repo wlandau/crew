@@ -38,7 +38,6 @@ crew_test("crew_client() works", {
   expect_false(client$started)
   expect_null(client$dispatcher)
   expect_null(client$url)
-  expect_equal(client$resolved(), 0L)
   expect_silent(client$start())
   expect_silent(client$validate())
   expect_true(client$started)
@@ -89,6 +88,19 @@ crew_test("crew_client() works", {
     )
   }
   px$signal(signal = crew_terminate_signal())
+})
+
+crew_test("crew_client() push_events() and collect_events()", {
+  x <- crew_client()
+  x$start()
+  on.exit(x$terminate())
+  for (index in seq_len(3L)) {
+    expect_equal(x$collect_events(), integer(0L))
+    x$push_events(1L)
+    x$push_events(c(4L, 3L))
+    x$push_events(0L)
+    expect_equal(x$collect_events(), c(1L, 4L, 3L, 0L))
+  }
 })
 
 crew_test("crew_client() cover a line", {

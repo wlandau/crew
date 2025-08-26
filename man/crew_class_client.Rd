@@ -57,8 +57,6 @@ condition variable.}
 
 \item{\code{profile}}{Compute profile of the client.}
 
-\item{\code{condition}}{Condition variable of the client.}
-
 \item{\code{client}}{Process ID of the local process running the client.}
 
 \item{\code{dispatcher}}{Process ID of the \code{mirai} dispatcher}
@@ -73,8 +71,9 @@ condition variable.}
 \item \href{#method-crew_class_client-set_started}{\code{crew_class_client$set_started()}}
 \item \href{#method-crew_class_client-start}{\code{crew_class_client$start()}}
 \item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
-\item \href{#method-crew_class_client-resolved}{\code{crew_class_client$resolved()}}
 \item \href{#method-crew_class_client-status}{\code{crew_class_client$status()}}
+\item \href{#method-crew_class_client-push_events}{\code{crew_class_client$push_events()}}
+\item \href{#method-crew_class_client-collect_events}{\code{crew_class_client$collect_events()}}
 \item \href{#method-crew_class_client-pids}{\code{crew_class_client$pids()}}
 }
 }
@@ -191,36 +190,53 @@ worker websockets.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-resolved"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-resolved}{}}}
-\subsection{Method \code{resolved()}}{
-Get the true value of the \code{nanonext} condition variable.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$resolved()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-The value of the \code{nanonext} condition variable.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_client-status"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-status}{}}}
 \subsection{Method \code{status()}}{
-Internal function:
-return the \code{mirai} status of the compute profile.
+Get the counters from \code{mirai::status()}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_client$status()}\if{html}{\out{</div>}}
 }
 
-\subsection{Details}{
-Should only be called by the launcher, never by the user.
-The returned \code{events} field changes on every call and must be
-interpreted by the launcher before it vanishes.
+\subsection{Returns}{
+A named integer vector of task counts
+(awaiting, executing, completed) as well as the number of
+worker connections.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_client-push_events"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-push_events}{}}}
+\subsection{Method \code{push_events()}}{
+Collect mirai worker-specific
+connection/disconnection events.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$push_events(events)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{events}}{Integer vector of connection/disconnection events.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{NULL} (invisibly).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_client-collect_events"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-collect_events}{}}}
+\subsection{Method \code{collect_events()}}{
+Collect mirai worker-specific
+connection/disconnection events.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$collect_events()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-A list with status information.
+Integer vector of connection/disconnection events.
 }
 }
 \if{html}{\out{<hr>}}

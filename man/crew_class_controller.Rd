@@ -52,11 +52,6 @@ Other controller:
 The list of tasks is dynamically generated from an internal,
 dictionary, so it is not as fast as a simple lookup.}
 
-\item{\code{pushed}}{Number of tasks pushed since the controller was started.}
-
-\item{\code{popped}}{Number of tasks popped
-since the controller was started.}
-
 \item{\code{reset_globals}}{See \code{\link[=crew_controller]{crew_controller()}}.
 since the controller was started.}
 
@@ -76,12 +71,12 @@ since the controller was started.}
 \item{\code{error}}{Tibble of task results (with one result per row)
 from the last call to \verb{map(error = "stop)}.}
 
-\item{\code{autoscaling}}{\code{TRUE} or \code{FALSE}, whether async \code{later}-based
-auto-scaling is currently running}
+\item{\code{loop}}{\code{later} loop if asynchronous auto-scaling is running,
+\code{NULL} otherwise.}
 
-\item{\code{queue_resolved}}{Queue of resolved unpopped/uncollected tasks.}
+\item{\code{queue_resolved}}{Queue of resolved tasks.}
 
-\item{\code{queue_backlog}}{Queue tracking explicitly backlogged tasks.}
+\item{\code{queue_backlog}}{Queue of explicitly backlogged tasks.}
 }
 \if{html}{\out{</div>}}
 }
@@ -90,11 +85,11 @@ auto-scaling is currently running}
 \itemize{
 \item \href{#method-crew_class_controller-new}{\code{crew_class_controller$new()}}
 \item \href{#method-crew_class_controller-validate}{\code{crew_class_controller$validate()}}
+\item \href{#method-crew_class_controller-size}{\code{crew_class_controller$size()}}
 \item \href{#method-crew_class_controller-empty}{\code{crew_class_controller$empty()}}
 \item \href{#method-crew_class_controller-nonempty}{\code{crew_class_controller$nonempty()}}
 \item \href{#method-crew_class_controller-resolved}{\code{crew_class_controller$resolved()}}
 \item \href{#method-crew_class_controller-unresolved}{\code{crew_class_controller$unresolved()}}
-\item \href{#method-crew_class_controller-unpopped}{\code{crew_class_controller$unpopped()}}
 \item \href{#method-crew_class_controller-saturated}{\code{crew_class_controller$saturated()}}
 \item \href{#method-crew_class_controller-start}{\code{crew_class_controller$start()}}
 \item \href{#method-crew_class_controller-started}{\code{crew_class_controller$started()}}
@@ -108,7 +103,6 @@ auto-scaling is currently running}
 \item \href{#method-crew_class_controller-map}{\code{crew_class_controller$map()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
 \item \href{#method-crew_class_controller-collect}{\code{crew_class_controller$collect()}}
-\item \href{#method-crew_class_controller-promise}{\code{crew_class_controller$promise()}}
 \item \href{#method-crew_class_controller-wait}{\code{crew_class_controller$wait()}}
 \item \href{#method-crew_class_controller-push_backlog}{\code{crew_class_controller$push_backlog()}}
 \item \href{#method-crew_class_controller-pop_backlog}{\code{crew_class_controller$pop_backlog()}}
@@ -192,6 +186,27 @@ Validate the controller.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-size"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-size}{}}}
+\subsection{Method \code{size()}}{
+Number of tasks in the controller.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$size(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Non-negative integer, number of tasks in the controller.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-empty"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-empty}{}}}
 \subsection{Method \code{empty()}}{
@@ -209,8 +224,12 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-A controller is empty if it has no running tasks
-or completed tasks waiting to be retrieved with \code{push()}.
+A controller is empty if it has no \code{\link[mirai:mirai]{mirai::mirai()}}
+task objects in the controller.
+There may still be other tasks running on the workers
+of an empty controller, but those tasks were not submitted with
+\code{push()} or \code{collect()},
+and they are not part of the controller task queue.
 }
 
 \subsection{Returns}{
@@ -235,8 +254,12 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-A controller is empty if it has no running tasks
-or completed tasks waiting to be retrieved with \code{push()}.
+A controller is empty if it has no \code{\link[mirai:mirai]{mirai::mirai()}}
+task objects in the controller.
+There may still be other tasks running on the workers
+of an empty controller, but those tasks were not submitted with
+\code{push()} or \code{collect()},
+and they are not part of the controller task queue.
 }
 
 \subsection{Returns}{
@@ -247,7 +270,7 @@ or completed tasks waiting to be retrieved with \code{push()}.
 \if{html}{\out{<a id="method-crew_class_controller-resolved"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-resolved}{}}}
 \subsection{Method \code{resolved()}}{
-Number of resolved \code{mirai()} tasks.
+Cumulative number of resolved tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$resolved(controllers = NULL)}\if{html}{\out{</div>}}
 }
@@ -267,7 +290,7 @@ tasks over the entire lifetime of the controller session.
 
 \subsection{Returns}{
 Non-negative integer of length 1,
-number of resolved \code{mirai()} tasks.
+number of resolved tasks.
 The return value is 0 if the condition variable does not exist
 (i.e. if the client is not running).
 }
@@ -276,7 +299,7 @@ The return value is 0 if the condition variable does not exist
 \if{html}{\out{<a id="method-crew_class_controller-unresolved"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-unresolved}{}}}
 \subsection{Method \code{unresolved()}}{
-Number of unresolved \code{mirai()} tasks.
+Number of unresolved tasks.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unresolved(controllers = NULL)}\if{html}{\out{</div>}}
 }
@@ -291,29 +314,7 @@ compatible with the analogous method of controller groups.}
 }
 \subsection{Returns}{
 Non-negative integer of length 1,
-number of unresolved \code{mirai()} tasks.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-unpopped"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-unpopped}{}}}
-\subsection{Method \code{unpopped()}}{
-Number of resolved \code{mirai()} tasks available via \code{pop()}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$unpopped(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Non-negative integer of length 1,
-number of resolved \code{mirai()} tasks available via \code{pop()}.
+number of unresolved tasks.
 }
 }
 \if{html}{\out{<hr>}}
@@ -342,12 +343,11 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-A controller is saturated if the number of unresolved tasks
+A controller is saturated if the number of uncollected tasks
 is greater than or equal to the maximum number of workers.
-In other words, in a saturated controller, every available worker
-has a task.
 You can still push tasks to a saturated controller, but
-tools that use \code{crew} such as \code{targets} may choose not to.
+tools that use \code{crew} such as \code{targets} may choose not to
+(for performance and user-friendliness).
 }
 
 \subsection{Returns}{
@@ -465,15 +465,20 @@ connection/disconnection events) (\code{FALSE} otherwise).
 \if{html}{\out{<a id="method-crew_class_controller-autoscale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-autoscale}{}}}
 \subsection{Method \code{autoscale()}}{
-Run worker auto-scaling in a private \code{later} loop
+Run worker auto-scaling in a \code{later} loop
 every \code{controller$client$seconds_interval} seconds.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$autoscale(controllers = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$autoscale(
+  loop = later::current_loop(),
+  controllers = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{loop}}{A \code{later} loop to run auto-scaling.}
+
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
 }
@@ -1081,88 +1086,6 @@ returned \code{tibble}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller-promise"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller-promise}{}}}
-\subsection{Method \code{promise()}}{
-Create a \code{promises::promise()} object to asynchronously
-pop or collect one or more tasks.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$promise(
-  mode = "one",
-  seconds_interval = 1,
-  scale = NULL,
-  throttle = NULL,
-  controllers = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{mode}}{Character of length 1, what kind of promise to create.
-\code{mode} must be \code{"one"} or \code{"all"}. Details:
-\itemize{
-\item If \code{mode} is \code{"one"}, then the promise is fulfilled (or rejected)
-when at least one task is resolved and available to \code{pop()}.
-When that happens, \code{pop()} runs asynchronously, pops a result off
-the task list, and returns a value.
-If the task succeeded, then the promise
-is fulfilled and its value is the result of \code{pop()} (a one-row
-\code{tibble} with the result and metadata). If the task threw an error,
-the error message of the task is forwarded to any error callbacks
-registered with the promise.
-\item If \code{mode} is \code{"all"}, then the promise is fulfilled (or rejected)
-when there are no unresolved tasks left in the controller.
-(Be careful: this condition is trivially met in the moment
-if the controller is empty and you have not submitted any tasks,
-so it is best to create this kind of promise only after you
-submit tasks.)
-When there are no unresolved tasks left,
-\code{collect()} runs asynchronously, pops all available results
-off the task list, and returns a value.
-If the task succeeded, then the promise
-is fulfilled and its value is the result of \code{collect()}
-(a \code{tibble} with one row per task result). If any of the tasks
-threw an error, then the first error message detected is forwarded
-to any error callbacks registered with the promise.
-}}
-
-\item{\code{seconds_interval}}{Positive numeric of length 1, delay in the
-\code{later::later()} polling interval to asynchronously check if
-the promise can be resolved.}
-
-\item{\code{scale}}{Deprecated on 2024-04-10 (version 0.9.1.9003)
-and no longer used. Now, \code{promise()} always turns on auto-scaling
-in a private \code{later} loop (if not already activated).}
-
-\item{\code{throttle}}{Deprecated on 2024-04-10 (version 0.9.1.9003)
-and no longer used. Now, \code{promise()} always turns on auto-scaling
-in a private \code{later} loop (if not already activated).}
-
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Please be aware that \code{pop()} or \code{collect()} will happen
-asynchronously at a some unpredictable time after the promise object
-is created, even if your local R process appears to be doing
-something completely different. This behavior is highly desirable
-in a Shiny reactive context, but please be careful as it may be
-surprising in other situations.
-}
-
-\subsection{Returns}{
-A \code{promises::promise()} object whose eventual value will
-be a \code{tibble} with results from one or more popped tasks.
-If \code{mode = "one"}, only one task is popped and returned (one row).
-If \code{mode = "all"}, then all the tasks are returned in a \code{tibble}
-with one row per task (or \code{NULL} is returned if there are no
-tasks to pop).
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-wait"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-wait}{}}}
 \subsection{Method \code{wait()}}{
@@ -1181,8 +1104,14 @@ Wait for tasks.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mode}}{Character of length 1: \code{"all"} to wait for all tasks to
-complete, \code{"one"} to wait for a single task to complete.}
+\item{\code{mode}}{Character string, name of the waiting condition.
+\code{wait(mode = "all")} waits until all tasks in the \code{mirai}
+compute profile resolve, and
+\code{wait(mode = "one")} waits until at least one task is available
+to \code{push()} or \code{collect()} from the controller.
+The former still works if the controller is not the only
+means of submitting tasks to the compute profile,
+whereas the latter assumes only the controller submits tasks.}
 
 \item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
 0.10.2.9003). Instead, the \code{seconds_interval} argument passed
@@ -1207,15 +1136,19 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-The \code{wait()} method blocks the calling R session and
-repeatedly auto-scales workers for tasks that need them.
-The function runs until it either times out or the condition
-in \code{mode} is met.
+The \code{wait()} method blocks the calling R session
+until the condition in the \code{mode} argument is met.
+During the wait, \code{wait()} iteratively auto-scales the workers.
 }
 
 \subsection{Returns}{
-A logical of length 1, invisibly. \code{TRUE} if the condition
-in \code{mode} was met, \code{FALSE} otherwise.
+A logical of length 1, invisibly.
+\code{wait(mode = "all")} returns \code{TRUE} if all tasks in the \code{mirai}
+compute profile have resolved (\code{FALSE} otherwise).
+\code{wait(mode = "one")} returns \code{TRUE} if the controller is ready
+to pop or collect at least one resolved task (\code{FALSE} otherwise).
+\code{wait(mode = "one")} assumes all
+tasks were submitted through the controller and not by other means.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1275,7 +1208,7 @@ controller without saturating it. If the controller is saturated,
 \if{html}{\out{<a id="method-crew_class_controller-summary"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller-summary}{}}}
 \subsection{Method \code{summary()}}{
-Summarize the workers and tasks of the controller.
+Summarize the collected tasks of the controller.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$summary(controllers = NULL)}\if{html}{\out{</div>}}
 }
@@ -1289,15 +1222,15 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A data frame of summary statistics on the tasks
-that ran on a worker and then were returned by \code{pop()} or
-\code{collect()}.
+A data frame of cumulative summary statistics on the tasks
+collected through \code{pop()} and \code{collect()}.
 It has one row and the following columns:
 \itemize{
 \item \code{controller}: name of the controller.
-\item \code{tasks}: number of tasks.
 \item \code{seconds}: total number of runtime in seconds.
-\item \code{success}: total number of successful tasks.
+\item \code{tasks}: total number of tasks collected.
+\item \code{success}: total number of collected tasks that did not crash
+or error.
 \item \code{error}: total number of tasks with errors, either in the R code
 of the task or an NNG-level error that is not a cancellation
 or crash.
@@ -1305,7 +1238,7 @@ or crash.
 unexpectedly while it was running the task).
 \item \code{cancel}: total number of tasks interrupted with the \code{cancel()}
 controller method.
-\item \code{warnings}: total number of tasks with one or more warnings.
+\item \code{warning}: total number of tasks with one or more warnings.
 }
 }
 }

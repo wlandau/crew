@@ -43,6 +43,7 @@ crew_test("crew_controller_group()", {
   expect_equal(length(x$pids()), 1L)
   x$start()
   expect_true(x$wait(mode = "all", seconds_timeout = 30))
+  expect_equal(x$size(), 0L)
   expect_true(x$started())
   expect_true(x$empty())
   expect_false(x$saturated())
@@ -69,8 +70,8 @@ crew_test("crew_controller_group()", {
     sort(
       c(
         "controller",
-        "tasks",
         "seconds",
+        "tasks",
         "success",
         "error",
         "crash",
@@ -86,6 +87,7 @@ crew_test("crew_controller_group()", {
     name = "task_pid",
     controller = "b"
   )
+  expect_equal(x$size(), 1L)
   # covr on GitHub Actions mysteriously causes problems
   # in many crew tests.
   covr_ci <- isTRUE(as.logical(Sys.getenv("R_COVR", "false"))) &&
@@ -540,7 +542,6 @@ crew_test("controller group map() works", {
   expect_true(is.character(out$worker))
   expect_equal(out$controller, rep(a$launcher$name, 2L))
   sum <- x$summary()
-  expect_equal(sum$tasks, 2L)
   expect_equal(sum$success, 2L)
   expect_equal(sum$error, 0L)
   expect_equal(sum$warning, 0L)
@@ -795,7 +796,7 @@ crew_test("backlog with the second controller saturated`", {
   expect_equal(x$pop_backlog(), character(0L))
 })
 
-crew_test("group helper methods (non)empty, (un)resolved, unpopped", {
+crew_test("group helper methods (non)empty and (un)resolved", {
   skip_on_cran()
   skip_on_os("windows")
   a <- crew_controller_local(
@@ -820,7 +821,6 @@ crew_test("group helper methods (non)empty, (un)resolved, unpopped", {
   expect_false(x$nonempty())
   expect_equal(x$resolved(), 0L)
   expect_equal(x$unresolved(), 0L)
-  expect_equal(x$unpopped(), 0L)
   x$push(TRUE, controller = "a")
   x$push(TRUE, controller = "b")
   x$wait(mode = "all", seconds_timeout = 30)
@@ -828,27 +828,24 @@ crew_test("group helper methods (non)empty, (un)resolved, unpopped", {
   expect_true(x$nonempty())
   expect_equal(x$resolved(), 2L)
   expect_equal(x$unresolved(), 0L)
-  expect_equal(x$unpopped(), 2L)
   tasks <- x$collect()
   expect_true(x$empty())
   expect_false(x$nonempty())
-  expect_equal(x$unpopped(), 0L)
   x$push(Sys.sleep(60), controller = "a")
   x$push(Sys.sleep(60), controller = "b")
   expect_false(x$empty())
   expect_true(x$nonempty())
   expect_equal(x$resolved(), 2L)
   expect_equal(x$unresolved(), 2L)
-  expect_equal(x$unpopped(), 0L)
   x$terminate()
 })
 
 crew_test("descale", {
   controller <- crew_controller_local()
   x <- crew_controller_group(controller)
-  expect_false(controller$autoscaling)
+  expect_null(controller$loop)
   x$descale()
-  expect_false(controller$autoscaling)
+  expect_null(controller$loop)
 })
 
 crew_test("crash detection with backup controllers in a group", {
@@ -893,9 +890,9 @@ crew_test("crash detection with backup controllers in a group", {
     crew_retry(
       ~ {
         x$scale()
-        isTRUE(a$launcher$instances$online) ||
-          isTRUE(b$launcher$instances$online) ||
-          isTRUE(c$launcher$instances$online)
+        isTRUE(a$client$status()["connections"] > 0L) ||
+          isTRUE(b$client$status()["connections"] > 0L) ||
+          isTRUE(c$client$status()["connections"] > 0L)
       },
       seconds_interval = 0.1,
       seconds_timeout = 60
@@ -916,7 +913,6 @@ crew_test("crash detection with backup controllers in a group", {
   expect_equal(c$crashes(name = "x"), 0L)
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
-  expect_equal(summary$tasks, c(1L, 0L, 0L))
   expect_equal(summary$crash, c(1L, 0L, 0L))
   expect_equal(summary$error, c(0L, 0L, 0L))
   out <- crash()
@@ -928,7 +924,6 @@ crew_test("crash detection with backup controllers in a group", {
   expect_equal(c$crashes(name = "x"), 0L)
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
-  expect_equal(summary$tasks, c(2L, 0L, 0L))
   expect_equal(summary$crash, c(2L, 0L, 0L))
   expect_equal(summary$error, c(0L, 0L, 0L))
   out <- crash()
@@ -940,7 +935,6 @@ crew_test("crash detection with backup controllers in a group", {
   expect_equal(c$crashes(name = "x"), 0L)
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
-  expect_equal(summary$tasks, c(2L, 1L, 0L))
   expect_equal(summary$crash, c(2L, 1L, 0L))
   out <- crash()
   expect_true(tibble::is_tibble(out))
@@ -951,7 +945,6 @@ crew_test("crash detection with backup controllers in a group", {
   expect_equal(c$crashes(name = "x"), 0L)
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
-  expect_equal(summary$tasks, c(2L, 2L, 0L))
   expect_equal(summary$crash, c(2L, 2L, 0L))
   out <- crash()
   expect_true(tibble::is_tibble(out))
@@ -962,7 +955,6 @@ crew_test("crash detection with backup controllers in a group", {
   expect_equal(c$crashes(name = "x"), 1L)
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
-  expect_equal(summary$tasks, c(2L, 2L, 1L))
   expect_equal(summary$crash, c(2L, 2L, 1L))
   out <- crash()
   expect_true(tibble::is_tibble(out))
@@ -973,7 +965,6 @@ crew_test("crash detection with backup controllers in a group", {
   expect_equal(c$crashes(name = "x"), 2L)
   summary <- x$summary()
   expect_equal(summary$controller, c("a", "b", "c"))
-  expect_equal(summary$tasks, c(2L, 2L, 2L))
   expect_equal(summary$crash, c(2L, 2L, 2L))
   expect_crew_error(crash())
 })

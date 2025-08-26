@@ -22,7 +22,6 @@ crew_test("warnings and errors", {
   expect_null(x$pop())
   x$start()
   expect_silent(x$validate())
-  expect_equal(x$summary()$tasks, 0L)
   expect_equal(x$summary()$error, 0L)
   expect_equal(x$summary()$warning, 0L)
   x$push(
@@ -35,7 +34,6 @@ crew_test("warnings and errors", {
   x$wait(seconds_timeout = 30)
   out <- x$pop(scale = FALSE)
   skip_on_covr() # error handling is mysteriously messed up with covr
-  expect_equal(x$summary()$tasks, 1L)
   expect_equal(x$summary()$error, 1L)
   expect_equal(x$summary()$warning, 1L)
   expect_equal(out$name, "warnings_and_errors")
@@ -360,7 +358,6 @@ crew_test("controller map() works", {
   expect_equal(out$warnings, rep(NA_character_, 2L))
   expect_equal(out$controller, rep(x$launcher$name, 2L))
   sum <- x$summary()
-  expect_equal(sum$tasks, 2L)
   expect_equal(sum$error, 0L)
   expect_equal(sum$warning, 0L)
 })
@@ -436,7 +433,6 @@ crew_test("map() works with errors and names and command strings", {
   expect_false(anyNA(out$warnings))
   expect_equal(out$controller, rep(x$launcher$name, 2L))
   sum <- x$summary()
-  expect_equal(sum$tasks, 6L)
   expect_equal(sum$error, 6L)
   expect_equal(sum$warning, 6L)
 })
@@ -627,9 +623,9 @@ crew_test("backlog with saturation", {
 
 crew_test("descale", {
   controller <- crew_controller_local()
-  expect_false(controller$autoscaling)
+  expect_null(controller$loop)
   controller$descale()
-  expect_false(controller$autoscaling)
+  expect_null(controller$loop)
 })
 
 crew_test("cancel() all", {
@@ -683,7 +679,6 @@ crew_test("cancel() named", {
   expect_true(all(grepl("operation canceled", tolower(tasks$error))))
   expect_equal(names(x$tasks), "y")
   s <- x$summary()
-  expect_equal(s$tasks, 2L)
   expect_equal(s$success, 0L)
   expect_equal(s$error, 0L)
   expect_equal(s$crash, 0L)
@@ -735,7 +730,7 @@ crew_test("crash detection with crashes_max == 0L", {
   crew_retry(
     ~ {
       x$scale()
-      isTRUE(x$launcher$instances$online)
+      isTRUE(x$client$status()["connections"] > 0L)
     },
     seconds_interval = 0.1,
     seconds_timeout = 60
@@ -769,7 +764,7 @@ crew_test("crash detection with crashes_max == 2L", {
     crew_retry(
       ~ {
         x$scale()
-        isTRUE(x$launcher$instances$online)
+        isTRUE(x$client$status()["connections"] > 0L)
       },
       seconds_interval = 0.1,
       seconds_timeout = 60
@@ -784,7 +779,7 @@ crew_test("crash detection with crashes_max == 2L", {
   crew_retry(
     ~ {
       x$scale()
-      isTRUE(x$launcher$instances$online)
+      isTRUE(x$client$status()["connections"] > 0L)
     },
     seconds_interval = 0.1,
     seconds_timeout = 60
@@ -818,7 +813,7 @@ crew_test("crash detection resets, crashes_max == 2L", {
     crew_retry(
       ~ {
         x$scale()
-        isTRUE(x$launcher$instances$online)
+        isTRUE(x$client$status()["connections"] > 0L)
       },
       seconds_interval = 0.1,
       seconds_timeout = 60
@@ -856,7 +851,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
     crew_retry(
       ~ {
         x$scale()
-        isTRUE(x$launcher$instances$online)
+        isTRUE(x$client$status()["connections"] > 0L)
       },
       seconds_interval = 0.1,
       seconds_timeout = 60
@@ -871,7 +866,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
   crew_retry(
     ~ {
       x$scale()
-      isTRUE(x$launcher$instances$online)
+      isTRUE(x$client$status()["connections"] > 0L)
     },
     seconds_interval = 0.1,
     seconds_timeout = 60

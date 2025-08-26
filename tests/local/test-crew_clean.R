@@ -18,11 +18,13 @@ crew_test("crew_clean()", {
     seconds_interval = 0.1,
     seconds_timeout = 15,
   )
-  expect_message(crew_clean())
+  expect_true(handle_worker$is_alive())
+  suppressWarnings(crew_clean())
   crew_retry(
     ~ !handle_worker$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 15,
   )
-  expect_message(crew_clean())
+  suppressWarnings(crew_clean())
+  expect_false(handle_worker$is_alive())
 })

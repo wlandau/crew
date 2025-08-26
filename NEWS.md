@@ -1,4 +1,4 @@
-# crew 1.2.1.9003 (development)
+# crew 1.2.1.9004 (development)
 
 * Reinstate checks that were temporarily suppressed to help plugins transition to #217.
 * Support `reset_globals`, `reset_packages`, `reset_options`, and `garbage_collection` in `crew_controller_sequential()` (#217).

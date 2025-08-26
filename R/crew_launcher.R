@@ -606,7 +606,6 @@ crew_class_launcher <- R6::R6Class(
       if (using_async) {
         on.exit(private$.async$terminate())
       }
-      self$terminate_workers()
       invisible()
     },
     #' @description Resolve asynchronous worker submissions.
@@ -718,26 +717,41 @@ crew_class_launcher <- R6::R6Class(
         abstract = TRUE
       )
     },
-    #' @description Abstract worker termination method.
-    #' @details Launcher plugins will overwrite this method.
-    #' @return A handle to mock worker termination.
+    #' @description Deprecated on 2025-08-26
+    #'  (`crew` version 1.2.1.9004).
+    #' @details {crew} launchers no longer need or support
+    #'  a `terminate_worker()` method.
+    #' @return A special `crew_null` object (invisibly).
     #' @param handle A handle object previously
     #'   returned by `launch_worker()` which allows the termination
     #'   of the worker.
     terminate_worker = function(handle) {
-      list(handle = handle, abstract = TRUE)
+      crew_deprecate(
+        name = "terminate_worker()",
+        date = "2025-08-26",
+        version = "1.2.1.9004",
+        alternative = "none",
+        condition = "message",
+        value = "x",
+        skip_cran = TRUE,
+        frequency = "once"
+      )
+      invisible(crew_null)
     },
-    #' @description Terminate all workers.
+    #' @description Deprecated on 2025-08-26
+    #'  (`crew` version 1.2.1.9004).
     #' @return `NULL` (invisibly).
     terminate_workers = function() {
-      instances <- .subset2(self, "instances")
-      tasks <- list()
-      for (index in seq_len(nrow(instances))) {
-        handle <- mirai_resolve(instances$handle[[index]], launching = TRUE)
-        tasks[[index]] <- self$terminate_worker(handle = handle)
-      }
-      mirai_wait(tasks = tasks, launching = FALSE)
-      private$.instances <- launcher_empty_instances
+      crew_deprecate(
+        name = "terminate_worker()",
+        date = "2025-08-26",
+        version = "1.2.1.9004",
+        alternative = "none",
+        condition = "message",
+        value = "x",
+        skip_cran = TRUE,
+        frequency = "once"
+      )
       invisible()
     },
     #' @description Deprecated on 2025-01-28 (`crew` version 1.0.0).

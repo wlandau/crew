@@ -407,6 +407,9 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     resolved = function(controllers = NULL) {
+      if (!started()) {
+        return(0L)
+      }
       counts <- .subset2(.subset2(.client, "status")(), "mirai")
       as.integer(.subset(counts, "completed"))
     },
@@ -416,6 +419,9 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     unresolved = function(controllers = NULL) {
+      if (!started()) {
+        return(0L)
+      }
       counts <- .subset2(.subset2(.client, "status")(), "mirai")
       as.integer(.subset(counts, "awaiting") + .subset2(counts, "executing"))
     },
@@ -1508,7 +1514,7 @@ crew_class_controller <- R6::R6Class(
         value = seconds_interval
       )
       crew_assert(mode, identical(., "all") || identical(., "one"))
-      if (size() < 1L) {
+      if (size() < 1L || !started()) {
         return(identical(mode, "all"))
       }
       if (identical(mode, "all")) {
@@ -1663,18 +1669,8 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     terminate = function(controllers = NULL) {
-      # https://github.com/r-lib/covr/issues/445#issuecomment-689032236
-      if_any(
-        condition = isTRUE(as.logical(Sys.getenv("R_COVR", "false"))),
-        true = {
-          .launcher$terminate()
-          .client$terminate()
-        },
-        false = {
-          .client$terminate() # nocov
-          .launcher$terminate() # nocov
-        }
-      )
+      .client$terminate()
+      .launcher$terminate()
       .tasks <<- collections::dict()
       .crash_log <<- collections::dict()
       .loop <<- FALSE

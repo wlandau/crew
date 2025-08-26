@@ -445,7 +445,8 @@ A handle to mock the worker launch.
 \if{html}{\out{<a id="method-crew_class_launcher-terminate_worker"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate_worker}{}}}
 \subsection{Method \code{terminate_worker()}}{
-Abstract worker termination method.
+Deprecated on 2025-08-26
+(\code{crew} version 1.2.1.9004).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate_worker(handle)}\if{html}{\out{</div>}}
 }
@@ -460,18 +461,20 @@ of the worker.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-Launcher plugins will overwrite this method.
+{crew} launchers no longer need or support
+a \code{terminate_worker()} method.
 }
 
 \subsection{Returns}{
-A handle to mock worker termination.
+A special \code{crew_null} object (invisibly).
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-terminate_workers"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate_workers}{}}}
 \subsection{Method \code{terminate_workers()}}{
-Terminate all workers.
+Deprecated on 2025-08-26
+(\code{crew} version 1.2.1.9004).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate_workers()}\if{html}{\out{</div>}}
 }

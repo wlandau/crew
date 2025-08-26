@@ -832,7 +832,7 @@ crew_class_controller_group <- R6::R6Class(
       )
       mode <- as.character(mode)
       crew_assert(mode, identical(., "all") || identical(., "one"))
-      if (size() < 1L) {
+      if (size() < 1L || !started()) {
         return(identical(mode, "all"))
       }
       if (identical(mode, "all")) {

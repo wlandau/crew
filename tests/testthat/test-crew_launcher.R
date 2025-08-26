@@ -62,13 +62,8 @@ crew_test("preemptive async termination for covr", {
 crew_test("default launch_launcher() method", {
   skip_on_cran()
   launcher <- crew_class_launcher$new(seconds_interval = 0.5)
-  out <- launcher$launch_worker(
-    call = "a",
-    name = "b",
-    launcher = "c",
-    worker = 57L
-  )
-  expect_equal(out$abstract, TRUE)
+  out <- launcher$launch_worker(call = "a", name = "b")
+  expect_equal(out$name, "b")
 })
 
 crew_test("launcher settings", {

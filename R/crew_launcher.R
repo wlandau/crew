@@ -413,7 +413,7 @@ crew_class_launcher <- R6::R6Class(
         is.function(self$launch_worker),
         message = "launch_worker() must be a function."
       )
-      fields <- c("call", "name", "launcher", "worker")
+      fields <- c("call", "name")
       crew_assert(
         fields %in% names(formals(self$launch_worker)),
         message = paste(
@@ -666,12 +666,7 @@ crew_class_launcher <- R6::R6Class(
       worker <- crew_random_name(n = 4L)
       call <- self$call(worker = worker)
       name <- name_worker(launcher = launcher, worker = worker)
-      handle <- self$launch_worker(
-        call = call,
-        name = name,
-        launcher = launcher,
-        worker = worker
-      )
+      handle <- self$launch_worker(call = call, name = name)
       private$.instances <- tibble::add_row(
         private$.instances,
         handle = list(handle) %||% crew_null,
@@ -713,19 +708,8 @@ crew_class_launcher <- R6::R6Class(
     #' @param call Character of length 1 with a namespaced call to
     #'   [crew_worker()] which will run in the worker and accept tasks.
     #' @param name Character of length 1 with an informative worker name.
-    #' @param launcher Character of length 1, name of the launcher.
-    #' @param worker Positive integer of length 1, index of the worker.
-    #'   This worker index remains the same even when the current instance
-    #'   of the worker exits and a new instance launches.
-    #'   It is always between 1 and the maximum number of concurrent workers.
-    launch_worker = function(call, name, launcher, worker) {
-      list(
-        call = call,
-        name = name,
-        launcher = launcher,
-        worker = worker,
-        abstract = TRUE
-      )
+    launch_worker = function(call, name) {
+      list(call = call, name = name)
     },
     #' @description Deprecated on 2025-08-26
     #'  (`crew` version 1.2.1.9004).

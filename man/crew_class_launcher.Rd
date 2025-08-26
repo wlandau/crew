@@ -412,7 +412,7 @@ connection/disconnection events) (\code{FALSE} otherwise).
 \subsection{Method \code{launch_worker()}}{
 Abstract worker launch method.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_worker(call, name, launcher, worker)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_worker(call, name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -422,13 +422,6 @@ Abstract worker launch method.
 \code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
 
 \item{\code{name}}{Character of length 1 with an informative worker name.}
-
-\item{\code{launcher}}{Character of length 1, name of the launcher.}
-
-\item{\code{worker}}{Positive integer of length 1, index of the worker.
-This worker index remains the same even when the current instance
-of the worker exits and a new instance launches.
-It is always between 1 and the maximum number of concurrent workers.}
 }
 \if{html}{\out{</div>}}
 }

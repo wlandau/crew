@@ -49,7 +49,7 @@ custom_launcher_class <- R6::R6Class(
   classname = "custom_launcher_class",
   inherit = crew::crew_class_launcher,
   public = list(
-    launch_worker = function(call, name, launcher, worker) {
+    launch_worker = function(call, name) {
       bin <- file.path(R.home("bin"), "Rscript")
       processx::process$new(
         command = bin,
@@ -63,14 +63,9 @@ custom_launcher_class <- R6::R6Class(
 
 Inside `launch_worker()`, the `processx::process$new(command = bin, args = c(self$r_arguments, "-e", call))` line runs the [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html) call in an external R process with the command line arguments from `r_arguments` (supplied when the launcher is created). This process runs in the background, connects back to `crew` and `mirai` over the local network, and accepts the tasks you push to the controller. 
 
-Every `launch_worker()` method must accept arguments `call`, `launcher`, `worker`, and `instance`. The method does not actually need to use all these arguments, but they must be present in the function signature.
+Every `launch_worker()` method must accept arguments `call` and `name`. The former is a text string with an R function call to  [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html), and `name` is a text string with a unique informative name for the worker instance. `launch_worker()` must launch a worker that runs the R code in `call`, but `name` is purely for convenience.
 
-* `call`: text string with a call to  [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.html).
-* `name`: text string with a unique informative name for the worker instance.
-* `launcher`: text string with the name of the launcher.
-* `worker`: positive integer index of the worker. Ranges from 1 to the maximum number of simultaneous workers configured for the controller.
-
-To see what the `call` object looks like, create a new launcher and run the `call()` method.
+To see what the `call` argument will look like from inside `launch_worker()`, create a new launcher and run the `call()` method.
 
 ```r
 library(crew)
@@ -80,7 +75,7 @@ launcher$call(worker = "worker_name")
 #> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = 1L, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tls = NULL, rs = NULL), launcher = \"27548330\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
 ```
 
-# Helper
+# Controllers
 
 It is useful to have a helper function that creates controllers with your custom launcher. It should:
 
@@ -261,7 +256,7 @@ controller$terminate()
 # crew workers successfully terminated.
 ```
 
-# Asynchrony
+# Asynchronicity
 
 Depending on the launcher plugin, worker launches can be time-consuming. For example, each HTTP request to AWS Batch can take a couple seconds, and this latency becomes burdensome when it there are hundreds of workers. Fortunately, `crew` launchers can run launches asynchronously. As a launcher plugin developer, all you need to do is:
 
@@ -277,7 +272,7 @@ async_launcher_class <- R6::R6Class(
   classname = "custom_launcher_class",
   inherit = crew::crew_class_launcher,
   public = list(
-    launch_worker = function(call, name, launcher, worker, instance) {
+    launch_worker = function(call, name) {
       self$async$eval(
         command = list(pid = process$new(bin, args = c("-e", call))$get_pid()),
         data = list(bin = file.path(R.home("bin"), "R"), call = call),

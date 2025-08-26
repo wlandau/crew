@@ -27,16 +27,17 @@ mirai_status <- function(profile, seconds_interval, seconds_timeout) {
 
 mirai_status_error <- function(status, profile) {
   message <- sprintf("'errorValue' int %s\n", nanonext::nng_error(status))
-  pid <- mirai::nextget("pid", .compute = profile)
-  exists <- !is.null(pid) &&
-    !inherits(
-      try(handle <- ps::ps_handle(pid = pid), silent = TRUE),
-      "try-error"
-    )
-  lines_common <- c(
-    "Please also try upgrading R packages {nanonext}, {mirai}, and {crew}",
-    "to their latest versions on CRAN. (Likewise with {targets} if you are",
-    "using it.) Upgrading these packages solves many kinds of errors.",
+  info <- paste(
+    "\nmirai::status(.compute = controller$client$profile) errored out",
+    "during normal {crew} operations",
+    "(probably auto-scaling or counting resolved tasks).",
+    "It is possible that the mirai::dispatcher() R process is no longer",
+    "running on your local machine.",
+    "\n\n",
+    "Please try upgrading R packages {nanonext}, {mirai}, and {crew}",
+    "to their latest released versions. (Likewise {targets}, {crew.cluster}",
+    "and/or {crew.aws.batch} if you are using them.)",
+    "Upgrading these packages solves many kinds of errors.",
     "\n\nAnother possibility is an out-of-memory error.",
     "The dispatcher process can run out of memory if it is overwhelmed with",
     "data objects too large or too many to comfortably fit inside a single",
@@ -52,35 +53,6 @@ mirai_status_error <- function(status, profile) {
     "cloud storage as documented at",
     "https://books.ropensci.org/targets/performance.html and",
     "https://books.ropensci.org/targets/cloud-storage.html."
-  )
-  info <- if_any(
-    exists,
-    sprintf(
-      paste(
-        c(
-          "A {mirai} dispatcher process is running at pid %s with status",
-          "\"%s\". There may be a network connection issue,",
-          "or the dispatcher is simply busy managing lots of tasks or",
-          "uploading/downloading large datasets. Maybe try increasing",
-          "seconds_timeout in your {crew} controller.\n\n",
-          lines_common
-        ),
-        collapse = " "
-      ),
-      pid,
-      ps::ps_status(handle)
-    ),
-    paste(
-      c(
-        "The {mirai} dispatcher is not running. If you are using {crew}",
-        "without {targets}, be sure to call the start() method of the",
-        "controller before doing anything else. If you already did,",
-        "or if you are using {targets}, then the dispatcher process probably",
-        "started and then failed.\n\n",
-        lines_common
-      ),
-      collapse = " "
-    )
   )
   crew_error(paste(message, info))
 }

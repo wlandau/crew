@@ -253,6 +253,7 @@ crew_class_launcher <- R6::R6Class(
     },
     #' @field launches Data frame tracking worker launches with one row
     #'   per launch. Each launch may create more than one worker.
+    #'   Old superfluous rows are periodically discarded for efficiency.
     launches = function() {
       .subset2(private, ".launches")
     },

@@ -89,7 +89,8 @@ Other launcher:
 \item{\code{profile}}{\code{mirai} compute profile of the launcher.}
 
 \item{\code{launches}}{Data frame tracking worker launches with one row
-per launch. Each launch may create more than one worker.}
+per launch. Each launch may create more than one worker.
+Old superfluous rows are periodically discarded for efficiency.}
 
 \item{\code{throttle}}{A \code{\link[=crew_throttle]{crew_throttle()}} object to throttle scaling.}
 

@@ -689,7 +689,7 @@ crew_class_launcher <- R6::R6Class(
       # The workers with expired startup windows have failed.
       # We need to record those for future calls to scale().
       private$.failed <- failed + expected_launching - already_launching
-      # Remove superfluous rows to contain overhead from rep.int() above.
+      # Remove superfluous rows to minimize overhead from rep.int() above.
       still_relevant <- launches$total >= connections + disconnections
       private$.launches <- launches[still_relevant,, drop = FALSE]
       # Figure out how many workers to launch.

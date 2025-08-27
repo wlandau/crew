@@ -665,19 +665,24 @@ crew_class_launcher <- R6::R6Class(
       disconnections <- status$disconnections
       failed <- private$.failed
       expected_launching <- total - connections - disconnections - failed
+      # In case workers are submitted outside crew:
+      expected_launching <- max(0L, expected_launching)
       # Among the workers we still expect to be launching,
-      # count the subset which are actually launching
-      # (startup period not yet expired).
+      # count the subset which are actually truly launching
+      # (dubbed already_launching)
+      # These are the workers for whom startup period not yet expired.
       start_times <- utils::tail(instances$start, expected_launching)
-      truly_launching <- sum((now() - start_times) < private$.seconds_launch)
+      already_launching <- sum((now() - start_times) < private$.seconds_launch)
       # The workers with expired startup windows have failed.
       # We need to record those for future calls to scale().
-      private$.failed <- failed + expected_launching - truly_launching
-      # We want to ensure the number of truly launching workers
-      # meets the demand of awaiting tasks.
-      target_launching <- min(status$mirai["awaiting"], private$.workers)
+      private$.failed <- failed + expected_launching - already_launching
       # Figure out how many workers to launch.
-      should_launch <- max(0L, target_launching - truly_launching)
+      # We want to ensure the number of active workers
+      # meets the demand of unresolved tasks (up to a pre-determined cap).
+      tasks <- status$mirai["awaiting"] + status$mirai["executing"]
+      demand <- min(private$.workers, tasks)
+      supply <- already_launching + connections
+      should_launch <- max(0L, demand - supply)
       # Launch those workers.
       replicate(should_launch, self$launch())
       # Tune the launcher polling interval using exponential backoff.

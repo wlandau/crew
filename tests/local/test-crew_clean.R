@@ -12,7 +12,7 @@ crew_test("crew_clean()", {
   })
   x$start()
   x$launch(n = 1L)
-  handle_worker <- x$launcher$launches$handle[[1]]
+  handle_worker <- unlist(x$launcher$launches$handle)[[1]]
   crew_retry(
     ~ handle_worker$is_alive(),
     seconds_interval = 0.1,

@@ -86,7 +86,7 @@ crew_test("test handling of launch failures", {
   results <- controller$collect()
   expect_equal(sort(as.integer(results$result)), seq_len(n_tasks))
   expect_equal(nrow(controller$launcher$launches), 2 * n_tasks)
-  handle <- as.character(controller$launcher$launches$handle)
+  handle <- as.character(unlist(controller$launcher$launches$handle))
   expect_equal(handle, rep(c("failure", "success"), times = 7L))
   expect_equal(controller$launcher$failed, 7L)
   status <- controller$client$status()

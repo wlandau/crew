@@ -568,6 +568,7 @@ crew_class_launcher <- R6::R6Class(
       call <- substitute(
         crew::crew_worker(
           settings = settings,
+          controller = controller,
           options_metrics = crew::crew_options_metrics(
             path = path,
             seconds_interval = seconds_interval
@@ -575,6 +576,7 @@ crew_class_launcher <- R6::R6Class(
         ),
         env = list(
           settings = self$settings(),
+          controller = private$.name,
           path = private$.options_metrics$path,
           seconds_interval = private$.options_metrics$seconds_interval %|||% 5
         )
@@ -648,6 +650,9 @@ crew_class_launcher <- R6::R6Class(
     #' @return Handle of the launched worker.
     #' @param n Positive integer, number of workers to launch.
     launch = function(n = 1L) {
+      if (n < 1L) {
+        return(invisible())
+      }
       handle <- self$launch_workers(call = self$call(), n = n)
       private$.launches <- tibble::add_row(
         private$.launches,
@@ -674,7 +679,17 @@ crew_class_launcher <- R6::R6Class(
     #'   [crew_worker()] which will run in each worker and accept tasks.
     #' @param n Positive integer, number of workers to launch.
     launch_workers = function(call, n) {
-      replicate(n, self$launch_worker(call), simplify = FALSE)
+      # TODO: remove argument name compatibility layer after enough
+      # releases of downstream plugins.
+      args <- list(
+        call = call,
+        name = "name",
+        launcher = private$.name,
+        worker = "worker",
+        instance = "instance"
+      )
+      args <- args[names(formals(self$launch_worker))]
+      replicate(n, do.call(self$launch_worker, args), simplify = FALSE)
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return Invisibly returns `TRUE` if there was any relevant

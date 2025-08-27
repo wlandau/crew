@@ -10,8 +10,7 @@ monad_init <- function(
   seconds = NA_real_,
   seed = NA_integer_,
   algorithm = NA_character_,
-  controller = NA_character_,
-  worker = NA_character_
+  controller = NA_character_
 ) {
   out <- monad_new(
     name = name,
@@ -25,8 +24,7 @@ monad_init <- function(
     seconds = seconds,
     seed = seed,
     algorithm = algorithm,
-    controller = controller,
-    worker = worker
+    controller = controller
   )
   out
 }
@@ -43,8 +41,7 @@ monad_new <- function(
   seconds = NULL,
   seed = NULL,
   algorithm = NULL,
-  controller = NULL,
-  worker = NULL
+  controller = NULL
 ) {
   as_monad_tibble(
     list(
@@ -59,8 +56,7 @@ monad_new <- function(
       seconds = seconds,
       seed = seed,
       algorithm = algorithm,
-      controller = controller,
-      worker = worker
+      controller = controller
     )
   )
 }
@@ -76,8 +72,7 @@ monad_validate <- function(monad) {
     "error",
     "trace",
     "warnings",
-    "controller",
-    "worker"
+    "controller"
   )
   for (col in cols) {
     crew_assert(monad[[col]], is.character(.), length(.) == 1L)

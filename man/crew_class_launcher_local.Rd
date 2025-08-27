@@ -194,7 +194,7 @@ Validate the local launcher.
 Launch a local process worker which will
 dial into a socket.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$launch_worker(call, name, launcher, worker)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$launch_worker(call)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -202,14 +202,6 @@ dial into a socket.
 \describe{
 \item{\code{call}}{Character of length 1 with a namespaced call to
 \code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
-
-\item{\code{name}}{Character of length 1 with a long informative worker name
-which contains the \code{launcher} and \code{worker} arguments
-described below.}
-
-\item{\code{launcher}}{Character of length 1, name of the launcher.}
-
-\item{\code{worker}}{Character string, name of the worker within the launcher.}
 }
 \if{html}{\out{</div>}}
 }

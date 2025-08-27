@@ -62,8 +62,8 @@ crew_test("preemptive async termination for covr", {
 crew_test("default launch_launcher() method", {
   skip_on_cran()
   launcher <- crew_class_launcher$new(seconds_interval = 0.5)
-  out <- launcher$launch_worker(call = "a", name = "b")
-  expect_equal(out$name, "b")
+  out <- launcher$launch_worker(call = "a")
+  expect_equal(out$call, "a")
 })
 
 crew_test("launcher settings", {
@@ -105,7 +105,7 @@ crew_test("launcher call", {
   )
   launcher$start(url = "url", profile = "profile")
   on.exit(launcher$terminate())
-  out <- launcher$call(worker = "cba033e58")
+  out <- launcher$call()
   expect_true(is.character(out))
   expect_true(!anyNA(out))
   expect_equal(length(out), 1L)

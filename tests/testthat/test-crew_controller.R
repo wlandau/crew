@@ -45,7 +45,7 @@ crew_test("warnings and errors", {
   expect_equal(out$error, "this is an error")
   expect_equal(out$warnings, "this is a warning")
   expect_false(anyNA(out$trace))
-  handle <- x$launcher$launches$handle[[1]]
+  handle <- unlist(x$launcher$launches$handle)[[1L]]
   x$terminate()
   expect_false(x$client$started)
   crew_retry(
@@ -721,7 +721,7 @@ crew_test("crash detection with crashes_max == 2L", {
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
-    for (handle in x$launcher$launches$handle) {
+    for (handle in unlist(x$launcher$launches$handle)) {
       handle$kill()
     }
     x$wait(mode = "one", seconds_timeout = 30)
@@ -734,7 +734,7 @@ crew_test("crash detection with crashes_max == 2L", {
     seconds_interval = 0.1,
     seconds_timeout = 60
   )
-  for (handle in x$launcher$launches$handle) {
+  for (handle in unlist(x$launcher$launches$handle)) {
     handle$kill()
   }
   x$wait(seconds_timeout = 30)
@@ -765,7 +765,7 @@ crew_test("crash detection resets, crashes_max == 2L", {
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
-    for (handle in x$launcher$launches$handle) {
+    for (handle in unlist(x$launcher$launches$handle)) {
       handle$kill()
     }
     x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
@@ -775,7 +775,7 @@ crew_test("crash detection resets, crashes_max == 2L", {
     x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
     expect_true(tibble::is_tibble(x$pop()))
     expect_equal(x$crashes(name = "x"), 0L)
-    for (handle in x$launcher$launches$handle) {
+    for (handle in unlist(x$launcher$launches$handle)) {
       handle$kill()
     }
   }
@@ -805,7 +805,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
       seconds_timeout = 60
     )
     Sys.sleep(0.25)
-    for (handle in x$launcher$launches$handle) {
+    for (handle in unlist(x$launcher$launches$handle)) {
       handle$kill()
     }
     x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
@@ -818,7 +818,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
     seconds_interval = 0.1,
     seconds_timeout = 60
   )
-  for (handle in x$launcher$launches$handle) {
+  for (handle in unlist(x$launcher$launches$handle)) {
     handle$kill()
   }
   x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
@@ -892,7 +892,7 @@ crew_test("count disconnections in a controller", {
       expect_equal(x$client$disconnections, launch - 1L)
       expect_equal(x$client$status()$disconnections, launch - 1L)
     }
-    for (handle in x$launcher$launches$handle) {
+    for (handle in unlist(x$launcher$launches$handle)) {
       handle$kill()
     }
     crew_retry(

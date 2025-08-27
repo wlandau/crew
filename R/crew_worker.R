@@ -7,6 +7,7 @@
 #'   for examples.
 #' @return `NULL` (invisibly)
 #' @param settings Named list of arguments to `mirai::daemon()`.
+#' @param controller Character string, name of the controller.
 #' @param options_metrics Either `NULL` to opt out of resource metric logging
 #'   for workers, or an object from [crew_options_metrics()] to enable
 #'   and configure resource metric logging for workers.
@@ -15,12 +16,13 @@
 #'   must be installed.
 crew_worker <- function(
   settings,
+  controller,
   options_metrics = crew::crew_options_metrics()
 ) {
   autometric <- package_installed("autometric (>= 0.1.0)")
   if (autometric && !is.null(options_metrics$path)) {
     pids <- Sys.getpid()
-    names(pids) <- sprintf("crew_worker_%s", crew_random_name(n = 4L))
+    names(pids) <- sprintf("crew_log_%s", crew_random_name())
     autometric::log_start(
       path = log_metrics_path(options_metrics$path, names(pids)),
       seconds = options_metrics$seconds_interval,
@@ -28,6 +30,11 @@ crew_worker <- function(
     )
     on.exit(autometric::log_stop())
   }
+  envvars <- "CREW_CONTROLLER"
+  previous <- Sys.getenv(envvars)
+  names(previous) <- envvars
+  on.exit(do.call(what = Sys.setenv, args = as.list(previous)), add = TRUE)
+  Sys.setenv(CREW_CONTROLLER = controller)
   crew_message(utils::capture.output(print(utils::sessionInfo())))
   code <- do.call(what = mirai::daemon, args = settings)
   crew_message(

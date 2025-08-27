@@ -62,7 +62,7 @@ crew_test("crew_launcher_local() separate log paths", {
 crew_test("crew_launcher_local() can run a task on a worker", {
   skip_on_cran()
   skip_on_os("windows")
-  client <- crew_client(host = "127.0.0.1", workers = 4L)
+  client <- crew_client(host = "127.0.0.1")
   launcher <- crew_launcher_local(name = client$profile, seconds_idle = 360)
   on.exit({
     client$terminate()
@@ -76,12 +76,12 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   client$start()
   launcher$start(url = client$url, profile = client$profile)
   launcher$launch()
-  expect_s3_class(launcher$launches$handle[[1L]], "process")
+  expect_s3_class(unlist(launcher$launches$handle)[[1L]], "process")
   expect_silent(launcher$validate())
   crew::crew_retry(
-    ~ launcher$launches$handle[[1L]]$is_alive(),
+    ~ unlist(launcher$launches$handle)[[1L]]$is_alive(),
     seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_timeout = 15
   )
   task <- mirai::mirai(ps::ps_pid(), .compute = client$profile)
   crew_retry(
@@ -89,16 +89,18 @@ crew_test("crew_launcher_local() can run a task on a worker", {
     seconds_interval = 0.5,
     seconds_timeout = 10
   )
-  expect_equal(task$data, launcher$launches$handle[[1L]]$get_pid())
+  expect_equal(task$data, unlist(launcher$launches$handle)[[1L]]$get_pid())
   client$terminate()
   tryCatch(
     crew::crew_retry(
-      ~ !launcher$launches$handle[[1L]]$is_alive(),
+      ~ !unlist(launcher$launches$handle)[[1L]]$is_alive(),
       seconds_interval = 0.1,
-      seconds_timeout = 5
+      seconds_timeout = 15
     ),
     crew_expire = function(condition) {
-      launcher$launches$handle[[1L]]$signal(signal = crew_terminate_signal())
+      unlist(
+        launcher$launches$handle
+      )[[1L]]$signal(signal = crew_terminate_signal())
     }
   )
 })
@@ -129,7 +131,7 @@ crew_test("crew_launcher_local() worker tasks_max", {
   launcher$launch()
   crew::crew_retry(
     ~ {
-      handle <- launcher$launches$handle[[1]]
+      handle <- unlist(launcher$launches$handle)[[1]]
       !is_crew_null(handle) && handle$is_alive()
     },
     seconds_interval = 0.5,
@@ -141,9 +143,9 @@ crew_test("crew_launcher_local() worker tasks_max", {
     seconds_interval = 0.5,
     seconds_timeout = 30
   )
-  expect_equal(task$data, launcher$launches$handle[[1]]$get_pid())
+  expect_equal(task$data, unlist(launcher$launches$handle)[[1]]$get_pid())
   crew::crew_retry(
-    ~ !launcher$launches$handle[[1]]$is_alive(),
+    ~ !unlist(launcher$launches$handle)[[1]]$is_alive(),
     seconds_interval = 0.5,
     seconds_timeout = 30
   )

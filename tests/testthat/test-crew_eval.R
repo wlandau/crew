@@ -183,17 +183,16 @@ crew_test("crew_eval() RNG state not restored if not set", {
 
 crew_test("crew_eval() environment variables", {
   skip_on_cran()
-  envvars <- c("CREW_CONTROLLER", "CREW_WORKER")
+  envvars <- "CREW_CONTROLLER"
   previous <- Sys.getenv(envvars)
+  names(previous) <- envvars
   Sys.unsetenv(envvars)
   on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
   out <- crew_eval(quote(L), name = "x")
   expect_equal(out$controller, NA_character_)
-  expect_equal(out$worker, NA_character_)
-  Sys.setenv(CREW_CONTROLLER = "x1", CREW_WORKER = "x2")
+  Sys.setenv(CREW_CONTROLLER = "x1")
   out <- crew_eval(quote(L), name = "x")
   expect_equal(out$controller, "x1")
-  expect_equal(out$worker, "x2")
 })
 
 crew_test("crew_eval() reset_globals", {

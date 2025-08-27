@@ -9,7 +9,7 @@ crew_test("custom launcher", {
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,
     public = list(
-      launch_worker = function(call, name, launcher, worker) {
+      launch_worker = function(call) {
         bin <- if_any(
           tolower(Sys.info()[["sysname"]]) == "windows",
           "R.exe",
@@ -81,7 +81,7 @@ crew_test("custom launcher", {
   controller$push(name = "pid", command = ps::ps_pid())
   controller$wait(seconds_timeout = 10)
   out <- controller$pop()$result[[1]]
-  handle <- controller$launcher$launches$handle[[1]]
+  handle <- unlist(controller$launcher$launches$handle)[[1]]
   exp <- handle$get_pid()
   expect_equal(out, exp)
   expect_true(handle$is_alive())
@@ -106,13 +106,12 @@ crew_test("custom launcher with local asyncs launch errors", {
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,
     public = list(
-      launch_worker = function(call, name, launcher, worker) {
+      launch_worker = function(call) {
         self$async$eval(
           command = "okay value",
           packages = "this package does not exist"
         )
-      },
-      terminate_worker = function(handle) {}
+      }
     )
   )
   crew_controller_custom <- function(
@@ -204,7 +203,7 @@ crew_test("custom launcher with async internal launcher tasks", {
     classname = "custom_launcher_class",
     inherit = crew::crew_class_launcher,
     public = list(
-      launch_worker = function(call, name, launcher, worker, instance) {
+      launch_worker = function(call) {
         bin <- if_any(
           tolower(Sys.info()[["sysname"]]) == "windows",
           "R.exe",
@@ -228,16 +227,6 @@ crew_test("custom launcher with async internal launcher tasks", {
             call = call
           ),
           packages = "processx"
-        )
-      },
-      terminate_worker = function(handle) {
-        pid <- handle$pid
-        self$async$eval(
-          command = {
-            crew::crew_terminate_process(pid)
-            list(pid = pid, status = "terminated")
-          },
-          data = list(pid = pid)
         )
       }
     )
@@ -313,9 +302,9 @@ crew_test("custom launcher with async internal launcher tasks", {
     seconds_interval = 0.25,
     seconds_timeout = 15
   )
-  handle <- controller$launcher$launches$handle[[1L]]
-  pid <- handle$pid
+  handle <- unlist(controller$launcher$launches$handle)[[1L]]
+  pid <- handle$data$pid
   expect_equal(envir$pid, pid)
-  expect_equal(handle$status, "started")
+  expect_equal(handle$data$status, "started")
   controller$launcher$terminate()
 })

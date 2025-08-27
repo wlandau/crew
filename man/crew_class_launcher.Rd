@@ -84,7 +84,8 @@ asynchronously.}
 
 \item{\code{profile}}{\code{mirai} compute profile of the launcher.}
 
-\item{\code{instances}}{Data frame of worker instance information.}
+\item{\code{launches}}{Data frame tracking worker launches with one row
+per launch. Each launch may create more than one worker.}
 
 \item{\code{async}}{A \code{\link[=crew_async]{crew_async()}} object to run low-level launcher tasks
 asynchronously.}
@@ -261,27 +262,9 @@ List of arguments for \code{mirai::daemon()}.
 Create a call to \code{\link[=crew_worker]{crew_worker()}} to
 help create custom launchers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call(
-  worker,
-  socket = NULL,
-  launcher = NULL,
-  instance = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{worker}}{Character string, name of the worker.}
-
-\item{\code{socket}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
-
-\item{\code{launcher}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
-
-\item{\code{instance}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 Character string with a call to \code{\link[=crew_worker]{crew_worker()}}.
 }
@@ -374,7 +357,7 @@ Handle of the launched worker.
 \subsection{Method \code{launch_worker()}}{
 Abstract worker launch method.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_worker(call, name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_worker(call)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -382,8 +365,6 @@ Abstract worker launch method.
 \describe{
 \item{\code{call}}{Character of length 1 with a namespaced call to
 \code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
-
-\item{\code{name}}{Character of length 1 with an informative worker name.}
 }
 \if{html}{\out{</div>}}
 }
@@ -401,7 +382,7 @@ A handle to mock the worker launch.
 \subsection{Method \code{launch_workers()}}{
 Launch multiple workers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_workers(call, name, n)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_workers(call, n)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -409,9 +390,6 @@ Launch multiple workers.
 \describe{
 \item{\code{call}}{Character of length 1 with a namespaced call to
 \code{\link[=crew_worker]{crew_worker()}} which will run in each worker and accept tasks.}
-
-\item{\code{name}}{Character string, informative name
-for the group of workers.}
 
 \item{\code{n}}{Positive integer, number of workers to launch.}
 }

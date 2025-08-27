@@ -8,16 +8,16 @@ crew_test("backlog of tasks for transient workers", {
   n <- 100
   time <- system.time({
     for (index in seq_len(n)) {
-      name <- paste0("task_", index)
-      x$push(name = name, command = Sys.getenv("CREW_WORKER"))
+      name <- paste0("task_1_", index)
+      x$push(name = name, command = name, data = list(name = name))
     }
   })
   message(time["elapsed"])
   # Launch many more tasks.
   time <- system.time({
     for (index in seq_len(n)) {
-      name <- paste0("task_", index + 1000L)
-      x$push(name = name, command = Sys.getenv("CREW_WORKER"))
+      name <- paste0("task_2_", index + 1000L)
+      x$push(name = name, command = name, data = list(name = name))
     }
   })
   message(time["elapsed"])

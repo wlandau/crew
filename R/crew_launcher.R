@@ -691,7 +691,7 @@ crew_class_launcher <- R6::R6Class(
       private$.failed <- failed + expected_launching - already_launching
       # Remove superfluous rows to minimize overhead from rep.int() above.
       still_relevant <- launches$total >= connections + disconnections
-      private$.launches <- launches[still_relevant,, drop = FALSE]
+      private$.launches <- launches[still_relevant, , drop = FALSE]
       # Figure out how many workers to launch.
       # We want to ensure the number of active workers
       # meets the demand of unresolved tasks (up to a pre-determined cap).

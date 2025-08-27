@@ -129,7 +129,8 @@ launcher_empty_launches <- tibble::tibble(
   handle = list(),
   start = numeric(0L),
   submitted = logical(0L),
-  count = integer(0L)
+  count = integer(0L),
+  cumulative = integer(0L)
 )
 
 # TODO: remove when the next crew.aws.batch release drops async$eval().
@@ -621,12 +622,14 @@ crew_class_launcher <- R6::R6Class(
         return(invisible())
       }
       handle <- self$launch_workers(call = self$call(), n = n)
+      launches <- private$.launches
       private$.launches <- tibble::add_row(
         private$.launches,
         handle = list(handle) %||% crew_null,
         start = now(),
         submitted = FALSE,
-        count = n
+        count = n,
+        cumulative = n + (launches$count[nrow(launches)] %||% 0L)
       )
       invisible()
     },
@@ -679,10 +682,10 @@ crew_class_launcher <- R6::R6Class(
       # count the subset which are actually truly still launching
       # (dubbed "already_launching" to reflect the logic later on).
       # These are the workers for whom startup period not yet expired.
-      start_times <- utils::tail(launches$start, expected_launching)
-      count <- utils::tail(launches$count, expected_launching)
+      start_times <- rep(launches$start, times = launches$cumulative)
+      start_times <- utils::tail(start_times, expected_launching)
       is_already_launching <- (now() - start_times) < private$.seconds_launch
-      already_launching <- sum(is_already_launching * count)
+      already_launching <- sum(is_already_launching)
       # The workers with expired startup windows have failed.
       # We need to record those for future calls to scale().
       private$.failed <- failed + expected_launching - already_launching

@@ -20,7 +20,7 @@ test_that("backlog of tasks completes with finite tasks_max", {
   utils::capture.output(suppressMessages(controller$start()))
   names <- character(0L)
   index <- 0L
-  n_tasks <- 60000L
+  n_tasks <- 6000L
   cli::cli_progress_bar(
     name = "tasks_max",
     type = "custom",

@@ -622,6 +622,7 @@ crew_class_launcher <- R6::R6Class(
     #' @return `NULL` (invisibly). Throw an error if there were any
     #'   asynchronous worker submission errors.'
     resolve = function() {
+      # TODO: remove this function when we get rid of async worker launches.
       unresolved <- which(!private$.instances$submitted)
       handles <- private$.instances$handle
       for (index in unresolved) {
@@ -661,12 +662,13 @@ crew_class_launcher <- R6::R6Class(
     #' @param throttle Deprecated, only used in the controller
     #'   as of 2025-01-16 (`crew` version 0.10.2.9003).
     scale = function(status, throttle = NULL) {
+      self$resolve() # TODO: remove when we get rid of async worker launches
       # Count the number of workers we still expect to be launching.
       instances <- private$.instances
       total <- nrow(instances)
       connections <- status$connections
       disconnections <- status$disconnections
-      failed <- private$failed
+      failed <- private$.failed
       expected_launching <- total - connections - disconnections - failed
       # Among the workers we still expect to be launching,
       # count the subset which are actually launching
@@ -675,7 +677,7 @@ crew_class_launcher <- R6::R6Class(
       truly_launching <- sum((now() - start_times) < private$.seconds_launch)
       # The workers with expired startup windows have failed.
       # We need to record those for future calls to scale().
-      private$failed <- failed + expected_launching - truly_launching
+      private$.failed <- failed + expected_launching - truly_launching
       # We want to ensure the number of truly launching workers
       # meets the demand of awaiting tasks.
       target_launching <- min(status$mirai["awaiting"], private$.workers)

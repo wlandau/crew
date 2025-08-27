@@ -51,10 +51,7 @@ processes.
 \if{latex}{\out{\hypertarget{method-crew_class_monitor_local-daemons}{}}}
 \subsection{Method \code{daemons()}}{
 List the process IDs of the locally running \code{mirai} daemon
-processes which are not \code{crew} workers. The \code{\link[=crew_async]{crew_async()}}
-object can launch such processes: for example, when a positive
-integer is supplied to the \code{processes} argument of e.g.
-\code{crew.aws.batch::crew_controller_aws_batch()}.
+processes which are not \code{crew} workers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$daemons(user = ps::ps_username())}\if{html}{\out{</div>}}
 }

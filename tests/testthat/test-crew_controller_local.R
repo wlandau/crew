@@ -324,6 +324,7 @@ crew_test("joined logs", {
   })
   x$start()
   x$push(print("this-print"))
+  # All these waits are needed to avoid an auto-scaling race condition.
   x$wait(mode = "all")
   x$push(message("this-message"))
   x$wait(mode = "all")
@@ -363,6 +364,7 @@ crew_test("separate logs", {
   })
   x$start()
   x$push(print("this-print"))
+  # All these waits are needed to avoid an auto-scaling race condition.
   x$wait(mode = "all")
   x$push(message("this-message"))
   x$wait(mode = "all")

@@ -134,11 +134,9 @@ crew_launcher <- function(
 
 launcher_empty_instances <- tibble::tibble(
   handle = list(),
-  id = integer(0L),
+  name = character(0L),
   start = numeric(0L),
-  submitted = logical(0L),
-  online = logical(0L),
-  discovered = logical(0L)
+  submitted = logical(0L)
 )
 
 #' @title Launcher abstract class
@@ -179,7 +177,6 @@ crew_class_launcher <- R6::R6Class(
     .url = NULL,
     .profile = NULL,
     .instances = launcher_empty_instances,
-    .id = NULL,
     .async = NULL,
     .throttle = NULL
   ),
@@ -248,10 +245,6 @@ crew_class_launcher <- R6::R6Class(
     #' @field instances Data frame of worker instance information.
     instances = function() {
       .subset2(private, ".instances")
-    },
-    #' @field id Integer worker ID from the last call to `settings()`.
-    id = function() {
-      .subset2(private, ".id")
     },
     #' @field async A [crew_async()] object to run low-level launcher tasks
     #'   asynchronously.
@@ -518,7 +511,6 @@ crew_class_launcher <- R6::R6Class(
     #' @description List of arguments for `mirai::daemon()`.
     #' @return List of arguments for `mirai::daemon()`.
     settings = function() {
-      private$.id <- private$.id + 1L
       list(
         url = private$.url,
         dispatcher = TRUE,
@@ -530,7 +522,7 @@ crew_class_launcher <- R6::R6Class(
         idletime = private$.seconds_idle * 1000,
         walltime = private$.seconds_wall * 1000,
         timerstart = private$.tasks_timers,
-        id = private$.id,
+        id = 1L,
         tlscert = private$.tls$worker(profile = private$.profile),
         rs = mirai::nextstream(.compute = private$.profile)
       )
@@ -600,7 +592,6 @@ crew_class_launcher <- R6::R6Class(
       private$.url <- url
       private$.profile <- profile
       private$.instances <- launcher_empty_instances
-      private$.id <- 0L
       invisible()
     },
     #' @description Terminate the whole launcher, including all workers.
@@ -662,19 +653,16 @@ crew_class_launcher <- R6::R6Class(
     #' @description Launch a worker.
     #' @return Handle of the launched worker.
     launch = function() {
-      launcher <- private$.name
-      worker <- crew_random_name(n = 4L)
       call <- self$call(worker = worker)
-      name <- name_worker(launcher = launcher, worker = worker)
+      worker <- crew_random_name(n = 4L)
+      name <- paste("crew-worker", private$.name, worker, sep = "-")
       handle <- self$launch_worker(call = call, name = name)
       private$.instances <- tibble::add_row(
         private$.instances,
         handle = list(handle) %||% crew_null,
-        id = private$.id,
+        name = name,
         start = now(),
-        submitted = FALSE,
-        online = FALSE,
-        discovered = FALSE
+        submitted = FALSE
       )
       invisible()
     },

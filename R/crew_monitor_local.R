@@ -63,7 +63,10 @@ crew_class_monitor_local <- R6::R6Class(
     #' @param pids Integer vector of process IDs of local processes to
     #'   terminate.
     terminate = function(pids) {
-      lapply(as.integer(pids), crew_terminate_process)
+      # Tested in tests/testthat/test-crew_monitor_local.R
+      # but avoiding on covr because of the infamous
+      # RDS file corruption error caused by terminating external processes.
+      lapply(as.integer(pids), crew_terminate_process) # nocov
     }
   )
 )

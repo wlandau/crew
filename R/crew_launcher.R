@@ -637,12 +637,7 @@ crew_class_launcher <- R6::R6Class(
     #' @description Launch a worker.
     #' @return Handle of the launched worker.
     launch = function() {
-      name <- paste(
-        "crew-worker",
-        private$.name,
-        crew_random_name(n = 4L),
-        sep = "-"
-      )
+      name <- name_worker(private$.name, crew_random_name(n = 4L))
       call <- self$call(worker = name)
       handle <- self$launch_worker(call = call, name = name)
       private$.instances <- tibble::add_row(

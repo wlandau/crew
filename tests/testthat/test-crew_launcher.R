@@ -7,12 +7,10 @@ crew_test("abstract launcher class", {
 crew_test("validate a started launcher", {
   skip_on_cran()
   skip_on_os("windows")
-  out <- crew_launcher(processes = 1L)
+  out <- crew_launcher()
   out$start(url = "url", profile = "profile")
   on.exit(out$terminate())
-  expect_s3_class(out$async, "crew_class_async")
   expect_s3_class(out$throttle, "crew_class_throttle")
-  expect_silent(out$async$validate())
   expect_silent(out$throttle$validate())
   expect_silent(out$validate())
 })
@@ -20,7 +18,7 @@ crew_test("validate a started launcher", {
 crew_test("active bindings for covr", {
   skip_on_cran()
   skip_on_os("windows")
-  out <- crew_launcher(processes = 1L, r_arguments = "--vanilla")
+  out <- crew_launcher(r_arguments = "--vanilla")
   expect_true(is.character(out$name))
   expect_equal(out$workers, 1L)
   expect_true(is.numeric(out$seconds_interval))
@@ -31,7 +29,6 @@ crew_test("active bindings for covr", {
   expect_true(is.numeric(out$tasks_max))
   expect_true(is.numeric(out$tasks_timers))
   expect_true(inherits(out$tls, "crew_class_tls"))
-  expect_equal(out$processes, 1L)
   expect_equal(out$r_arguments, "--vanilla")
   expect_s3_class(
     out$options_metrics,
@@ -41,22 +38,7 @@ crew_test("active bindings for covr", {
   expect_null(out$profile)
   expect_true(is.data.frame(out$launches))
   expect_equal(out$failed, 0L)
-  expect_null(out$async)
   expect_s3_class(out$throttle, "crew_class_throttle")
-})
-
-crew_test("preemptive async termination for covr", {
-  skip_on_cran()
-  skip_on_os("windows")
-  out <- crew_launcher(processes = 1L)
-  private <- crew_private(out)
-  private$.async <- crew_async()
-  on.exit({
-    private$.async$terminate()
-    out$terminate()
-  })
-  out$start(url = "url", profile = "profile")
-  expect_true(TRUE)
 })
 
 crew_test("default launch_launcher() method", {

@@ -178,7 +178,8 @@ crew_class_launcher <- R6::R6Class(
     .profile = NULL,
     .instances = launcher_empty_instances,
     .async = NULL,
-    .throttle = NULL
+    .throttle = NULL,
+    .failed = 0L
   ),
   active = list(
     #' @field name See [crew_launcher()].
@@ -254,6 +255,11 @@ crew_class_launcher <- R6::R6Class(
     #' @field throttle A [crew_throttle()] object to throttle scaling.
     throttle = function() {
       .subset2(private, ".throttle")
+    },
+    #' @field failed Number of failed worker launches
+    #'   (launches that exceed `seconds_launch` seconds to dial in).
+    failed = function() {
+      .subset2(private, ".failed")
     }
   ),
   public = list(
@@ -592,6 +598,7 @@ crew_class_launcher <- R6::R6Class(
       private$.url <- url
       private$.profile <- profile
       private$.instances <- launcher_empty_instances
+      private$.failed <- 0L
       invisible()
     },
     #' @description Terminate the whole launcher, including all workers.
@@ -599,6 +606,7 @@ crew_class_launcher <- R6::R6Class(
     terminate = function() {
       private$.url <- NULL
       private$.profile <- NULL
+      private$.failed <- 0L
       if (!is.null(private$.throttle)) {
         private$.throttle$reset()
       }
@@ -625,37 +633,16 @@ crew_class_launcher <- R6::R6Class(
         }
       }
     },
-    #' @description Update worker metadata, resolve asynchronous
-    #'   worker submissions, and terminate lost workers.
-    #' @return `NULL` (invisibly).
-    #' @param status A `mirai` status list.
-    update = function(status) {
-      self$resolve()
-      instances <- private$.instances
-      id <- instances$id
-      events <- as.integer(status$events)
-      connected <- id %in% (events[events > 0L])
-      disconnected <- id %in% (-events[events < 0L])
-      instances$online[connected] <- TRUE
-      instances$online[disconnected] <- FALSE
-      instances$discovered[connected] <- TRUE
-      online <- instances$online
-      discovered <- instances$discovered
-      start <- instances$start
-      awaiting <- (now() - start) < private$.seconds_launch
-      active <- online | (!discovered & awaiting)
-      lost <- !active & !discovered
-      handles <- instances$handle[lost]
-      handles <- lapply(handles, mirai_resolve, launching = TRUE)
-      private$.instances <- instances[active, ]
-      invisible()
-    },
     #' @description Launch a worker.
     #' @return Handle of the launched worker.
     launch = function() {
-      call <- self$call(worker = worker)
-      worker <- crew_random_name(n = 4L)
-      name <- paste("crew-worker", private$.name, worker, sep = "-")
+      name <- paste(
+        "crew-worker",
+        private$.name,
+        crew_random_name(n = 4L),
+        sep = "-"
+      )
+      call <- self$call(worker = name)
       handle <- self$launch_worker(call = call, name = name)
       private$.instances <- tibble::add_row(
         private$.instances,
@@ -674,19 +661,30 @@ crew_class_launcher <- R6::R6Class(
     #' @param throttle Deprecated, only used in the controller
     #'   as of 2025-01-16 (`crew` version 0.10.2.9003).
     scale = function(status, throttle = NULL) {
-      self$update(status = status)
-      supply <- nrow(private$.instances)
-      demand <- status$mirai["awaiting"] + status$mirai["executing"]
-      increment <- 0L
-      if (!anyNA(demand)) {
-        increment <- min(self$workers - supply, max(0L, demand - supply))
-        index <- 1L
-        while (index <= increment) {
-          self$launch()
-          index <- index + 1L
-        }
-      }
-      activity <- length(status$events) > 0L || increment > 0L
+      # Count the number of workers we still expect to be launching.
+      instances <- private$.instances
+      total <- nrow(instances)
+      connections <- status$connections
+      disconnections <- status$disconnections
+      failed <- private$failed
+      expected_launching <- total - connections - disconnections - failed
+      # Among the workers we still expect to be launching,
+      # count the subset which are actually launching
+      # (startup period not yet expired).
+      start_times <- utils::tail(instances$start, expected_launching)
+      truly_launching <- sum((now() - start_times) < private$.seconds_launch)
+      # The workers with expired startup windows have failed.
+      # We need to record those for future calls to scale().
+      private$failed <- failed + expected_launching - truly_launching
+      # We want to ensure the number of truly launching workers
+      # meets the demand of awaiting tasks.
+      target_launching <- min(status$mirai["awaiting"], private$.workers)
+      # Figure out how many workers to launch.
+      should_launch <- max(0L, target_launching - truly_launching)
+      # Launch those workers.
+      replicate(should_launch, self$launch())
+      # Tune the launcher polling interval using exponential backoff.
+      activity <- should_launch > 0L
       private$.throttle$update(activity = activity)
       invisible(activity)
     },

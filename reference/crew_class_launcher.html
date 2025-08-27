@@ -9,7 +9,7 @@ which launch and manage workers."><meta property="og:image" content="https://wla
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -126,10 +126,6 @@ asynchronously.</p></dd>
 <dd><p>Data frame of worker instance information.</p></dd>
 
 
-<dt><code>id</code></dt>
-<dd><p>Integer worker ID from the last call to <code>settings()</code>.</p></dd>
-
-
 <dt><code>async</code></dt>
 <dd><p>A <code><a href="crew_async.html">crew_async()</a></code> object to run low-level launcher tasks
 asynchronously.</p></dd>
@@ -137,6 +133,11 @@ asynchronously.</p></dd>
 
 <dt><code>throttle</code></dt>
 <dd><p>A <code><a href="crew_throttle.html">crew_throttle()</a></code> object to throttle scaling.</p></dd>
+
+
+<dt><code>failed</code></dt>
+<dd><p>Number of failed worker launches
+(launches that exceed <code>seconds_launch</code> seconds to dial in).</p></dd>
 
 
 </dl><p></p></div>
@@ -155,7 +156,6 @@ asynchronously.</p></dd>
 <li><p><a href="#method-crew_class_launcher-start"><code>crew_class_launcher$start()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-terminate"><code>crew_class_launcher$terminate()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-resolve"><code>crew_class_launcher$resolve()</code></a></p></li>
-<li><p><a href="#method-crew_class_launcher-update"><code>crew_class_launcher$update()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-launch"><code>crew_class_launcher$launch()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-scale"><code>crew_class_launcher$scale()</code></a></p></li>
 <li><p><a href="#method-crew_class_launcher-launch_worker"><code>crew_class_launcher$launch_worker()</code></a></p></li>
@@ -431,48 +431,27 @@ help create custom launchers.</p><div class="section">
 asynchronous worker submission errors.'</p>
 </div>
 
-</div><p></p><hr><a id="method-crew_class_launcher-update"></a><div class="section">
-<h3 id="method-update-">Method <code><a href="https://rdrr.io/r/stats/update.html" class="external-link">update()</a></code><a class="anchor" aria-label="anchor" href="#method-update-"></a></h3>
-<p>Update worker metadata, resolve asynchronous
-worker submissions, and terminate lost workers.</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">update</span><span class="op">(</span><span class="va">status</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>status</code></dt>
-<dd><p>A <code>mirai</code> status list.</p></dd>
-
-
-</dl><p></p></div>
-</div>
-<div class="section">
-<h4 id="returns-8">Returns<a class="anchor" aria-label="anchor" href="#returns-8"></a></h4>
-<p><code>NULL</code> (invisibly).</p>
-</div>
-
 </div><p></p><hr><a id="method-crew_class_launcher-launch"></a><div class="section">
 <h3 id="method-launch-">Method <code>launch()</code><a class="anchor" aria-label="anchor" href="#method-launch-"></a></h3>
 <p>Launch a worker.</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">launch</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="returns-9">Returns<a class="anchor" aria-label="anchor" href="#returns-9"></a></h4>
+<h4 id="returns-8">Returns<a class="anchor" aria-label="anchor" href="#returns-8"></a></h4>
 <p>Handle of the launched worker.</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-scale"></a><div class="section">
 <h3 id="method-scale-">Method <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code><a class="anchor" aria-label="anchor" href="#method-scale-"></a></h3>
 <p>Auto-scale workers out to meet the demand of tasks.</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">scale</span><span class="op">(</span><span class="va">status</span>, throttle <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>status</code></dt>
 <dd><p>A <code>mirai</code> status list with worker and task information.</p></dd>
 
@@ -485,7 +464,7 @@ as of 2025-01-16 (<code>crew</code> version 0.10.2.9003).</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-10">Returns<a class="anchor" aria-label="anchor" href="#returns-10"></a></h4>
+<h4 id="returns-9">Returns<a class="anchor" aria-label="anchor" href="#returns-9"></a></h4>
 <p>Invisibly returns <code>TRUE</code> if there was any relevant
 auto-scaling activity (new worker launches or worker
 connection/disconnection events) (<code>FALSE</code> otherwise).</p>
@@ -494,12 +473,12 @@ connection/disconnection events) (<code>FALSE</code> otherwise).</p>
 </div><p></p><hr><a id="method-crew_class_launcher-launch_worker"></a><div class="section">
 <h3 id="method-launch-worker-">Method <code>launch_worker()</code><a class="anchor" aria-label="anchor" href="#method-launch-worker-"></a></h3>
 <p>Abstract worker launch method.</p><div class="section">
-<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">launch_worker</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>call</code></dt>
 <dd><p>Character of length 1 with a namespaced call to
 <code><a href="crew_worker.html">crew_worker()</a></code> which will run in the worker and accept tasks.</p></dd>
@@ -517,7 +496,7 @@ connection/disconnection events) (<code>FALSE</code> otherwise).</p>
 </div>
 
 <div class="section">
-<h4 id="returns-11">Returns<a class="anchor" aria-label="anchor" href="#returns-11"></a></h4>
+<h4 id="returns-10">Returns<a class="anchor" aria-label="anchor" href="#returns-10"></a></h4>
 <p>A handle to mock the worker launch.</p>
 </div>
 
@@ -525,24 +504,24 @@ connection/disconnection events) (<code>FALSE</code> otherwise).</p>
 <h3 id="method-terminate-workers-">Method <code>terminate_workers()</code><a class="anchor" aria-label="anchor" href="#method-terminate-workers-"></a></h3>
 <p>Deprecated on 2025-08-26
 (<code>crew</code> version 1.2.1.9004).</p><div class="section">
-<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">terminate_workers</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="returns-12">Returns<a class="anchor" aria-label="anchor" href="#returns-12"></a></h4>
+<h4 id="returns-11">Returns<a class="anchor" aria-label="anchor" href="#returns-11"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-crashes"></a><div class="section">
 <h3 id="method-crashes-">Method <code>crashes()</code><a class="anchor" aria-label="anchor" href="#method-crashes-"></a></h3>
 <p>Deprecated on 2025-01-28 (<code>crew</code> version 1.0.0).</p><div class="section">
-<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">crashes</span><span class="op">(</span>index <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>index</code></dt>
 <dd><p>Unused argument.</p></dd>
 
@@ -550,19 +529,19 @@ connection/disconnection events) (<code>FALSE</code> otherwise).</p>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-13">Returns<a class="anchor" aria-label="anchor" href="#returns-13"></a></h4>
+<h4 id="returns-12">Returns<a class="anchor" aria-label="anchor" href="#returns-12"></a></h4>
 <p>The integer 1, for compatibility.</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-set_name"></a><div class="section">
 <h3 id="method-set-name-">Method <code>set_name()</code><a class="anchor" aria-label="anchor" href="#method-set-name-"></a></h3>
 <p>Deprecated on 2025-01-28 (<code>crew</code> version 1.0.0).</p><div class="section">
-<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
+<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">set_name</span><span class="op">(</span><span class="va">name</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>Name to set for the launcher.</p></dd>
 
@@ -570,19 +549,19 @@ connection/disconnection events) (<code>FALSE</code> otherwise).</p>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-14">Returns<a class="anchor" aria-label="anchor" href="#returns-14"></a></h4>
+<h4 id="returns-13">Returns<a class="anchor" aria-label="anchor" href="#returns-13"></a></h4>
 <p><code>NULL</code> (invisibly).</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
+<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -631,7 +610,7 @@ connection/disconnection events) (<code>FALSE</code> otherwise).</p>
 <span class="r-in"><span><span class="va">launcher</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_launcher_local.html">crew_launcher_local</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span>url <span class="op">=</span> <span class="st">"tcp://127.0.0.1:57000"</span>, profile <span class="op">=</span> <span class="st">"profile"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">call</span><span class="op">(</span>worker <span class="op">=</span> <span class="st">"worker_name"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tlscert = NULL, rs = NULL), launcher = \"cd220582\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tlscert = NULL, rs = NULL), launcher = \"cef4e848\", worker = \"worker_name\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>

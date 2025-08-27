@@ -132,11 +132,11 @@ crew_launcher <- function(
   launcher
 }
 
-launcher_empty_instances <- tibble::tibble(
+launcher_empty_launches <- tibble::tibble(
   handle = list(),
-  name = character(0L),
   start = numeric(0L),
-  submitted = logical(0L)
+  submitted = logical(0L),
+  count = integer(0L)
 )
 
 #' @title Launcher abstract class
@@ -176,7 +176,7 @@ crew_class_launcher <- R6::R6Class(
     .options_metrics = NULL,
     .url = NULL,
     .profile = NULL,
-    .instances = launcher_empty_instances,
+    .launches = launcher_empty_launches,
     .async = NULL,
     .throttle = NULL,
     .failed = 0L
@@ -243,9 +243,10 @@ crew_class_launcher <- R6::R6Class(
     profile = function() {
       .subset2(private, ".profile")
     },
-    #' @field instances Data frame of worker instance information.
-    instances = function() {
-      .subset2(private, ".instances")
+    #' @field launches Data frame tracking worker launches with one row
+    #'   per launch. Each launch may create more than one worker.
+    launches = function() {
+      .subset2(private, ".launches")
     },
     #' @field async A [crew_async()] object to run low-level launcher tasks
     #'   asynchronously.
@@ -408,18 +409,40 @@ crew_class_launcher <- R6::R6Class(
           )
         )
       }
-      crew_assert(
-        is.function(self$launch_worker),
-        message = "launch_worker() must be a function."
-      )
-      fields <- c("call", "name")
-      crew_assert(
-        fields %in% names(formals(self$launch_worker)),
-        message = paste(
-          "launch_worker() must have the following arguments:",
-          paste(sprintf("\"%s\"", fields), collapse = ", ")
+      if (!is.null(self$launch_worker)) {
+        crew_assert(
+          is.function(self$launch_worker),
+          message = "If supplied, launch_worker() must be a function."
         )
-      )
+        fields <- "call"
+        if (!is.null(self$launch_worker)) {
+          crew_assert(
+            fields %in% names(formals(self$launch_worker)),
+            message = paste(
+              "If supplied, launch_worker()",
+              "must have the following arguments:",
+              paste(sprintf("\"%s\"", fields), collapse = ", ")
+            )
+          )
+        }
+      }
+      if (!is.null(self$launch_workers)) {
+        crew_assert(
+          is.function(self$launch_workers),
+          message = "If supplied, launch_worker() must be a function."
+        )
+        fields <- c("call", "n")
+        if (!is.null(self$launch_workers)) {
+          crew_assert(
+            fields %in% names(formals(self$launch_workers)),
+            message = paste(
+              "If supplied, launch_workers()",
+              "must have the following arguments:",
+              paste(sprintf("\"%s\"", fields), collapse = ", ")
+            )
+          )
+        }
+      }
       crew_deprecate(
         name = "terminate_worker()",
         date = "2025-08-26",
@@ -477,7 +500,7 @@ crew_class_launcher <- R6::R6Class(
           nzchar(.)
         )
       }
-      crew_assert(private$.instances, is.data.frame(.))
+      crew_assert(private$.launches, is.data.frame(.))
       if (!is.null(private$.r_arguments)) {
         crew_assert(
           is.character(private$.r_arguments),
@@ -536,26 +559,15 @@ crew_class_launcher <- R6::R6Class(
     #' @description Create a call to [crew_worker()] to
     #'   help create custom launchers.
     #' @return Character string with a call to [crew_worker()].
-    #' @param worker Character string, name of the worker.
-    #' @param socket Deprecated on 2025-01-28 (`crew` version 1.0.0).
-    #' @param launcher Deprecated on 2025-01-28 (`crew` version 1.0.0).
-    #' @param instance Deprecated on 2025-01-28 (`crew` version 1.0.0).
     #' @examples
     #' launcher <- crew_launcher_local()
     #' launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
     #' launcher$call(worker = "worker_name")
     #' launcher$terminate()
-    call = function(
-      worker,
-      socket = NULL,
-      launcher = NULL,
-      instance = NULL
-    ) {
+    call = function() {
       call <- substitute(
         crew::crew_worker(
           settings = settings,
-          launcher = launcher,
-          worker = worker,
           options_metrics = crew::crew_options_metrics(
             path = path,
             seconds_interval = seconds_interval
@@ -563,8 +575,6 @@ crew_class_launcher <- R6::R6Class(
         ),
         env = list(
           settings = self$settings(),
-          launcher = private$.name,
-          worker = worker,
           path = private$.options_metrics$path,
           seconds_interval = private$.options_metrics$seconds_interval %|||% 5
         )
@@ -597,7 +607,7 @@ crew_class_launcher <- R6::R6Class(
       private$.throttle <- crew_throttle(seconds_max = self$seconds_interval)
       private$.url <- url
       private$.profile <- profile
-      private$.instances <- launcher_empty_instances
+      private$.launches <- launcher_empty_launches
       private$.failed <- 0L
       invisible()
     },
@@ -623,29 +633,28 @@ crew_class_launcher <- R6::R6Class(
     #'   asynchronous worker submission errors.'
     resolve = function() {
       # TODO: remove this function when we get rid of async worker launches.
-      unresolved <- which(!private$.instances$submitted)
-      handles <- private$.instances$handle
+      unresolved <- which(!private$.launches$submitted)
+      handles <- private$.launches$handle
       for (index in unresolved) {
         handle <- .subset2(handles, index)
         if (mirai_resolved(handle)) {
           handle <- mirai_resolve(handle, launching = TRUE)
-          private$.instances$handle[[index]] <- handle %||% crew_null
-          private$.instances$submitted[index] <- TRUE
+          private$.launches$handle[[index]] <- handle %||% crew_null
+          private$.launches$submitted[index] <- TRUE
         }
       }
     },
     #' @description Launch a worker.
     #' @return Handle of the launched worker.
-    launch = function() {
-      name <- name_worker(private$.name, crew_random_name(n = 4L))
-      call <- self$call(worker = name)
-      handle <- self$launch_worker(call = call, name = name)
-      private$.instances <- tibble::add_row(
-        private$.instances,
+    #' @param n Positive integer, number of workers to launch.
+    launch = function(n = 1L) {
+      handle <- self$launch_workers(call = self$call(), n = n)
+      private$.launches <- tibble::add_row(
+        private$.launches,
         handle = list(handle) %||% crew_null,
-        name = name,
         start = now(),
-        submitted = FALSE
+        submitted = FALSE,
+        count = n
       )
       invisible()
     },
@@ -654,9 +663,18 @@ crew_class_launcher <- R6::R6Class(
     #' @return A handle to mock the worker launch.
     #' @param call Character of length 1 with a namespaced call to
     #'   [crew_worker()] which will run in the worker and accept tasks.
-    #' @param name Character of length 1 with an informative worker name.
-    launch_worker = function(call, name) {
-      list(call = call, name = name)
+    launch_worker = function(call) {
+      list(call = call)
+    },
+    #' @description Launch multiple workers.
+    #' @details Launcher plugins may overwrite this method
+    #'   to launch multiple workers from a single system call.
+    #' @return A handle to mock the worker launch.
+    #' @param call Character of length 1 with a namespaced call to
+    #'   [crew_worker()] which will run in each worker and accept tasks.
+    #' @param n Positive integer, number of workers to launch.
+    launch_workers = function(call, n) {
+      replicate(n, self$launch_worker(call), simplify = FALSE)
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return Invisibly returns `TRUE` if there was any relevant
@@ -668,8 +686,8 @@ crew_class_launcher <- R6::R6Class(
     scale = function(status, throttle = NULL) {
       self$resolve() # TODO: remove when we get rid of async worker launches
       # Count the number of workers we still expect to be launching.
-      instances <- private$.instances
-      total <- nrow(instances)
+      launches <- private$.launches
+      total <- sum(launches$count)
       connections <- status$connections
       disconnections <- status$disconnections
       failed <- private$.failed
@@ -677,11 +695,13 @@ crew_class_launcher <- R6::R6Class(
       # In case workers are submitted outside crew:
       expected_launching <- max(0L, expected_launching)
       # Among the workers we still expect to be launching,
-      # count the subset which are actually truly launching
-      # (dubbed already_launching)
+      # count the subset which are actually truly still launching
+      # (dubbed "already_launching" to reflect the logic later on).
       # These are the workers for whom startup period not yet expired.
-      start_times <- utils::tail(instances$start, expected_launching)
-      already_launching <- sum((now() - start_times) < private$.seconds_launch)
+      start_times <- utils::tail(launches$start, expected_launching)
+      count <- utils::tail(launches$count, expected_launching)
+      is_already_launching <- (now() - start_times) < private$.seconds_launch
+      already_launching <- sum(is_already_launching * count)
       # The workers with expired startup windows have failed.
       # We need to record those for future calls to scale().
       private$.failed <- failed + expected_launching - already_launching
@@ -693,7 +713,7 @@ crew_class_launcher <- R6::R6Class(
       supply <- already_launching + connections
       should_launch <- max(0L, demand - supply)
       # Launch those workers.
-      replicate(should_launch, self$launch())
+      self$launch(n = should_launch)
       # Tune the launcher polling interval using exponential backoff.
       activity <- should_launch > 0L
       private$.throttle$update(activity = activity)

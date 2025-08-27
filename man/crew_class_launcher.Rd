@@ -108,8 +108,9 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 \item \href{#method-crew_class_launcher-resolve}{\code{crew_class_launcher$resolve()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
-\item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
+\item \href{#method-crew_class_launcher-launch_workers}{\code{crew_class_launcher$launch_workers()}}
+\item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
 \item \href{#method-crew_class_launcher-crashes}{\code{crew_class_launcher$crashes()}}
 \item \href{#method-crew_class_launcher-set_name}{\code{crew_class_launcher$set_name()}}
@@ -353,36 +354,18 @@ asynchronous worker submission errors.'
 \subsection{Method \code{launch()}}{
 Launch a worker.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Handle of the launched worker.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-scale"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-scale}{}}}
-\subsection{Method \code{scale()}}{
-Auto-scale workers out to meet the demand of tasks.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$scale(status, throttle = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(n = 1L)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{status}}{A \code{mirai} status list with worker and task information.}
-
-\item{\code{throttle}}{Deprecated, only used in the controller
-as of 2025-01-16 (\code{crew} version 0.10.2.9003).}
+\item{\code{n}}{Positive integer, number of workers to launch.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Invisibly returns \code{TRUE} if there was any relevant
-auto-scaling activity (new worker launches or worker
-connection/disconnection events) (\code{FALSE} otherwise).
+Handle of the launched worker.
 }
 }
 \if{html}{\out{<hr>}}
@@ -410,6 +393,62 @@ Launcher plugins will overwrite this method.
 
 \subsection{Returns}{
 A handle to mock the worker launch.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-launch_workers"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-launch_workers}{}}}
+\subsection{Method \code{launch_workers()}}{
+Launch multiple workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_workers(call, name, n)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{call}}{Character of length 1 with a namespaced call to
+\code{\link[=crew_worker]{crew_worker()}} which will run in each worker and accept tasks.}
+
+\item{\code{name}}{Character string, informative name
+for the group of workers.}
+
+\item{\code{n}}{Positive integer, number of workers to launch.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Launcher plugins may overwrite this method
+to launch multiple workers from a single system call.
+}
+
+\subsection{Returns}{
+A handle to mock the worker launch.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-scale"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-scale}{}}}
+\subsection{Method \code{scale()}}{
+Auto-scale workers out to meet the demand of tasks.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$scale(status, throttle = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{status}}{A \code{mirai} status list with worker and task information.}
+
+\item{\code{throttle}}{Deprecated, only used in the controller
+as of 2025-01-16 (\code{crew} version 0.10.2.9003).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Invisibly returns \code{TRUE} if there was any relevant
+auto-scaling activity (new worker launches or worker
+connection/disconnection events) (\code{FALSE} otherwise).
 }
 }
 \if{html}{\out{<hr>}}

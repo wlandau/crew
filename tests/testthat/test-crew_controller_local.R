@@ -117,7 +117,7 @@ crew_test("crew_controller_local()", {
     expect_equal(out$result[[1]], "xy")
   }
   # terminate
-  handle <- x$launcher$instances$handle[[1]]
+  handle <- x$launcher$launches$handle[[1]]
   x$terminate()
   expect_false(x$client$started)
   expect_false(x$started())
@@ -171,7 +171,7 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
   expect_true(anyNA(out$warnings))
   expect_true(anyNA(out$trace))
   # cleanup
-  handle <- x$launcher$instances$handle[[1]]
+  handle <- x$launcher$launches$handle[[1]]
   x$terminate()
   expect_false(x$client$started)
   crew_retry(
@@ -195,7 +195,7 @@ crew_test("crew_controller_local() launch method", {
   })
   x$start()
   x$launch(n = 1L)
-  handle <- x$launcher$instances$handle[[1]]
+  handle <- x$launcher$launches$handle[[1]]
   crew_retry(
     ~ handle$is_alive(),
     seconds_interval = 0.1,

@@ -39,7 +39,7 @@ crew_test("active bindings for covr", {
   )
   expect_null(out$url)
   expect_null(out$profile)
-  expect_true(is.data.frame(out$instances))
+  expect_true(is.data.frame(out$launches))
   expect_equal(out$failed, 0L)
   expect_null(out$async)
   expect_s3_class(out$throttle, "crew_class_throttle")

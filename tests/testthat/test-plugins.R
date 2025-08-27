@@ -81,7 +81,7 @@ crew_test("custom launcher", {
   controller$push(name = "pid", command = ps::ps_pid())
   controller$wait(seconds_timeout = 10)
   out <- controller$pop()$result[[1]]
-  handle <- controller$launcher$instances$handle[[1]]
+  handle <- controller$launcher$launches$handle[[1]]
   exp <- handle$get_pid()
   expect_equal(out, exp)
   expect_true(handle$is_alive())
@@ -313,7 +313,7 @@ crew_test("custom launcher with async internal launcher tasks", {
     seconds_interval = 0.25,
     seconds_timeout = 15
   )
-  handle <- controller$launcher$instances$handle[[1L]]
+  handle <- controller$launcher$launches$handle[[1L]]
   pid <- handle$pid
   expect_equal(envir$pid, pid)
   expect_equal(handle$status, "started")

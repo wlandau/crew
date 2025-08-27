@@ -115,7 +115,7 @@ crew_test("crew_controller_group()", {
     expect_true(anyNA(out$trace))
     expect_true(anyNA(out$warnings))
     pid_out <- out$result[[1]]
-    pid_exp <- x$controllers[[2]]$launcher$instances$handle[[1]]$get_pid()
+    pid_exp <- x$controllers[[2]]$launcher$launches$handle[[1]]$get_pid()
     expect_equal(pid_out, pid_exp)
   }
   # substitute = FALSE # nolint
@@ -148,11 +148,11 @@ crew_test("crew_controller_group()", {
     expect_true(anyNA(out$trace))
     expect_true(anyNA(out$warnings))
     pid_out <- out$result[[1]]
-    pid_exp <- x$controllers[[1]]$launcher$instances$handle[[1]]$get_pid()
+    pid_exp <- x$controllers[[1]]$launcher$launches$handle[[1]]$get_pid()
     expect_equal(pid_out, pid_exp)
   }
   # cleanup
-  handle <- x$controllers[[2]]$launcher$instances$handle[[1]]
+  handle <- x$controllers[[2]]$launcher$launches$handle[[1]]
   x$terminate()
   expect_false(x$started())
   for (index in seq_len(2)) {
@@ -272,8 +272,8 @@ crew_test("crew_controller_group() launch method", {
   x$start()
   expect_silent(x$launch(n = 1L))
   handles <- list(
-    x$controllers[["a"]]$launcher$instances$handle[[1L]],
-    x$controllers[["b"]]$launcher$instances$handle[[1L]]
+    x$controllers[["a"]]$launcher$launches$handle[[1L]],
+    x$controllers[["b"]]$launcher$launches$handle[[1L]]
   )
   for (index in seq_len(2L)) {
     crew_retry(
@@ -310,11 +310,11 @@ crew_test("crew_controller_group() scale method", {
   a$push(command = "x", scale = FALSE)
   x$scale()
   crew_retry(
-    ~ nrow(a$launcher$instances) > 0L,
+    ~ nrow(a$launcher$launches) > 0L,
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
-  handle <- a$launcher$instances$handle[[1L]]
+  handle <- a$launcher$launches$handle[[1L]]
   crew_retry(
     fun = ~ handle$is_alive(),
     seconds_interval = 0.1,
@@ -899,7 +899,7 @@ crew_test("crash detection with backup controllers in a group", {
       seconds_timeout = 60
     )
     for (controller in list(a, b, c)) {
-      for (handle in controller$launcher$instances$handle) {
+      for (handle in controller$launcher$launches$handle) {
         handle$kill()
       }
     }

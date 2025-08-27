@@ -67,7 +67,7 @@ crew_test("terminate a process", {
   })
   controller$start()
   controller$launch()
-  handle <- controller$launcher$instances$handle[[1L]]
+  handle <- controller$launcher$launches$handle[[1L]]
   crew_retry(
     ~ handle$is_alive(),
     seconds_interval = 0.1,

@@ -76,10 +76,10 @@ crew_test("crew_launcher_local() can run a task on a worker", {
   client$start()
   launcher$start(url = client$url, profile = client$profile)
   launcher$launch()
-  expect_s3_class(launcher$instances$handle[[1L]], "process")
+  expect_s3_class(launcher$launches$handle[[1L]], "process")
   expect_silent(launcher$validate())
   crew::crew_retry(
-    ~ launcher$instances$handle[[1L]]$is_alive(),
+    ~ launcher$launches$handle[[1L]]$is_alive(),
     seconds_interval = 0.1,
     seconds_timeout = 5
   )
@@ -89,16 +89,16 @@ crew_test("crew_launcher_local() can run a task on a worker", {
     seconds_interval = 0.5,
     seconds_timeout = 10
   )
-  expect_equal(task$data, launcher$instances$handle[[1L]]$get_pid())
+  expect_equal(task$data, launcher$launches$handle[[1L]]$get_pid())
   client$terminate()
   tryCatch(
     crew::crew_retry(
-      ~ !launcher$instances$handle[[1L]]$is_alive(),
+      ~ !launcher$launches$handle[[1L]]$is_alive(),
       seconds_interval = 0.1,
       seconds_timeout = 5
     ),
     crew_expire = function(condition) {
-      launcher$instances$handle[[1L]]$signal(signal = crew_terminate_signal())
+      launcher$launches$handle[[1L]]$signal(signal = crew_terminate_signal())
     }
   )
 })
@@ -129,7 +129,7 @@ crew_test("crew_launcher_local() worker tasks_max", {
   launcher$launch()
   crew::crew_retry(
     ~ {
-      handle <- launcher$instances$handle[[1]]
+      handle <- launcher$launches$handle[[1]]
       !is_crew_null(handle) && handle$is_alive()
     },
     seconds_interval = 0.5,
@@ -141,9 +141,9 @@ crew_test("crew_launcher_local() worker tasks_max", {
     seconds_interval = 0.5,
     seconds_timeout = 30
   )
-  expect_equal(task$data, launcher$instances$handle[[1]]$get_pid())
+  expect_equal(task$data, launcher$launches$handle[[1]]$get_pid())
   crew::crew_retry(
-    ~ !launcher$instances$handle[[1]]$is_alive(),
+    ~ !launcher$launches$handle[[1]]$is_alive(),
     seconds_interval = 0.5,
     seconds_timeout = 30
   )

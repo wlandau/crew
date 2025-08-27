@@ -557,7 +557,7 @@ crew_class_launcher <- R6::R6Class(
     #' @examples
     #' launcher <- crew_launcher_local()
     #' launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
-    #' launcher$call(worker = "worker_name")
+    #' launcher$call()
     #' launcher$terminate()
     call = function() {
       call <- substitute(

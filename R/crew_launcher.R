@@ -649,6 +649,15 @@ crew_class_launcher <- R6::R6Class(
       )
       invisible()
     },
+    #' @description Abstract worker launch method.
+    #' @details Launcher plugins will overwrite this method.
+    #' @return A handle to mock the worker launch.
+    #' @param call Character of length 1 with a namespaced call to
+    #'   [crew_worker()] which will run in the worker and accept tasks.
+    #' @param name Character of length 1 with an informative worker name.
+    launch_worker = function(call, name) {
+      list(call = call, name = name)
+    },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return Invisibly returns `TRUE` if there was any relevant
     #'   auto-scaling activity (new worker launches or worker
@@ -689,15 +698,6 @@ crew_class_launcher <- R6::R6Class(
       activity <- should_launch > 0L
       private$.throttle$update(activity = activity)
       invisible(activity)
-    },
-    #' @description Abstract worker launch method.
-    #' @details Launcher plugins will overwrite this method.
-    #' @return A handle to mock the worker launch.
-    #' @param call Character of length 1 with a namespaced call to
-    #'   [crew_worker()] which will run in the worker and accept tasks.
-    #' @param name Character of length 1 with an informative worker name.
-    launch_worker = function(call, name) {
-      list(call = call, name = name)
     },
     #' @description Deprecated on 2025-08-26
     #'  (`crew` version 1.2.1.9004).

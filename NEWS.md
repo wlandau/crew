@@ -1,4 +1,4 @@
-# crew 1.2.1.9008 (development)
+# crew 1.2.1.9009 (development)
 
 * Reinstate checks that were temporarily suppressed to help plugins transition to #217.
 * Support `reset_globals`, `reset_packages`, `reset_options`, and `garbage_collection` in `crew_controller_sequential()` (#217).
@@ -17,6 +17,7 @@
 * Deprecate `crew_clean()` in favor of `crew_monitor_local()` (#236).
 * Trim down the argument list of `launch_worker()` to just include arguments `call` and `name`.
 * Simplify the auto-scaling algorithm to support greater interoperability and the eventual threaded dispatcher in `mirai` (#232).
+* Deprecate `processes` and `async` in `crew` launchers in favor of job arrays (#218, #237).
 
 # crew 1.2.1
 

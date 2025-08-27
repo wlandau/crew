@@ -67,14 +67,7 @@
 #'   [crew::crew_controller()] instead.
 #' @param crashes_error Deprecated on 2025-01-13 (`crew` version 0.10.2.9002).
 #' @param launch_max Deprecated on 2024-11-04 (`crew` version 0.10.2.9002).
-#' @param processes `NULL` or positive integer of length 1,
-#'   number of local processes to
-#'   launch to allow worker launches to happen asynchronously. If `NULL`,
-#'   then no local processes are launched. If 1 or greater, then the launcher
-#'   starts the processes on `start()` and ends them on `terminate()`.
-#'   Plugins that may use these processes should run asynchronous calls
-#'   using `launcher$async$eval()` and expect a `mirai` task object
-#'   as the return value.
+#' @param processes Deprecated on 2025-08-27 (`crew` version 1.2.1.9009).
 #' @param r_arguments Optional character vector of command line arguments
 #'   to pass to `Rscript` (non-Windows) or `Rscript.exe` (Windows)
 #'   when starting a worker. Example:
@@ -139,6 +132,27 @@ launcher_empty_launches <- tibble::tibble(
   count = integer(0L)
 )
 
+# TODO: remove when the next crew.aws.batch release drops async$eval().
+deprecated_async_eval <- function(
+  command,
+  substitute = TRUE,
+  data = list(),
+  packages = character(0L),
+  library = NULL
+) {
+  crew_deprecate(
+    name = "async$eval() in crew plugins",
+    date = "2025-08-27",
+    version = "1.2.1.9009",
+    alternative = "none",
+    condition = "message",
+    value = "x"
+  )
+  command <- if_any(substitute, substitute(command), command)
+  load_packages(packages = packages, library = library)
+  eval(expr = command, envir = list2env(data, parent = globalenv()))
+}
+
 #' @title Launcher abstract class
 #' @export
 #' @family launcher
@@ -171,13 +185,11 @@ crew_class_launcher <- R6::R6Class(
     .tasks_max = NULL,
     .tasks_timers = NULL,
     .tls = NULL,
-    .processes = NULL,
     .r_arguments = NULL,
     .options_metrics = NULL,
     .url = NULL,
     .profile = NULL,
     .launches = launcher_empty_launches,
-    .async = NULL,
     .throttle = NULL,
     .failed = 0L
   ),
@@ -222,11 +234,6 @@ crew_class_launcher <- R6::R6Class(
     tls = function() {
       .subset2(private, ".tls")
     },
-    #' @field processes See [crew_launcher()].
-    #'   asynchronously.
-    processes = function() {
-      .subset2(private, ".processes")
-    },
     #' @field r_arguments See [crew_launcher()].
     r_arguments = function() {
       .subset2(private, ".r_arguments")
@@ -247,11 +254,6 @@ crew_class_launcher <- R6::R6Class(
     #'   per launch. Each launch may create more than one worker.
     launches = function() {
       .subset2(private, ".launches")
-    },
-    #' @field async A [crew_async()] object to run low-level launcher tasks
-    #'   asynchronously.
-    async = function() {
-      .subset2(private, ".async")
     },
     #' @field throttle A [crew_throttle()] object to throttle scaling.
     throttle = function() {
@@ -283,7 +285,7 @@ crew_class_launcher <- R6::R6Class(
     #' @param crashes_error See [crew_launcher()].
     #' @param launch_max Deprecated.
     #' @param tls See [crew_launcher()].
-    #' @param processes See [crew_launcher()].
+    #' @param processes Deprecated on 2025-08-27 (`crew` version 1.2.1.9009).
     #' @param r_arguments See [crew_launcher()].
     #' @param options_metrics See [crew_launcher()].
     #' @examples
@@ -379,6 +381,14 @@ crew_class_launcher <- R6::R6Class(
         condition = "message",
         value = crashes_error
       )
+      crew_deprecate(
+        name = "processes",
+        date = "2025-08-27",
+        version = "1.2.1.9009",
+        alternative = "none",
+        condition = "message",
+        value = processes
+      )
       private$.name <- name %|||% crew_random_name(n = 4L)
       private$.workers <- workers
       private$.seconds_interval <- seconds_interval
@@ -389,7 +399,6 @@ crew_class_launcher <- R6::R6Class(
       private$.tasks_max <- tasks_max
       private$.tasks_timers <- tasks_timers
       private$.tls <- tls
-      private$.processes <- processes
       private$.r_arguments <- r_arguments
       private$.options_metrics <- options_metrics
       private$.throttle <- crew_throttle(seconds_max = seconds_interval)
@@ -483,14 +492,6 @@ crew_class_launcher <- R6::R6Class(
           message = paste(field, "must be a non-missing numeric of length 1")
         )
       }
-      crew_assert(
-        private$.processes %|||% 1L,
-        is.numeric(.),
-        . > 0L,
-        length(.) == 1L,
-        !anyNA(.),
-        message = "processes must be NULL or a positive integer of length 1"
-      )
       if (!is.null(private$.url)) {
         crew_assert(
           private$.url,
@@ -512,13 +513,6 @@ crew_class_launcher <- R6::R6Class(
         message = "field 'tls' must be an object created by crew_tls()"
       )
       private$.tls$validate()
-      if (!is.null(private$.async)) {
-        crew_assert(
-          inherits(private$.async, "crew_class_async"),
-          message = "field 'async' must be an object created by crew_async()"
-        )
-        private$.async$validate()
-      }
       if (!is.null(private$.throttle)) {
         crew_assert(
           inherits(private$.throttle, "crew_class_throttle"),
@@ -601,11 +595,6 @@ crew_class_launcher <- R6::R6Class(
       )
       url <- url %|||% sockets[1L]
       profile <- profile %|||% crew_random_name()
-      if (!is.null(private$.async)) {
-        private$.async$terminate()
-      }
-      private$.async <- crew_async(workers = private$.processes)
-      private$.async$start()
       private$.throttle <- crew_throttle(seconds_max = self$seconds_interval)
       private$.url <- url
       private$.profile <- profile
@@ -622,29 +611,7 @@ crew_class_launcher <- R6::R6Class(
       if (!is.null(private$.throttle)) {
         private$.throttle$reset()
       }
-      using_async <- !is.null(private$.async) &&
-        private$.async$asynchronous() &&
-        private$.async$started()
-      if (using_async) {
-        on.exit(private$.async$terminate())
-      }
       invisible()
-    },
-    #' @description Resolve asynchronous worker submissions.
-    #' @return `NULL` (invisibly). Throw an error if there were any
-    #'   asynchronous worker submission errors.'
-    resolve = function() {
-      # TODO: remove this function when we get rid of async worker launches.
-      unresolved <- which(!private$.launches$submitted)
-      handles <- private$.launches$handle
-      for (index in unresolved) {
-        handle <- .subset2(handles, index)
-        if (mirai_resolved(handle)) {
-          handle <- mirai_resolve(handle, launching = TRUE)
-          private$.launches$handle[[index]] <- handle %||% crew_null
-          private$.launches$submitted[index] <- TRUE
-        }
-      }
     },
     #' @description Launch a worker.
     #' @return Handle of the launched worker.
@@ -699,7 +666,6 @@ crew_class_launcher <- R6::R6Class(
     #' @param throttle Deprecated, only used in the controller
     #'   as of 2025-01-16 (`crew` version 0.10.2.9003).
     scale = function(status, throttle = NULL) {
-      self$resolve() # TODO: remove when we get rid of async worker launches
       # Count the number of workers we still expect to be launching.
       launches <- private$.launches
       total <- sum(launches$count)
@@ -780,6 +746,8 @@ crew_class_launcher <- R6::R6Class(
       )
       private$.name <- name
       invisible()
-    }
+    },
+    #' @field async Deprecated on 2025-08-27 (`crew` version 1.2.1.9009).
+    async = list(eval = deprecated_async_eval)
   )
 )

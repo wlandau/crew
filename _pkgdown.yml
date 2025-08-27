@@ -66,10 +66,6 @@ reference:
   contents:
   - crew_relay
   - crew_class_relay
-- title: Local asynchronicity
-  contents:
-  - crew_async
-  - crew_class_async
 - title: Utilities
   contents:
   - crew_assert

@@ -78,8 +78,8 @@ crew_test("crew_client() disconnections", {
   skip_on_os("windows")
   x <- crew_client()
   on.exit({
-    client$terminate()
-    rm(client)
+    x$terminate()
+    rm(x)
     crew_test_sleep()
   })
   expect_equal(x$disconnections, 0L)

@@ -862,3 +862,52 @@ crew_test("serialization", {
   out <- x$pop()
   expect_equal(out$status, "success")
 })
+
+crew_test("count disconnections in a controller", {
+  skip_on_cran()
+  skip_on_os("windows")
+  x <- crew_controller_local(workers = 1L)
+  on.exit({
+    x$terminate()
+    rm(x)
+    gc()
+    crew_test_sleep()
+  })
+  expect_equal(x$client$disconnections, 0L)
+  x$start()
+  expect_equal(x$client$disconnections, 0L)
+  for (launch in seq_len(4L)) {
+    x$launch(n = 1L)
+    crew_retry(
+      ~ {
+        identical(
+          as.integer(x$client$status()$connections),
+          1L
+        )
+      },
+      seconds_interval = 0.5,
+      seconds_timeout = 60
+    )
+    for (check in seq_len(4L)) {
+      expect_equal(x$client$disconnections, launch - 1L)
+      expect_equal(x$client$status()$disconnections, launch - 1L)
+    }
+    for (handle in x$launcher$instances$handle) {
+      handle$kill()
+    }
+    crew_retry(
+      ~ {
+        identical(
+          as.integer(x$client$status()$connections),
+          0L
+        )
+      },
+      seconds_interval = 0.5,
+      seconds_timeout = 60
+    )
+    for (check in seq_len(4L)) {
+      expect_equal(x$client$disconnections, launch)
+      expect_equal(x$client$status()$disconnections, launch)
+    }
+  }
+})

@@ -56,6 +56,8 @@ condition variable.}
 \item{\code{url}}{Client websocket URL.}
 
 \item{\code{profile}}{Compute profile of the client.}
+
+\item{\code{disconnections}}{Cumulative worker disconnection events.}
 }
 \if{html}{\out{</div>}}
 }
@@ -68,8 +70,6 @@ condition variable.}
 \item \href{#method-crew_class_client-start}{\code{crew_class_client$start()}}
 \item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
 \item \href{#method-crew_class_client-status}{\code{crew_class_client$status()}}
-\item \href{#method-crew_class_client-push_events}{\code{crew_class_client$push_events()}}
-\item \href{#method-crew_class_client-collect_events}{\code{crew_class_client$collect_events()}}
 \item \href{#method-crew_class_client-pids}{\code{crew_class_client$pids()}}
 }
 }
@@ -198,41 +198,6 @@ Get the counters from \code{mirai::status()}.
 A named integer vector of task counts
 (awaiting, executing, completed) as well as the number of
 worker connections.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-push_events"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-push_events}{}}}
-\subsection{Method \code{push_events()}}{
-Collect mirai worker-specific
-connection/disconnection events.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$push_events(events)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{events}}{Integer vector of connection/disconnection events.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-collect_events"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-collect_events}{}}}
-\subsection{Method \code{collect_events()}}{
-Collect mirai worker-specific
-connection/disconnection events.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$collect_events()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-Integer vector of connection/disconnection events.
 }
 }
 \if{html}{\out{<hr>}}

@@ -507,9 +507,7 @@ crew_class_controller <- R6::R6Class(
         return(invisible())
       }
       start()
-      status <- .client$status()
-      status$events <- .client$collect_events() # TODO: remove on #232
-      activity <- .launcher$scale(status = status, throttle = throttle)
+      activity <- .launcher$scale(.client$status(), throttle)
       invisible(activity)
     },
     #' @description Run worker auto-scaling in a `later` loop

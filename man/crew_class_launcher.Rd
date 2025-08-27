@@ -86,12 +86,13 @@ asynchronously.}
 
 \item{\code{instances}}{Data frame of worker instance information.}
 
-\item{\code{id}}{Integer worker ID from the last call to \code{settings()}.}
-
 \item{\code{async}}{A \code{\link[=crew_async]{crew_async()}} object to run low-level launcher tasks
 asynchronously.}
 
 \item{\code{throttle}}{A \code{\link[=crew_throttle]{crew_throttle()}} object to throttle scaling.}
+
+\item{\code{failed}}{Number of failed worker launches
+(launches that exceed \code{seconds_launch} seconds to dial in).}
 }
 \if{html}{\out{</div>}}
 }
@@ -106,7 +107,6 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
 \item \href{#method-crew_class_launcher-resolve}{\code{crew_class_launcher$resolve()}}
-\item \href{#method-crew_class_launcher-update}{\code{crew_class_launcher$update()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
 \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
@@ -345,27 +345,6 @@ Resolve asynchronous worker submissions.
 \subsection{Returns}{
 \code{NULL} (invisibly). Throw an error if there were any
 asynchronous worker submission errors.'
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-update"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-update}{}}}
-\subsection{Method \code{update()}}{
-Update worker metadata, resolve asynchronous
-worker submissions, and terminate lost workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$update(status)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{status}}{A \code{mirai} status list.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
 }
 }
 \if{html}{\out{<hr>}}

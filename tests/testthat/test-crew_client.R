@@ -73,16 +73,47 @@ crew_test("crew_client() works", {
   px$signal(signal = crew_terminate_signal())
 })
 
-crew_test("crew_client() push_events() and collect_events()", {
+crew_test("crew_client() disconnections", {
+  skip_on_cran()
+  skip_on_os("windows")
   x <- crew_client()
+  expect_equal(x$disconnections, 0L)
   x$start()
-  on.exit(x$terminate())
-  for (index in seq_len(3L)) {
-    expect_equal(x$collect_events(), integer(0L))
-    x$push_events(1L)
-    x$push_events(c(4L, 3L))
-    x$push_events(0L)
-    expect_equal(x$collect_events(), c(1L, 4L, 3L, 0L))
+  expect_equal(x$disconnections, 0L)
+  bin <- if_any(tolower(Sys.info()[["sysname"]]) == "windows", "R.exe", "R")
+  path <- file.path(R.home("bin"), bin)
+  call <- sprintf("mirai::daemon('%s', dispatcher = TRUE, id = 1L)", x$url)
+  for (launch in seq_len(4L)) {
+    px <- processx::process$new(command = path, args = c("-e", call))
+    crew_retry(
+      ~ {
+        identical(
+          as.integer(x$status()$connections),
+          1L
+        )
+      },
+      seconds_interval = 0.5,
+      seconds_timeout = 60
+    )
+    for (check in seq_len(4L)) {
+      expect_equal(x$disconnections, launch - 1L)
+      expect_equal(x$status()$disconnections, launch - 1L)
+    }
+    px$signal(signal = crew_terminate_signal())
+    crew_retry(
+      ~ {
+        identical(
+          as.integer(x$status()$connections),
+          0L
+        )
+      },
+      seconds_interval = 0.5,
+      seconds_timeout = 60
+    )
+    for (check in seq_len(4L)) {
+      expect_equal(x$disconnections, launch)
+      expect_equal(x$status()$disconnections, launch)
+    }
   }
 })
 

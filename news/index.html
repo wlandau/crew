@@ -68,6 +68,7 @@
 <li>Simplify the auto-scaling algorithm to support greater interoperability and the eventual threaded dispatcher in <code>mirai</code> (<a href="https://github.com/wlandau/crew/issues/232" class="external-link">#232</a>).</li>
 <li>Deprecate <code>processes</code> and <code>async</code> in <code>crew</code> launchers in favor of job arrays (<a href="https://github.com/wlandau/crew/issues/218" class="external-link">#218</a>, <a href="https://github.com/wlandau/crew/issues/237" class="external-link">#237</a>).</li>
 <li>Drop the unified controller group throttle. Let individual controllers handle their own throttling based on their own auto-scaling settings.</li>
+<li>When <code>tasks_mask</code> is finite, set <code>seconds_min</code> to <code>seconds_interval</code> in the throttle to give tasks enough time to accumulate.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.1" id="crew-121">crew 1.2.1<a class="anchor" aria-label="anchor" href="#crew-121"></a></h2><p class="text-muted">CRAN release: 2025-06-09</p>

@@ -119,10 +119,14 @@ to return a completed task.</p>
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get pid"</span>, command <span class="op">=</span> <span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_pid.html" class="external-link">ps_pid</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>As a side effect, methods <code>push()</code>, <code>pop()</code>,
 and <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> also launch workers to run the tasks. However,
-launches may not occur immediately because <code>crew</code> may wait to
-collect many tasks before scaling to the appropriate number of workers.
-So you may need to loop over <code>pop()</code> or <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code>
-multiple times to make sure enough workers are always available.</p>
+by default<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;when the &lt;code&gt;throttle&lt;/code&gt; argument is
+&lt;code&gt;TRUE&lt;/code&gt;&lt;/p&gt;"><sup>1</sup></a> workers only launch at certain times. This
+is for efficiency: it avoids the slowdown of frequent system calls, and
+it gives plugins like <code>crew.cluster</code> enough time to collect
+tasks for large efficient job arrays. To ensure workers are launched,
+either set the <code>throttle</code> argument to <code>FALSE</code> or
+repeat calls to <code>pop()</code>, <code>collect()</code>, or
+<code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">pop</span><span class="op">(</span><span class="op">)</span> <span class="co"># No workers started yet and the task is not done.</span></span>
 <span><span class="co">#&gt; NULL</span></span>
@@ -135,7 +139,8 @@ multiple times to make sure enough workers are always available.</p>
 <span><span class="co">#&gt; 1 get pid ps::ps_pi… &lt;int&gt;  succe… NA        0 NA    NA             0    NA</span></span>
 <span><span class="co">#&gt; # ℹ 3 more variables: algorithm &lt;chr&gt;, controller &lt;chr&gt;, worker &lt;chr&gt;</span></span></code></pre></div>
 <p>Alternatively, <code>wait()</code> is a loop that repeatedly checks
-tasks and launches workers until all tasks complete.</p>
+tasks and launches workers until all tasks complete, and it also
+launches workers as needed.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></code></pre></div>
 <p>The return value of the task is in the <code>result</code>
@@ -468,7 +473,7 @@ workflow and troubleshoot, or you can choose to retry the task on a
 different (possibly new) worker. Simply push the task again and use the
 same task name.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;As of &lt;code&gt;targets&lt;/code&gt; &amp;gt;= 1.10.0.9002,
 &lt;code&gt;targets&lt;/code&gt; pipelines automatically retry tasks whose workers
-crash.&lt;/p&gt;"><sup>1</sup></a></p>
+crash.&lt;/p&gt;"><sup>2</sup></a></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span>command <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">300</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"my_task"</span><span class="op">)</span></span></code></pre></div>
 <p>The controller enforces a maximum number of retries, given by the

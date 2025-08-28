@@ -56,8 +56,6 @@ condition variable.}
 \item{\code{url}}{Client websocket URL.}
 
 \item{\code{profile}}{Compute profile of the client.}
-
-\item{\code{disconnections}}{Cumulative worker disconnection events.}
 }
 \if{html}{\out{</div>}}
 }

@@ -683,10 +683,10 @@ crew_test("crash detection with crashes_max == 0L", {
   x$wait(seconds_timeout = 30)
   expect_true(tibble::is_tibble(x$pop()))
   expect_equal(x$crashes(name = "x"), 0L)
-  x$push(Sys.sleep(300L), name = "x")
+  x$push(Sys.sleep(300L), name = "x", throttle = FALSE)
   crew_retry(
     ~ {
-      x$scale()
+      x$scale(throttle = FALSE)
       isTRUE(x$client$status()["connections"] > 0L)
     },
     seconds_interval = 0.1,

@@ -715,8 +715,8 @@ crew_class_launcher <- R6::R6Class(
       # Count the number of workers we still expect to be launching.
       launches <- private$.launches
       total <- launches$total[nrow(launches)]
-      connections <- status$connections
-      disconnections <- status$disconnections
+      connections <- .subset(status, "connections")
+      disconnections <- .subset(status, "cumulative") - connections
       failed <- private$.failed
       expected_launching <- total - connections - disconnections - failed
       # In case workers are submitted outside crew:
@@ -738,7 +738,7 @@ crew_class_launcher <- R6::R6Class(
       # Figure out how many workers to launch.
       # We want to ensure the number of active workers
       # meets the demand of unresolved tasks (up to a pre-determined cap).
-      tasks <- status$mirai["awaiting"] + status$mirai["executing"]
+      tasks <- .subset(status, "awaiting") + .subset(status, "executing")
       demand <- min(private$.workers, tasks)
       supply <- already_launching + connections
       should_launch <- max(0L, demand - supply)

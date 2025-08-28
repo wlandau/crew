@@ -5,6 +5,24 @@
 #'   in functions that create custom third-party launchers. See
 #'   `@inheritParams crew::crew_launcher` in the source code file of
 #'   [crew_launcher_local()].
+#' @section Auto-scaling:
+#'   `crew` launchers implement auto-scaling in the `scale()` method.
+#'   When the task load increases, the number of workers increases in response
+#'   to demand. When the task load decreases, the workers start to exit.
+#'   This behavior happens dynamically over the course of a workflow,
+#'   and it can be tuned with arguments `seconds_interval`, `seconds_wall`,
+#'   and `tasks_max`.
+#'
+#'   `tasks_max` is special: it determines not only the number of tasks
+#'   a worker runs before exiting, it also determines how often
+#'   auto-scaling runs.
+#'   If `tasks_max` is `Inf`, then `crew` only scales at equally-spaced
+#'   time intervals of `seconds_interval` to allow enough pending
+#'   tasks to accumulate for job arrays.
+#'   This last part is important because auto-scaling
+#'   too frequently could lead to hundreds of separate job arrays with only
+#'   job per array (as opposed to the desired outcome of 1 or 2 arrays
+#'   with many jobs each).
 #' @inheritParams crew_client
 #' @inheritParams crew_worker
 #' @param name Character string, name of the launcher. If the name is
@@ -44,11 +62,11 @@
 #' @param seconds_exit Deprecated on 2023-09-21 in version 0.5.0.9002.
 #'   No longer necessary.
 #' @param tasks_max Maximum number of tasks that a worker will do before
-#'   exiting. See the `maxtasks` argument of `mirai::daemon()`.
-#'   `crew` does not
-#'   excel with perfectly transient workers because it does not micromanage
-#'   the assignment of tasks to workers, it is recommended to set
-#'   `tasks_max` to a value greater than 1.
+#'   exiting. If it is a finite positive integer, then `crew` auto-scales
+#'   with an aggressive exponential backoff algorithm.
+#'   If `tasks_max` is `Inf`, then `crew` only scales at time intervals
+#'   of `seconds_interval` to allow enough pending tasks to accumulate
+#'   for job arrays. See the Auto-scaling section for details.
 #' @param tasks_timers Number of tasks to do before activating
 #'   the timers for `seconds_idle` and `seconds_wall`.
 #'   See the `timerstart` argument of `mirai::daemon()`.
@@ -403,7 +421,12 @@ crew_class_launcher <- R6::R6Class(
       private$.tls <- tls
       private$.r_arguments <- r_arguments
       private$.options_metrics <- options_metrics
-      private$.throttle <- crew_throttle()
+      private$.throttle <- crew_throttle(
+        seconds_max = seconds_interval,
+        # Persistent workers should not run auto-scaling too frequently
+        # because then job arrays would not be as effective (see help file).
+        seconds_min = if_any(is.finite(tasks_max), 1e-4, seconds_interval)
+      )
     },
     #' @description Validate the launcher.
     #' @return `NULL` (invisibly).

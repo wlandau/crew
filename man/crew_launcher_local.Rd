@@ -75,11 +75,11 @@ See the \code{walltime} argument of \code{mirai::daemon()}.}
 No longer necessary.}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
-exiting. See the \code{maxtasks} argument of \code{mirai::daemon()}.
-\code{crew} does not
-excel with perfectly transient workers because it does not micromanage
-the assignment of tasks to workers, it is recommended to set
-\code{tasks_max} to a value greater than 1.}
+exiting. If it is a finite positive integer, then \code{crew} auto-scales
+with an aggressive exponential backoff algorithm.
+If \code{tasks_max} is \code{Inf}, then \code{crew} only scales at time intervals
+of \code{seconds_interval} to allow enough pending tasks to accumulate
+for job arrays. See the Auto-scaling section for details.}
 
 \item{tasks_timers}{Number of tasks to do before activating
 the timers for \code{seconds_idle} and \code{seconds_wall}.

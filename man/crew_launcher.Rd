@@ -73,11 +73,11 @@ See the \code{walltime} argument of \code{mirai::daemon()}.}
 No longer necessary.}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
-exiting. See the \code{maxtasks} argument of \code{mirai::daemon()}.
-\code{crew} does not
-excel with perfectly transient workers because it does not micromanage
-the assignment of tasks to workers, it is recommended to set
-\code{tasks_max} to a value greater than 1.}
+exiting. If it is a finite positive integer, then \code{crew} auto-scales
+with an aggressive exponential backoff algorithm.
+If \code{tasks_max} is \code{Inf}, then \code{crew} only scales at time intervals
+of \code{seconds_interval} to allow enough pending tasks to accumulate
+for job arrays. See the Auto-scaling section for details.}
 
 \item{tasks_timers}{Number of tasks to do before activating
 the timers for \code{seconds_idle} and \code{seconds_wall}.
@@ -126,6 +126,27 @@ in functions that create custom third-party launchers. See
 \verb{@inheritParams crew::crew_launcher} in the source code file of
 \code{\link[=crew_launcher_local]{crew_launcher_local()}}.
 }
+\section{Auto-scaling}{
+
+\code{crew} launchers implement auto-scaling in the \code{scale()} method.
+When the task load increases, the number of workers increases in response
+to demand. When the task load decreases, the workers start to exit.
+This behavior happens dynamically over the course of a workflow,
+and it can be tuned with arguments \code{seconds_interval}, \code{seconds_wall},
+and \code{tasks_max}.
+
+\code{tasks_max} is special: it determines not only the number of tasks
+a worker runs before exiting, it also determines how often
+auto-scaling runs.
+If \code{tasks_max} is \code{Inf}, then \code{crew} only scales at equally-spaced
+time intervals of \code{seconds_interval} to allow enough pending
+tasks to accumulate for job arrays.
+This last part is important because auto-scaling
+too frequently could lead to hundreds of separate job arrays with only
+job per array (as opposed to the desired outcome of 1 or 2 arrays
+with many jobs each).
+}
+
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()

@@ -13,7 +13,7 @@ crew_launcher_local()."><meta property="og:image" content="https://wlandau.githu
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9009</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -202,14 +202,7 @@ Please use the <code>garbage_collection</code> option of
 
 
 <dt id="arg-processes">processes<a class="anchor" aria-label="anchor" href="#arg-processes"></a></dt>
-<dd><p><code>NULL</code> or positive integer of length 1,
-number of local processes to
-launch to allow worker launches to happen asynchronously. If <code>NULL</code>,
-then no local processes are launched. If 1 or greater, then the launcher
-starts the processes on <code><a href="https://rdrr.io/r/stats/start.html" class="external-link">start()</a></code> and ends them on <code>terminate()</code>.
-Plugins that may use these processes should run asynchronous calls
-using <code>launcher$async$eval()</code> and expect a <code>mirai</code> task object
-as the return value.</p></dd>
+<dd><p>Deprecated on 2025-08-27 (<code>crew</code> version 1.2.1.9009).</p></dd>
 
 
 <dt id="arg-r-arguments">r_arguments<a class="anchor" aria-label="anchor" href="#arg-r-arguments"></a></dt>

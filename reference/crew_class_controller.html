@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9009</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -506,7 +506,7 @@ compatible with the analogous method of controller groups.</p></dd>
 <h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>throttle</code></dt>
 <dd><p><code>TRUE</code> to skip auto-scaling if it already happened
-within the last <code>seconds_interval</code> seconds. <code>FALSE</code> to auto-scale
+within the last polling interval. <code>FALSE</code> to auto-scale
 every time <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> is called. Throttling avoids
 overburdening the <code>mirai</code> dispatcher and other resources.</p></dd>
 
@@ -526,15 +526,16 @@ run tasks if needed.</p>
 
 <div class="section">
 <h4 id="returns-11">Returns<a class="anchor" aria-label="anchor" href="#returns-11"></a></h4>
-<p>Invisibly returns <code>TRUE</code> if there was any relevant
+<p>Invisibly returns <code>TRUE</code> if auto-scaling was attempted
+(throttling can skip it) and there was any relevant
 auto-scaling activity (new worker launches or worker
-connection/disconnection events) (<code>FALSE</code> otherwise).</p>
+connection/disconnection events). <code>FALSE</code> otherwise.</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_controller-autoscale"></a><div class="section">
 <h3 id="method-autoscale-">Method <code>autoscale()</code><a class="anchor" aria-label="anchor" href="#method-autoscale-"></a></h3>
 <p>Run worker auto-scaling in a <code>later</code> loop
-every <code>controller$client$seconds_interval</code> seconds.</p><div class="section">
+in polling intervals determined by exponential backoff.</p><div class="section">
 <h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_controller</span><span class="op">$</span><span class="fu">autoscale</span><span class="op">(</span></span>
 <span>  loop <span class="op">=</span> <span class="fu">later</span><span class="fu">::</span><span class="fu"><a href="https://later.r-lib.org/reference/create_loop.html" class="external-link">current_loop</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -719,7 +720,7 @@ see the <code>throttle</code> argument.</p></dd>
 
 <dt><code>throttle</code></dt>
 <dd><p><code>TRUE</code> to skip auto-scaling if it already happened
-within the last <code>seconds_interval</code> seconds. <code>FALSE</code> to auto-scale
+within the last polling interval. <code>FALSE</code> to auto-scale
 every time <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> is called. Throttling avoids
 overburdening the <code>mirai</code> dispatcher and other resources.</p></dd>
 
@@ -885,7 +886,7 @@ demand. See also the <code>throttle</code> argument.</p></dd>
 
 <dt><code>throttle</code></dt>
 <dd><p><code>TRUE</code> to skip auto-scaling if it already happened
-within the last <code>seconds_interval</code> seconds. <code>FALSE</code> to auto-scale
+within the last polling interval. <code>FALSE</code> to auto-scale
 every time <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> is called. Throttling avoids
 overburdening the <code>mirai</code> dispatcher and other resources.</p></dd>
 
@@ -1077,7 +1078,7 @@ demand. See also the <code>throttle</code> argument.</p></dd>
 
 <dt><code>throttle</code></dt>
 <dd><p><code>TRUE</code> to skip auto-scaling if it already happened
-within the last <code>seconds_interval</code> seconds. <code>FALSE</code> to auto-scale
+within the last polling interval. <code>FALSE</code> to auto-scale
 every time <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> is called. Throttling avoids
 overburdening the <code>mirai</code> dispatcher and other resources.</p></dd>
 
@@ -1135,7 +1136,7 @@ See also the <code>throttle</code> argument.</p></dd>
 
 <dt><code>throttle</code></dt>
 <dd><p><code>TRUE</code> to skip auto-scaling if it already happened
-within the last <code>seconds_interval</code> seconds. <code>FALSE</code> to auto-scale
+within the last polling interval. <code>FALSE</code> to auto-scale
 every time <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> is called. Throttling avoids
 overburdening the <code>mirai</code> dispatcher and other resources.</p></dd>
 
@@ -1230,7 +1231,7 @@ to auto-scale workers to meet the demand of the task load.</p></dd>
 
 <dt><code>throttle</code></dt>
 <dd><p><code>TRUE</code> to skip auto-scaling if it already happened
-within the last <code>seconds_interval</code> seconds. <code>FALSE</code> to auto-scale
+within the last polling interval. <code>FALSE</code> to auto-scale
 every time <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> is called. Throttling avoids
 overburdening the <code>mirai</code> dispatcher and other resources.</p></dd>
 
@@ -1310,7 +1311,7 @@ See also the <code>throttle</code> argument.</p></dd>
 
 <dt><code>throttle</code></dt>
 <dd><p><code>TRUE</code> to skip auto-scaling if it already happened
-within the last <code>seconds_interval</code> seconds. <code>FALSE</code> to auto-scale
+within the last polling interval. <code>FALSE</code> to auto-scale
 every time <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> is called. Throttling avoids
 overburdening the <code>mirai</code> dispatcher and other resources.</p></dd>
 

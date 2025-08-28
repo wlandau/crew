@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9009</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_throttle</span><span class="op">(</span></span>
 <span>  seconds_max <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  seconds_min <span class="op">=</span> <span class="fl">0.001</span>,</span>
+<span>  seconds_min <span class="op">=</span> <span class="fl">1e-04</span>,</span>
 <span>  seconds_start <span class="op">=</span> <span class="va">seconds_min</span>,</span>
 <span>  base <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -122,7 +122,7 @@ in order to respond quicker to surges of activity (see the
 <span class="r-in"><span><span class="va">throttle</span><span class="op">$</span><span class="fu">poll</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="va">throttle</span><span class="op">$</span><span class="fu">poll</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

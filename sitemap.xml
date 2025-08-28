@@ -18,8 +18,6 @@
 <url><loc>https://wlandau.github.io/crew/news/index.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew-package.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_assert.html</loc></url>
-<url><loc>https://wlandau.github.io/crew/reference/crew_async.html</loc></url>
-<url><loc>https://wlandau.github.io/crew/reference/crew_class_async.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_class_client.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_class_controller.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_class_controller_group.html</loc></url>
@@ -38,7 +36,6 @@
 <url><loc>https://wlandau.github.io/crew/reference/crew_controller_sequential.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_deprecate.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_eval.html</loc></url>
-<url><loc>https://wlandau.github.io/crew/reference/crew_eval_async.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_launcher.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_launcher_local.html</loc></url>
 <url><loc>https://wlandau.github.io/crew/reference/crew_monitor_local.html</loc></url>

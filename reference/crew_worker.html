@@ -13,7 +13,7 @@ for examples."><meta property="og:image" content="https://wlandau.github.io/crew
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9009</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,8 +63,7 @@ for examples.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">crew_worker</span><span class="op">(</span></span>
 <span>  <span class="va">settings</span>,</span>
-<span>  <span class="va">launcher</span>,</span>
-<span>  <span class="va">worker</span>,</span>
+<span>  <span class="va">controller</span>,</span>
 <span>  options_metrics <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_options_metrics.html">crew_options_metrics</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -77,12 +76,8 @@ for examples.</p>
 <dd><p>Named list of arguments to <code><a href="https://mirai.r-lib.org/reference/daemon.html" class="external-link">mirai::daemon()</a></code>.</p></dd>
 
 
-<dt id="arg-launcher">launcher<a class="anchor" aria-label="anchor" href="#arg-launcher"></a></dt>
-<dd><p>Character string, name of the launcher</p></dd>
-
-
-<dt id="arg-worker">worker<a class="anchor" aria-label="anchor" href="#arg-worker"></a></dt>
-<dd><p>Character of length 1 to uniquely identify the current worker.</p></dd>
+<dt id="arg-controller">controller<a class="anchor" aria-label="anchor" href="#arg-controller"></a></dt>
+<dd><p>Character string, name of the controller.</p></dd>
 
 
 <dt id="arg-options-metrics">options_metrics<a class="anchor" aria-label="anchor" href="#arg-options-metrics"></a></dt>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9009</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,8 +86,8 @@
 </ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="call"><a href="crew_class_launcher.html#method-call"><code>crew::crew_class_launcher$call()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="crashes"><a href="crew_class_launcher.html#method-crashes"><code>crew::crew_class_launcher$crashes()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch"><a href="crew_class_launcher.html#method-launch"><code>crew::crew_class_launcher$launch()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch_workers"><a href="crew_class_launcher.html#method-launch_workers"><code>crew::crew_class_launcher$launch_workers()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="poll"><a href="crew_class_launcher.html#method-poll"><code>crew::crew_class_launcher$poll()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="resolve"><a href="crew_class_launcher.html#method-resolve"><code>crew::crew_class_launcher$resolve()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="scale"><a href="crew_class_launcher.html#method-scale"><code>crew::crew_class_launcher$scale()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="set_name"><a href="crew_class_launcher.html#method-set_name"><code>crew::crew_class_launcher$set_name()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="settings"><a href="crew_class_launcher.html#method-settings"><code>crew::crew_class_launcher$settings()</code></a></span></li>
@@ -239,7 +239,7 @@
 <p>Launch a local process worker which will
 dial into a socket.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher_local</span><span class="op">$</span><span class="fu">launch_worker</span><span class="op">(</span><span class="va">call</span>, <span class="va">name</span>, <span class="va">launcher</span>, <span class="va">worker</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_launcher_local</span><span class="op">$</span><span class="fu">launch_worker</span><span class="op">(</span><span class="va">call</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -247,20 +247,6 @@ dial into a socket.</p><div class="section">
 <p></p><div class="arguments"><dl><dt><code>call</code></dt>
 <dd><p>Character of length 1 with a namespaced call to
 <code><a href="crew_worker.html">crew_worker()</a></code> which will run in the worker and accept tasks.</p></dd>
-
-
-<dt><code>name</code></dt>
-<dd><p>Character of length 1 with a long informative worker name
-which contains the <code>launcher</code> and <code>worker</code> arguments
-described below.</p></dd>
-
-
-<dt><code>launcher</code></dt>
-<dd><p>Character of length 1, name of the launcher.</p></dd>
-
-
-<dt><code>worker</code></dt>
-<dd><p>Character string, name of the worker within the launcher.</p></dd>
 
 
 </dl><p></p></div>

@@ -427,6 +427,9 @@ crew_class_launcher <- R6::R6Class(
         # because then job arrays would not be as effective (see help file).
         seconds_min = if_any(
           is.finite(tasks_max),
+          # Should be too small to feel but should reach seconds_interval
+          # when doubled enough times
+          # (doublings = ceiling(log (1 / seconds_min) / log(2))).
           1e-6,
           # Should be enough time
           # to accumulate tasks but not enough time to feel.

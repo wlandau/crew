@@ -310,7 +310,7 @@ crew_test("crew_controller_group() scale method", {
   })
   x$start()
   a$push(command = "x", scale = FALSE)
-  x$scale()
+  x$scale(throttle = FALSE)
   crew_retry(
     ~ nrow(a$launcher$launches) > 0L,
     seconds_interval = 0.1,

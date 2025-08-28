@@ -147,11 +147,8 @@ No longer necessary.</p></dd>
 
 <dt id="arg-tasks-max">tasks_max<a class="anchor" aria-label="anchor" href="#arg-tasks-max"></a></dt>
 <dd><p>Maximum number of tasks that a worker will do before
-exiting. If it is a finite positive integer, then <code>crew</code> auto-scales
-with an aggressive exponential backoff algorithm.
-If <code>tasks_max</code> is <code>Inf</code>, then <code>crew</code> only scales at time intervals
-of <code>seconds_interval</code> to allow enough pending tasks to accumulate
-for job arrays. See the Auto-scaling section for details.</p></dd>
+exiting. Also determines how often the controller auto-scales.
+See the Auto-scaling section for details.</p></dd>
 
 
 <dt id="arg-tasks-timers">tasks_timers<a class="anchor" aria-label="anchor" href="#arg-tasks-timers"></a></dt>

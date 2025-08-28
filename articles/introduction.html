@@ -401,7 +401,9 @@ are:</p>
 waiting for a task.</li>
 <li>
 <code>tasks_max</code>: shut down a worker after it completes a
-certain number of tasks.</li>
+certain number of tasks. This argument also determines how frequently
+the controller auto-scales (see auto-scaling section of
+<code><a href="../reference/crew_throttle.html">crew_throttle()</a></code> for details).</li>
 <li>
 <code>seconds_wall</code>: soft wall time of a worker.</li>
 </ol>

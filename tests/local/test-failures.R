@@ -1,10 +1,13 @@
 crew_test("test handling of launch failures", {
+  envir <- new.env(parent = emptyenv())
+  envir$result <- character(0L)
   system2_launcher_class <- R6::R6Class(
     classname = "system2_launcher_class",
     inherit = crew::crew_class_launcher,
     public = list(
       launch_worker = function(call, name) {
-        if (nrow(self$launches) %% 2L) {
+        total <- self$launches$total[nrow(self$launches)]
+        if (length(total) > 0L && total %% 2L) {
           system2(
             command = file.path(R.home("bin"), "R"),
             args = c("-e", shQuote(call)),
@@ -12,9 +15,9 @@ crew_test("test handling of launch failures", {
             stdout = FALSE,
             stderr = FALSE
           )
-          return("success")
+          envir$result <- c(envir$result, "success")
         } else {
-          return("failure")
+          envir$result <- c(envir$result, "failure")
         }
       }
     )
@@ -83,11 +86,9 @@ crew_test("test handling of launch failures", {
     cli::cli_progress_update()
   }
   cli::cli_progress_done()
+  expect_equal(envir$result, rep(c("failure", "success"), times = 7L))
   results <- controller$collect()
   expect_equal(sort(as.integer(results$result)), seq_len(n_tasks))
-  expect_equal(nrow(controller$launcher$launches), 2 * n_tasks)
-  handle <- as.character(unlist(controller$launcher$launches$handle))
-  expect_equal(handle, rep(c("failure", "success"), times = 7L))
   expect_equal(controller$launcher$failed, 7L)
   status <- controller$client$status()
   expect_equal(status$connections, 0L)

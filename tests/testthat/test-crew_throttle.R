@@ -16,9 +16,7 @@ crew_test("crew_throttle active bindings", {
   expect_equal(x$seconds_start, 10)
   expect_equal(x$base, 2)
   expect_equal(x$seconds_interval, 10)
-  expect_false(is.finite(x$polled))
-  expect_true(x$poll())
-  expect_true(is.numeric(x$polled))
+  expect_null(x$polled)
 })
 
 crew_test("crew_throttle poll() and reset()", {
@@ -28,7 +26,6 @@ crew_test("crew_throttle poll() and reset()", {
     seconds_start = 10,
     base = 2
   )
-  expect_true(x$poll())
   expect_false(x$poll())
   expect_silent(x$reset())
   expect_equal(x$seconds_interval, 10)
@@ -72,6 +69,7 @@ crew_test("crew_throttle decelerate()", {
 })
 
 crew_test("crew_throttle update()", {
+  skip_on_cran()
   x <- crew_throttle(
     seconds_max = 25,
     seconds_min = 1,
@@ -79,11 +77,12 @@ crew_test("crew_throttle update()", {
     base = 2
   )
   expect_equal(x$seconds_interval, 10)
-  expect_false(is.finite(x$polled))
+  expect_null(x$polled)
   x$update(activity = FALSE)
   expect_equal(x$seconds_interval, 20)
-  expect_false(is.finite(x$polled))
-  expect_true(x$poll())
+  expect_null(x$polled)
+  expect_false(x$poll())
+  x$private$.polled <- now() - 10000000
   expect_true(is.finite(x$polled))
   x$update(activity = FALSE)
   expect_equal(x$seconds_interval, 25)

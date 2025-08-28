@@ -5,5 +5,5 @@ crew_test("throttle$poll() returns the right values at the right times", {
   while (proc.time()["elapsed"] - start < 10) {
     throttled <- throttled + x$poll()
   }
-  expect_equal(throttled, 3L)
+  expect_equal(throttled, 2L)
 })

@@ -38,7 +38,7 @@
 #' throttle$poll()
 crew_throttle <- function(
   seconds_max = 1,
-  seconds_min = 1e-4,
+  seconds_min = 1e-6,
   seconds_start = seconds_min,
   base = 2
 ) {
@@ -48,7 +48,6 @@ crew_throttle <- function(
     seconds_start = seconds_start,
     base = base
   )
-  throttle$reset()
   throttle$validate()
   throttle
 }
@@ -147,7 +146,7 @@ crew_class_throttle <- R6::R6Class(
         message = "crew throttle base must be greater than 1."
       )
       crew_assert(
-        .polled,
+        .polled %|||% 1,
         is.numeric(.),
         length(.) == 1L,
         !anyNA(.),

@@ -263,9 +263,16 @@ List of arguments for \code{mirai::daemon()}.
 Create a call to \code{\link[=crew_worker]{crew_worker()}} to
 help create custom launchers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call(worker = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{worker}}{Deprecated on 2025-08-28 (\code{crew} version 1.2.1.9009).}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 Character string with a call to \code{\link[=crew_worker]{crew_worker()}}.
 }

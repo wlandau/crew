@@ -587,12 +587,13 @@ crew_class_launcher <- R6::R6Class(
     #' @description Create a call to [crew_worker()] to
     #'   help create custom launchers.
     #' @return Character string with a call to [crew_worker()].
+    #' @param worker Deprecated on 2025-08-28 (`crew` version 1.2.1.9009).
     #' @examples
     #' launcher <- crew_launcher_local()
     #' launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
     #' launcher$call()
     #' launcher$terminate()
-    call = function() {
+    call = function(worker = NULL) {
       call <- substitute(
         crew::crew_worker(
           settings = settings,

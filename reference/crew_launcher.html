@@ -151,11 +151,11 @@ No longer necessary.</p></dd>
 
 <dt id="arg-tasks-max">tasks_max<a class="anchor" aria-label="anchor" href="#arg-tasks-max"></a></dt>
 <dd><p>Maximum number of tasks that a worker will do before
-exiting. See the <code>maxtasks</code> argument of <code><a href="https://mirai.r-lib.org/reference/daemon.html" class="external-link">mirai::daemon()</a></code>.
-<code>crew</code> does not
-excel with perfectly transient workers because it does not micromanage
-the assignment of tasks to workers, it is recommended to set
-<code>tasks_max</code> to a value greater than 1.</p></dd>
+exiting. If it is a finite positive integer, then <code>crew</code> auto-scales
+with an aggressive exponential backoff algorithm.
+If <code>tasks_max</code> is <code>Inf</code>, then <code>crew</code> only scales at time intervals
+of <code>seconds_interval</code> to allow enough pending tasks to accumulate
+for job arrays. See the Auto-scaling section for details.</p></dd>
 
 
 <dt id="arg-tasks-timers">tasks_timers<a class="anchor" aria-label="anchor" href="#arg-tasks-timers"></a></dt>
@@ -221,6 +221,27 @@ the <code>autometric</code> R package version 0.1.0 or higher
 must be installed.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="auto-scaling">Auto-scaling<a class="anchor" aria-label="anchor" href="#auto-scaling"></a></h2>
+
+
+<p><code>crew</code> launchers implement auto-scaling in the <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> method.
+When the task load increases, the number of workers increases in response
+to demand. When the task load decreases, the workers start to exit.
+This behavior happens dynamically over the course of a workflow,
+and it can be tuned with arguments <code>seconds_interval</code>, <code>seconds_wall</code>,
+and <code>tasks_max</code>.</p>
+<p><code>tasks_max</code> is special: it determines not only the number of tasks
+a worker runs before exiting, it also determines how often
+auto-scaling runs.
+If <code>tasks_max</code> is <code>Inf</code>, then <code>crew</code> only scales at equally-spaced
+time intervals of <code>seconds_interval</code> to allow enough pending
+tasks to accumulate for job arrays.
+This last part is important because auto-scaling
+too frequently could lead to hundreds of separate job arrays with only
+job per array (as opposed to the desired outcome of 1 or 2 arrays
+with many jobs each).</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other launcher:

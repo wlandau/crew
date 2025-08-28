@@ -290,12 +290,7 @@ crew_class_launcher_local <- R6::R6Class(
     #'   later on.
     #' @param call Character of length 1 with a namespaced call to
     #'   [crew_worker()] which will run in the worker and accept tasks.
-    #' @param name Character of length 1 with a long informative worker name
-    #'   which contains the `launcher` and `worker` arguments
-    #'   described below.
-    #' @param launcher Character of length 1, name of the launcher.
-    #' @param worker Character string, name of the worker within the launcher.
-    launch_worker = function(call, name, launcher, worker) {
+    launch_worker = function(call) {
       bin <- if_any(
         tolower(Sys.info()[["sysname"]]) == "windows",
         "Rscript.exe",
@@ -303,6 +298,7 @@ crew_class_launcher_local <- R6::R6Class(
       )
       path <- file.path(R.home("bin"), bin)
       private$.log_prepare()
+      name <- crew_random_name()
       processx::process$new(
         command = path,
         args = c(private$.r_arguments, "-e", call),

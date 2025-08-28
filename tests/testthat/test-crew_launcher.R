@@ -7,12 +7,10 @@ crew_test("abstract launcher class", {
 crew_test("validate a started launcher", {
   skip_on_cran()
   skip_on_os("windows")
-  out <- crew_launcher(processes = 1L)
+  out <- crew_launcher()
   out$start(url = "url", profile = "profile")
   on.exit(out$terminate())
-  expect_s3_class(out$async, "crew_class_async")
   expect_s3_class(out$throttle, "crew_class_throttle")
-  expect_silent(out$async$validate())
   expect_silent(out$throttle$validate())
   expect_silent(out$validate())
 })
@@ -20,7 +18,7 @@ crew_test("validate a started launcher", {
 crew_test("active bindings for covr", {
   skip_on_cran()
   skip_on_os("windows")
-  out <- crew_launcher(processes = 1L, r_arguments = "--vanilla")
+  out <- crew_launcher(r_arguments = "--vanilla")
   expect_true(is.character(out$name))
   expect_equal(out$workers, 1L)
   expect_true(is.numeric(out$seconds_interval))
@@ -31,7 +29,6 @@ crew_test("active bindings for covr", {
   expect_true(is.numeric(out$tasks_max))
   expect_true(is.numeric(out$tasks_timers))
   expect_true(inherits(out$tls, "crew_class_tls"))
-  expect_equal(out$processes, 1L)
   expect_equal(out$r_arguments, "--vanilla")
   expect_s3_class(
     out$options_metrics,
@@ -39,31 +36,16 @@ crew_test("active bindings for covr", {
   )
   expect_null(out$url)
   expect_null(out$profile)
-  expect_true(is.data.frame(out$instances))
+  expect_true(is.data.frame(out$launches))
   expect_equal(out$failed, 0L)
-  expect_null(out$async)
   expect_s3_class(out$throttle, "crew_class_throttle")
-})
-
-crew_test("preemptive async termination for covr", {
-  skip_on_cran()
-  skip_on_os("windows")
-  out <- crew_launcher(processes = 1L)
-  private <- crew_private(out)
-  private$.async <- crew_async()
-  on.exit({
-    private$.async$terminate()
-    out$terminate()
-  })
-  out$start(url = "url", profile = "profile")
-  expect_true(TRUE)
 })
 
 crew_test("default launch_launcher() method", {
   skip_on_cran()
   launcher <- crew_class_launcher$new(seconds_interval = 0.5)
-  out <- launcher$launch_worker(call = "a", name = "b")
-  expect_equal(out$name, "b")
+  out <- launcher$launch_worker(call = "a")
+  expect_equal(out$call, "a")
 })
 
 crew_test("launcher settings", {
@@ -105,12 +87,108 @@ crew_test("launcher call", {
   )
   launcher$start(url = "url", profile = "profile")
   on.exit(launcher$terminate())
-  out <- launcher$call(worker = "cba033e58")
+  out <- launcher$call()
   expect_true(is.character(out))
   expect_true(!anyNA(out))
   expect_equal(length(out), 1L)
   expect_true(all(nzchar(out)))
   expect_true(grepl(pattern = "^crew::crew_worker\\(", x = out))
+})
+
+crew_test("custom launcher", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_if_not_installed("processx")
+  if (isTRUE(as.logical(Sys.getenv("CI", "false")))) {
+    skip_on_os("mac")
+  }
+  custom_launcher_class <- R6::R6Class(
+    classname = "custom_launcher_class",
+    inherit = crew::crew_class_launcher,
+    public = list(
+      launch_worker = function(call) {
+        bin <- if_any(
+          tolower(Sys.info()[["sysname"]]) == "windows",
+          "R.exe",
+          "R"
+        )
+        path <- file.path(R.home("bin"), bin)
+        processx::process$new(command = path, args = c("-e", call))
+      }
+    )
+  )
+  crew_controller_custom <- function(
+    name = "custom controller name",
+    workers = 1L,
+    host = "127.0.0.1",
+    port = NULL,
+    tls = crew::crew_tls(mode = "none"),
+    serialization = NULL,
+    seconds_interval = 0.5,
+    seconds_timeout = 5,
+    seconds_launch = 30,
+    seconds_idle = Inf,
+    seconds_wall = Inf,
+    tasks_max = Inf,
+    tasks_timers = 0L,
+    reset_globals = TRUE,
+    reset_packages = FALSE,
+    reset_options = FALSE,
+    garbage_collection = FALSE
+  ) {
+    client <- crew::crew_client(
+      host = host,
+      port = port,
+      tls = tls,
+      serialization = serialization,
+      seconds_interval = seconds_interval,
+      seconds_timeout = seconds_timeout
+    )
+    launcher <- custom_launcher_class$new(
+      name = name,
+      workers = workers,
+      seconds_interval = seconds_interval,
+      seconds_timeout = seconds_timeout,
+      seconds_launch = seconds_launch,
+      seconds_idle = seconds_idle,
+      seconds_wall = seconds_wall,
+      tasks_max = tasks_max,
+      tasks_timers = tasks_timers,
+      tls = tls
+    )
+    controller <- crew::crew_controller(
+      client = client,
+      launcher = launcher,
+      reset_globals = reset_globals,
+      reset_packages = reset_packages,
+      reset_options = reset_options,
+      garbage_collection = garbage_collection,
+    )
+    controller$validate()
+    controller
+  }
+  controller <- crew_controller_custom()
+  controller$start()
+  on.exit({
+    controller$terminate()
+    rm(controller)
+    gc()
+    crew_test_sleep()
+  })
+  controller$push(name = "pid", command = ps::ps_pid())
+  controller$wait(seconds_timeout = 10)
+  out <- controller$pop()$result[[1]]
+  handle <- unlist(controller$launcher$launches$handle)[[1]]
+  exp <- handle$get_pid()
+  expect_equal(out, exp)
+  expect_true(handle$is_alive())
+  controller$terminate()
+  crew_retry(
+    ~ !handle$is_alive(),
+    seconds_interval = 0.1,
+    seconds_timeout = 5
+  )
+  expect_false(handle$is_alive())
 })
 
 crew_test("deprecate seconds_exit", {
@@ -132,4 +210,10 @@ crew_test("deprecated set_name() method", {
 crew_test("deprecated terminate_workers()", {
   x <- crew_launcher(name = "x")
   expect_message(x$terminate_workers(), class = "crew_deprecate")
+})
+
+crew_test("deprecated async$eval()", {
+  x <- crew_launcher(name = "x")
+  expect_equal(x$async$eval(1L + 1L), 2L)
+  expect_equal(deprecated_async_eval(1L + 1L), 2L)
 })

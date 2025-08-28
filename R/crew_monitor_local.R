@@ -26,10 +26,7 @@ crew_class_monitor_local <- R6::R6Class(
       crew_monitor_pids(pattern = "mirai::dispatcher", user = user)
     },
     #' @description List the process IDs of the locally running `mirai` daemon
-    #'   processes which are not `crew` workers. The [crew_async()]
-    #'   object can launch such processes: for example, when a positive
-    #'   integer is supplied to the `processes` argument of e.g.
-    #'   `crew.aws.batch::crew_controller_aws_batch()`.
+    #'   processes which are not `crew` workers.
     #' @return Integer vector of process IDs of the locally running
     #'   `mirai` daemon processes which are not `crew` workers.
     #' @param user Character of length 1, user ID to filter on. `NULL`

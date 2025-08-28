@@ -1,10 +1,13 @@
 crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   skip_on_cran()
   skip_on_os("windows")
-  envvars <- c("CREW_CONTROLLER", "CREW_WORKER")
+  envvars <- "CREW_CONTROLLER"
   previous <- Sys.getenv(envvars)
+  names(previous) <- envvars
   Sys.unsetenv(envvars)
-  on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
+  on.exit({
+    do.call(what = Sys.setenv, args = as.list(previous))
+  })
   profile <- basename(tempfile())
   mirai::daemons(
     n = 1L,
@@ -16,17 +19,21 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   on.exit(crew_test_sleep(), add = TRUE)
   task <- mirai::mirai(
     .expr = list(
-      controller = Sys.getenv("CREW_CONTROLLER"),
-      worker = Sys.getenv("CREW_WORKER")
+      controller = Sys.getenv("CREW_CONTROLLER")
     ),
     .compute = profile
   )
   url <- mirai::nextget("url", .compute = profile)
-  settings <- list(url = url, maxtasks = 1L, cleanup = 0L, dispatcher = TRUE)
+  settings <- list(
+    url = url,
+    maxtasks = 1L,
+    cleanup = 0L,
+    dispatcher = TRUE,
+    output = TRUE
+  )
   crew_worker(
     settings = settings,
-    launcher = "my_controller",
-    worker = "worker_id",
+    controller = "my_controller",
     options_metrics = NULL
   )
   crew_retry(
@@ -37,7 +44,6 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
   data <- task$data
   expect_true(is.list(data))
   expect_equal(data$controller, "my_controller")
-  expect_equal(data$worker, "worker_id")
   for (var in envvars) {
     expect_equal(Sys.getenv(var, unset = ""), "")
   }
@@ -47,10 +53,13 @@ crew_test("crew_worker() metrics logging to a directory", {
   skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("autometric", minimum_version = "0.1.0")
-  envvars <- c("CREW_CONTROLLER", "CREW_WORKER")
+  envvars <- "CREW_CONTROLLER"
   previous <- Sys.getenv(envvars)
+  names(previous) <- envvars
   Sys.unsetenv(envvars)
-  on.exit(do.call(what = Sys.setenv, args = as.list(previous)))
+  on.exit({
+    do.call(what = Sys.setenv, args = as.list(previous))
+  })
   mirai::daemons(
     n = 1L,
     url = "tcp://127.0.0.1:0",
@@ -61,18 +70,22 @@ crew_test("crew_worker() metrics logging to a directory", {
   m <- mirai::mirai({
     Sys.sleep(2)
     list(
-      controller = Sys.getenv("CREW_CONTROLLER"),
-      worker = Sys.getenv("CREW_WORKER")
+      controller = Sys.getenv("CREW_CONTROLLER")
     )
   })
   envir <- new.env(parent = emptyenv())
   url <- mirai::nextget("url")
-  settings <- list(url = url, maxtasks = 1L, cleanup = 0L, dispatcher = TRUE)
+  settings <- list(
+    url = url,
+    maxtasks = 1L,
+    cleanup = 0L,
+    dispatcher = TRUE,
+    output = TRUE
+  )
   log <- tempfile()
   crew_worker(
     settings = settings,
-    launcher = "my_controller",
-    worker = "worker_id",
+    controller = "my_controller",
     options_metrics = crew_options_metrics(
       path = log,
       seconds_interval = 0.25
@@ -84,7 +97,6 @@ crew_test("crew_worker() metrics logging to a directory", {
     seconds_timeout = 5
   )
   expect_equal(m$data$controller, "my_controller")
-  expect_equal(m$data$worker, "worker_id")
   for (var in envvars) {
     expect_equal(Sys.getenv(var, unset = ""), "")
   }

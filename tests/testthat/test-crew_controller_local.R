@@ -50,7 +50,7 @@ crew_test("crew_controller_local()", {
   expect_equal(suppressWarnings(length(x$pids())), 1L)
   # first task
   task <- x$push(
-    command = Sys.getenv("CREW_WORKER"),
+    command = Sys.getenv("CREW_CONTROLLER"),
     name = "task"
   )
   expect_s3_class(task, "mirai")
@@ -74,9 +74,9 @@ crew_test("crew_controller_local()", {
   expect_equal(x$summary()$error, 0L)
   expect_equal(x$summary()$warning, 0L)
   expect_equal(out$name, "task")
-  expect_equal(out$command, "Sys.getenv(\"CREW_WORKER\")")
-  expect_equal(out$result[[1]], out$worker)
-  expect_false(any(out$worker == Sys.getenv("CREW_WORKER")))
+  expect_equal(out$command, "Sys.getenv(\"CREW_CONTROLLER\")")
+  expect_equal(out$result[[1]], out$controller)
+  expect_false(any(out$controller == Sys.getenv("CREW_CONTROLLER")))
   expect_true(is.numeric(out$seconds))
   expect_false(anyNA(out$seconds))
   expect_true(out$seconds >= 0)
@@ -117,7 +117,7 @@ crew_test("crew_controller_local()", {
     expect_equal(out$result[[1]], "xy")
   }
   # terminate
-  handle <- x$launcher$instances$handle[[1]]
+  handle <- unlist(x$launcher$launches$handle)[[1]]
   x$terminate()
   expect_false(x$client$started)
   expect_false(x$started())
@@ -171,7 +171,7 @@ crew_test("crew_controller_local() substitute = FALSE and quick push", {
   expect_true(anyNA(out$warnings))
   expect_true(anyNA(out$trace))
   # cleanup
-  handle <- x$launcher$instances$handle[[1]]
+  handle <- unlist(x$launcher$launches$handle)[[1]]
   x$terminate()
   expect_false(x$client$started)
   crew_retry(
@@ -195,7 +195,7 @@ crew_test("crew_controller_local() launch method", {
   })
   x$start()
   x$launch(n = 1L)
-  handle <- x$launcher$instances$handle[[1]]
+  handle <- unlist(x$launcher$launches$handle)[[1]]
   crew_retry(
     ~ handle$is_alive(),
     seconds_interval = 0.1,

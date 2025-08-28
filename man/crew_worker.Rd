@@ -6,17 +6,14 @@
 \usage{
 crew_worker(
   settings,
-  launcher,
-  worker,
+  controller,
   options_metrics = crew::crew_options_metrics()
 )
 }
 \arguments{
 \item{settings}{Named list of arguments to \code{mirai::daemon()}.}
 
-\item{launcher}{Character string, name of the launcher}
-
-\item{worker}{Character of length 1 to uniquely identify the current worker.}
+\item{controller}{Character string, name of the controller.}
 
 \item{options_metrics}{Either \code{NULL} to opt out of resource metric logging
 for workers, or an object from \code{\link[=crew_options_metrics]{crew_options_metrics()}} to enable

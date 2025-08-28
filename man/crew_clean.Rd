@@ -23,7 +23,7 @@ whether to terminate workers.}
 \item{user}{Character of length 1. Terminate dispatchers and/or
 workers associated with this user name.}
 
-\item{seconds_interval}{Seconds to between polling intervals
+\item{seconds_interval}{Seconds to wait between polling intervals
 waiting for a process to exit.}
 
 \item{seconds_timeout}{Seconds to wait for a process to exit.}

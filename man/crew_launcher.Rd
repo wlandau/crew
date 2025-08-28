@@ -106,14 +106,7 @@ Please use the \code{garbage_collection} option of
 
 \item{tls}{A TLS configuration object from \code{\link[=crew_tls]{crew_tls()}}.}
 
-\item{processes}{\code{NULL} or positive integer of length 1,
-number of local processes to
-launch to allow worker launches to happen asynchronously. If \code{NULL},
-then no local processes are launched. If 1 or greater, then the launcher
-starts the processes on \code{start()} and ends them on \code{terminate()}.
-Plugins that may use these processes should run asynchronous calls
-using \code{launcher$async$eval()} and expect a \code{mirai} task object
-as the return value.}
+\item{processes}{Deprecated on 2025-08-27 (\code{crew} version 1.2.1.9009).}
 
 \item{r_arguments}{Optional character vector of command line arguments
 to pass to \code{Rscript} (non-Windows) or \code{Rscript.exe} (Windows)

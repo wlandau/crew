@@ -6,7 +6,7 @@
 \usage{
 crew_throttle(
   seconds_max = 1,
-  seconds_min = 0.001,
+  seconds_min = 1e-04,
   seconds_start = seconds_min,
   base = 2
 )

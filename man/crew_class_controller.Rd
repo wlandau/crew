@@ -441,7 +441,7 @@ Auto-scale workers out to meet the demand of tasks.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -456,9 +456,10 @@ run tasks if needed.
 }
 
 \subsection{Returns}{
-Invisibly returns \code{TRUE} if there was any relevant
+Invisibly returns \code{TRUE} if auto-scaling was attempted
+(throttling can skip it) and there was any relevant
 auto-scaling activity (new worker launches or worker
-connection/disconnection events) (\code{FALSE} otherwise).
+connection/disconnection events). \code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}
@@ -466,7 +467,7 @@ connection/disconnection events) (\code{FALSE} otherwise).
 \if{latex}{\out{\hypertarget{method-crew_class_controller-autoscale}{}}}
 \subsection{Method \code{autoscale()}}{
 Run worker auto-scaling in a \code{later} loop
-every \code{controller$client$seconds_interval} seconds.
+in polling intervals determined by exponential backoff.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$autoscale(
   loop = later::current_loop(),
@@ -625,7 +626,7 @@ to auto-scale workers to meet the demand of the task load. Also
 see the \code{throttle} argument.}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -757,7 +758,7 @@ when pushing tasks.}
 demand. See also the \code{throttle} argument.}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -914,7 +915,7 @@ as tasks resolve.}
 demand. See also the \code{throttle} argument.}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -965,7 +966,7 @@ See also the \code{throttle} argument.}
 \item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02).}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -1058,7 +1059,7 @@ whether to automatically call \code{scale()}
 to auto-scale workers to meet the demand of the task load.}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -1126,7 +1127,7 @@ to auto-scale workers to meet the demand of the task load.
 See also the \code{throttle} argument.}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 

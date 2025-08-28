@@ -42,7 +42,7 @@ client$terminate()
 
 launcher <- crew_launcher_local()
 launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
-launcher$call(worker = "worker_name")
+launcher$call()
 launcher$terminate()
 }
 \seealso{
@@ -50,6 +50,13 @@ Other launcher:
 \code{\link{crew_launcher}()}
 }
 \concept{launcher}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{async}}{Deprecated on 2025-08-27 (\code{crew} version 1.2.1.9009).}
+}
+\if{html}{\out{</div>}}
+}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
@@ -73,9 +80,6 @@ Other launcher:
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.
-asynchronously.}
-
 \item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
 \item{\code{options_metrics}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
@@ -84,10 +88,9 @@ asynchronously.}
 
 \item{\code{profile}}{\code{mirai} compute profile of the launcher.}
 
-\item{\code{instances}}{Data frame of worker instance information.}
-
-\item{\code{async}}{A \code{\link[=crew_async]{crew_async()}} object to run low-level launcher tasks
-asynchronously.}
+\item{\code{launches}}{Data frame tracking worker launches with one row
+per launch. Each launch may create more than one worker.
+Old superfluous rows are periodically discarded for efficiency.}
 
 \item{\code{throttle}}{A \code{\link[=crew_throttle]{crew_throttle()}} object to throttle scaling.}
 
@@ -106,10 +109,10 @@ asynchronously.}
 \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
 \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
 \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
-\item \href{#method-crew_class_launcher-resolve}{\code{crew_class_launcher$resolve()}}
 \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
-\item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
+\item \href{#method-crew_class_launcher-launch_workers}{\code{crew_class_launcher$launch_workers()}}
+\item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
 \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
 \item \href{#method-crew_class_launcher-crashes}{\code{crew_class_launcher$crashes()}}
 \item \href{#method-crew_class_launcher-set_name}{\code{crew_class_launcher$set_name()}}
@@ -183,7 +186,7 @@ Launcher constructor.
 
 \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+\item{\code{processes}}{Deprecated on 2025-08-27 (\code{crew} version 1.2.1.9009).}
 
 \item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
@@ -260,27 +263,9 @@ List of arguments for \code{mirai::daemon()}.
 Create a call to \code{\link[=crew_worker]{crew_worker()}} to
 help create custom launchers.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call(
-  worker,
-  socket = NULL,
-  launcher = NULL,
-  instance = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{worker}}{Character string, name of the worker.}
-
-\item{\code{socket}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
-
-\item{\code{launcher}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
-
-\item{\code{instance}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
-}
-\if{html}{\out{</div>}}
-}
 \subsection{Returns}{
 Character string with a call to \code{\link[=crew_worker]{crew_worker()}}.
 }
@@ -288,7 +273,7 @@ Character string with a call to \code{\link[=crew_worker]{crew_worker()}}.
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{launcher <- crew_launcher_local()
 launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
-launcher$call(worker = "worker_name")
+launcher$call()
 launcher$terminate()
 }
 \if{html}{\out{</div>}}
@@ -334,30 +319,76 @@ Terminate the whole launcher, including all workers.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-resolve"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-resolve}{}}}
-\subsection{Method \code{resolve()}}{
-Resolve asynchronous worker submissions.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$resolve()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-\code{NULL} (invisibly). Throw an error if there were any
-asynchronous worker submission errors.'
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-launch}{}}}
 \subsection{Method \code{launch()}}{
 Launch a worker.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(n = 1L)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Positive integer, number of workers to launch.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Handle of the launched worker.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-launch_worker"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-launch_worker}{}}}
+\subsection{Method \code{launch_worker()}}{
+Abstract worker launch method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_worker(call)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{call}}{Character of length 1 with a namespaced call to
+\code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Launcher plugins will overwrite this method.
 }
 
 \subsection{Returns}{
-Handle of the launched worker.
+A handle to mock the worker launch.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_launcher-launch_workers"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-launch_workers}{}}}
+\subsection{Method \code{launch_workers()}}{
+Launch multiple workers.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_workers(call, n)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{call}}{Character of length 1 with a namespaced call to
+\code{\link[=crew_worker]{crew_worker()}} which will run in each worker and accept tasks.}
+
+\item{\code{n}}{Positive integer, number of workers to launch.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Launcher plugins may overwrite this method
+to launch multiple workers from a single system call.
+}
+
+\subsection{Returns}{
+A handle to mock the worker launch.
 }
 }
 \if{html}{\out{<hr>}}
@@ -383,33 +414,6 @@ as of 2025-01-16 (\code{crew} version 0.10.2.9003).}
 Invisibly returns \code{TRUE} if there was any relevant
 auto-scaling activity (new worker launches or worker
 connection/disconnection events) (\code{FALSE} otherwise).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-launch_worker"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-launch_worker}{}}}
-\subsection{Method \code{launch_worker()}}{
-Abstract worker launch method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_worker(call, name)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{call}}{Character of length 1 with a namespaced call to
-\code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
-
-\item{\code{name}}{Character of length 1 with an informative worker name.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Launcher plugins will overwrite this method.
-}
-
-\subsection{Returns}{
-A handle to mock the worker launch.
 }
 }
 \if{html}{\out{<hr>}}

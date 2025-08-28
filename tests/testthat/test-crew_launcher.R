@@ -215,4 +215,5 @@ crew_test("deprecated terminate_workers()", {
 crew_test("deprecated async$eval()", {
   x <- crew_launcher(name = "x")
   expect_equal(x$async$eval(1L + 1L), 2L)
+  expect_equal(deprecated_async_eval(1L + 1L), 2L)
 })

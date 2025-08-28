@@ -1,7 +1,3 @@
-name_worker <- function(launcher, worker) {
-  paste("crew-worker", launcher, worker, sep = "-")
-}
-
 name_task_tempfile <- function() {
   basename(tempfile(pattern = "unnamed_task_"))
 }

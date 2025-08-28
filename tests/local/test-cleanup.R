@@ -13,7 +13,7 @@ crew_test("workers signal themselves to exit when connection breaks", {
     seconds_timeout = 60
   )
   crew_retry(
-    ~ x$client$status()$connections > 0L,
+    ~ x$client$status()["connections"] > 0L,
     seconds_interval = 0.5,
     seconds_timeout = 60
   )

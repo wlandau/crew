@@ -456,9 +456,10 @@ run tasks if needed.
 }
 
 \subsection{Returns}{
-Invisibly returns \code{TRUE} if there was any relevant
+Invisibly returns \code{TRUE} if auto-scaling was attempted
+(throttling can skip it) and there was any relevant
 auto-scaling activity (new worker launches or worker
-connection/disconnection events) (\code{FALSE} otherwise).
+connection/disconnection events). \code{FALSE} otherwise.
 }
 }
 \if{html}{\out{<hr>}}

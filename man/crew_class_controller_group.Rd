@@ -54,9 +54,6 @@ Other controller_group:
 
 \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
-
-\item{\code{throttle}}{\code{\link[=crew_throttle]{crew_throttle()}} object to orchestrate exponential
-backoff in the relay and auto-scaling.}
 }
 \if{html}{\out{</div>}}
 }
@@ -97,11 +94,7 @@ backoff in the relay and auto-scaling.}
 \subsection{Method \code{new()}}{
 Multi-controller constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$new(
-  controllers = NULL,
-  relay = NULL,
-  throttle = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$new(controllers = NULL, relay = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -111,9 +104,6 @@ Multi-controller constructor.
 
 \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
-
-\item{\code{throttle}}{\code{\link[=crew_throttle]{crew_throttle()}} object to orchestrate exponential
-backoff in the relay and auto-scaling.}
 }
 \if{html}{\out{</div>}}
 }

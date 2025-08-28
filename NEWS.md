@@ -18,6 +18,7 @@
 * Trim down the argument list of `launch_worker()` to just include arguments `call` and `name`.
 * Simplify the auto-scaling algorithm to support greater interoperability and the eventual threaded dispatcher in `mirai` (#232).
 * Deprecate `processes` and `async` in `crew` launchers in favor of job arrays (#218, #237).
+* Drop the unified controller group throttle. Let individual controllers handle their own throttling based on their own auto-scaling settings.
 
 # crew 1.2.1
 

@@ -493,9 +493,10 @@ crew_class_controller <- R6::R6Class(
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @details The `scale()` method launches new workers to
     #'   run tasks if needed.
-    #' @return Invisibly returns `TRUE` if there was any relevant
+    #' @return Invisibly returns `TRUE` if auto-scaling was attempted
+    #'   (throttling can skip it) and there was any relevant
     #'   auto-scaling activity (new worker launches or worker
-    #'   connection/disconnection events) (`FALSE` otherwise).
+    #'   connection/disconnection events). `FALSE` otherwise.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
@@ -504,7 +505,7 @@ crew_class_controller <- R6::R6Class(
     #'   compatible with the analogous method of controller groups.
     scale = function(throttle = TRUE, controllers = NULL) {
       if (throttle && !.launcher$poll()) {
-        return(invisible())
+        return(invisible(FALSE))
       }
       start()
       activity <- .launcher$scale(.client$status(), throttle)

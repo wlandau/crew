@@ -38,7 +38,7 @@
 #' throttle$poll()
 crew_throttle <- function(
   seconds_max = 1,
-  seconds_min = 1e-3,
+  seconds_min = 1e-4,
   seconds_start = seconds_min,
   base = 2
 ) {

@@ -1,7 +1,11 @@
 crew_test("workers signal themselves to exit when connection breaks", {
   x <- crew_controller_local(workers = 1L)
   x$start()
-  x$push(nanonext::until(nanonext::cv(), 600 * 1e3), scale = TRUE)
+  x$push(
+    nanonext::until(nanonext::cv(), 600 * 1e3),
+    scale = TRUE,
+    throttle = FALSE
+  )
   worker <- unlist(x$launcher$launches$handle)[[1L]]
   crew_retry(
     ~ worker$is_alive(),

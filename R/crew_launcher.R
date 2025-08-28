@@ -423,7 +423,7 @@ crew_class_launcher <- R6::R6Class(
       private$.options_metrics <- options_metrics
       private$.throttle <- crew_throttle(
         seconds_max = seconds_interval,
-        # Persistent workers should not run auto-scaling too frequently
+        # Persistent workers should not auto-scale too frequently
         # because then job arrays would not be as effective (see help file).
         seconds_min = if_any(
           is.finite(tasks_max),

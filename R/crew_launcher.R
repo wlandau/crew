@@ -629,7 +629,6 @@ crew_class_launcher <- R6::R6Class(
       )
       url <- url %|||% sockets[1L]
       profile <- profile %|||% crew_random_name()
-      private$.throttle$reset()
       private$.url <- url
       private$.profile <- profile
       private$.launches <- launcher_empty_launches

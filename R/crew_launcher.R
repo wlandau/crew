@@ -594,6 +594,16 @@ crew_class_launcher <- R6::R6Class(
     #' launcher$call()
     #' launcher$terminate()
     call = function(worker = NULL) {
+      crew::crew_deprecate(
+        name = "worker argument of launcher$call()",
+        date = "2025-02-28",
+        version = "1.2.1.9009",
+        alternative = "none",
+        condition = "message",
+        value = worker,
+        skip_cran = TRUE,
+        frequency = "once"
+      )
       call <- substitute(
         crew::crew_worker(
           settings = settings,

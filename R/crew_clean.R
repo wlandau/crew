@@ -22,7 +22,7 @@
 #'   whether to terminate workers.
 #' @param user Character of length 1. Terminate dispatchers and/or
 #'   workers associated with this user name.
-#' @param seconds_interval Seconds to between polling intervals
+#' @param seconds_interval Seconds to wait between polling intervals
 #'   waiting for a process to exit.
 #' @param seconds_timeout Seconds to wait for a process to exit.
 #' @param verbose Logical of length 1, whether to print an informative

@@ -285,8 +285,7 @@ crew_class_controller_group <- R6::R6Class(
       control <- .select_controllers(controllers)
       invisible(any(map_lgl(control, ~ .x$scale(throttle = throttle))))
     },
-    #' @description Run worker auto-scaling in a `later` loop
-    #'   every `controller$client$seconds_interval` seconds.
+    #' @description Run worker auto-scaling in a `later` loop.
     #' @param loop A `later` loop to run auto-scaling.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.

@@ -414,8 +414,7 @@ connection/disconnection events) (\code{FALSE} otherwise).
 \if{html}{\out{<a id="method-crew_class_controller_group-autoscale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-autoscale}{}}}
 \subsection{Method \code{autoscale()}}{
-Run worker auto-scaling in a \code{later} loop
-every \code{controller$client$seconds_interval} seconds.
+Run worker auto-scaling in a \code{later} loop.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$autoscale(
   loop = later::current_loop(),

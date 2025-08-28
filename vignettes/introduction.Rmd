@@ -38,7 +38,7 @@ Use `push()` to submit a new task and `pop()` to return a completed task.
 controller$push(name = "get pid", command = ps::ps_pid())
 ```
 
-As a side effect, methods `push()`, `pop()`, and `scale()` also launch workers to run the tasks. However, launches may not occur immediately because `crew` may wait to collect many tasks before scaling to the appropriate number of workers. So you may need to loop over `pop()` or `scale()` multiple times to make sure enough workers are always available.
+As a side effect, methods `push()`, `pop()`, and `scale()` also launch workers to run the tasks. However, by default^[when the `throttle` argument is `TRUE`] workers only launch at certain times. This is for efficiency: it avoids the slowdown of frequent system calls, and it gives plugins like `crew.cluster` enough time to collect tasks for large efficient job arrays. To ensure workers are launched, either set the `throttle` argument to `FALSE` or repeat calls to `pop()`, `collect()`, or `scale()`.
 
 ```r
 controller$pop() # No workers started yet and the task is not done.
@@ -53,7 +53,7 @@ task
 #> # ℹ 3 more variables: algorithm <chr>, controller <chr>, worker <chr>
 ```
 
-Alternatively, `wait()` is a loop that repeatedly checks tasks and launches workers until all tasks complete.
+Alternatively, `wait()` is a loop that repeatedly checks tasks and launches workers until all tasks complete, and it also launches workers as needed.
 
 ```r
 controller$wait(mode = "all")

@@ -8,7 +8,7 @@ crew_clean(
   dispatchers = TRUE,
   workers = TRUE,
   user = ps::ps_username(),
-  seconds_interval = 1,
+  seconds_interval = 0.25,
   seconds_timeout = 60,
   verbose = TRUE
 )

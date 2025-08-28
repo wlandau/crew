@@ -21,7 +21,7 @@
 #' group$pop()
 #' group$terminate()
 #' }
-crew_controller_group <- function(..., seconds_interval = 1) {
+crew_controller_group <- function(..., seconds_interval = 0.25) {
   controllers <- unlist(list(...), recursive = TRUE)
   crew_assert(
     length(controllers) > 0L,

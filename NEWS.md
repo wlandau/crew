@@ -19,6 +19,7 @@
 * Simplify the auto-scaling algorithm to support greater interoperability and the eventual threaded dispatcher in `mirai` (#232).
 * Deprecate `processes` and `async` in `crew` launchers in favor of job arrays (#218, #237).
 * Drop the unified controller group throttle. Let individual controllers handle their own throttling based on their own auto-scaling settings.
+* When `tasks_mask` is finite, set `seconds_min` to `seconds_interval` in the throttle to give tasks enough time to accumulate.
 
 # crew 1.2.1
 

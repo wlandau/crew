@@ -105,7 +105,7 @@
 crew_launcher <- function(
   name = NULL,
   workers = 1L,
-  seconds_interval = 1,
+  seconds_interval = 0.25,
   seconds_timeout = 60,
   seconds_launch = 30,
   seconds_idle = 300,
@@ -425,7 +425,13 @@ crew_class_launcher <- R6::R6Class(
         seconds_max = seconds_interval,
         # Persistent workers should not run auto-scaling too frequently
         # because then job arrays would not be as effective (see help file).
-        seconds_min = if_any(is.finite(tasks_max), 1e-4, seconds_interval)
+        seconds_min = if_any(
+          is.finite(tasks_max),
+          1e-4,
+          # Should be enough time
+          # to accumulate tasks but not enough time to feel.
+          seconds_interval
+        )
       )
     },
     #' @description Validate the launcher.

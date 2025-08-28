@@ -71,8 +71,8 @@ crew_class_throttle <- R6::R6Class(
     .seconds_min = NULL,
     .seconds_start = NULL,
     .base = NULL,
-    .seconds_interval = 1e-3,
-    .polled = -Inf
+    .seconds_interval = NULL,
+    .polled = NULL
   ),
   active = list(
     #' @field seconds_max See [crew_throttle()].
@@ -123,6 +123,7 @@ crew_class_throttle <- R6::R6Class(
       .seconds_min <<- seconds_min
       .seconds_start <<- seconds_start
       .base <<- base
+      .seconds_interval <<- seconds_start
     },
     #' @description Validate the object.
     #' @return `NULL` (invisibly).
@@ -179,6 +180,14 @@ crew_class_throttle <- R6::R6Class(
     #'   `max` seconds, `FALSE` otherwise.
     poll = function() {
       now <- now()
+      # Skipping the first polling interval helps initial scaling with
+      # job arrays. It avoids the awkward single-job array that would
+      # be submitted if crew did not give a little chance for
+      # tasks to accumulate initially.
+      if (is.null(.polled)) {
+        .polled <<- now
+        return(FALSE)
+      }
       out <- (now - .polled) > .seconds_interval
       if (out) {
         .polled <<- now

@@ -13,7 +13,7 @@ crew_controller_local(
   tls_enable = NULL,
   tls_config = NULL,
   serialization = NULL,
-  seconds_interval = 1,
+  seconds_interval = 0.25,
   seconds_timeout = 60,
   seconds_launch = 30,
   seconds_idle = 300,

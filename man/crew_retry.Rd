@@ -7,7 +7,7 @@
 crew_retry(
   fun,
   args = list(),
-  seconds_interval = 1,
+  seconds_interval = 0.25,
   seconds_timeout = 60,
   max_tries = Inf,
   error = TRUE,

@@ -4,7 +4,7 @@
 \alias{crew_controller_group}
 \title{Create a controller group.}
 \usage{
-crew_controller_group(..., seconds_interval = 1)
+crew_controller_group(..., seconds_interval = 0.25)
 }
 \arguments{
 \item{...}{\code{R6} controller objects or lists of \code{R6} controller objects.

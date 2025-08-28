@@ -108,11 +108,8 @@ No longer necessary.}
 \item{retry_tasks}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 
 \item{tasks_max}{Maximum number of tasks that a worker will do before
-exiting. If it is a finite positive integer, then \code{crew} auto-scales
-with an aggressive exponential backoff algorithm.
-If \code{tasks_max} is \code{Inf}, then \code{crew} only scales at time intervals
-of \code{seconds_interval} to allow enough pending tasks to accumulate
-for job arrays. See the Auto-scaling section for details.}
+exiting. Also determines how often the controller auto-scales.
+See the Auto-scaling section for details.}
 
 \item{tasks_timers}{Number of tasks to do before activating
 the timers for \code{seconds_idle} and \code{seconds_wall}.

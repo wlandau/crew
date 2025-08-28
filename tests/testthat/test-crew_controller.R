@@ -724,11 +724,11 @@ crew_test("crash detection with crashes_max == 2L", {
     for (handle in unlist(x$launcher$launches$handle)) {
       handle$kill()
     }
-    x$wait(mode = "one", seconds_timeout = 30)
+    x$wait(mode = "one", seconds_timeout = 30, throttle = FALSE, scale = TRUE)
     expect_true(tibble::is_tibble(x$pop()))
     expect_equal(x$crashes(name = "x"), index)
   }
-  x$push(Sys.sleep(300L), name = "x", scale = TRUE)
+  x$push(Sys.sleep(300L), name = "x", scale = TRUE, throttle = FALSE)
   crew_retry(
     ~ isTRUE(x$client$status()["connections"] > 0L),
     seconds_interval = 0.1,
@@ -798,7 +798,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
   x$start()
   for (index in seq_len(2L)) {
     expect_equal(x$crashes(name = "x"), index - 1L)
-    x$push(Sys.sleep(300L), name = "x", scale = TRUE)
+    x$push(Sys.sleep(300L), name = "x", scale = TRUE, throttle = FALSE)
     crew_retry(
       ~ isTRUE(x$client$status()["connections"] > 0L),
       seconds_interval = 0.1,
@@ -812,7 +812,7 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
     expect_true(tibble::is_tibble(x$collect()))
     expect_equal(x$crashes(name = "x"), index)
   }
-  x$push(Sys.sleep(300L), name = "x", scale = TRUE)
+  x$push(Sys.sleep(300L), name = "x", scale = TRUE, throttle = FALSE)
   crew_retry(
     ~ isTRUE(x$client$status()["connections"] > 0L),
     seconds_interval = 0.1,

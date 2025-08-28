@@ -238,7 +238,7 @@ As explained above, `push()`, `pop()`, and `wait()` launch new workers to run ta
 The most useful arguments for down-scaling, in order of importance, are:
 
 1. `seconds_idle`: shut down a worker if it spends too long waiting for a task.
-2. `tasks_max`: shut down a worker after it completes a certain number of tasks.
+2. `tasks_max`: shut down a worker after it completes a certain number of tasks. This argument also determines how frequently the controller auto-scales (see auto-scaling section of `crew_throttle()` for details).
 3. `seconds_wall`: soft wall time of a worker.
 
 Please tune these these arguments to achieve the desired balance for auto-scaling. The two extremes of auto-scaling are [`clustermq`](https://mschubert.github.io/clustermq/)-like *persistent workers* and [`future`](https://future.futureverse.org/)-like *transient workers*, and each is problematic in its own way.

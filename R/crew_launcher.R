@@ -16,7 +16,10 @@
 #'   `tasks_max` is special: it determines not only the number of tasks
 #'   a worker runs before exiting, it also determines how often
 #'   auto-scaling runs.
-#'   If `tasks_max` is `Inf`, then `crew` only scales at equally-spaced
+#'   If `tasks_max` is finite, then `crew` uses an aggressive
+#'   deterministic exponential backoff algorithm to determine how frequently
+#'   to auto-scale (see [crew_throttle()]).
+#'   But if `tasks_max` is `Inf`, then `crew` only scales at equally-spaced
 #'   time intervals of `seconds_interval` to allow enough pending
 #'   tasks to accumulate for job arrays.
 #'   This last part is important because auto-scaling
@@ -62,11 +65,8 @@
 #' @param seconds_exit Deprecated on 2023-09-21 in version 0.5.0.9002.
 #'   No longer necessary.
 #' @param tasks_max Maximum number of tasks that a worker will do before
-#'   exiting. If it is a finite positive integer, then `crew` auto-scales
-#'   with an aggressive exponential backoff algorithm.
-#'   If `tasks_max` is `Inf`, then `crew` only scales at time intervals
-#'   of `seconds_interval` to allow enough pending tasks to accumulate
-#'   for job arrays. See the Auto-scaling section for details.
+#'   exiting. Also determines how often the controller auto-scales.
+#'   See the Auto-scaling section for details.
 #' @param tasks_timers Number of tasks to do before activating
 #'   the timers for `seconds_idle` and `seconds_wall`.
 #'   See the `timerstart` argument of `mirai::daemon()`.

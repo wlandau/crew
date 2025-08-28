@@ -118,10 +118,11 @@ to return a completed task.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get pid"</span>, command <span class="op">=</span> <span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_pid.html" class="external-link">ps_pid</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>As a side effect, methods <code>push()</code>, <code>pop()</code>,
-and <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> also launch workers to run the tasks. If your
-controller uses transient workers and has a backlog of tasks, you may
-need to loop over <code>pop()</code> or <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> multiple
-times to make sure enough workers are always available.</p>
+and <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> also launch workers to run the tasks. However,
+launches may not occur immediately because <code>crew</code> may wait to
+collect many tasks before scaling to the appropriate number of workers.
+So you may need to loop over <code>pop()</code> or <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code>
+multiple times to make sure enough workers are always available.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">controller</span><span class="op">$</span><span class="fu">pop</span><span class="op">(</span><span class="op">)</span> <span class="co"># No workers started yet and the task is not done.</span></span>
 <span><span class="co">#&gt; NULL</span></span>
@@ -197,9 +198,6 @@ output.</li>
 <li>
 <code>controller</code>: name of the <code>crew</code> controller
 where the task ran.</li>
-<li>
-<code>worker</code>: name of the <code>crew</code> worker that ran
-the task.</li>
 </ul>
 <p>If <code>seed</code> and <code>algorithm</code> are both non-missing
 in the output, then you can recover the pseudo-random number generator
@@ -427,18 +425,6 @@ transient worker to run it. Transient workers avoid excessive idling,
 but frequent worker launches cause significant overhead and slows down
 the computation as a whole.</li>
 </ol>
-</div>
-<div class="section level2">
-<h2 id="asynchronous-management-of-workers">Asynchronous management of workers<a class="anchor" aria-label="anchor" href="#asynchronous-management-of-workers"></a>
-</h2>
-<p>Some controllers support local processes to launch and terminate
-workers asynchronously. For example, a cloud-based controller may need
-to make HTTP requests to launch and terminate workers on e.g. AWS Batch,
-and these time-consuming requests should happen in the background.
-Controllers that support this will have a <code>processes</code>
-argument to specify the number of local R processes to churn through
-worker launches and terminations. Set <code>processes = NULL</code> to
-disable async, which can be helpful for troubleshooting.</p>
 </div>
 <div class="section level2">
 <h2 id="crashes-and-retries">Crashes and retries<a class="anchor" aria-label="anchor" href="#crashes-and-retries"></a>

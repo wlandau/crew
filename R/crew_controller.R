@@ -876,7 +876,7 @@ crew_class_controller <- R6::R6Class(
       names <- if_any(
         is.null(names),
         paste(
-          basename(tempfile(pattern = "unnamed_task_")),
+          name_task_tempfile(),
           as.character(seq_along(iterate[[1L]])),
           sep = "_"
         ),

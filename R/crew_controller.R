@@ -498,7 +498,7 @@ crew_class_controller <- R6::R6Class(
     #'   auto-scaling activity (new worker launches or worker
     #'   connection/disconnection events). `FALSE` otherwise.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controllers Not used. Included to ensure the signature is
@@ -512,7 +512,7 @@ crew_class_controller <- R6::R6Class(
       invisible(activity)
     },
     #' @description Run worker auto-scaling in a `later` loop
-    #'   every `controller$client$seconds_interval` seconds.
+    #'   in polling intervals determined by exponential backoff.
     #' @details Call `controller$descale()` to terminate the
     #'   auto-scaling loop.
     #' @param loop A `later` loop to run auto-scaling.
@@ -531,10 +531,10 @@ crew_class_controller <- R6::R6Class(
       }
       poll <- function() {
         if (!is.null(.loop)) {
-          self$scale(throttle = FALSE) # necessary reference to self
+          self$scale(throttle = TRUE) # necessary reference to self
           later::later(
             func = poll,
-            delay = .client$seconds_interval,
+            delay = .launcher$throttle$seconds_interval,
             loop = .loop
           )
         }
@@ -613,7 +613,7 @@ crew_class_controller <- R6::R6Class(
     #'   to auto-scale workers to meet the demand of the task load. Also
     #'   see the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param name Character string, name of the task. If `NULL`, then
@@ -768,7 +768,7 @@ crew_class_controller <- R6::R6Class(
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controller Not used. Included to ensure the signature is
@@ -1056,7 +1056,7 @@ crew_class_controller <- R6::R6Class(
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controller Not used. Included to ensure the signature is
@@ -1283,7 +1283,7 @@ crew_class_controller <- R6::R6Class(
     #'   See also the `throttle` argument.
     #' @param collect Deprecated in version 0.5.0.9003 (2023-10-02).
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param error `NULL` or character of length 1, choice of action if
@@ -1386,7 +1386,7 @@ crew_class_controller <- R6::R6Class(
     #'   whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param error `NULL` or character of length 1, choice of action if
@@ -1491,7 +1491,7 @@ crew_class_controller <- R6::R6Class(
     #'   to auto-scale workers to meet the demand of the task load.
     #'   See also the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controllers Not used. Included to ensure the signature is

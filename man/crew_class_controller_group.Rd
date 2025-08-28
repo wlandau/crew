@@ -391,7 +391,7 @@ in one or more controller objects.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -566,7 +566,7 @@ demand. See the \code{scale} argument of the \code{push()} method of
 ordinary single controllers.}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -702,7 +702,7 @@ when pushing tasks.}
 demand. See also the \code{throttle} argument.}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -855,7 +855,7 @@ interactive session if at least one task encounters an error.}
 demand. See also the \code{throttle} argument.}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -901,7 +901,7 @@ ordinary single controllers.}
 \item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -948,7 +948,7 @@ whether to automatically call \code{scale()}
 to auto-scale workers to meet the demand of the task load.}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 
@@ -1015,7 +1015,7 @@ See the \code{scale} argument of the \code{wait()} method of
 ordinary single controllers.}
 
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
-within the last \code{seconds_interval} seconds. \code{FALSE} to auto-scale
+within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the \code{mirai} dispatcher and other resources.}
 

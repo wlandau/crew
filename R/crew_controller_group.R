@@ -276,7 +276,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   auto-scaling activity (new worker launches or worker
     #'   connection/disconnection events) (`FALSE` otherwise).
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controllers Character vector of controller names.
@@ -366,7 +366,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   demand. See the `scale` argument of the `push()` method of
     #'   ordinary single controllers.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param name Character string, name of the task. If `NULL`,
@@ -488,7 +488,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controller Character of length 1,
@@ -620,7 +620,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param scale Logical, whether to automatically scale workers to meet
     #'   demand. See also the `throttle` argument.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controller Character of length 1,
@@ -689,7 +689,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   ordinary single controllers.
     #' @param collect Deprecated in version 0.5.0.9003 (2023-10-02). Not used.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param error `NULL` or character of length 1, choice of action if
@@ -729,7 +729,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   whether to automatically call `scale()`
     #'   to auto-scale workers to meet the demand of the task load.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param error `NULL` or character of length 1, choice of action if
@@ -791,7 +791,7 @@ crew_class_controller_group <- R6::R6Class(
     #'   See the `scale` argument of the `wait()` method of
     #'   ordinary single controllers.
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
-    #'   within the last `seconds_interval` seconds. `FALSE` to auto-scale
+    #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
     #'   overburdening the `mirai` dispatcher and other resources.
     #' @param controllers Character vector of controller names.

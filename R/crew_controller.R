@@ -1517,17 +1517,17 @@ crew_class_controller <- R6::R6Class(
       }
       if (identical(mode, "all")) {
         wait_event <- function() {
-          if (unresolved() > 0L) {
+          if (self$unresolved() > 0L) {
             .client$relay$wait()
           }
-          unresolved() < 1L
+          self$unresolved() < 1L
         }
       } else {
         wait_event <- function() {
-          if (size() - unresolved() < 1L) {
+          if (size() - self$unresolved() < 1L) {
             .client$relay$wait()
           }
-          size() - unresolved() > 0L
+          self$size() - self$unresolved() > 0L
         }
       }
       envir <- new.env(parent = emptyenv())

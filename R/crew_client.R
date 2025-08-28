@@ -333,16 +333,15 @@ crew_class_client <- R6::R6Class(
     #'   (awaiting, executing, completed) as well as the number of
     #'   worker connections.
     status = function() {
+      default <- c(
+        connections = 0L,
+        cumulative = 0L,
+        awaiting = 0L,
+        executing = 0L,
+        completed = 0L
+      )
       if (!.started) {
-        return(
-          c(
-            connections = 0L,
-            cumulative = 0L,
-            awaiting = 0L,
-            executing = 0L,
-            completed = 0L
-          )
-        )
+        return(default)
       }
       mirai_status(
         profile = .profile,

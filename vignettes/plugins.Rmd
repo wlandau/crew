@@ -75,11 +75,31 @@ launcher$call()
 #> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, id = 1L, tlscert = NULL, rs = NULL), controller = \"a28f357a\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
 ```
 
-# Job arrays
+# Batched launches
 
+Some platforms support launching multiple workers from a single system call. For example, clusters like SLURM and cloud services like AWS Batch support job arrays. To leverage this feature in `crew`, define a method called `launch_workers()` (plural) instead of `launch_worker()` (singular). The former supersedes the latter when it is user-defined.^[The default `launch_workers()` method just calls `launch_worker()` `n` times.] For example:
 
+```r
+R6::R6Class(
+  classname = "slurm_launcher_class",
+  inherit = crew::crew_class_launcher,
+  public = list(
+    launch_workers = function(call, n) {
+      template <- c(
+        "#!/bin/bash",
+        "#SBATCH --array=1-%s",
+        "module load R",
+        "Rscript -e '%s'"
+      )
+      script <- tempfile()
+      writeLines(sprintf(template, n, call), script)
+      system2("sbatch", script, wait = FALSE)
+    }
+  )
+)
+```
 
-
+Above, `call` is the same as before: a call to `mirai::daemon()` to run a single worker. `n` is the number of `crew` workers (i.e. SLURM jobs) to launch in the current round of auto-scaling. The body of the function creates a job script for an array job, then submits the script to the cluster with `sbatch`.
 
 # Controllers
 

@@ -38,7 +38,7 @@ Use `push()` to submit a new task and `pop()` to return a completed task.
 controller$push(name = "get pid", command = ps::ps_pid())
 ```
 
-As a side effect, methods `push()`, `pop()`, and `scale()` also launch workers to run the tasks. If your controller uses transient workers and has a backlog of tasks, you may need to loop over `pop()` or `scale()` multiple times to make sure enough workers are always available.
+As a side effect, methods `push()`, `pop()`, and `scale()` also launch workers to run the tasks. However, launches may not occur immediately because `crew` may wait to collect many tasks before scaling to the appropriate number of workers. So you may need to loop over `pop()` or `scale()` multiple times to make sure enough workers are always available.
 
 ```r
 controller$pop() # No workers started yet and the task is not done.
@@ -101,7 +101,6 @@ Here is the full list of output in the `task` object returned by `pop()`.
    `set.seed(seed = seed, kind = algorithm)`, where `seed` and
    `algorithm` are part of this output.
 * `controller`: name of the `crew` controller where the task ran.
-* `worker`: name of the `crew` worker that ran the task.
 
 If `seed` and `algorithm` are both non-missing in the output,
 then you can recover the pseudo-random number generator state
@@ -246,10 +245,6 @@ Please tune these these arguments to achieve the desired balance for auto-scalin
 
 1. *Persistent workers*: a persistent worker launches once, typically runs many tasks, and stays running for the entire lifetime of the controller. Persistent workers minimize overhead and quickly complete large numbers of short tasks. However, they risk spending too much time in an idle state if there are no tasks to run. Excessive idling wastes resources, which could impact your colleagues on a shared cluster or drive up costs on Amazon Web Services.
 2. *Transient workers*: a transient worker terminates as soon as it completes a single task. Each subsequent task requires a new transient worker to run it. Transient workers avoid excessive idling, but frequent worker launches cause significant overhead and slows down the computation as a whole.
-
-# Asynchronous management of workers
-
-Some controllers support local processes to launch and terminate workers asynchronously. For example, a cloud-based controller may need to make HTTP requests to launch and terminate workers on e.g. AWS Batch, and these time-consuming requests should happen in the background. Controllers that support this will have a `processes` argument to specify the number of local R processes to churn through worker launches and terminations. Set `processes = NULL` to disable async, which can be helpful for troubleshooting.
 
 # Crashes and retries
  

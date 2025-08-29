@@ -17,16 +17,6 @@ knitr::opts_chunk$set(
 
 `crew` facilitates computationally demanding workloads that consume a lot of memory and CPU resources, and workloads that exhaust these resources may stall or crash. Oftentimes, a crash is silent and there are no clues for troubleshooting. But if you proactively monitor `crew` processes in log files, you can keep track of resource usage and generated prospective data which is useful in diagnosing problems. This vignette describes best practices for logging.
 
-# Processes
-
-`crew` runs in 3 different kinds of R processes:
-
-1. The local R session from which you call `crew_controller_local()` or similar.
-2. The `mirai` dispatcher which sends tasks to workers. The dispatcher starts on `controller$start()` and terminates on `controller$terminate()` or when the local R session closes. The dispatcher always runs on the same machine as (1).
-3. The workers that accept tasks from (2). These workers may run on different machines, e.g. on a cluster or the cloud, depending on the [launcher plugin](https://wlandau.github.io/crew/articles/plugins.html) you are using.
-
-This vignette first covers logging for local the R session and dispatcher (1 and 2), then logging for workers (3).
-
 # Logging worker processes
 
 Each [launcher plugin](https://wlandau.github.io/crew/articles/plugins.html) has its own way to turn on logging for workers. In the case of the local plugin (`crew_controller_local()`), the `crew_options_local()` has arguments to configure how messages are written to log file, and each worker instance gets its own log file in a directory you specify. Other plugins in packages such as [`crew.cluster`](https://wlandau.github.io/crew.cluster/) and [`crew.aws.batch`](https://wlandau.github.io/crew.aws.batch/) have different arguments to configure platform-specific logging mechanisms (e.g. SLURM logs or AWS CloudWatch logs). Example for the local plugin:
@@ -135,61 +125,9 @@ autometric::log_plot(data, pid = 43098, metric = "resident")
 
 ![](./figures/memory.png)
 
-# Logging local processes
-
-You can use the [`autometric`](https://wlandau.github.io/autometric/) package directly to monitor local `crew` processes (including the `mirai` dispatcher). To begin, you need the process IDs of the local processes. As of `crew` version `0.9.5.9012`, every controller has a `pids()` method to get the process IDs of all the local processes.
-
-```r
-library(crew)
-controller <- crew_controller_local()
-controller$start()
-controller$pids()
-#>                               local dispatcher-e07cd32eeac18cb9e1dd59fb 
-#>                             2104319                             2104731
-```
-
-You can pass this named vector of process IDs directly into [`autometric::log_start()`](https://wlandau.github.io/autometric/reference/log_start.html), which starts a background thread which logs resource usage metrics to the text file of your choice.^[On Mac OS, you may not get usable metrics for the dispatcher because of security restrictions on low-level system calls.] Remember to call [`autometric::log_stop()`](https://wlandau.github.io/autometric/reference/log_stop.html) when you are done (or restart R) to stop logging.
-
-```r
-path <- tempfile()
-autometric::log_start(
-  path = path,
-  seconds = 1,
-  pids = controller$pids()
-)
-controller$push(Sys.sleep(5))
-controller$wait()
-autometric::log_stop()
-controller$terminate()
-```
-
-Use [`autometric::log_read()`](https://wlandau.github.io/autometric/reference/log_read.html) to read these metrics and [`autometric::log_plot()`](https://wlandau.github.io/autometric/reference/log_plot.html) to visualize them. Below, the `time` column is elapsed time in seconds since logging began, and `resident` is memory usage in megabytes. More details are at [`autometric::log_read()`](https://wlandau.github.io/autometric/reference/log_read.html). Note: the `phase` column does not show task information because only the workers know which tasks are running.
-
-```r
-data <- autometric::log_read(path)
-data$name <- substr(data$name, 0, 10)
-data
-#>    version       phase     pid       name status  time  core   cpu resident   virtual
-#> 1    0.0.1 __DEFAULT__ 2104319      local      0 0.000 0.000 0.000 195.1007  9708.073
-#> 2    0.0.1 __DEFAULT__ 2104731 dispatcher      0 0.000 0.000 0.000  31.7399  9514.222
-#> 3    0.0.1 __DEFAULT__ 2104319      local      0 1.000 4.998 0.078 195.1007  9842.328
-#> 4    0.0.1 __DEFAULT__ 2104731 dispatcher      0 1.000 0.000 0.000  31.7399  9849.901
-#> 5    0.0.1 __DEFAULT__ 2104319      local      0 2.000 0.000 0.000 195.1007  9909.436
-#> 6    0.0.1 __DEFAULT__ 2104731 dispatcher      0 2.000 0.000 0.000  31.7399  9984.119
-#> 7    0.0.1 __DEFAULT__ 2104319      local      0 3.001 0.000 0.000 195.1007  9909.436
-#> 8    0.0.1 __DEFAULT__ 2104731 dispatcher      0 3.001 0.000 0.000  31.7399 10118.337
-#> 9    0.0.1 __DEFAULT__ 2104319      local      0 4.001 0.000 0.000 195.1007  9976.545
-#> 10   0.0.1 __DEFAULT__ 2104731 dispatcher      0 4.001 0.000 0.000  31.7399 10185.445
-```
-
 # In `targets`
 
-As explained at <https://books.ropensci.org/targets/crew.html>, `crew` helps `targets` orchestrate pipelines. For a `targets` pipeline, to log all local processes as in the previous section, you will need to pass an already started controller to `tar_option_set()`. To do this safely:
-
-1. Only start the controller if you are actually running a pipeline. You can use [`targets::tar_active()`](https://docs.ropensci.org/targets/reference/tar_active.html) in `_targets.R` to check if [`tar_make()`](https://docs.ropensci.org/targets/reference/tar_make.html) is running.
-2. Do not run [`tar_make()`](https://docs.ropensci.org/targets/reference/tar_make.html) with `callr_function = NULL`. This ensures the logging thread quits when the [`tar_make()`](https://docs.ropensci.org/targets/reference/tar_make.html) isolated `callr` R process quits.
-
-Example `_targets.R` file:
+As explained at <https://books.ropensci.org/targets/crew.html>, `crew` helps `targets` orchestrate pipelines. In addition to the `crew` workers above, `targets` has its own central process for managing the pipeline. To monitor this central process, simply write `if (tar_active()) log_start()` in `_targets.R`. This will write a separate file to record the resource usage statistics of the central process. Example:
 
 ```r
 library(autometric)
@@ -197,24 +135,22 @@ library(crew)
 library(targets)
 library(tarchetypes)
 
-controller <- crew_controller_local(
-  workers = 2,
-  options_metrics = crew_options_metrics(
-    path = "worker_log_directory/",
-    seconds_interval = 1
+tar_option_set(
+  controller = crew_controller_local(
+    workers = 2,
+    options_metrics = crew_options_metrics(
+      path = "worker_log_directory/", # Worker logs live here.
+      seconds_interval = 1
+    )
   )
 )
 
 if (tar_active()) {
-  controller$start()
   log_start(
-    path = "log.txt",
-    seconds = 1,
-    pids = controller$pids()
+    path = "main_process.txt", # Statistics on the main process go here.
+    seconds = 1
   )
 }
-
-tar_option_set(controller = controller)
 
 list(
   tar_target(name = sleep1, command = Sys.sleep(5)),

@@ -202,6 +202,11 @@ crew_class_controller <- R6::R6Class(
     }
   ),
   active = list(
+    #' @field profile Character string, compute profile of the
+    #'   controller.
+    profile = function() {
+      .subset2(.client, "profile")
+    },
     #' @field client Client object.
     client = function() {
       .client

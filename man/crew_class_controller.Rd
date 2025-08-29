@@ -44,6 +44,9 @@ Other controller:
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
+\item{\code{profile}}{Character string, compute profile of the
+controller.}
+
 \item{\code{client}}{Client object.}
 
 \item{\code{launcher}}{Launcher object.}

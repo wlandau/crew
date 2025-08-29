@@ -579,7 +579,6 @@ crew_class_launcher <- R6::R6Class(
         idletime = private$.seconds_idle * 1000,
         walltime = private$.seconds_wall * 1000,
         timerstart = private$.tasks_timers,
-        id = 1L,
         tlscert = private$.tls$worker(profile = private$.profile),
         rs = mirai::nextstream(.compute = private$.profile)
       )

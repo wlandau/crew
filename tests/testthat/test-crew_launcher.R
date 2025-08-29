@@ -69,7 +69,6 @@ crew_test("launcher settings", {
   expect_equal(settings$walltime, 3000)
   expect_equal(settings$timerstart, 8)
   expect_false(settings$cleanup)
-  expect_equal(settings$id, 1L)
 })
 
 crew_test("launcher call", {

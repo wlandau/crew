@@ -340,7 +340,14 @@ crew_class_client <- R6::R6Class(
         executing = 0L,
         completed = 0L
       )
-      if (!.started) {
+      # Need to perform these checks because the user could call
+      # mirai::daemons(0) on the compute profile manually,
+      # and we don't want to submit a request with retries that will just
+      # end up timing out.
+      not_listening <- !.started ||
+        is.null(.profile) || # Probably redundant but keeping anyway.
+        is.null(mirai::nextget("url", .compute = .profile))
+      if (not_listening) {
         return(default)
       }
       mirai_status(

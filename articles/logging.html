@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9009</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9010</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,24 +87,6 @@ proactively monitor <code>crew</code> processes in log files, you can
 keep track of resource usage and generated prospective data which is
 useful in diagnosing problems. This vignette describes best practices
 for logging.</p>
-<div class="section level2">
-<h2 id="processes">Processes<a class="anchor" aria-label="anchor" href="#processes"></a>
-</h2>
-<p><code>crew</code> runs in 3 different kinds of R processes:</p>
-<ol style="list-style-type: decimal">
-<li>The local R session from which you call
-<code><a href="../reference/crew_controller_local.html">crew_controller_local()</a></code> or similar.</li>
-<li>The <code>mirai</code> dispatcher which sends tasks to workers. The
-dispatcher starts on <code>controller$start()</code> and terminates on
-<code>controller$terminate()</code> or when the local R session closes.
-The dispatcher always runs on the same machine as (1).</li>
-<li>The workers that accept tasks from (2). These workers may run on
-different machines, e.g. on a cluster or the cloud, depending on the <a href="https://wlandau.github.io/crew/articles/plugins.html">launcher
-plugin</a> you are using.</li>
-</ol>
-<p>This vignette first covers logging for local the R session and
-dispatcher (1 and 2), then logging for workers (3).</p>
-</div>
 <div class="section level2">
 <h2 id="logging-worker-processes">Logging worker processes<a class="anchor" aria-label="anchor" href="#logging-worker-processes"></a>
 </h2>
@@ -223,103 +205,37 @@ More details are at <a href="https://wlandau.github.io/autometric/reference/log_
 <p><img src="figures/memory.png"></p>
 </div>
 <div class="section level2">
-<h2 id="logging-local-processes">Logging local processes<a class="anchor" aria-label="anchor" href="#logging-local-processes"></a>
-</h2>
-<p>You can use the <a href="https://wlandau.github.io/autometric/" class="external-link"><code>autometric</code></a>
-package directly to monitor local <code>crew</code> processes (including
-the <code>mirai</code> dispatcher). To begin, you need the process IDs
-of the local processes. As of <code>crew</code> version
-<code>0.9.5.9012</code>, every controller has a <code>pids()</code>
-method to get the process IDs of all the local processes.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/crew/">crew</a></span><span class="op">)</span></span>
-<span><span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">controller</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">controller</span><span class="op">$</span><span class="fu">pids</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                               local dispatcher-e07cd32eeac18cb9e1dd59fb </span></span>
-<span><span class="co">#&gt;                             2104319                             2104731</span></span></code></pre></div>
-<p>You can pass this named vector of process IDs directly into <a href="https://wlandau.github.io/autometric/reference/log_start.html" class="external-link"><code>autometric::log_start()</code></a>,
-which starts a background thread which logs resource usage metrics to
-the text file of your choice.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;On Mac OS, you may not get usable metrics for the
-dispatcher because of security restrictions on low-level system calls.&lt;/p&gt;"><sup>2</sup></a> Remember to call <a href="https://wlandau.github.io/autometric/reference/log_stop.html" class="external-link"><code>autometric::log_stop()</code></a>
-when you are done (or restart R) to stop logging.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu">autometric</span><span class="fu">::</span><span class="fu"><a href="https://wlandau.github.io/autometric/reference/log_start.html" class="external-link">log_start</a></span><span class="op">(</span></span>
-<span>  path <span class="op">=</span> <span class="va">path</span>,</span>
-<span>  seconds <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  pids <span class="op">=</span> <span class="va">controller</span><span class="op">$</span><span class="fu">pids</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">controller</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu">autometric</span><span class="fu">::</span><span class="fu"><a href="https://wlandau.github.io/autometric/reference/log_stop.html" class="external-link">log_stop</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">controller</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Use <a href="https://wlandau.github.io/autometric/reference/log_read.html" class="external-link"><code>autometric::log_read()</code></a>
-to read these metrics and <a href="https://wlandau.github.io/autometric/reference/log_plot.html" class="external-link"><code>autometric::log_plot()</code></a>
-to visualize them. Below, the <code>time</code> column is elapsed time
-in seconds since logging began, and <code>resident</code> is memory
-usage in megabytes. More details are at <a href="https://wlandau.github.io/autometric/reference/log_read.html" class="external-link"><code>autometric::log_read()</code></a>.
-Note: the <code>phase</code> column does not show task information
-because only the workers know which tasks are running.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">autometric</span><span class="fu">::</span><span class="fu"><a href="https://wlandau.github.io/autometric/reference/log_read.html" class="external-link">log_read</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
-<span><span class="va">data</span><span class="op">$</span><span class="va">name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">name</span>, <span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">data</span></span>
-<span><span class="co">#&gt;    version       phase     pid       name status  time  core   cpu resident   virtual</span></span>
-<span><span class="co">#&gt; 1    0.0.1 __DEFAULT__ 2104319      local      0 0.000 0.000 0.000 195.1007  9708.073</span></span>
-<span><span class="co">#&gt; 2    0.0.1 __DEFAULT__ 2104731 dispatcher      0 0.000 0.000 0.000  31.7399  9514.222</span></span>
-<span><span class="co">#&gt; 3    0.0.1 __DEFAULT__ 2104319      local      0 1.000 4.998 0.078 195.1007  9842.328</span></span>
-<span><span class="co">#&gt; 4    0.0.1 __DEFAULT__ 2104731 dispatcher      0 1.000 0.000 0.000  31.7399  9849.901</span></span>
-<span><span class="co">#&gt; 5    0.0.1 __DEFAULT__ 2104319      local      0 2.000 0.000 0.000 195.1007  9909.436</span></span>
-<span><span class="co">#&gt; 6    0.0.1 __DEFAULT__ 2104731 dispatcher      0 2.000 0.000 0.000  31.7399  9984.119</span></span>
-<span><span class="co">#&gt; 7    0.0.1 __DEFAULT__ 2104319      local      0 3.001 0.000 0.000 195.1007  9909.436</span></span>
-<span><span class="co">#&gt; 8    0.0.1 __DEFAULT__ 2104731 dispatcher      0 3.001 0.000 0.000  31.7399 10118.337</span></span>
-<span><span class="co">#&gt; 9    0.0.1 __DEFAULT__ 2104319      local      0 4.001 0.000 0.000 195.1007  9976.545</span></span>
-<span><span class="co">#&gt; 10   0.0.1 __DEFAULT__ 2104731 dispatcher      0 4.001 0.000 0.000  31.7399 10185.445</span></span></code></pre></div>
-</div>
-<div class="section level2">
 <h2 id="in-targets">In <code>targets</code><a class="anchor" aria-label="anchor" href="#in-targets"></a>
 </h2>
 <p>As explained at <a href="https://books.ropensci.org/targets/crew.html" class="external-link uri">https://books.ropensci.org/targets/crew.html</a>,
-<code>crew</code> helps <code>targets</code> orchestrate pipelines. For
-a <code>targets</code> pipeline, to log all local processes as in the
-previous section, you will need to pass an already started controller to
-<code>tar_option_set()</code>. To do this safely:</p>
-<ol style="list-style-type: decimal">
-<li>Only start the controller if you are actually running a pipeline.
-You can use <a href="https://docs.ropensci.org/targets/reference/tar_active.html" class="external-link"><code>targets::tar_active()</code></a>
-in <code>_targets.R</code> to check if <a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link"><code>tar_make()</code></a>
-is running.</li>
-<li>Do not run <a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link"><code>tar_make()</code></a>
-with <code>callr_function = NULL</code>. This ensures the logging thread
-quits when the <a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link"><code>tar_make()</code></a>
-isolated <code>callr</code> R process quits.</li>
-</ol>
-<p>Example <code>_targets.R</code> file:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code>crew</code> helps <code>targets</code> orchestrate pipelines. In
+addition to the <code>crew</code> workers above, <code>targets</code>
+has its own central process for managing the pipeline. To monitor this
+central process, simply write <code>if (tar_active()) log_start()</code>
+in <code>_targets.R</code>. This will write a separate file to record
+the resource usage statistics of the central process. Example:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/autometric/" class="external-link">autometric</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wlandau.github.io/crew/">crew</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/" class="external-link">targets</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/tarchetypes/" class="external-link">tarchetypes</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">controller</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span></span>
-<span>  workers <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  options_metrics <span class="op">=</span> <span class="fu"><a href="../reference/crew_options_metrics.html">crew_options_metrics</a></span><span class="op">(</span></span>
-<span>    path <span class="op">=</span> <span class="st">"worker_log_directory/"</span>,</span>
-<span>    seconds_interval <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="fu">tar_option_set</span><span class="op">(</span></span>
+<span>  controller <span class="op">=</span> <span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span></span>
+<span>    workers <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>    options_metrics <span class="op">=</span> <span class="fu"><a href="../reference/crew_options_metrics.html">crew_options_metrics</a></span><span class="op">(</span></span>
+<span>      path <span class="op">=</span> <span class="st">"worker_log_directory/"</span>, <span class="co"># Worker logs live here.</span></span>
+<span>      seconds_interval <span class="op">=</span> <span class="fl">1</span></span>
+<span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu">tar_active</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">controller</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://wlandau.github.io/autometric/reference/log_start.html" class="external-link">log_start</a></span><span class="op">(</span></span>
-<span>    path <span class="op">=</span> <span class="st">"log.txt"</span>,</span>
-<span>    seconds <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>    pids <span class="op">=</span> <span class="va">controller</span><span class="op">$</span><span class="fu">pids</span><span class="op">(</span><span class="op">)</span></span>
+<span>    path <span class="op">=</span> <span class="st">"main_process.txt"</span>, <span class="co"># Statistics on the main process go here.</span></span>
+<span>    seconds <span class="op">=</span> <span class="fl">1</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span></span>
-<span><span class="fu">tar_option_set</span><span class="op">(</span>controller <span class="op">=</span> <span class="va">controller</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="fu">tar_target</span><span class="op">(</span>name <span class="op">=</span> <span class="va">sleep1</span>, command <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>

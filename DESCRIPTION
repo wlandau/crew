@@ -63,8 +63,8 @@ Suggests:
   rmarkdown (>= 2.4),
   testthat (>= 3.0.0)
 Remotes:
-    r-lib/mirai@dev,
-    r-lib/nanonext
+  år-lib/mirai@dev,
+  r-lib/nanonext
 Encoding: UTF-8
 Language: en-US
 VignetteBuilder: knitr

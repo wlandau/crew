@@ -38,7 +38,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck, local::., github::r-lib/mirai@dev, github::r-lib/nanonext
+          extra-packages: any::rcmdcheck, local::.
           needs: check
           cache-version: 3
 

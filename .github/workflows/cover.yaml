@@ -21,7 +21,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::covr, local::., github::r-lib/mirai@dev, github::r-lib/nanonext
+          extra-packages: any::covr, local::.
           needs: coverage
           cache-version: 3
 

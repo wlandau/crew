@@ -7,7 +7,6 @@
 [![status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![check](https://github.com/wlandau/crew/actions/workflows/check.yaml/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Acheck)
 [![codecov](https://codecov.io/gh/wlandau/crew/branch/main/graph/badge.svg?token=3T5DlLwUVl)](https://app.codecov.io/gh/wlandau/crew)
-[![lint](https://github.com/wlandau/crew/actions/workflows/lint.yaml/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Alint)
 [![pkgdown](https://github.com/wlandau/crew/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/wlandau/crew/actions?query=workflow%3Apkgdown)
 <!-- badges: end --->
 

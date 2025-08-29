@@ -18,10 +18,10 @@
 #' @param seconds_interval Number of seconds between
 #'   polling intervals waiting for certain internal
 #'   synchronous operations to complete,
-#'   such as checking `mirai::status()`
+#'   such as checking `mirai::info()`
 #' @param seconds_timeout Number of seconds until timing
 #'   out while waiting for certain synchronous operations to complete,
-#'   such as checking `mirai::status()`.
+#'   such as checking `mirai::info()`.
 #' @param serialization Either `NULL` (default) or an object produced by
 #'   [mirai::serial_config()] to control the serialization
 #'   of data sent to workers. This can help with either more efficient
@@ -149,10 +149,7 @@ crew_class_client <- R6::R6Class(
     .relay = NULL,
     .started = FALSE,
     .url = NULL,
-    .profile = NULL,
-    # TODO: remove if/when mirai::status()$events
-    # becomes irrelevant (issue #232):
-    .disconnections = 0L
+    .profile = NULL
   ),
   active = list(
     #' @field host See [crew_client()].
@@ -195,10 +192,6 @@ crew_class_client <- R6::R6Class(
     #' @field profile Compute profile of the client.
     profile = function() {
       .profile
-    },
-    #' @field disconnections Cumulative worker disconnection events.
-    disconnections = function() {
-      .disconnections
     }
   ),
   public = list(
@@ -287,15 +280,6 @@ crew_class_client <- R6::R6Class(
         crew_assert(is.list(.serialization))
       )
       .relay$validate()
-      if (!is.null(.disconnections)) {
-        crew_assert(
-          .disconnections,
-          is.integer(.),
-          all(is.finite(.)),
-          length(.) == 1L,
-          all(. >= 0L)
-        )
-      }
       invisible()
     },
     #' @description Register the client as started.
@@ -326,7 +310,6 @@ crew_class_client <- R6::R6Class(
       .relay$set_from(mirai::nextget(x = "cv", .compute = .profile))
       .relay$start()
       .started <<- TRUE
-      .disconnections <<- 0L
       invisible()
     },
     #' @description Stop the mirai client and disconnect from the
@@ -343,24 +326,35 @@ crew_class_client <- R6::R6Class(
       .relay$terminate()
       .url <<- NULL
       .started <<- FALSE
-      .disconnections <<- 0L
       invisible()
     },
-    #' @description Get the counters from `mirai::status()`.
+    #' @description Get the counters from `mirai::info()`.
     #' @return A named integer vector of task counts
     #'   (awaiting, executing, completed) as well as the number of
     #'   worker connections.
     status = function() {
-      status <- mirai_status(
+      default <- c(
+        connections = 0L,
+        cumulative = 0L,
+        awaiting = 0L,
+        executing = 0L,
+        completed = 0L
+      )
+      # Need to perform these checks because the user could call
+      # mirai::daemons(0) on the compute profile manually,
+      # and we don't want to submit a request with retries that will just
+      # end up timing out.
+      not_listening <- !.started ||
+        is.null(.profile) || # Probably redundant but keeping anyway.
+        is.null(mirai::nextget("url", .compute = .profile))
+      if (not_listening) {
+        return(default)
+      }
+      mirai_status(
         profile = .profile,
         seconds_interval = .seconds_interval,
         seconds_timeout = .seconds_timeout
       )
-      .disconnections <<- .disconnections +
-        sum(.subset2(status, "events") < 0L)
-      status$disconnections <- .disconnections
-      status$events <- NULL
-      status
     },
     #' @description Deprecated on 2025-08-26 in `crew` version 1.2.1.9005.
     #' @return The integer process ID of the current process.

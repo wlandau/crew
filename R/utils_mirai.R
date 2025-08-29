@@ -1,17 +1,10 @@
 mirai_status <- function(profile, seconds_interval, seconds_timeout) {
   envir <- new.env(parent = emptyenv())
   iterate <- function() {
-    status <- mirai::status(.compute = profile)
-    valid <- is.list(status)
-    retry <- is.numeric(status) && identical(as.integer(status), 5L)
-    if_any(
-      valid || retry,
-      NULL,
-      mirai_status_error(status = status, profile = profile)
-    )
+    status <- mirai::info(.compute = profile)
+    envir$valid <- !is.null(status)
     envir$status <- status
-    envir$valid <- valid
-    valid
+    !is.null(status)
   }
   crew_retry(
     fun = iterate,
@@ -21,14 +14,12 @@ mirai_status <- function(profile, seconds_interval, seconds_timeout) {
     assertions = FALSE
   )
   status <- .subset2(envir, "status")
-  valid <- .subset2(envir, "valid")
-  if_any(valid, status, mirai_status_error(status, profile))
+  if_any(.subset2(envir, "valid"), status, mirai_status_error(profile))
 }
 
-mirai_status_error <- function(status, profile) {
-  message <- sprintf("'errorValue' int %s\n", nanonext::nng_error(status))
+mirai_status_error <- function(profile) {
   info <- paste(
-    "\nmirai::status(.compute = controller$client$profile) errored out",
+    "mirai::info(.compute = controller$client$profile) errored out",
     "during normal {crew} operations",
     "(probably auto-scaling or counting resolved tasks).",
     "It is possible that the mirai::dispatcher() R process is no longer",
@@ -54,56 +45,5 @@ mirai_status_error <- function(status, profile) {
     "https://books.ropensci.org/targets/performance.html and",
     "https://books.ropensci.org/targets/cloud-storage.html."
   )
-  crew_error(paste(message, info))
-}
-
-mirai_resolved <- function(task) {
-  !is_mirai(task) || !nanonext::.unresolved(task)
-}
-
-mirai_resolve <- function(task, launching) {
-  if (mirai::is_mirai(task)) {
-    mirai::call_mirai(task)
-    mirai_assert(task, launching)
-    task$data
-  } else {
-    task
-  }
-}
-
-mirai_wait <- function(tasks, launching) {
-  mirai::call_mirai(tasks)
-  lapply(tasks, mirai_assert, launching = launching)
-  invisible()
-}
-
-mirai_assert <- function(task, launching) {
-  if (!mirai::is_mirai(task)) {
-    return()
-  }
-  data <- .subset2(task, "data")
-  if (mirai::is_mirai_error(data)) {
-    if (launching) {
-      crew_error(
-        message = paste(
-          "Error asynchronously launching a worker:",
-          mirai_condition_message(data)
-        )
-      )
-    } else {
-      crew_warning(
-        message = paste(
-          "Error asynchronously terminating a worker:",
-          mirai_condition_message(data)
-        )
-      )
-    }
-  }
-}
-
-mirai_condition_message <- function(data) {
-  tryCatch(
-    as.character(data),
-    error = function(condition) attr(data, "message")
-  )
+  crew_error(info)
 }

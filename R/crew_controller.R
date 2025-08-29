@@ -410,8 +410,7 @@ crew_class_controller <- R6::R6Class(
       if (!started()) {
         return(0L)
       }
-      counts <- .subset2(.subset2(.client, "status")(), "mirai")
-      as.integer(.subset(counts, "completed"))
+      as.integer(.subset(.subset2(.client, "status")(), "completed"))
     },
     #' @description Number of unresolved tasks.
     #' @return Non-negative integer of length 1,
@@ -422,7 +421,7 @@ crew_class_controller <- R6::R6Class(
       if (!started()) {
         return(0L)
       }
-      counts <- .subset2(.subset2(.client, "status")(), "mirai")
+      counts <- .subset2(.client, "status")()
       as.integer(.subset(counts, "awaiting") + .subset2(counts, "executing"))
     },
     #' @description Check if the controller is saturated.
@@ -449,7 +448,7 @@ crew_class_controller <- R6::R6Class(
       # This shortcut avoids a bottleneck in {targets},
       # but it isn't exactly what "saturated" should mean.
       #
-      # counts <- .subset2(.subset2(.client, "status")(), "mirai")
+      # counts <- .subset2(.client, "status")()
       # unresolved <- .subset(counts, "awaiting") +
       #   .subset(counts, "executing")
       # as.logical(unresolved >= .subset2(.launcher, "workers"))
@@ -1518,17 +1517,17 @@ crew_class_controller <- R6::R6Class(
       }
       if (identical(mode, "all")) {
         wait_event <- function() {
-          if (unresolved() > 0L) {
+          if (self$unresolved() > 0L) {
             .client$relay$wait()
           }
-          unresolved() < 1L
+          self$unresolved() < 1L
         }
       } else {
         wait_event <- function() {
-          if (size() - unresolved() < 1L) {
+          if (size() - self$unresolved() < 1L) {
             .client$relay$wait()
           }
-          size() - unresolved() > 0L
+          self$size() - self$unresolved() > 0L
         }
       }
       envir <- new.env(parent = emptyenv())

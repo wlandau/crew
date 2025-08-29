@@ -14,7 +14,7 @@ or another list.}
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal
 synchronous operations to complete,
-such as checking \code{mirai::status()}}
+such as checking \code{mirai::info()}}
 }
 \description{
 Create an \code{R6} object to submit tasks and launch workers

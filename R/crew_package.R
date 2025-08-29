@@ -29,7 +29,7 @@
 #' @importFrom processx process
 #' @importFrom promises promise
 #' @importFrom ps ps_cmdline ps_handle ps_pid ps_is_running
-#'   ps_status ps_username
+#'   ps_username
 #' @importFrom R6 R6Class
 #' @importFrom rlang abort as_function enquo is_installed is_named quo_squash
 #' @importFrom stats runif

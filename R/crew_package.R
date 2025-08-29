@@ -22,8 +22,8 @@
 #' @importFrom collections dict queue
 #' @importFrom data.table rbindlist
 #' @importFrom later create_loop current_loop destroy_loop exists_loop later
-#' @importFrom mirai call_mirai daemon daemons is_mirai is_mirai_error
-#'   mirai nextcode nextget nextstream status stop_mirai
+#' @importFrom mirai call_mirai daemon daemons info is_mirai
+#'   is_mirai_error mirai nextcode nextget nextstream stop_mirai
 #' @importFrom nanonext %~>% cv ip_addr mclock msleep nng_error
 #'   random .unresolved until_ tls_config
 #' @importFrom processx process

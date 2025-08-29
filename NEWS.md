@@ -1,4 +1,4 @@
-# crew 1.2.1.9009 (development)
+# crew 1.2.1.9010 (development)
 
 * Reinstate checks that were temporarily suppressed to help plugins transition to #217.
 * Support `reset_globals`, `reset_packages`, `reset_options`, and `garbage_collection` in `crew_controller_sequential()` (#217).
@@ -20,6 +20,7 @@
 * Deprecate `processes` and `async` in `crew` launchers in favor of job arrays (#218, #237).
 * Drop the unified controller group throttle. Let individual controllers handle their own throttling based on their own auto-scaling settings.
 * When `tasks_mask` is finite, set `seconds_min` to `seconds_interval` in the throttle to give tasks enough time to accumulate.
+* Use the counters in `mirai::info()` instead of `mirai::status()$events` (#232, @shikokuchuo).
 
 # crew 1.2.1
 

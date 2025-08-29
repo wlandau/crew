@@ -49,11 +49,11 @@ See \code{?mirai::serial_config} for details.}
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal
 synchronous operations to complete,
-such as checking \code{mirai::status()}}
+such as checking \code{mirai::info()}}
 
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete,
-such as checking \code{mirai::status()}.}
+such as checking \code{mirai::info()}.}
 
 \item{retry_tasks}{Deprecated on 2025-01-13 (\code{crew} version 0.10.2.9002).}
 }

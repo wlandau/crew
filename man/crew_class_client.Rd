@@ -187,7 +187,7 @@ worker websockets.
 \if{html}{\out{<a id="method-crew_class_client-status"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-status}{}}}
 \subsection{Method \code{status()}}{
-Get the counters from \code{mirai::status()}.
+Get the counters from \code{mirai::info()}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_client$status()}\if{html}{\out{</div>}}
 }

@@ -80,7 +80,7 @@ in a \code{\link[=crew_throttle]{crew_throttle()}} object.}
 
 \item{seconds_timeout}{Number of seconds until timing
 out while waiting for certain synchronous operations to complete,
-such as checking \code{mirai::status()}.}
+such as checking \code{mirai::info()}.}
 
 \item{seconds_launch}{Seconds of startup time to allow.
 A worker is unconditionally assumed to be alive

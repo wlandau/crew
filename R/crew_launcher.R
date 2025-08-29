@@ -44,7 +44,7 @@
 #'   in a [crew_throttle()] object.
 #' @param seconds_timeout Number of seconds until timing
 #'   out while waiting for certain synchronous operations to complete,
-#'   such as checking `mirai::status()`.
+#'   such as checking `mirai::info()`.
 #' @param seconds_launch Seconds of startup time to allow.
 #'   A worker is unconditionally assumed to be alive
 #'   from the moment of its launch until `seconds_launch` seconds later.

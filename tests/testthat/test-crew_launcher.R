@@ -191,27 +191,32 @@ crew_test("custom launcher", {
 })
 
 crew_test("deprecate seconds_exit", {
+  skip_on_cran()
   suppressWarnings(crew_launcher(seconds_exit = 1))
   expect_true(TRUE)
 })
 
 crew_test("deprecated crashes() method", {
+  skip_on_cran()
   x <- crew_launcher_local()
   expect_equal(x$crashes(index = 1L), 1L)
 })
 
 crew_test("deprecated set_name() method", {
+  skip_on_cran()
   x <- crew_launcher_local(name = "x")
   x$set_name(name = "y")
   expect_equal(x$name, "y")
 })
 
 crew_test("deprecated terminate_workers()", {
+  skip_on_cran()
   x <- crew_launcher(name = "x")
   expect_message(x$terminate_workers(), class = "crew_deprecate")
 })
 
 crew_test("deprecated async$eval()", {
+  skip_on_cran()
   x <- crew_launcher(name = "x")
   expect_equal(x$async$eval(1L + 1L), 2L)
   expect_equal(deprecated_async_eval(1L + 1L), 2L)

@@ -13,7 +13,7 @@ crew_test("autoscale() and descale() for single controllers", {
   x$push(4L, scale = FALSE)
   x$push(5L, scale = FALSE)
   # Manually wait to verify no new workers or tasks are running.
-  expect_equal(as.integer(x$client$status()$mirai["awaiting"]), 2L)
+  expect_equal(as.integer(x$client$status()["awaiting"]), 2L)
   expect_equal(x$resolved(), 3L)
   x$terminate()
 })
@@ -34,7 +34,7 @@ crew_test("autoscale() and descale() for controller groups", {
   x$push(4L, scale = FALSE)
   x$push(5L, scale = FALSE)
   # Manually wait to verify no new workers or tasks are running.
-  expect_equal(as.integer(y$client$status()$mirai["awaiting"]), 2L)
+  expect_equal(as.integer(y$client$status()["awaiting"]), 2L)
   expect_equal(x$resolved(), 3L)
   x$terminate()
 })

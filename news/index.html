@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.2.1.9010" id="crew-1219010-development">crew 1.2.1.9010 (development)<a class="anchor" aria-label="anchor" href="#crew-1219010-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.3.0" id="crew-130">crew 1.3.0<a class="anchor" aria-label="anchor" href="#crew-130"></a></h2>
 <ul><li>Reinstate checks that were temporarily suppressed to help plugins transition to <a href="https://github.com/wlandau/crew/issues/217" class="external-link">#217</a>.</li>
 <li>Support <code>reset_globals</code>, <code>reset_packages</code>, <code>reset_options</code>, and <code>garbage_collection</code> in <code><a href="../reference/crew_controller_sequential.html">crew_controller_sequential()</a></code> (<a href="https://github.com/wlandau/crew/issues/217" class="external-link">#217</a>).</li>
 <li>Change argument <code>tls</code> to <code>tlscert</code> in the call to <code><a href="https://mirai.r-lib.org/reference/daemon.html" class="external-link">mirai::daemon()</a></code> (<a href="https://github.com/wlandau/crew/issues/227" class="external-link">#227</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
@@ -70,6 +70,10 @@
 <li>Drop the unified controller group throttle. Let individual controllers handle their own throttling based on their own auto-scaling settings.</li>
 <li>When <code>tasks_mask</code> is finite, set <code>seconds_min</code> to <code>seconds_interval</code> in the throttle to give tasks enough time to accumulate.</li>
 <li>Use the counters in <code><a href="https://mirai.r-lib.org/reference/info.html" class="external-link">mirai::info()</a></code> instead of <code>mirai::status()$events</code> (<a href="https://github.com/wlandau/crew/issues/232" class="external-link">#232</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
+<li>Allow custom compute profiles in <code><a href="../reference/crew_client.html">crew_client()</a></code>. This is mainly to support the use of the default compute profile to make <code>crew</code> more compatible with non-<code>crew</code> <code>mirai</code>-based workflows. It’s a quick solution for single controllers but does not work for controller groups.</li>
+<li>
+<code>crew_client()$start()</code> now errors if a <code>mirai</code> compute profile of the same name is already active.</li>
+<li>Shorten the length of strings from <code><a href="../reference/crew_random_name.html">crew_random_name()</a></code>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.1" id="crew-121">crew 1.2.1<a class="anchor" aria-label="anchor" href="#crew-121"></a></h2><p class="text-muted">CRAN release: 2025-06-09</p>

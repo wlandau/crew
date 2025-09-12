@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,10 +57,11 @@
 <span>  workers <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  host <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  port <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  serialization <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  profile <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_random_name.html">crew_random_name</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  tls <span class="op">=</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="crew_tls.html">crew_tls</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  tls_enable <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tls_config <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  serialization <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  seconds_interval <span class="op">=</span> <span class="fl">0.25</span>,</span>
 <span>  seconds_timeout <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>  retry_tasks <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -91,6 +92,19 @@ Controllers running simultaneously on the same computer
 (as in a controller group) must not share the same TCP port.</p></dd>
 
 
+<dt id="arg-serialization">serialization<a class="anchor" aria-label="anchor" href="#arg-serialization"></a></dt>
+<dd><p>Either <code>NULL</code> (default) or an object produced by
+<code><a href="https://nanonext.r-lib.org/reference/serial_config.html" class="external-link">mirai::serial_config()</a></code> to control the serialization
+of data sent to workers. This can help with either more efficient
+data transfers or to preserve attributes of otherwise
+non-exportable objects (such as <code>torch</code> tensors or <code>arrow</code> tables).
+See <code><a href="https://nanonext.r-lib.org/reference/serial_config.html" class="external-link">?mirai::serial_config</a></code> for details.</p></dd>
+
+
+<dt id="arg-profile">profile<a class="anchor" aria-label="anchor" href="#arg-profile"></a></dt>
+<dd><p>Character string, compute profile for <code><a href="https://mirai.r-lib.org/reference/daemons.html" class="external-link">mirai::daemons()</a></code>.</p></dd>
+
+
 <dt id="arg-tls">tls<a class="anchor" aria-label="anchor" href="#arg-tls"></a></dt>
 <dd><p>A TLS configuration object from <code><a href="crew_tls.html">crew_tls()</a></code>.</p></dd>
 
@@ -103,15 +117,6 @@ Use argument <code>tls</code> instead.</p></dd>
 <dt id="arg-tls-config">tls_config<a class="anchor" aria-label="anchor" href="#arg-tls-config"></a></dt>
 <dd><p>Deprecated on 2023-09-15 in version 0.4.1.
 Use argument <code>tls</code> instead.</p></dd>
-
-
-<dt id="arg-serialization">serialization<a class="anchor" aria-label="anchor" href="#arg-serialization"></a></dt>
-<dd><p>Either <code>NULL</code> (default) or an object produced by
-<code><a href="https://nanonext.r-lib.org/reference/serial_config.html" class="external-link">mirai::serial_config()</a></code> to control the serialization
-of data sent to workers. This can help with either more efficient
-data transfers or to preserve attributes of otherwise
-non-exportable objects (such as <code>torch</code> tensors or <code>arrow</code> tables).
-See <code><a href="https://nanonext.r-lib.org/reference/serial_config.html" class="external-link">?mirai::serial_config</a></code> for details.</p></dd>
 
 
 <dt id="arg-seconds-interval">seconds_interval<a class="anchor" aria-label="anchor" href="#arg-seconds-interval"></a></dt>

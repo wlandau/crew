@@ -15,6 +15,13 @@
 #'   Use argument `tls` instead.
 #' @param tls_config Deprecated on 2023-09-15 in version 0.4.1.
 #'   Use argument `tls` instead.
+#' @param serialization Either `NULL` (default) or an object produced by
+#'   [mirai::serial_config()] to control the serialization
+#'   of data sent to workers. This can help with either more efficient
+#'   data transfers or to preserve attributes of otherwise
+#'   non-exportable objects (such as `torch` tensors or `arrow` tables).
+#'   See `?mirai::serial_config` for details.
+#' @param profile Character string, compute profile for [mirai::daemons()].
 #' @param seconds_interval Number of seconds between
 #'   polling intervals waiting for certain internal
 #'   synchronous operations to complete,
@@ -22,12 +29,6 @@
 #' @param seconds_timeout Number of seconds until timing
 #'   out while waiting for certain synchronous operations to complete,
 #'   such as checking `mirai::info()`.
-#' @param serialization Either `NULL` (default) or an object produced by
-#'   [mirai::serial_config()] to control the serialization
-#'   of data sent to workers. This can help with either more efficient
-#'   data transfers or to preserve attributes of otherwise
-#'   non-exportable objects (such as `torch` tensors or `arrow` tables).
-#'   See `?mirai::serial_config` for details.
 #' @param retry_tasks Deprecated on 2025-01-13 (`crew` version 0.10.2.9002).
 #' @examples
 #' if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -41,10 +42,11 @@ crew_client <- function(
   workers = NULL,
   host = NULL,
   port = NULL,
+  serialization = NULL,
+  profile = crew::crew_random_name(),
   tls = crew::crew_tls(),
   tls_enable = NULL,
   tls_config = NULL,
-  serialization = NULL,
   seconds_interval = 0.25,
   seconds_timeout = 60,
   retry_tasks = NULL
@@ -88,31 +90,13 @@ crew_client <- function(
     condition = "message"
   )
   host <- as.character(host %|||% utils::head(nanonext::ip_addr(), n = 1L))
-  crew_assert(
-    host,
-    is.character(.),
-    length(.) == 1L,
-    nzchar(.),
-    !anyNA(.),
-    message = paste0(
-      "invalid host: ",
-      host,
-      ". In {crew} controllers, the `host` argument should have the ",
-      "(local) IP address or host name of the local machine. ",
-      "The default value of nanonext::ip_addr()[1] is usually enough ",
-      "for most situations."
-    )
-  )
   port <- as.integer(port %|||% 0L)
-  crew_assert(
-    inherits(tls, "crew_class_tls"),
-    message = "argument tls must be an object created by crew_tls()"
-  )
   client <- crew_class_client$new(
     host = host,
     port = port,
     tls = tls,
     serialization = serialization,
+    profile = profile,
     seconds_interval = seconds_interval,
     seconds_timeout = seconds_timeout,
     relay = crew_relay(
@@ -144,12 +128,12 @@ crew_class_client <- R6::R6Class(
     .port = NULL,
     .tls = NULL,
     .serialization = NULL,
+    .profile = NULL,
     .seconds_interval = NULL,
     .seconds_timeout = NULL,
     .relay = NULL,
     .started = FALSE,
-    .url = NULL,
-    .profile = NULL
+    .url = NULL
   ),
   active = list(
     #' @field host See [crew_client()].
@@ -167,6 +151,10 @@ crew_class_client <- R6::R6Class(
     #' @field serialization See [crew_client()].
     serialization = function() {
       .serialization
+    },
+    #' @field profile Compute profile of the client.
+    profile = function() {
+      .profile
     },
     #' @field seconds_interval See [crew_client()].
     seconds_interval = function() {
@@ -188,10 +176,6 @@ crew_class_client <- R6::R6Class(
     #' @field url Client websocket URL.
     url = function() {
       .url
-    },
-    #' @field profile Compute profile of the client.
-    profile = function() {
-      .profile
     }
   ),
   public = list(
@@ -201,6 +185,7 @@ crew_class_client <- R6::R6Class(
     #' @param port Argument passed from [crew_client()].
     #' @param tls Argument passed from [crew_client()].
     #' @param serialization Argument passed from [crew_client()].
+    #' @param profile Argument passed from [crew_client()].
     #' @param seconds_interval Argument passed from [crew_client()].
     #' @param seconds_timeout Argument passed from [crew_client()].
     #' @param relay Argument passed from [crew_client()].
@@ -216,6 +201,7 @@ crew_class_client <- R6::R6Class(
       port = NULL,
       tls = NULL,
       serialization = NULL,
+      profile = NULL,
       seconds_interval = NULL,
       seconds_timeout = NULL,
       relay = NULL
@@ -224,6 +210,7 @@ crew_class_client <- R6::R6Class(
       .port <<- port
       .tls <<- tls
       .serialization <<- serialization
+      .profile <<- profile
       .seconds_interval <<- seconds_interval
       .seconds_timeout <<- seconds_timeout
       .relay <<- relay
@@ -235,9 +222,16 @@ crew_class_client <- R6::R6Class(
         .host,
         is.character(.),
         length(.) == 1L,
-        !anyNA(.),
         nzchar(.),
-        message = "host must be a valid nonempty character string."
+        !anyNA(.),
+        message = paste0(
+          "invalid host: ",
+          host,
+          ". In {crew} controllers, the `host` argument should have the ",
+          "(local) IP address or host name of the local machine. ",
+          "The default value of nanonext::ip_addr()[1] is usually enough ",
+          "for most situations."
+        )
       )
       crew_assert(
         .port,
@@ -251,6 +245,19 @@ crew_class_client <- R6::R6Class(
       crew_assert(
         inherits(.tls, "crew_class_tls"),
         message = "argument tls must be an object created by crew_tls()"
+      )
+      if_any(
+        is.null(.serialization),
+        NULL,
+        crew_assert(is.list(.serialization))
+      )
+      crew_assert(
+        .profile,
+        is.character(.),
+        length(.) == 1L,
+        !anyNA(.),
+        nzchar(.),
+        message = "profile must be a nonempty non-missing character string"
       )
       fields <- c(
         ".seconds_interval",
@@ -273,12 +280,8 @@ crew_class_client <- R6::R6Class(
         .seconds_timeout >= .seconds_interval,
         message = "seconds_timeout cannot be less than seconds_interval"
       )
+
       crew_assert(inherits(.relay, "crew_class_relay"))
-      if_any(
-        is.null(.serialization),
-        NULL,
-        crew_assert(is.list(.serialization))
-      )
       .relay$validate()
       invisible()
     },
@@ -296,7 +299,20 @@ crew_class_client <- R6::R6Class(
       if (!is.null(.started) && .started) {
         return(invisible())
       }
-      .profile <<- crew_random_name()
+      existing_url <- mirai::nextget("url", .compute = .profile)
+      crew_assert(
+        is.null(existing_url),
+        message = sprintf(
+          paste(
+            "{mirai} compute profile '%s' is already active at URL %s.",
+            "Each {crew} controller must have a unique compute profile",
+            "that does not conflict with",
+            "an existing call to mirai::daemons()."
+          ),
+          .profile,
+          existing_url
+        )
+      )
       mirai::daemons(
         url = .tls$url(host = .host, port = .port),
         dispatcher = TRUE,
@@ -316,13 +332,7 @@ crew_class_client <- R6::R6Class(
     #'   worker websockets.
     #' @return `NULL` (invisibly).
     terminate = function() {
-      if (!isTRUE(.started)) {
-        return(invisible())
-      }
-      if (!is.null(.profile)) {
-        mirai::daemons(n = 0L, .compute = .profile)
-      }
-      .profile <<- NULL
+      mirai::daemons(n = 0L, .compute = .profile)
       .relay$terminate()
       .url <<- NULL
       .started <<- FALSE

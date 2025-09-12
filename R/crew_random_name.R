@@ -11,6 +11,6 @@
 #'   more likely to generate unique names, but it may be slower to compute.
 #' @examples
 #' crew_random_name()
-crew_random_name <- function(n = 12L) {
+crew_random_name <- function(n = 8L) {
   nanonext::random(n = n)
 }

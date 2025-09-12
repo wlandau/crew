@@ -4,7 +4,7 @@
 \alias{crew_random_name}
 \title{Random name}
 \usage{
-crew_random_name(n = 12L)
+crew_random_name(n = 8L)
 }
 \arguments{
 \item{n}{Number of bytes of information in the random string

@@ -1,4 +1,4 @@
-# crew 1.2.1.9010 (development)
+# crew 1.3.0
 
 * Reinstate checks that were temporarily suppressed to help plugins transition to #217.
 * Support `reset_globals`, `reset_packages`, `reset_options`, and `garbage_collection` in `crew_controller_sequential()` (#217).
@@ -21,6 +21,9 @@
 * Drop the unified controller group throttle. Let individual controllers handle their own throttling based on their own auto-scaling settings.
 * When `tasks_mask` is finite, set `seconds_min` to `seconds_interval` in the throttle to give tasks enough time to accumulate.
 * Use the counters in `mirai::info()` instead of `mirai::status()$events` (#232, @shikokuchuo).
+* Allow custom compute profiles in `crew_client()`. This is mainly to support the use of the default compute profile to make `crew` more compatible with non-`crew` `mirai`-based workflows. It's a quick solution for single controllers but does not work for controller groups.
+* `crew_client()$start()` now errors if a `mirai` compute profile of the same name is already active.
+* Shorten the length of strings from `crew_random_name()`.
 
 # crew 1.2.1
 

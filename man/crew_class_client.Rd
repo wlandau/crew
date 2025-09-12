@@ -44,6 +44,8 @@ Other client:
 
 \item{\code{serialization}}{See \code{\link[=crew_client]{crew_client()}}.}
 
+\item{\code{profile}}{Compute profile of the client.}
+
 \item{\code{seconds_interval}}{See \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{seconds_timeout}}{See \code{\link[=crew_client]{crew_client()}}.}
@@ -54,8 +56,6 @@ condition variable.}
 \item{\code{started}}{Whether the client is started.}
 
 \item{\code{url}}{Client websocket URL.}
-
-\item{\code{profile}}{Compute profile of the client.}
 }
 \if{html}{\out{</div>}}
 }
@@ -82,6 +82,7 @@ condition variable.}
   port = NULL,
   tls = NULL,
   serialization = NULL,
+  profile = NULL,
   seconds_interval = NULL,
   seconds_timeout = NULL,
   relay = NULL
@@ -98,6 +99,8 @@ condition variable.}
 \item{\code{tls}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{serialization}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+
+\item{\code{profile}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 
 \item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
 

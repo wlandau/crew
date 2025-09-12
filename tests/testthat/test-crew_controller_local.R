@@ -382,6 +382,20 @@ crew_test("separate logs", {
   expect_true(any(grepl("Error: this-stop", stderr, fixed = TRUE)))
 })
 
+crew_test("custom compute profile", {
+  skip_on_cran()
+  x <- crew_controller_local(
+    host = "127.0.0.1",
+    port = "57000",
+    profile = "__abc__"
+  )
+  expect_equal(x$client$profile, "__abc__")
+  on.exit(x$terminate())
+  x$start()
+  url <- nanonext::parse_url(mirai::nextget("url", .compute = "__abc__"))
+  expect_equal(as.character(url["host"]), "127.0.0.1:57000")
+})
+
 crew_test("deprecate seconds_exit", {
   expect_warning(
     x <- crew_controller_local(

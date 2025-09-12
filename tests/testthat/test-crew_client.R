@@ -9,6 +9,7 @@ crew_test("crew_client() active bindings", {
     port = 123L,
     seconds_interval = 123,
     seconds_timeout = 456,
+    profile = "abc",
     retry_tasks = FALSE
   )
   on.exit(client$terminate())
@@ -19,7 +20,7 @@ crew_test("crew_client() active bindings", {
   expect_equal(client$seconds_timeout, 456)
   expect_false(client$started)
   expect_null(client$url)
-  expect_null(client$profile)
+  expect_equal(client$profile, "abc")
   expect_null(client$serialization)
   expect_silent(client$validate())
 })
@@ -100,4 +101,41 @@ crew_test("crew_client() deprecate pids()", {
   expect_warning(pid <- crew_client()$pids(), class = "crew_deprecate")
   skip_on_os("windows")
   expect_equal(pid, Sys.getpid())
+})
+
+crew_test("crew_client() custom profile", {
+  skip_on_cran()
+  x <- crew_client(
+    host = "127.0.0.1",
+    port = "57000",
+    profile = "__abc__"
+  )
+  expect_equal(x$profile, "__abc__")
+  on.exit(x$terminate())
+  x$start()
+  url <- nanonext::parse_url(mirai::nextget("url", .compute = "__abc__"))
+  expect_equal(as.character(url["host"]), "127.0.0.1:57000")
+})
+
+crew_test("crew_client() profile conflicts", {
+  skip_on_cran()
+  skip_if_not(is.null(mirai::nextget("url", .compute = "__abc__")))
+  x <- crew_client(
+    host = "127.0.0.1",
+    port = "57000",
+    profile = "__abc__"
+  )
+  y <- crew_client(
+    host = "127.0.0.1",
+    port = "57001",
+    profile = "__abc__"
+  )
+  on.exit({
+    x$terminate()
+    y$terminate()
+  })
+  x$start()
+  expect_crew_error(y$start())
+  x$terminate()
+  expect_no_error(y$start())
 })

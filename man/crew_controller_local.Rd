@@ -13,6 +13,7 @@ crew_controller_local(
   tls_enable = NULL,
   tls_config = NULL,
   serialization = NULL,
+  profile = crew::crew_random_name(),
   seconds_interval = 0.25,
   seconds_timeout = 60,
   seconds_launch = 30,
@@ -71,6 +72,8 @@ of data sent to workers. This can help with either more efficient
 data transfers or to preserve attributes of otherwise
 non-exportable objects (such as \code{torch} tensors or \code{arrow} tables).
 See \code{?mirai::serial_config} for details.}
+
+\item{profile}{Character string, compute profile for \code{\link[mirai:daemons]{mirai::daemons()}}.}
 
 \item{seconds_interval}{Number of seconds between
 polling intervals waiting for certain internal

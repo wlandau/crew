@@ -42,7 +42,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/wlandau/crew/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/wlandau/crew/blob/1.3.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -52,7 +52,7 @@
 <li>Change argument <code>tls</code> to <code>tlscert</code> in the call to <code><a href="https://mirai.r-lib.org/reference/daemon.html" class="external-link">mirai::daemon()</a></code> (<a href="https://github.com/wlandau/crew/issues/227" class="external-link">#227</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 <li>Use <code>collections</code> queues instead of custom queues (<a href="https://github.com/wlandau/crew/issues/229" class="external-link">#229</a>).</li>
 <li>Use <code>collections</code> dictionaries instead of hash environments to track tasks (<a href="https://github.com/wlandau/crew/issues/229" class="external-link">#229</a>).</li>
-<li>Remove the long-deprecated <code><a href="https://rdrr.io/pkg/promises/man/promise.html" class="external-link">promise()</a></code> method of the controller.</li>
+<li>Remove the long-deprecated <code><a href="https://rstudio.github.io/promises/reference/promise.html" class="external-link">promise()</a></code> method of the controller.</li>
 <li>Improve interoperability of <code>crew</code>’s workers by avoiding <code><a href="https://nanonext.r-lib.org/reference/cv.html" class="external-link">nanonext::cv_value()</a></code> for condition variables (<a href="https://github.com/wlandau/crew/issues/225" class="external-link">#225</a>). Consequences:
 <ul><li>
 <code>wait(mode = "all")</code> no longer guarantees that a task is available for <code>pop()</code>. It just consumes a condition variable signal. <code>pop()</code> should always be checked for <code>NULL</code> return values.</li>
@@ -172,7 +172,7 @@
 <h2 class="pkg-version" data-toc-text="0.9.2" id="crew-092">crew 0.9.2<a class="anchor" aria-label="anchor" href="#crew-092"></a></h2><p class="text-muted">CRAN release: 2024-04-24</p>
 <ul><li>Use <code>.args</code> rather than <code>...</code> in <code><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai::mirai()</a></code> to make sure arguments continue to be passed as local variables in <code>mirai</code> &gt;= 0.13.1.9012.</li>
 <li>Add new controller methods <code>autoscale()</code>, <code>descale()</code>, and <code>started()</code> to facilitate different kinds of Shiny apps.</li>
-<li>Deprecate the <code>scale</code> and <code>throttle</code> methods of <code>controller$promise()</code>. <code><a href="https://rdrr.io/pkg/promises/man/promise.html" class="external-link">promise()</a></code> now always calls <code>autoscale()</code> to make sure one and only one auto-scaling loop is running asynchronously. Auto-scaling thus continues even after the promise resolves.</li>
+<li>Deprecate the <code>scale</code> and <code>throttle</code> methods of <code>controller$promise()</code>. <code><a href="https://rstudio.github.io/promises/reference/promise.html" class="external-link">promise()</a></code> now always calls <code>autoscale()</code> to make sure one and only one auto-scaling loop is running asynchronously. Auto-scaling thus continues even after the promise resolves.</li>
 <li>Add a second example vignette that simulates coin flips.</li>
 <li>Add a new <code>error</code> argument to <code>collect()</code> (<a href="https://github.com/wlandau/crew/issues/166" class="external-link">#166</a>).</li>
 </ul></div>
@@ -188,7 +188,7 @@
 <ul><li>Require <code>nanonext</code> &gt;= 0.12.0 and <code>mirai</code> &gt;= 0.12.0.</li>
 <li>Return to always re-launching backlogged inactive workers (<a href="https://github.com/wlandau/crew/issues/79" class="external-link">#79</a>, <a href="https://github.com/r-lib/mirai/discussions/95" class="external-link uri">https://github.com/r-lib/mirai/discussions/95</a>).</li>
 <li>Implement <code>push_backlog()</code> and <code>pop_backlog()</code> to manage cases when it is not desirable to push to saturated controllers (<a href="https://github.com/ropensci/targets/issues/1220" class="external-link uri">https://github.com/ropensci/targets/issues/1220</a>).</li>
-<li>Invisibly return the <code>mirai</code> object of a task pushed to the controller. This allows users to interact with the task directly, e.g. to create a promise object with <code><a href="https://rdrr.io/pkg/promises/man/is.promise.html" class="external-link">promises::as.promise()</a></code> (<a href="https://github.com/wlandau/crew/issues/146" class="external-link">#146</a>, <a href="https://github.com/jcheng5" class="external-link">@jcheng5</a>).</li>
+<li>Invisibly return the <code>mirai</code> object of a task pushed to the controller. This allows users to interact with the task directly, e.g. to create a promise object with <code><a href="https://rstudio.github.io/promises/reference/is.promise.html" class="external-link">promises::as.promise()</a></code> (<a href="https://github.com/wlandau/crew/issues/146" class="external-link">#146</a>, <a href="https://github.com/jcheng5" class="external-link">@jcheng5</a>).</li>
 <li>Add a new <code>walk()</code> method for controllers and controller groups to submit tasks in batch and return control immediately without waiting for any task to complete (<a href="https://github.com/wlandau/crew/issues/148" class="external-link">#148</a>, <a href="https://github.com/jcheng5" class="external-link">@jcheng5</a>).</li>
 <li>Revive the <code>collect()</code> method for popping multiple tasks at once (<a href="https://github.com/wlandau/crew/issues/148" class="external-link">#148</a>, <a href="https://github.com/jcheng5" class="external-link">@jcheng5</a>).</li>
 <li>Add controller group methods <code>nonempty()</code>, <code>resolved()</code>, <code>unresolved()</code>, and <code>unpopped()</code> to help with <a href="https://github.com/wlandau/crew/issues/148" class="external-link">#148</a>.</li>

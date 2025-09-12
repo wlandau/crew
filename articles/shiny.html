@@ -75,7 +75,7 @@
 Daniel Woodie</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/wlandau/crew/blob/main/vignettes/shiny.Rmd" class="external-link"><code>vignettes/shiny.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/wlandau/crew/blob/1.3.0/vignettes/shiny.Rmd" class="external-link"><code>vignettes/shiny.Rmd</code></a></small>
       <div class="d-none name"><code>shiny.Rmd</code></div>
     </div>
 
@@ -311,7 +311,7 @@ finished flips and updates the flip counts.</p>
 <span>    <span class="va">input</span><span class="op">$</span><span class="va">button</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span></span>
 <span>      <span class="fl">1000</span>,</span>
-<span>      <span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="fu">flip_coin</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>flip_coin <span class="op">=</span> <span class="va">flip_coin</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/promises/man/pipes.html" class="external-link">%...&gt;%</a></span></span>
+<span>      <span class="va">controller</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="fu">flip_coin</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>flip_coin <span class="op">=</span> <span class="va">flip_coin</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html" class="external-link">%...&gt;%</a></span></span>
 <span>        <span class="fu">collect_flips</span><span class="op">(</span><span class="va">controller</span>, <span class="va">flips</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>

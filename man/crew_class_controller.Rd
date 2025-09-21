@@ -473,7 +473,7 @@ Run worker auto-scaling in a \code{later} loop
 in polling intervals determined by exponential backoff.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$autoscale(
-  loop = later::current_loop(),
+  loop = later::global_loop(),
   controllers = NULL
 )}\if{html}{\out{</div>}}
 }

@@ -1,6 +1,6 @@
-# crew 1.3.0.9000 (development)
+# crew 1.3.0.9001 (development)
 
-
+* Use `later::global_loop()` instead of `later::current_loop()` in `controller$autoscale()`.
 
 # crew 1.3.0
 

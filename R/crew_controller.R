@@ -523,7 +523,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     #' @return `NULL` (invisibly).
-    autoscale = function(loop = later::current_loop(), controllers = NULL) {
+    autoscale = function(loop = later::global_loop(), controllers = NULL) {
       # Tested in tests/interactive/test-autoscale.R
       # nocov start
       crew_assert(

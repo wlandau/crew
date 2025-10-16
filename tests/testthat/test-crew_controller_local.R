@@ -393,7 +393,8 @@ crew_test("custom compute profile", {
   on.exit(x$terminate())
   x$start()
   url <- nanonext::parse_url(mirai::nextget("url", .compute = "__abc__"))
-  expect_equal(as.character(url["host"]), "127.0.0.1:57000")
+  expect_equal(as.character(url["hostname"]), "127.0.0.1")
+  expect_equal(as.character(url["port"]), "57000")
 })
 
 crew_test("deprecate seconds_exit", {

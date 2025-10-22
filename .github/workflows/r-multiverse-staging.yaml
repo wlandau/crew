@@ -1,5 +1,8 @@
 name: r-multiverse-staging
 
+permissions:
+  contents: read
+
 on:
   push:
   pull_request:

@@ -10,5 +10,6 @@ on:
 
 jobs:
   r-multiverse-staging:
-    uses: r-multiverse/workflows/.github/workflows/check-staging.yaml@main
-    secrets: inherit
+    uses: r-universe-org/workflows/.github/workflows/build.yml@v3
+    with:
+      universe: r-multiverse-staging

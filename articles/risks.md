@@ -1,0 +1,182 @@
+# Known risks of crew
+
+The `crew` package has unavoidable risks, and the user is responsible
+for safety, security, and computational resources. This vignette
+describes known risks and safeguards, but is by no means exhaustive.
+Please read the [software
+license](https://wlandau.github.io/crew/LICENSE.html).
+
+## Resources
+
+### Processes
+
+The `crew` package launches external R processes:
+
+1.  Worker processes to run tasks, which may include expensive jobs on
+    cloud services like AWS Batch or traditional clusters like SLURM.
+2.  The [`mirai`](https://mirai.r-lib.org/) dispatcher, an R process
+    which send tasks to workers and retrieves results back. If `x` is a
+    `crew` controller, a
+    [`ps::ps_handle()`](https://ps.r-lib.org/reference/ps_handle.html)
+    process handle of the dispatcher is retained in
+    `x$client$dispatcher`.
+
+In the event of a poorly-timed crash or network error, these processes
+may not terminate properly. If that happens, they will continue to run,
+which may strain traditional clusters or incur heavy expenses on the
+cloud. Please monitor the platforms you use and manually terminate
+defunct hanging processes as needed. To list and terminate local
+processes, please use
+[`crew_monitor_local()`](https://wlandau.github.io/crew/reference/crew_monitor_local.md)
+as explained in the introduction vignette. To manage and monitor
+non-local high-performance computing workers such as those on SLURM and
+AWS Batch, please familiarize yourself with the given computing
+platform, and consider using the monitor objects in the relevant
+third-party plugin packages such as
+[`crew.cluster`](https://wlandau.github.io/crew.cluster/) or
+[`crew.aws.batch`](https://wlandau.github.io/crew.aws.batch/). Example:
+<https://wlandau.github.io/crew.aws.batch/index.html#job-management>.
+
+### Crashes
+
+The local process or [`mirai`](https://mirai.r-lib.org/) dispatcher
+process could crash. A common cause of crashes is running out of
+computer memory. The “Resources” section of the
+[introduction](https://wlandau.github.io/crew/articles/introduction.html)
+explains how to monitor memory usage. If you are running `crew` in a
+[`targets`](https://docs.ropensci.org/targets/) pipeline (as explained
+[here in the `targets` user
+manual](https://books.ropensci.org/targets/crew.html)), consider setting
+`storage = "worker"` and `retrieval = "worker` in `tar_option_set()` to
+minimize memory consumption of the local processes (see also the
+[performance
+chapter](https://books.ropensci.org/targets/performance.html)).
+
+In addition, `crew` worker processes may crash silently at runtime, or
+they may fail to launch or connect at all. The reasons may be
+platform-specific, but here are some common possibilities:
+
+- Memory: if a worker exhausts the available memory limits, it will
+  crash, and there is no way to relay an informative error message.
+  Please read <https://wlandau.github.io/crew/articles/logging.html> to
+  learn about proactive resource logging, which can generate data to
+  help troubleshoot in the event of a crash. If you need more memory,
+  [`crew.aws.batch`](https://wlandau.github.io/crew.aws.batch/) and
+  [`crew.cluster`](https://wlandau.github.io/crew.cluster/) expose
+  special platform-specific parameters in the controllers to do this.
+- Connections: each worker must run on the same local network as the
+  controlling R process, and it must be able to dial into that
+  controlling process over TCP. Firewalls and proxies may interfere, and
+  these safeguards exist for good reason, so please ensure any custom
+  networking you do is safe and secure. For example, it is most likely
+  not secure for these connections to pass through the public internet.
+  For AWS Batch, we recommend you run the controlling R process and all
+  the workers in an isolated security group that points to itself
+  (details: <https://wlandau.github.io/crew.aws.batch/#prerequisites>).
+  You may have to discuss with your system administrator.
+- Tasks: R code may crash or segfault the worker and cause it to
+  abruptly exit. If that happens, see if you can isolate the problem
+  locally, then debug the code that caused the crash.
+
+### Ports
+
+In addition, `crew` occupies one TCP port per controller. TCP ports
+range from 0 to 65535, and only around 16000 of these ports are
+considered ephemeral or dynamic, so please be careful not to run too
+many controllers simultaneously on shared machines, especially in
+[controller group](https://wlandau.github.io/crew/articles/groups.html).
+The `terminate()` frees these ports again for other processes to use.
+
+## Security
+
+By default, `crew` uses unencrypted TCP connections for transactions
+among workers. In a compromised network, an attacker can read the data
+in transit, and even gain direct access to the client or host.
+
+### Perimeters
+
+It is best to avoid persistent direct connections between your local
+computer and the public internet. The `host` argument of the controller
+should not be a public IP address. Instead, please try to operate
+entirely within a perimeter such as a firewall, a virtual private
+network (VPN), or an Amazon Web Services (AWS) security group. In the
+case of AWS, your security group can open ports to itself. That way, the
+`crew` workers on e.g. AWS Batch jobs can connect to a `crew` client
+running in the same security group on an AWS Batch job or EC2 instance.
+
+### Encryption
+
+In the age of Zero Trust, perimeters alone are seldom sufficient.
+Transport layer security (TLS) encrypts data to protect it from hackers
+while it travels over a network. TLS is the state of the art of
+encryption for network communications, and it is responsible for
+security in popular protocols such as HTTPS and SSH. TLS is based on
+public key cryptography, which requires two files:
+
+1.  A private key file which lives in a protected location on the host
+    machine.
+2.  A public key file which is sent to the remote machine on the other
+    side of the connection.
+
+To use TLS in `crew` with automatic configuration, simply set
+`tls = crew_tls(mode = "automatic")` in the controller,
+e.g. [`crew_controller_local()`](https://wlandau.github.io/crew/reference/crew_controller_local.md).[¹](#fn1)
+[`mirai`](https://mirai.r-lib.org/) generates a one-time key pair and
+encrypts data for the current `crew` client. The key pair expires when
+the client terminates, which reduces the risk of a breach. In addition,
+the public key is a self-signed certificate, which somewhat protects
+against tampering on its way from the client to the server.
+
+### Certificate authorities
+
+The signature in a self-signed certificate helps the server verify that
+the public key has a valid private key somewhere. However, in a
+“man-in-the-middle” (MITM) attack, that private key could belong to a
+malicious hacker instead of the true client. A certificate authority
+(CA) is a trusted third party that vouches for the authenticity of a
+certificate. A CA-backed certificate is more secure than a self-signed
+one. To supply a CA-backed certificate to `crew`:
+
+1.  Create a PEM-formatted private key file and matching PEM-formatted
+    certificate file. Details are in
+    <https://www.feistyduck.com/library/openssl-cookbook/online/>
+    Chapter 1.2: Key and Certificate Management. When you are done with
+    this step, you should at least have have a private key file, a
+    matching signed certificate, and the root certificate of the CA. If
+    your private key is encrypted, you will also have a password.
+2.  When you create a `crew` controller, create a TLS configuration
+    object with
+    [`crew_tls()`](https://wlandau.github.io/crew/reference/crew_tls.md)
+    using the following arguments:
+    - `mode`: `"custom"`.
+    - `key`: file path the private key.
+    - `pass`: Your private key password if the private key is encrypted.
+      Do not hard-code this value into any R code files. Instead, use a
+      package like `keyring` to mask your password.
+    - `certificates`: Character vector of file paths to certificates.
+      One option is to supply only your own certificate. However, for
+      extra security, you may wish to supply the entire certificate
+      chain. In that case, set `certificates` to the character vector of
+      the certificate file paths in the order they appear in the chain.
+      Begin with your own certificate, then list the certificate that
+      signed it, then the certificate that signed that one, and so on.
+      The final certificate should be the root certificate of the CA.
+3.  As before, supply this
+    [`crew_tls()`](https://wlandau.github.io/crew/reference/crew_tls.md)
+    object to the `tls` argument of functions like
+    [`crew_controller_local()`](https://wlandau.github.io/crew/reference/crew_controller_local.md)
+    (and for plugin developers,
+    [`crew_client()`](https://wlandau.github.io/crew/reference/crew_client.md)).
+
+[`mirai`](https://mirai.r-lib.org/),
+[`nanonext`](https://nanonext.r-lib.org/), and
+[NNG](https://nng.nanomsg.org) manage encryption behind the scenes. For
+more details about configuring TLS, please read
+<https://mirai.r-lib.org/articles/mirai#distributed-computing-tls-secure-connections>.
+
+------------------------------------------------------------------------
+
+1.  [Launcher
+    plugins](https://wlandau.github.io/crew/articles/plugins.html)
+    should expose the `tls` argument of
+    [`crew_client()`](https://wlandau.github.io/crew/reference/crew_client.md).

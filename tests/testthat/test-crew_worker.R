@@ -31,15 +31,35 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     dispatcher = TRUE,
     output = TRUE
   )
-  crew_worker(
-    settings = settings,
-    controller = "my_controller",
-    options_metrics = NULL
+  call <- deparse_safe(
+    substitute(
+      crew::crew_worker(
+        settings = settings,
+        controller = controller,
+        options_metrics = options_metrics
+      ),
+      list(
+        settings = settings,
+        controller = "my_controller",
+        options_metrics = NULL
+      )
+    ),
+    collapse = " "
+  )
+  bin <- if_any(
+    tolower(Sys.info()[["sysname"]]) == "windows",
+    "Rscript.exe",
+    "Rscript"
+  )
+  path <- file.path(R.home("bin"), bin)
+  process <- processx::process$new(
+    command = path,
+    args = c("-e", call)
   )
   crew_retry(
     ~ !nanonext::unresolved(task),
     seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_timeout = 15
   )
   data <- task$data
   expect_true(is.list(data))
@@ -67,7 +87,7 @@ crew_test("crew_worker() metrics logging to a directory", {
   )
   on.exit(mirai::daemons(n = 0L), add = TRUE)
   on.exit(crew_test_sleep(), add = TRUE)
-  m <- mirai::mirai({
+  task <- mirai::mirai({
     Sys.sleep(2)
     list(
       controller = Sys.getenv("CREW_CONTROLLER")
@@ -83,20 +103,40 @@ crew_test("crew_worker() metrics logging to a directory", {
     output = TRUE
   )
   log <- tempfile()
-  crew_worker(
-    settings = settings,
-    controller = "my_controller",
-    options_metrics = crew_options_metrics(
-      path = log,
-      seconds_interval = 0.25
-    )
+  call <- deparse_safe(
+    substitute(
+      crew::crew_worker(
+        settings = settings,
+        controller = "my_controller",
+        options_metrics = crew::crew_options_metrics(
+          path = log,
+          seconds_interval = 0.25
+        )
+      ),
+      list(
+        settings = settings,
+        controller = "my_controller",
+        log = log
+      )
+    ),
+    collapse = " "
+  )
+  bin <- if_any(
+    tolower(Sys.info()[["sysname"]]) == "windows",
+    "Rscript.exe",
+    "Rscript"
+  )
+  path <- file.path(R.home("bin"), bin)
+  process <- processx::process$new(
+    command = path,
+    args = c("-e", call)
   )
   crew_retry(
-    ~ !nanonext::.unresolved(m$data),
+    ~ !nanonext::.unresolved(task),
     seconds_interval = 0.1,
-    seconds_timeout = 5
+    seconds_timeout = 15
   )
-  expect_equal(m$data$controller, "my_controller")
+  expect_equal(task$data$controller, "my_controller")
   for (var in envvars) {
     expect_equal(Sys.getenv(var, unset = ""), "")
   }
@@ -105,4 +145,11 @@ crew_test("crew_worker() metrics logging to a directory", {
   expect_true(is.data.frame(data))
   expect_gt(nrow(data), 0L)
   expect_equal(unique(data$status), 0L)
+})
+
+crew_test("log_metrics_path()", {
+  expect_equal(log_metrics_path("a", "b"), file.path("a", "b.log"))
+  expect_null(log_metrics_path(NULL, "a"))
+  expect_equal(log_metrics_path("/dev/stdout", "a"), "/dev/stdout")
+  expect_equal(log_metrics_path("/dev/stderr", "a"), "/dev/stderr")
 })

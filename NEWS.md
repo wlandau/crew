@@ -1,6 +1,7 @@
 # crew 1.3.0.9001 (development)
 
 * Use `later::global_loop()` instead of `later::current_loop()` in `controller$autoscale()`.
+* Test `crew_worker()` in a background process (https://github.com/r-lib/mirai/issues/535).
 
 # crew 1.3.0
 
@@ -269,7 +270,7 @@
 * Allow the dispatcher process to not exist so that the router will keep working if `mirai` implements the dispatcher another way (#60).
 * Add a `substitute` argument to `push()` (#63).
 * Remove dependency on custom NNG bus sockets, which significantly simplifies the internals, improves robustness, and smooths the integration with `mirai` (#61).
-* Use `processx` instead of `callr` for the local process launcher (#64").
+* Use `processx` instead of `callr` for the local process launcher (#64).
 * Speed up `crew_eval()` by e.g. relying on `nanonext::mclock()` for the time.
 * Add an `empty()` method to check if the controller or controller group is empty.
 * Rely on `mirai` for globals cleanup, garbage collection, and global option resets (#65).

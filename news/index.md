@@ -1,6 +1,6 @@
 # Changelog
 
-## crew 1.3.0.9001 (development)
+## crew 1.3.0.9002 (development)
 
 - Use
   [`later::global_loop()`](https://later.r-lib.org/reference/create_loop.html)

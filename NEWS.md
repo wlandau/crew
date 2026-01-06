@@ -1,4 +1,4 @@
-# crew 1.3.0.9001 (development)
+# crew 1.3.0.9002 (development)
 
 * Use `later::global_loop()` instead of `later::current_loop()` in `controller$autoscale()`.
 * Test `crew_worker()` in a background process (https://github.com/r-lib/mirai/issues/535).

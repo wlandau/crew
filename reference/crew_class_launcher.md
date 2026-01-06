@@ -613,6 +613,6 @@ client$terminate()
 launcher <- crew_launcher_local()
 launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
 launcher$call()
-#> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tlscert = NULL, rs = NULL), controller = \"8bf8f7fc\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
+#> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tlscert = NULL, rs = NULL), controller = \"e0da6542\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
 launcher$terminate()
 ```

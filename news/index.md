@@ -9,7 +9,7 @@
   in `controller$autoscale()`.
 - Test
   [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.md)
-  in a background process (<https://github.com/r-lib/mirai/issues/535>).
+  with `autoexit = FALSE` (<https://github.com/r-lib/mirai/issues/535>).
 
 ## crew 1.3.0
 

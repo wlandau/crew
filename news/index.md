@@ -7,6 +7,9 @@
   instead of
   [`later::current_loop()`](https://later.r-lib.org/reference/create_loop.html)
   in `controller$autoscale()`.
+- Test
+  [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.md)
+  in a background process (<https://github.com/r-lib/mirai/issues/535>).
 
 ## crew 1.3.0
 
@@ -631,7 +634,7 @@ CRAN release: 2023-04-19
   integration with `mirai`
   ([\#61](https://github.com/wlandau/crew/issues/61)).
 - Use `processx` instead of `callr` for the local process launcher
-  ([\#64](https://github.com/wlandau/crew/issues/64)”).
+  ([\#64](https://github.com/wlandau/crew/issues/64)).
 - Speed up
   [`crew_eval()`](https://wlandau.github.io/crew/reference/crew_eval.md)
   by e.g. relying on

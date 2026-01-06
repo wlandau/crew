@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0.9002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.0.9001" id="crew-1309001-development">crew 1.3.0.9001 (development)<a class="anchor" aria-label="anchor" href="#crew-1309001-development"></a></h2>
 <ul><li>Use <code><a href="https://later.r-lib.org/reference/create_loop.html" class="external-link">later::global_loop()</a></code> instead of <code><a href="https://later.r-lib.org/reference/create_loop.html" class="external-link">later::current_loop()</a></code> in <code>controller$autoscale()</code>.</li>
+<li>Test <code><a href="../reference/crew_worker.html">crew_worker()</a></code> in a background process (<a href="https://github.com/r-lib/mirai/issues/535" class="external-link uri">https://github.com/r-lib/mirai/issues/535</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.0" id="crew-130">crew 1.3.0<a class="anchor" aria-label="anchor" href="#crew-130"></a></h2><p class="text-muted">CRAN release: 2025-09-13</p>
@@ -323,7 +324,7 @@
 <li>Allow the dispatcher process to not exist so that the router will keep working if <code>mirai</code> implements the dispatcher another way (<a href="https://github.com/wlandau/crew/issues/60" class="external-link">#60</a>).</li>
 <li>Add a <code>substitute</code> argument to <code>push()</code> (<a href="https://github.com/wlandau/crew/issues/63" class="external-link">#63</a>).</li>
 <li>Remove dependency on custom NNG bus sockets, which significantly simplifies the internals, improves robustness, and smooths the integration with <code>mirai</code> (<a href="https://github.com/wlandau/crew/issues/61" class="external-link">#61</a>).</li>
-<li>Use <code>processx</code> instead of <code>callr</code> for the local process launcher (<a href="https://github.com/wlandau/crew/issues/64" class="external-link">#64</a>”).</li>
+<li>Use <code>processx</code> instead of <code>callr</code> for the local process launcher (<a href="https://github.com/wlandau/crew/issues/64" class="external-link">#64</a>).</li>
 <li>Speed up <code><a href="../reference/crew_eval.html">crew_eval()</a></code> by e.g. relying on <code><a href="https://nanonext.r-lib.org/reference/mclock.html" class="external-link">nanonext::mclock()</a></code> for the time.</li>
 <li>Add an <code>empty()</code> method to check if the controller or controller group is empty.</li>
 <li>Rely on <code>mirai</code> for globals cleanup, garbage collection, and global option resets (<a href="https://github.com/wlandau/crew/issues/65" class="external-link">#65</a>).</li>

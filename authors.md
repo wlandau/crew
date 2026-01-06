@@ -15,12 +15,12 @@ Source:
 [`DESCRIPTION`](https://github.com/wlandau/crew/blob/main/DESCRIPTION)
 
 Landau WM (2026). *crew: A Distributed Worker Launcher Framework*. R
-package version 1.3.0.9001, <https://wlandau.github.io/crew/>.
+package version 1.3.0.9002, <https://wlandau.github.io/crew/>.
 
     @Manual{,
       title = {crew: A Distributed Worker Launcher Framework},
       author = {William Michael Landau},
       year = {2026},
-      note = {R package version 1.3.0.9001},
+      note = {R package version 1.3.0.9002},
       url = {https://wlandau.github.io/crew/},
     }

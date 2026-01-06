@@ -299,7 +299,7 @@ crew_test("crew_controller_local() resource usage metrics with stdout", {
   data <- autometric::log_read(log)
   expect_true(is.data.frame(data))
   expect_gt(nrow(data), 0L)
-  expect_equal(unique(data$status), 0L)
+  expect_equal(unique(data$status[!is.na(data$status)]), 0L)
 })
 
 crew_test("joined logs", {

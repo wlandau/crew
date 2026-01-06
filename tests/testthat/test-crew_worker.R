@@ -29,32 +29,13 @@ crew_test("crew_worker() can run mirai tasks and assigns env vars", {
     maxtasks = 1L,
     cleanup = 0L,
     dispatcher = TRUE,
-    output = TRUE
+    output = TRUE,
+    autoexit = FALSE
   )
-  call <- deparse_safe(
-    substitute(
-      crew::crew_worker(
-        settings = settings,
-        controller = controller,
-        options_metrics = options_metrics
-      ),
-      list(
-        settings = settings,
-        controller = "my_controller",
-        options_metrics = NULL
-      )
-    ),
-    collapse = " "
-  )
-  bin <- if_any(
-    tolower(Sys.info()[["sysname"]]) == "windows",
-    "Rscript.exe",
-    "Rscript"
-  )
-  path <- file.path(R.home("bin"), bin)
-  process <- processx::process$new(
-    command = path,
-    args = c("-e", call)
+  crew_worker(
+    settings = settings,
+    controller = "my_controller",
+    options_metrics = NULL
   )
   crew_retry(
     ~ !nanonext::unresolved(task),
@@ -100,36 +81,17 @@ crew_test("crew_worker() metrics logging to a directory", {
     maxtasks = 1L,
     cleanup = 0L,
     dispatcher = TRUE,
-    output = TRUE
+    output = TRUE,
+    autoexit = FALSE
   )
   log <- tempfile()
-  call <- deparse_safe(
-    substitute(
-      crew::crew_worker(
-        settings = settings,
-        controller = "my_controller",
-        options_metrics = crew::crew_options_metrics(
-          path = log,
-          seconds_interval = 0.25
-        )
-      ),
-      list(
-        settings = settings,
-        controller = "my_controller",
-        log = log
-      )
-    ),
-    collapse = " "
-  )
-  bin <- if_any(
-    tolower(Sys.info()[["sysname"]]) == "windows",
-    "Rscript.exe",
-    "Rscript"
-  )
-  path <- file.path(R.home("bin"), bin)
-  process <- processx::process$new(
-    command = path,
-    args = c("-e", call)
+  crew_worker(
+    settings = settings,
+    controller = "my_controller",
+    options_metrics = crew_options_metrics(
+      path = log,
+      seconds_interval = 0.25
+    )
   )
   crew_retry(
     ~ !nanonext::.unresolved(task),

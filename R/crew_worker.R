@@ -19,8 +19,6 @@ crew_worker <- function(
   controller,
   options_metrics = crew::crew_options_metrics()
 ) {
-  # TODO: expose to covr after https://github.com/r-lib/mirai/issues/535
-  # nocov start
   autometric <- package_installed("autometric (>= 0.1.0)")
   if (autometric && !is.null(options_metrics$path)) {
     pids <- Sys.getpid()
@@ -45,7 +43,6 @@ crew_worker <- function(
       mirai::nextcode(xc = code)
     )
   )
-  # nocov end
 }
 
 log_metrics_path <- function(path, name) {

@@ -2,17 +2,8 @@ crew_test("detect dispatchers", {
   skip_on_cran()
   skip_on_os("windows")
   x <- crew_monitor_local()
-  pids <- x$dispatchers()
+  suppressWarnings(pids <- x$dispatchers())
   expect_true(is.integer(pids))
-  mirai::daemons(n = 1L, dispatcher = TRUE)
-  pids <- x$dispatchers()
-  expect_true(is.integer(pids))
-  expect_gt(length(pids), 0L)
-  on.exit({
-    mirai::daemons(n = 0L)
-    gc()
-    crew_test_sleep()
-  })
 })
 
 crew_test("detect daemons", {

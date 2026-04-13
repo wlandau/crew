@@ -17,12 +17,23 @@ crew_class_monitor_local <- R6::R6Class(
   cloneable = FALSE,
   public = list(
     #' @description List the process IDs of the running `mirai` dispatcher
-    #'   processes.
+    #'   processes
+    #'   (for older versions of `mirai` without the threaded dispatcher).
+    #' @details The `mirai` dispatcher is an R process only in `mirai` version
+    #'   <= 2.6.1. In later versions, the dispatcher is a thread within
+    #'   the controller's own R process, and the `dispatchers()` method
+    #'   does not return any process IDs.
     #' @return Integer vector of process IDs of the running `mirai` dispatcher
     #'   processes.
     #' @param user Character of length 1, user ID to filter on. `NULL`
     #'   to list processes of all users (not recommended).
     dispatchers = function(user = ps::ps_username()) {
+      crew_deprecate(
+        name = "dispatchers()",
+        date = "2026-04-13",
+        version = "1.3.1",
+        alternative = "none"
+      )
       crew_monitor_pids(pattern = "mirai::dispatcher", user = user)
     },
     #' @description List the process IDs of the locally running `mirai` daemon

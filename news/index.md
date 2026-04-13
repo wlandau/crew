@@ -10,6 +10,9 @@
 - Test
   [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.md)
   with `autoexit = FALSE` (<https://github.com/r-lib/mirai/issues/535>).
+- Deprecate the `dispatchers()` method of
+  [`crew_monitor_local()`](https://wlandau.github.io/crew/reference/crew_monitor_local.md)
+  objects because the dispatcher is a thread in `mirai` \> 2.6.1.
 
 ## crew 1.3.0
 

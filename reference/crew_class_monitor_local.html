@@ -73,7 +73,8 @@
 </ul></div><p></p><hr><a id="method-crew_class_monitor_local-dispatchers"></a><div class="section">
 <h3 id="method-dispatchers-">Method <code>dispatchers()</code><a class="anchor" aria-label="anchor" href="#method-dispatchers-"></a></h3>
 <p>List the process IDs of the running <code>mirai</code> dispatcher
-processes.</p><div class="section">
+processes
+(for older versions of <code>mirai</code> without the threaded dispatcher).</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">crew_class_monitor_local</span><span class="op">$</span><span class="fu">dispatchers</span><span class="op">(</span>user <span class="op">=</span> <span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_username.html" class="external-link">ps_username</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -87,6 +88,14 @@ to list processes of all users (not recommended).</p></dd>
 
 </dl><p></p></div>
 </div>
+<div class="section">
+<h4 id="details-1">Details<a class="anchor" aria-label="anchor" href="#details-1"></a></h4>
+<p>The <code>mirai</code> dispatcher is an R process only in <code>mirai</code> version
+&lt;= 2.6.1. In later versions, the dispatcher is a thread within
+the controller's own R process, and the <code>dispatchers()</code> method
+does not return any process IDs.</p>
+</div>
+
 <div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
 <p>Integer vector of process IDs of the running <code>mirai</code> dispatcher
@@ -134,7 +143,7 @@ to list processes of all users (not recommended).</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="details-1">Details<a class="anchor" aria-label="anchor" href="#details-1"></a></h4>
+<h4 id="details-2">Details<a class="anchor" aria-label="anchor" href="#details-2"></a></h4>
 <p>Only the workers running on your local computer are listed.
 Workers that are not listed include jobs on job schedulers like
 SLURM or jobs on cloud services like AWS Batch. To monitor
@@ -166,7 +175,7 @@ terminate.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="details-2">Details<a class="anchor" aria-label="anchor" href="#details-2"></a></h4>
+<h4 id="details-3">Details<a class="anchor" aria-label="anchor" href="#details-3"></a></h4>
 <p>Termination happens with the operating system signal
 given by <code><a href="crew_terminate_signal.html">crew_terminate_signal()</a></code>.</p>
 </div>

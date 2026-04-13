@@ -28,7 +28,8 @@ Other monitor:
 
 ### Method `dispatchers()`
 
-List the process IDs of the running `mirai` dispatcher processes.
+List the process IDs of the running `mirai` dispatcher processes (for
+older versions of `mirai` without the threaded dispatcher).
 
 #### Usage
 
@@ -40,6 +41,13 @@ List the process IDs of the running `mirai` dispatcher processes.
 
   Character of length 1, user ID to filter on. `NULL` to list processes
   of all users (not recommended).
+
+#### Details
+
+The `mirai` dispatcher is an R process only in `mirai` version \<=
+2.6.1. In later versions, the dispatcher is a thread within the
+controller's own R process, and the `dispatchers()` method does not
+return any process IDs.
 
 #### Returns
 

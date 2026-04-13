@@ -49,6 +49,7 @@
 <h2 class="pkg-version" data-toc-text="1.3.0.9002" id="crew-1309002-development">crew 1.3.0.9002 (development)<a class="anchor" aria-label="anchor" href="#crew-1309002-development"></a></h2>
 <ul><li>Use <code><a href="https://later.r-lib.org/reference/create_loop.html" class="external-link">later::global_loop()</a></code> instead of <code><a href="https://later.r-lib.org/reference/create_loop.html" class="external-link">later::current_loop()</a></code> in <code>controller$autoscale()</code>.</li>
 <li>Test <code><a href="../reference/crew_worker.html">crew_worker()</a></code> with <code>autoexit = FALSE</code> (<a href="https://github.com/r-lib/mirai/issues/535" class="external-link uri">https://github.com/r-lib/mirai/issues/535</a>).</li>
+<li>Deprecate the <code>dispatchers()</code> method of <code><a href="../reference/crew_monitor_local.html">crew_monitor_local()</a></code> objects because the dispatcher is a thread in <code>mirai</code> &gt; 2.6.1.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.0" id="crew-130">crew 1.3.0<a class="anchor" aria-label="anchor" href="#crew-130"></a></h2><p class="text-muted">CRAN release: 2025-09-13</p>

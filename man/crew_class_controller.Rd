@@ -601,7 +601,10 @@ that invoke \code{crew} controllers.}
 \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
 seed to set for the evaluation of the task. Passed to the
 \code{seed} argument of \code{set.seed()} if not \code{NULL}.
-If \code{algorithm} and \code{seed} are both \code{NULL},
+If \code{seed} and \code{algorithm} are both non-missing in the output
+of \code{pop()},  then you can recover the pseudo-random number generator state
+of the task using \code{set.seed(seed = seed, kind = algorithm)}.
+Otherwise, if the \code{algorithm} and \code{seed} are both \code{NULL} (recommended),
 then the random number generator defaults to the
 widely spaced worker-specific
 L'Ecuyer streams as supported by \code{mirai::nextstream()}.
@@ -610,9 +613,12 @@ See \code{vignette("parallel", package = "parallel")} for details.}
 \item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
 generator algorithm to set for the evaluation of the task.
 Passed to the \code{kind} argument of \code{RNGkind()} if not \code{NULL}.
-If \code{algorithm} and \code{seed} are both \code{NULL},
+If \code{seed} and \code{algorithm} are both non-missing in the output
+of \code{pop()},  then you can recover the pseudo-random number generator state
+of the task using \code{set.seed(seed = seed, kind = algorithm)}.
+Otherwise, if the \code{algorithm} and \code{seed} are both \code{NULL} (recommended),
 then the random number generator defaults to the
-recommended widely spaced worker-specific
+widely spaced worker-specific
 L'Ecuyer streams as supported by \code{mirai::nextstream()}.
 See \code{vignette("parallel", package = "parallel")} for details.}
 

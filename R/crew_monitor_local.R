@@ -16,10 +16,10 @@ crew_class_monitor_local <- R6::R6Class(
   classname = "crew_class_monitor_local",
   cloneable = FALSE,
   public = list(
-    #' @description List the process IDs of the running `mirai` dispatcher
-    #'   processes
-    #'   (for older versions of `mirai` without the threaded dispatcher).
-    #' @details The `mirai` dispatcher is an R process only in `mirai` version
+    #' @description Deprecated:
+    #'   list the process IDs of the running `mirai` dispatcher processes.
+    #'   (No longer applicable.)
+    #' @details The `mirai` dispatcher was an R process in `mirai` version
     #'   <= 2.6.1. In later versions, the dispatcher is a thread within
     #'   the controller's own R process, and the `dispatchers()` method
     #'   does not return any process IDs.

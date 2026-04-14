@@ -27,9 +27,9 @@ Other monitor:
 \if{html}{\out{<a id="method-crew_class_monitor_local-dispatchers"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_monitor_local-dispatchers}{}}}
 \subsection{Method \code{dispatchers()}}{
-List the process IDs of the running \code{mirai} dispatcher
-processes
-(for older versions of \code{mirai} without the threaded dispatcher).
+Deprecated:
+list the process IDs of the running \code{mirai} dispatcher processes.
+(No longer applicable.)
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$dispatchers(user = ps::ps_username())}\if{html}{\out{</div>}}
 }
@@ -43,7 +43,7 @@ to list processes of all users (not recommended).}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-The \code{mirai} dispatcher is an R process only in \code{mirai} version
+The \code{mirai} dispatcher was an R process in \code{mirai} version
 <= 2.6.1. In later versions, the dispatcher is a thread within
 the controller's own R process, and the \code{dispatchers()} method
 does not return any process IDs.

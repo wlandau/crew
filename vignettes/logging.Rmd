@@ -138,6 +138,7 @@ library(tarchetypes)
 tar_option_set(
   controller = crew_controller_local(
     workers = 2,
+    # To monitor crew worker processes:
     options_metrics = crew_options_metrics(
       path = "worker_log_directory/", # Worker logs live here.
       seconds_interval = 1
@@ -146,6 +147,7 @@ tar_option_set(
 )
 
 if (tar_active()) {
+  # To monitor the central process of the targets pipeline:
   log_start(
     path = "main_process.txt", # Statistics on the main process go here.
     seconds = 1

@@ -35,13 +35,16 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
-          extra-repositories: "https://shikokuchuo.r-universe.dev"
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck, local::.
           needs: check
           cache-version: 3
+
+      - name: Install development mirai and nanonext.
+        shell: Rscript {0}
+        run: install.packages(c("nanonext", "mirai"), repos = "https://r-lib.r-universe.dev")
 
       - uses: r-lib/actions/check-r-package@v2
         with:

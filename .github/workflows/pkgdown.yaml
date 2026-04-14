@@ -32,6 +32,10 @@ jobs:
           needs: website
           cache-version: 3
 
+      - name: Install development mirai and nanonext.
+        shell: Rscript {0}
+        run: install.packages(c("nanonext", "mirai"), repos = "https://r-lib.r-universe.dev")
+
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}

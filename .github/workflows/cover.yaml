@@ -26,6 +26,10 @@ jobs:
           needs: coverage
           cache-version: 3
 
+      - name: Install development mirai and nanonext.
+        shell: Rscript {0}
+        run: install.packages(c("nanonext", "mirai"), repos = "https://r-lib.r-universe.dev")
+
       - name: Test coverage
         run: |
           covr::codecov(

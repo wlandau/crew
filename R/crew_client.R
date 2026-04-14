@@ -360,11 +360,7 @@ crew_class_client <- R6::R6Class(
       if (not_listening) {
         return(default)
       }
-      mirai_status(
-        profile = .profile,
-        seconds_interval = .seconds_interval,
-        seconds_timeout = .seconds_timeout
-      )
+      mirai::info(.compute = .profile)
     },
     #' @description Deprecated on 2025-08-26 in `crew` version 1.2.1.9005.
     #' @return The integer process ID of the current process.

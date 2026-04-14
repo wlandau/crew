@@ -396,7 +396,7 @@ Check if the controller is saturated.
 
 #### Details
 
-A controller is saturated if the number of uncollected tasks is greater
+A controller is saturated if the number of unresolved tasks is greater
 than or equal to the maximum number of workers. You can still push tasks
 to a saturated controller, but tools that use `crew` such as `targets`
 may choose not to (for performance and user-friendliness).
@@ -498,7 +498,7 @@ Auto-scale workers out to meet the demand of tasks.
   `TRUE` to skip auto-scaling if it already happened within the last
   polling interval. `FALSE` to auto-scale every time
   [`scale()`](https://rdrr.io/r/base/scale.html) is called. Throttling
-  avoids overburdening the `mirai` dispatcher and other resources.
+  avoids overburdening the local R process.
 
 - `controllers`:
 
@@ -708,7 +708,7 @@ Push a task to the head of the task list.
   `TRUE` to skip auto-scaling if it already happened within the last
   polling interval. `FALSE` to auto-scale every time
   [`scale()`](https://rdrr.io/r/base/scale.html) is called. Throttling
-  avoids overburdening the `mirai` dispatcher and other resources.
+  avoids overburdening the local R process.
 
 - `name`:
 
@@ -875,7 +875,7 @@ user without waiting for any task to complete.
   `TRUE` to skip auto-scaling if it already happened within the last
   polling interval. `FALSE` to auto-scale every time
   [`scale()`](https://rdrr.io/r/base/scale.html) is called. Throttling
-  avoids overburdening the `mirai` dispatcher and other resources.
+  avoids overburdening the local R process.
 
 - `controller`:
 
@@ -1071,7 +1071,7 @@ complete, and return the results of all tasks.
   `TRUE` to skip auto-scaling if it already happened within the last
   polling interval. `FALSE` to auto-scale every time
   [`scale()`](https://rdrr.io/r/base/scale.html) is called. Throttling
-  avoids overburdening the `mirai` dispatcher and other resources.
+  avoids overburdening the local R process.
 
 - `controller`:
 
@@ -1125,7 +1125,7 @@ Pop a completed task from the results data frame.
   `TRUE` to skip auto-scaling if it already happened within the last
   polling interval. `FALSE` to auto-scale every time
   [`scale()`](https://rdrr.io/r/base/scale.html) is called. Throttling
-  avoids overburdening the `mirai` dispatcher and other resources.
+  avoids overburdening the local R process.
 
 - `error`:
 
@@ -1231,7 +1231,7 @@ Pop all available task results and return them in a tidy `tibble`.
   `TRUE` to skip auto-scaling if it already happened within the last
   polling interval. `FALSE` to auto-scale every time
   [`scale()`](https://rdrr.io/r/base/scale.html) is called. Throttling
-  avoids overburdening the `mirai` dispatcher and other resources.
+  avoids overburdening the local R process.
 
 - `error`:
 
@@ -1307,7 +1307,7 @@ Wait for tasks.
   `TRUE` to skip auto-scaling if it already happened within the last
   polling interval. `FALSE` to auto-scale every time
   [`scale()`](https://rdrr.io/r/base/scale.html) is called. Throttling
-  avoids overburdening the `mirai` dispatcher and other resources.
+  avoids overburdening the local R process.
 
 - `controllers`:
 

@@ -1,19 +1,5 @@
 # Changelog
 
-## crew 1.3.0.9002 (development)
-
-- Use
-  [`later::global_loop()`](https://later.r-lib.org/reference/create_loop.html)
-  instead of
-  [`later::current_loop()`](https://later.r-lib.org/reference/create_loop.html)
-  in `controller$autoscale()`.
-- Test
-  [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.md)
-  with `autoexit = FALSE` (<https://github.com/r-lib/mirai/issues/535>).
-- Deprecate the `dispatchers()` method of
-  [`crew_monitor_local()`](https://wlandau.github.io/crew/reference/crew_monitor_local.md)
-  objects because the dispatcher is a thread in `mirai` \> 2.6.1.
-
 ## crew 1.3.0
 
 CRAN release: 2025-09-13

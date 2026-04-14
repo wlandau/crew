@@ -21,7 +21,10 @@ crew_clean(
 
 - dispatchers:
 
-  Logical of length 1, whether to terminate dispatchers.
+  Logical of length 1, whether to terminate dispatcher processes (in
+  older versions of `mirai`: \<= 2.6.1). In `mirai` \> 2.6.1, the
+  dispatcher is a thread within the controller's own R process and will
+  not be terminated by this function.
 
 - workers:
 
@@ -29,8 +32,8 @@ crew_clean(
 
 - user:
 
-  Character of length 1. Terminate dispatchers and/or workers associated
-  with this user name.
+  Character of length 1. Terminate processes associated with this user
+  name.
 
 - seconds_interval:
 
@@ -50,19 +53,6 @@ crew_clean(
 
 `NULL` (invisibly). If `verbose` is `TRUE`, it does print out a message
 for every terminated process.
-
-## Details
-
-Behind the scenes, `mirai` uses an external R process called a
-"dispatcher" to send tasks to `crew` workers. This dispatcher usually
-shuts down when you terminate the controller or quit your R session, but
-sometimes it lingers. Likewise, sometimes `crew` workers do not shut
-down on their own. The `crew_clean()` function searches the process
-table on your local machine and manually terminates any `mirai`
-dispatchers and `crew` workers associated with your user name (or the
-user name you select in the `user` argument. Unfortunately, it cannot
-reach remote workers such as those launched by a `crew.cluster`
-controller.
 
 ## See also
 

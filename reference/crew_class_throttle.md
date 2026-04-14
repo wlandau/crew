@@ -209,7 +209,7 @@ throttle <- crew_throttle(seconds_max = 1)
 throttle$poll()
 #> [1] FALSE
 throttle$poll()
-#> [1] FALSE
+#> [1] TRUE
 
 ## ------------------------------------------------
 ## Method `crew_class_throttle$new`
@@ -219,5 +219,5 @@ throttle <- crew_throttle(seconds_max = 1)
 throttle$poll()
 #> [1] FALSE
 throttle$poll()
-#> [1] FALSE
+#> [1] TRUE
 ```

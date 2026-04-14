@@ -44,7 +44,7 @@ Imports:
   collections (>= 0.3.9),
   data.table,
   later,
-  mirai (>= 2.6.1.9000),
+  mirai (>= 2.5.0),
   nanonext (>= 1.7.0),
   processx,
   promises,

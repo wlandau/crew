@@ -346,7 +346,7 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-A controller is saturated if the number of uncollected tasks
+A controller is saturated if the number of unresolved tasks
 is greater than or equal to the maximum number of workers.
 You can still push tasks to a saturated controller, but
 tools that use \code{crew} such as \code{targets} may choose not to
@@ -446,7 +446,7 @@ Auto-scale workers out to meet the demand of tasks.
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -631,7 +631,7 @@ see the \code{throttle} argument.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{name}}{Character string, name of the task. If \code{NULL}, then
 a random name is generated automatically.
@@ -763,7 +763,7 @@ demand. See also the \code{throttle} argument.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -920,7 +920,7 @@ demand. See also the \code{throttle} argument.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
@@ -971,7 +971,7 @@ See also the \code{throttle} argument.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{error}}{\code{NULL} or character of length 1, choice of action if
 the popped task threw an error. Possible values:
@@ -1064,7 +1064,7 @@ to auto-scale workers to meet the demand of the task load.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{error}}{\code{NULL} or character of length 1, choice of action if
 the popped task threw an error. Possible values:
@@ -1132,7 +1132,7 @@ See also the \code{throttle} argument.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}

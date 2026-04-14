@@ -430,7 +430,7 @@ crew_class_controller <- R6::R6Class(
       as.integer(.subset(counts, "awaiting") + .subset2(counts, "executing"))
     },
     #' @description Check if the controller is saturated.
-    #' @details A controller is saturated if the number of uncollected tasks
+    #' @details A controller is saturated if the number of unresolved tasks
     #'   is greater than or equal to the maximum number of workers.
     #'   You can still push tasks to a saturated controller, but
     #'   tools that use `crew` such as `targets` may choose not to
@@ -441,26 +441,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
-      # TODO: when mirai gains a threaded dispatcher, reinstate the
-      # commented 4 lines of code below and also follow the TODO
-      # comments in pop_backlog().
-      #
-      # "Saturated" really should mean that the number of *unresolved* tasks
-      # is equal to the maximum number of workers.
-      # To avoid potentially burdensome dispatcher queries, "saturated"
-      # for the time being means that the number of *uncollected* tasks
-      # is equal to the maximum number of workers.
-      # This shortcut avoids a bottleneck in {targets},
-      # but it isn't exactly what "saturated" should mean.
-      #
-      # counts <- .subset2(.client, "status")()
-      # unresolved <- .subset(counts, "awaiting") +
-      #   .subset(counts, "executing")
-      # as.logical(unresolved >= .subset2(.launcher, "workers"))
-      #
-      # Here is the shortcut crew currently uses to reduce overhead
-      # from repeated calls to saturated():
-      as.logical(size() >= .subset2(.launcher, "workers"))
+      as.logical(unresolved() >= .subset2(.launcher, "workers"))
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
@@ -504,7 +485,7 @@ crew_class_controller <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     scale = function(throttle = TRUE, controllers = NULL) {
@@ -619,7 +600,7 @@ crew_class_controller <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param name Character string, name of the task. If `NULL`, then
     #'   a random name is generated automatically.
     #'   The name of the task must not conflict with the name of another
@@ -774,7 +755,7 @@ crew_class_controller <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     walk = function(
@@ -1062,7 +1043,7 @@ crew_class_controller <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     map = function(
@@ -1289,7 +1270,7 @@ crew_class_controller <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param error `NULL` or character of length 1, choice of action if
     #'   the popped task threw an error. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
@@ -1392,7 +1373,7 @@ crew_class_controller <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param error `NULL` or character of length 1, choice of action if
     #'   the popped task threw an error. Possible values:
     #'     * `"stop"`: throw an error in the main R session instead of
@@ -1497,7 +1478,7 @@ crew_class_controller <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     wait = function(
@@ -1573,16 +1554,9 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop_backlog = function(controllers = NULL) {
-      # TODO: when mirai gains a threaded dispatcher and status() is
-      # zero overhead, reinstate the following line of code:
-      #
-      # n <- .subset2(.launcher, "workers") - unresolved()
-      #
-      # In place of these 3 lines:
       max_workers <- .subset2(.launcher, "workers")
-      uncollected_tasks <- .subset2(.tasks, "size")()
+      uncollected_tasks <- unresolved()
       n <- max(0, max_workers - uncollected_tasks)
-      # The rest of pop_backlog() doesn't depend on the issue above:
       n <- min(n, .subset2(.queue_backlog, "size")())
       if (n < 1L) {
         return(character(0L))

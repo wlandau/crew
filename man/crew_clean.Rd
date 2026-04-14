@@ -15,13 +15,17 @@ crew_clean(
 }
 \arguments{
 \item{dispatchers}{Logical of length 1,
-whether to terminate dispatchers.}
+whether to terminate dispatcher processes
+(in older versions of \code{mirai}: <= 2.6.1).
+In \code{mirai} > 2.6.1, the dispatcher is a thread within
+the controller's own R process
+and will not be terminated by this function.}
 
 \item{workers}{Logical of length 1,
 whether to terminate workers.}
 
-\item{user}{Character of length 1. Terminate dispatchers and/or
-workers associated with this user name.}
+\item{user}{Character of length 1. Terminate processes
+associated with this user name.}
 
 \item{seconds_interval}{Seconds to wait between polling intervals
 waiting for a process to exit.}
@@ -38,19 +42,6 @@ print out a message for every terminated process.
 \description{
 Deprecated on 2025-08-26 in \code{crew} version 1.2.1.9006.
 Please use \code{\link[=crew_monitor_local]{crew_monitor_local()}} instead.
-}
-\details{
-Behind the scenes, \code{mirai} uses an external R process
-called a "dispatcher" to send tasks to \code{crew} workers.
-This dispatcher usually shuts down when you terminate the controller
-or quit your R session, but sometimes it lingers. Likewise,
-sometimes \code{crew} workers do not shut down on their own.
-The \code{crew_clean()} function searches the process table on your
-local machine and manually terminates any \code{mirai} dispatchers
-and \code{crew} workers associated with your user name (or the
-user name you select in the \code{user} argument.
-Unfortunately, it cannot reach remote workers such as those
-launched by a \code{crew.cluster} controller.
 }
 \examples{
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {

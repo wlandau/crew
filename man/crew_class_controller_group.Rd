@@ -393,7 +393,7 @@ in one or more controller objects.
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
@@ -567,7 +567,7 @@ ordinary single controllers.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{name}}{Character string, name of the task. If \code{NULL},
 a random name is automatically generated.
@@ -703,7 +703,7 @@ demand. See also the \code{throttle} argument.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{controller}}{Character of length 1,
 name of the controller to submit the tasks.
@@ -856,7 +856,7 @@ demand. See also the \code{throttle} argument.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{controller}}{Character of length 1,
 name of the controller to submit the tasks.
@@ -902,7 +902,7 @@ ordinary single controllers.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{error}}{\code{NULL} or character of length 1, choice of action if
 the popped task threw an error. Possible values:
@@ -949,7 +949,7 @@ to auto-scale workers to meet the demand of the task load.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{error}}{\code{NULL} or character of length 1, choice of action if
 the popped task threw an error. Possible values:
@@ -1016,7 +1016,7 @@ ordinary single controllers.}
 \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
-overburdening the \code{mirai} dispatcher and other resources.}
+overburdening the local R process.}
 
 \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}

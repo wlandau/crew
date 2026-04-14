@@ -1,8 +1,10 @@
-# crew 1.3.0.9002 (development)
+# crew development version
 
 * Use `later::global_loop()` instead of `later::current_loop()` in `controller$autoscale()`.
 * Test `crew_worker()` with `autoexit = FALSE` (https://github.com/r-lib/mirai/issues/535).
 * Deprecate the `dispatchers()` method of `crew_monitor_local()` objects because the dispatcher is a thread in `mirai` > 2.6.1.
+* Make `controller$pop_backlog()` more responsive (factoring a real-time count of unresolved tasks), relying on the new threaded dispatcher in `mirai` > 2.6.1 for efficiency.
+* In `controller$saturated()`, the definition of "saturated" has changed: now, a controller is saturated if the number of *unresolved* tasks is greater than or equal to the maximum number of workers. Previously, it was the number of *uncollected* tasks. The current definition was always the intended one, but the time lag from querying the dispatcher made it impractical. Now with the threaded dispatcher in `mirai`, the unresolved task count can be queried in sub-microsecond time.
 
 # crew 1.3.0
 

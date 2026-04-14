@@ -278,7 +278,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     scale = function(throttle = TRUE, controllers = NULL) {
@@ -367,7 +367,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param name Character string, name of the task. If `NULL`,
     #'   a random name is automatically generated.
     #'   The task name must not conflict with an existing task
@@ -489,7 +489,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param controller Character of length 1,
     #'   name of the controller to submit the tasks.
     #'   If `NULL`, the controller defaults to the
@@ -621,7 +621,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param controller Character of length 1,
     #'   name of the controller to submit the tasks.
     #'   If `NULL`, the controller defaults to the
@@ -690,7 +690,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param error `NULL` or character of length 1, choice of action if
     #'   the popped task threw an error. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
@@ -730,7 +730,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param error `NULL` or character of length 1, choice of action if
     #'   the popped task threw an error. Possible values:
     #'   * `"stop"`: throw an error in the main R session instead of returning
@@ -792,7 +792,7 @@ crew_class_controller_group <- R6::R6Class(
     #' @param throttle `TRUE` to skip auto-scaling if it already happened
     #'   within the last polling interval. `FALSE` to auto-scale
     #'   every time `scale()` is called. Throttling avoids
-    #'   overburdening the `mirai` dispatcher and other resources.
+    #'   overburdening the local R process.
     #' @param controllers Character vector of controller names.
     #'   Set to `NULL` to select all controllers.
     wait = function(

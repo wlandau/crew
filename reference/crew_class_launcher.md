@@ -8,12 +8,6 @@ workers.
 Other launcher:
 [`crew_launcher()`](https://wlandau.github.io/crew/reference/crew_launcher.md)
 
-## Public fields
-
-- `async`:
-
-  Deprecated on 2025-08-27 (`crew` version 1.2.1.9009).
-
 ## Active bindings
 
 - `name`:
@@ -613,6 +607,6 @@ client$terminate()
 launcher <- crew_launcher_local()
 launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
 launcher$call()
-#> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tlscert = NULL, rs = NULL), controller = \"414d0680\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
+#> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tlscert = NULL, rs = NULL), controller = \"132fe4d6\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
 launcher$terminate()
 ```

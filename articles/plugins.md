@@ -259,8 +259,7 @@ When you are ready to begin testing, try out the example in the
 your custom controller helper instead of
 [`crew_controller_local()`](https://wlandau.github.io/crew/reference/crew_controller_local.html).
 
-First, create and start a controller. You may wish to monitor local
-processes on your computer to make sure the `mirai` dispatcher starts.
+First, create and start a controller.
 
 ``` r
 library(crew)
@@ -291,18 +290,24 @@ Please use the result to verify that the task really ran on a worker as
 intended. The process ID above should agree with the one from the handle
 ([except on Windows](https://github.com/r-lib/processx/issues/364)
 because the actual R process may be different from the `Rscript.exe`
-process created first). In addition, if the worker is running on a
-different computer, the worker IP address should be different than the
-local IP address. Since our custom launcher creates local processes, the
-IP addresses are the same in this case, but they should be different for
-a [SLURM](https://slurm.schedmd.com/) or [AWS
-Batch](https://aws.amazon.com/batch/) launcher.
+process created first).
+
+``` r
+controller$launcher$instances$handle[[1]]$get_pid()
+#> [1] 27336
+```
+
+In addition, please compare the worker IP address to the IP address of
+the local R session. Since our custom launcher creates local processes,
+the IP addresses are the same in this case. However, if the worker runs
+on a different computer (as with the[SLURM](https://slurm.schedmd.com/)
+or [AWS Batch](https://aws.amazon.com/batch/) launcher) then the worker
+IP address should be different from the one you get from the local R
+session.
 
 ``` r
 as.character(nanonext::ip_addr())[1]
 #> "192.168.0.2"
-controller$launcher$instances$handle[[1]]$get_pid()
-#> [1] 27336
 ```
 
 If you did not set any timeouts or task limits, the worker that ran the
@@ -314,9 +319,8 @@ controller$launcher$instances$handle[[1]]$is_alive()
 #> [1] TRUE
 ```
 
-When you are done, terminate the controller. This severs the underlying
-network connections of the controller, which terminates the workers and
-dispatcher.
+When you are done, either close the local R session or terminate the
+controller manually.
 
 ``` r
 controller$terminate()
@@ -380,28 +384,20 @@ controller$terminate()
 
 ## Managing workers
 
-Usually `crew` workers terminate themselves when the parent R session
-exits or the controller terminates, but under rare circumstances they
-may continue running. To help users of your plugin monitor and manually
-terminate workers, please consider implementing job management utilities
-to go along with your launcher plugin. As described in the [introduction
-vignette](https://wlandau.github.io/crew/articles/introduction.html),
-[`crew_monitor_local()`](https://wlandau.github.io/crew/reference/crew_monitor_local.md)
-helps manually list and terminate local processes relevant to `crew`.
-Source code for the local monitor is [on
-GitHub](https://github.com/wlandau/crew/blob/main/R/crew_monitor_local.R),
-methods are [documented in the package
-website](https://wlandau.github.io/crew/reference/crew_class_monitor_local.html),
-and example usage is in the [introduction
-vignette](https://wlandau.github.io/crew/articles/introduction.html). In
-addition,
-[`crew_monitor_aws_batch()`](https://wlandau.github.io/crew.aws.batch/reference/crew_monitor_aws_batch.html)
-implements [several
-methods](https://wlandau.github.io/crew.aws.batch/reference/crew_class_monitor_aws_batch.html)
-for listing and terminating AWS Batch jobs, as well as viewing
-CloudWatch logs.
+There are safeguards to make sure workers terminate when the controller
+terminates or the parent R session exits. However, these safeguards are
+based on network connections and operating system signals, which are not
+guaranteed to work in all cases. It is the user’s responsibility to
+monitor and manage `crew` workers. To make the user’s job easier, it is
+good practice to implement job management utilities to go along with
+your launcher plugin. The `crew` ecosystem implements “monitor” objects
+such as
+[`crew_monitor_local()`](https://wlandau.github.io/crew/reference/crew_class_monitor_local.html)
+and
+[`crew_monitor_aws_batch()`](https://wlandau.github.io/crew.aws.batch/reference/crew_class_monitor_aws_batch.html)
+to help users list and terminate workers, as well as view logs.
 
-The source code for the local monitor is copied below:
+The essence of the local monitor is copied below:
 
 ``` r
 crew_monitor_local <- function() {
@@ -412,12 +408,6 @@ crew_class_monitor_local <- R6::R6Class(
   classname = "crew_class_monitor_local",
   cloneable = FALSE,
   public = list(
-    dispatchers = function() {
-      crew_monitor_pids(pattern = "mirai::dispatcher")
-    },
-    daemons = function() {
-      crew_monitor_pids(pattern = "mirai::daemon")
-    },
     workers = function() {
       crew_monitor_pids(pattern = "crew::crew_worker")
     },
@@ -442,10 +432,6 @@ Example usage:
 
 ``` r
 monitor <- crew_monitor_local()
-monitor$dispatchers() # List PIDs of all local {mirai} dispatcher processes.
-#> [1] 31215
-monitor$daemons()
-#> integer(0)
 monitor$workers()
 #> [1] 57001 57002
 monitor$terminate(pids = c(57001, 57002))

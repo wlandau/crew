@@ -85,41 +85,34 @@ vignette describes known risks and safeguards, but is by no means
 exhaustive. Please read the <a href="https://wlandau.github.io/crew/LICENSE.html">software
 license</a>.</p>
 <div class="section level2">
-<h2 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a>
+<h2 id="resource-usage">Resource usage<a class="anchor" aria-label="anchor" href="#resource-usage"></a>
 </h2>
 <div class="section level3">
-<h3 id="processes">Processes<a class="anchor" aria-label="anchor" href="#processes"></a>
+<h3 id="workers">Workers<a class="anchor" aria-label="anchor" href="#workers"></a>
 </h3>
-<p>The <code>crew</code> package launches external R processes:</p>
-<ol style="list-style-type: decimal">
-<li>Worker processes to run tasks, which may include expensive jobs on
-cloud services like AWS Batch or traditional clusters like SLURM.</li>
-<li>The <a href="https://mirai.r-lib.org/" class="external-link"><code>mirai</code></a>
-dispatcher, an R process which send tasks to workers and retrieves
-results back. If <code>x</code> is a <code>crew</code> controller, a
-<code><a href="https://ps.r-lib.org/reference/ps_handle.html" class="external-link">ps::ps_handle()</a></code> process handle of the dispatcher is
-retained in <code>x$client$dispatcher</code>.</li>
-</ol>
-<p>In the event of a poorly-timed crash or network error, these
-processes may not terminate properly. If that happens, they will
-continue to run, which may strain traditional clusters or incur heavy
-expenses on the cloud. Please monitor the platforms you use and manually
-terminate defunct hanging processes as needed. To list and terminate
-local processes, please use <code><a href="../reference/crew_monitor_local.html">crew_monitor_local()</a></code> as
-explained in the introduction vignette. To manage and monitor non-local
-high-performance computing workers such as those on SLURM and AWS Batch,
-please familiarize yourself with the given computing platform, and
-consider using the monitor objects in the relevant third-party plugin
-packages such as <a href="https://wlandau.github.io/crew.cluster/"><code>crew.cluster</code></a>
+<p>The <code>crew</code> package launches external worker processes to
+run tasks, which may include expensive jobs on cloud services like AWS
+Batch or traditional clusters like SLURM. In the event of a poorly-timed
+crash or network error, these processes may not terminate properly. If
+that happens, they will continue to run, which may strain traditional
+clusters or incur heavy expenses on the cloud.</p>
+<p>Please monitor the platforms you use and manually terminate defunct
+hanging processes as needed. To list and terminate local processes,
+please use <code><a href="../reference/crew_monitor_local.html">crew_monitor_local()</a></code> as explained in the
+introduction vignette. To manage and monitor non-local high-performance
+computing workers such as those on SLURM and AWS Batch, please
+familiarize yourself with the given computing platform, and consider
+using the monitor objects in the relevant third-party plugin packages
+such as <a href="https://wlandau.github.io/crew.cluster/"><code>crew.cluster</code></a>
 or <a href="https://wlandau.github.io/crew.aws.batch/"><code>crew.aws.batch</code></a>.
 Example: <a href="https://wlandau.github.io/crew.aws.batch/index.html#job-management" class="uri">https://wlandau.github.io/crew.aws.batch/index.html#job-management</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="crashes">Crashes<a class="anchor" aria-label="anchor" href="#crashes"></a>
 </h3>
-<p>The local process or <a href="https://mirai.r-lib.org/" class="external-link"><code>mirai</code></a> dispatcher
-process could crash. A common cause of crashes is running out of
-computer memory. The “Resources” section of the <a href="https://wlandau.github.io/crew/articles/introduction.html">introduction</a>
+<p>The local R process could crash if resources are exhausted. A common
+cause of crashes is running out of computer memory. The “Resources”
+section of the <a href="https://wlandau.github.io/crew/articles/introduction.html">introduction</a>
 explains how to monitor memory usage. If you are running
 <code>crew</code> in a <a href="https://docs.ropensci.org/targets/" class="external-link"><code>targets</code></a>
 pipeline (as explained <a href="https://books.ropensci.org/targets/crew.html" class="external-link">here in the

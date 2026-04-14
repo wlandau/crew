@@ -661,9 +661,12 @@ Push a task to the head of the task list.
   Integer of length 1 with the pseudo-random number generator seed to
   set for the evaluation of the task. Passed to the `seed` argument of
   [`set.seed()`](https://rdrr.io/r/base/Random.html) if not `NULL`. If
-  `algorithm` and `seed` are both `NULL`, then the random number
-  generator defaults to the widely spaced worker-specific L'Ecuyer
-  streams as supported by
+  `seed` and `algorithm` are both non-missing in the output of `pop()`,
+  then you can recover the pseudo-random number generator state of the
+  task using `set.seed(seed = seed, kind = algorithm)`. Otherwise, if
+  the `algorithm` and `seed` are both `NULL` (recommended), then the
+  random number generator defaults to the widely spaced worker-specific
+  L'Ecuyer streams as supported by
   [`mirai::nextstream()`](https://mirai.r-lib.org/reference/nextstream.html).
   See
   [`vignette("parallel", package = "parallel")`](https://cran.rstudio.com/web/packages/parallel/vignettes/parallel.pdf)
@@ -674,8 +677,11 @@ Push a task to the head of the task list.
   Integer of length 1 with the pseudo-random number generator algorithm
   to set for the evaluation of the task. Passed to the `kind` argument
   of [`RNGkind()`](https://rdrr.io/r/base/Random.html) if not `NULL`. If
-  `algorithm` and `seed` are both `NULL`, then the random number
-  generator defaults to the recommended widely spaced worker-specific
+  `seed` and `algorithm` are both non-missing in the output of `pop()`,
+  then you can recover the pseudo-random number generator state of the
+  task using `set.seed(seed = seed, kind = algorithm)`. Otherwise, if
+  the `algorithm` and `seed` are both `NULL` (recommended), then the
+  random number generator defaults to the widely spaced worker-specific
   L'Ecuyer streams as supported by
   [`mirai::nextstream()`](https://mirai.r-lib.org/reference/nextstream.html).
   See

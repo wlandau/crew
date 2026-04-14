@@ -6,27 +6,20 @@ describes known risks and safeguards, but is by no means exhaustive.
 Please read the [software
 license](https://wlandau.github.io/crew/LICENSE.html).
 
-## Resources
+## Resource usage
 
-### Processes
+### Workers
 
-The `crew` package launches external R processes:
+The `crew` package launches external worker processes to run tasks,
+which may include expensive jobs on cloud services like AWS Batch or
+traditional clusters like SLURM. In the event of a poorly-timed crash or
+network error, these processes may not terminate properly. If that
+happens, they will continue to run, which may strain traditional
+clusters or incur heavy expenses on the cloud.
 
-1.  Worker processes to run tasks, which may include expensive jobs on
-    cloud services like AWS Batch or traditional clusters like SLURM.
-2.  The [`mirai`](https://mirai.r-lib.org/) dispatcher, an R process
-    which send tasks to workers and retrieves results back. If `x` is a
-    `crew` controller, a
-    [`ps::ps_handle()`](https://ps.r-lib.org/reference/ps_handle.html)
-    process handle of the dispatcher is retained in
-    `x$client$dispatcher`.
-
-In the event of a poorly-timed crash or network error, these processes
-may not terminate properly. If that happens, they will continue to run,
-which may strain traditional clusters or incur heavy expenses on the
-cloud. Please monitor the platforms you use and manually terminate
-defunct hanging processes as needed. To list and terminate local
-processes, please use
+Please monitor the platforms you use and manually terminate defunct
+hanging processes as needed. To list and terminate local processes,
+please use
 [`crew_monitor_local()`](https://wlandau.github.io/crew/reference/crew_monitor_local.md)
 as explained in the introduction vignette. To manage and monitor
 non-local high-performance computing workers such as those on SLURM and
@@ -39,9 +32,9 @@ third-party plugin packages such as
 
 ### Crashes
 
-The local process or [`mirai`](https://mirai.r-lib.org/) dispatcher
-process could crash. A common cause of crashes is running out of
-computer memory. The “Resources” section of the
+The local R process could crash if resources are exhausted. A common
+cause of crashes is running out of computer memory. The “Resources”
+section of the
 [introduction](https://wlandau.github.io/crew/articles/introduction.html)
 explains how to monitor memory usage. If you are running `crew` in a
 [`targets`](https://docs.ropensci.org/targets/) pipeline (as explained

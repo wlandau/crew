@@ -5,7 +5,7 @@ and auto-scaling. A `crew` controller is an object in R which accepts
 tasks, returns results, and launches workers. Workers can be local
 processes, jobs on traditional clusters such as SLURM, or jobs on cloud
 services such as AWS Batch, depending on the [launcher
-plugin](https://wlandau.github.io/crew/articles/plugins.html) of the
+plugin](https://wlandau.github.io/crew/articles/plugins.md) of the
 controller.
 
 ## Tasks vs workers
@@ -16,7 +16,7 @@ A *worker* is a
 R process that runs one or more tasks. When tasks run on workers, the
 local R session is free and responsive, and work gets done faster. For
 example, [this
-vignette](https://wlandau.github.io/crew/articles/shiny.html) shows how
+vignette](https://wlandau.github.io/crew/articles/shiny.md) shows how
 `crew` and [`mirai`](https://mirai.r-lib.org/) work together to speed up
 [Shiny](https://rstudio.github.io/shiny/) apps.
 
@@ -87,53 +87,9 @@ task$result[[1]] # return value of the task
 #> [1] 69631
 ```
 
-Here is the full list of output in the `task` object returned by
-`pop()`.
-
-- `name`: the task name.
-- `command`: a character string with the R command.
-- `result`: a list containing the return value of the R command. `NA` if
-  the task failed.
-- `status`: a character string. `"success"` if the task succeeded,
-  `"cancel"` if the task was canceled with the `cancel()` controller
-  method, `"crash"` if the worker running the task exited before
-  completing the task, and `"error"` for any other kind of error. (See
-  the “Crashes and retries” section below for more on crashes.)
-- `error`: the first 2048 characters of the error message if the task
-  status is not `"success"`, `NA` otherwise.
-- `code`: an integer code denoting the specific exit status: `0` for
-  successful tasks, `-1` for tasks with an error in the R command of the
-  task, and another positive integer with an NNG status code if there is
-  an error at the NNG/`nanonext` level.
-  [`nanonext::nng_error()`](https://nanonext.r-lib.org/reference/nng_error.html)
-  can interpret these codes.
-- `trace`: the first 2048 characters of the text of the traceback if the
-  task threw an error, `NA` otherwise.
-- `warnings`: the first 2048 characters. of the text of warning messages
-  that the task may have generated, `NA` otherwise.
-- `seconds`: number of seconds that the task ran.
-- `seed`: the single integer originally supplied to `push()`, `NA`
-  otherwise. The pseudo-random number generator state just prior to the
-  task can be restored using `set.seed(seed = seed, kind = algorithm)`,
-  where `seed` and `algorithm` are part of this output.
-- `algorithm`: name of the pseudo-random number generator algorithm
-  originally supplied to `push()`, `NA` otherwise. The pseudo-random
-  number generator state just prior to the task can be restored using
-  `set.seed(seed = seed, kind = algorithm)`, where `seed` and
-  `algorithm` are part of this output.
-- `controller`: name of the `crew` controller where the task ran.
-
-If `seed` and `algorithm` are both non-missing in the output, then you
-can recover the pseudo-random number generator state of the task using
-`set.seed(seed = seed, kind = algorithm)`. However, it is recommended to
-supply `NULL` to these arguments in `push()`, in which case you will
-observe `NA` in the outputs. With `seed` and `algorithm` both `NULL`,
-the random number generator defaults to the recommended widely spaced
-worker-specific L’Ecuyer streams supported by
-[`mirai::nextstream()`](https://mirai.r-lib.org/reference/nextstream.html).
-See
-[`vignette("parallel", package = "parallel")`](https://cran.rstudio.com/web/packages/parallel/vignettes/parallel.pdf)
-for details.
+See the
+[reference](https://wlandau.github.io/crew/reference/crew_class_controller.html#returns-18)
+for the full list of output in the `task` object returned by `pop()`.
 
 ## Synchronous functional programming
 
@@ -257,60 +213,28 @@ controller$summary()
 
 ## Termination
 
-Call `terminate()` on the controller after you finish using it.
-`terminate()` tries to close the the [`mirai`](https://mirai.r-lib.org/)
-dispatcher and any workers that may still be running. It is important to
-free up these resources.
+The `terminate()` method signals the workers to close and severs the
+connection.
 
 ``` r
 controller$terminate()
 ```
 
-The `mirai` dispatcher process should exit on its own, but if not, you
-can manually terminate the process with
-`ps::ps_kill(p = controller$client$dispatcher)` or call
-[`crew_clean()`](https://wlandau.github.io/crew/reference/crew_clean.md)
-to terminate any dispatchers and local workers running on your local
-machine.
-
-``` r
-crew_clean()
-#> nothing to clean up
-```
+Alternatively, closing the local R session also terminates the workers.
 
 ## Monitoring local processes
 
-A `crew` controller creates different types of local processes. These
-include:
-
-- Dispatchers: every controller has a special local process called a
-  “dispatcher”. [`mirai`](https://mirai.r-lib.org/) needs this process
-  to orchestrate tasks.
-- Workers: the R processes that `crew` launches to run tasks. These may
-  be local processes as in the case of
-  [`crew_controller_local()`](https://wlandau.github.io/crew/reference/crew_controller_local.md),
-  or they may be processes on different computers if you are using a
-  third-party [launcher
-  plugin](https://wlandau.github.io/crew/articles/plugins.html) like
-  `crew.cluster` or `crew.aws.batch`. launches processes.
-- Daemons: R processes created by `mirai` outside of `crew` to run
-  tasks. Such processes may spawn automatically if you set the
-  `processes` argument of
-  e.g. `crew.aws.batch::crew_controller_aws_batch()` to a positive
-  integer.
-
-Usually these processes terminate themselves when the parent R session
-exits or the controller terminates, but under rare circumstances they
-may continue running. The “local monitor” in `crew` makes it easy to
-list and terminate any of these processes which may be running on your
-local computer. Example:
+`crew` controllers launch workers to run tasks. Although `crew` and
+`mirai` try to clean up superfluous worker processes, cleanup is not
+guaranteed to succeed. It is the user’s responsibility to monitor and
+manage worker processes. For workers launched through
+[`crew_controller_local()`](https://wlandau.github.io/crew/reference/crew_controller_local.md),
+you can list and terminate worker processes with the
+[`crew_monitor_local()`](https://wlandau.github.io/crew/reference/crew_monitor_local.md)
+object:
 
 ``` r
 monitor <- crew_monitor_local()
-monitor$dispatchers() # List PIDs of all local {mirai} dispatcher processes.
-#> [1] 31215
-monitor$daemons()
-#> integer(0)
 monitor$workers()
 #> [1] 57001 57002
 monitor$terminate(pid = c(57001, 57002))
@@ -319,14 +243,11 @@ monitor$workers()
 ```
 
 [`crew_monitor_local()`](https://wlandau.github.io/crew/reference/crew_monitor_local.md)
-only manages processes running on your local computer. To manage `crew`
-workers running on different computers, such as SLURM or AWS Batch,
-please familiarize yourself with the given computing platform, and
-consider using the monitor objects in the relevant third-party plugin
-packages such as
-[`crew.cluster`](https://wlandau.github.io/crew.cluster/) or
-[`crew.aws.batch`](https://wlandau.github.io/crew.aws.batch/). Example:
-<https://wlandau.github.io/crew.aws.batch/index.html#job-management>.
+only manages processes running on your local computer.’ Other [launcher
+plugins](https://wlandau.github.io/crew/articles/plugins.md), as in
+[`crew.cluster`](https://wlandau.github.io/crew.cluster/) and
+[`crew.aws.batch`](https://wlandau.github.io/crew.aws.batch/), support
+monitors of their own.
 
 ## Tuning and auto-scaling
 
@@ -375,7 +296,7 @@ the worker could run out of memory, the task could cause a segmentation
 fault, the [AWS Batch](https://wlandau.github.io/crew.aws.batch/) spot
 instance could exit because of a spike in price, etc. To troubleshoot,
 it is best to consult the worker log files and [`autometric` resource
-logs](https://wlandau.github.io/crew/articles/logging.html).
+logs](https://wlandau.github.io/crew/articles/logging.md).
 
 If a worker crashes, the task will return a status of `"crashed"` in
 `pop()` (and `collect()` and `map()`). You can simulate a crash for
@@ -428,16 +349,16 @@ controller$pop()
 #> in controller 'my_controller'.
 #> For details and advice, please see the crashes_max argument of
 #> crew::crew_controller(), as well as
-#> https://wlandau.github.io/crew/articles/risks.html#crashes and
-#> https://wlandau.github.io/crew/articles/logging.html.
+#> risks.html#crashes and
+#> logging.html.
 ```
 
 With multiple controllers in a [controller
-group](https://wlandau.github.io/crew/articles/groups.html), you can
+group](https://wlandau.github.io/crew/articles/groups.md), you can
 configure tasks to run in a different controller if the task crashes in
 the original controller `crashes_max` times. For details, see the
 [controller group
-vignette](https://wlandau.github.io/crew/articles/groups.html).
+vignette](https://wlandau.github.io/crew/articles/groups.md).
 
 ------------------------------------------------------------------------
 

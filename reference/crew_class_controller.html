@@ -685,7 +685,10 @@ that invoke <code>crew</code> controllers.</p></dd>
 <dd><p>Integer of length 1 with the pseudo-random number generator
 seed to set for the evaluation of the task. Passed to the
 <code>seed</code> argument of <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> if not <code>NULL</code>.
-If <code>algorithm</code> and <code>seed</code> are both <code>NULL</code>,
+If <code>seed</code> and <code>algorithm</code> are both non-missing in the output
+of <code>pop()</code>,  then you can recover the pseudo-random number generator state
+of the task using <code>set.seed(seed = seed, kind = algorithm)</code>.
+Otherwise, if the <code>algorithm</code> and <code>seed</code> are both <code>NULL</code> (recommended),
 then the random number generator defaults to the
 widely spaced worker-specific
 L'Ecuyer streams as supported by <code><a href="https://mirai.r-lib.org/reference/nextstream.html" class="external-link">mirai::nextstream()</a></code>.
@@ -696,9 +699,12 @@ See <code><a href="https://cran.rstudio.com/web/packages/parallel/vignettes/para
 <dd><p>Integer of length 1 with the pseudo-random number
 generator algorithm to set for the evaluation of the task.
 Passed to the <code>kind</code> argument of <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">RNGkind()</a></code> if not <code>NULL</code>.
-If <code>algorithm</code> and <code>seed</code> are both <code>NULL</code>,
+If <code>seed</code> and <code>algorithm</code> are both non-missing in the output
+of <code>pop()</code>,  then you can recover the pseudo-random number generator state
+of the task using <code>set.seed(seed = seed, kind = algorithm)</code>.
+Otherwise, if the <code>algorithm</code> and <code>seed</code> are both <code>NULL</code> (recommended),
 then the random number generator defaults to the
-recommended widely spaced worker-specific
+widely spaced worker-specific
 L'Ecuyer streams as supported by <code><a href="https://mirai.r-lib.org/reference/nextstream.html" class="external-link">mirai::nextstream()</a></code>.
 See <code><a href="https://cran.rstudio.com/web/packages/parallel/vignettes/parallel.pdf" class="external-link">vignette("parallel", package = "parallel")</a></code> for details.</p></dd>
 

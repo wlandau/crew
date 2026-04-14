@@ -223,6 +223,7 @@ the resource usage statistics of the central process. Example:</p>
 <span><span class="fu">tar_option_set</span><span class="op">(</span></span>
 <span>  controller <span class="op">=</span> <span class="fu"><a href="../reference/crew_controller_local.html">crew_controller_local</a></span><span class="op">(</span></span>
 <span>    workers <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>    <span class="co"># To monitor crew worker processes:</span></span>
 <span>    options_metrics <span class="op">=</span> <span class="fu"><a href="../reference/crew_options_metrics.html">crew_options_metrics</a></span><span class="op">(</span></span>
 <span>      path <span class="op">=</span> <span class="st">"worker_log_directory/"</span>, <span class="co"># Worker logs live here.</span></span>
 <span>      seconds_interval <span class="op">=</span> <span class="fl">1</span></span>
@@ -231,6 +232,7 @@ the resource usage statistics of the central process. Example:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu">tar_active</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># To monitor the central process of the targets pipeline:</span></span>
 <span>  <span class="fu"><a href="https://wlandau.github.io/autometric/reference/log_start.html" class="external-link">log_start</a></span><span class="op">(</span></span>
 <span>    path <span class="op">=</span> <span class="st">"main_process.txt"</span>, <span class="co"># Statistics on the main process go here.</span></span>
 <span>    seconds <span class="op">=</span> <span class="fl">1</span></span>

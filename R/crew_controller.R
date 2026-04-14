@@ -576,7 +576,10 @@ crew_class_controller <- R6::R6Class(
     #' @param seed Integer of length 1 with the pseudo-random number generator
     #'   seed to set for the evaluation of the task. Passed to the
     #'   `seed` argument of `set.seed()` if not `NULL`.
-    #'   If `algorithm` and `seed` are both `NULL`,
+    #'   If `seed` and `algorithm` are both non-missing in the output
+    #'   of `pop()`,  then you can recover the pseudo-random number generator state
+    #'   of the task using `set.seed(seed = seed, kind = algorithm)`.
+    #'   Otherwise, if the `algorithm` and `seed` are both `NULL` (recommended),
     #'   then the random number generator defaults to the
     #'   widely spaced worker-specific
     #'   L'Ecuyer streams as supported by `mirai::nextstream()`.
@@ -584,9 +587,12 @@ crew_class_controller <- R6::R6Class(
     #' @param algorithm Integer of length 1 with the pseudo-random number
     #'   generator algorithm to set for the evaluation of the task.
     #'   Passed to the `kind` argument of `RNGkind()` if not `NULL`.
-    #'   If `algorithm` and `seed` are both `NULL`,
+    #'   If `seed` and `algorithm` are both non-missing in the output
+    #'   of `pop()`,  then you can recover the pseudo-random number generator state
+    #'   of the task using `set.seed(seed = seed, kind = algorithm)`.
+    #'   Otherwise, if the `algorithm` and `seed` are both `NULL` (recommended),
     #'   then the random number generator defaults to the
-    #'   recommended widely spaced worker-specific
+    #'   widely spaced worker-specific
     #'   L'Ecuyer streams as supported by `mirai::nextstream()`.
     #'   See `vignette("parallel", package = "parallel")` for details.
     #' @param packages Character vector of packages to load for the task.

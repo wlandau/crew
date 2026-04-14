@@ -11,7 +11,7 @@ articles:
   - groups
   - logging
   - shiny
-  - promises
+  - mirai
 - title: Technical details
   navbar: Technical details
   contents:

@@ -24,7 +24,7 @@
     <li><a class="dropdown-item" href="../articles/groups.html">Controller groups</a></li>
     <li><a class="dropdown-item" href="../articles/logging.html">Logging</a></li>
     <li><a class="dropdown-item" href="../articles/shiny.html">Asynchronous Shiny apps</a></li>
-    <li><a class="dropdown-item" href="../articles/promises.html">Integration with promises</a></li>
+    <li><a class="dropdown-item" href="../articles/mirai.html">mirai workflows</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Technical details</h6></li>
     <li><a class="dropdown-item" href="../articles/plugins.html">Launcher plugins</a></li>
@@ -56,7 +56,7 @@
 <li>Improve interoperability of <code>crew</code>’s workers by avoiding <code><a href="https://nanonext.r-lib.org/reference/cv.html" class="external-link">nanonext::cv_value()</a></code> for condition variables (<a href="https://github.com/wlandau/crew/issues/225" class="external-link">#225</a>). Consequences:
 <ul><li>
 <code>wait(mode = "all")</code> no longer guarantees that a task is available for <code>pop()</code>. It just consumes a condition variable signal. <code>pop()</code> should always be checked for <code>NULL</code> return values.</li>
-<li>Until <code>mirai</code> gains a threaded dispatcher, <code>saturated()</code> needs to avoid the overhead of calling <code>status()</code> to get task counts. So the definition of “saturated” has changed: a controller is saturated if the number of <em>uncollected</em> tasks is greater than or equal to the maximum number of workers. Previously, it was the number of <em>unresolved</em> tasks.</li>
+<li>Until <code>mirai</code> gains a threaded dispatcher, <code>saturated()</code> needs to avoid the overhead of calling <code><a href="https://mirai.r-lib.org/reference/status.html" class="external-link">status()</a></code> to get task counts. So the definition of “saturated” has changed: a controller is saturated if the number of <em>uncollected</em> tasks is greater than or equal to the maximum number of workers. Previously, it was the number of <em>unresolved</em> tasks.</li>
 <li>Internal counters <code>.pushed</code> and <code>.popped</code> are safely removed.</li>
 <li>Active bindings <code>pushed</code> and <code>popped</code> are removed.</li>
 </ul></li>
@@ -81,9 +81,9 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.0" id="crew-120">crew 1.2.0<a class="anchor" aria-label="anchor" href="#crew-120"></a></h2><p class="text-muted">CRAN release: 2025-06-06</p>
-<ul><li>22.7x speedup in <code>controller$walk()</code> with 100000 tasks: pre-compute the task list and defer auto-scaling until all tasks are pushed. Pushing a million tasks in <code>walk()</code> now takes just under 70 seconds on a local M2 Macbook.</li>
+<ul><li>22.7x speedup in <code>controller$walk()</code> with 100000 tasks: pre-compute the task list and defer auto-scaling until all tasks are pushed. Pushing a million tasks in <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk()</a></code> now takes just under 70 seconds on a local M2 Macbook.</li>
 <li>Use <code><a href="https://nanonext.r-lib.org/reference/ip_addr.html" class="external-link">nanonext::ip_addr()</a></code> instead of <code>getip::getip()</code> to get the default IP address of the host (<a href="https://github.com/wlandau/crew/issues/216" class="external-link">#216</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
-<li>Add a progress bar to <code>walk()</code> report progress when pushing tasks.</li>
+<li>Add a progress bar to <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk()</a></code> report progress when pushing tasks.</li>
 <li>Move arguments <code>reset_globals</code>, <code>reset_packages</code>, <code>reset_options</code>, and <code>garbage_collection</code> from the launcher to the controller (<a href="https://github.com/wlandau/crew/issues/217" class="external-link">#217</a>). <code><a href="../reference/crew_eval.html">crew_eval()</a></code> now handles cleanup directly, and workflows running <code>mirai</code> 2.0.0 should mostly run faster because not all cleanup steps are automatically enabled.</li>
 <li>Avoid <code>mirai::call_mirai_()</code> in tests (<a href="https://github.com/wlandau/crew/issues/222" class="external-link">#222</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 </ul></div>
@@ -101,7 +101,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="crew-110">crew 1.1.0<a class="anchor" aria-label="anchor" href="#crew-110"></a></h2><p class="text-muted">CRAN release: 2025-04-10</p>
 <ul><li>Change prefix in <code>name_worker()</code> from <code>crew-</code> to <code>crew-worker-</code>.</li>
-<li>Use <code>call_mirai()</code> instead of the now deprecated <code>call_mirai_()</code> (<a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>, <a href="https://github.com/wlandau/crew/issues/198" class="external-link">#198</a>).</li>
+<li>Use <code><a href="https://mirai.r-lib.org/reference/call_mirai.html" class="external-link">call_mirai()</a></code> instead of the now deprecated <code>call_mirai_()</code> (<a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>, <a href="https://github.com/wlandau/crew/issues/198" class="external-link">#198</a>).</li>
 <li>Add <code><a href="../reference/crew_controller_sequential.html">crew_controller_sequential()</a></code> (<a href="https://github.com/wlandau/crew/issues/205" class="external-link">#205</a>).</li>
 <li>Add a <code>serialization</code> argument to <code><a href="../reference/crew_client.html">crew_client()</a></code> (<a href="https://github.com/wlandau/crew/issues/204" class="external-link">#204</a>).</li>
 </ul></div>
@@ -189,9 +189,9 @@
 <li>Return to always re-launching backlogged inactive workers (<a href="https://github.com/wlandau/crew/issues/79" class="external-link">#79</a>, <a href="https://github.com/r-lib/mirai/discussions/95" class="external-link uri">https://github.com/r-lib/mirai/discussions/95</a>).</li>
 <li>Implement <code>push_backlog()</code> and <code>pop_backlog()</code> to manage cases when it is not desirable to push to saturated controllers (<a href="https://github.com/ropensci/targets/issues/1220" class="external-link uri">https://github.com/ropensci/targets/issues/1220</a>).</li>
 <li>Invisibly return the <code>mirai</code> object of a task pushed to the controller. This allows users to interact with the task directly, e.g. to create a promise object with <code><a href="https://rstudio.github.io/promises/reference/is.promise.html" class="external-link">promises::as.promise()</a></code> (<a href="https://github.com/wlandau/crew/issues/146" class="external-link">#146</a>, <a href="https://github.com/jcheng5" class="external-link">@jcheng5</a>).</li>
-<li>Add a new <code>walk()</code> method for controllers and controller groups to submit tasks in batch and return control immediately without waiting for any task to complete (<a href="https://github.com/wlandau/crew/issues/148" class="external-link">#148</a>, <a href="https://github.com/jcheng5" class="external-link">@jcheng5</a>).</li>
+<li>Add a new <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk()</a></code> method for controllers and controller groups to submit tasks in batch and return control immediately without waiting for any task to complete (<a href="https://github.com/wlandau/crew/issues/148" class="external-link">#148</a>, <a href="https://github.com/jcheng5" class="external-link">@jcheng5</a>).</li>
 <li>Revive the <code>collect()</code> method for popping multiple tasks at once (<a href="https://github.com/wlandau/crew/issues/148" class="external-link">#148</a>, <a href="https://github.com/jcheng5" class="external-link">@jcheng5</a>).</li>
-<li>Add controller group methods <code>nonempty()</code>, <code>resolved()</code>, <code>unresolved()</code>, and <code>unpopped()</code> to help with <a href="https://github.com/wlandau/crew/issues/148" class="external-link">#148</a>.</li>
+<li>Add controller group methods <code>nonempty()</code>, <code>resolved()</code>, <code><a href="https://nanonext.r-lib.org/reference/unresolved.html" class="external-link">unresolved()</a></code>, and <code>unpopped()</code> to help with <a href="https://github.com/wlandau/crew/issues/148" class="external-link">#148</a>.</li>
 <li>Make the <code>mirai</code> dispatcher error message extremely verbose.</li>
 </ul></div>
     <div class="section level2">
@@ -200,7 +200,7 @@
 <li>Implement <code><a href="../reference/crew_monitor_local.html">crew_monitor_local()</a></code> to help users monitor and terminate local R processes created by <code>crew</code> and <code>mirai</code>.</li>
 <li>Implement new utility function <code><a href="../reference/crew_terminate_process.html">crew_terminate_process()</a></code> to terminate a process manually without resorting to <code>SIGKILL</code> on Windows.</li>
 <li>Throw a warning from <code>controller$map()</code> if at least one task threw one. <code>warnings = FALSE</code> suppresses this behavior.</li>
-<li>Set <code>output = TRUE</code> in <code>daemon()</code> so <code>stdout</code> and <code>stderr</code> streams print.</li>
+<li>Set <code>output = TRUE</code> in <code><a href="https://mirai.r-lib.org/reference/daemon.html" class="external-link">daemon()</a></code> so <code>stdout</code> and <code>stderr</code> streams print.</li>
 <li>Add new arguments <code>local_log_directory</code> and <code>local_log_join</code> to write to local log files.</li>
 </ul></div>
     <div class="section level2">
@@ -209,7 +209,7 @@
 <li>Use <code>Sys.info()[["user"]]</code> to get the user in <code><a href="../reference/crew_clean.html">crew_clean()</a></code> (<a href="https://github.com/wlandau/crew/issues/135" class="external-link">#135</a>, <a href="https://github.com/luwidmer" class="external-link">@luwidmer</a>).</li>
 <li>Use condition variables to wait for tasks more efficiently (<a href="https://github.com/wlandau/crew/issues/108" class="external-link">#108</a>).</li>
 <li>Because of <a href="https://github.com/wlandau/crew/issues/108" class="external-link">#108</a>, <code>controller$map()</code> can no longer be used if there are tasks waiting to be popped.</li>
-<li>Use a <code>cli</code> progress bar in <code>map()</code>.</li>
+<li>Use a <code>cli</code> progress bar in <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map()</a></code>.</li>
 <li>Encapsulate non-function <code>R6</code> members in the <code>private</code> list and add active bindings where interfaces are necessary (<a href="https://github.com/wlandau/crew/issues/137" class="external-link">#137</a>). Ad hoc tests that absolutely need to modify private objects can use <code>object$.__enclos_env__$private</code> trick, but these tests should be skipped on CRAN in case there is a change to <code>R6</code> that breaks this.</li>
 <li>Drop <code>.signal</code> from <code><a href="https://mirai.r-lib.org/reference/mirai.html" class="external-link">mirai::mirai()</a></code> since all <code>mirai</code> tasks signal as of <code>mirai</code> version 0.11.2.9025.</li>
 <li>Implement <code><a href="../reference/crew_throttle.html">crew_throttle()</a></code>, a decoupled mechanism for throttling that can be applied to scaling.</li>
@@ -225,7 +225,7 @@
 <li>Remove throttling and <code>collect()</code> in auto-scaling. Simplifies much of the code. Made possible by the efficiency gains in <a href="https://github.com/wlandau/crew/issues/131" class="external-link">#131</a>.</li>
 <li>Simplify <code>wait()</code>.</li>
 <li>
-<code>seconds_interval</code> in <code>map()</code> no longer defaults to <code>controller$client$seconds_interval</code>.</li>
+<code>seconds_interval</code> in <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map()</a></code> no longer defaults to <code>controller$client$seconds_interval</code>.</li>
 <li>
 <code>launcher$terminate_workers()</code> terminates one or more workers, and <code>launcher$terminate</code> terminates the whole launcher.</li>
 <li>Add infrastructure to let custom launcher plugins launch and terminate workers asynchronously (<a href="https://github.com/wlandau/crew/issues/133" class="external-link">#133</a>). Launchers can set a positive number in the <code>processes</code> field to set the number of local <code>mirai</code> daemons for asynchronous requests to launch and terminate the serious workers. Then, <code>launch_worker()</code> and <code>terminate_worker()</code> can optionally make use of <code>launcher$async$eval()</code> to send these asynchronous calls.</li>
@@ -234,10 +234,10 @@
 <h2 class="pkg-version" data-toc-text="0.5.0" id="crew-050">crew 0.5.0<a class="anchor" aria-label="anchor" href="#crew-050"></a></h2><p class="text-muted">CRAN release: 2023-09-18</p>
 <ul><li>Suppress interactive browser on Windows which launched on each worker previously (<a href="https://github.com/psychelzh" class="external-link">@psychelzh</a>).</li>
 <li>Migrate to the new host/daemon nomenclature in <code>mirai</code> 0.9.1 (<a href="https://github.com/wlandau/crew/issues/96" class="external-link">#96</a>).</li>
-<li>Suppress <code>status()</code> retries (<a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>, <a href="https://github.com/wlandau/crew/issues/100" class="external-link">#100</a>).</li>
+<li>Suppress <code><a href="https://mirai.r-lib.org/reference/status.html" class="external-link">status()</a></code> retries (<a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>, <a href="https://github.com/wlandau/crew/issues/100" class="external-link">#100</a>).</li>
 <li>Implement <code>launch_max</code> to error out if workers repeatedly launch without completing any tasks (<a href="https://github.com/wlandau/crew/issues/101" class="external-link">#101</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>, <a href="https://github.com/multimeric" class="external-link">@multimeric</a>).</li>
 <li>Detect discovered workers more robustly in <code>launcher$done()</code>.</li>
-<li>Add a new <code>algorithm</code> argument to the <code>push()</code>, <code>shove()</code>, and <code>map()</code> methods of controllers and controller groups, as well as arguments/fields in <code><a href="../reference/crew_eval.html">crew_eval()</a></code> and its return value (<a href="https://github.com/wlandau/crew/issues/113" class="external-link">#113</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
+<li>Add a new <code>algorithm</code> argument to the <code>push()</code>, <code>shove()</code>, and <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map()</a></code> methods of controllers and controller groups, as well as arguments/fields in <code><a href="../reference/crew_eval.html">crew_eval()</a></code> and its return value (<a href="https://github.com/wlandau/crew/issues/113" class="external-link">#113</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 <li>As a default for pseudo-random number generation, leverage widely-spaced L’Ecuyer streams as supported by <code><a href="https://mirai.r-lib.org/reference/nextstream.html" class="external-link">mirai::nextstream()</a></code> (<a href="https://github.com/wlandau/crew/issues/115" class="external-link">#115</a>, <a href="https://github.com/shikokuchuo" class="external-link">@shikokuchuo</a>).</li>
 <li>Move README documentation to vignettes.</li>
 <li>Add a new <code><a href="../reference/crew_tls.html">crew_tls()</a></code> function for TLS configuration (<a href="https://github.com/wlandau/crew/issues/120" class="external-link">#120</a>).</li>
@@ -248,7 +248,7 @@
 <div class="section level3">
 <h3 id="highlights-0-4-0">Highlights<a class="anchor" aria-label="anchor" href="#highlights-0-4-0"></a></h3>
 <ul><li>Use the TLS capabilities of <code>nanonext</code> and <code>mirai</code>.</li>
-<li>Add a <code>map()</code> method to the controller class for functional programming (<a href="https://github.com/wlandau/crew/issues/93" class="external-link">#93</a>).</li>
+<li>Add a <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map()</a></code> method to the controller class for functional programming (<a href="https://github.com/wlandau/crew/issues/93" class="external-link">#93</a>).</li>
 <li>Fix bug in <code><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale()</a></code> which launched too many workers when <code>active - demand</code> was less than 0.</li>
 <li>Add <code><a href="../reference/crew_clean.html">crew_clean()</a></code> to help clean up any lingering dispatchers and workers from previous sessions.</li>
 </ul></div>
@@ -256,7 +256,7 @@
 <h3 id="other-improvements-0-4-0">Other improvements<a class="anchor" aria-label="anchor" href="#other-improvements-0-4-0"></a></h3>
 <ul><li>Remove temporary controller summary workaround that ensured CRAN compatibility with <code>targets</code> 1.1.3.</li>
 <li>Add guardrails to make sure the controller is started for methods that require this. Part of this involved improving the error messages.</li>
-<li>Retry <code>daemons()</code> in <code>daemons_info()</code>.</li>
+<li>Retry <code><a href="https://mirai.r-lib.org/reference/daemons.html" class="external-link">daemons()</a></code> in <code>daemons_info()</code>.</li>
 </ul></div>
 </div>
     <div class="section level2">

@@ -29,11 +29,12 @@ CRAN release: 2025-09-13
     for `pop()`. It just consumes a condition variable signal. `pop()`
     should always be checked for `NULL` return values.
   - Until `mirai` gains a threaded dispatcher, `saturated()` needs to
-    avoid the overhead of calling `status()` to get task counts. So the
-    definition of “saturated” has changed: a controller is saturated if
-    the number of *uncollected* tasks is greater than or equal to the
-    maximum number of workers. Previously, it was the number of
-    *unresolved* tasks.
+    avoid the overhead of calling
+    [`status()`](https://mirai.r-lib.org/reference/status.html) to get
+    task counts. So the definition of “saturated” has changed: a
+    controller is saturated if the number of *uncollected* tasks is
+    greater than or equal to the maximum number of workers. Previously,
+    it was the number of *unresolved* tasks.
   - Internal counters `.pushed` and `.popped` are safely removed.
   - Active bindings `pushed` and `popped` are removed.
 - Controllers no longer have a `unpopped()` method because it is
@@ -88,14 +89,17 @@ CRAN release: 2025-06-06
 
 - 22.7x speedup in `controller$walk()` with 100000 tasks: pre-compute
   the task list and defer auto-scaling until all tasks are pushed.
-  Pushing a million tasks in `walk()` now takes just under 70 seconds on
-  a local M2 Macbook.
+  Pushing a million tasks in
+  [`walk()`](https://purrr.tidyverse.org/reference/map.html) now takes
+  just under 70 seconds on a local M2 Macbook.
 - Use
   [`nanonext::ip_addr()`](https://nanonext.r-lib.org/reference/ip_addr.html)
   instead of `getip::getip()` to get the default IP address of the host
   ([\#216](https://github.com/wlandau/crew/issues/216),
   [@shikokuchuo](https://github.com/shikokuchuo)).
-- Add a progress bar to `walk()` report progress when pushing tasks.
+- Add a progress bar to
+  [`walk()`](https://purrr.tidyverse.org/reference/map.html) report
+  progress when pushing tasks.
 - Move arguments `reset_globals`, `reset_packages`, `reset_options`, and
   `garbage_collection` from the launcher to the controller
   ([\#217](https://github.com/wlandau/crew/issues/217)).
@@ -138,7 +142,9 @@ CRAN release: 2025-05-08
 CRAN release: 2025-04-10
 
 - Change prefix in `name_worker()` from `crew-` to `crew-worker-`.
-- Use `call_mirai()` instead of the now deprecated `call_mirai_()`
+- Use
+  [`call_mirai()`](https://mirai.r-lib.org/reference/call_mirai.html)
+  instead of the now deprecated `call_mirai_()`
   ([@shikokuchuo](https://github.com/shikokuchuo),
   [\#198](https://github.com/wlandau/crew/issues/198)).
 - Add
@@ -328,16 +334,17 @@ CRAN release: 2024-02-08
   [`promises::as.promise()`](https://rstudio.github.io/promises/reference/is.promise.html)
   ([\#146](https://github.com/wlandau/crew/issues/146),
   [@jcheng5](https://github.com/jcheng5)).
-- Add a new `walk()` method for controllers and controller groups to
-  submit tasks in batch and return control immediately without waiting
-  for any task to complete
-  ([\#148](https://github.com/wlandau/crew/issues/148),
+- Add a new [`walk()`](https://purrr.tidyverse.org/reference/map.html)
+  method for controllers and controller groups to submit tasks in batch
+  and return control immediately without waiting for any task to
+  complete ([\#148](https://github.com/wlandau/crew/issues/148),
   [@jcheng5](https://github.com/jcheng5)).
 - Revive the `collect()` method for popping multiple tasks at once
   ([\#148](https://github.com/wlandau/crew/issues/148),
   [@jcheng5](https://github.com/jcheng5)).
 - Add controller group methods `nonempty()`, `resolved()`,
-  `unresolved()`, and `unpopped()` to help with
+  [`unresolved()`](https://nanonext.r-lib.org/reference/unresolved.html),
+  and `unpopped()` to help with
   [\#148](https://github.com/wlandau/crew/issues/148).
 - Make the `mirai` dispatcher error message extremely verbose.
 
@@ -365,8 +372,9 @@ CRAN release: 2024-01-09
   Windows.
 - Throw a warning from `controller$map()` if at least one task threw
   one. `warnings = FALSE` suppresses this behavior.
-- Set `output = TRUE` in `daemon()` so `stdout` and `stderr` streams
-  print.
+- Set `output = TRUE` in
+  [`daemon()`](https://mirai.r-lib.org/reference/daemon.html) so
+  `stdout` and `stderr` streams print.
 - Add new arguments `local_log_directory` and `local_log_join` to write
   to local log files.
 
@@ -384,7 +392,8 @@ CRAN release: 2023-12-11
 - Because of [\#108](https://github.com/wlandau/crew/issues/108),
   `controller$map()` can no longer be used if there are tasks waiting to
   be popped.
-- Use a `cli` progress bar in `map()`.
+- Use a `cli` progress bar in
+  [`map()`](https://purrr.tidyverse.org/reference/map.html).
 - Encapsulate non-function `R6` members in the `private` list and add
   active bindings where interfaces are necessary
   ([\#137](https://github.com/wlandau/crew/issues/137)). Ad hoc tests
@@ -426,8 +435,9 @@ CRAN release: 2023-10-12
   the code. Made possible by the efficiency gains in
   [\#131](https://github.com/wlandau/crew/issues/131).
 - Simplify `wait()`.
-- `seconds_interval` in `map()` no longer defaults to
-  `controller$client$seconds_interval`.
+- `seconds_interval` in
+  [`map()`](https://purrr.tidyverse.org/reference/map.html) no longer
+  defaults to `controller$client$seconds_interval`.
 - `launcher$terminate_workers()` terminates one or more workers, and
   `launcher$terminate` terminates the whole launcher.
 - Add infrastructure to let custom launcher plugins launch and terminate
@@ -447,8 +457,8 @@ CRAN release: 2023-09-18
   previously ([@psychelzh](https://github.com/psychelzh)).
 - Migrate to the new host/daemon nomenclature in `mirai` 0.9.1
   ([\#96](https://github.com/wlandau/crew/issues/96)).
-- Suppress `status()` retries
-  ([@shikokuchuo](https://github.com/shikokuchuo),
+- Suppress [`status()`](https://mirai.r-lib.org/reference/status.html)
+  retries ([@shikokuchuo](https://github.com/shikokuchuo),
   [\#100](https://github.com/wlandau/crew/issues/100)).
 - Implement `launch_max` to error out if workers repeatedly launch
   without completing any tasks
@@ -456,9 +466,9 @@ CRAN release: 2023-09-18
   [@shikokuchuo](https://github.com/shikokuchuo),
   [@multimeric](https://github.com/multimeric)).
 - Detect discovered workers more robustly in `launcher$done()`.
-- Add a new `algorithm` argument to the `push()`, `shove()`, and `map()`
-  methods of controllers and controller groups, as well as
-  arguments/fields in
+- Add a new `algorithm` argument to the `push()`, `shove()`, and
+  [`map()`](https://purrr.tidyverse.org/reference/map.html) methods of
+  controllers and controller groups, as well as arguments/fields in
   [`crew_eval()`](https://wlandau.github.io/crew/reference/crew_eval.md)
   and its return value
   ([\#113](https://github.com/wlandau/crew/issues/113),
@@ -486,8 +496,9 @@ CRAN release: 2023-07-10
 ### Highlights
 
 - Use the TLS capabilities of `nanonext` and `mirai`.
-- Add a `map()` method to the controller class for functional
-  programming ([\#93](https://github.com/wlandau/crew/issues/93)).
+- Add a [`map()`](https://purrr.tidyverse.org/reference/map.html) method
+  to the controller class for functional programming
+  ([\#93](https://github.com/wlandau/crew/issues/93)).
 - Fix bug in [`scale()`](https://rdrr.io/r/base/scale.html) which
   launched too many workers when `active - demand` was less than 0.
 - Add
@@ -501,7 +512,8 @@ CRAN release: 2023-07-10
   compatibility with `targets` 1.1.3.
 - Add guardrails to make sure the controller is started for methods that
   require this. Part of this involved improving the error messages.
-- Retry `daemons()` in `daemons_info()`.
+- Retry [`daemons()`](https://mirai.r-lib.org/reference/daemons.html) in
+  `daemons_info()`.
 
 ## crew 0.3.0
 

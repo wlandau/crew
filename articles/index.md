@@ -9,8 +9,7 @@
 - [Logging](https://wlandau.github.io/crew/articles/logging.md):
 - [Asynchronous Shiny
   apps](https://wlandau.github.io/crew/articles/shiny.md):
-- [Integration with
-  promises](https://wlandau.github.io/crew/articles/promises.md):
+- [mirai workflows](https://wlandau.github.io/crew/articles/mirai.md):
 
 ### Technical details
 

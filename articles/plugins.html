@@ -44,7 +44,7 @@
     <li><a class="dropdown-item" href="../articles/groups.html">Controller groups</a></li>
     <li><a class="dropdown-item" href="../articles/logging.html">Logging</a></li>
     <li><a class="dropdown-item" href="../articles/shiny.html">Asynchronous Shiny apps</a></li>
-    <li><a class="dropdown-item" href="../articles/promises.html">Integration with promises</a></li>
+    <li><a class="dropdown-item" href="../articles/mirai.html">mirai workflows</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Technical details</h6></li>
     <li><a class="dropdown-item" href="../articles/plugins.html">Launcher plugins</a></li>
@@ -451,7 +451,7 @@ to help users list and terminate workers, as well as view logs.</p>
 <span></span>
 <span><span class="va">crew_monitor_pids</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">pattern</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">processes</span> <span class="op">&lt;-</span> <span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps.html" class="external-link">ps</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">commands</span> <span class="op">&lt;-</span> <span class="fu">map</span><span class="op">(</span></span>
+<span>  <span class="va">commands</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
 <span>    <span class="va">processes</span><span class="op">$</span><span class="va">ps_handle</span>,</span>
 <span>    <span class="op">~</span><span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu">ps</span><span class="fu">::</span><span class="fu"><a href="https://ps.r-lib.org/reference/ps_cmdline.html" class="external-link">ps_cmdline</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">condition</span><span class="op">)</span> <span class="st">""</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>

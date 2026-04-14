@@ -50,13 +50,6 @@ Other launcher:
 \code{\link{crew_launcher}()}
 }
 \concept{launcher}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{async}}{Deprecated on 2025-08-27 (\code{crew} version 1.2.1.9009).}
-}
-\if{html}{\out{</div>}}
-}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{

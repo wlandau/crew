@@ -151,27 +151,6 @@ launcher_empty_launches <- tibble::tibble(
   total = integer(0L)
 )
 
-# TODO: remove when the next crew.aws.batch release drops async$eval().
-deprecated_async_eval <- function(
-  command,
-  substitute = TRUE,
-  data = list(),
-  packages = character(0L),
-  library = NULL
-) {
-  crew_deprecate(
-    name = "async$eval() in crew plugins",
-    date = "2025-08-27",
-    version = "1.2.1.9009",
-    alternative = "none",
-    condition = "message",
-    value = "x"
-  )
-  command <- if_any(substitute, substitute(command), command)
-  load_packages(packages = packages, library = library)
-  eval(expr = command, envir = list2env(data, parent = globalenv()))
-}
-
 #' @title Launcher abstract class
 #' @export
 #' @family launcher
@@ -691,17 +670,7 @@ crew_class_launcher <- R6::R6Class(
     #'   [crew_worker()] which will run in each worker and accept tasks.
     #' @param n Positive integer, number of workers to launch.
     launch_workers = function(call, n) {
-      # TODO: remove argument name compatibility layer after enough
-      # releases of downstream plugins.
-      args <- list(
-        call = call,
-        name = "name",
-        launcher = private$.name,
-        worker = "worker",
-        instance = "instance"
-      )
-      args <- args[names(formals(self$launch_worker))]
-      replicate(n, do.call(self$launch_worker, args), simplify = FALSE)
+      replicate(n, self$launch_worker(call), simplify = FALSE)
     },
     #' @description Auto-scale workers out to meet the demand of tasks.
     #' @return Invisibly returns `TRUE` if there was any relevant
@@ -794,8 +763,6 @@ crew_class_launcher <- R6::R6Class(
       )
       private$.name <- name
       invisible()
-    },
-    #' @field async Deprecated on 2025-08-27 (`crew` version 1.2.1.9009).
-    async = list(eval = deprecated_async_eval)
+    }
   )
 )

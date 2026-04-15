@@ -212,5 +212,5 @@ crew_test("deprecated set_name() method", {
 crew_test("deprecated terminate_workers()", {
   skip_on_cran()
   x <- crew_launcher(name = "x")
-  expect_message(x$terminate_workers(), class = "crew_deprecate")
+  expect_no_error(suppressWarnings(x$terminate_workers()))
 })

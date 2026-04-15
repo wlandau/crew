@@ -4,6 +4,9 @@ on: [push, pull_request]
 
 name: air
 
+permissions:
+  contents: read
+
 jobs:
   air:
     runs-on: ubuntu-latest

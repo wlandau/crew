@@ -4,6 +4,9 @@ on: [push, pull_request]
 
 name: cover
 
+permissions:
+  contents: read
+
 jobs:
   cover:
     runs-on: ubuntu-latest

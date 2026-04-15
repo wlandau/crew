@@ -1534,10 +1534,10 @@ crew_class_controller <- R6::R6Class(
       }
       if (identical(mode, "all")) {
         wait_event <- function() {
-          if (self$unresolved() > 0L) {
+          if (!self$synced() || (self$unresolved() > 0L)) {
             .client$relay$wait()
           }
-          self$unresolved() < 1L
+          self$synced() && (self$unresolved() < 1L)
         }
       } else {
         wait_event <- function() {

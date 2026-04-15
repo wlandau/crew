@@ -833,10 +833,12 @@ crew_class_controller_group <- R6::R6Class(
       }
       if (identical(mode, "all")) {
         wait_event <- function() {
-          if (self$unresolved(controllers) > 0L) {
+          if (
+            !self$synced(controllers) || (self$unresolved(controllers) > 0L)
+          ) {
             private$.relay$wait()
           }
-          self$unresolved(controllers) < 1L
+          self$synced(controllers) && (self$unresolved(controllers) < 1L)
         }
       } else {
         wait_event <- function() {

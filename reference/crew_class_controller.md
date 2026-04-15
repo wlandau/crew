@@ -33,6 +33,11 @@ Other controller:
   objects. The list of tasks is dynamically generated from an internal,
   dictionary, so it is not as fast as a simple lookup.
 
+- `pushed`:
+
+  Number of tasks ever submitted to the `mirai` compute profile through
+  the controller.
+
 - `reset_globals`:
 
   See
@@ -120,6 +125,8 @@ Other controller:
 - [`crew_class_controller$crashes()`](#method-crew_class_controller-crashes)
 
 - [`crew_class_controller$push()`](#method-crew_class_controller-push)
+
+- [`crew_class_controller$synced()`](#method-crew_class_controller-synced)
 
 - [`crew_class_controller$walk()`](#method-crew_class_controller-walk)
 
@@ -396,7 +403,7 @@ Check if the controller is saturated.
 
 #### Details
 
-A controller is saturated if the number of unresolved tasks is greater
+A controller is saturated if the number of uncollected tasks is greater
 than or equal to the maximum number of workers. You can still push tasks
 to a saturated controller, but tools that use `crew` such as `targets`
 may choose not to (for performance and user-friendliness).
@@ -739,6 +746,29 @@ Push a task to the head of the task list.
 Invisibly return the `mirai` object of the pushed task. This allows you
 to interact with the task directly, e.g. to create a promise object with
 [`promises::as.promise()`](https://rstudio.github.io/promises/reference/is.promise.html).
+
+------------------------------------------------------------------------
+
+### Method `synced()`
+
+Check if the controller is synced.
+
+#### Usage
+
+    crew_class_controller$synced(controllers = NULL)
+
+#### Arguments
+
+- `controllers`:
+
+  Not used. Included to ensure the signature is compatible with the
+  analogous method of controller groups.
+
+#### Details
+
+A controller is synced if all pushed tasks in the controller show up in
+the task counts in
+[`mirai::info()`](https://mirai.r-lib.org/reference/info.html).
 
 ------------------------------------------------------------------------
 

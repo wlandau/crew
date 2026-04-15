@@ -62,6 +62,7 @@ Inherited methods
 - [`crew::crew_class_controller$size()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-size)
 - [`crew::crew_class_controller$started()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-started)
 - [`crew::crew_class_controller$summary()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-summary)
+- [`crew::crew_class_controller$synced()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-synced)
 - [`crew::crew_class_controller$validate()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-validate)
 - [`crew::crew_class_controller$walk()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-walk)
 

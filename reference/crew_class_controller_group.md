@@ -59,6 +59,8 @@ Other controller_group:
 
 - [`crew_class_controller_group$push()`](#method-crew_class_controller_group-push)
 
+- [`crew_class_controller_group$synced()`](#method-crew_class_controller_group-synced)
+
 - [`crew_class_controller_group$walk()`](#method-crew_class_controller_group-walk)
 
 - [`crew_class_controller_group$map()`](#method-crew_class_controller_group-map)
@@ -614,6 +616,29 @@ Push a task to the head of the task list.
 Invisibly return the `mirai` object of the pushed task. This allows you
 to interact with the task directly, e.g. to create a promise object with
 [`promises::as.promise()`](https://rstudio.github.io/promises/reference/is.promise.html).
+
+------------------------------------------------------------------------
+
+### Method `synced()`
+
+Check if all controllers are synced.
+
+#### Usage
+
+    crew_class_controller_group$synced(controllers = NULL)
+
+#### Arguments
+
+- `controllers`:
+
+  Character vector of controller names. Set to `NULL` to select all
+  controllers.
+
+#### Details
+
+A controller is synced if all pushed tasks in the controller show up in
+the task counts in
+[`mirai::info()`](https://mirai.r-lib.org/reference/info.html).
 
 ------------------------------------------------------------------------
 

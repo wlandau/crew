@@ -416,6 +416,21 @@ crew_class_controller_group <- R6::R6Class(
         name = name
       )
     },
+    #' @description Check if all controllers are synced.
+    #' @details A controller is synced if all pushed tasks in the controller
+    #'   show up in the task counts in `mirai::info()`.
+    #' @param controllers Character vector of controller names.
+    #'   Set to `NULL` to select all controllers.
+    synced = function(controllers = NULL) {
+      control <- .select_controllers(controllers)
+      out <- lapply(
+        control,
+        function(controller) {
+          controller$synced()
+        }
+      )
+      all(unlist(out))
+    },
     #' @description Apply a single command to multiple inputs,
     #'   and return control to the user without
     #'   waiting for any task to complete.
@@ -825,10 +840,14 @@ crew_class_controller_group <- R6::R6Class(
         }
       } else {
         wait_event <- function() {
-          if (self$size(controllers) - self$unresolved(controllers) < 1L) {
+          if (
+            !self$synced(controllers) ||
+              (self$size(controllers) - self$unresolved(controllers) < 1L)
+          ) {
             private$.relay$wait()
           }
-          self$size(controllers) - self$unresolved(controllers) > 0L
+          self$synced(controllers) &&
+            (self$size(controllers) - self$unresolved(controllers) > 0L)
         }
       }
       envir <- new.env(parent = emptyenv())

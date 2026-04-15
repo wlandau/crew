@@ -57,6 +57,7 @@ Other sequential controllers:
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="size"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-size'><code>crew::crew_class_controller$size()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="started"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-started'><code>crew::crew_class_controller$started()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="summary"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-summary'><code>crew::crew_class_controller$summary()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="synced"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-synced'><code>crew::crew_class_controller$synced()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="validate"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-validate'><code>crew::crew_class_controller$validate()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="walk"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-walk'><code>crew::crew_class_controller$walk()</code></a></span></li>
 </ul>

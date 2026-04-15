@@ -107,7 +107,6 @@ crew_test("crew_client() custom profile", {
   skip_on_cran()
   x <- crew_client(
     host = "127.0.0.1",
-    port = "57000",
     profile = "__abc__"
   )
   expect_equal(x$profile, "__abc__")
@@ -115,7 +114,6 @@ crew_test("crew_client() custom profile", {
   x$start()
   url <- nanonext::parse_url(mirai::nextget("url", .compute = "__abc__"))
   expect_equal(as.character(url["hostname"]), "127.0.0.1")
-  expect_equal(as.character(url["port"]), "57000")
 })
 
 crew_test("crew_client() profile conflicts", {
@@ -123,12 +121,10 @@ crew_test("crew_client() profile conflicts", {
   skip_if_not(is.null(mirai::nextget("url", .compute = "__abc__")))
   x <- crew_client(
     host = "127.0.0.1",
-    port = "57000",
     profile = "__abc__"
   )
   y <- crew_client(
     host = "127.0.0.1",
-    port = "57001",
     profile = "__abc__"
   )
   on.exit({

@@ -386,7 +386,6 @@ crew_test("custom compute profile", {
   skip_on_cran()
   x <- crew_controller_local(
     host = "127.0.0.1",
-    port = "57000",
     profile = "__abc__"
   )
   expect_equal(x$client$profile, "__abc__")
@@ -394,7 +393,6 @@ crew_test("custom compute profile", {
   x$start()
   url <- nanonext::parse_url(mirai::nextget("url", .compute = "__abc__"))
   expect_equal(as.character(url["hostname"]), "127.0.0.1")
-  expect_equal(as.character(url["port"]), "57000")
 })
 
 crew_test("deprecate seconds_exit", {

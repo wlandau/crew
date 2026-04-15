@@ -109,6 +109,7 @@ crew_class_controller <- R6::R6Class(
     .client = NULL,
     .launcher = NULL,
     .tasks = collections::dict(),
+    .pushed = NULL,
     .reset_globals = NULL,
     .reset_packages = NULL,
     .reset_options = NULL,
@@ -123,6 +124,7 @@ crew_class_controller <- R6::R6Class(
     .queue_backlog = NULL,
     .register_started = function() {
       .tasks <<- collections::dict()
+      .pushed <<- 0L
       .crash_log <<- collections::dict()
       .summary <<- list(
         controller = .launcher$name,
@@ -220,6 +222,11 @@ crew_class_controller <- R6::R6Class(
     #'   dictionary, so it is not as fast as a simple lookup.
     tasks = function() {
       .subset2(.tasks, "as_list")()
+    },
+    #' @field pushed Number of tasks ever submitted to the `mirai`
+    #'   compute profile through the controller.
+    pushed = function() {
+      .pushed
     },
     #' @field reset_globals See [crew_controller()].
     #' since the controller was started.
@@ -359,6 +366,11 @@ crew_class_controller <- R6::R6Class(
         )
       }
       crew_assert(.tasks, is.null(.) || is.environment(.))
+      crew_assert(
+        .pushed,
+        is.null(.) ||
+          (is.numeric(.) && length(.) == 1L && . >= 0L && is.finite(.))
+      )
       crew_assert(.summary, is.null(.) || is.list(.))
       crew_assert(.loop, is.null(.) || inherits(., "event_loop"))
       if (!is.null(.queue_resolved)) {
@@ -430,7 +442,7 @@ crew_class_controller <- R6::R6Class(
       as.integer(.subset(counts, "awaiting") + .subset2(counts, "executing"))
     },
     #' @description Check if the controller is saturated.
-    #' @details A controller is saturated if the number of unresolved tasks
+    #' @details A controller is saturated if the number of uncollected tasks
     #'   is greater than or equal to the maximum number of workers.
     #'   You can still push tasks to a saturated controller, but
     #'   tools that use `crew` such as `targets` may choose not to
@@ -441,7 +453,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controller Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     saturated = function(collect = NULL, throttle = NULL, controller = NULL) {
-      as.logical(unresolved() >= .subset2(.launcher, "workers"))
+      as.logical(size() >= .subset2(.launcher, "workers"))
     },
     #' @description Start the controller if it is not already started.
     #' @details Register the mirai client and register worker websockets
@@ -683,10 +695,23 @@ crew_class_controller <- R6::R6Class(
         .compute = .subset2(.client, "profile")
       )
       .subset2(.tasks, "set")(key = name, value = task)
+      .pushed <<- .pushed + 1L
       if (scale) {
         scale(throttle = throttle)
       }
       invisible(task)
+    },
+    #' @description Check if the controller is synced.
+    #' @details A controller is synced if all pushed tasks in the controller
+    #'   show up in the task counts in `mirai::info()`.
+    #' @param controllers Not used. Included to ensure the signature is
+    #'   compatible with the analogous method of controller groups.
+    synced = function(controllers = NULL) {
+      if (is.null(.pushed)) {
+        return(TRUE)
+      }
+      counts <- .subset2(.client, "status")()
+      .pushed == sum(counts[c("awaiting", "executing", "completed")])
     },
     #' @description Apply a single command to multiple inputs,
     #'   and return control to the user without
@@ -1504,7 +1529,7 @@ crew_class_controller <- R6::R6Class(
         value = seconds_interval
       )
       crew_assert(mode, identical(., "all") || identical(., "one"))
-      if (size() < 1L || !started()) {
+      if (self$size() < 1L || !self$started()) {
         return(identical(mode, "all"))
       }
       if (identical(mode, "all")) {
@@ -1516,10 +1541,10 @@ crew_class_controller <- R6::R6Class(
         }
       } else {
         wait_event <- function() {
-          if (size() - self$unresolved() < 1L) {
+          if (!self$synced() || (self$size() - self$unresolved() < 1L)) {
             .client$relay$wait()
           }
-          self$size() - self$unresolved() > 0L
+          self$synced() && (self$size() - self$unresolved() > 0L)
         }
       }
       envir <- new.env(parent = emptyenv())
@@ -1560,9 +1585,7 @@ crew_class_controller <- R6::R6Class(
     #' @param controllers Not used. Included to ensure the signature is
     #'   compatible with the analogous method of controller groups.
     pop_backlog = function(controllers = NULL) {
-      max_workers <- .subset2(.launcher, "workers")
-      uncollected_tasks <- unresolved()
-      n <- max(0, max_workers - uncollected_tasks)
+      n <- max(0, .subset2(.launcher, "workers") - size())
       n <- min(n, .subset2(.queue_backlog, "size")())
       if (n < 1L) {
         return(character(0L))
@@ -1661,6 +1684,7 @@ crew_class_controller <- R6::R6Class(
       .client$terminate()
       .launcher$terminate()
       .tasks <<- collections::dict()
+      .pushed <<- NULL
       .crash_log <<- collections::dict()
       .loop <<- FALSE
       .queue_resolved <<- collections::queue()

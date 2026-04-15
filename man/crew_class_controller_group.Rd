@@ -76,6 +76,7 @@ condition variable.}
 \item \href{#method-crew_class_controller_group-descale}{\code{crew_class_controller_group$descale()}}
 \item \href{#method-crew_class_controller_group-crashes}{\code{crew_class_controller_group$crashes()}}
 \item \href{#method-crew_class_controller_group-push}{\code{crew_class_controller_group$push()}}
+\item \href{#method-crew_class_controller_group-synced}{\code{crew_class_controller_group$synced()}}
 \item \href{#method-crew_class_controller_group-walk}{\code{crew_class_controller_group$walk()}}
 \item \href{#method-crew_class_controller_group-map}{\code{crew_class_controller_group$map()}}
 \item \href{#method-crew_class_controller_group-pop}{\code{crew_class_controller_group$pop()}}
@@ -592,6 +593,29 @@ Invisibly return the \code{mirai} object of the pushed task.
 This allows you to interact with the task directly, e.g.
 to create a promise object with \code{promises::as.promise()}.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller_group-synced"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-synced}{}}}
+\subsection{Method \code{synced()}}{
+Check if all controllers are synced.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$synced(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+A controller is synced if all pushed tasks in the controller
+show up in the task counts in \code{mirai::info()}.
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-walk"></a>}}

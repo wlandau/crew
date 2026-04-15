@@ -55,6 +55,9 @@ controller.}
 The list of tasks is dynamically generated from an internal,
 dictionary, so it is not as fast as a simple lookup.}
 
+\item{\code{pushed}}{Number of tasks ever submitted to the \code{mirai}
+compute profile through the controller.}
+
 \item{\code{reset_globals}}{See \code{\link[=crew_controller]{crew_controller()}}.
 since the controller was started.}
 
@@ -102,6 +105,7 @@ from the last call to \verb{map(error = "stop)}.}
 \item \href{#method-crew_class_controller-descale}{\code{crew_class_controller$descale()}}
 \item \href{#method-crew_class_controller-crashes}{\code{crew_class_controller$crashes()}}
 \item \href{#method-crew_class_controller-push}{\code{crew_class_controller$push()}}
+\item \href{#method-crew_class_controller-synced}{\code{crew_class_controller$synced()}}
 \item \href{#method-crew_class_controller-walk}{\code{crew_class_controller$walk()}}
 \item \href{#method-crew_class_controller-map}{\code{crew_class_controller$map()}}
 \item \href{#method-crew_class_controller-pop}{\code{crew_class_controller$pop()}}
@@ -346,7 +350,7 @@ compatible with the analogous method of controller groups.}
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-A controller is saturated if the number of unresolved tasks
+A controller is saturated if the number of uncollected tasks
 is greater than or equal to the maximum number of workers.
 You can still push tasks to a saturated controller, but
 tools that use \code{crew} such as \code{targets} may choose not to
@@ -658,6 +662,29 @@ Invisibly return the \code{mirai} object of the pushed task.
 This allows you to interact with the task directly, e.g.
 to create a promise object with \code{promises::as.promise()}.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-crew_class_controller-synced"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller-synced}{}}}
+\subsection{Method \code{synced()}}{
+Check if the controller is synced.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller$synced(controllers = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+A controller is synced if all pushed tasks in the controller
+show up in the task counts in \code{mirai::info()}.
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller-walk"></a>}}

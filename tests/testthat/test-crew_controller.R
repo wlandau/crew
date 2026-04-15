@@ -1,5 +1,6 @@
 crew_test("active bindings", {
   x <- crew_controller_local(crashes_max = 1L)
+  expect_null(x$pushed)
   expect_equal(x$crashes_max, 1L)
   expect_null(x$backup)
   x$start()

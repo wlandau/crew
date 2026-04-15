@@ -11,6 +11,7 @@ crew_test("crew_controller_local()", {
     crew_test_sleep()
   })
   expect_silent(x$validate())
+  expect_true(x$synced())
   expect_false(x$client$started)
   expect_false(x$started())
   expect_null(x$summary())

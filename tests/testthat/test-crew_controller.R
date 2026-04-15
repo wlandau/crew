@@ -720,7 +720,10 @@ crew_test("crash detection with crashes_max == 2L", {
     expect_equal(x$crashes(name = "x"), index - 1L)
     x$push(Sys.sleep(300L), name = "x", scale = TRUE, throttle = FALSE)
     crew_retry(
-      ~ isTRUE(x$client$status()["connections"] > 0L),
+      ~ {
+        x$scale(throttle = FALSE)
+        isTRUE(x$client$status()["connections"] > 0L)
+      },
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
@@ -733,7 +736,10 @@ crew_test("crash detection with crashes_max == 2L", {
   }
   x$push(Sys.sleep(300L), name = "x", scale = TRUE, throttle = FALSE)
   crew_retry(
-    ~ isTRUE(x$client$status()["connections"] > 0L),
+    ~ {
+      x$scale(throttle = FALSE)
+      isTRUE(x$client$status()["connections"] > 0L)
+    },
     seconds_interval = 0.1,
     seconds_timeout = 60
   )
@@ -764,7 +770,10 @@ crew_test("crash detection resets, crashes_max == 2L", {
     expect_equal(x$crashes(name = "x"), 0L)
     x$push(Sys.sleep(300L), name = "x", scale = TRUE, throttle = FALSE)
     crew_retry(
-      ~ isTRUE(x$client$status()["connections"] > 0L),
+      ~ {
+        x$scale(throttle = FALSE)
+        isTRUE(x$client$status()["connections"] > 0L)
+      },
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
@@ -803,7 +812,10 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
     expect_equal(x$crashes(name = "x"), index - 1L)
     x$push(Sys.sleep(300L), name = "x", scale = TRUE, throttle = FALSE)
     crew_retry(
-      ~ isTRUE(x$client$status()["connections"] > 0L),
+      ~ {
+        x$scale(throttle = FALSE)
+        isTRUE(x$client$status()["connections"] > 0L)
+      },
       seconds_interval = 0.1,
       seconds_timeout = 60
     )
@@ -817,7 +829,10 @@ crew_test("crash detection with crashes_max == 2L and collect()", {
   }
   x$push(Sys.sleep(300L), name = "x", scale = TRUE, throttle = FALSE)
   crew_retry(
-    ~ isTRUE(x$client$status()["connections"] > 0L),
+    ~ {
+      x$scale(throttle = FALSE)
+      isTRUE(x$client$status()["connections"] > 0L)
+    },
     seconds_interval = 0.1,
     seconds_timeout = 60
   )

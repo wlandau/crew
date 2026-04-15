@@ -4,6 +4,9 @@
 * Test `crew_worker()` with `autoexit = FALSE` (https://github.com/r-lib/mirai/issues/535).
 * Deprecate the `dispatchers()` method of `crew_monitor_local()` objects because the dispatcher is a thread in `mirai` > 2.6.1.
 * Simplify `controller$pop_backlog()` and `controller$saturated()`.
+* Add a `synced()` method for controllers and controller groups to check that task counts from `mirai::info()` are up to date with tasks pushed through the controller.
+* Use `synced()` as a guardrail in `wait(mode = "one")` to prevent a race condition where `mirai::info()` briefly undercounts newly pushed tasks.
+* Fix intermittent test failures in crash detection tests by retrying `scale()` while waiting for worker connections.
 * Remove the compatibility layer of the deprecated internal `async` class for worker launches in plugins.
 * Remove `mirai_status()` internal error handling for dispatcher queries. Now that the `mirai` dispatcher is a thread, `crew` can trust direct calls to `mirai::info()` because it is a direct memory lookup rather than a request to an external process.
 

@@ -785,7 +785,7 @@ crew_test("crash detection resets, crashes_max == 2L", {
     expect_true(tibble::is_tibble(x$pop()))
     expect_equal(x$crashes(name = "x"), 1L)
     x$push(TRUE, name = "x", scale = TRUE, throttle = FALSE)
-    x$wait(mode = "one", seconds_timeout = 30, scale = FALSE)
+    x$wait(mode = "one", seconds_timeout = 30, scale = TRUE, throttle = FALSE)
     expect_true(tibble::is_tibble(x$pop(throttle = FALSE)))
     expect_equal(x$crashes(name = "x"), 0L)
     for (handle in unlist(x$launcher$launches$handle)) {

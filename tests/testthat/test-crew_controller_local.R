@@ -294,7 +294,7 @@ crew_test("crew_controller_local() resource usage metrics with stdout", {
   })
   x$start()
   x$push(Sys.sleep(2))
-  x$wait(mode = "all", seconds_timeout = 30)
+  x$wait(mode = "all", seconds_timeout = 30, scale = TRUE, throttle = FALSE)
   x$terminate()
   expect_true(dir.exists(log))
   data <- autometric::log_read(log)

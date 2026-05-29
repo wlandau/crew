@@ -6,6 +6,7 @@
 * Remove `mirai_status()` internal error handling for dispatcher queries. Now that the `mirai` dispatcher is a thread, `crew` can trust direct calls to `mirai::info()` because it is a direct memory lookup rather than a request to an external process.
 * Add a `synced()` method for controllers and controller groups to check that task counts from `mirai::info()` are up to date with tasks pushed through the controller.
 * Use `synced()` as a guardrail in `wait()` to prevent a race condition where `mirai::info()` briefly undercounts newly pushed tasks.
+* Guard `pop()` and `collect()` against a sub-millisecond race where `mirai::info()` reports a task as resolved before the task handle itself is ready. If counts say a task should be available but the resolved queue is empty, briefly retry the handle scan before returning `NULL`.
 
 ## Other updates
 

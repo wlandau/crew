@@ -171,6 +171,30 @@ crew_class_controller <- R6::R6Class(
       resolved <- as.character(keys)[!as.logical(is_unresolved)]
       .queue_resolved <<- collections::queue(items = resolved)
     },
+    .resolve_race = function() {
+      # Guards against a sub-millisecond race condition where
+      # mirai::info() task counts say a task is resolved before
+      # the corresponding mirai task handle is ready for pop()
+      # or collect(). Not feasible to cover deterministically in tests.
+      # nocov start
+      if (.subset2(.queue_resolved, "size")() > 0L) {
+        return()
+      }
+      if (!self$synced() || (self$size() - self$unresolved() < 1L)) {
+        return()
+      }
+      crew_retry(
+        fun = ~ {
+          .resolve(force = TRUE)
+          .subset2(.queue_resolved, "size")() > 0L
+        },
+        seconds_interval = 0.05,
+        seconds_timeout = 0.5,
+        error = FALSE,
+        assertions = FALSE
+      )
+      # nocov end
+    },
     .scan_crash = function(name, task) {
       code <- .subset2(task, "code")
       if (code != code_crash) {
@@ -1350,6 +1374,7 @@ crew_class_controller <- R6::R6Class(
         return(NULL)
       }
       .resolve(force = FALSE)
+      .resolve_race() # nocov
       if (.subset2(.queue_resolved, "size")() < 1L) {
         return(NULL)
       }
@@ -1441,6 +1466,7 @@ crew_class_controller <- R6::R6Class(
         return(NULL)
       }
       .resolve(force = TRUE)
+      .resolve_race() # nocov
       queue_pop <- .subset2(.queue_resolved, "pop")
       n <- .subset2(.queue_resolved, "size")()
       names <- as.character(replicate(n, queue_pop(), simplify = FALSE))

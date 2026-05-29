@@ -1366,8 +1366,13 @@ compatible with the analogous method of controller groups.</p></dd>
 <div class="section">
 <h4 id="details-14">Details<a class="anchor" aria-label="anchor" href="#details-14"></a></h4>
 <p>The <code>wait()</code> method blocks the calling R session
+and (optionally) auto-scales workers
 until the condition in the <code>mode</code> argument is met.
-During the wait, <code>wait()</code> iteratively auto-scales the workers.</p>
+NOTE: <code>wait()</code> may register a task as resolved
+a split second before the task handle is ready for <code>pop()</code>
+or <code>collect()</code>.
+If <code>wait()</code> returns but <code>pop()</code> returns <code>NULL</code>, simply retry <code>pop()</code>
+a short time later.</p>
 </div>
 
 <div class="section">

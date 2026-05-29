@@ -1352,9 +1352,11 @@ Wait for tasks.
 
 #### Details
 
-The `wait()` method blocks the calling R session until the condition in
-the `mode` argument is met. During the wait, `wait()` iteratively
-auto-scales the workers.
+The `wait()` method blocks the calling R session and (optionally)
+auto-scales workers until the condition in the `mode` argument is met.
+NOTE: `wait()` may register a task as resolved a split second before the
+task handle is ready for `pop()` or `collect()`. If `wait()` returns but
+`pop()` returns `NULL`, simply retry `pop()` a short time later.
 
 #### Returns
 

@@ -27,6 +27,7 @@ app stays interactive.
 We first load Shiny.
 
 ``` r
+
 library(shiny)
 ```
 
@@ -35,6 +36,7 @@ randomly return 1 for heads or 0 for tails. After many flips, the user
 may deduce that the coin is slightly unfair.
 
 ``` r
+
 flip_coin <- function() {
   Sys.sleep(0.1)
   rbinom(n = 1, size = 1, prob = 0.501)
@@ -44,6 +46,7 @@ flip_coin <- function() {
 The UI has a button to flip coins and a text output for results.
 
 ``` r
+
 ui <- fluidPage(
   div("Is the coin fair?"),
   actionButton("button", "Flip 1000 coins"),
@@ -66,12 +69,14 @@ server <- function(input, output, session) {
 We keep running totals of heads, tails, and total flips.
 
 ``` r
+
   flips <- reactiveValues(heads = 0, tails = 0, total = 0)
 ```
 
 The action button submits a batch of 1000 coin flips.
 
 ``` r
+
   observeEvent(input$button, {
     controller$walk(
       command = flip_coin(),
@@ -85,6 +90,7 @@ We include an `observe()` statement to watch for finished coin flips and
 update the totals every 0.5 seconds.
 
 ``` r
+
   observe({
     invalidateLater(millis = 500)
     results <- controller$collect(error = "stop")
@@ -117,6 +123,7 @@ passed.
 ### Full app code
 
 ``` r
+
 library(shiny)
 
 flip_coin <- function() {
@@ -189,6 +196,7 @@ background loop to auto-scale `crew` workers. To enable this, we call
 [`start()`](https://rdrr.io/r/stats/start.html).
 
 ``` r
+
 controller$start()
 controller$autoscale()
 onStop(function() controller$terminate())
@@ -200,6 +208,7 @@ This [`promise`](https://rstudio.github.io/promises/) updates the coin
 flip counts as soon as the flip finishes.
 
 ``` r
+
 observeEvent(
   input$button,
   replicate(
@@ -214,6 +223,7 @@ Finally, the `collect_flips()` function collects all the finished flips
 and updates the flip counts.
 
 ``` r
+
 collect_flips <- function(ignore, controller, flips) {
   new_flips <- as.integer(controller$collect(error = "stop")$result)
   if (!length(new_flips)) return()
@@ -226,6 +236,7 @@ collect_flips <- function(ignore, controller, flips) {
 ### Full app code
 
 ``` r
+
 library(promises)
 library(shiny)
 

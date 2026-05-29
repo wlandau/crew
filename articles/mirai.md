@@ -11,9 +11,10 @@ environments.
 ## How it works
 
 First, create a `crew` controller with “default” compute profile and
-`seconds_idle = Inf`.[¹](#fn1)
+`seconds_idle = Inf`.[^1]
 
 ``` r
+
 library(crew)
 controller <- crew_controller_local(profile = "default", seconds_idle = Inf)
 ```
@@ -21,12 +22,14 @@ controller <- crew_controller_local(profile = "default", seconds_idle = Inf)
 Next, launch one or more workers.
 
 ``` r
+
 controller$launch(n = 1)
 ```
 
-Submit a `mirai` task normally.[²](#fn2)
+Submit a `mirai` task normally.[^2]
 
 ``` r
+
 library(mirai)
 task <- mirai(1 + 1)
 ```
@@ -35,14 +38,16 @@ The task will start as soon as the worker connects to the controller.
 When the task completes, you can get the result with:
 
 ``` r
+
 task$data
 #> [1] 2
 ```
 
 Below, a “completed” count greater than zero confirms that the task
-actually ran on the controller.[³](#fn3)
+actually ran on the controller.[^3]
 
 ``` r
+
 controller$client$status()
 #> connections  cumulative    awaiting   executing   completed 
 #>           1           1           0           0           1 
@@ -52,6 +57,7 @@ To stop the workers, either close the local R session or terminate the
 controller.
 
 ``` r
+
 controller$terminate()
 ```
 
@@ -61,6 +67,7 @@ The pattern is the same with `mirai`-powered parallel purrr. First,
 create the controller and launch the workers.
 
 ``` r
+
 library(crew)
 controller <- crew_controller_local(profile = "default", seconds_idle = Inf)
 controller$launch(n = 4)
@@ -70,6 +77,7 @@ Then, use the controller’s compute profile in `mirai`’s parallel purrr
 functions.
 
 ``` r
+
 library(purrr)
 seq_len(4) |> map(in_parallel(\(x) Sys.sleep(1))) # Takes 1 second to run.
 ```
@@ -81,6 +89,7 @@ schedules functional programming tasks without blocking the R session.
 The pattern is analogous to the `purrr` case.
 
 ``` r
+
 controller <- crew_controller_local(profile = "default", seconds_idle = Inf)
 controller$launch(n = 4)
 tasks <- mirai_map(seq_len(4), \(x) Sys.sleep(10))
@@ -94,6 +103,7 @@ tasks
 `mirai` tasks. To enable this, we configure the controller differently:
 
 ``` r
+
 controller <- crew_controller_local(
   profile = "default",
   seconds_idle = 30, # Workers will terminate after 30 seconds of idleness.
@@ -105,6 +115,7 @@ The `autoscale()` method runs an asynchronous `later` loop that launches
 new workers in the background.
 
 ``` r
+
 controller$autoscale()
 ```
 
@@ -112,6 +123,7 @@ controller$autoscale()
 programming sections above, but it can accommodate individual tasks.
 
 ``` r
+
 task <- mirai(1 + 1)
 # After waiting a few seconds:
 task$data
@@ -121,6 +133,7 @@ task$data
 To deactivate the auto-scaling loop:
 
 ``` r
+
 controller$descale()
 ```
 
@@ -146,16 +159,14 @@ controller$descale()
   [`later::run_now()`](https://later.r-lib.org/reference/run_now.html)
   to trigger `crew`’s auto-scaling.
 
-------------------------------------------------------------------------
-
-1.  Or a compute profile you will supply to the `.compute` argument of
+[^1]: Or a compute profile you will supply to the `.compute` argument of
     [`mirai::mirai()`](https://mirai.r-lib.org/reference/mirai.html).
 
-2.  If you didn’t set the “default” compute profile in the controller,
+[^2]: If you didn’t set the “default” compute profile in the controller,
     you can set it in
     [`mirai()`](https://mirai.r-lib.org/reference/mirai.html) with
     `.compute = controller$profile`.
 
-3.  These counts are the result of
+[^3]: These counts are the result of
     `mirai::info(.compute = controller$profile)`. The “connections” and
     “cumulative” counts are for workers, and the rest are for tasks.

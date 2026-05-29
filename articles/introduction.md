@@ -25,6 +25,7 @@ vignette](https://wlandau.github.io/crew/articles/shiny.md) shows how
 First, create a controller object to manage tasks and workers.
 
 ``` r
+
 library(crew)
 controller <- crew_controller_local(
   name = "example",
@@ -39,6 +40,7 @@ with the controller, call `controller$terminate()` to clean up your
 resources.
 
 ``` r
+
 controller$start()
 ```
 
@@ -46,20 +48,21 @@ Use `push()` to submit a new task and `pop()` to return a completed
 task.
 
 ``` r
+
 controller$push(name = "get pid", command = ps::ps_pid())
 ```
 
 As a side effect, methods `push()`, `pop()`, and
 [`scale()`](https://rdrr.io/r/base/scale.html) also launch workers to
-run the tasks. However, by default[¹](#fn1) workers only launch at
-certain times. This is for efficiency: it avoids the slowdown of
-frequent system calls, and it gives plugins like `crew.cluster` enough
-time to collect tasks for large efficient job arrays. To ensure workers
-are launched, either set the `throttle` argument to `FALSE` or repeat
-calls to `pop()`, `collect()`, or
-[`scale()`](https://rdrr.io/r/base/scale.html).
+run the tasks. However, by default[^1] workers only launch at certain
+times. This is for efficiency: it avoids the slowdown of frequent system
+calls, and it gives plugins like `crew.cluster` enough time to collect
+tasks for large efficient job arrays. To ensure workers are launched,
+either set the `throttle` argument to `FALSE` or repeat calls to
+`pop()`, `collect()`, or [`scale()`](https://rdrr.io/r/base/scale.html).
 
 ``` r
+
 controller$pop() # No workers started yet and the task is not done.
 #> NULL
 
@@ -77,12 +80,14 @@ launches workers until all tasks complete, and it also launches workers
 as needed.
 
 ``` r
+
 controller$wait(mode = "all")
 ```
 
 The return value of the task is in the `result` column.
 
 ``` r
+
 task$result[[1]] # return value of the task
 #> [1] 69631
 ```
@@ -116,6 +121,7 @@ to task, while the elements of `data` and `globals` stay constant across
 tasks.
 
 ``` r
+
 results <- controller$map(
   command = a + b + c + d,
   iterate = list(
@@ -158,6 +164,7 @@ complete. Instead, it returns control to the local R session immediately
 and lets you do other things while the tasks run in the background.
 
 ``` r
+
 controller$walk(
   command = a + b + c + d,
   iterate = list(
@@ -175,6 +182,7 @@ pops all completed tasks. Put together, `walk()`, `wait(mode = "all")`,
 and `collect()` have the same overall effect as `map()`.
 
 ``` r
+
 controller$wait(mode = "all")
 
 controller$collect()
@@ -204,6 +212,7 @@ how many total seconds the workers spent running tasks, how many tasks
 threw warnings or errors, etc.
 
 ``` r
+
 controller$summary()
 #> # A tibble: 1 × 8
 #>   controller tasks seconds success error crash cancel warning
@@ -217,6 +226,7 @@ The `terminate()` method signals the workers to close and severs the
 connection.
 
 ``` r
+
 controller$terminate()
 ```
 
@@ -234,6 +244,7 @@ you can list and terminate worker processes with the
 object:
 
 ``` r
+
 monitor <- crew_monitor_local()
 monitor$workers()
 #> [1] 57001 57002
@@ -303,6 +314,7 @@ If a worker crashes, the task will return a status of `"crashed"` in
 yourself:
 
 ``` r
+
 library(crew)
 controller <- crew_controller_local(name = "my_controller", crashes_max = 5L)
 controller$start()
@@ -329,9 +341,10 @@ task[, c("name", "result", "status", "error", "code", "controller")]
 In the event of a crash like this one, you can choose to abandon the
 workflow and troubleshoot, or you can choose to retry the task on a
 different (possibly new) worker. Simply push the task again and use the
-same task name.[²](#fn2)
+same task name.[^2]
 
 ``` r
+
 controller$push(command = Sys.sleep(300), name = "my_task")
 ```
 
@@ -343,6 +356,7 @@ same controller, then a subsequent `pop()` (or `collect()` or `map()`)
 throws an informative error:
 
 ``` r
+
 controller$pop()
 #> Error:
 #> ! the crew worker of task 'my_task' crashed 6 consecutive time(s)
@@ -360,9 +374,7 @@ the original controller `crashes_max` times. For details, see the
 [controller group
 vignette](https://wlandau.github.io/crew/articles/groups.md).
 
-------------------------------------------------------------------------
+[^1]: when the `throttle` argument is `TRUE`
 
-1.  when the `throttle` argument is `TRUE`
-
-2.  As of `targets` \>= 1.10.0.9002, `targets` pipelines automatically
+[^2]: As of `targets` \>= 1.10.0.9002, `targets` pipelines automatically
     retry tasks whose workers crash.

@@ -1,5 +1,43 @@
 # Changelog
 
+## crew 1.3.1
+
+### Threaded dispatcher updates
+
+- Deprecate the `dispatchers()` method of
+  [`crew_monitor_local()`](https://wlandau.github.io/crew/reference/crew_monitor_local.md)
+  objects because the dispatcher is a thread in `mirai` \> 2.6.1.
+- Remove `mirai_status()` internal error handling for dispatcher
+  queries. Now that the `mirai` dispatcher is a thread, `crew` can trust
+  direct calls to
+  [`mirai::info()`](https://mirai.r-lib.org/reference/info.html) because
+  it is a direct memory lookup rather than a request to an external
+  process.
+- Add a `synced()` method for controllers and controller groups to check
+  that task counts from
+  [`mirai::info()`](https://mirai.r-lib.org/reference/info.html) are up
+  to date with tasks pushed through the controller.
+- Use `synced()` as a guardrail in `wait()` to prevent a race condition
+  where [`mirai::info()`](https://mirai.r-lib.org/reference/info.html)
+  briefly undercounts newly pushed tasks.
+
+### Other updates
+
+- Use
+  [`later::global_loop()`](https://later.r-lib.org/reference/create_loop.html)
+  instead of
+  [`later::current_loop()`](https://later.r-lib.org/reference/create_loop.html)
+  in `controller$autoscale()`.
+- Test
+  [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.md)
+  with `autoexit = FALSE` (<https://github.com/r-lib/mirai/issues/535>).
+- Simplify `controller$pop_backlog()` and `controller$saturated()`.
+- Fix intermittent test failures in crash detection tests by retrying
+  [`scale()`](https://rdrr.io/r/base/scale.html) while waiting for
+  worker connections.
+- Remove the compatibility layer of the deprecated internal `async`
+  class for worker launches in plugins.
+
 ## crew 1.3.0
 
 CRAN release: 2025-09-13

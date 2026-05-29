@@ -14,6 +14,7 @@ terminate after completing four tasks. We create controller objects with
 names.
 
 ``` r
+
 library(crew)
 persistent <- crew_controller_local(name = "persistent")
 transient <- crew_controller_local(name = "semi-persistent", tasks_max = 4L)
@@ -26,6 +27,7 @@ ports in the [README](https://wlandau.github.io/crew/index.html).
 We put these controller objects into a new controller group object.
 
 ``` r
+
 group <- crew_controller_group(persistent, transient)
 ```
 
@@ -33,12 +35,14 @@ This controller group has a global `connect()` method to initialize both
 controllers.
 
 ``` r
+
 group$start()
 ```
 
 You can choose which worker pool to receive tasks.
 
 ``` r
+
 group$push(name = "my task", command = sqrt(4), controller = "semi-persistent")
 ```
 
@@ -49,6 +53,7 @@ controllers to act on. Below in `pop()` the `controller` column of the
 output indicates which controller ran the task.
 
 ``` r
+
 group$wait(controllers = "semi-persistent")
 group$pop()
 #> # A tibble: 1 × 13
@@ -64,6 +69,7 @@ method provides functional programming, and the `controller` argument
 lets you choose the controller to submit the tasks.
 
 ``` r
+
 group$map(
   command = a + b + c + d,
   iterate = list(
@@ -87,6 +93,7 @@ The controller group has a
 aggregates the summaries of one or more controllers.
 
 ``` r
+
 group$summary()
 #> # A tibble: 2 × 8
 #>   controller      tasks seconds success error crash cancel warning
@@ -99,6 +106,7 @@ When you are finished, please call `terminate()` with no arguments to
 terminate all controllers in the controller group.
 
 ``` r
+
 group$terminate()
 ```
 
@@ -125,6 +133,7 @@ that use one another as backups. The `default` controller uses the
 controller uses the `high_memory` controller as a backup.
 
 ``` r
+
 library(crew)
 library(crew.cluster) # https://wlandau.github.io/crew.cluster/index.html
 
@@ -154,6 +163,7 @@ automatically run in the `default` unless special circumstances dictate
 otherwise.
 
 ``` r
+
 group <- crew_controller_group(default, medium_memory, high_memory)
 ```
 
@@ -161,6 +171,7 @@ Consider a task that sometimes exhausts the available memory of its
 [SLURM](https://en.wikipedia.org/wiki/Slurm_Workload_Manager) worker:
 
 ``` r
+
 group$push(command = my.package::run_heavy_task(), name = "heavy_task")
 ```
 
@@ -168,6 +179,7 @@ If the task exhausts available memory and crashes its worker, then
 `pop()` informs you:
 
 ``` r
+
 task <- group$pop()
 task[, c("name", "result", "status", "error", "code", "controller")]
 #> # A tibble: 1 × 6
@@ -199,6 +211,7 @@ task[, c("name", "result", "status", "error", "code", "controller")]
 the task, with crashes counted as errors.
 
 ``` r
+
 group$summary()
 #> # A tibble: 2 × 8
 #>   controller    tasks seconds success error crash cancel warning

@@ -16,10 +16,10 @@ third-party worker launchers. Inspiration also comes from packages
 
 # Installation
 
-| Type        | Source     | Command                                                              |
-|-------------|------------|----------------------------------------------------------------------|
-| Release     | CRAN       | `install.packages("crew")`                                           |
-| Development | GitHub     | `remotes::install_github("wlandau/crew")`                            |
+| Type | Source | Command |
+|----|----|----|
+| Release | CRAN | `install.packages("crew")` |
+| Development | GitHub | `remotes::install_github("wlandau/crew")` |
 | Development | R-universe | `install.packages("crew", repos = "https://wlandau.r-universe.dev")` |
 
 # Documentation

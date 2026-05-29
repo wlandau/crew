@@ -25,6 +25,7 @@ different arguments to configure platform-specific logging mechanisms
 (e.g. SLURM logs or AWS CloudWatch logs). Example for the local plugin:
 
 ``` r
+
 library(crew)
 log_directory <- tempfile()
 controller <- crew_controller_local(
@@ -51,9 +52,10 @@ writeLines(readLines(log_files[2]))
 
 To add resource metrics to existing log files, regardless of your
 platform, use the `options_metrics` argument and set
-`path = "/dev/stdout"`.[¹](#fn1)
+`path = "/dev/stdout"`.[^1]
 
 ``` r
+
 library(crew)
 log_directory <- tempfile()
 controller <- crew_controller_local(
@@ -84,6 +86,7 @@ log_files <- list.files(log_directory, full.names = TRUE)
 ```
 
 ``` r
+
 writeLines(readLines(log_files[1]))
 #> R version 4.4.0 (2024-04-24)
 #> ... # more session info...
@@ -96,6 +99,7 @@ writeLines(readLines(log_files[1]))
 ```
 
 ``` r
+
 writeLines(readLines(log_files[2]))
 #> R version 4.4.0 (2024-04-24)
 #> ... # more session info...
@@ -119,6 +123,7 @@ running a task). More details are at
 [`autometric::log_read()`](https://wlandau.github.io/autometric/reference/log_read.html).
 
 ``` r
+
 data <- autometric::log_read(log_directory)
 data$name <- substr(data$name, 0, 20)
 data
@@ -135,6 +140,7 @@ data
 ```
 
 ``` r
+
 autometric::log_plot(data, pid = 43098, metric = "resident")
 ```
 
@@ -151,6 +157,7 @@ separate file to record the resource usage statistics of the central
 process. Example:
 
 ``` r
+
 library(autometric)
 library(crew)
 library(targets)
@@ -181,9 +188,7 @@ list(
 )
 ```
 
-------------------------------------------------------------------------
-
-1.  Windows does not have `/dev/stdout`, but `path` can be a directory
+[^1]: Windows does not have `/dev/stdout`, but `path` can be a directory
     on disk as well. In that case, `crew` will write the log files
     there, instead of to the existing log files specified in
     `options_local`.

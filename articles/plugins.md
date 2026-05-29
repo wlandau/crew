@@ -68,6 +68,7 @@ The following is a custom custom launcher class whose workers are local
 R processes on Unix-like systems.
 
 ``` r
+
 custom_launcher_class <- R6::R6Class(
   classname = "custom_launcher_class",
   inherit = crew::crew_class_launcher,
@@ -103,6 +104,7 @@ To see what the `call` argument will look like from inside
 [`call()`](https://rdrr.io/r/base/call.html) method.
 
 ``` r
+
 library(crew)
 launcher <- crew_launcher_local()
 launcher$start(url = "tcp://127.0.0.1:57000", profile = "example_profile")
@@ -117,9 +119,10 @@ call. For example, clusters like SLURM and cloud services like AWS Batch
 support job arrays. To leverage this feature in `crew`, define a method
 called `launch_workers()` (plural) instead of `launch_worker()`
 (singular). The former supersedes the latter when it is
-user-defined.[¹](#fn1) For example:
+user-defined.[^1] For example:
 
 ``` r
+
 R6::R6Class(
   classname = "slurm_launcher_class",
   inherit = crew::crew_class_launcher,
@@ -174,6 +177,7 @@ platform, especially `seconds_launch` if workers take a long time to
 launch.
 
 ``` r
+
 #' @title Create a controller with the custom launcher.
 #' @export
 #' @description Create an `R6` object to submit tasks and
@@ -262,6 +266,7 @@ your custom controller helper instead of
 First, create and start a controller.
 
 ``` r
+
 library(crew)
 controller <- crew_controller_custom(workers = 2)
 controller$start()
@@ -271,6 +276,7 @@ Try pushing a task that gets the local IP address and process ID of the
 worker instance.
 
 ``` r
+
 controller$push(
   name = "get worker IP address and process ID",
   command = paste(nanonext::ip_addr()[1], ps::ps_pid())
@@ -280,6 +286,7 @@ controller$push(
 Wait for the task to complete and look at the result.
 
 ``` r
+
 controller$wait()
 result <- controller$pop()
 result$result[[1]]
@@ -293,6 +300,7 @@ because the actual R process may be different from the `Rscript.exe`
 process created first).
 
 ``` r
+
 controller$launcher$instances$handle[[1]]$get_pid()
 #> [1] 27336
 ```
@@ -306,6 +314,7 @@ IP address should be different from the one you get from the local R
 session.
 
 ``` r
+
 as.character(nanonext::ip_addr())[1]
 #> "192.168.0.2"
 ```
@@ -315,6 +324,7 @@ task should still be running. The other worker had no tasks, so it did
 not need to launch.
 
 ``` r
+
 controller$launcher$instances$handle[[1]]$is_alive()
 #> [1] TRUE
 ```
@@ -323,6 +333,7 @@ When you are done, either close the local R session or terminate the
 controller manually.
 
 ``` r
+
 controller$terminate()
 ```
 
@@ -340,6 +351,7 @@ more ambitious scenarios. As one example, you can test that your workers
 can auto-scale and quickly churn through a large number of tasks.
 
 ``` r
+
 library(crew)
 controller <- crew_controller_custom(
   seconds_idle = 2L,
@@ -400,6 +412,7 @@ to help users list and terminate workers, as well as view logs.
 The essence of the local monitor is copied below:
 
 ``` r
+
 crew_monitor_local <- function() {
   crew_class_monitor_local$new()
 }
@@ -431,6 +444,7 @@ crew_monitor_pids <- function(pattern) {
 Example usage:
 
 ``` r
+
 monitor <- crew_monitor_local()
 monitor$workers()
 #> [1] 57001 57002
@@ -439,7 +453,5 @@ monitor$workers()
 #> integer(0)
 ```
 
-------------------------------------------------------------------------
-
-1.  The default `launch_workers()` method just calls `launch_worker()`
+[^1]: The default `launch_workers()` method just calls `launch_worker()`
     `n` times.

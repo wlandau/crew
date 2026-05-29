@@ -113,7 +113,7 @@ public key cryptography, which requires two files:
 
 To use TLS in `crew` with automatic configuration, simply set
 `tls = crew_tls(mode = "automatic")` in the controller,
-e.g. [`crew_controller_local()`](https://wlandau.github.io/crew/reference/crew_controller_local.md).[¹](#fn1)
+e.g. [`crew_controller_local()`](https://wlandau.github.io/crew/reference/crew_controller_local.md).[^1]
 [`mirai`](https://mirai.r-lib.org/) generates a one-time key pair and
 encrypts data for the current `crew` client. The key pair expires when
 the client terminates, which reduces the risk of a breach. In addition,
@@ -167,9 +167,7 @@ one. To supply a CA-backed certificate to `crew`:
 more details about configuring TLS, please read
 <https://mirai.r-lib.org/articles/mirai#distributed-computing-tls-secure-connections>.
 
-------------------------------------------------------------------------
-
-1.  [Launcher
+[^1]: [Launcher
     plugins](https://wlandau.github.io/crew/articles/plugins.html)
     should expose the `tls` argument of
     [`crew_client()`](https://wlandau.github.io/crew/reference/crew_client.md).

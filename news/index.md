@@ -20,6 +20,11 @@
 - Use `synced()` as a guardrail in `wait()` to prevent a race condition
   where [`mirai::info()`](https://mirai.r-lib.org/reference/info.html)
   briefly undercounts newly pushed tasks.
+- Guard `pop()` and `collect()` against a sub-millisecond race where
+  [`mirai::info()`](https://mirai.r-lib.org/reference/info.html) reports
+  a task as resolved before the task handle itself is ready. If counts
+  say a task should be available but the resolved queue is empty,
+  briefly retry the handle scan before returning `NULL`.
 
 ### Other updates
 

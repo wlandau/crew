@@ -53,6 +53,7 @@
 <li>Remove <code>mirai_status()</code> internal error handling for dispatcher queries. Now that the <code>mirai</code> dispatcher is a thread, <code>crew</code> can trust direct calls to <code><a href="https://mirai.r-lib.org/reference/info.html" class="external-link">mirai::info()</a></code> because it is a direct memory lookup rather than a request to an external process.</li>
 <li>Add a <code>synced()</code> method for controllers and controller groups to check that task counts from <code><a href="https://mirai.r-lib.org/reference/info.html" class="external-link">mirai::info()</a></code> are up to date with tasks pushed through the controller.</li>
 <li>Use <code>synced()</code> as a guardrail in <code>wait()</code> to prevent a race condition where <code><a href="https://mirai.r-lib.org/reference/info.html" class="external-link">mirai::info()</a></code> briefly undercounts newly pushed tasks.</li>
+<li>Guard <code>pop()</code> and <code>collect()</code> against a sub-millisecond race where <code><a href="https://mirai.r-lib.org/reference/info.html" class="external-link">mirai::info()</a></code> reports a task as resolved before the task handle itself is ready. If counts say a task should be available but the resolved queue is empty, briefly retry the handle scan before returning <code>NULL</code>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="other-updates-1-3-1">Other updates<a class="anchor" aria-label="anchor" href="#other-updates-1-3-1"></a></h3>

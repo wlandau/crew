@@ -295,6 +295,11 @@ crew_test("crew_controller_local() resource usage metrics with stdout", {
   x$start()
   x$push(Sys.sleep(2))
   x$wait(mode = "all", seconds_timeout = 30, scale = TRUE, throttle = FALSE)
+  crew_retry(
+    ~ isTRUE(tibble::is_tibble(x$pop())),
+    seconds_interval = 0.1,
+    seconds_timeout = 60
+  )
   x$terminate()
   expect_true(dir.exists(log))
   data <- autometric::log_read(log)

@@ -1480,8 +1480,13 @@ crew_class_controller <- R6::R6Class(
     },
     #' @description Wait for tasks.
     #' @details The `wait()` method blocks the calling R session
+    #'   and (optionally) auto-scales workers
     #'   until the condition in the `mode` argument is met.
-    #'   During the wait, `wait()` iteratively auto-scales the workers.
+    #'   NOTE: `wait()` may register a task as resolved
+    #'   a split second before the task handle is ready for `pop()`
+    #'   or `collect()`.
+    #'   If `wait()` returns but `pop()` returns `NULL`, simply retry `pop()`
+    #'   a short time later.
     #' @return A logical of length 1, invisibly.
     #'   `wait(mode = "all")` returns `TRUE` if all tasks in the `mirai`
     #'   compute profile have resolved (`FALSE` otherwise).

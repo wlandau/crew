@@ -1174,8 +1174,13 @@ compatible with the analogous method of controller groups.}
 }
 \subsection{Details}{
 The \code{wait()} method blocks the calling R session
+and (optionally) auto-scales workers
 until the condition in the \code{mode} argument is met.
-During the wait, \code{wait()} iteratively auto-scales the workers.
+NOTE: \code{wait()} may register a task as resolved
+a split second before the task handle is ready for \code{pop()}
+or \code{collect()}.
+If \code{wait()} returns but \code{pop()} returns \code{NULL}, simply retry \code{pop()}
+a short time later.
 }
 
 \subsection{Returns}{

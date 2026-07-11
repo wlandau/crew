@@ -302,7 +302,7 @@ crew_class_launcher_local <- R6::R6Class(
       processx::process$new(
         command = path,
         args = c(private$.r_arguments, "-e", call),
-        cleanup = TRUE,
+        cleanup = FALSE,
         stdout = private$.log_stdout(name = name),
         stderr = private$.log_stderr(name = name)
       )

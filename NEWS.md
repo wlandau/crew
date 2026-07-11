@@ -1,6 +1,6 @@
 # crew development version
 
-
+* In `processx::process$new()` in the local launcher, set `cleanup = FALSE` to avoid worker crashes when a worker is garbage collected (#253, @fdhidalgo).
 
 # crew 1.3.1
 

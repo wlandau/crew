@@ -251,6 +251,13 @@ crew_class_launcher <- R6::R6Class(
     #' @field launches Data frame tracking worker launches with one row
     #'   per launch. Each launch may create more than one worker.
     #'   Old superfluous rows are periodically discarded for efficiency.
+    #'   The `handle` column is used internally for testing and
+    #'   worker launching logic only.
+    #'   Handles are not guaranteed to
+    #'   persist for the full duration of a pipeline:
+    #'   `crew` prunes old rows as workers connect and disconnect,
+    #'   so handles may become unavailable in long-running
+    #'   or high-throughput workflows.
     launches = function() {
       .subset2(private, ".launches")
     },
@@ -636,7 +643,9 @@ crew_class_launcher <- R6::R6Class(
       invisible()
     },
     #' @description Launch a worker.
-    #' @return Handle of the launched worker.
+    #' @return Handle of the launched worker (stored internally for
+    #'   auto-scaling logic and testing but not
+    #'   guaranteed to persist; see the `launches` field).
     #' @param n Positive integer, number of workers to launch.
     launch = function(n = 1L) {
       if (n < 1L) {
@@ -657,6 +666,10 @@ crew_class_launcher <- R6::R6Class(
     #' @description Abstract worker launch method.
     #' @details Launcher plugins will overwrite this method.
     #' @return A handle to mock the worker launch.
+    #'   Handles are used internally for testing and
+    #'   worker launching logic only. They are not guaranteed
+    #'   to persist in long-running or high-throughput pipelines
+    #'   (see the `launches` field).
     #' @param call Character of length 1 with a namespaced call to
     #'   [crew_worker()] which will run in the worker and accept tasks.
     launch_worker = function(call) {
@@ -666,6 +679,10 @@ crew_class_launcher <- R6::R6Class(
     #' @details Launcher plugins may overwrite this method
     #'   to launch multiple workers from a single system call.
     #' @return A handle to mock the worker launch.
+    #'   Handles are used internally for testing and
+    #'   worker launching logic only. They are not guaranteed
+    #'   to persist in long-running or high-throughput pipelines
+    #'   (see the `launches` field).
     #' @param call Character of length 1 with a namespaced call to
     #'   [crew_worker()] which will run in each worker and accept tasks.
     #' @param n Positive integer, number of workers to launch.

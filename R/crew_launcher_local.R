@@ -287,7 +287,10 @@ crew_class_launcher_local <- R6::R6Class(
     #'   and `instance` arguments are useful for
     #'   constructing informative job names.
     #' @return A handle object to allow the termination of the worker
-    #'   later on.
+    #'   later on. Used internally for testing and
+    #'   worker launching logic only: not guaranteed to persist
+    #'   in long-running or high-throughput pipelines
+    #'   (see the `launches` field of the launcher class).
     #' @param call Character of length 1 with a namespaced call to
     #'   [crew_worker()] which will run in the worker and accept tasks.
     launch_worker = function(call) {

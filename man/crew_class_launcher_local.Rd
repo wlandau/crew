@@ -213,7 +213,10 @@ constructing informative job names.
 
 \subsection{Returns}{
 A handle object to allow the termination of the worker
-later on.
+later on. Used internally for testing and
+worker launching logic only: not guaranteed to persist
+in long-running or high-throughput pipelines
+(see the \code{launches} field of the launcher class).
 }
 }
 \if{html}{\out{<hr>}}

@@ -83,7 +83,14 @@ Other launcher:
 
 \item{\code{launches}}{Data frame tracking worker launches with one row
 per launch. Each launch may create more than one worker.
-Old superfluous rows are periodically discarded for efficiency.}
+Old superfluous rows are periodically discarded for efficiency.
+The \code{handle} column is used internally for testing and
+worker launching logic only.
+Handles are not guaranteed to
+persist for the full duration of a pipeline:
+\code{crew} prunes old rows as workers connect and disconnect,
+so handles may become unavailable in long-running
+or high-throughput workflows.}
 
 \item{\code{throttle}}{A \code{\link[=crew_throttle]{crew_throttle()}} object to throttle scaling.}
 
@@ -335,7 +342,9 @@ Launch a worker.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Handle of the launched worker.
+Handle of the launched worker (stored internally for
+auto-scaling logic and testing but not
+guaranteed to persist; see the \code{launches} field).
 }
 }
 \if{html}{\out{<hr>}}
@@ -361,6 +370,10 @@ Launcher plugins will overwrite this method.
 
 \subsection{Returns}{
 A handle to mock the worker launch.
+Handles are used internally for testing and
+worker launching logic only. They are not guaranteed
+to persist in long-running or high-throughput pipelines
+(see the \code{launches} field).
 }
 }
 \if{html}{\out{<hr>}}
@@ -389,6 +402,10 @@ to launch multiple workers from a single system call.
 
 \subsection{Returns}{
 A handle to mock the worker launch.
+Handles are used internally for testing and
+worker launching logic only. They are not guaranteed
+to persist in long-running or high-throughput pipelines
+(see the \code{launches} field).
 }
 }
 \if{html}{\out{<hr>}}

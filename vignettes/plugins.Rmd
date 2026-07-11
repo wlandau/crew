@@ -216,9 +216,15 @@ result$result[[1]]
 Please use the result to verify that the task really ran on a worker as intended. The process ID above should agree with the one from the handle ([except on Windows](https://github.com/r-lib/processx/issues/364) because the actual R process may be different from the `Rscript.exe` process created first).
 
 ```r
-controller$launcher$instances$handle[[1]]$get_pid()
+controller$launcher$launches$handle[[1]]$get_pid()
 #> [1] 27336
 ```
+
+**Note:** handles in the `launches` data frame exist only for
+internal auto-scaling logic and testing purposes. In long-running
+or high-throughput pipelines, `crew` periodically prunes old rows from
+`launches` as workers connect and disconnect, so handles are
+not guaranteed to remain available for the full lifetime of a pipeline.
 
 In addition, please compare the worker IP address to the IP address of the local R session. Since our custom launcher creates local processes, the IP addresses are the same in this case. However, if the worker runs on a different computer (as with the[SLURM](https://slurm.schedmd.com/) or [AWS Batch](https://aws.amazon.com/batch/) launcher) then the worker IP address should be different from the one you get from the local R session. 
 
@@ -230,7 +236,7 @@ as.character(nanonext::ip_addr())[1]
 If you did not set any timeouts or task limits, the worker that ran the task should still be running. The other worker had no tasks, so it did not need to launch.
 
 ```r
-controller$launcher$instances$handle[[1]]$is_alive()
+controller$launcher$launches$handle[[1]]$is_alive()
 #> [1] TRUE
 ```
 

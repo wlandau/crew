@@ -42,5 +42,5 @@ Other utility:
 
 ``` r
 crew_random_name()
-#> [1] "21478a311869d695"
+#> [1] "730b8d3fc66468b7"
 ```

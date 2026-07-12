@@ -2,6 +2,8 @@
 
 ## crew 1.3.1
 
+CRAN release: 2026-05-30
+
 ### Threaded dispatcher updates
 
 - Deprecate the `dispatchers()` method of

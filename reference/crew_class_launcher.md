@@ -82,7 +82,11 @@ Other launcher:
 
   Data frame tracking worker launches with one row per launch. Each
   launch may create more than one worker. Old superfluous rows are
-  periodically discarded for efficiency.
+  periodically discarded for efficiency. The `handle` column is used
+  internally for testing and worker launching logic only. Handles are
+  not guaranteed to persist for the full duration of a pipeline: `crew`
+  prunes old rows as workers connect and disconnect, so handles may
+  become unavailable in long-running or high-throughput workflows.
 
 - `throttle`:
 
@@ -413,7 +417,8 @@ Launch a worker.
 
 #### Returns
 
-Handle of the launched worker.
+Handle of the launched worker (stored internally for auto-scaling logic
+and testing but not guaranteed to persist; see the `launches` field).
 
 ------------------------------------------------------------------------
 
@@ -439,7 +444,10 @@ Launcher plugins will overwrite this method.
 
 #### Returns
 
-A handle to mock the worker launch.
+A handle to mock the worker launch. Handles are used internally for
+testing and worker launching logic only. They are not guaranteed to
+persist in long-running or high-throughput pipelines (see the `launches`
+field).
 
 ------------------------------------------------------------------------
 
@@ -470,7 +478,10 @@ from a single system call.
 
 #### Returns
 
-A handle to mock the worker launch.
+A handle to mock the worker launch. Handles are used internally for
+testing and worker launching logic only. They are not guaranteed to
+persist in long-running or high-throughput pipelines (see the `launches`
+field).
 
 ------------------------------------------------------------------------
 
@@ -607,6 +618,6 @@ client$terminate()
 launcher <- crew_launcher_local()
 launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
 launcher$call()
-#> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tlscert = NULL, rs = NULL), controller = \"a2359777\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
+#> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tlscert = NULL, rs = NULL), controller = \"e14ae9ce\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
 launcher$terminate()
 ```

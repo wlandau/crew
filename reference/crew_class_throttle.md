@@ -219,5 +219,5 @@ throttle <- crew_throttle(seconds_max = 1)
 throttle$poll()
 #> [1] FALSE
 throttle$poll()
-#> [1] TRUE
+#> [1] FALSE
 ```

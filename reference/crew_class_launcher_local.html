@@ -262,7 +262,10 @@ constructing informative job names.</p>
 <div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
 <p>A handle object to allow the termination of the worker
-later on.</p>
+later on. Used internally for testing and
+worker launching logic only: not guaranteed to persist
+in long-running or high-throughput pipelines
+(see the <code>launches</code> field of the launcher class).</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher_local-clone"></a><div class="section">
@@ -325,7 +328,7 @@ later on.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

@@ -301,9 +301,15 @@ process created first).
 
 ``` r
 
-controller$launcher$instances$handle[[1]]$get_pid()
+controller$launcher$launches$handle[[1]]$get_pid()
 #> [1] 27336
 ```
+
+**Note:** handles in the `launches` data frame exist only for internal
+auto-scaling logic and testing purposes. In long-running or
+high-throughput pipelines, `crew` periodically prunes old rows from
+`launches` as workers connect and disconnect, so handles are not
+guaranteed to remain available for the full lifetime of a pipeline.
 
 In addition, please compare the worker IP address to the IP address of
 the local R session. Since our custom launcher creates local processes,
@@ -325,7 +331,7 @@ not need to launch.
 
 ``` r
 
-controller$launcher$instances$handle[[1]]$is_alive()
+controller$launcher$launches$handle[[1]]$is_alive()
 #> [1] TRUE
 ```
 

@@ -120,7 +120,14 @@ which launch and manage workers.</p>
 <dt><code>launches</code></dt>
 <dd><p>Data frame tracking worker launches with one row
 per launch. Each launch may create more than one worker.
-Old superfluous rows are periodically discarded for efficiency.</p></dd>
+Old superfluous rows are periodically discarded for efficiency.
+The <code>handle</code> column is used internally for testing and
+worker launching logic only.
+Handles are not guaranteed to
+persist for the full duration of a pipeline:
+<code>crew</code> prunes old rows as workers connect and disconnect,
+so handles may become unavailable in long-running
+or high-throughput workflows.</p></dd>
 
 
 <dt><code>throttle</code></dt>
@@ -410,7 +417,9 @@ help create custom launchers.</p><div class="section">
 </div>
 <div class="section">
 <h4 id="returns-7">Returns<a class="anchor" aria-label="anchor" href="#returns-7"></a></h4>
-<p>Handle of the launched worker.</p>
+<p>Handle of the launched worker (stored internally for
+auto-scaling logic and testing but not
+guaranteed to persist; see the <code>launches</code> field).</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-launch_worker"></a><div class="section">
@@ -436,7 +445,11 @@ help create custom launchers.</p><div class="section">
 
 <div class="section">
 <h4 id="returns-8">Returns<a class="anchor" aria-label="anchor" href="#returns-8"></a></h4>
-<p>A handle to mock the worker launch.</p>
+<p>A handle to mock the worker launch.
+Handles are used internally for testing and
+worker launching logic only. They are not guaranteed
+to persist in long-running or high-throughput pipelines
+(see the <code>launches</code> field).</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-launch_workers"></a><div class="section">
@@ -467,7 +480,11 @@ to launch multiple workers from a single system call.</p>
 
 <div class="section">
 <h4 id="returns-9">Returns<a class="anchor" aria-label="anchor" href="#returns-9"></a></h4>
-<p>A handle to mock the worker launch.</p>
+<p>A handle to mock the worker launch.
+Handles are used internally for testing and
+worker launching logic only. They are not guaranteed
+to persist in long-running or high-throughput pipelines
+(see the <code>launches</code> field).</p>
 </div>
 
 </div><p></p><hr><a id="method-crew_class_launcher-scale"></a><div class="section">
@@ -607,7 +624,7 @@ connection/disconnection events) (<code>FALSE</code> otherwise).</p>
 <span class="r-in"><span><span class="va">launcher</span> <span class="op">&lt;-</span> <span class="fu"><a href="crew_launcher_local.html">crew_launcher_local</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">start</span><span class="op">(</span>url <span class="op">=</span> <span class="st">"tcp://127.0.0.1:57000"</span>, profile <span class="op">=</span> <span class="st">"profile"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">call</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tlscert = NULL, rs = NULL), controller = \"a2359777\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tlscert = NULL, rs = NULL), controller = \"e14ae9ce\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"</span>
 <span class="r-in"><span><span class="va">launcher</span><span class="op">$</span><span class="fu">terminate</span><span class="op">(</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
@@ -620,7 +637,7 @@ connection/disconnection events) (<code>FALSE</code> otherwise).</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

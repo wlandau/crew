@@ -20,9 +20,9 @@ crew_class_monitor_local <- R6::R6Class(
     #'   list the process IDs of the running `mirai` dispatcher processes.
     #'   (No longer applicable.)
     #' @details The `mirai` dispatcher was an R process in `mirai` version
-    #'   <= 2.6.1. In later versions, the dispatcher is a thread within
-    #'   the controller's own R process, and the `dispatchers()` method
-    #'   does not return any process IDs.
+    #'   <= 2.6.1. In later versions,
+    #'   the dispatcher no longer a full process,
+    #'   and the `dispatchers()` method does not return any process IDs.
     #' @return Integer vector of process IDs of the running `mirai` dispatcher
     #'   processes.
     #' @param user Character of length 1, user ID to filter on. `NULL`

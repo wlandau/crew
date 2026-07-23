@@ -44,9 +44,9 @@ to list processes of all users (not recommended).}
 }
 \subsection{Details}{
 The \code{mirai} dispatcher was an R process in \code{mirai} version
-<= 2.6.1. In later versions, the dispatcher is a thread within
-the controller's own R process, and the \code{dispatchers()} method
-does not return any process IDs.
+<= 2.6.1. In later versions,
+the dispatcher no longer a full process,
+and the \code{dispatchers()} method does not return any process IDs.
 }
 
 \subsection{Returns}{

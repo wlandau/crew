@@ -23,8 +23,8 @@ crew_clean(
 
   Logical of length 1, whether to terminate dispatcher processes (in
   older versions of `mirai`: \<= 2.6.1). In `mirai` \> 2.6.1, the
-  dispatcher is a thread within the controller's own R process and will
-  not be terminated by this function.
+  dispatcher is a no longer a full process and will not be terminated by
+  this function.
 
 - workers:
 

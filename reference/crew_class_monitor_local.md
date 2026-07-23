@@ -45,8 +45,8 @@ processes. (No longer applicable.)
 #### Details
 
 The `mirai` dispatcher was an R process in `mirai` version \<= 2.6.1. In
-later versions, the dispatcher is a thread within the controller's own R
-process, and the `dispatchers()` method does not return any process IDs.
+later versions, the dispatcher no longer a full process, and the
+`dispatchers()` method does not return any process IDs.
 
 #### Returns
 

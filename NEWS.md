@@ -1,4 +1,4 @@
-# crew development version
+# crew 1.3.2
 
 * In `processx::process$new()` in the local launcher, set `cleanup = FALSE` to avoid worker crashes when a worker is garbage collected (#253, @fdhidalgo).
 * Document that worker launch handles exist only for internal auto-scaling logic and testing. They are not guaranteed to persist for the full duration of a pipeline (#253).

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">crew</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,11 @@
       <small>Source: <a href="https://github.com/wlandau/crew/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.3.2" id="crew-132">crew 1.3.2<a class="anchor" aria-label="anchor" href="#crew-132"></a></h2>
+<ul><li>In <code>processx::process$new()</code> in the local launcher, set <code>cleanup = FALSE</code> to avoid worker crashes when a worker is garbage collected (<a href="https://github.com/wlandau/crew/issues/253" class="external-link">#253</a>, <a href="https://github.com/fdhidalgo" class="external-link">@fdhidalgo</a>).</li>
+<li>Document that worker launch handles exist only for internal auto-scaling logic and testing. They are not guaranteed to persist for the full duration of a pipeline (<a href="https://github.com/wlandau/crew/issues/253" class="external-link">#253</a>).</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.1" id="crew-131">crew 1.3.1<a class="anchor" aria-label="anchor" href="#crew-131"></a></h2><p class="text-muted">CRAN release: 2026-05-30</p>
 <div class="section level3">

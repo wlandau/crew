@@ -71,9 +71,10 @@ Please also follow these additional guidelines.
   automated should go in `tests/interactive/`. For features affecting
   performance, it is good practice to add profiling studies to
   `tests/performance/`.
-- Check code coverage with `covr::package_coverage()`. Automated tests
-  should cover all the new or changed functionality in your pull
-  request.
+- Check code coverage with
+  [`covr::package_coverage()`](http://covr.r-lib.org/reference/package_coverage.md).
+  Automated tests should cover all the new or changed functionality in
+  your pull request.
 - Run overall package checks with `devtools::check()` and
   `goodpractice::gp()`
 - Describe your contribution in the project’s

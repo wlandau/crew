@@ -216,11 +216,16 @@ crew_class_tls <- R6::R6Class(
       # Cannot test in unit tests because custom TLS configuration
       # is platform-dependent and low-level.
       # nocov start
-      if (isTRUE(test)) {
-        nanonext::tls_config(
-          client = worker(profile = "default"),
-          server = client(),
-          pass = .password
+      # A TLS configuration only needs to be tested if TLS is
+      # actually going to be used.
+      # Wrapping in try() to appease CRAN.
+      if (isTRUE(test) && .mode != "none") {
+        try(
+          nanonext::tls_config(
+            client = worker(profile = "default"),
+            server = client(),
+            pass = .password
+          )
         )
       }
       # nocov end

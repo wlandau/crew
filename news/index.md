@@ -1,6 +1,15 @@
 # Changelog
 
+## crew 1.3.3
+
+- Wrap
+  [`nanonext::tls_config()`](https://nanonext.r-lib.org/reference/tls_config.html)
+  in [`try()`](https://rdrr.io/r/base/try.html) to avoid
+  platform-dependent false positives on CRAN.
+
 ## crew 1.3.2
+
+CRAN release: 2026-07-30
 
 - In `processx::process$new()` in the local launcher, set
   `cleanup = FALSE` to avoid worker crashes when a worker is garbage

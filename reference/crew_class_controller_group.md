@@ -27,7 +27,7 @@ Other controller_group:
 
 ### Public methods
 
-- [`crew_class_controller_group$new()`](#method-crew_class_controller_group-new)
+- [`crew_class_controller_group$new()`](#method-crew_class_controller_group-initialize)
 
 - [`crew_class_controller_group$validate()`](#method-crew_class_controller_group-validate)
 
@@ -83,7 +83,7 @@ Other controller_group:
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `crew_class_controller_group$new()`
 
 Multi-controller constructor.
 
@@ -124,7 +124,7 @@ An `R6` object with the controller group object.
 
 ------------------------------------------------------------------------
 
-### Method `validate()`
+### `crew_class_controller_group$validate()`
 
 Validate the client.
 
@@ -138,7 +138,7 @@ Validate the client.
 
 ------------------------------------------------------------------------
 
-### Method `size()`
+### `crew_class_controller_group$size()`
 
 Number of tasks in the selected controllers.
 
@@ -159,7 +159,7 @@ Non-negative integer, number of tasks in the controller.
 
 ------------------------------------------------------------------------
 
-### Method `empty()`
+### `crew_class_controller_group$empty()`
 
 See if the controllers are empty.
 
@@ -185,7 +185,7 @@ waiting to be retrieved with `push()`.
 
 ------------------------------------------------------------------------
 
-### Method `nonempty()`
+### `crew_class_controller_group$nonempty()`
 
 Check if the controller group is nonempty.
 
@@ -211,7 +211,7 @@ waiting to be retrieved with `push()`.
 
 ------------------------------------------------------------------------
 
-### Method `resolved()`
+### `crew_class_controller_group$resolved()`
 
 Number of resolved `mirai()` tasks.
 
@@ -239,7 +239,7 @@ the client is not running).
 
 ------------------------------------------------------------------------
 
-### Method `unresolved()`
+### `crew_class_controller_group$unresolved()`
 
 Number of unresolved `mirai()` tasks.
 
@@ -260,7 +260,7 @@ Non-negative integer of length 1, number of unresolved `mirai()` tasks.
 
 ------------------------------------------------------------------------
 
-### Method `saturated()`
+### `crew_class_controller_group$saturated()`
 
 Check if a controller is saturated.
 
@@ -300,7 +300,7 @@ may choose not to (for performance and user-friendliness).
 
 ------------------------------------------------------------------------
 
-### Method [`start()`](https://rdrr.io/r/stats/start.html)
+### `crew_class_controller_group$start()`
 
 Start one or more controllers.
 
@@ -321,7 +321,7 @@ Start one or more controllers.
 
 ------------------------------------------------------------------------
 
-### Method `started()`
+### `crew_class_controller_group$started()`
 
 Check whether all the given controllers are started.
 
@@ -346,7 +346,7 @@ Actually checks whether all the given clients are started.
 
 ------------------------------------------------------------------------
 
-### Method `launch()`
+### `crew_class_controller_group$launch()`
 
 Launch one or more workers on one or more controllers.
 
@@ -371,7 +371,7 @@ Launch one or more workers on one or more controllers.
 
 ------------------------------------------------------------------------
 
-### Method [`scale()`](https://rdrr.io/r/base/scale.html)
+### `crew_class_controller_group$scale()`
 
 Automatically scale up the number of workers if needed in one or more
 controller objects.
@@ -407,7 +407,7 @@ otherwise).
 
 ------------------------------------------------------------------------
 
-### Method `autoscale()`
+### `crew_class_controller_group$autoscale()`
 
 Run worker auto-scaling in a `later` loop.
 
@@ -435,7 +435,7 @@ Run worker auto-scaling in a `later` loop.
 
 ------------------------------------------------------------------------
 
-### Method `descale()`
+### `crew_class_controller_group$descale()`
 
 Terminate the auto-scaling loop started by `controller$autoscale()`.
 
@@ -456,7 +456,7 @@ Terminate the auto-scaling loop started by `controller$autoscale()`.
 
 ------------------------------------------------------------------------
 
-### Method `crashes()`
+### `crew_class_controller_group$crashes()`
 
 Report the number of consecutive crashes of a task, summed over all
 selected controllers in the group.
@@ -488,7 +488,7 @@ controllers in the group.
 
 ------------------------------------------------------------------------
 
-### Method `push()`
+### `crew_class_controller_group$push()`
 
 Push a task to the head of the task list.
 
@@ -619,7 +619,7 @@ to interact with the task directly, e.g. to create a promise object with
 
 ------------------------------------------------------------------------
 
-### Method `synced()`
+### `crew_class_controller_group$synced()`
 
 Check if all controllers are synced.
 
@@ -642,7 +642,7 @@ the task counts in
 
 ------------------------------------------------------------------------
 
-### Method `walk()`
+### `crew_class_controller_group$walk()`
 
 Apply a single command to multiple inputs, and return control to the
 user without waiting for any task to complete.
@@ -800,7 +800,7 @@ tasks. The order of tasks in the list matches the order of data in the
 
 ------------------------------------------------------------------------
 
-### Method `map()`
+### `crew_class_controller_group$map()`
 
 Apply a single command to multiple inputs.
 
@@ -989,7 +989,7 @@ corresponding to the output of `pop()`.
 
 ------------------------------------------------------------------------
 
-### Method `pop()`
+### `crew_class_controller_group$pop()`
 
 Pop a completed task from the results data frame.
 
@@ -1047,7 +1047,7 @@ controllers.
 
 ------------------------------------------------------------------------
 
-### Method `collect()`
+### `crew_class_controller_group$collect()`
 
 Pop all available task results and return them in a tidy `tibble`.
 
@@ -1099,7 +1099,7 @@ per task. Returns `NULL` if there are no available results.
 
 ------------------------------------------------------------------------
 
-### Method `wait()`
+### `crew_class_controller_group$wait()`
 
 Wait for tasks.
 
@@ -1174,7 +1174,7 @@ controller and not by other means.
 
 ------------------------------------------------------------------------
 
-### Method `push_backlog()`
+### `crew_class_controller_group$push_backlog()`
 
 Push the name of a task to the backlog.
 
@@ -1204,7 +1204,7 @@ controller.
 
 ------------------------------------------------------------------------
 
-### Method `pop_backlog()`
+### `crew_class_controller_group$pop_backlog()`
 
 Pop the task names from the head of the backlog which can be pushed
 without saturating the controller.
@@ -1228,7 +1228,7 @@ is returned.
 
 ------------------------------------------------------------------------
 
-### Method [`summary()`](https://rdrr.io/r/base/summary.html)
+### `crew_class_controller_group$summary()`
 
 Summarize the workers of one or more controllers.
 
@@ -1254,7 +1254,7 @@ output.
 
 ------------------------------------------------------------------------
 
-### Method `pids()`
+### `crew_class_controller_group$pids()`
 
 Deprecated on 2025-08-26 in `crew` version 1.2.1.9005.
 
@@ -1275,7 +1275,7 @@ The integer process ID of the current process.
 
 ------------------------------------------------------------------------
 
-### Method `terminate()`
+### `crew_class_controller_group$terminate()`
 
 Terminate the workers and disconnect the client for one or more
 controllers.
@@ -1313,7 +1313,7 @@ group$terminate()
 }
 
 ## ------------------------------------------------
-## Method `crew_class_controller_group$new`
+## Method `crew_class_controller_group$new()`
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {

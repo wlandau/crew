@@ -94,7 +94,7 @@ Other controller:
 
 ### Public methods
 
-- [`crew_class_controller$new()`](#method-crew_class_controller-new)
+- [`crew_class_controller$new()`](#method-crew_class_controller-initialize)
 
 - [`crew_class_controller$validate()`](#method-crew_class_controller-validate)
 
@@ -152,7 +152,7 @@ Other controller:
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `crew_class_controller$new()`
 
 `mirai` controller constructor.
 
@@ -230,7 +230,7 @@ An `R6` controller object.
 
 ------------------------------------------------------------------------
 
-### Method `validate()`
+### `crew_class_controller$validate()`
 
 Validate the controller.
 
@@ -244,7 +244,7 @@ Validate the controller.
 
 ------------------------------------------------------------------------
 
-### Method `size()`
+### `crew_class_controller$size()`
 
 Number of tasks in the controller.
 
@@ -265,7 +265,7 @@ Non-negative integer, number of tasks in the controller.
 
 ------------------------------------------------------------------------
 
-### Method `empty()`
+### `crew_class_controller$empty()`
 
 Check if the controller is empty.
 
@@ -295,7 +295,7 @@ queue.
 
 ------------------------------------------------------------------------
 
-### Method `nonempty()`
+### `crew_class_controller$nonempty()`
 
 Check if the controller is nonempty.
 
@@ -325,7 +325,7 @@ queue.
 
 ------------------------------------------------------------------------
 
-### Method `resolved()`
+### `crew_class_controller$resolved()`
 
 Cumulative number of resolved tasks.
 
@@ -353,7 +353,7 @@ is not running).
 
 ------------------------------------------------------------------------
 
-### Method `unresolved()`
+### `crew_class_controller$unresolved()`
 
 Number of unresolved tasks.
 
@@ -374,7 +374,7 @@ Non-negative integer of length 1, number of unresolved tasks.
 
 ------------------------------------------------------------------------
 
-### Method `saturated()`
+### `crew_class_controller$saturated()`
 
 Check if the controller is saturated.
 
@@ -414,7 +414,7 @@ may choose not to (for performance and user-friendliness).
 
 ------------------------------------------------------------------------
 
-### Method [`start()`](https://rdrr.io/r/stats/start.html)
+### `crew_class_controller$start()`
 
 Start the controller if it is not already started.
 
@@ -440,7 +440,7 @@ launcher.
 
 ------------------------------------------------------------------------
 
-### Method `started()`
+### `crew_class_controller$started()`
 
 Check whether the controller is started.
 
@@ -465,7 +465,7 @@ Actually checks whether the client is started.
 
 ------------------------------------------------------------------------
 
-### Method `launch()`
+### `crew_class_controller$launch()`
 
 Launch one or more workers.
 
@@ -490,7 +490,7 @@ Launch one or more workers.
 
 ------------------------------------------------------------------------
 
-### Method [`scale()`](https://rdrr.io/r/base/scale.html)
+### `crew_class_controller$scale()`
 
 Auto-scale workers out to meet the demand of tasks.
 
@@ -525,7 +525,7 @@ launches or worker connection/disconnection events). `FALSE` otherwise.
 
 ------------------------------------------------------------------------
 
-### Method `autoscale()`
+### `crew_class_controller$autoscale()`
 
 Run worker auto-scaling in a `later` loop in polling intervals
 determined by exponential backoff.
@@ -558,7 +558,7 @@ Call `controller$descale()` to terminate the auto-scaling loop.
 
 ------------------------------------------------------------------------
 
-### Method `descale()`
+### `crew_class_controller$descale()`
 
 Terminate the auto-scaling loop started by `controller$autoscale()`.
 
@@ -579,7 +579,7 @@ Terminate the auto-scaling loop started by `controller$autoscale()`.
 
 ------------------------------------------------------------------------
 
-### Method `crashes()`
+### `crew_class_controller$crashes()`
 
 Report the number of consecutive crashes of a task.
 
@@ -609,7 +609,7 @@ Non-negative integer, number of consecutive times the task crashed.
 
 ------------------------------------------------------------------------
 
-### Method `push()`
+### `crew_class_controller$push()`
 
 Push a task to the head of the task list.
 
@@ -749,7 +749,7 @@ to interact with the task directly, e.g. to create a promise object with
 
 ------------------------------------------------------------------------
 
-### Method `synced()`
+### `crew_class_controller$synced()`
 
 Check if the controller is synced.
 
@@ -772,7 +772,7 @@ the task counts in
 
 ------------------------------------------------------------------------
 
-### Method `walk()`
+### `crew_class_controller$walk()`
 
 Apply a single command to multiple inputs, and return control to the
 user without waiting for any task to complete.
@@ -931,7 +931,7 @@ tasks. The order of tasks in the list matches the order of data in the
 
 ------------------------------------------------------------------------
 
-### Method `map()`
+### `crew_class_controller$map()`
 
 Apply a single command to multiple inputs, wait for all tasks to
 complete, and return the results of all tasks.
@@ -1128,7 +1128,7 @@ corresponding to the output of `pop()`.
 
 ------------------------------------------------------------------------
 
-### Method `pop()`
+### `crew_class_controller$pop()`
 
 Pop a completed task from the results data frame.
 
@@ -1203,7 +1203,8 @@ one-row `tibble` with the following columns.
 - `status`: a character string. `"success"` if the task succeeded,
   `"cancel"` if the task was canceled with the `cancel()` controller
   method, `"crash"` if the worker running the task exited before it
-  could complete the task, or `"error"` for any other kind of error.
+  could complete the task, `"timeout"` if the task timed out, or
+  `"error"` for any other kind of error.
 
 - `error`: the first 2048 characters of the error message if the task
   status is not `"success"`, `NA` otherwise. Messages for crashes and
@@ -1241,7 +1242,7 @@ one-row `tibble` with the following columns.
 
 ------------------------------------------------------------------------
 
-### Method `collect()`
+### `crew_class_controller$collect()`
 
 Pop all available task results and return them in a tidy `tibble`.
 
@@ -1272,12 +1273,17 @@ Pop all available task results and return them in a tidy `tibble`.
 - `error`:
 
   `NULL` or character of length 1, choice of action if the popped task
-  threw an error. Possible values: \* `"stop"`: throw an error in the
-  main R session instead of returning a value. \* `"warn"`: throw a
-  warning. \* `NULL` or `"silent"`: do not react to errors. NOTE: the
-  only kinds of errors considered here are errors at the R level. A
-  crashed tasks will return a status of `"crash"` in the output and not
-  trigger an error in `collect()` unless `crashes_max` is reached.
+  threw an error. Possible values:
+
+  - `"stop"`: throw an error in the main R session instead of returning
+    a value.
+
+  - `"warn"`: throw a warning.
+
+  - `NULL` or `"silent"`: do not react to errors. NOTE: the only kinds
+    of errors considered here are errors at the R level. A crashed tasks
+    will return a status of `"crash"` in the output and not trigger an
+    error in `collect()` unless `crashes_max` is reached.
 
 - `controllers`:
 
@@ -1292,7 +1298,7 @@ for details on the columns of the returned `tibble`.
 
 ------------------------------------------------------------------------
 
-### Method `wait()`
+### `crew_class_controller$wait()`
 
 Wait for tasks.
 
@@ -1369,7 +1375,7 @@ controller and not by other means.
 
 ------------------------------------------------------------------------
 
-### Method `push_backlog()`
+### `crew_class_controller$push_backlog()`
 
 Push the name of a task to the backlog.
 
@@ -1399,7 +1405,7 @@ controller.
 
 ------------------------------------------------------------------------
 
-### Method `pop_backlog()`
+### `crew_class_controller$pop_backlog()`
 
 Pop the task names from the head of the backlog which can be pushed
 without saturating the controller.
@@ -1423,7 +1429,7 @@ is returned.
 
 ------------------------------------------------------------------------
 
-### Method [`summary()`](https://rdrr.io/r/base/summary.html)
+### `crew_class_controller$summary()`
 
 Summarize the collected tasks of the controller.
 
@@ -1466,7 +1472,7 @@ columns:
 
 ------------------------------------------------------------------------
 
-### Method `cancel()`
+### `crew_class_controller$cancel()`
 
 Cancel one or more tasks.
 
@@ -1492,7 +1498,7 @@ Cancel one or more tasks.
 
 ------------------------------------------------------------------------
 
-### Method `pids()`
+### `crew_class_controller$pids()`
 
 Deprecated on 2025-08-26 in `crew` version 1.2.1.9005.
 
@@ -1513,7 +1519,7 @@ The integer process ID of the current process.
 
 ------------------------------------------------------------------------
 
-### Method `terminate()`
+### `crew_class_controller$terminate()`
 
 Terminate the workers and the `mirai` client.
 
@@ -1547,7 +1553,7 @@ controller$terminate()
 }
 
 ## ------------------------------------------------
-## Method `crew_class_controller$new`
+## Method `crew_class_controller$new()`
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {

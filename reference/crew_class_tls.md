@@ -38,7 +38,7 @@ Other tls:
 
 ### Public methods
 
-- [`crew_class_tls$new()`](#method-crew_class_tls-new)
+- [`crew_class_tls$new()`](#method-crew_class_tls-initialize)
 
 - [`crew_class_tls$validate()`](#method-crew_class_tls-validate)
 
@@ -50,7 +50,7 @@ Other tls:
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `crew_class_tls$new()`
 
 TLS configuration constructor.
 
@@ -95,7 +95,7 @@ An `R6` object with TLS configuration.
 
 ------------------------------------------------------------------------
 
-### Method `validate()`
+### `crew_class_tls$validate()`
 
 Validate the object.
 
@@ -116,7 +116,7 @@ Validate the object.
 
 ------------------------------------------------------------------------
 
-### Method `client()`
+### `crew_class_tls$client()`
 
 TLS credentials for the `crew` client.
 
@@ -130,7 +130,7 @@ TLS credentials for the `crew` client.
 
 ------------------------------------------------------------------------
 
-### Method `worker()`
+### `crew_class_tls$worker()`
 
 TLS credentials for `crew` workers.
 
@@ -150,7 +150,7 @@ TLS credentials for `crew` workers.
 
 ------------------------------------------------------------------------
 
-### Method [`url()`](https://rdrr.io/r/base/connections.html)
+### `crew_class_tls$url()`
 
 Form the URL for `crew` worker connections.
 
@@ -202,7 +202,7 @@ crew_tls(mode = "automatic")
 #>     .validate_mode_custom: function () 
 
 ## ------------------------------------------------
-## Method `crew_class_tls$new`
+## Method `crew_class_tls$new()`
 ## ------------------------------------------------
 
 crew_tls(mode = "automatic")

@@ -2,6 +2,8 @@
 
 ## crew 1.3.3
 
+CRAN release: 2026-09-04
+
 - Wrap
   [`nanonext::tls_config()`](https://nanonext.r-lib.org/reference/tls_config.html)
   in [`try()`](https://rdrr.io/r/base/try.html) to avoid

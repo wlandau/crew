@@ -36,7 +36,7 @@ Other relay:
 
 ### Public methods
 
-- [`crew_class_relay$new()`](#method-crew_class_relay-new)
+- [`crew_class_relay$new()`](#method-crew_class_relay-initialize)
 
 - [`crew_class_relay$validate()`](#method-crew_class_relay-validate)
 
@@ -52,7 +52,7 @@ Other relay:
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `crew_class_relay$new()`
 
 Relay constructor.
 
@@ -76,7 +76,7 @@ object.
 
 ------------------------------------------------------------------------
 
-### Method `validate()`
+### `crew_class_relay$validate()`
 
 Validate the object.
 
@@ -90,7 +90,7 @@ Validate the object.
 
 ------------------------------------------------------------------------
 
-### Method [`start()`](https://rdrr.io/r/stats/start.html)
+### `crew_class_relay$start()`
 
 Start the relay object.
 
@@ -104,7 +104,7 @@ Start the relay object.
 
 ------------------------------------------------------------------------
 
-### Method `terminate()`
+### `crew_class_relay$terminate()`
 
 Terminate the relay object.
 
@@ -118,7 +118,7 @@ Terminate the relay object.
 
 ------------------------------------------------------------------------
 
-### Method `set_from()`
+### `crew_class_relay$set_from()`
 
 Set the condition variable to relay from.
 
@@ -138,7 +138,7 @@ Set the condition variable to relay from.
 
 ------------------------------------------------------------------------
 
-### Method `set_to()`
+### `crew_class_relay$set_to()`
 
 Set the condition variable to relay to.
 
@@ -158,7 +158,7 @@ Set the condition variable to relay to.
 
 ------------------------------------------------------------------------
 
-### Method `wait()`
+### `crew_class_relay$wait()`
 
 Wait until an unobserved task resolves or the timeout is reached. Use
 the throttle to determine the waiting time.

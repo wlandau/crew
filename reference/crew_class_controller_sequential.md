@@ -14,7 +14,7 @@ Other sequential controllers:
 
 ## Super class
 
-[`crew::crew_class_controller`](https://wlandau.github.io/crew/reference/crew_class_controller.md)
+[`crew_class_controller`](https://wlandau.github.io/crew/reference/crew_class_controller.md)
 -\> `crew_class_controller_sequential`
 
 ## Methods
@@ -51,24 +51,24 @@ Other sequential controllers:
 
 Inherited methods
 
-- [`crew::crew_class_controller$collect()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-collect)
-- [`crew::crew_class_controller$crashes()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crashes)
-- [`crew::crew_class_controller$empty()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-empty)
-- [`crew::crew_class_controller$initialize()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-initialize)
-- [`crew::crew_class_controller$map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-map)
-- [`crew::crew_class_controller$nonempty()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-nonempty)
-- [`crew::crew_class_controller$pids()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-pids)
-- [`crew::crew_class_controller$pop()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-pop)
-- [`crew::crew_class_controller$size()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-size)
-- [`crew::crew_class_controller$started()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-started)
-- [`crew::crew_class_controller$summary()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-summary)
-- [`crew::crew_class_controller$synced()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-synced)
-- [`crew::crew_class_controller$validate()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-validate)
-- [`crew::crew_class_controller$walk()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-walk)
+- [`crew_class_controller$collect()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-collect)
+- [`crew_class_controller$crashes()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-crashes)
+- [`crew_class_controller$empty()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-empty)
+- [`crew_class_controller$initialize()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-initialize)
+- [`crew_class_controller$map()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-map)
+- [`crew_class_controller$nonempty()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-nonempty)
+- [`crew_class_controller$pids()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-pids)
+- [`crew_class_controller$pop()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-pop)
+- [`crew_class_controller$size()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-size)
+- [`crew_class_controller$started()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-started)
+- [`crew_class_controller$summary()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-summary)
+- [`crew_class_controller$synced()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-synced)
+- [`crew_class_controller$validate()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-validate)
+- [`crew_class_controller$walk()`](https://wlandau.github.io/crew/reference/crew_class_controller.html#method-walk)
 
 ------------------------------------------------------------------------
 
-### Method `resolved()`
+### `crew_class_controller_sequential$resolved()`
 
 Number of resolved tasks.
 
@@ -97,7 +97,7 @@ is not running).
 
 ------------------------------------------------------------------------
 
-### Method `unresolved()`
+### `crew_class_controller_sequential$unresolved()`
 
 Number of unresolved tasks.
 
@@ -119,7 +119,7 @@ soon as they are pushed.
 
 ------------------------------------------------------------------------
 
-### Method `saturated()`
+### `crew_class_controller_sequential$saturated()`
 
 Check if the controller is saturated.
 
@@ -153,7 +153,7 @@ immediately on the local process and there are no workers.
 
 ------------------------------------------------------------------------
 
-### Method [`start()`](https://rdrr.io/r/stats/start.html)
+### `crew_class_controller_sequential$start()`
 
 Start the controller if it is not already started.
 
@@ -179,7 +179,7 @@ the client as started.
 
 ------------------------------------------------------------------------
 
-### Method `launch()`
+### `crew_class_controller_sequential$launch()`
 
 Does nothing for the sequential controller.
 
@@ -204,7 +204,7 @@ Does nothing for the sequential controller.
 
 ------------------------------------------------------------------------
 
-### Method [`scale()`](https://rdrr.io/r/base/scale.html)
+### `crew_class_controller_sequential$scale()`
 
 Does nothing for the sequential controller.
 
@@ -229,7 +229,7 @@ Invisibly returns `FALSE`.
 
 ------------------------------------------------------------------------
 
-### Method `autoscale()`
+### `crew_class_controller_sequential$autoscale()`
 
 Not applicable to the sequential controller.
 
@@ -251,7 +251,7 @@ Not applicable to the sequential controller.
 
 ------------------------------------------------------------------------
 
-### Method `descale()`
+### `crew_class_controller_sequential$descale()`
 
 Not applicable to the sequential controller.
 
@@ -272,7 +272,7 @@ Not applicable to the sequential controller.
 
 ------------------------------------------------------------------------
 
-### Method `push()`
+### `crew_class_controller_sequential$push()`
 
 Push a task to the head of the task list.
 
@@ -390,7 +390,7 @@ result of the task.
 
 ------------------------------------------------------------------------
 
-### Method `wait()`
+### `crew_class_controller_sequential$wait()`
 
 Not applicable to the sequential controller.
 
@@ -438,7 +438,7 @@ Always returns `TRUE` (invisibly) for the sequential controller.
 
 ------------------------------------------------------------------------
 
-### Method `push_backlog()`
+### `crew_class_controller_sequential$push_backlog()`
 
 Not applicable to the sequential controller.
 
@@ -463,7 +463,7 @@ Not applicable to the sequential controller.
 
 ------------------------------------------------------------------------
 
-### Method `pop_backlog()`
+### `crew_class_controller_sequential$pop_backlog()`
 
 Not applicable to the sequential controller.
 
@@ -484,7 +484,7 @@ Always `character(0L)` for the sequential controller.
 
 ------------------------------------------------------------------------
 
-### Method `cancel()`
+### `crew_class_controller_sequential$cancel()`
 
 Not applicable to the sequential controller.
 
@@ -504,7 +504,7 @@ Not applicable to the sequential controller.
 
 ------------------------------------------------------------------------
 
-### Method `terminate()`
+### `crew_class_controller_sequential$terminate()`
 
 Terminate the controller.
 

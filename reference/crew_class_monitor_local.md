@@ -26,7 +26,7 @@ Other monitor:
 
 ------------------------------------------------------------------------
 
-### Method `dispatchers()`
+### `crew_class_monitor_local$dispatchers()`
 
 Deprecated: list the process IDs of the running `mirai` dispatcher
 processes. (No longer applicable.)
@@ -55,7 +55,7 @@ processes.
 
 ------------------------------------------------------------------------
 
-### Method `daemons()`
+### `crew_class_monitor_local$daemons()`
 
 List the process IDs of the locally running `mirai` daemon processes
 which are not `crew` workers.
@@ -78,7 +78,7 @@ processes which are not `crew` workers.
 
 ------------------------------------------------------------------------
 
-### Method `workers()`
+### `crew_class_monitor_local$workers()`
 
 List the process IDs of locally running `crew` workers launched by the
 local controller
@@ -111,7 +111,7 @@ by the local controller
 
 ------------------------------------------------------------------------
 
-### Method `terminate()`
+### `crew_class_monitor_local$terminate()`
 
 Terminate the given process IDs.
 

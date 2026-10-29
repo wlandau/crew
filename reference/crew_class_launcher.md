@@ -103,7 +103,7 @@ Other launcher:
 
 ### Public methods
 
-- [`crew_class_launcher$new()`](#method-crew_class_launcher-new)
+- [`crew_class_launcher$new()`](#method-crew_class_launcher-initialize)
 
 - [`crew_class_launcher$validate()`](#method-crew_class_launcher-validate)
 
@@ -135,7 +135,7 @@ Other launcher:
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `crew_class_launcher$new()`
 
 Launcher constructor.
 
@@ -284,7 +284,7 @@ An `R6` object with the launcher.
 
 ------------------------------------------------------------------------
 
-### Method `validate()`
+### `crew_class_launcher$validate()`
 
 Validate the launcher.
 
@@ -298,7 +298,7 @@ Validate the launcher.
 
 ------------------------------------------------------------------------
 
-### Method `poll()`
+### `crew_class_launcher$poll()`
 
 Poll the throttle.
 
@@ -313,7 +313,7 @@ appropriate time.
 
 ------------------------------------------------------------------------
 
-### Method `settings()`
+### `crew_class_launcher$settings()`
 
 List of arguments for
 [`mirai::daemon()`](https://mirai.r-lib.org/reference/daemon.html).
@@ -329,7 +329,7 @@ List of arguments for
 
 ------------------------------------------------------------------------
 
-### Method [`call()`](https://rdrr.io/r/base/call.html)
+### `crew_class_launcher$call()`
 
 Create a call to
 [`crew_worker()`](https://wlandau.github.io/crew/reference/crew_worker.md)
@@ -359,7 +359,7 @@ Character string with a call to
 
 ------------------------------------------------------------------------
 
-### Method [`start()`](https://rdrr.io/r/stats/start.html)
+### `crew_class_launcher$start()`
 
 Start the launcher.
 
@@ -387,7 +387,7 @@ Start the launcher.
 
 ------------------------------------------------------------------------
 
-### Method `terminate()`
+### `crew_class_launcher$terminate()`
 
 Terminate the whole launcher, including all workers.
 
@@ -401,7 +401,7 @@ Terminate the whole launcher, including all workers.
 
 ------------------------------------------------------------------------
 
-### Method `launch()`
+### `crew_class_launcher$launch()`
 
 Launch a worker.
 
@@ -422,7 +422,7 @@ and testing but not guaranteed to persist; see the `launches` field).
 
 ------------------------------------------------------------------------
 
-### Method `launch_worker()`
+### `crew_class_launcher$launch_worker()`
 
 Abstract worker launch method.
 
@@ -451,7 +451,7 @@ field).
 
 ------------------------------------------------------------------------
 
-### Method `launch_workers()`
+### `crew_class_launcher$launch_workers()`
 
 Launch multiple workers.
 
@@ -485,7 +485,7 @@ field).
 
 ------------------------------------------------------------------------
 
-### Method [`scale()`](https://rdrr.io/r/base/scale.html)
+### `crew_class_launcher$scale()`
 
 Auto-scale workers out to meet the demand of tasks.
 
@@ -512,7 +512,7 @@ otherwise).
 
 ------------------------------------------------------------------------
 
-### Method `terminate_workers()`
+### `crew_class_launcher$terminate_workers()`
 
 Deprecated on 2025-08-26 (`crew` version 1.2.1.9004).
 
@@ -526,7 +526,7 @@ Deprecated on 2025-08-26 (`crew` version 1.2.1.9004).
 
 ------------------------------------------------------------------------
 
-### Method `crashes()`
+### `crew_class_launcher$crashes()`
 
 Deprecated on 2025-01-28 (`crew` version 1.0.0).
 
@@ -546,7 +546,7 @@ The integer 1, for compatibility.
 
 ------------------------------------------------------------------------
 
-### Method `set_name()`
+### `crew_class_launcher$set_name()`
 
 Deprecated on 2025-01-28 (`crew` version 1.0.0).
 
@@ -566,7 +566,7 @@ Deprecated on 2025-01-28 (`crew` version 1.0.0).
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `crew_class_launcher$clone()`
 
 The objects of this class are cloneable with this method.
 
@@ -596,7 +596,7 @@ client$terminate()
 }
 
 ## ------------------------------------------------
-## Method `crew_class_launcher$new`
+## Method `crew_class_launcher$new()`
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -612,12 +612,12 @@ client$terminate()
 }
 
 ## ------------------------------------------------
-## Method `crew_class_launcher$call`
+## Method `crew_class_launcher$call()`
 ## ------------------------------------------------
 
 launcher <- crew_launcher_local()
 launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
 launcher$call()
-#> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tlscert = NULL, rs = NULL), controller = \"ad4de8fc\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
+#> [1] "crew::crew_worker(settings = list(url = \"tcp://127.0.0.1:57000\", dispatcher = TRUE, asyncdial = FALSE, autoexit = 15L, cleanup = FALSE, output = TRUE, maxtasks = Inf, idletime = Inf, walltime = Inf, timerstart = 0L, tlscert = NULL, rs = NULL), controller = \"d463caf5\", options_metrics = crew::crew_options_metrics(path = NULL, seconds_interval = 5))"
 launcher$terminate()
 ```

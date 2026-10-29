@@ -65,7 +65,7 @@ Other client:
 
 ### Public methods
 
-- [`crew_class_client$new()`](#method-crew_class_client-new)
+- [`crew_class_client$new()`](#method-crew_class_client-initialize)
 
 - [`crew_class_client$validate()`](#method-crew_class_client-validate)
 
@@ -81,7 +81,7 @@ Other client:
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `crew_class_client$new()`
 
 `mirai` client constructor.
 
@@ -155,7 +155,7 @@ An `R6` object with the client.
 
 ------------------------------------------------------------------------
 
-### Method `validate()`
+### `crew_class_client$validate()`
 
 Validate the client.
 
@@ -169,7 +169,7 @@ Validate the client.
 
 ------------------------------------------------------------------------
 
-### Method `set_started()`
+### `crew_class_client$set_started()`
 
 Register the client as started.
 
@@ -188,7 +188,7 @@ manually inside the client or the sequential controller.
 
 ------------------------------------------------------------------------
 
-### Method [`start()`](https://rdrr.io/r/stats/start.html)
+### `crew_class_client$start()`
 
 Start listening for workers on the available sockets.
 
@@ -202,7 +202,7 @@ Start listening for workers on the available sockets.
 
 ------------------------------------------------------------------------
 
-### Method `terminate()`
+### `crew_class_client$terminate()`
 
 Stop the mirai client and disconnect from the worker websockets.
 
@@ -216,7 +216,7 @@ Stop the mirai client and disconnect from the worker websockets.
 
 ------------------------------------------------------------------------
 
-### Method `status()`
+### `crew_class_client$status()`
 
 Get the counters from
 [`mirai::info()`](https://mirai.r-lib.org/reference/info.html).
@@ -232,7 +232,7 @@ as well as the number of worker connections.
 
 ------------------------------------------------------------------------
 
-### Method `pids()`
+### `crew_class_client$pids()`
 
 Deprecated on 2025-08-26 in `crew` version 1.2.1.9005.
 
@@ -255,7 +255,7 @@ client$terminate()
 }
 
 ## ------------------------------------------------
-## Method `crew_class_client$new`
+## Method `crew_class_client$new()`
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {

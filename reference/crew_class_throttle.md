@@ -48,7 +48,7 @@ Other throttle:
 
 ### Public methods
 
-- [`crew_class_throttle$new()`](#method-crew_class_throttle-new)
+- [`crew_class_throttle$new()`](#method-crew_class_throttle-initialize)
 
 - [`crew_class_throttle$validate()`](#method-crew_class_throttle-validate)
 
@@ -64,7 +64,7 @@ Other throttle:
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `crew_class_throttle$new()`
 
 Throttle constructor.
 
@@ -111,7 +111,7 @@ An `R6` object with throttle configuration.
 
 ------------------------------------------------------------------------
 
-### Method `validate()`
+### `crew_class_throttle$validate()`
 
 Validate the object.
 
@@ -125,7 +125,7 @@ Validate the object.
 
 ------------------------------------------------------------------------
 
-### Method `poll()`
+### `crew_class_throttle$poll()`
 
 Poll the throttler.
 
@@ -140,7 +140,7 @@ Poll the throttler.
 
 ------------------------------------------------------------------------
 
-### Method `accelerate()`
+### `crew_class_throttle$accelerate()`
 
 Divide `seconds_interval` by `base`.
 
@@ -154,7 +154,7 @@ Divide `seconds_interval` by `base`.
 
 ------------------------------------------------------------------------
 
-### Method `decelerate()`
+### `crew_class_throttle$decelerate()`
 
 Multiply `seconds_interval` by `base`.
 
@@ -168,7 +168,7 @@ Multiply `seconds_interval` by `base`.
 
 ------------------------------------------------------------------------
 
-### Method `reset()`
+### `crew_class_throttle$reset()`
 
 Reset the throttle object so the next `poll()` returns `TRUE`, and reset
 the wait time interval to its initial value.
@@ -183,7 +183,7 @@ the wait time interval to its initial value.
 
 ------------------------------------------------------------------------
 
-### Method [`update()`](https://rdrr.io/r/stats/update.html)
+### `crew_class_throttle$update()`
 
 Reset the throttle when there is activity and decelerate it gradually
 when there is no activity.
@@ -212,12 +212,12 @@ throttle$poll()
 #> [1] TRUE
 
 ## ------------------------------------------------
-## Method `crew_class_throttle$new`
+## Method `crew_class_throttle$new()`
 ## ------------------------------------------------
 
 throttle <- crew_throttle(seconds_max = 1)
 throttle$poll()
 #> [1] FALSE
 throttle$poll()
-#> [1] TRUE
+#> [1] FALSE
 ```

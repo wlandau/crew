@@ -15,7 +15,7 @@ Other plugin_local:
 
 ## Super class
 
-[`crew::crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.md)
+[`crew_class_launcher`](https://wlandau.github.io/crew/reference/crew_class_launcher.md)
 -\> `crew_class_launcher_local`
 
 ## Active bindings
@@ -29,7 +29,7 @@ Other plugin_local:
 
 ### Public methods
 
-- [`crew_class_launcher_local$new()`](#method-crew_class_launcher_local-new)
+- [`crew_class_launcher_local$new()`](#method-crew_class_launcher_local-initialize)
 
 - [`crew_class_launcher_local$validate()`](#method-crew_class_launcher_local-validate)
 
@@ -39,21 +39,21 @@ Other plugin_local:
 
 Inherited methods
 
-- [`crew::crew_class_launcher$call()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-call)
-- [`crew::crew_class_launcher$crashes()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-crashes)
-- [`crew::crew_class_launcher$launch()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-launch)
-- [`crew::crew_class_launcher$launch_workers()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-launch_workers)
-- [`crew::crew_class_launcher$poll()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-poll)
-- [`crew::crew_class_launcher$scale()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-scale)
-- [`crew::crew_class_launcher$set_name()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-set_name)
-- [`crew::crew_class_launcher$settings()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-settings)
-- [`crew::crew_class_launcher$start()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-start)
-- [`crew::crew_class_launcher$terminate()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-terminate)
-- [`crew::crew_class_launcher$terminate_workers()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-terminate_workers)
+- [`crew_class_launcher$call()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-call)
+- [`crew_class_launcher$crashes()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-crashes)
+- [`crew_class_launcher$launch()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-launch)
+- [`crew_class_launcher$launch_workers()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-launch_workers)
+- [`crew_class_launcher$poll()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-poll)
+- [`crew_class_launcher$scale()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-scale)
+- [`crew_class_launcher$set_name()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-set_name)
+- [`crew_class_launcher$settings()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-settings)
+- [`crew_class_launcher$start()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-start)
+- [`crew_class_launcher$terminate()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-terminate)
+- [`crew_class_launcher$terminate_workers()`](https://wlandau.github.io/crew/reference/crew_class_launcher.html#method-terminate_workers)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `crew_class_launcher_local$new()`
 
 Local launcher constructor.
 
@@ -200,7 +200,7 @@ An `R6` object with the local launcher.
 
 ------------------------------------------------------------------------
 
-### Method `validate()`
+### `crew_class_launcher_local$validate()`
 
 Validate the local launcher.
 
@@ -214,7 +214,7 @@ Validate the local launcher.
 
 ------------------------------------------------------------------------
 
-### Method `launch_worker()`
+### `crew_class_launcher_local$launch_worker()`
 
 Launch a local process worker which will dial into a socket.
 
@@ -245,7 +245,7 @@ to persist in long-running or high-throughput pipelines (see the
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `crew_class_launcher_local$clone()`
 
 The objects of this class are cloneable with this method.
 
@@ -275,7 +275,7 @@ client$terminate()
 }
 
 ## ------------------------------------------------
-## Method `crew_class_launcher_local$new`
+## Method `crew_class_launcher_local$new()`
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {

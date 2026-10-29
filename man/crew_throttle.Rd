@@ -57,7 +57,7 @@ throttle$poll()
 throttle$poll()
 }
 \seealso{
-Other throttle: 
+Other throttle:
 \code{\link{crew_class_throttle}}
 }
 \concept{throttle}

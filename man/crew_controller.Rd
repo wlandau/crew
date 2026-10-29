@@ -95,7 +95,7 @@ controller$terminate()
 }
 }
 \seealso{
-Other controller: 
+Other controller:
 \code{\link{crew_class_controller}}
 }
 \concept{controller}

@@ -23,7 +23,7 @@ among condition variables.
 crew_relay()
 }
 \seealso{
-Other relay: 
+Other relay:
 \code{\link{crew_class_relay}}
 }
 \concept{relay}

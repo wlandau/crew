@@ -72,7 +72,7 @@ client$terminate()
 }
 }
 \seealso{
-Other client: 
+Other client:
 \code{\link{crew_class_client}}
 }
 \concept{client}

@@ -210,8 +210,8 @@ controller$terminate()
 }
 }
 \seealso{
-Other plugin_local: 
+Other plugin_local:
 \code{\link{crew_class_launcher_local}},
-\code{\link{crew_launcher_local}()}
+\code{\link[=crew_launcher_local]{crew_launcher_local()}}
 }
 \concept{plugin_local}

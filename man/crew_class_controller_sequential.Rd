@@ -17,259 +17,267 @@ controller$pop()
 }
 }
 \seealso{
-Other sequential controllers: 
-\code{\link{crew_controller_sequential}()}
+Other sequential controllers:
+\code{\link[=crew_controller_sequential]{crew_controller_sequential()}}
 }
 \concept{sequential controllers}
 \section{Super class}{
-\code{\link[crew:crew_class_controller]{crew::crew_class_controller}} -> \code{crew_class_controller_sequential}
+\code{\link[crew:crew_class_controller]{crew_class_controller}} -> \code{crew_class_controller_sequential}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-crew_class_controller_sequential-resolved}{\code{crew_class_controller_sequential$resolved()}}
-\item \href{#method-crew_class_controller_sequential-unresolved}{\code{crew_class_controller_sequential$unresolved()}}
-\item \href{#method-crew_class_controller_sequential-saturated}{\code{crew_class_controller_sequential$saturated()}}
-\item \href{#method-crew_class_controller_sequential-start}{\code{crew_class_controller_sequential$start()}}
-\item \href{#method-crew_class_controller_sequential-launch}{\code{crew_class_controller_sequential$launch()}}
-\item \href{#method-crew_class_controller_sequential-scale}{\code{crew_class_controller_sequential$scale()}}
-\item \href{#method-crew_class_controller_sequential-autoscale}{\code{crew_class_controller_sequential$autoscale()}}
-\item \href{#method-crew_class_controller_sequential-descale}{\code{crew_class_controller_sequential$descale()}}
-\item \href{#method-crew_class_controller_sequential-push}{\code{crew_class_controller_sequential$push()}}
-\item \href{#method-crew_class_controller_sequential-wait}{\code{crew_class_controller_sequential$wait()}}
-\item \href{#method-crew_class_controller_sequential-push_backlog}{\code{crew_class_controller_sequential$push_backlog()}}
-\item \href{#method-crew_class_controller_sequential-pop_backlog}{\code{crew_class_controller_sequential$pop_backlog()}}
-\item \href{#method-crew_class_controller_sequential-cancel}{\code{crew_class_controller_sequential$cancel()}}
-\item \href{#method-crew_class_controller_sequential-terminate}{\code{crew_class_controller_sequential$terminate()}}
+  \itemize{
+    \item \href{#method-crew_class_controller_sequential-resolved}{\code{crew_class_controller_sequential$resolved()}}
+    \item \href{#method-crew_class_controller_sequential-unresolved}{\code{crew_class_controller_sequential$unresolved()}}
+    \item \href{#method-crew_class_controller_sequential-saturated}{\code{crew_class_controller_sequential$saturated()}}
+    \item \href{#method-crew_class_controller_sequential-start}{\code{crew_class_controller_sequential$start()}}
+    \item \href{#method-crew_class_controller_sequential-launch}{\code{crew_class_controller_sequential$launch()}}
+    \item \href{#method-crew_class_controller_sequential-scale}{\code{crew_class_controller_sequential$scale()}}
+    \item \href{#method-crew_class_controller_sequential-autoscale}{\code{crew_class_controller_sequential$autoscale()}}
+    \item \href{#method-crew_class_controller_sequential-descale}{\code{crew_class_controller_sequential$descale()}}
+    \item \href{#method-crew_class_controller_sequential-push}{\code{crew_class_controller_sequential$push()}}
+    \item \href{#method-crew_class_controller_sequential-wait}{\code{crew_class_controller_sequential$wait()}}
+    \item \href{#method-crew_class_controller_sequential-push_backlog}{\code{crew_class_controller_sequential$push_backlog()}}
+    \item \href{#method-crew_class_controller_sequential-pop_backlog}{\code{crew_class_controller_sequential$pop_backlog()}}
+    \item \href{#method-crew_class_controller_sequential-cancel}{\code{crew_class_controller_sequential$cancel()}}
+    \item \href{#method-crew_class_controller_sequential-terminate}{\code{crew_class_controller_sequential$terminate()}}
+  }
 }
-}
-\if{html}{\out{
-<details><summary>Inherited methods</summary>
+\if{html}{\out{<details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="collect"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-collect'><code>crew::crew_class_controller$collect()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="crashes"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-crashes'><code>crew::crew_class_controller$crashes()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="empty"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-empty'><code>crew::crew_class_controller$empty()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="initialize"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-initialize'><code>crew::crew_class_controller$initialize()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="map"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-map'><code>crew::crew_class_controller$map()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="nonempty"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-nonempty'><code>crew::crew_class_controller$nonempty()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="pids"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-pids'><code>crew::crew_class_controller$pids()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="pop"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-pop'><code>crew::crew_class_controller$pop()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="size"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-size'><code>crew::crew_class_controller$size()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="started"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-started'><code>crew::crew_class_controller$started()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="summary"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-summary'><code>crew::crew_class_controller$summary()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="synced"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-synced'><code>crew::crew_class_controller$synced()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="validate"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-validate'><code>crew::crew_class_controller$validate()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="walk"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-walk'><code>crew::crew_class_controller$walk()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="collect"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-collect'><code>crew_class_controller$collect()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="crashes"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-crashes'><code>crew_class_controller$crashes()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="empty"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-empty'><code>crew_class_controller$empty()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="initialize"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-initialize'><code>crew_class_controller$initialize()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="map"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-map'><code>crew_class_controller$map()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="nonempty"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-nonempty'><code>crew_class_controller$nonempty()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="pids"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-pids'><code>crew_class_controller$pids()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="pop"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-pop'><code>crew_class_controller$pop()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="size"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-size'><code>crew_class_controller$size()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="started"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-started'><code>crew_class_controller$started()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="summary"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-summary'><code>crew_class_controller$summary()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="synced"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-synced'><code>crew_class_controller$synced()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="validate"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-validate'><code>crew_class_controller$validate()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_controller" data-id="walk"><a href='../../crew/html/crew_class_controller.html#method-crew_class_controller-walk'><code>crew_class_controller$walk()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-resolved"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-resolved}{}}}
-\subsection{Method \code{resolved()}}{
-Number of resolved tasks.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$resolved(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
+\subsection{\code{crew_class_controller_sequential$resolved()}}{
+  Number of resolved tasks.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$resolved(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-\code{resolved()} is cumulative: it counts all the resolved
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    \code{resolved()} is cumulative: it counts all the resolved
 tasks over the entire lifetime of the controller session.
 For the sequential controller, tasks are resolved as soon as they
 are pushed.
-}
-
-\subsection{Returns}{
-Non-negative integer of length 1,
+  }
+  \subsection{Returns}{
+    Non-negative integer of length 1,
 number of resolved tasks.
 The return value is 0 if the condition variable does not exist
 (i.e. if the client is not running).
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-unresolved"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-unresolved}{}}}
-\subsection{Method \code{unresolved()}}{
-Number of unresolved tasks.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$unresolved(controllers = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_controller_sequential$unresolved()}}{
+  Number of unresolved tasks.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$unresolved(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Returns 0 always because the sequential controller
+resolves tasks as soon as they are pushed.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Returns 0 always because the sequential controller
-resolves tasks as soon as they are pushed.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-saturated"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-saturated}{}}}
-\subsection{Method \code{saturated()}}{
-Check if the controller is saturated.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$saturated(
+\subsection{\code{crew_class_controller_sequential$saturated()}}{
+  Check if the controller is saturated.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$saturated(
   collect = NULL,
   throttle = NULL,
   controller = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
-
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
-
-\item{\code{controller}}{Not used. Included to ensure the signature is
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+      \item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+      \item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Always returns \code{FALSE} for the sequential controller
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Always returns \code{FALSE} for the sequential controller
 because tasks run immediately on the local process and there
 are no workers.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-start"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-start}{}}}
-\subsection{Method \code{start()}}{
-Start the controller if it is not already started.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$start(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
+\subsection{\code{crew_class_controller_sequential$start()}}{
+  Start the controller if it is not already started.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$start(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-For the sequential controller, there is nothing to do
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    For the sequential controller, there is nothing to do
 except register the client as started.
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-launch}{}}}
-\subsection{Method \code{launch()}}{
-Does nothing for the sequential controller.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$launch(n = 1L, controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{n}}{Number of workers to launch.}
-
-\item{\code{controllers}}{Not used. Included to ensure the signature is
+\subsection{\code{crew_class_controller_sequential$launch()}}{
+  Does nothing for the sequential controller.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$launch(n = 1L, controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{n}}{Number of workers to launch.}
+      \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-scale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-scale}{}}}
-\subsection{Method \code{scale()}}{
-Does nothing for the sequential controller.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$scale(throttle = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{throttle}}{Not applicable to the sequential controller.}
-
-\item{\code{controllers}}{Not used. Included to ensure the signature is
+\subsection{\code{crew_class_controller_sequential$scale()}}{
+  Does nothing for the sequential controller.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$scale(throttle = TRUE, controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{throttle}}{Not applicable to the sequential controller.}
+      \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Invisibly returns \code{FALSE}.
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly returns \code{FALSE}.
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-autoscale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-autoscale}{}}}
-\subsection{Method \code{autoscale()}}{
-Not applicable to the sequential controller.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$autoscale(loop = NULL, controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{loop}}{Not used by sequential controllers.
+\subsection{\code{crew_class_controller_sequential$autoscale()}}{
+  Not applicable to the sequential controller.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$autoscale(loop = NULL, controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{loop}}{Not used by sequential controllers.
 Included to ensure the signature is
 compatible with the analogous method of controller groups.}
-
-\item{\code{controllers}}{Not used by sequential controllers.
+      \item{\code{controllers}}{Not used by sequential controllers.
 Included to ensure the signature is
 compatible with the analogous method of controller groups.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-descale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-descale}{}}}
-\subsection{Method \code{descale()}}{
-Not applicable to the sequential controller.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$descale(controllers = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_controller_sequential$descale()}}{
+  Not applicable to the sequential controller.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$descale(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-push"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-push}{}}}
-\subsection{Method \code{push()}}{
-Push a task to the head of the task list.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$push(
+\subsection{\code{crew_class_controller_sequential$push()}}{
+  Push a task to the head of the task list.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$push(
   command,
   data = list(),
   globals = list(),
@@ -284,26 +292,23 @@ Push a task to the head of the task list.
   name = NULL,
   save_command = NULL,
   controller = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{command}}{Language object with R code to run.}
-
-\item{\code{data}}{Named list of local data objects in the
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{command}}{Language object with R code to run.}
+      \item{\code{data}}{Named list of local data objects in the
 evaluation environment.}
-
-\item{\code{globals}}{Named list of objects to temporarily assign to the
+      \item{\code{globals}}{Named list of objects to temporarily assign to the
 global environment for the task.
 This list should
 include any functions you previously defined in the global
 environment which are required to run tasks.
 See the \code{reset_globals} argument
 of \code{\link[=crew_controller_local]{crew_controller_local()}}.}
-
-\item{\code{substitute}}{Logical of length 1, whether to call
+      \item{\code{substitute}}{Logical of length 1, whether to call
 \code{base::substitute()} on the supplied value of the
 \code{command} argument. If \code{TRUE} (default) then \code{command} is quoted
 literally as you write it, e.g.
@@ -313,175 +318,169 @@ value, e.g. \code{push(command = quote(your_function_call()))}.
 \code{substitute = TRUE} is appropriate for interactive use,
 whereas \code{substitute = FALSE} is meant for automated R programs
 that invoke \code{crew} controllers.}
-
-\item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
+      \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
 seed to set for the evaluation of the task. Passed to the
 \code{seed} argument of \code{set.seed()} if not \code{NULL}.
 If \code{algorithm} and \code{seed} are both \code{NULL} for the sequential
 controller, then the random number generator defaults to the
 current RNG of the local R session where the sequential
 controller lives.}
-
-\item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
+      \item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
 generator algorithm to set for the evaluation of the task.
 Passed to the \code{kind} argument of \code{RNGkind()} if not \code{NULL}.
 If \code{algorithm} and \code{seed} are both \code{NULL} for the sequential
 controller, then the random number generator defaults to the
 current RNG of the local R session where the sequential
 controller lives.}
-
-\item{\code{packages}}{Character vector of packages to load for the task.}
-
-\item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
+      \item{\code{packages}}{Character vector of packages to load for the task.}
+      \item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
 argument of \code{require()}.}
-
-\item{\code{seconds_timeout}}{Not used in the sequential controller..}
-
-\item{\code{scale}}{Not used in the sequential controller.}
-
-\item{\code{throttle}}{Not used in the sequential controller.}
-
-\item{\code{name}}{Character string, name of the task. If \code{NULL}, then
+      \item{\code{seconds_timeout}}{Not used in the sequential controller..}
+      \item{\code{scale}}{Not used in the sequential controller.}
+      \item{\code{throttle}}{Not used in the sequential controller.}
+      \item{\code{name}}{Character string, name of the task. If \code{NULL}, then
 a random name is generated automatically.
 The name of the task must not conflict with the name of another
 task pushed to the controller. Any previous task with the same name
 must first be popped before a new task with that name can be pushed.}
-
-\item{\code{save_command}}{Deprecated on 2025-01-22 (\code{crew} version
+      \item{\code{save_command}}{Deprecated on 2025-01-22 (\code{crew} version
 0.10.2.9004) and no longer used.}
-
-\item{\code{controller}}{Not used. Included to ensure the signature is
+      \item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly returns a \code{mirai}-like list where the \code{data}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Invisibly returns a \code{mirai}-like list where the \code{data}
 element is the result of the task.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-wait"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-wait}{}}}
-\subsection{Method \code{wait()}}{
-Not applicable to the sequential controller.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$wait(
+\subsection{\code{crew_class_controller_sequential$wait()}}{
+  Not applicable to the sequential controller.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$wait(
   mode = "all",
   seconds_interval = NULL,
   seconds_timeout = Inf,
   scale = TRUE,
   throttle = TRUE,
   controllers = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{mode}}{Not applicable to the sequential controller.}
-
-\item{\code{seconds_interval}}{Not applicable to the sequential controller.}
-
-\item{\code{seconds_timeout}}{Not applicable to the sequential controller.}
-
-\item{\code{scale}}{Not applicable to the sequential controller.}
-
-\item{\code{throttle}}{Not applicable to the sequential controller.}
-
-\item{\code{controllers}}{Not used. Included to ensure the signature is
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{mode}}{Not applicable to the sequential controller.}
+      \item{\code{seconds_interval}}{Not applicable to the sequential controller.}
+      \item{\code{seconds_timeout}}{Not applicable to the sequential controller.}
+      \item{\code{scale}}{Not applicable to the sequential controller.}
+      \item{\code{throttle}}{Not applicable to the sequential controller.}
+      \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Always returns \code{TRUE} (invisibly)
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Always returns \code{TRUE} (invisibly)
 for the sequential controller.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-push_backlog"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-push_backlog}{}}}
-\subsection{Method \code{push_backlog()}}{
-Not applicable to the sequential controller.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$push_backlog(name, controller = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Character of length 1 with the task name to push to
+\subsection{\code{crew_class_controller_sequential$push_backlog()}}{
+  Not applicable to the sequential controller.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$push_backlog(name, controller = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{name}}{Character of length 1 with the task name to push to
 the backlog.}
-
-\item{\code{controller}}{Not used. Included to ensure the signature is
+      \item{\code{controller}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-pop_backlog"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-pop_backlog}{}}}
-\subsection{Method \code{pop_backlog()}}{
-Not applicable to the sequential controller.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$pop_backlog(controllers = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_controller_sequential$pop_backlog()}}{
+  Not applicable to the sequential controller.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$pop_backlog(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Always \code{character(0L)} for the sequential controller.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Always \code{character(0L)} for the sequential controller.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-cancel"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-cancel}{}}}
-\subsection{Method \code{cancel()}}{
-Not applicable to the sequential controller.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$cancel(names = character(0L), all = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_controller_sequential$cancel()}}{
+  Not applicable to the sequential controller.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$cancel(names = character(0L), all = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{names}}{Not applicable to the sequential controller.}
+      \item{\code{all}}{Not applicable to the sequential controller.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{names}}{Not applicable to the sequential controller.}
-
-\item{\code{all}}{Not applicable to the sequential controller.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_sequential-terminate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_sequential-terminate}{}}}
-\subsection{Method \code{terminate()}}{
-Terminate the controller.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_sequential$terminate(controllers = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_controller_sequential$terminate()}}{
+  Terminate the controller.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_sequential$terminate(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Not used. Included to ensure the signature is
+compatible with the analogous method of controller groups.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Not used. Included to ensure the signature is
-compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 }

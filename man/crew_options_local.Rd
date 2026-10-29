@@ -30,7 +30,7 @@ Options for the local \code{crew} launcher.
   crew_options_local()
 }
 \seealso{
-Other options: 
-\code{\link{crew_options_metrics}()}
+Other options:
+\code{\link[=crew_options_metrics]{crew_options_metrics()}}
 }
 \concept{options}

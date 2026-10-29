@@ -11,7 +11,7 @@ Create an \code{R6} object to monitor local processes created by
 \code{crew} and \code{mirai}.
 }
 \seealso{
-Other monitor: 
+Other monitor:
 \code{\link{crew_class_monitor_local}}
 }
 \concept{monitor}

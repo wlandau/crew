@@ -36,7 +36,7 @@ group$terminate()
 }
 }
 \seealso{
-Other controller_group: 
+Other controller_group:
 \code{\link{crew_class_controller_group}}
 }
 \concept{controller_group}

@@ -67,7 +67,7 @@ See \url{https://wlandau.github.io/crew/articles/risks.html} for details.
 crew_tls(mode = "automatic")
 }
 \seealso{
-Other tls: 
+Other tls:
 \code{\link{crew_class_tls}}
 }
 \concept{tls}

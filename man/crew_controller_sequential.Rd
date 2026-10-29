@@ -44,7 +44,7 @@ controller$pop()
 }
 }
 \seealso{
-Other sequential controllers: 
+Other sequential controllers:
 \code{\link{crew_class_controller_sequential}}
 }
 \concept{sequential controllers}

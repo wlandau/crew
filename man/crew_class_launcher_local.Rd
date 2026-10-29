@@ -23,7 +23,7 @@ client$terminate()
 }
 
 ## ------------------------------------------------
-## Method `crew_class_launcher_local$new`
+## Method `crew_class_launcher_local$new()`
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -39,54 +39,53 @@ client$terminate()
 }
 }
 \seealso{
-Other plugin_local: 
-\code{\link{crew_controller_local}()},
-\code{\link{crew_launcher_local}()}
+Other plugin_local:
+\code{\link[=crew_controller_local]{crew_controller_local()}},
+\code{\link[=crew_launcher_local]{crew_launcher_local()}}
 }
 \concept{plugin_local}
 \section{Super class}{
-\code{\link[crew:crew_class_launcher]{crew::crew_class_launcher}} -> \code{crew_class_launcher_local}
+\code{\link[crew:crew_class_launcher]{crew_class_launcher}} -> \code{crew_class_launcher_local}
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{options_local}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
-}
-\if{html}{\out{</div>}}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{options_local}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-crew_class_launcher_local-new}{\code{crew_class_launcher_local$new()}}
-\item \href{#method-crew_class_launcher_local-validate}{\code{crew_class_launcher_local$validate()}}
-\item \href{#method-crew_class_launcher_local-launch_worker}{\code{crew_class_launcher_local$launch_worker()}}
-\item \href{#method-crew_class_launcher_local-clone}{\code{crew_class_launcher_local$clone()}}
+  \itemize{
+    \item \href{#method-crew_class_launcher_local-initialize}{\code{crew_class_launcher_local$new()}}
+    \item \href{#method-crew_class_launcher_local-validate}{\code{crew_class_launcher_local$validate()}}
+    \item \href{#method-crew_class_launcher_local-launch_worker}{\code{crew_class_launcher_local$launch_worker()}}
+    \item \href{#method-crew_class_launcher_local-clone}{\code{crew_class_launcher_local$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details><summary>Inherited methods</summary>
+\if{html}{\out{<details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="call"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-call'><code>crew::crew_class_launcher$call()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="crashes"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-crashes'><code>crew::crew_class_launcher$crashes()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch'><code>crew::crew_class_launcher$launch()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch_workers"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch_workers'><code>crew::crew_class_launcher$launch_workers()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="poll"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-poll'><code>crew::crew_class_launcher$poll()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="scale"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-scale'><code>crew::crew_class_launcher$scale()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="set_name"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-set_name'><code>crew::crew_class_launcher$set_name()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="settings"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-settings'><code>crew::crew_class_launcher$settings()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="start"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-start'><code>crew::crew_class_launcher$start()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate'><code>crew::crew_class_launcher$terminate()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate_workers"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate_workers'><code>crew::crew_class_launcher$terminate_workers()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="call"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-call'><code>crew_class_launcher$call()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="crashes"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-crashes'><code>crew_class_launcher$crashes()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch'><code>crew_class_launcher$launch()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="launch_workers"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-launch_workers'><code>crew_class_launcher$launch_workers()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="poll"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-poll'><code>crew_class_launcher$poll()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="scale"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-scale'><code>crew_class_launcher$scale()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="set_name"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-set_name'><code>crew_class_launcher$set_name()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="settings"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-settings'><code>crew_class_launcher$settings()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="start"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-start'><code>crew_class_launcher$start()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate'><code>crew_class_launcher$terminate()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="crew" data-topic="crew_class_launcher" data-id="terminate_workers"><a href='../../crew/html/crew_class_launcher.html#method-crew_class_launcher-terminate_workers'><code>crew_class_launcher$terminate_workers()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher_local-new"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher_local-new}{}}}
-\subsection{Method \code{new()}}{
-Local launcher constructor.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$new(
+\if{html}{\out{<a id="method-crew_class_launcher_local-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher_local-initialize}{}}}
+\subsection{\code{crew_class_launcher_local$new()}}{
+  Local launcher constructor.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher_local$new(
   name = NULL,
   workers = NULL,
   seconds_interval = NULL,
@@ -103,60 +102,41 @@ Local launcher constructor.
   r_arguments = NULL,
   options_metrics = NULL,
   options_local = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{workers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_exit}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{crashes_error}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{options_metrics}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
-
-\item{\code{options_local}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
-
-\item{\code{reset_globals}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{reset_packages}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{reset_options}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{garbage_collection}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-An \code{R6} object with the local launcher.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{workers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_exit}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{crashes_error}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{processes}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{options_metrics}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+      \item{\code{options_local}}{See \code{\link[=crew_launcher_local]{crew_launcher_local()}}.}
+      \item{\code{reset_globals}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{reset_packages}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{reset_options}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{garbage_collection}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    An \code{R6} object with the local launcher.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local(name = client$name)
@@ -168,72 +148,76 @@ task$data
 client$terminate()
 }
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher_local-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher_local-validate}{}}}
-\subsection{Method \code{validate()}}{
-Validate the local launcher.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$validate()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_launcher_local$validate()}}{
+  Validate the local launcher.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher_local$validate()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher_local-launch_worker"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher_local-launch_worker}{}}}
-\subsection{Method \code{launch_worker()}}{
-Launch a local process worker which will
+\subsection{\code{crew_class_launcher_local$launch_worker()}}{
+  Launch a local process worker which will
 dial into a socket.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$launch_worker(call)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{call}}{Character of length 1 with a namespaced call to
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher_local$launch_worker(call)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{call}}{Character of length 1 with a namespaced call to
 \code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-The \code{call} argument is R code that will run to
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    The \code{call} argument is R code that will run to
 initiate the worker. Together, the \code{launcher}, \code{worker},
 and \code{instance} arguments are useful for
 constructing informative job names.
-}
-
-\subsection{Returns}{
-A handle object to allow the termination of the worker
+  }
+  \subsection{Returns}{
+    A handle object to allow the termination of the worker
 later on. Used internally for testing and
 worker launching logic only: not guaranteed to persist
 in long-running or high-throughput pipelines
 (see the \code{launches} field of the launcher class).
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher_local-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher_local-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher_local$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_launcher_local$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher_local$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

@@ -25,7 +25,7 @@ group$terminate()
 }
 
 ## ------------------------------------------------
-## Method `crew_class_controller_group$new`
+## Method `crew_class_controller_group$new()`
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -43,77 +43,77 @@ group$terminate()
 }
 }
 \seealso{
-Other controller_group: 
-\code{\link{crew_controller_group}()}
+Other controller_group:
+\code{\link[=crew_controller_group]{crew_controller_group()}}
 }
 \concept{controller_group}
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{controllers}}{List of \code{R6} controller objects.}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{controllers}}{List of \code{R6} controller objects.}
 
-\item{\code{relay}}{Relay object for event-driven programming on a downstream
+    \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
-}
-\if{html}{\out{</div>}}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-crew_class_controller_group-new}{\code{crew_class_controller_group$new()}}
-\item \href{#method-crew_class_controller_group-validate}{\code{crew_class_controller_group$validate()}}
-\item \href{#method-crew_class_controller_group-size}{\code{crew_class_controller_group$size()}}
-\item \href{#method-crew_class_controller_group-empty}{\code{crew_class_controller_group$empty()}}
-\item \href{#method-crew_class_controller_group-nonempty}{\code{crew_class_controller_group$nonempty()}}
-\item \href{#method-crew_class_controller_group-resolved}{\code{crew_class_controller_group$resolved()}}
-\item \href{#method-crew_class_controller_group-unresolved}{\code{crew_class_controller_group$unresolved()}}
-\item \href{#method-crew_class_controller_group-saturated}{\code{crew_class_controller_group$saturated()}}
-\item \href{#method-crew_class_controller_group-start}{\code{crew_class_controller_group$start()}}
-\item \href{#method-crew_class_controller_group-started}{\code{crew_class_controller_group$started()}}
-\item \href{#method-crew_class_controller_group-launch}{\code{crew_class_controller_group$launch()}}
-\item \href{#method-crew_class_controller_group-scale}{\code{crew_class_controller_group$scale()}}
-\item \href{#method-crew_class_controller_group-autoscale}{\code{crew_class_controller_group$autoscale()}}
-\item \href{#method-crew_class_controller_group-descale}{\code{crew_class_controller_group$descale()}}
-\item \href{#method-crew_class_controller_group-crashes}{\code{crew_class_controller_group$crashes()}}
-\item \href{#method-crew_class_controller_group-push}{\code{crew_class_controller_group$push()}}
-\item \href{#method-crew_class_controller_group-synced}{\code{crew_class_controller_group$synced()}}
-\item \href{#method-crew_class_controller_group-walk}{\code{crew_class_controller_group$walk()}}
-\item \href{#method-crew_class_controller_group-map}{\code{crew_class_controller_group$map()}}
-\item \href{#method-crew_class_controller_group-pop}{\code{crew_class_controller_group$pop()}}
-\item \href{#method-crew_class_controller_group-collect}{\code{crew_class_controller_group$collect()}}
-\item \href{#method-crew_class_controller_group-wait}{\code{crew_class_controller_group$wait()}}
-\item \href{#method-crew_class_controller_group-push_backlog}{\code{crew_class_controller_group$push_backlog()}}
-\item \href{#method-crew_class_controller_group-pop_backlog}{\code{crew_class_controller_group$pop_backlog()}}
-\item \href{#method-crew_class_controller_group-summary}{\code{crew_class_controller_group$summary()}}
-\item \href{#method-crew_class_controller_group-pids}{\code{crew_class_controller_group$pids()}}
-\item \href{#method-crew_class_controller_group-terminate}{\code{crew_class_controller_group$terminate()}}
-}
+  \itemize{
+    \item \href{#method-crew_class_controller_group-initialize}{\code{crew_class_controller_group$new()}}
+    \item \href{#method-crew_class_controller_group-validate}{\code{crew_class_controller_group$validate()}}
+    \item \href{#method-crew_class_controller_group-size}{\code{crew_class_controller_group$size()}}
+    \item \href{#method-crew_class_controller_group-empty}{\code{crew_class_controller_group$empty()}}
+    \item \href{#method-crew_class_controller_group-nonempty}{\code{crew_class_controller_group$nonempty()}}
+    \item \href{#method-crew_class_controller_group-resolved}{\code{crew_class_controller_group$resolved()}}
+    \item \href{#method-crew_class_controller_group-unresolved}{\code{crew_class_controller_group$unresolved()}}
+    \item \href{#method-crew_class_controller_group-saturated}{\code{crew_class_controller_group$saturated()}}
+    \item \href{#method-crew_class_controller_group-start}{\code{crew_class_controller_group$start()}}
+    \item \href{#method-crew_class_controller_group-started}{\code{crew_class_controller_group$started()}}
+    \item \href{#method-crew_class_controller_group-launch}{\code{crew_class_controller_group$launch()}}
+    \item \href{#method-crew_class_controller_group-scale}{\code{crew_class_controller_group$scale()}}
+    \item \href{#method-crew_class_controller_group-autoscale}{\code{crew_class_controller_group$autoscale()}}
+    \item \href{#method-crew_class_controller_group-descale}{\code{crew_class_controller_group$descale()}}
+    \item \href{#method-crew_class_controller_group-crashes}{\code{crew_class_controller_group$crashes()}}
+    \item \href{#method-crew_class_controller_group-push}{\code{crew_class_controller_group$push()}}
+    \item \href{#method-crew_class_controller_group-synced}{\code{crew_class_controller_group$synced()}}
+    \item \href{#method-crew_class_controller_group-walk}{\code{crew_class_controller_group$walk()}}
+    \item \href{#method-crew_class_controller_group-map}{\code{crew_class_controller_group$map()}}
+    \item \href{#method-crew_class_controller_group-pop}{\code{crew_class_controller_group$pop()}}
+    \item \href{#method-crew_class_controller_group-collect}{\code{crew_class_controller_group$collect()}}
+    \item \href{#method-crew_class_controller_group-wait}{\code{crew_class_controller_group$wait()}}
+    \item \href{#method-crew_class_controller_group-push_backlog}{\code{crew_class_controller_group$push_backlog()}}
+    \item \href{#method-crew_class_controller_group-pop_backlog}{\code{crew_class_controller_group$pop_backlog()}}
+    \item \href{#method-crew_class_controller_group-summary}{\code{crew_class_controller_group$summary()}}
+    \item \href{#method-crew_class_controller_group-pids}{\code{crew_class_controller_group$pids()}}
+    \item \href{#method-crew_class_controller_group-terminate}{\code{crew_class_controller_group$terminate()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_controller_group-new"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_controller_group-new}{}}}
-\subsection{Method \code{new()}}{
-Multi-controller constructor.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$new(controllers = NULL, relay = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{List of \code{R6} controller objects.}
-
-\item{\code{relay}}{Relay object for event-driven programming on a downstream
+\if{html}{\out{<a id="method-crew_class_controller_group-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_controller_group-initialize}{}}}
+\subsection{\code{crew_class_controller_group$new()}}{
+  Multi-controller constructor.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$new(controllers = NULL, relay = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{List of \code{R6} controller objects.}
+      \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-An \code{R6} object with the controller group object.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    An \code{R6} object with the controller group object.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 persistent <- crew_controller_local(name = "persistent")
 transient <- crew_controller_local(
   name = "transient",
@@ -127,374 +127,389 @@ group$pop()
 group$terminate()
 }
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-validate}{}}}
-\subsection{Method \code{validate()}}{
-Validate the client.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$validate()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_controller_group$validate()}}{
+  Validate the client.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$validate()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-size"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-size}{}}}
-\subsection{Method \code{size()}}{
-Number of tasks in the selected controllers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$size(controllers = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_controller_group$size()}}{
+  Number of tasks in the selected controllers.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$size(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Non-negative integer, number of tasks in the controller.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
-Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Non-negative integer, number of tasks in the controller.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-empty"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-empty}{}}}
-\subsection{Method \code{empty()}}{
-See if the controllers are empty.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$empty(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
+\subsection{\code{crew_class_controller_group$empty()}}{
+  See if the controllers are empty.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$empty(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-A controller is empty if it has no running tasks
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    A controller is empty if it has no running tasks
 or completed tasks waiting to be retrieved with \code{push()}.
+  }
+  \subsection{Returns}{
+    \code{TRUE} if all the selected controllers are empty,
+\code{FALSE} otherwise.
+  }
 }
 
-\subsection{Returns}{
-\code{TRUE} if all the selected controllers are empty,
-\code{FALSE} otherwise.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-nonempty"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-nonempty}{}}}
-\subsection{Method \code{nonempty()}}{
-Check if the controller group is nonempty.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$nonempty(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
+\subsection{\code{crew_class_controller_group$nonempty()}}{
+  Check if the controller group is nonempty.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$nonempty(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-A controller is empty if it has no running tasks
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    A controller is empty if it has no running tasks
 or completed tasks waiting to be retrieved with \code{push()}.
+  }
+  \subsection{Returns}{
+    \code{TRUE} if the controller is empty, \code{FALSE} otherwise.
+  }
 }
 
-\subsection{Returns}{
-\code{TRUE} if the controller is empty, \code{FALSE} otherwise.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-resolved"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-resolved}{}}}
-\subsection{Method \code{resolved()}}{
-Number of resolved \code{mirai()} tasks.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$resolved(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
+\subsection{\code{crew_class_controller_group$resolved()}}{
+  Number of resolved \code{mirai()} tasks.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$resolved(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-\code{resolved()} is cumulative: it counts all the resolved
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    \code{resolved()} is cumulative: it counts all the resolved
 tasks over the entire lifetime of the controller session.
-}
-
-\subsection{Returns}{
-Non-negative integer of length 1,
+  }
+  \subsection{Returns}{
+    Non-negative integer of length 1,
 number of resolved \code{mirai()} tasks.
 The return value is 0 if the condition variable does not exist
 (i.e. if the client is not running).
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-unresolved"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-unresolved}{}}}
-\subsection{Method \code{unresolved()}}{
-Number of unresolved \code{mirai()} tasks.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$unresolved(controllers = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_controller_group$unresolved()}}{
+  Number of unresolved \code{mirai()} tasks.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$unresolved(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Non-negative integer of length 1,
+number of unresolved \code{mirai()} tasks.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
-Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Non-negative integer of length 1,
-number of unresolved \code{mirai()} tasks.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-saturated"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-saturated}{}}}
-\subsection{Method \code{saturated()}}{
-Check if a controller is saturated.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$saturated(
+\subsection{\code{crew_class_controller_group$saturated()}}{
+  Check if a controller is saturated.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$saturated(
   collect = NULL,
   throttle = NULL,
   controller = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
-
-\item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
-
-\item{\code{controller}}{Character vector of length 1 with the controller name.
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+      \item{\code{throttle}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+      \item{\code{controller}}{Character vector of length 1 with the controller name.
 Set to \code{NULL} to select the default controller that \code{push()}
 would choose.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-A controller is saturated if the number of uncollected tasks
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    A controller is saturated if the number of uncollected tasks
 is greater than or equal to the maximum number of workers.
 You can still push tasks to a saturated controller, but
 tools that use \code{crew} such as \code{targets} may choose not to
 (for performance and user-friendliness).
+  }
+  \subsection{Returns}{
+    \code{TRUE} if all the selected controllers are saturated,
+\code{FALSE} otherwise.
+  }
 }
 
-\subsection{Returns}{
-\code{TRUE} if all the selected controllers are saturated,
-\code{FALSE} otherwise.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-start"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-start}{}}}
-\subsection{Method \code{start()}}{
-Start one or more controllers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$start(controllers = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_controller_group$start()}}{
+  Start one or more controllers.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$start(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
-Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-started"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-started}{}}}
-\subsection{Method \code{started()}}{
-Check whether all the given controllers are started.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$started(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
+\subsection{\code{crew_class_controller_group$started()}}{
+  Check whether all the given controllers are started.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$started(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Actually checks whether all the given clients are started.
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Actually checks whether all the given clients are started.
+  }
+  \subsection{Returns}{
+    \code{TRUE} if the controllers are started, \code{FALSE} if any are not.
+  }
 }
 
-\subsection{Returns}{
-\code{TRUE} if the controllers are started, \code{FALSE} if any are not.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-launch}{}}}
-\subsection{Method \code{launch()}}{
-Launch one or more workers on one or more controllers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$launch(n = 1L, controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{n}}{Number of workers to launch in each controller selected.}
-
-\item{\code{controllers}}{Character vector of controller names.
+\subsection{\code{crew_class_controller_group$launch()}}{
+  Launch one or more workers on one or more controllers.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$launch(n = 1L, controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{n}}{Number of workers to launch in each controller selected.}
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-scale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-scale}{}}}
-\subsection{Method \code{scale()}}{
-Automatically scale up the number of workers if needed
+\subsection{\code{crew_class_controller_group$scale()}}{
+  Automatically scale up the number of workers if needed
 in one or more controller objects.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$scale(throttle = TRUE, controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$scale(throttle = TRUE, controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the local R process.}
-
-\item{\code{controllers}}{Character vector of controller names.
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-See the \code{scale()} method in individual controller classes.
-}
-
-\subsection{Returns}{
-Invisibly returns \code{TRUE} if there was any relevant
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    See the \code{scale()} method in individual controller classes.
+  }
+  \subsection{Returns}{
+    Invisibly returns \code{TRUE} if there was any relevant
 auto-scaling activity (new worker launches or worker
 connection/disconnection events) (\code{FALSE} otherwise).
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-autoscale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-autoscale}{}}}
-\subsection{Method \code{autoscale()}}{
-Run worker auto-scaling in a \code{later} loop.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$autoscale(
+\subsection{\code{crew_class_controller_group$autoscale()}}{
+  Run worker auto-scaling in a \code{later} loop.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$autoscale(
   loop = later::current_loop(),
   controllers = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{loop}}{A \code{later} loop to run auto-scaling.}
-
-\item{\code{controllers}}{Character vector of controller names.
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{loop}}{A \code{later} loop to run auto-scaling.}
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-descale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-descale}{}}}
-\subsection{Method \code{descale()}}{
-Terminate the auto-scaling loop started by
+\subsection{\code{crew_class_controller_group$descale()}}{
+  Terminate the auto-scaling loop started by
 \code{controller$autoscale()}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$descale(controllers = NULL)}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$descale(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
-Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-crashes"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-crashes}{}}}
-\subsection{Method \code{crashes()}}{
-Report the number of consecutive crashes of a task,
+\subsection{\code{crew_class_controller_group$crashes()}}{
+  Report the number of consecutive crashes of a task,
 summed over all selected controllers in the group.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$crashes(name, controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Character string, name of the task to check.}
-
-\item{\code{controllers}}{Not used. Included to ensure the signature is
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$crashes(name, controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{name}}{Character string, name of the task to check.}
+      \item{\code{controllers}}{Not used. Included to ensure the signature is
 compatible with the analogous method of controller groups.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-See the \code{crashes_max} argument of \code{\link[=crew_controller]{crew_controller()}}.
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    See the \code{crashes_max} argument of \code{\link[=crew_controller]{crew_controller()}}.
+  }
+  \subsection{Returns}{
+    Number of consecutive crashes of the named task,
+summed over all the controllers in the group.
+  }
 }
 
-\subsection{Returns}{
-Number of consecutive crashes of the named task,
-summed over all the controllers in the group.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-push"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-push}{}}}
-\subsection{Method \code{push()}}{
-Push a task to the head of the task list.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$push(
+\subsection{\code{crew_class_controller_group$push()}}{
+  Push a task to the head of the task list.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$push(
   command,
   data = list(),
   globals = list(),
@@ -509,22 +524,19 @@ Push a task to the head of the task list.
   name = NULL,
   save_command = NULL,
   controller = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{command}}{Language object with R code to run.}
-
-\item{\code{data}}{Named list of local data objects in the
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{command}}{Language object with R code to run.}
+      \item{\code{data}}{Named list of local data objects in the
 evaluation environment.}
-
-\item{\code{globals}}{Named list of objects to temporarily assign to the
+      \item{\code{globals}}{Named list of objects to temporarily assign to the
 global environment for the task. See the \code{reset_globals}
 argument of \code{\link[=crew_controller_local]{crew_controller_local()}}.}
-
-\item{\code{substitute}}{Logical of length 1, whether to call
+      \item{\code{substitute}}{Logical of length 1, whether to call
 \code{base::substitute()} on the supplied value of the
 \code{command} argument. If \code{TRUE} (default) then \code{command} is quoted
 literally as you write it, e.g.
@@ -534,8 +546,7 @@ value, e.g. \code{push(command = quote(your_function_call()))}.
 \code{substitute = TRUE} is appropriate for interactive use,
 whereas \code{substitute = FALSE} is meant for automated R programs
 that invoke \code{crew} controllers.}
-
-\item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
+      \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
 seed to set for the evaluation of the task. Passed to the
 \code{seed} argument of \code{set.seed()} if not \code{NULL}.
 If \code{algorithm} and \code{seed} are both \code{NULL},
@@ -543,8 +554,7 @@ then the random number generator defaults to the
 widely spaced worker-specific
 L'Ecuyer streams as supported by \code{mirai::nextstream()}.
 See \code{vignette("parallel", package = "parallel")} for details.}
-
-\item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
+      \item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
 generator algorithm to set for the evaluation of the task.
 Passed to the \code{kind} argument of \code{RNGkind()} if not \code{NULL}.
 If \code{algorithm} and \code{seed} are both \code{NULL},
@@ -552,80 +562,75 @@ then the random number generator defaults to the
 recommended widely spaced worker-specific
 L'Ecuyer streams as supported by \code{mirai::nextstream()}.
 See \code{vignette("parallel", package = "parallel")} for details.}
-
-\item{\code{packages}}{Character vector of packages to load for the task.}
-
-\item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
+      \item{\code{packages}}{Character vector of packages to load for the task.}
+      \item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
 argument of \code{require()}.}
-
-\item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
+      \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
-
-\item{\code{scale}}{Logical, whether to automatically scale workers to meet
+      \item{\code{scale}}{Logical, whether to automatically scale workers to meet
 demand. See the \code{scale} argument of the \code{push()} method of
 ordinary single controllers.}
-
-\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+      \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the local R process.}
-
-\item{\code{name}}{Character string, name of the task. If \code{NULL},
+      \item{\code{name}}{Character string, name of the task. If \code{NULL},
 a random name is automatically generated.
 The task name must not conflict with an existing task
 in the controller where it is submitted.
 To reuse the name, wait for the existing task
 to finish, then either \code{pop()} or \code{collect()} it
 to remove it from its controller.}
-
-\item{\code{save_command}}{Deprecated on 2025-01-22
+      \item{\code{save_command}}{Deprecated on 2025-01-22
 (\code{crew} version 0.10.2.9004).}
-
-\item{\code{controller}}{Character of length 1,
+      \item{\code{controller}}{Character of length 1,
 name of the controller to submit the task.
 If \code{NULL}, the controller defaults to the
 first controller in the list.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly return the \code{mirai} object of the pushed task.
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Invisibly return the \code{mirai} object of the pushed task.
 This allows you to interact with the task directly, e.g.
 to create a promise object with \code{promises::as.promise()}.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-synced"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-synced}{}}}
-\subsection{Method \code{synced()}}{
-Check if all controllers are synced.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$synced(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
+\subsection{\code{crew_class_controller_group$synced()}}{
+  Check if all controllers are synced.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$synced(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-A controller is synced if all pushed tasks in the controller
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    A controller is synced if all pushed tasks in the controller
 show up in the task counts in \code{mirai::info()}.
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-walk"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-walk}{}}}
-\subsection{Method \code{walk()}}{
-Apply a single command to multiple inputs,
+\subsection{\code{crew_class_controller_group$walk()}}{
+  Apply a single command to multiple inputs,
 and return control to the user without
 waiting for any task to complete.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$walk(
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$walk(
   command,
   iterate,
   data = list(),
@@ -642,15 +647,14 @@ waiting for any task to complete.
   scale = TRUE,
   throttle = TRUE,
   controller = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{command}}{Language object with R code to run.}
-
-\item{\code{iterate}}{Named list of vectors or lists to iterate over.
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{command}}{Language object with R code to run.}
+      \item{\code{iterate}}{Named list of vectors or lists to iterate over.
 For example, to run function calls
 \code{f(x = 1, y = "a")} and \code{f(x = 2, y = "b")},
 set \code{command} to \code{f(x, y)}, and set \code{iterate} to
@@ -661,20 +665,17 @@ function calls are evaluated as
 All the elements of \code{iterate} must have the same length.
 If there are any name conflicts between \code{iterate} and \code{data},
 \code{iterate} takes precedence.}
-
-\item{\code{data}}{Named list of constant local data objects in the
+      \item{\code{data}}{Named list of constant local data objects in the
 evaluation environment. Objects in this list are treated as single
 values and are held constant for each iteration of the map.}
-
-\item{\code{globals}}{Named list of constant objects to temporarily
+      \item{\code{globals}}{Named list of constant objects to temporarily
 assign to the global environment for each task. This list should
 include any functions you previously defined in the global
 environment which are required to run tasks.
 See the \code{reset_globals} argument of \code{\link[=crew_controller_local]{crew_controller_local()}}.
 Objects in this list are treated as single
 values and are held constant for each iteration of the map.}
-
-\item{\code{substitute}}{Logical of length 1, whether to call
+      \item{\code{substitute}}{Logical of length 1, whether to call
 \code{base::substitute()} on the supplied value of the
 \code{command} argument. If \code{TRUE} (default) then \code{command} is quoted
 literally as you write it, e.g.
@@ -684,8 +685,7 @@ value, e.g. \code{push(command = quote(your_function_call()))}.
 \code{substitute = TRUE} is appropriate for interactive use,
 whereas \code{substitute = FALSE} is meant for automated R programs
 that invoke \code{crew} controllers.}
-
-\item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
+      \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
 seed to set for the evaluation of the task. Passed to the
 \code{seed} argument of \code{set.seed()} if not \code{NULL}.
 If \code{algorithm} and \code{seed} are both \code{NULL},
@@ -693,8 +693,7 @@ then the random number generator defaults to the
 recommended widely spaced worker-specific
 L'Ecuyer streams as supported by \code{mirai::nextstream()}.
 See \code{vignette("parallel", package = "parallel")} for details.}
-
-\item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
+      \item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
 generator algorithm to set for the evaluation of the task.
 Passed to the \code{kind} argument of \code{RNGkind()} if not \code{NULL}.
 If \code{algorithm} and \code{seed} are both \code{NULL},
@@ -702,58 +701,50 @@ then the random number generator defaults to the
 recommended widely spaced worker-specific
 L'Ecuyer streams as supported by \code{mirai::nextstream()}.
 See \code{vignette("parallel", package = "parallel")} for details.}
-
-\item{\code{packages}}{Character vector of packages to load for the task.}
-
-\item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
+      \item{\code{packages}}{Character vector of packages to load for the task.}
+      \item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
 argument of \code{require()}.}
-
-\item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
+      \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
-
-\item{\code{names}}{Optional character of length 1, name of the element of
+      \item{\code{names}}{Optional character of length 1, name of the element of
 \code{iterate} with names for the tasks. If \code{names} is supplied,
 then \code{iterate[[names]]} must be a character vector.}
-
-\item{\code{save_command}}{Deprecated on 2025-01-22
+      \item{\code{save_command}}{Deprecated on 2025-01-22
 (\code{crew} version 0.10.2.9004).}
-
-\item{\code{verbose}}{Logical of length 1, whether to print to a progress bar
+      \item{\code{verbose}}{Logical of length 1, whether to print to a progress bar
 when pushing tasks.}
-
-\item{\code{scale}}{Logical, whether to automatically scale workers to meet
+      \item{\code{scale}}{Logical, whether to automatically scale workers to meet
 demand. See also the \code{throttle} argument.}
-
-\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+      \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the local R process.}
-
-\item{\code{controller}}{Character of length 1,
+      \item{\code{controller}}{Character of length 1,
 name of the controller to submit the tasks.
 If \code{NULL}, the controller defaults to the
 first controller in the list.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-In contrast to \code{walk()}, \code{map()} blocks the local R session
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    In contrast to \code{walk()}, \code{map()} blocks the local R session
 and waits for all tasks to complete.
-}
-
-\subsection{Returns}{
-Invisibly returns a list of \code{mirai} task objects for the
+  }
+  \subsection{Returns}{
+    Invisibly returns a list of \code{mirai} task objects for the
 newly created tasks. The order of tasks in the list matches the
 order of data in the \code{iterate} argument.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-map"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-map}{}}}
-\subsection{Method \code{map()}}{
-Apply a single command to multiple inputs.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$map(
+\subsection{\code{crew_class_controller_group$map()}}{
+  Apply a single command to multiple inputs.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$map(
   command,
   iterate,
   data = list(),
@@ -773,15 +764,14 @@ Apply a single command to multiple inputs.
   scale = TRUE,
   throttle = TRUE,
   controller = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{command}}{Language object with R code to run.}
-
-\item{\code{iterate}}{Named list of vectors or lists to iterate over.
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{command}}{Language object with R code to run.}
+      \item{\code{iterate}}{Named list of vectors or lists to iterate over.
 For example, to run function calls
 \code{f(x = 1, y = "a")} and \code{f(x = 2, y = "b")},
 set \code{command} to \code{f(x, y)}, and set \code{iterate} to
@@ -792,20 +782,17 @@ function calls are evaluated as
 All the elements of \code{iterate} must have the same length.
 If there are any name conflicts between \code{iterate} and \code{data},
 \code{iterate} takes precedence.}
-
-\item{\code{data}}{Named list of constant local data objects in the
+      \item{\code{data}}{Named list of constant local data objects in the
 evaluation environment. Objects in this list are treated as single
 values and are held constant for each iteration of the map.}
-
-\item{\code{globals}}{Named list of constant objects to temporarily
+      \item{\code{globals}}{Named list of constant objects to temporarily
 assign to the global environment for each task. This list should
 include any functions you previously defined in the global
 environment which are required to run tasks.
 See the \code{reset_globals} argument of \code{\link[=crew_controller_local]{crew_controller_local()}}.
 Objects in this list are treated as single
 values and are held constant for each iteration of the map.}
-
-\item{\code{substitute}}{Logical of length 1, whether to call
+      \item{\code{substitute}}{Logical of length 1, whether to call
 \code{base::substitute()} on the supplied value of the
 \code{command} argument. If \code{TRUE} (default) then \code{command} is quoted
 literally as you write it, e.g.
@@ -815,8 +802,7 @@ value, e.g. \code{push(command = quote(your_function_call()))}.
 \code{substitute = TRUE} is appropriate for interactive use,
 whereas \code{substitute = FALSE} is meant for automated R programs
 that invoke \code{crew} controllers.}
-
-\item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
+      \item{\code{seed}}{Integer of length 1 with the pseudo-random number generator
 seed to set for the evaluation of the task. Passed to the
 \code{seed} argument of \code{set.seed()} if not \code{NULL}.
 If \code{algorithm} and \code{seed} are both \code{NULL},
@@ -824,8 +810,7 @@ then the random number generator defaults to the
 recommended widely spaced worker-specific
 L'Ecuyer streams as supported by \code{mirai::nextstream()}.
 See \code{vignette("parallel", package = "parallel")} for details.}
-
-\item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
+      \item{\code{algorithm}}{Integer of length 1 with the pseudo-random number
 generator algorithm to set for the evaluation of the task.
 Passed to the \code{kind} argument of \code{RNGkind()} if not \code{NULL}.
 If \code{algorithm} and \code{seed} are both \code{NULL},
@@ -833,29 +818,22 @@ then the random number generator defaults to the
 recommended widely spaced worker-specific
 L'Ecuyer streams as supported by \code{mirai::nextstream()}.
 See \code{vignette("parallel", package = "parallel")} for details.}
-
-\item{\code{packages}}{Character vector of packages to load for the task.}
-
-\item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
+      \item{\code{packages}}{Character vector of packages to load for the task.}
+      \item{\code{library}}{Library path to load the packages. See the \code{lib.loc}
 argument of \code{require()}.}
-
-\item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
+      \item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
 0.10.2.9003). Instead, the \code{seconds_interval} argument passed
 to \code{\link[=crew_controller_group]{crew_controller_group()}} is used as \code{seconds_max}
 in a \code{\link[=crew_throttle]{crew_throttle()}} object which orchestrates exponential
 backoff.}
-
-\item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
+      \item{\code{seconds_timeout}}{Optional task timeout passed to the \code{.timeout}
 argument of \code{mirai::mirai()} (after converting to milliseconds).}
-
-\item{\code{names}}{Optional character of length 1, name of the element of
+      \item{\code{names}}{Optional character of length 1, name of the element of
 \code{iterate} with names for the tasks. If \code{names} is supplied,
 then \code{iterate[[names]]} must be a character vector.}
-
-\item{\code{save_command}}{Deprecated on 2025-01-22
+      \item{\code{save_command}}{Deprecated on 2025-01-22
 (\code{crew} version 0.10.2.9004).}
-
-\item{\code{error}}{Character vector of length 1, choice of action if
+      \item{\code{error}}{Character vector of length 1, choice of action if
 a task has an error. Possible values:
 \itemize{
 \item \code{"stop"}: throw an error in the main R session instead of returning
@@ -868,67 +846,60 @@ you are finished troubleshooting.
 all the error messages and tracebacks to be generated.
 \item \code{"silent"}: do nothing special.
 }}
-
-\item{\code{warnings}}{Logical of length 1, whether to throw a warning in the
+      \item{\code{warnings}}{Logical of length 1, whether to throw a warning in the
 interactive session if at least one task encounters an error.}
-
-\item{\code{verbose}}{Logical of length 1, whether to print progress messages.}
-
-\item{\code{scale}}{Logical, whether to automatically scale workers to meet
+      \item{\code{verbose}}{Logical of length 1, whether to print progress messages.}
+      \item{\code{scale}}{Logical, whether to automatically scale workers to meet
 demand. See also the \code{throttle} argument.}
-
-\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+      \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the local R process.}
-
-\item{\code{controller}}{Character of length 1,
+      \item{\code{controller}}{Character of length 1,
 name of the controller to submit the tasks.
 If \code{NULL}, the controller defaults to the
 first controller in the list.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-The idea comes from functional programming: for example,
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    The idea comes from functional programming: for example,
 the \code{map()} function from the \code{purrr} package.
+  }
+  \subsection{Returns}{
+    A \code{tibble} of results and metadata: one row per task and
+columns corresponding to the output of \code{pop()}.
+  }
 }
 
-\subsection{Returns}{
-A \code{tibble} of results and metadata: one row per task and
-columns corresponding to the output of \code{pop()}.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-pop"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-pop}{}}}
-\subsection{Method \code{pop()}}{
-Pop a completed task from the results data frame.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop(
+\subsection{\code{crew_class_controller_group$pop()}}{
+  Pop a completed task from the results data frame.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$pop(
   scale = TRUE,
   collect = NULL,
   throttle = TRUE,
   error = NULL,
   controllers = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{scale}}{Logical, whether to automatically scale workers to meet
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{scale}}{Logical, whether to automatically scale workers to meet
 demand. See the \code{scale} argument of the \code{pop()} method of
 ordinary single controllers.}
-
-\item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
-
-\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+      \item{\code{collect}}{Deprecated in version 0.5.0.9003 (2023-10-02). Not used.}
+      \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the local R process.}
-
-\item{\code{error}}{\code{NULL} or character of length 1, choice of action if
+      \item{\code{error}}{\code{NULL} or character of length 1, choice of action if
 the popped task threw an error. Possible values:
 \itemize{
 \item \code{"stop"}: throw an error in the main R session instead of returning
@@ -936,46 +907,45 @@ a value.
 \item \code{"warn"}: throw a warning.
 \item \code{NULL} or \code{"silent"}: do not react to errors.
 }}
-
-\item{\code{controllers}}{Character vector of controller names.
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-If there is no task to collect, return \code{NULL}. Otherwise,
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    If there is no task to collect, return \code{NULL}. Otherwise,
 return a one-row \code{tibble} with the same columns as \code{pop()}
 for ordinary controllers.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-collect"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-collect}{}}}
-\subsection{Method \code{collect()}}{
-Pop all available task results and return them in a tidy
+\subsection{\code{crew_class_controller_group$collect()}}{
+  Pop all available task results and return them in a tidy
 \code{tibble}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$collect(
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$collect(
   scale = TRUE,
   throttle = TRUE,
   error = NULL,
   controllers = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{scale}}{Logical of length 1,
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{scale}}{Logical of length 1,
 whether to automatically call \code{scale()}
 to auto-scale workers to meet the demand of the task load.}
-
-\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+      \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the local R process.}
-
-\item{\code{error}}{\code{NULL} or character of length 1, choice of action if
+      \item{\code{error}}{\code{NULL} or character of length 1, choice of action if
 the popped task threw an error. Possible values:
 \itemize{
 \item \code{"stop"}: throw an error in the main R session instead of returning
@@ -983,38 +953,39 @@ a value.
 \item \code{"warn"}: throw a warning.
 \item \code{NULL} or \code{"silent"}: do not react to errors.
 }}
-
-\item{\code{controllers}}{Character vector of controller names.
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A \code{tibble} of results and metadata of all resolved tasks,
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A \code{tibble} of results and metadata of all resolved tasks,
 with one row per task. Returns \code{NULL} if there are no available
 results.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-wait"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-wait}{}}}
-\subsection{Method \code{wait()}}{
-Wait for tasks.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$wait(
+\subsection{\code{crew_class_controller_group$wait()}}{
+  Wait for tasks.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$wait(
   mode = "all",
   seconds_interval = NULL,
   seconds_timeout = Inf,
   scale = TRUE,
   throttle = TRUE,
   controllers = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{mode}}{Character string, name of the waiting condition.
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{mode}}{Character string, name of the waiting condition.
 \code{wait(mode = "all")} waits until all tasks in the \code{mirai}
 compute profile resolve, and
 \code{wait(mode = "one")} waits until at least one task is available
@@ -1022,167 +993,170 @@ to \code{push()} or \code{collect()} from the controller.
 The former still works if the controller is not the only
 means of submitting tasks to the compute profile,
 whereas the latter assumes only the controller submits tasks.}
-
-\item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
+      \item{\code{seconds_interval}}{Deprecated on 2025-01-17 (\code{crew} version
 0.10.2.9003). Instead, the \code{seconds_interval} argument passed
 to \code{\link[=crew_controller_group]{crew_controller_group()}} is used as \code{seconds_max}
 in a \code{\link[=crew_throttle]{crew_throttle()}} object which orchestrates exponential
 backoff.}
-
-\item{\code{seconds_timeout}}{Timeout length in seconds waiting for
+      \item{\code{seconds_timeout}}{Timeout length in seconds waiting for
 results to become available.}
-
-\item{\code{scale}}{Logical of length 1, whether to call \code{scale_later()}
+      \item{\code{scale}}{Logical of length 1, whether to call \code{scale_later()}
 on each selected controller to schedule auto-scaling.
 See the \code{scale} argument of the \code{wait()} method of
 ordinary single controllers.}
-
-\item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
+      \item{\code{throttle}}{\code{TRUE} to skip auto-scaling if it already happened
 within the last polling interval. \code{FALSE} to auto-scale
 every time \code{scale()} is called. Throttling avoids
 overburdening the local R process.}
-
-\item{\code{controllers}}{Character vector of controller names.
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-The \code{wait()} method blocks the calling R session
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    The \code{wait()} method blocks the calling R session
 until the condition in the \code{mode} argument is met.
 During the wait, \code{wait()} iteratively auto-scales the workers.
-}
-
-\subsection{Returns}{
-A logical of length 1, invisibly.
+  }
+  \subsection{Returns}{
+    A logical of length 1, invisibly.
 \code{wait(mode = "all")} returns \code{TRUE} if all tasks in the \code{mirai}
 compute profile have resolved (\code{FALSE} otherwise).
 \code{wait(mode = "one")} returns \code{TRUE} if the controller is ready
 to pop or collect at least one resolved task (\code{FALSE} otherwise).
 \code{wait(mode = "one")} assumes all
 tasks were submitted through the controller and not by other means.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-push_backlog"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-push_backlog}{}}}
-\subsection{Method \code{push_backlog()}}{
-Push the name of a task to the backlog.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$push_backlog(name, controller = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Character of length 1 with the task name to push to
+\subsection{\code{crew_class_controller_group$push_backlog()}}{
+  Push the name of a task to the backlog.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$push_backlog(name, controller = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{name}}{Character of length 1 with the task name to push to
 the backlog.}
-
-\item{\code{controller}}{Character vector of length 1 with the controller name.
+      \item{\code{controller}}{Character vector of length 1 with the controller name.
 Set to \code{NULL} to select the default controller that \code{push_backlog()}
 would choose.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-\code{pop_backlog()} pops the tasks that can be pushed
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    \code{pop_backlog()} pops the tasks that can be pushed
 without saturating the controller.
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-pop_backlog"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-pop_backlog}{}}}
-\subsection{Method \code{pop_backlog()}}{
-Pop the task names from the head of the backlog which
+\subsection{\code{crew_class_controller_group$pop_backlog()}}{
+  Pop the task names from the head of the backlog which
 can be pushed without saturating the controller.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pop_backlog(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$pop_backlog(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Character vector of task names which can be pushed to the
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Character vector of task names which can be pushed to the
 controller without saturating it. If the controller is saturated,
 \code{character(0L)} is returned.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-summary"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-summary}{}}}
-\subsection{Method \code{summary()}}{
-Summarize the workers of one or more controllers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$summary(controllers = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
+\subsection{\code{crew_class_controller_group$summary()}}{
+  Summarize the workers of one or more controllers.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$summary(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
 Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A data frame of aggregated worker summary statistics
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A data frame of aggregated worker summary statistics
 of all the selected controllers. It has one row per worker,
 and the rows are grouped by controller.
 See the documentation of the \code{summary()} method of the controller
 class for specific information about the columns in the output.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-pids"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-pids}{}}}
-\subsection{Method \code{pids()}}{
-Deprecated on 2025-08-26 in \code{crew} version 1.2.1.9005.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$pids(controllers = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_controller_group$pids()}}{
+  Deprecated on 2025-08-26 in \code{crew} version 1.2.1.9005.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$pids(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    The integer process ID of the current process.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
-Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The integer process ID of the current process.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_controller_group-terminate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_controller_group-terminate}{}}}
-\subsection{Method \code{terminate()}}{
-Terminate the workers and disconnect the client
+\subsection{\code{crew_class_controller_group$terminate()}}{
+  Terminate the workers and disconnect the client
 for one or more controllers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_controller_group$terminate(controllers = NULL)}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_controller_group$terminate(controllers = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{controllers}}{Character vector of controller names.
+Set to \code{NULL} to select all controllers.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{controllers}}{Character vector of controller names.
-Set to \code{NULL} to select all controllers.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 }

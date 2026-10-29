@@ -18,7 +18,7 @@ client$terminate()
 }
 
 ## ------------------------------------------------
-## Method `crew_class_client$new`
+## Method `crew_class_client$new()`
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -29,55 +29,56 @@ client$terminate()
 }
 }
 \seealso{
-Other client: 
-\code{\link{crew_client}()}
+Other client:
+\code{\link[=crew_client]{crew_client()}}
 }
 \concept{client}
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{host}}{See \code{\link[=crew_client]{crew_client()}}.}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{host}}{See \code{\link[=crew_client]{crew_client()}}.}
 
-\item{\code{port}}{See \code{\link[=crew_client]{crew_client()}}.}
+    \item{\code{port}}{See \code{\link[=crew_client]{crew_client()}}.}
 
-\item{\code{tls}}{See \code{\link[=crew_client]{crew_client()}}.}
+    \item{\code{tls}}{See \code{\link[=crew_client]{crew_client()}}.}
 
-\item{\code{serialization}}{See \code{\link[=crew_client]{crew_client()}}.}
+    \item{\code{serialization}}{See \code{\link[=crew_client]{crew_client()}}.}
 
-\item{\code{profile}}{Compute profile of the client.}
+    \item{\code{profile}}{Compute profile of the client.}
 
-\item{\code{seconds_interval}}{See \code{\link[=crew_client]{crew_client()}}.}
+    \item{\code{seconds_interval}}{See \code{\link[=crew_client]{crew_client()}}.}
 
-\item{\code{seconds_timeout}}{See \code{\link[=crew_client]{crew_client()}}.}
+    \item{\code{seconds_timeout}}{See \code{\link[=crew_client]{crew_client()}}.}
 
-\item{\code{relay}}{Relay object for event-driven programming on a downstream
+    \item{\code{relay}}{Relay object for event-driven programming on a downstream
 condition variable.}
 
-\item{\code{started}}{Whether the client is started.}
+    \item{\code{started}}{Whether the client is started.}
 
-\item{\code{url}}{Client websocket URL.}
-}
-\if{html}{\out{</div>}}
+    \item{\code{url}}{Client websocket URL.}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-crew_class_client-new}{\code{crew_class_client$new()}}
-\item \href{#method-crew_class_client-validate}{\code{crew_class_client$validate()}}
-\item \href{#method-crew_class_client-set_started}{\code{crew_class_client$set_started()}}
-\item \href{#method-crew_class_client-start}{\code{crew_class_client$start()}}
-\item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
-\item \href{#method-crew_class_client-status}{\code{crew_class_client$status()}}
-\item \href{#method-crew_class_client-pids}{\code{crew_class_client$pids()}}
-}
+  \itemize{
+    \item \href{#method-crew_class_client-initialize}{\code{crew_class_client$new()}}
+    \item \href{#method-crew_class_client-validate}{\code{crew_class_client$validate()}}
+    \item \href{#method-crew_class_client-set_started}{\code{crew_class_client$set_started()}}
+    \item \href{#method-crew_class_client-start}{\code{crew_class_client$start()}}
+    \item \href{#method-crew_class_client-terminate}{\code{crew_class_client$terminate()}}
+    \item \href{#method-crew_class_client-status}{\code{crew_class_client$status()}}
+    \item \href{#method-crew_class_client-pids}{\code{crew_class_client$pids()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_client-new"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_client-new}{}}}
-\subsection{Method \code{new()}}{
-\code{mirai} client constructor.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$new(
+\if{html}{\out{<a id="method-crew_class_client-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_client-initialize}{}}}
+\subsection{\code{crew_class_client$new()}}{
+  \code{mirai} client constructor.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_client$new(
   host = NULL,
   port = NULL,
   tls = NULL,
@@ -86,132 +87,135 @@ condition variable.}
   seconds_interval = NULL,
   seconds_timeout = NULL,
   relay = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{host}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{port}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{tls}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{serialization}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{profile}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{seconds_timeout}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-
-\item{\code{relay}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-An \code{R6} object with the client.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{host}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+      \item{\code{port}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+      \item{\code{tls}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+      \item{\code{serialization}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+      \item{\code{profile}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+      \item{\code{seconds_interval}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+      \item{\code{seconds_timeout}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+      \item{\code{relay}}{Argument passed from \code{\link[=crew_client]{crew_client()}}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    An \code{R6} object with the client.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
 client$log()
 client$terminate()
 }
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_client-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-validate}{}}}
-\subsection{Method \code{validate()}}{
-Validate the client.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$validate()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_client$validate()}}{
+  Validate the client.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_client$validate()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_client-set_started"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-set_started}{}}}
-\subsection{Method \code{set_started()}}{
-Register the client as started.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$set_started()}\if{html}{\out{</div>}}
-}
-
-\subsection{Details}{
-Exported to implement the sequential controller.
+\subsection{\code{crew_class_client$set_started()}}{
+  Register the client as started.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_client$set_started()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Exported to implement the sequential controller.
 Only meant to be called manually inside the client or
 the sequential controller.
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_client-start"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-start}{}}}
-\subsection{Method \code{start()}}{
-Start listening for workers on the available sockets.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$start()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_client$start()}}{
+  Start listening for workers on the available sockets.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_client$start()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_client-terminate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-terminate}{}}}
-\subsection{Method \code{terminate()}}{
-Stop the mirai client and disconnect from the
+\subsection{\code{crew_class_client$terminate()}}{
+  Stop the mirai client and disconnect from the
 worker websockets.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$terminate()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_client$terminate()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_client-status"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-status}{}}}
-\subsection{Method \code{status()}}{
-Get the counters from \code{mirai::info()}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$status()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-A named integer vector of task counts
+\subsection{\code{crew_class_client$status()}}{
+  Get the counters from \code{mirai::info()}.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_client$status()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A named integer vector of task counts
 (awaiting, executing, completed) as well as the number of
 worker connections.
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_client-pids"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_client-pids}{}}}
-\subsection{Method \code{pids()}}{
-Deprecated on 2025-08-26 in \code{crew} version 1.2.1.9005.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_client$pids()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_client$pids()}}{
+  Deprecated on 2025-08-26 in \code{crew} version 1.2.1.9005.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_client$pids()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    The integer process ID of the current process.
+  }
 }
 
-\subsection{Returns}{
-The integer process ID of the current process.
-}
-}
 }

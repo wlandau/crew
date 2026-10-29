@@ -99,10 +99,13 @@ as_monad <- function(task, name, controller) {
   } else {
     code <- as.integer(out)
     error <- nanonext::nng_error(code)
+    status <- "error"
     if (identical(code, code_crash)) {
       status <- "crash"
     } else if (identical(code, code_cancel)) {
       status <- "cancel"
+    } else if (identical(code, code_timeout)) {
+      status <- "timeout"
     }
   }
   monad_init(
@@ -129,3 +132,4 @@ monad_rownames <- .set_row_names(1L)
 
 code_crash <- 19L
 code_cancel <- 20L
+code_timeout <- 5L

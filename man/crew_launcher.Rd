@@ -161,7 +161,7 @@ client$terminate()
 }
 }
 \seealso{
-Other launcher: 
+Other launcher:
 \code{\link{crew_class_launcher}}
 }
 \concept{launcher}

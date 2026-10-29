@@ -10,129 +10,134 @@ Local monitor \code{R6} class
 See \code{\link[=crew_monitor_local]{crew_monitor_local()}}.
 }
 \seealso{
-Other monitor: 
-\code{\link{crew_monitor_local}()}
+Other monitor:
+\code{\link[=crew_monitor_local]{crew_monitor_local()}}
 }
 \concept{monitor}
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-crew_class_monitor_local-dispatchers}{\code{crew_class_monitor_local$dispatchers()}}
-\item \href{#method-crew_class_monitor_local-daemons}{\code{crew_class_monitor_local$daemons()}}
-\item \href{#method-crew_class_monitor_local-workers}{\code{crew_class_monitor_local$workers()}}
-\item \href{#method-crew_class_monitor_local-terminate}{\code{crew_class_monitor_local$terminate()}}
-}
+  \itemize{
+    \item \href{#method-crew_class_monitor_local-dispatchers}{\code{crew_class_monitor_local$dispatchers()}}
+    \item \href{#method-crew_class_monitor_local-daemons}{\code{crew_class_monitor_local$daemons()}}
+    \item \href{#method-crew_class_monitor_local-workers}{\code{crew_class_monitor_local$workers()}}
+    \item \href{#method-crew_class_monitor_local-terminate}{\code{crew_class_monitor_local$terminate()}}
+  }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_monitor_local-dispatchers"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_monitor_local-dispatchers}{}}}
-\subsection{Method \code{dispatchers()}}{
-Deprecated:
+\subsection{\code{crew_class_monitor_local$dispatchers()}}{
+  Deprecated:
 list the process IDs of the running \code{mirai} dispatcher processes.
 (No longer applicable.)
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$dispatchers(user = ps::ps_username())}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{user}}{Character of length 1, user ID to filter on. \code{NULL}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_monitor_local$dispatchers(user = ps::ps_username())}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{user}}{Character of length 1, user ID to filter on. \code{NULL}
 to list processes of all users (not recommended).}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-The \code{mirai} dispatcher was an R process in \code{mirai} version
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    The \code{mirai} dispatcher was an R process in \code{mirai} version
 <= 2.6.1. In later versions,
 the dispatcher no longer a full process,
 and the \code{dispatchers()} method does not return any process IDs.
+  }
+  \subsection{Returns}{
+    Integer vector of process IDs of the running \code{mirai} dispatcher
+processes.
+  }
 }
 
-\subsection{Returns}{
-Integer vector of process IDs of the running \code{mirai} dispatcher
-processes.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_monitor_local-daemons"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_monitor_local-daemons}{}}}
-\subsection{Method \code{daemons()}}{
-List the process IDs of the locally running \code{mirai} daemon
+\subsection{\code{crew_class_monitor_local$daemons()}}{
+  List the process IDs of the locally running \code{mirai} daemon
 processes which are not \code{crew} workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$daemons(user = ps::ps_username())}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_monitor_local$daemons(user = ps::ps_username())}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{user}}{Character of length 1, user ID to filter on. \code{NULL}
+to list processes of all users (not recommended).}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Integer vector of process IDs of the locally running
+\code{mirai} daemon processes which are not \code{crew} workers.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{user}}{Character of length 1, user ID to filter on. \code{NULL}
-to list processes of all users (not recommended).}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Integer vector of process IDs of the locally running
-\code{mirai} daemon processes which are not \code{crew} workers.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_monitor_local-workers"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_monitor_local-workers}{}}}
-\subsection{Method \code{workers()}}{
-List the process IDs of locally running \code{crew} workers
+\subsection{\code{crew_class_monitor_local$workers()}}{
+  List the process IDs of locally running \code{crew} workers
 launched by the local controller (\code{\link[=crew_controller_local]{crew_controller_local()}}).
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$workers(user = ps::ps_username())}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{user}}{Character of length 1, user ID to filter on. \code{NULL}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_monitor_local$workers(user = ps::ps_username())}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{user}}{Character of length 1, user ID to filter on. \code{NULL}
 to list processes of all users (not recommended).}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Only the workers running on your local computer are listed.
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Only the workers running on your local computer are listed.
 Workers that are not listed include jobs on job schedulers like
 SLURM or jobs on cloud services like AWS Batch. To monitor
 those worker processes, please consult the monitor objects in
 the relevant third-party launcher plugins such as \code{crew.cluster}
 and \code{crew.aws.batch}.
+  }
+  \subsection{Returns}{
+    Integer vector of process IDs of locally running \code{crew} workers
+launched by the local controller (\code{\link[=crew_controller_local]{crew_controller_local()}}).
+  }
 }
 
-\subsection{Returns}{
-Integer vector of process IDs of locally running \code{crew} workers
-launched by the local controller (\code{\link[=crew_controller_local]{crew_controller_local()}}).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_monitor_local-terminate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_monitor_local-terminate}{}}}
-\subsection{Method \code{terminate()}}{
-Terminate the given process IDs.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_monitor_local$terminate(pids)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{pids}}{Integer vector of process IDs of local processes to
+\subsection{\code{crew_class_monitor_local$terminate()}}{
+  Terminate the given process IDs.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_monitor_local$terminate(pids)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{pids}}{Integer vector of process IDs of local processes to
 terminate.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Termination happens with the operating system signal
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Termination happens with the operating system signal
 given by \code{\link[=crew_terminate_signal]{crew_terminate_signal()}}.
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 }

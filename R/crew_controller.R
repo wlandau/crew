@@ -1285,7 +1285,8 @@ crew_class_controller <- R6::R6Class(
     #'     `"cancel"` if the task was canceled with
     #'     the `cancel()` controller method,
     #'     `"crash"` if the worker running the task exited before
-    #'     it could complete the task, or `"error"`
+    #'     it could complete the task,
+    #'     `"timeout"` if the task timed out, or `"error"`
     #'      for any other kind of error.
     #'   * `error`: the first 2048 characters of the error message if
     #'     the task status is not `"success"`, `NA` otherwise.

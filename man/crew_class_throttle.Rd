@@ -15,7 +15,7 @@ throttle$poll()
 throttle$poll()
 
 ## ------------------------------------------------
-## Method `crew_class_throttle$new`
+## Method `crew_class_throttle$new()`
 ## ------------------------------------------------
 
 throttle <- crew_throttle(seconds_max = 1)
@@ -23,168 +23,177 @@ throttle$poll()
 throttle$poll()
 }
 \seealso{
-Other throttle: 
-\code{\link{crew_throttle}()}
+Other throttle:
+\code{\link[=crew_throttle]{crew_throttle()}}
 }
 \concept{throttle}
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{seconds_max}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{seconds_max}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
 
-\item{\code{seconds_min}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+    \item{\code{seconds_min}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
 
-\item{\code{seconds_start}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+    \item{\code{seconds_start}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
 
-\item{\code{base}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+    \item{\code{base}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
 
-\item{\code{seconds_interval}}{Current wait time interval.}
+    \item{\code{seconds_interval}}{Current wait time interval.}
 
-\item{\code{polled}}{Positive numeric of length 1,
+    \item{\code{polled}}{Positive numeric of length 1,
 millisecond timestamp of the last time \code{poll()} returned \code{TRUE}.
 \code{NULL} if \code{poll()} was never called on the current object.}
-}
-\if{html}{\out{</div>}}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-crew_class_throttle-new}{\code{crew_class_throttle$new()}}
-\item \href{#method-crew_class_throttle-validate}{\code{crew_class_throttle$validate()}}
-\item \href{#method-crew_class_throttle-poll}{\code{crew_class_throttle$poll()}}
-\item \href{#method-crew_class_throttle-accelerate}{\code{crew_class_throttle$accelerate()}}
-\item \href{#method-crew_class_throttle-decelerate}{\code{crew_class_throttle$decelerate()}}
-\item \href{#method-crew_class_throttle-reset}{\code{crew_class_throttle$reset()}}
-\item \href{#method-crew_class_throttle-update}{\code{crew_class_throttle$update()}}
-}
+  \itemize{
+    \item \href{#method-crew_class_throttle-initialize}{\code{crew_class_throttle$new()}}
+    \item \href{#method-crew_class_throttle-validate}{\code{crew_class_throttle$validate()}}
+    \item \href{#method-crew_class_throttle-poll}{\code{crew_class_throttle$poll()}}
+    \item \href{#method-crew_class_throttle-accelerate}{\code{crew_class_throttle$accelerate()}}
+    \item \href{#method-crew_class_throttle-decelerate}{\code{crew_class_throttle$decelerate()}}
+    \item \href{#method-crew_class_throttle-reset}{\code{crew_class_throttle$reset()}}
+    \item \href{#method-crew_class_throttle-update}{\code{crew_class_throttle$update()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_throttle-new"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_throttle-new}{}}}
-\subsection{Method \code{new()}}{
-Throttle constructor.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$new(
+\if{html}{\out{<a id="method-crew_class_throttle-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_throttle-initialize}{}}}
+\subsection{\code{crew_class_throttle$new()}}{
+  Throttle constructor.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_throttle$new(
   seconds_max = NULL,
   seconds_min = NULL,
   seconds_start = NULL,
   base = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{seconds_max}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
-
-\item{\code{seconds_min}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
-
-\item{\code{seconds_start}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
-
-\item{\code{base}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-An \code{R6} object with throttle configuration.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{throttle <- crew_throttle(seconds_max = 1)
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{seconds_max}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+      \item{\code{seconds_min}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+      \item{\code{seconds_start}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+      \item{\code{base}}{See \code{\link[=crew_throttle]{crew_throttle()}}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    An \code{R6} object with throttle configuration.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{throttle <- crew_throttle(seconds_max = 1)
 throttle$poll()
 throttle$poll()
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_throttle-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_throttle-validate}{}}}
-\subsection{Method \code{validate()}}{
-Validate the object.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$validate()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_throttle$validate()}}{
+  Validate the object.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_throttle$validate()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_throttle-poll"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_throttle-poll}{}}}
-\subsection{Method \code{poll()}}{
-Poll the throttler.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$poll()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_throttle$poll()}}{
+  Poll the throttler.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_throttle$poll()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{TRUE} if \code{poll()} did not return \code{TRUE} in the last
+\code{max} seconds, \code{FALSE} otherwise.
+  }
 }
 
-\subsection{Returns}{
-\code{TRUE} if \code{poll()} did not return \code{TRUE} in the last
-\code{max} seconds, \code{FALSE} otherwise.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_throttle-accelerate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_throttle-accelerate}{}}}
-\subsection{Method \code{accelerate()}}{
-Divide \code{seconds_interval} by \code{base}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$accelerate()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_throttle$accelerate()}}{
+  Divide \code{seconds_interval} by \code{base}.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_throttle$accelerate()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly). Called for its side effects.
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly). Called for its side effects.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_throttle-decelerate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_throttle-decelerate}{}}}
-\subsection{Method \code{decelerate()}}{
-Multiply \code{seconds_interval} by \code{base}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$decelerate()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_throttle$decelerate()}}{
+  Multiply \code{seconds_interval} by \code{base}.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_throttle$decelerate()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly). Called for its side effects.
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly). Called for its side effects.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_throttle-reset"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_throttle-reset}{}}}
-\subsection{Method \code{reset()}}{
-Reset the throttle object so the next \code{poll()} returns
+\subsection{\code{crew_class_throttle$reset()}}{
+  Reset the throttle object so the next \code{poll()} returns
 \code{TRUE}, and reset the wait time interval to its initial value.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$reset()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_throttle$reset()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_throttle-update"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_throttle-update}{}}}
-\subsection{Method \code{update()}}{
-Reset the throttle when there is activity and
+\subsection{\code{crew_class_throttle$update()}}{
+  Reset the throttle when there is activity and
 decelerate it gradually when there is no activity.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_throttle$update(activity)}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_throttle$update(activity)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{activity}}{\code{TRUE} if there is activity, \code{FALSE} otherwise.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{activity}}{\code{TRUE} if there is activity, \code{FALSE} otherwise.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 }

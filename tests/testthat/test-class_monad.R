@@ -47,3 +47,16 @@ crew_test("as_monad()", {
   expect_true(grepl("connection reset", tolower(monad$error)))
   expect_equal(monad$code, 19L)
 })
+
+crew_test("as_monad() on a mirai timeout", {
+  skip_on_cran()
+  skip_on_os("windows")
+  task <- mirai::mirai(Sys.sleep(300), .timeout = 1L)
+  mirai::call_mirai(task)
+  monad <- as_monad(task = task, name = "x", controller = "y")
+  expect_equal(monad$name, "x")
+  expect_equal(monad$result, list(NA))
+  expect_equal(monad$status, "timeout")
+  expect_true(grepl("timed out", tolower(monad$error)))
+  expect_equal(monad$code, 5L)
+})

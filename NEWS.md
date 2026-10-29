@@ -1,6 +1,6 @@
 # crew development version
 
-
+* Fix timeout status reporting (#254, @dshemetov).
 
 # crew 1.3.3
 

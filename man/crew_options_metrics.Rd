@@ -52,7 +52,7 @@ if those files are mixed with other messages.
   crew_options_metrics()
 }
 \seealso{
-Other options: 
-\code{\link{crew_options_local}()}
+Other options:
+\code{\link[=crew_options_local]{crew_options_local()}}
 }
 \concept{options}

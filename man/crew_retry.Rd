@@ -52,14 +52,14 @@ and exit the loop when it returns \code{TRUE}
 crew_retry(fun = function() TRUE)
 }
 \seealso{
-Other utility: 
-\code{\link{crew_assert}()},
-\code{\link{crew_clean}()},
-\code{\link{crew_deprecate}()},
-\code{\link{crew_eval}()},
-\code{\link{crew_random_name}()},
-\code{\link{crew_terminate_process}()},
-\code{\link{crew_terminate_signal}()},
-\code{\link{crew_worker}()}
+Other utility:
+\code{\link[=crew_assert]{crew_assert()}},
+\code{\link[=crew_clean]{crew_clean()}},
+\code{\link[=crew_deprecate]{crew_deprecate()}},
+\code{\link[=crew_eval]{crew_eval()}},
+\code{\link[=crew_random_name]{crew_random_name()}},
+\code{\link[=crew_terminate_process]{crew_terminate_process()}},
+\code{\link[=crew_terminate_signal]{crew_terminate_signal()}},
+\code{\link[=crew_worker]{crew_worker()}}
 }
 \concept{utility}

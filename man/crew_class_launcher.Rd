@@ -21,7 +21,7 @@ client$terminate()
 }
 
 ## ------------------------------------------------
-## Method `crew_class_launcher$new`
+## Method `crew_class_launcher$new()`
 ## ------------------------------------------------
 
 if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
@@ -37,7 +37,7 @@ client$terminate()
 }
 
 ## ------------------------------------------------
-## Method `crew_class_launcher$call`
+## Method `crew_class_launcher$call()`
 ## ------------------------------------------------
 
 launcher <- crew_launcher_local()
@@ -46,42 +46,42 @@ launcher$call()
 launcher$terminate()
 }
 \seealso{
-Other launcher: 
-\code{\link{crew_launcher}()}
+Other launcher:
+\code{\link[=crew_launcher]{crew_launcher()}}
 }
 \concept{launcher}
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{workers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    \item{\code{workers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    \item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    \item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    \item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    \item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    \item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    \item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    \item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    \item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{options_metrics}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    \item{\code{options_metrics}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
 
-\item{\code{url}}{Websocket URL for worker connections.}
+    \item{\code{url}}{Websocket URL for worker connections.}
 
-\item{\code{profile}}{\code{mirai} compute profile of the launcher.}
+    \item{\code{profile}}{\code{mirai} compute profile of the launcher.}
 
-\item{\code{launches}}{Data frame tracking worker launches with one row
+    \item{\code{launches}}{Data frame tracking worker launches with one row
 per launch. Each launch may create more than one worker.
 Old superfluous rows are periodically discarded for efficiency.
 The \code{handle} column is used internally for testing and
@@ -92,40 +92,41 @@ persist for the full duration of a pipeline:
 so handles may become unavailable in long-running
 or high-throughput workflows.}
 
-\item{\code{throttle}}{A \code{\link[=crew_throttle]{crew_throttle()}} object to throttle scaling.}
+    \item{\code{throttle}}{A \code{\link[=crew_throttle]{crew_throttle()}} object to throttle scaling.}
 
-\item{\code{failed}}{Number of failed worker launches
+    \item{\code{failed}}{Number of failed worker launches
 (launches that exceed \code{seconds_launch} seconds to dial in).}
-}
-\if{html}{\out{</div>}}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-crew_class_launcher-new}{\code{crew_class_launcher$new()}}
-\item \href{#method-crew_class_launcher-validate}{\code{crew_class_launcher$validate()}}
-\item \href{#method-crew_class_launcher-poll}{\code{crew_class_launcher$poll()}}
-\item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
-\item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
-\item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
-\item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
-\item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
-\item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
-\item \href{#method-crew_class_launcher-launch_workers}{\code{crew_class_launcher$launch_workers()}}
-\item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
-\item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
-\item \href{#method-crew_class_launcher-crashes}{\code{crew_class_launcher$crashes()}}
-\item \href{#method-crew_class_launcher-set_name}{\code{crew_class_launcher$set_name()}}
-\item \href{#method-crew_class_launcher-clone}{\code{crew_class_launcher$clone()}}
-}
+  \itemize{
+    \item \href{#method-crew_class_launcher-initialize}{\code{crew_class_launcher$new()}}
+    \item \href{#method-crew_class_launcher-validate}{\code{crew_class_launcher$validate()}}
+    \item \href{#method-crew_class_launcher-poll}{\code{crew_class_launcher$poll()}}
+    \item \href{#method-crew_class_launcher-settings}{\code{crew_class_launcher$settings()}}
+    \item \href{#method-crew_class_launcher-call}{\code{crew_class_launcher$call()}}
+    \item \href{#method-crew_class_launcher-start}{\code{crew_class_launcher$start()}}
+    \item \href{#method-crew_class_launcher-terminate}{\code{crew_class_launcher$terminate()}}
+    \item \href{#method-crew_class_launcher-launch}{\code{crew_class_launcher$launch()}}
+    \item \href{#method-crew_class_launcher-launch_worker}{\code{crew_class_launcher$launch_worker()}}
+    \item \href{#method-crew_class_launcher-launch_workers}{\code{crew_class_launcher$launch_workers()}}
+    \item \href{#method-crew_class_launcher-scale}{\code{crew_class_launcher$scale()}}
+    \item \href{#method-crew_class_launcher-terminate_workers}{\code{crew_class_launcher$terminate_workers()}}
+    \item \href{#method-crew_class_launcher-crashes}{\code{crew_class_launcher$crashes()}}
+    \item \href{#method-crew_class_launcher-set_name}{\code{crew_class_launcher$set_name()}}
+    \item \href{#method-crew_class_launcher-clone}{\code{crew_class_launcher$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-crew_class_launcher-new"></a>}}
-\if{latex}{\out{\hypertarget{method-crew_class_launcher-new}{}}}
-\subsection{Method \code{new()}}{
-Launcher constructor.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$new(
+\if{html}{\out{<a id="method-crew_class_launcher-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-crew_class_launcher-initialize}{}}}
+\subsection{\code{crew_class_launcher$new()}}{
+  Launcher constructor.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$new(
   name = NULL,
   workers = NULL,
   seconds_interval = NULL,
@@ -146,60 +147,41 @@ Launcher constructor.
   processes = NULL,
   r_arguments = NULL,
   options_metrics = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{workers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{seconds_exit}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{reset_globals}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{reset_packages}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{reset_options}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{garbage_collection}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{crashes_error}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{launch_max}}{Deprecated.}
-
-\item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{processes}}{Deprecated on 2025-08-27 (\code{crew} version 1.2.1.9009).}
-
-\item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-
-\item{\code{options_metrics}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-An \code{R6} object with the launcher.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{name}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{workers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_interval}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_timeout}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_launch}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_idle}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_wall}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{seconds_exit}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{tasks_max}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{tasks_timers}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{reset_globals}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{reset_packages}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{reset_options}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{garbage_collection}}{Deprecated. See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{crashes_error}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{launch_max}}{Deprecated.}
+      \item{\code{tls}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{processes}}{Deprecated on 2025-08-27 (\code{crew} version 1.2.1.9009).}
+      \item{\code{r_arguments}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+      \item{\code{options_metrics}}{See \code{\link[=crew_launcher]{crew_launcher()}}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    An \code{R6} object with the launcher.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{if (identical(Sys.getenv("CREW_EXAMPLES"), "true")) {
 client <- crew_client()
 client$start()
 launcher <- crew_launcher_local()
@@ -211,297 +193,316 @@ task$data
 client$terminate()
 }
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-validate}{}}}
-\subsection{Method \code{validate()}}{
-Validate the launcher.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$validate()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_launcher$validate()}}{
+  Validate the launcher.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$validate()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-poll"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-poll}{}}}
-\subsection{Method \code{poll()}}{
-Poll the throttle.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$poll()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_launcher$poll()}}{
+  Poll the throttle.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$poll()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{TRUE} to run whatever work comes next, \code{FALSE} to skip
+until the appropriate time.
+  }
 }
 
-\subsection{Returns}{
-\code{TRUE} to run whatever work comes next, \code{FALSE} to skip
-until the appropriate time.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-settings"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-settings}{}}}
-\subsection{Method \code{settings()}}{
-List of arguments for \code{mirai::daemon()}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$settings()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_launcher$settings()}}{
+  List of arguments for \code{mirai::daemon()}.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$settings()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    List of arguments for \code{mirai::daemon()}.
+  }
 }
 
-\subsection{Returns}{
-List of arguments for \code{mirai::daemon()}.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-call"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-call}{}}}
-\subsection{Method \code{call()}}{
-Create a call to \code{\link[=crew_worker]{crew_worker()}} to
+\subsection{\code{crew_class_launcher$call()}}{
+  Create a call to \code{\link[=crew_worker]{crew_worker()}} to
 help create custom launchers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$call(worker = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{worker}}{Deprecated on 2025-08-28 (\code{crew} version 1.2.1.9009).}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Character string with a call to \code{\link[=crew_worker]{crew_worker()}}.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{launcher <- crew_launcher_local()
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$call(worker = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{worker}}{Deprecated on 2025-08-28 (\code{crew} version 1.2.1.9009).}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Character string with a call to \code{\link[=crew_worker]{crew_worker()}}.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{launcher <- crew_launcher_local()
 launcher$start(url = "tcp://127.0.0.1:57000", profile = "profile")
 launcher$call()
 launcher$terminate()
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-start"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-start}{}}}
-\subsection{Method \code{start()}}{
-Start the launcher.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$start(url = NULL, profile = NULL, sockets = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_launcher$start()}}{
+  Start the launcher.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$start(url = NULL, profile = NULL, sockets = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{url}}{Character string, websocket URL for worker connections.}
+      \item{\code{profile}}{Character string, \code{mirai} compute profile.}
+      \item{\code{sockets}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{url}}{Character string, websocket URL for worker connections.}
-
-\item{\code{profile}}{Character string, \code{mirai} compute profile.}
-
-\item{\code{sockets}}{Deprecated on 2025-01-28 (\code{crew} version 1.0.0).}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-terminate"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate}{}}}
-\subsection{Method \code{terminate()}}{
-Terminate the whole launcher, including all workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate()}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_launcher$terminate()}}{
+  Terminate the whole launcher, including all workers.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$terminate()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-launch"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-launch}{}}}
-\subsection{Method \code{launch()}}{
-Launch a worker.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch(n = 1L)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{n}}{Positive integer, number of workers to launch.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Handle of the launched worker (stored internally for
+\subsection{\code{crew_class_launcher$launch()}}{
+  Launch a worker.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$launch(n = 1L)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{n}}{Positive integer, number of workers to launch.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Handle of the launched worker (stored internally for
 auto-scaling logic and testing but not
 guaranteed to persist; see the \code{launches} field).
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-launch_worker"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-launch_worker}{}}}
-\subsection{Method \code{launch_worker()}}{
-Abstract worker launch method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_worker(call)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{call}}{Character of length 1 with a namespaced call to
+\subsection{\code{crew_class_launcher$launch_worker()}}{
+  Abstract worker launch method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$launch_worker(call)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{call}}{Character of length 1 with a namespaced call to
 \code{\link[=crew_worker]{crew_worker()}} which will run in the worker and accept tasks.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Launcher plugins will overwrite this method.
-}
-
-\subsection{Returns}{
-A handle to mock the worker launch.
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Launcher plugins will overwrite this method.
+  }
+  \subsection{Returns}{
+    A handle to mock the worker launch.
 Handles are used internally for testing and
 worker launching logic only. They are not guaranteed
 to persist in long-running or high-throughput pipelines
 (see the \code{launches} field).
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-launch_workers"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-launch_workers}{}}}
-\subsection{Method \code{launch_workers()}}{
-Launch multiple workers.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$launch_workers(call, n)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{call}}{Character of length 1 with a namespaced call to
+\subsection{\code{crew_class_launcher$launch_workers()}}{
+  Launch multiple workers.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$launch_workers(call, n)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{call}}{Character of length 1 with a namespaced call to
 \code{\link[=crew_worker]{crew_worker()}} which will run in each worker and accept tasks.}
-
-\item{\code{n}}{Positive integer, number of workers to launch.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Launcher plugins may overwrite this method
+      \item{\code{n}}{Positive integer, number of workers to launch.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Details}{
+    Launcher plugins may overwrite this method
 to launch multiple workers from a single system call.
-}
-
-\subsection{Returns}{
-A handle to mock the worker launch.
+  }
+  \subsection{Returns}{
+    A handle to mock the worker launch.
 Handles are used internally for testing and
 worker launching logic only. They are not guaranteed
 to persist in long-running or high-throughput pipelines
 (see the \code{launches} field).
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-scale"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-scale}{}}}
-\subsection{Method \code{scale()}}{
-Auto-scale workers out to meet the demand of tasks.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$scale(status, throttle = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{status}}{A \code{mirai} status list with worker and task information.}
-
-\item{\code{throttle}}{Deprecated, only used in the controller
+\subsection{\code{crew_class_launcher$scale()}}{
+  Auto-scale workers out to meet the demand of tasks.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$scale(status, throttle = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{status}}{A \code{mirai} status list with worker and task information.}
+      \item{\code{throttle}}{Deprecated, only used in the controller
 as of 2025-01-16 (\code{crew} version 0.10.2.9003).}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly returns \code{TRUE} if there was any relevant
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Invisibly returns \code{TRUE} if there was any relevant
 auto-scaling activity (new worker launches or worker
 connection/disconnection events) (\code{FALSE} otherwise).
+  }
 }
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-terminate_workers"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-terminate_workers}{}}}
-\subsection{Method \code{terminate_workers()}}{
-Deprecated on 2025-08-26
+\subsection{\code{crew_class_launcher$terminate_workers()}}{
+  Deprecated on 2025-08-26
 (\code{crew} version 1.2.1.9004).
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$terminate_workers()}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$terminate_workers()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-crashes"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-crashes}{}}}
-\subsection{Method \code{crashes()}}{
-Deprecated on 2025-01-28 (\code{crew} version 1.0.0).
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$crashes(index = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_launcher$crashes()}}{
+  Deprecated on 2025-01-28 (\code{crew} version 1.0.0).
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$crashes(index = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{index}}{Unused argument.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    The integer 1, for compatibility.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{index}}{Unused argument.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The integer 1, for compatibility.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-set_name"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-set_name}{}}}
-\subsection{Method \code{set_name()}}{
-Deprecated on 2025-01-28 (\code{crew} version 1.0.0).
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$set_name(name)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_launcher$set_name()}}{
+  Deprecated on 2025-01-28 (\code{crew} version 1.0.0).
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$set_name(name)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{name}}{Name to set for the launcher.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{NULL} (invisibly).
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{name}}{Name to set for the launcher.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{NULL} (invisibly).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-crew_class_launcher-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-crew_class_launcher-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{crew_class_launcher$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{crew_class_launcher$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{crew_class_launcher$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

@@ -43,70 +43,92 @@ export(num_range)
 export(one_of)
 export(starts_with)
 importFrom(R6,R6Class)
-importFrom(cli,cli_progress_bar)
-importFrom(cli,cli_progress_done)
-importFrom(cli,cli_progress_update)
-importFrom(collections,dict)
-importFrom(collections,queue)
+importFrom(cli,
+  cli_progress_bar,
+  cli_progress_done,
+  cli_progress_update
+)
+importFrom(collections,
+  dict,
+  queue
+)
 importFrom(data.table,rbindlist)
-importFrom(later,global_loop)
-importFrom(later,later)
-importFrom(mirai,call_mirai)
-importFrom(mirai,daemon)
-importFrom(mirai,daemons)
-importFrom(mirai,info)
-importFrom(mirai,is_mirai)
-importFrom(mirai,is_mirai_error)
-importFrom(mirai,mirai)
-importFrom(mirai,nextcode)
-importFrom(mirai,nextget)
-importFrom(mirai,nextstream)
-importFrom(mirai,stop_mirai)
-importFrom(nanonext,"%~>%")
-importFrom(nanonext,.unresolved)
-importFrom(nanonext,cv)
-importFrom(nanonext,ip_addr)
-importFrom(nanonext,mclock)
-importFrom(nanonext,msleep)
-importFrom(nanonext,nng_error)
-importFrom(nanonext,random)
-importFrom(nanonext,tls_config)
-importFrom(nanonext,until_)
+importFrom(later,
+  global_loop,
+  later
+)
+importFrom(mirai,
+  call_mirai,
+  daemon,
+  daemons,
+  info,
+  is_mirai,
+  is_mirai_error,
+  mirai,
+  nextcode,
+  nextget,
+  nextstream,
+  stop_mirai
+)
+importFrom(nanonext,
+  "%~>%",
+  .unresolved,
+  cv,
+  ip_addr,
+  mclock,
+  msleep,
+  nng_error,
+  random,
+  tls_config,
+  until_
+)
 importFrom(processx,process)
 importFrom(promises,promise)
-importFrom(ps,ps_cmdline)
-importFrom(ps,ps_handle)
-importFrom(ps,ps_is_running)
-importFrom(ps,ps_pid)
-importFrom(ps,ps_username)
-importFrom(rlang,abort)
-importFrom(rlang,as_function)
-importFrom(rlang,enquo)
-importFrom(rlang,is_installed)
-importFrom(rlang,is_named)
-importFrom(rlang,quo_squash)
+importFrom(ps,
+  ps_cmdline,
+  ps_handle,
+  ps_is_running,
+  ps_pid,
+  ps_username
+)
+importFrom(rlang,
+  abort,
+  as_function,
+  enquo,
+  is_installed,
+  is_named,
+  quo_squash
+)
 importFrom(stats,runif)
-importFrom(tibble,as_tibble)
-importFrom(tibble,new_tibble)
-importFrom(tibble,tibble)
-importFrom(tidyselect,all_of)
-importFrom(tidyselect,any_of)
-importFrom(tidyselect,contains)
-importFrom(tidyselect,ends_with)
-importFrom(tidyselect,eval_select)
-importFrom(tidyselect,everything)
-importFrom(tidyselect,last_col)
-importFrom(tidyselect,matches)
-importFrom(tidyselect,num_range)
-importFrom(tidyselect,one_of)
-importFrom(tidyselect,starts_with)
-importFrom(tools,SIGINT)
-importFrom(tools,SIGQUIT)
-importFrom(tools,SIGTERM)
-importFrom(tools,pskill)
-importFrom(utils,capture.output)
-importFrom(utils,compareVersion)
-importFrom(utils,globalVariables)
-importFrom(utils,head)
-importFrom(utils,sessionInfo)
-importFrom(utils,tail)
+importFrom(tibble,
+  as_tibble,
+  new_tibble,
+  tibble
+)
+importFrom(tidyselect,
+  all_of,
+  any_of,
+  contains,
+  ends_with,
+  eval_select,
+  everything,
+  last_col,
+  matches,
+  num_range,
+  one_of,
+  starts_with
+)
+importFrom(tools,
+  SIGINT,
+  SIGQUIT,
+  SIGTERM,
+  pskill
+)
+importFrom(utils,
+  capture.output,
+  compareVersion,
+  globalVariables,
+  head,
+  sessionInfo,
+  tail
+)
